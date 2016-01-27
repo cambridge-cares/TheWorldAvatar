@@ -82,37 +82,42 @@ import com.esri.toolkit.overlays.HitTestOverlay;
 public class JParkSim {
 	
 	// style of different layers
-	final static SimpleFillSymbol Landlotscolor = new SimpleFillSymbol(Color.cyan, new SimpleLineSymbol(Color.cyan, 1), SimpleFillSymbol.Style.NULL);
-	final static SimpleFillSymbol Buildingscolor = new SimpleFillSymbol(Color.orange);
-	final static SimpleFillSymbol Storagecolor = new SimpleFillSymbol(new Color(139,69,19));
-	// power grid
-	final static SimpleFillSymbol PowerGencolor = new SimpleFillSymbol(Color.red);
-	final static SimpleLineSymbol UHTLinescolor = new SimpleLineSymbol(Color.green, 3);
-	final static SimpleMarkerSymbol UHTSubstationcolor = new SimpleMarkerSymbol(Color.red, 20, Style.CROSS);
-	final static SimpleLineSymbol EHTLinescolor = new SimpleLineSymbol(new Color(204,204,0), 3);
-	final static SimpleMarkerSymbol EHTSubstationcolor = new SimpleMarkerSymbol(Color.blue, 20, Style.CIRCLE);
-	final static SimpleLineSymbol HTLinescolor = new SimpleLineSymbol(new Color(0,100,0), 3);
-	final static SimpleMarkerSymbol LoadPointscolor = new SimpleMarkerSymbol(new Color(127,0,255), 10, Style.DIAMOND);
-	final static SimpleMarkerSymbol BusCouplercolor = new SimpleMarkerSymbol(Color.magenta, 10, Style.TRIANGLE);
-	final static SimpleMarkerSymbol ChemProcesscolor = new SimpleMarkerSymbol(Color.red, 20, Style.CIRCLE);
-	final static SimpleFillSymbol PlantReactorcolor = new SimpleFillSymbol(Color.pink);
-	final static SimpleFillSymbol Decantercolor = new SimpleFillSymbol(Color.cyan);
-	final static SimpleFillSymbol Extractorcolor = new SimpleFillSymbol(new Color(225,134,225));
-	final static SimpleFillSymbol FlashDrumcolor = new SimpleFillSymbol(Color.gray);
-	final static SimpleFillSymbol Mixercolor = new SimpleFillSymbol(new Color(225,225,20));
-	final static SimpleFillSymbol RadFraccolor = new SimpleFillSymbol(new Color(0,150,30));
-	final static SimpleFillSymbol PlantBackgroundcolor = new SimpleFillSymbol(new Color(230,230,230));
-	final static SimpleLineSymbol GasLinecolor = new SimpleLineSymbol(Color.black, 3);
-	final static SimpleLineSymbol AirLinecolor = new SimpleLineSymbol(new Color(200,100,0), 3);
-	final static SimpleLineSymbol EnergyStreamcolor = new SimpleLineSymbol(new Color(250,0,250), 3);
-	final static SimpleLineSymbol MaterialLinecolor = new SimpleLineSymbol(Color.red, 3);
-	final static SimpleLineSymbol WaterLinecolor = new SimpleLineSymbol(Color.blue, 3);
-	final static SimpleLineSymbol ElectricityLinecolor = new SimpleLineSymbol(Color.orange, 3);
-	final static SimpleFillSymbol Exchangercolor = new SimpleFillSymbol(new Color(100,100,30));
-	final static SimpleFillSymbol pumpcolor = new SimpleFillSymbol(new Color(200,100,30));
-	final static SimpleFillSymbol blowercolor = new SimpleFillSymbol(new Color(100,50,30));
-	final static SimpleFillSymbol valvecolor = new SimpleFillSymbol(new Color(40,130,30));
-	final static SimpleFillSymbol splittercolor = new SimpleFillSymbol(new Color(130,20,89));
+		final static SimpleFillSymbol Landlotscolor = new SimpleFillSymbol(Color.cyan, new SimpleLineSymbol(Color.cyan, 1), SimpleFillSymbol.Style.NULL);
+		final static SimpleFillSymbol Buildingscolor = new SimpleFillSymbol(Color.orange);
+		final static SimpleFillSymbol Storagecolor = new SimpleFillSymbol(new Color(139,69,19));
+		final static SimpleLineSymbol Pipecolor = new SimpleLineSymbol(Color.pink,3);
+		final static SimpleFillSymbol Roadcolor = new SimpleFillSymbol(Color.gray);
+		// power grid
+		final static SimpleFillSymbol PowerGencolor = new SimpleFillSymbol(Color.red);
+		final static SimpleLineSymbol UHTLinescolor = new SimpleLineSymbol(Color.green, 3);
+		final static SimpleMarkerSymbol UHTSubstationcolor = new SimpleMarkerSymbol(Color.red, 20, Style.CROSS);
+		final static SimpleLineSymbol EHTLinescolor = new SimpleLineSymbol(new Color(204,204,0), 3);
+		final static SimpleMarkerSymbol EHTSubstationcolor = new SimpleMarkerSymbol(Color.blue, 20, Style.CIRCLE);
+		final static SimpleLineSymbol HTLinescolor = new SimpleLineSymbol(new Color(0,100,0), 3);
+		final static SimpleMarkerSymbol LoadPointscolor = new SimpleMarkerSymbol(new Color(127,0,255), 10, Style.DIAMOND);
+		final static SimpleMarkerSymbol BusCouplercolor = new SimpleMarkerSymbol(Color.magenta, 10, Style.TRIANGLE);
+		// chemical plant
+		final static SimpleMarkerSymbol ChemProcesscolor = new SimpleMarkerSymbol(Color.red, 20, Style.CIRCLE);
+		final static SimpleFillSymbol PlantReactorcolor = new SimpleFillSymbol(Color.pink);
+		final static SimpleFillSymbol Decantercolor = new SimpleFillSymbol(Color.cyan);
+		final static SimpleFillSymbol Extractorcolor = new SimpleFillSymbol(new Color(225,134,225));
+		final static SimpleFillSymbol FlashDrumcolor = new SimpleFillSymbol(Color.gray);
+		final static SimpleFillSymbol Mixercolor = new SimpleFillSymbol(new Color(225,225,20));
+		final static SimpleFillSymbol RadFraccolor = new SimpleFillSymbol(new Color(0,150,30));
+		final static SimpleFillSymbol PlantBackgroundcolor = new SimpleFillSymbol(new Color(230,230,230));
+		final static SimpleLineSymbol GasLinecolor = new SimpleLineSymbol(Color.black, 3);
+		final static SimpleLineSymbol AirLinecolor = new SimpleLineSymbol(new Color(200,100,0), 3);
+		final static SimpleLineSymbol EnergyStreamcolor = new SimpleLineSymbol(new Color(250,0,250), 3);
+		final static SimpleLineSymbol MaterialLinecolor = new SimpleLineSymbol(Color.red, 3);
+		final static SimpleLineSymbol WaterLinecolor = new SimpleLineSymbol(Color.blue, 3);
+		final static SimpleLineSymbol ElectricityLinecolor = new SimpleLineSymbol(Color.orange, 3);
+		final static SimpleFillSymbol Exchangercolor = new SimpleFillSymbol(new Color(100,100,30));
+		final static SimpleFillSymbol pumpcolor = new SimpleFillSymbol(new Color(200,100,30));
+		final static SimpleFillSymbol blowercolor = new SimpleFillSymbol(new Color(100,50,30));
+		final static SimpleFillSymbol valvecolor = new SimpleFillSymbol(new Color(40,130,30));
+		final static SimpleFillSymbol splittercolor = new SimpleFillSymbol(new Color(130,20,89));
+		
+	
 	
 	private JFrame window;
 	private JMap map;
@@ -122,6 +127,8 @@ public class JParkSim {
 	public static ArcGISFeatureLayer Landlotslayer;
 	public static ArcGISFeatureLayer Buildingslayer;
 	public static ArcGISFeatureLayer Storagelayer;
+	public static ArcGISFeatureLayer Pipelayer;
+	public static ArcGISFeatureLayer Roadlayer;
 	public static ArcGISFeatureLayer PowerGenlayer;
 	public static ArcGISFeatureLayer UHTLineslayer;
 	public static ArcGISFeatureLayer UHTSubstationlayer;
@@ -149,7 +156,7 @@ public class JParkSim {
 	public static ArcGISFeatureLayer blowerlayer;
 	public static ArcGISFeatureLayer valvelayer;
 	public static ArcGISFeatureLayer splitterlayer;
-
+	
  	public static String httpStringCSV = new String("D:/httpReq.CSV"); // (mjk, 151115) investigating structure of DataOutputStream object
  	public static String httpStringCSV1 = new String("D:/httpReq1.CSV"); // (ZL-151203) investigating structure of DataOutputStream object
  	public static String httpStringCSV2 = new String("D:/httpReq2.CSV"); // (ZL-151203) investigating structure of DataOutputStream object
@@ -183,9 +190,11 @@ public class JParkSim {
     // adds layers uploaded onto ArcGIS for Developers
     UserCredentials user = new UserCredentials();
     user.setUserAccount("jparksimulator", "c4tjpark"); // Access secure feature layer service using login username and password
-    Landlotslayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/arcgis/rest/services/Landlots/FeatureServer/0", user);
+    Landlotslayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/landlots2/FeatureServer/0", user);
     Buildingslayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/Buildings/FeatureServer/0", user);
-    Storagelayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/arcgis/rest/services/Storage/FeatureServer/0", user);
+    Storagelayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/wholestorage/FeatureServer/0", user);
+    Pipelayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/pipelines/FeatureServer/0", user);
+    Roadlayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/Road/FeatureServer/0", user);
     PowerGenlayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/arcgis/rest/services/PowerGen/FeatureServer/0", user);
     UHTLineslayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/arcgis/rest/services/UHT_Lines_(230kV)/FeatureServer/0", user);
     UHTSubstationlayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/arcgis/rest/services/UHT_Substation_(230_66kV)/FeatureServer/0", user);
@@ -202,7 +211,7 @@ public class JParkSim {
     MaterialLinelayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/MaterialLine/FeatureServer/0", user);
     WaterLinelayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/WaterLine/FeatureServer/0", user);
     ElectricityLinelayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/electricity_line/FeatureServer/0", user);
-    PlantReactorlayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/PlantReactor/FeatureServer/0", user);
+        PlantReactorlayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/PlantReactor/FeatureServer/0", user);
     Decanterlayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/Decanter/FeatureServer/0", user);
     Extractorlayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/Extractor/FeatureServer/0", user);
     FlashDrumlayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/FlashDrum/FeatureServer/0", user);
@@ -213,17 +222,19 @@ public class JParkSim {
     blowerlayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/blower/FeatureServer/0", user);
     valvelayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/valve/FeatureServer/0", user);
     splitterlayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/splitter/FeatureServer/0", user);
-    
 	// UPDATE THIS LIST whenever new layers are added: first layer is the bottom most layer *see currently known issues #3
-    ArcGISFeatureLayer[] completeLayerList = {Landlotslayer, Buildingslayer, Storagelayer, PowerGenlayer, UHTLineslayer, UHTSubstationlayer,
+    
+	ArcGISFeatureLayer[] completeLayerList = {Landlotslayer, Buildingslayer, Storagelayer, Pipelayer, Roadlayer, PowerGenlayer, UHTLineslayer, UHTSubstationlayer,
 			EHTLineslayer, EHTSubstationlayer, HTLineslayer, LoadPointslayer, BusCouplerlayer, ChemProcesslayer,PlantBackgroundlayer,
 			GasLinelayer,AirLinelayer,EnergyStreamlayer,MaterialLinelayer,ElectricityLinelayer,WaterLinelayer,PlantReactorlayer,Decanterlayer,Extractorlayer,
 			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer};
 
     // render layers
-    createRenderer(layers, new ArcGISFeatureLayer [] {Landlotslayer}, Landlotscolor);
+	createRenderer(layers, new ArcGISFeatureLayer [] {Landlotslayer}, Landlotscolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Buildingslayer}, Buildingscolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Storagelayer}, Storagecolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {Pipelayer}, Pipecolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {Roadlayer}, Roadcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {PowerGenlayer}, PowerGencolor);   
     createRenderer(layers, new ArcGISFeatureLayer [] {UHTLineslayer}, UHTLinescolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {UHTSubstationlayer}, UHTSubstationcolor);
@@ -285,6 +296,8 @@ public class JParkSim {
     editlayer.put("Landlot", Landlotslayer);
     editlayer.put("Building", Buildingslayer);
     editlayer.put("Storage", Storagelayer);
+    editlayer.put("Pipelines", Pipelayer);
+    editlayer.put("Public Road", Roadlayer);
     editlayer.put("PowerGen", PowerGenlayer);
     editlayer.put("UHT Line", UHTLineslayer);
     editlayer.put("UHT Substation", UHTSubstationlayer);
@@ -297,10 +310,10 @@ public class JParkSim {
     editlayer.put("Background", PlantBackgroundlayer);
     editlayer.put("GasLine", GasLinelayer);
     editlayer.put("AirLine", AirLinelayer);
-    editlayer.put("EnergyStream", EnergyStreamlayer);
-    editlayer.put("MaterialLine", MaterialLinelayer);     
+    editlayer.put("Energy Stream", EnergyStreamlayer);
+    editlayer.put("Material Line", MaterialLinelayer);     
     editlayer.put("WaterLine", WaterLinelayer);
-    editlayer.put("ElectricityLine", ElectricityLinelayer);
+    editlayer.put("Electricity Line", ElectricityLinelayer);
     editlayer.put("ChemReactor", PlantReactorlayer);
     editlayer.put("Decanter", Decanterlayer);
     editlayer.put("Extractor", Extractorlayer);
@@ -690,7 +703,7 @@ public class JParkSim {
     		OutputStreamWriter out;
     		URL url;
     		try {
-				url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet 
+				url = new URL("http://www.jparksimulator.com/APServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
@@ -701,17 +714,11 @@ public class JParkSim {
 					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
 					StringBuilder layers = new StringBuilder();
 					StringBuilder FIDs = new StringBuilder();
-					StringBuilder OBJECTIDs = new StringBuilder();
-					StringBuilder appCallFlag = new StringBuilder();
 					for (String[] item : editStack) { // create comma separated values
 						layers.append(item[0]);
 						layers.append(",");
 						FIDs.append(item[1]);
 						FIDs.append(",");
-						OBJECTIDs.append(item[2]);
-						OBJECTIDs.append(",");
-						appCallFlag.append("PrAP");
-						appCallFlag.append(",");
 					}
 					StringBuilder outputString = new StringBuilder();
 					// Only URL encoded string values can be sent over a HTTP connection
@@ -722,15 +729,6 @@ public class JParkSim {
 					outputString.append(URLEncoder.encode("FIDs", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(FIDs.toString(), "UTF-8"));
-					outputString.append("&");
-					outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
-					outputString.append("=");
-					outputString.append(URLEncoder.encode(OBJECTIDs.toString(), "UTF-8"));
-					outputString.append("&");
-					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
-					outputString.append("=");
-					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
-					System.out.println("outputString="+outputString);
 					
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
 					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
