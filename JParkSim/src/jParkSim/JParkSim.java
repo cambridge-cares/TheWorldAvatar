@@ -211,7 +211,7 @@ public class JParkSim {
     MaterialLinelayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/MaterialLine/FeatureServer/0", user);
     WaterLinelayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/WaterLine/FeatureServer/0", user);
     ElectricityLinelayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/electricity_line/FeatureServer/0", user);
-        PlantReactorlayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/PlantReactor/FeatureServer/0", user);
+    PlantReactorlayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/PlantReactor/FeatureServer/0", user);
     Decanterlayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/Decanter/FeatureServer/0", user);
     Extractorlayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/Extractor/FeatureServer/0", user);
     FlashDrumlayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/FlashDrum/FeatureServer/0", user);
@@ -703,7 +703,7 @@ public class JParkSim {
     		OutputStreamWriter out;
     		URL url;
     		try {
-				url = new URL("http://www.jparksimulator.com/APServlet/"); // URL of servlet
+				url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
@@ -714,11 +714,18 @@ public class JParkSim {
 					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
 					StringBuilder layers = new StringBuilder();
 					StringBuilder FIDs = new StringBuilder();
+					StringBuilder OBJECTIDs = new StringBuilder();
+					StringBuilder appCallFlag = new StringBuilder();
+					
 					for (String[] item : editStack) { // create comma separated values
 						layers.append(item[0]);
 						layers.append(",");
 						FIDs.append(item[1]);
 						FIDs.append(",");
+						OBJECTIDs.append(item[2]);
+						OBJECTIDs.append(",");
+						appCallFlag.append("PrAP");
+						appCallFlag.append(",");
 					}
 					StringBuilder outputString = new StringBuilder();
 					// Only URL encoded string values can be sent over a HTTP connection
@@ -729,6 +736,15 @@ public class JParkSim {
 					outputString.append(URLEncoder.encode("FIDs", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(FIDs.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(OBJECTIDs.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					System.out.println("outputString="+outputString);
 					
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
 					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
