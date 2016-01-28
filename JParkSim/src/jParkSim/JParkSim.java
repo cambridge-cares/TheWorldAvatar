@@ -87,6 +87,7 @@ public class JParkSim {
 		final static SimpleFillSymbol Storagecolor = new SimpleFillSymbol(new Color(139,69,19));
 		final static SimpleLineSymbol Pipecolor = new SimpleLineSymbol(Color.pink,3);
 		final static SimpleFillSymbol Roadcolor = new SimpleFillSymbol(Color.gray);
+		
 		// power grid
 		final static SimpleFillSymbol PowerGencolor = new SimpleFillSymbol(Color.red);
 		final static SimpleLineSymbol UHTLinescolor = new SimpleLineSymbol(Color.green, 3);
@@ -116,6 +117,11 @@ public class JParkSim {
 		final static SimpleFillSymbol blowercolor = new SimpleFillSymbol(new Color(100,50,30));
 		final static SimpleFillSymbol valvecolor = new SimpleFillSymbol(new Color(40,130,30));
 		final static SimpleFillSymbol splittercolor = new SimpleFillSymbol(new Color(130,20,89));
+		final static SimpleFillSymbol expandercolor = new SimpleFillSymbol(new Color(130,30,200));
+		final static SimpleFillSymbol filtercolor = new SimpleFillSymbol(Color.green);
+		final static SimpleFillSymbol vesselcolor = new SimpleFillSymbol(Color.blue);
+		
+		
 		
 	
 	
@@ -156,7 +162,9 @@ public class JParkSim {
 	public static ArcGISFeatureLayer blowerlayer;
 	public static ArcGISFeatureLayer valvelayer;
 	public static ArcGISFeatureLayer splitterlayer;
-	
+	public static ArcGISFeatureLayer expanderlayer;
+	public static ArcGISFeatureLayer filterlayer;
+	public static ArcGISFeatureLayer vessellayer;
  	public static String httpStringCSV = new String("D:/httpReq.CSV"); // (mjk, 151115) investigating structure of DataOutputStream object
  	public static String httpStringCSV1 = new String("D:/httpReq1.CSV"); // (ZL-151203) investigating structure of DataOutputStream object
  	public static String httpStringCSV2 = new String("D:/httpReq2.CSV"); // (ZL-151203) investigating structure of DataOutputStream object
@@ -222,12 +230,16 @@ public class JParkSim {
     blowerlayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/blower/FeatureServer/0", user);
     valvelayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/valve/FeatureServer/0", user);
     splitterlayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/splitter/FeatureServer/0", user);
+    expanderlayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/expander/FeatureServer/0", user);
+    filterlayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/filter/FeatureServer/0", user);
+    vessellayer = new ArcGISFeatureLayer("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/vessel/FeatureServer/0", user);
+    
 	// UPDATE THIS LIST whenever new layers are added: first layer is the bottom most layer *see currently known issues #3
     
 	ArcGISFeatureLayer[] completeLayerList = {Landlotslayer, Buildingslayer, Storagelayer, Pipelayer, Roadlayer, PowerGenlayer, UHTLineslayer, UHTSubstationlayer,
 			EHTLineslayer, EHTSubstationlayer, HTLineslayer, LoadPointslayer, BusCouplerlayer, ChemProcesslayer,PlantBackgroundlayer,
 			GasLinelayer,AirLinelayer,EnergyStreamlayer,MaterialLinelayer,ElectricityLinelayer,WaterLinelayer,PlantReactorlayer,Decanterlayer,Extractorlayer,
-			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer};
+			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer,expanderlayer,filterlayer,vessellayer};
 
     // render layers
 	createRenderer(layers, new ArcGISFeatureLayer [] {Landlotslayer}, Landlotscolor);
@@ -262,7 +274,9 @@ public class JParkSim {
     createRenderer(layers, new ArcGISFeatureLayer [] {blowerlayer}, blowercolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {valvelayer}, valvecolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {splitterlayer}, splittercolor);
-    
+    createRenderer(layers, new ArcGISFeatureLayer [] {expanderlayer}, expandercolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {filterlayer}, filtercolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {vessellayer}, vesselcolor);
     // initialize window
     window = new JFrame("J-Park Simulator");
     window.setSize(1200, 900);
@@ -325,6 +339,11 @@ public class JParkSim {
     editlayer.put("Blower", blowerlayer);
     editlayer.put("Valve", valvelayer);
     editlayer.put("Splitter", splitterlayer);
+    editlayer.put("Expander", expanderlayer);
+    editlayer.put("Filter", filterlayer);
+    editlayer.put("Vessel", vessellayer);
+    
+    
 
     final JComboBox<String> cbxLayer = new JComboBox<>(editlayer.keySet().toArray(new String[0]));	// initialize dropdown box
     cbxLayer.setMaximumSize(new Dimension(220, 25));
