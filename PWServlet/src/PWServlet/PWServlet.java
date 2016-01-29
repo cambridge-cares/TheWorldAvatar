@@ -899,79 +899,8 @@ public class PWServlet extends HttpServlet {
 			}
 		}	
 		readPrAPCSV(); 	
-//		WriteXMLFile(attributeslist_CR);
 	}
-/*	
-//to write XML file with the data extracted from ArcGIS database	
-	public void WriteXMLFile(ArrayList<Map<String, Object>> attributeslist_CR){		
-		System.out.println("1");
-		try{
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
-			Document doc = docBuilder.newDocument();	
-			
-			for(int i=0; i<attributeslist_CR.size()-1;i++){
-				System.out.println("2");
-				for(String key: attributeslist_CR.get(i).keySet()){
-					if(key=="OBJECTID"){
-						  System.out.println("3");
-						  					  
-						  //Element rootElement=doc.createElement(OBJECTIDtoCRNum.get(i+1));
-						  Element rootElement = doc.createElement("reactor");
-				          doc.appendChild(rootElement);
-				          
-				          String newNode = OBJECTIDtoCRNum.get(i+1);				          						  
-						  Element reactant1 = doc.createElement("reactant");
-						  rootElement.appendChild(reactant1);
-						  
-						  Element compound = doc.createElement("compound");
-						  compound.appendChild(doc.createTextNode(String.valueOf(attributeslist_CR.get(i).get("Mat_In_1"))));
-						  reactant1.appendChild(compound);
-						  
-						  Element temperature = doc.createElement("temperature");
-						  temperature.appendChild(doc.createTextNode(String.valueOf(attributeslist_CR.get(i).get("MatIn1_T"))));
-						  reactant1.appendChild(temperature);
-						
-						  Attr attrt1 = doc.createAttribute("unit");
-						  attrt1.setValue("K");
-						  temperature.setAttributeNode(attrt1);
-						  
-						  Element pressure = doc.createElement("pressure");
-						  pressure.appendChild(doc.createTextNode(String.valueOf(attributeslist_CR.get(i).get("MatIn1_P"))));
-						  reactant1.appendChild(pressure);
-						  
-						  Attr attrp1 = doc.createAttribute("unit");
-						  attrp1.setValue("atm");
-					      pressure.setAttributeNode(attrp1);
-					      
-					      Element quantity = doc.createElement("quantity");
-						  quantity.appendChild(doc.createTextNode(String.valueOf(attributeslist_CR.get(i).get("MatIn1Qnt"))));
-						  reactant1.appendChild(quantity);
-						  
-						  Attr attrq1 = doc.createAttribute("unit");
-						  attrq1.setValue(String.valueOf(attributeslist_CR.get(i).get("MatIn1Unit")));
-						  quantity.setAttributeNode(attrq1);
-						  
-						  TransformerFactory transformerFactory = TransformerFactory.newInstance();
-						  Transformer transformer = transformerFactory.newTransformer();
-						  DOMSource source = new DOMSource(doc);
-						  StreamResult result = new StreamResult(new File(XMLTest));
-						  
-						  transformer.transform(source, result);
-						  System.out.println("File saved!");
-					}
-				}
-			}
-						
-		} catch (ParserConfigurationException pce) {
-			pce.printStackTrace();
-		  } catch (TransformerException tfe) {
-			tfe.printStackTrace();
-		  }
-		
-	}//end of WriteXMLFile
-*/	
 	public void runPrPowerWorld(ArrayList<String[]> editStack) {
 		ArrayList<Map<String, Object>> attributeslist_LP = new ArrayList<Map<String, Object>>();		// additional ArrayList for loadpoints
 		ArrayList<Map<String, Object>> attributeslist_PG = new ArrayList<Map<String, Object>>();		// additional ArrayList for powergen
