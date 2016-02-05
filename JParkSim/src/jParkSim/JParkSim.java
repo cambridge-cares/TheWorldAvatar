@@ -510,7 +510,7 @@ public class JParkSim {
     });
     PWbutton.setEnabled(true);
     PWbutton.setVisible(true);
-    PWbutton.setSize(150,30);
+    PWbutton.setSize(190,30);
     PWbutton.setLocation(490, 10);
 
     
@@ -599,8 +599,8 @@ public class JParkSim {
     });
     PWPrButton.setEnabled(true);
     PWPrButton.setVisible(true);
-    PWPrButton.setSize(170,30);
-    PWPrButton.setLocation(650, 10);
+    PWPrButton.setSize(190,30);
+    PWPrButton.setLocation(690, 10);
 
     
     // Run AspenPlus button
@@ -690,7 +690,7 @@ public class JParkSim {
     });
     APbutton.setEnabled(true);
     APbutton.setVisible(true);
-    APbutton.setSize(150,30);
+    APbutton.setSize(190,30);
     APbutton.setLocation(490, 60);    
 
 
@@ -772,9 +772,170 @@ public class JParkSim {
     });
     APPrButton.setEnabled(true);
     APPrButton.setVisible(true);
-    APPrButton.setSize(170,30);
-    APPrButton.setLocation(650, 60);
+    APPrButton.setSize(190,30);
+    APPrButton.setLocation(690, 60);
+    
+ // Run AspenPlus model with heat recovery button
+    JButton APHrButton = new JButton("Run AP with HeatRecovery");
+    APHrButton.addActionListener(new ActionListener() {
+    	@Override
+    	public void actionPerformed(ActionEvent arg0) {
+    		HttpURLConnection urlCon;
+    		OutputStreamWriter out;
+    		URL url;
+    		try {
+				url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
+				urlCon = (HttpURLConnection) url.openConnection();
+				urlCon.setRequestMethod("POST");
+				urlCon.setDoOutput(true);
+				
+				if (editStack.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "You did not edit any features for AspenPlus!");
+				} else {
+					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
+					StringBuilder layers = new StringBuilder();
+					StringBuilder FIDs = new StringBuilder();
+					StringBuilder OBJECTIDs = new StringBuilder();
+					StringBuilder appCallFlag = new StringBuilder();
+					
+					for (String[] item : editStack) { // create comma separated values
+						layers.append(item[0]);
+						layers.append(",");
+						FIDs.append(item[1]);
+						FIDs.append(",");
+						OBJECTIDs.append(item[2]);
+						OBJECTIDs.append(",");
+						appCallFlag.append("APHr");
+						appCallFlag.append(",");
+					}
+					StringBuilder outputString = new StringBuilder();
+					// Only URL encoded string values can be sent over a HTTP connection
+					outputString.append(URLEncoder.encode("layers", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(layers.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("FIDs", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(FIDs.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(OBJECTIDs.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					System.out.println("outputString="+outputString);
+					
+					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
+					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
+					wr.writeBytes(outputString.toString()); // write query string into servlet doPost() method
+					wr.flush();
+					wr.close();
+					
+					if (urlCon.getResponseCode()==200) {
+						JOptionPane.showMessageDialog(null, "AspenPlus model with heat recovery has finished running!");
+						editStack.clear(); // delete all items in editStack
+					} else {
+						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
+								+ "\nPlease try running Parameterised AP again");
+					}
+					out.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+    		for (ArcGISFeatureLayer layer : completeLayerList) {
+    			layer.requery();
+    			layer.refresh();
+    		}
+    	}
+    });
+    APHrButton.setEnabled(true);
+    APHrButton.setVisible(true);
+    APHrButton.setSize(190,30);
+    APHrButton.setLocation(490, 110);
 
+ // Run AspenPlus model with heat recovery button
+    JButton APPWButton = new JButton("Run Parameterised AP+PW");
+    APPWButton.addActionListener(new ActionListener() {
+    	@Override
+    	public void actionPerformed(ActionEvent arg0) {
+    		HttpURLConnection urlCon;
+    		OutputStreamWriter out;
+    		URL url;
+    		try {
+				url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
+				urlCon = (HttpURLConnection) url.openConnection();
+				urlCon.setRequestMethod("POST");
+				urlCon.setDoOutput(true);
+				
+				if (editStack.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "You did not edit any features for AspenPlus!");
+				} else {
+					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
+					StringBuilder layers = new StringBuilder();
+					StringBuilder FIDs = new StringBuilder();
+					StringBuilder OBJECTIDs = new StringBuilder();
+					StringBuilder appCallFlag = new StringBuilder();
+					
+					for (String[] item : editStack) { // create comma separated values
+						layers.append(item[0]);
+						layers.append(",");
+						FIDs.append(item[1]);
+						FIDs.append(",");
+						OBJECTIDs.append(item[2]);
+						OBJECTIDs.append(",");
+						appCallFlag.append("PrAPPW");
+						appCallFlag.append(",");
+					}
+					StringBuilder outputString = new StringBuilder();
+					// Only URL encoded string values can be sent over a HTTP connection
+					outputString.append(URLEncoder.encode("layers", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(layers.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("FIDs", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(FIDs.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(OBJECTIDs.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					System.out.println("outputString="+outputString);
+					
+					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
+					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
+					wr.writeBytes(outputString.toString()); // write query string into servlet doPost() method
+					wr.flush();
+					wr.close();
+					
+					if (urlCon.getResponseCode()==200) {
+						JOptionPane.showMessageDialog(null, "AspenPlus model with heat recovery has finished running!");
+						editStack.clear(); // delete all items in editStack
+					} else {
+						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
+								+ "\nPlease try running Parameterised AP again");
+					}
+					out.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+    		for (ArcGISFeatureLayer layer : completeLayerList) {
+    			layer.requery();
+    			layer.refresh();
+    		}
+    	}
+    });
+    APPWButton.setEnabled(true);
+    APPWButton.setVisible(true);
+    APPWButton.setSize(190,30);
+    APPWButton.setLocation(690, 110);
 
     JButton refreshButton = new JButton("Refresh Map");
     refreshButton.addActionListener(new ActionListener() {
@@ -788,8 +949,8 @@ public class JParkSim {
     });
     refreshButton.setEnabled(true);
     refreshButton.setVisible(true);
-    refreshButton.setSize(150,30);
-    refreshButton.setLocation(830, 10);
+    refreshButton.setSize(130,30);
+    refreshButton.setLocation(890, 10);
 
     
     // combine text, label and dropdown list into one panel for selecting layer to edit
@@ -814,7 +975,9 @@ public class JParkSim {
     contentPane.add(PWbutton);
     contentPane.add(PWPrButton); 
     contentPane.add(APbutton);
-    contentPane.add(APPrButton);    
+    contentPane.add(APPrButton); 
+    contentPane.add(APHrButton);
+    contentPane.add(APPWButton);
     contentPane.add(refreshButton);
     contentPane.add(panel);
     contentPane.add(legend, BorderLayout.WEST);

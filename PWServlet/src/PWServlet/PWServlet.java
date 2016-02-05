@@ -106,6 +106,8 @@ public class PWServlet extends HttpServlet {
  	public static String PrAPCRin = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPCRXin.CSV"); 
  	public static String PrAPSPin = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPSPXin.CSV"); 
  	public static String PrAPDCin = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPDCXin.CSV"); 
+ 	public static String APINsub = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/APINsub.CSV");
+ 	public static String APOUTsub = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/APOUTsub.CSV");
  	
  	public static String XMLTest = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/test.xml"); 
  	
@@ -302,118 +304,119 @@ public class PWServlet extends HttpServlet {
 			PWBusNumtoArcGISFID.put(entry.getValue(), entry.getKey());
 		}
 
-/*		
-		BusNumtoXPoint.put("31", "0");
-		BusNumtoXPoint.put("32", "1");		
-		BusNumtoXPoint.put("34", "2");
-		BusNumtoXPoint.put("35", "3");
-		BusNumtoXPoint.put("36", "4");
-		BusNumtoXPoint.put("38", "5");
-		BusNumtoXPoint.put("40", "7");
-		BusNumtoXPoint.put("41", "8");
-		BusNumtoXPoint.put("45", "9");
-		BusNumtoXPoint.put("46", "10");
-		BusNumtoXPoint.put("47", "11");
-		BusNumtoXPoint.put("49", "12");
-		BusNumtoXPoint.put("52", "13");
-		BusNumtoXPoint.put("53", "14");
-		BusNumtoXPoint.put("54", "15");
-		BusNumtoXPoint.put("57", "16");
-		BusNumtoXPoint.put("59", "17");
-		BusNumtoXPoint.put("60", "18");
-		BusNumtoXPoint.put("62", "19");
-		BusNumtoXPoint.put("63", "20");
-		BusNumtoXPoint.put("64", "21");
-		BusNumtoXPoint.put("65", "22");
-		BusNumtoXPoint.put("66", "23");
-		BusNumtoXPoint.put("67", "24");
-		BusNumtoXPoint.put("70", "25");
-		BusNumtoXPoint.put("71", "26");
-		BusNumtoXPoint.put("73", "27");
-		BusNumtoXPoint.put("75", "28");
-		BusNumtoXPoint.put("76", "29");
-		BusNumtoXPoint.put("77", "30");
-		BusNumtoXPoint.put("80", "31");
-		BusNumtoXPoint.put("82", "32");
-		BusNumtoXPoint.put("83", "33");
-		BusNumtoXPoint.put("84", "34");
-		BusNumtoXPoint.put("85", "35");
-		BusNumtoXPoint.put("86", "36");
-		BusNumtoXPoint.put("88", "37");
-		BusNumtoXPoint.put("89", "38");
-		BusNumtoXPoint.put("90", "39");
-		BusNumtoXPoint.put("93", "40");
-		BusNumtoXPoint.put("94", "41");
-		BusNumtoXPoint.put("95", "42");
-		BusNumtoXPoint.put("97", "43");
-		BusNumtoXPoint.put("98", "44");
-		BusNumtoXPoint.put("99", "45");
-		BusNumtoXPoint.put("100", "46");
-		BusNumtoXPoint.put("101", "47");
-		BusNumtoXPoint.put("102", "48");
-		BusNumtoXPoint.put("103", "49");
-		BusNumtoXPoint.put("104", "50");
-		BusNumtoXPoint.put("105", "51");
-		BusNumtoXPoint.put("106", "52");
-		BusNumtoXPoint.put("107", "53");
-		BusNumtoXPoint.put("108", "54");
-		BusNumtoXPoint.put("109", "55");
-		BusNumtoXPoint.put("110", "56");
-		BusNumtoXPoint.put("111", "57");
-		BusNumtoXPoint.put("113", "58");
-		BusNumtoXPoint.put("114", "59");
-		BusNumtoXPoint.put("115", "60");
-		BusNumtoXPoint.put("116", "61");
-		BusNumtoXPoint.put("117", "62");
-		BusNumtoXPoint.put("118", "63");
-		BusNumtoXPoint.put("119", "64");
-		BusNumtoXPoint.put("120", "65");
-		BusNumtoXPoint.put("121", "66");
-		BusNumtoXPoint.put("122", "67");
-		BusNumtoXPoint.put("123", "68");
-		BusNumtoXPoint.put("124", "69");
-		BusNumtoXPoint.put("125", "70");
-		BusNumtoXPoint.put("126", "71");
-		BusNumtoXPoint.put("127", "72");
-		BusNumtoXPoint.put("128", "73");
-		BusNumtoXPoint.put("130", "74");
-		BusNumtoXPoint.put("131", "75");
-		BusNumtoXPoint.put("132", "76");
-		BusNumtoXPoint.put("133", "77");
-		BusNumtoXPoint.put("134", "78");
-		BusNumtoXPoint.put("136", "79");
-		BusNumtoXPoint.put("137", "80");
-		BusNumtoXPoint.put("138", "81");
-		BusNumtoXPoint.put("147", "82");
-		BusNumtoXPoint.put("148", "83");
-		BusNumtoXPoint.put("150", "84");
-		BusNumtoXPoint.put("153", "85");
-		BusNumtoXPoint.put("156", "86");
-		BusNumtoXPoint.put("159", "87");
-		BusNumtoXPoint.put("162", "88");
-		BusNumtoXPoint.put("163", "89");
-		BusNumtoXPoint.put("175", "90");
-		BusNumtoXPoint.put("177", "91");
-		BusNumtoXPoint.put("178", "92");
-		BusNumtoXPoint.put("180", "93");
-		BusNumtoXPoint.put("182", "94");
-		BusNumtoXPoint.put("184", "95");
-		BusNumtoXPoint.put("187", "96");
-		BusNumtoXPoint.put("191", "97");
-		BusNumtoXPoint.put("192", "98");
-		BusNumtoXPoint.put("193", "99");
-		BusNumtoXPoint.put("197", "100");
-		BusNumtoXPoint.put("200", "101");
-		BusNumtoXPoint.put("202", "102");
-		BusNumtoXPoint.put("203", "103");
-		BusNumtoXPoint.put("205", "104");
-		BusNumtoXPoint.put("206", "105");
-		BusNumtoXPoint.put("207", "106");
-		BusNumtoXPoint.put("208", "107");
-*/		
-		BusNumtoXPoint.put("93", 0);
-		BusNumtoXPoint.put("94", 1);
-		BusNumtoXPoint.put("95", 2);
+		
+		BusNumtoXPoint.put("31", 0);
+		BusNumtoXPoint.put("32", 1);		
+		BusNumtoXPoint.put("34", 2);
+		BusNumtoXPoint.put("35", 3);
+		BusNumtoXPoint.put("36", 4);
+		BusNumtoXPoint.put("38", 5);
+		BusNumtoXPoint.put("39", 6);
+		BusNumtoXPoint.put("40", 7);
+		BusNumtoXPoint.put("41", 8);
+		BusNumtoXPoint.put("45", 9);
+		BusNumtoXPoint.put("46", 10);
+		BusNumtoXPoint.put("47", 11);
+		BusNumtoXPoint.put("49", 12);
+		BusNumtoXPoint.put("52", 13);
+		BusNumtoXPoint.put("53", 14);
+		BusNumtoXPoint.put("54", 15);
+		BusNumtoXPoint.put("57", 16);
+		BusNumtoXPoint.put("59", 17);
+		BusNumtoXPoint.put("60", 18);
+		BusNumtoXPoint.put("62", 19);
+		BusNumtoXPoint.put("63", 20);
+		BusNumtoXPoint.put("64", 21);
+		BusNumtoXPoint.put("65", 22);
+		BusNumtoXPoint.put("66", 23);
+		BusNumtoXPoint.put("67", 24);
+		BusNumtoXPoint.put("70", 25);
+		BusNumtoXPoint.put("71", 26);
+		BusNumtoXPoint.put("73", 27);
+		BusNumtoXPoint.put("75", 28);
+		BusNumtoXPoint.put("76", 29);
+		BusNumtoXPoint.put("77", 30);
+		BusNumtoXPoint.put("80", 31);
+		BusNumtoXPoint.put("82", 32);
+		BusNumtoXPoint.put("83", 33);
+		BusNumtoXPoint.put("84", 34);
+		BusNumtoXPoint.put("85", 35);
+		BusNumtoXPoint.put("86", 36);
+		BusNumtoXPoint.put("88", 37);
+		BusNumtoXPoint.put("89", 38);
+		BusNumtoXPoint.put("90", 39);
+		BusNumtoXPoint.put("93", 40);
+		BusNumtoXPoint.put("94", 41);
+		BusNumtoXPoint.put("95", 42);
+		BusNumtoXPoint.put("97", 43);
+		BusNumtoXPoint.put("98", 44);
+		BusNumtoXPoint.put("99", 45);
+		BusNumtoXPoint.put("100", 46);
+		BusNumtoXPoint.put("101", 47);
+		BusNumtoXPoint.put("102", 48);
+		BusNumtoXPoint.put("103", 49);
+		BusNumtoXPoint.put("104", 50);
+		BusNumtoXPoint.put("105", 51);
+		BusNumtoXPoint.put("106", 52);
+		BusNumtoXPoint.put("107", 53);
+		BusNumtoXPoint.put("108", 54);
+		BusNumtoXPoint.put("109", 55);
+		BusNumtoXPoint.put("110", 56);
+		BusNumtoXPoint.put("111", 57);
+		BusNumtoXPoint.put("113", 58);
+		BusNumtoXPoint.put("114", 59);
+		BusNumtoXPoint.put("115", 60);
+		BusNumtoXPoint.put("116", 61);
+		BusNumtoXPoint.put("117", 62);
+		BusNumtoXPoint.put("118", 63);
+		BusNumtoXPoint.put("119", 64);
+		BusNumtoXPoint.put("120", 65);
+		BusNumtoXPoint.put("121", 66);
+		BusNumtoXPoint.put("122", 67);
+		BusNumtoXPoint.put("123", 68);
+		BusNumtoXPoint.put("124", 69);
+		BusNumtoXPoint.put("125", 70);
+		BusNumtoXPoint.put("126", 71);
+		BusNumtoXPoint.put("127", 72);
+		BusNumtoXPoint.put("128", 73);
+		BusNumtoXPoint.put("130", 74);
+		BusNumtoXPoint.put("131", 75);
+		BusNumtoXPoint.put("132", 76);
+		BusNumtoXPoint.put("133", 77);
+		BusNumtoXPoint.put("134", 78);
+		BusNumtoXPoint.put("136", 79);
+		BusNumtoXPoint.put("137", 80);
+		BusNumtoXPoint.put("138", 81);
+		BusNumtoXPoint.put("147", 82);
+		BusNumtoXPoint.put("148", 83);
+		BusNumtoXPoint.put("150", 84);
+		BusNumtoXPoint.put("153", 85);
+		BusNumtoXPoint.put("156", 86);
+		BusNumtoXPoint.put("159", 87);
+		BusNumtoXPoint.put("162", 88);
+		BusNumtoXPoint.put("163", 89);
+		BusNumtoXPoint.put("175", 90);
+		BusNumtoXPoint.put("177", 91);
+		BusNumtoXPoint.put("178", 92);
+		BusNumtoXPoint.put("180", 93);
+		BusNumtoXPoint.put("182", 94);
+		BusNumtoXPoint.put("184", 95);
+		BusNumtoXPoint.put("187", 96);
+		BusNumtoXPoint.put("191", 97);
+		BusNumtoXPoint.put("192", 98);
+		BusNumtoXPoint.put("193", 99);
+		BusNumtoXPoint.put("197", 100);
+		BusNumtoXPoint.put("200", 101);
+		BusNumtoXPoint.put("202", 102);
+		BusNumtoXPoint.put("203", 103);
+		BusNumtoXPoint.put("205", 104);
+		BusNumtoXPoint.put("206", 105);
+		BusNumtoXPoint.put("207", 106);
+		BusNumtoXPoint.put("208", 107);
+		
+//		BusNumtoXPoint.put("93", 0);
+//		BusNumtoXPoint.put("94", 1);
+//		BusNumtoXPoint.put("95", 2);
 	
 		for (Map.Entry<String, Integer> entry : BusNumtoXPoint.entrySet()) { // reverse mapping
 			XPointtoBusNum.put(entry.getValue(), entry.getKey());
@@ -510,11 +513,12 @@ public class PWServlet extends HttpServlet {
 		switch(appCallFlag[0]) {
 		case "AP":
 			System.out.println(appCallFlag[0]+" button was pressed!");
-			runAspenPlus(editStack); 	//run Aspen Plus model when run AspenPlus Button was pressed
+//			runAspenPlus(editStack); 	//run Aspen Plus model when run AspenPlus Button was pressed
+			runPrAspenPlus(editStack); 	//for the purpose of testing the AP subset model
 			break;
 		case "PrAP": //if PrAP button was pressed, then the following action will be taken
 			System.out.println(appCallFlag[0]+" button was pressed!");
-			runPrAspenPlus();           //run Parametrised Aspen Plus model when run Parametrised AspenPlus Button was pressed
+			runPrAspenPlus(editStack);           //run Parametrised Aspen Plus model when run Parametrised AspenPlus Button was pressed
 			break;
 		case "PW":
 			System.out.println(appCallFlag[0]+" button was pressed!");
@@ -547,7 +551,7 @@ public class PWServlet extends HttpServlet {
 			break;
 		case "PrAP": //if PrAP button was pressed, then the following action will be taken
 			System.out.println(appCallFlag[0]+" button was pressed!");
-			runPrAspenPlus();           //run Parametrised Aspen Plus model when run Parametrised AspenPlus Button was pressed
+			runPrAspenPlus(editStack);           //run Parametrised Aspen Plus model when run Parametrised AspenPlus Button was pressed
 			break;
 		case "PW":
 			System.out.println(appCallFlag[0]+" button was pressed!");
@@ -600,7 +604,7 @@ public class PWServlet extends HttpServlet {
 		}
 	}
 	
-	public void runPrAspenPlus(){
+	public void runPrAspenPlus(ArrayList<String[]> editStack){
 		ArrayList<Map<String, Object>> attributeslist_MX = new ArrayList<Map<String, Object>>();		// additional ArrayList for mixer
 		ArrayList<Map<String, Object>> attributeslist_HX = new ArrayList<Map<String, Object>>();		// additional ArrayList for heat exchanger
 		ArrayList<Map<String, Object>> attributeslist_CR = new ArrayList<Map<String, Object>>();		// additional ArrayList for chemical reactor
@@ -608,7 +612,7 @@ public class PWServlet extends HttpServlet {
 		ArrayList<Map<String, Object>> attributeslist_DC = new ArrayList<Map<String, Object>>();		// additional ArrayList for Decanter		
 		UserCredentials user = new UserCredentials();
 	    user.setUserAccount("jparksimulator", "c4tjpark");
-	    
+	    	    	    
 	    ArrayList<Double> xRow = new ArrayList<Double>();  //extra arraylist to collect the x-value required as input to the pr aspen plus model  
 	    ArrayList<ArrayList<Double>> xData = new ArrayList<>(1);  //arraylist to store the input x-values 
 		ArrayList<ArrayList<Double>> yData;	  //output of the pr aspenplus model
@@ -703,40 +707,18 @@ public class PWServlet extends HttpServlet {
 		FileWriter filewriterHX =null;
 		FileWriter filewriterCR =null;
 		FileWriter filewriterSP =null;
-		FileWriter filewriterDC =null;
+		FileWriter filewriterDC =null;			
+		FileWriter filewriterAPIN =null;
 		
 		try{
 			filewriterMX = new FileWriter(PrAPMXin); //to put the input x-values from the mixer to a CSV file in order to check if the commands works properly when neccessary
 			filewriterHX = new FileWriter(PrAPHXin); //to put the input x-values from the heat exchanger to a CSV file in order to check if the commands works properly when neccessary
 			filewriterCR = new FileWriter(PrAPCRin); //to put the input x-values from the chemical reactor to a CSV file in order to check if the commands works properly when neccessary
 			filewriterSP = new FileWriter(PrAPSPin); //to put the input x-values from the separator to a CSV file in order to check if the commands works properly when neccessary
-			filewriterDC = new FileWriter(PrAPDCin); //to put the input x-values from the decanter to a CSV file in order to check if the commands works properly when neccessary		
+			filewriterDC = new FileWriter(PrAPDCin); //to put the input x-values from the decanter to a CSV file in order to check if the commands works properly when neccessary	
+			filewriterAPIN = new FileWriter(APINsub); //to put the input values for the AspenPlus subset model
 			
-			for(int i=0; i<attributeslist_MX.size();i++){
-				for(String key: attributeslist_MX.get(i).keySet()){                                     //go through all the mixers in biodiesel plant
-					if(key == "OBJECTID"){						
-						filewriterMX.append(key);
-						filewriterMX.append(",");
-						filewriterMX.append(String.valueOf(attributeslist_MX.get(i).get(key)));
-						filewriterMX.append(", FMEOH=");              
-						filewriterMX.append(String.valueOf(attributeslist_MX.get(i).get("MatIn2Qnt")));  //to get the feeding mole flowrate of methanol
-						filewriterMX.append("\n");
-						
-						filewriterMX.append(key);
-						filewriterMX.append(",");
-						filewriterMX.append(String.valueOf(attributeslist_MX.get(i).get(key)));
-						filewriterMX.append(", TMEOH=");
-						filewriterMX.append(String.valueOf(attributeslist_MX.get(i).get("MatIn2_T")));  //to get the temperature of the feeding methanol flow
-						filewriterMX.append("\n");
-
-						if(OBJECTIDtoMXNum.get(i+1).equals("mx01")){							        //"mx01" is the mixer for methanol and the catalyst to be mixed before feeding to the reactor
-							xRow.add(Double.parseDouble(String.valueOf(attributeslist_MX.get(i).get("MatIn2Qnt"))));  //add the feeding mole flowrate of methanol to xRow
-							xRow.add(Double.parseDouble(String.valueOf(attributeslist_MX.get(i).get("MatIn2_T"))));	  //add the temperature of the feeding methanol flow to xRow
-						}				
-					}
-				}
-			}			
-			System.out.println("xRow=" + xRow);
+			filewriterAPIN.append("FOIL, TOIL, FMEOH, TMEOH, TCR, VCR, TSP, TDC, TOIL, TESTER, TESTER2");
 			for(int i=0; i<attributeslist_HX.size();i++){
 				for(String key: attributeslist_HX.get(i).keySet()){                                      //go through all the heat exchangers in biodiesel plant
 					if(key == "OBJECTID"){						
@@ -755,6 +737,10 @@ public class PWServlet extends HttpServlet {
 						filewriterHX.append("\n");
 						
 						if(OBJECTIDtoHXNum.get(i+1).equals("10E01")){                                   //"10E01" is the heat exchanger for oil to be heated before feeding to the reactor
+							filewriterAPIN.append(String.valueOf(attributeslist_MX.get(i).get("MatIn1Qnt")));
+							filewriterAPIN.append(",");
+							filewriterAPIN.append(String.valueOf(attributeslist_MX.get(i).get("MatIn1_T")));
+							filewriterAPIN.append(",");
 							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt"))));  //add the feeding mole flowrate of oil to xRow
 							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T"))));    //add the temperature of oil to xRow
 						}					
@@ -762,6 +748,35 @@ public class PWServlet extends HttpServlet {
 				}
 			}			
 			System.out.println("xRow=" + xRow);
+			for(int i=0; i<attributeslist_MX.size();i++){
+				for(String key: attributeslist_MX.get(i).keySet()){                                     //go through all the mixers in biodiesel plant
+					if(key == "OBJECTID"){						
+						filewriterMX.append(key);
+						filewriterMX.append(",");
+						filewriterMX.append(String.valueOf(attributeslist_MX.get(i).get(key)));
+						filewriterMX.append(", FMEOH=");              
+						filewriterMX.append(String.valueOf(attributeslist_MX.get(i).get("MatIn2Qnt")));  //to get the feeding mole flowrate of methanol
+						filewriterMX.append("\n");
+						
+						filewriterMX.append(key);
+						filewriterMX.append(",");
+						filewriterMX.append(String.valueOf(attributeslist_MX.get(i).get(key)));
+						filewriterMX.append(", TMEOH=");
+						filewriterMX.append(String.valueOf(attributeslist_MX.get(i).get("MatIn2_T")));  //to get the temperature of the feeding methanol flow
+						filewriterMX.append("\n");
+
+						if(OBJECTIDtoMXNum.get(i+1).equals("mx01")){							        //"mx01" is the mixer for methanol and the catalyst to be mixed before feeding to the reactor
+							filewriterAPIN.append(String.valueOf(attributeslist_MX.get(i).get("MatIn2Qnt")));
+							filewriterAPIN.append(",");
+							filewriterAPIN.append(String.valueOf(attributeslist_MX.get(i).get("MatIn2_T")));
+							filewriterAPIN.append(",");
+							xRow.add(Double.parseDouble(String.valueOf(attributeslist_MX.get(i).get("MatIn2Qnt"))));  //add the feeding mole flowrate of methanol to xRow
+							xRow.add(Double.parseDouble(String.valueOf(attributeslist_MX.get(i).get("MatIn2_T"))));	  //add the temperature of the feeding methanol flow to xRow
+						}				
+					}
+				}
+			}			
+			System.out.println("xRow=" + xRow);			
 			for(int i=0; i<attributeslist_CR.size();i++){
 				for(String key: attributeslist_CR.get(i).keySet()){                                      //go through all the reactors in biodiesel plant
 					if(key == "OBJECTID"){						
@@ -778,8 +793,11 @@ public class PWServlet extends HttpServlet {
 						filewriterCR.append(", VCR=");
 						filewriterCR.append(String.valueOf(attributeslist_CR.get(i).get("Volume")));     //to get the reaction volume of reactor
 						filewriterCR.append("\n");
-						System.out.println("hello1!");
 						if(OBJECTIDtoCRNum.get(i+1).equals("10D01")){                                    //"10D01" is the first reactor
+							filewriterAPIN.append(String.valueOf(attributeslist_CR.get(i).get("operate_T")));
+							filewriterAPIN.append(",");
+							filewriterAPIN.append(String.valueOf(attributeslist_CR.get(i).get("Volume")));
+							filewriterAPIN.append(",");
 							xRow.add(Double.parseDouble(String.valueOf(attributeslist_CR.get(i).get("operate_T"))));   //add the operation temperature of reactor to xRow
 							xRow.add(Double.parseDouble(String.valueOf(attributeslist_CR.get(i).get("Volume"))));      //add the reaction volume of reactor to xRow
 						}						
@@ -798,6 +816,8 @@ public class PWServlet extends HttpServlet {
 						filewriterSP.append("\n");
 						
 						if(OBJECTIDtoSPNum.get(i+1).equals("10D02")){
+							filewriterAPIN.append(String.valueOf(attributeslist_SP.get(i).get("Operate_T")));
+							filewriterAPIN.append(",");
 							xRow.add(Double.parseDouble(String.valueOf(attributeslist_SP.get(i).get("Operate_T"))));   //add the operation temperature to xRow							
 						}				
 					}
@@ -815,6 +835,8 @@ public class PWServlet extends HttpServlet {
 						filewriterDC.append("\n");
 						
 						if(OBJECTIDtoDCNum.get(i+1).equals("10D02D")){
+							filewriterAPIN.append(String.valueOf(attributeslist_DC.get(i).get("Operate_T")));
+							filewriterAPIN.append(",");
 							xRow.add(Double.parseDouble(String.valueOf(attributeslist_DC.get(i).get("Operate_T"))));  //add the operation temperature to xRow					
 						}						
 					}
@@ -831,6 +853,8 @@ public class PWServlet extends HttpServlet {
 						filewriterHX.append("\n");
 						
 						if(OBJECTIDtoHXNum.get(i+1).equals("10E01")||OBJECTIDtoHXNum.get(i+1).equals("10E02")||OBJECTIDtoHXNum.get(i+1).equals("10E03")){
+							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("T_Cold_Out")));
+							filewriterAPIN.append(",");
 							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("T_Cold_Out"))));	//add the temperature of the outlet cold stream	to xRow				
 						}						
 					}
@@ -848,57 +872,68 @@ public class PWServlet extends HttpServlet {
 			filewriterSP.close();
 			filewriterDC.flush();																			// passes the data from ArcGIS database to PrAPDCin.csv
 			filewriterDC.close();
+			filewriterAPIN.flush();
+			filewriterAPIN.close();
 		}catch (Exception e) {
 			e.printStackTrace();
 	     } 	
-			
-		xData.add(xRow);                                                                                   // pass all the collected input x-value to xData 
-	    System.out.println("xData="+xData);
-		String simDir = APSim1;                                                                            // pass the directory of the aspenplus sorrogate model to simDir
-        // String modelName = "HDMR_Alg_1";
-        String modelName = "Polynomial_surrogate_Alg_1";
-        FileWriter fileWriter = null;
-        try{
-        	fileWriter = new FileWriter(PrAPOUTCSV);	                                                  //filewriter for the output of pr aspenplus model
-			System.load("C:/apache-tomcat-8.0.24/webapps/ROOT/MoDS_Java_API.dll");                        //not recommended--Messing with the library path on the command line?	
-        	ArrayList<String> xNames = MoDSAPI.getXVarNamesFromAPI(simDir, modelName);
-        	System.out.println("xNames= "+xNames);
-        	ArrayList<String> yNames = MoDSAPI.getYVarNamesFromAPI(simDir, modelName);
-        	System.out.println("yNames= "+yNames);
-        	for(int j=0;j<yNames.size();j++){			        		
-					fileWriter.append(yNames.get(j));                                                     //write the yNames to the output CSV file
-					fileWriter.append(",");
-				}				        				        				        	
-            }catch (Error e) {
-			e.printStackTrace();			
-		    }catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+//as the input x-value set for the AP-subset model and the Pr AP model are the same, so we can use the same code to extract them 		
+		for (int i=0; i<editStack.size(); i++) {														// for each feature in editStack, append something to skeleton, attributeslist and layers
+			String appCallFlag = (String) editStack.get(i)[3];
+			switch(appCallFlag){
+			case "AP":
+				runPyScript(editStack);    //call python script to run aspen plus model
+				readAPCSVsub();
+			case "PrAP":
+				xData.add(xRow);                                                                                   // pass all the collected input x-value to xData 
+			    System.out.println("xData="+xData);
+				String simDir = APSim1;                                                                            // pass the directory of the aspenplus sorrogate model to simDir
+		        // String modelName = "HDMR_Alg_1";
+		        String modelName = "Polynomial_surrogate_Alg_1";
+		        FileWriter fileWriter = null;
+		        try{
+		        	fileWriter = new FileWriter(PrAPOUTCSV);	                                                  //filewriter for the output of pr aspenplus model
+					System.load("C:/apache-tomcat-8.0.24/webapps/ROOT/MoDS_Java_API.dll");                        //not recommended--Messing with the library path on the command line?	
+		        	ArrayList<String> xNames = MoDSAPI.getXVarNamesFromAPI(simDir, modelName);
+		        	System.out.println("xNames= "+xNames);
+		        	ArrayList<String> yNames = MoDSAPI.getYVarNamesFromAPI(simDir, modelName);
+		        	System.out.println("yNames= "+yNames);
+		        	for(int j=0;j<yNames.size();j++){			        		
+							fileWriter.append(yNames.get(j));                                                     //write the yNames to the output CSV file
+							fileWriter.append(",");
+						}				        				        				        	
+		            }catch (Error e) {
+					e.printStackTrace();			
+				    }catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		        			        				        
+		        yData = MoDSAPI.evaluateSurrogate(simDir, modelName, xData);			                         //call MoDS API to evaluate the surrogate model basing on the MoDS simulation file "simDir -> modelNam" and the input xData that was collected before        
+		        System.out.println("yData="+yData);	                                                             //print out the output yData to console
+		        					
+				for(int j=0;j<yData.size();j++){
+					try {
+						fileWriter.append("\n");
+						for(int k=0;k<yData.get(j).size();k++){
+							fileWriter.append(Double.toString(yData.get(j).get(k)));                            //write the yData to the output CSV file
+							fileWriter.append(",");					
+						}							
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}finally {
+						try {
+							fileWriter.flush();
+							fileWriter.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}	
+				readPrAPCSV(); 
 			}
-        			        				        
-        yData = MoDSAPI.evaluateSurrogate(simDir, modelName, xData);			                         //call MoDS API to evaluate the surrogate model basing on the MoDS simulation file "simDir -> modelNam" and the input xData that was collected before        
-        System.out.println("yData="+yData);	                                                             //print out the output yData to console
-        					
-		for(int j=0;j<yData.size();j++){
-			try {
-				fileWriter.append("\n");
-				for(int k=0;k<yData.get(j).size();k++){
-					fileWriter.append(Double.toString(yData.get(j).get(k)));                            //write the yData to the output CSV file
-					fileWriter.append(",");					
-				}							
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}finally {
-				try {
-					fileWriter.flush();
-					fileWriter.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}	
-		readPrAPCSV(); 	
+	    }								
 	}
 
 	public void runPrPowerWorld(ArrayList<String[]> editStack) {
@@ -958,9 +993,9 @@ public class PWServlet extends HttpServlet {
 		ArrayList<ArrayList<Double>> yData;	
 		
 		String[] ArcGISFID = null; 
-		ArcGISFID=new String[3];                                                 //for the simplified parameterised PW model, 6 inputs from 3 of the BusNum are required 
+		ArcGISFID=new String[108];                                                 //for the simplified parameterised PW model, 6 inputs from 3 of the BusNum are required 
 
-	    for(int j=0; j < 3; j++){				    	
+	    for(int j=0; j < 108; j++){				    	
         	String BusNum = XPointtoBusNum.get(j);                              //get the BusNum so that we can look for the ArcGIS FID, then extract the input x-value
         	System.out.println(BusNum);
         	ArcGISFID[j] = PWBusNumtoArcGISFID.get(BusNum);				        //get the ArcGIS FID for the input x-values    		            			            			         	
@@ -979,7 +1014,7 @@ public class PWServlet extends HttpServlet {
 			 while((line=fileReader.readLine())!=null){
 			    String[] data =line.split(",");
 			    			    
-			    	for(int k=0; k<3; k++){	
+			    	for(int k=0; k<108; k++){	
 			    		if (ArcGISFID[k].equals(data[1])) {	                //append the pwr_P value if the ArcGIS FID is the demanded FID
 	            			XValue.append(data[2].trim());
 	            			XValue.append("\n");
@@ -993,7 +1028,7 @@ public class PWServlet extends HttpServlet {
 			 while((line1=fileReader1.readLine())!=null){
 				    String[] data =line1.split(",");
 				    						    
-				    	for(int k=0; k<3; k++){	
+				    	for(int k=0; k<108; k++){	
 				    		if (ArcGISFID[k].equals(data[1])) {	         //append the pwr_Q value if the ArcGIS FID is the demanded FID
 		            			XValue.append(data[2].trim());
 		            			XValue.append("\n");
@@ -1333,9 +1368,9 @@ public class PWServlet extends HttpServlet {
 				    String[] data =line.split(",");
 					System.out.println("data= "+data);
 				    String[] ArcGISFID = null; 
-				    ArcGISFID=new String[3];                       //only 3 BusNum involved for this simplified pr power world model
+				    ArcGISFID=new String[208];                       //only 3 BusNum involved for this simplified pr power world model
 
-				    for(int j=0; j < 3; j++){				    	
+				    for(int j=0; j < 209; j++){				    	
 			        	String BusNum = XPointtoBusNum.get(j);
 			        	System.out.println(BusNum);
 			        	ArcGISFID[j] = PWBusNumtoArcGISFID.get(BusNum);	
@@ -1344,16 +1379,19 @@ public class PWServlet extends HttpServlet {
 			        	if(ArcGISFID[j] !=null){
 							  Map<String,Object> LoadPointAttributes =LoadPointTable.getFeature(Long.parseLong(ArcGISFID[j])).getAttributes();
 							  if(!data[0].trim().isEmpty()) {
-								  LoadPointAttributes.put("theta_act",Float.parseFloat(data[0+4*j].trim())*2*3.146/360);     //convert the bus angle to radian and upgrade it to the corressponding BusNum attributes
+								  LoadPointAttributes.put("theta_act",Float.parseFloat(data[0+5*j].trim())*2*3.146/360);     //convert the bus angle to radian and upgrade it to the corressponding BusNum attributes
 							  }
 							  if(!data[1].trim().isEmpty()) {
-								  LoadPointAttributes.put("volt_act",Float.parseFloat(data[1+4*j].trim()));
+								  LoadPointAttributes.put("volt_act",Float.parseFloat(data[1+5*j].trim()));
 								  }
 							  if(!data[2].trim().isEmpty()) {
-								  LoadPointAttributes.put("pwr_P_act",Float.parseFloat(data[2+4*j].trim()));
+								  LoadPointAttributes.put("pwr_P_act",Float.parseFloat(data[2+5*j].trim()));
 								  }
 							  if(!data[3].trim().isEmpty()) {
-								  LoadPointAttributes.put("pwr_Q_act",Float.parseFloat(data[3+4*j].trim()));
+								  LoadPointAttributes.put("pwr_Q_act",Float.parseFloat(data[3+5*j].trim()));
+								  }
+							  if(!data[4].trim().isEmpty()) {
+								  LoadPointAttributes.put("pwr_Q_act",Float.parseFloat(data[4+5*j].trim()));
 								  }
 							  LoadPointTable.updateFeature(Long.parseLong(ArcGISFID[j]),LoadPointAttributes); //update feature table locally
 							}
@@ -1436,6 +1474,71 @@ public class PWServlet extends HttpServlet {
 				}
 			}	  
 		}
+	public void readAPCSVsub(){
+		  BufferedReader fileReader =null;
+		  UserCredentials user = new UserCredentials();
+		  user.setUserAccount("jparksimulator", "c4tjpark");
+		  
+		  try{
+			  long start =System.currentTimeMillis();               //start a timer
+				 String line =null;
+				 fileReader =new BufferedReader(new FileReader(APOUTsub));
+				 fileReader.readLine();                             //Read the CSV flie header to skip it
+				 QueryParameters loadAllFeatures =new QueryParameters();
+				 loadAllFeatures.setWhere("OBJECTID IS NOT NULL");							
+				 GeodatabaseFeatureServiceTable HeatexchangerTable = new GeodatabaseFeatureServiceTable("http://services6.arcgis.com/MXY8H7lIySnKUlD3/arcgis/rest/services/heat_exchanger/FeatureServer", user, 0);
+				 HeatexchangerTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);			 						 			 	
+				 HeatexchangerTable.initialize();
+				 
+				 final CountDownLatch latch = new CountDownLatch(1); // ZL-151207 handles one asynchronous processes, only continues Thread when it reaches 0			  
+				 HeatexchangerTable.populateFromService(loadAllFeatures, false, new CallbackListener<Boolean>() {
+						@Override
+						public void onCallback(Boolean status) {     // Asynchronous callback: code must wait for populate from service to finish loading features
+							if (status==true) {
+								latch.countDown();                   // latch decrement if feature service table is ready
+							}
+						}
+						@Override
+						public void onError(Throwable e) {
+							e.printStackTrace();
+						}});
+				 latch.await();                                     //wait until all feature service tables are ready then continue
+				 
+				 while((line=fileReader.readLine())!=null){
+					    String[] data =line.split(",");
+						System.out.println("data= "+data);
+						String[] ArcGISOBJECTID = null; 
+						ArcGISOBJECTID=new String[7];              
+
+					    for(int j=0; j < 7; j++){				    	
+				        	ArcGISOBJECTID[j] = String.valueOf(j+1);	
+				        	System.out.println(ArcGISOBJECTID);
+				        	
+				        	if(OBJECTIDtoHXNum.get(j+1).equals("10E03")){       //heat exchanger 10E03 is for now where the output data should be upgraded to
+								  Map<String,Object> DecanterAttributes =HeatexchangerTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
+								  if(!data[1].trim().isEmpty()) {
+									  DecanterAttributes.put("MatOut3Qnt",Float.parseFloat(data[1].trim()));        //upgrade the new mole flowrate of ester3 that calculated by the pr aspen plus model to ArcGIS databse
+								  }
+								  if(!data[2].trim().isEmpty()) {
+									  DecanterAttributes.put("MatOut3_T",Float.parseFloat(data[2].trim()));         //upgrade the new temperature of ester3 that calculated by the pr aspen plus model to ArcGIS databse
+									  }							
+								  HeatexchangerTable.updateFeature(Long.parseLong(ArcGISOBJECTID[j]),DecanterAttributes); //update feature table locally
+								  break;
+								}
+				        } 						  									
+					 }
+				     HeatexchangerTable.applyEdits(null); // commit local updates onto server	    
+					 System.out.println("Updating process took " + String.valueOf(System.currentTimeMillis()-start) + "ms");  //tells how long it took to update
+		  }catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					fileReader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+	}
 	public void writePrPWCSV(ArrayList<Map<String, Object>> attributeslist_LP, 
 			                 ArrayList<Map<String, Object>> attributeslist_PG) {
 		
