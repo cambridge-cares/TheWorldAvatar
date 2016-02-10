@@ -46,6 +46,13 @@ import com.esri.core.map.FeatureResult;
 import com.esri.core.tasks.query.QueryParameters;
 import com.esri.core.tasks.query.QueryTask;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
+import edu.stanford.smi.protegex.owl.ProtegeOWL;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import static java.awt.PageAttributes.MediaType.A;
+import static java.awt.PageAttributes.MediaType.B;
+
 public class PWServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	public static Map<String, String> ArcGISFIDtoPWBusNum = new HashMap<>();  // Maps ArcGIS FID (key) to BusNum (value) in PowerWorld
