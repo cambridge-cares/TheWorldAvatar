@@ -805,7 +805,7 @@ public class JParkSim {
 						FIDs.append(",");
 						OBJECTIDs.append(item[2]);
 						OBJECTIDs.append(",");
-						appCallFlag.append("APHr");
+						appCallFlag.append("APHR");
 						appCallFlag.append(",");
 					}
 					StringBuilder outputString = new StringBuilder();
@@ -886,7 +886,7 @@ public class JParkSim {
 						FIDs.append(",");
 						OBJECTIDs.append(item[2]);
 						OBJECTIDs.append(",");
-						appCallFlag.append("PrAPPW");
+						appCallFlag.append("APPW");
 						appCallFlag.append(",");
 					}
 					StringBuilder outputString = new StringBuilder();
