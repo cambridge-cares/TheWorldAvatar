@@ -691,7 +691,7 @@ public class JParkSim {
     APbutton.setEnabled(true);
     APbutton.setVisible(true);
     APbutton.setSize(190,30);
-    APbutton.setLocation(490, 60);    
+    APbutton.setLocation(490, 45);    
 
 
     // Run Parameterised AspenPlus button
@@ -773,7 +773,7 @@ public class JParkSim {
     APPrButton.setEnabled(true);
     APPrButton.setVisible(true);
     APPrButton.setSize(190,30);
-    APPrButton.setLocation(690, 60);
+    APPrButton.setLocation(690, 45);
     
  // Run AspenPlus model with heat recovery button
     JButton APHrButton = new JButton("Run AP with HeatRecovery");
@@ -854,10 +854,10 @@ public class JParkSim {
     APHrButton.setEnabled(true);
     APHrButton.setVisible(true);
     APHrButton.setSize(190,30);
-    APHrButton.setLocation(490, 110);
+    APHrButton.setLocation(490, 80);
 
  // Run AspenPlus model with heat recovery button
-    JButton APPWButton = new JButton("Run Parameterised AP+PW");
+    JButton APPWButton = new JButton("Run AP and PW");
     APPWButton.addActionListener(new ActionListener() {
     	@Override
     	public void actionPerformed(ActionEvent arg0) {
@@ -935,7 +935,7 @@ public class JParkSim {
     APPWButton.setEnabled(true);
     APPWButton.setVisible(true);
     APPWButton.setSize(190,30);
-    APPWButton.setLocation(690, 110);
+    APPWButton.setLocation(690, 80);
 
     JButton refreshButton = new JButton("Refresh Map");
     refreshButton.addActionListener(new ActionListener() {

@@ -8,12 +8,15 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.concurrent.CountDownLatch;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -50,8 +53,6 @@ import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import static java.awt.PageAttributes.MediaType.A;
-import static java.awt.PageAttributes.MediaType.B;
 
 public class PWServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -102,7 +103,6 @@ public class PWServlet extends HttpServlet {
  	public static String UHTOUT = new String("C:/apache-tomcat-8.0.24/webapps/output/UHTOUT.CSV");
  	public static String EHTOUT = new String("C:/apache-tomcat-8.0.24/webapps/output/EHTOUT.CSV");
  	public static String PGOUT = new String("C:/apache-tomcat-8.0.24/webapps/output/PGOUT.CSV");	
-	public static String runPythonCommand = new String("python C:/apache-tomcat-8.0.24/webapps/ROOT/PWrun.pyw"); // ensure that python environment variable is set to python34 	
  	public static String flag2CSV = new String("C:/apache-tomcat-8.0.24/webapps/input/flag2.CSV"); // (mjk, 151115) to see how far runPowerWorld() is being executed
  	public static String httpReqCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/httpReq.CSV"); // (mjk, 151115) differentiating function calls "Run PowerWorld" and "Run parameterised PW"
  	 	
@@ -116,9 +116,13 @@ public class PWServlet extends HttpServlet {
  	public static String APINsub = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/APINsub.CSV");
  	public static String APOUTsub = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/APOUTsub.CSV");
  	
- 	public static String XMLTest = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/test.xml"); 
+ 	public static String APPWIN = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/APPWIN.CSV"); //input CSV file for the combined AP+PW model
  	
+ 	public static String XMLTest = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/test.xml"); 
+
+	public static String runPythonCommand = new String("python C:/apache-tomcat-8.0.24/webapps/ROOT/PWrun.pyw"); // ensure that python environment variable is set to python34 	
  	public static String runPythonCommandAP = new String("python C:/apache-tomcat-8.0.24/webapps/ROOT/APrun.pyw"); //ZL-151124  python script calling Aspen Plus model
+ 	public static String runPythonCommandAPPW = new String("python C:/apache-tomcat-8.0.24/webapps/ROOT/APPWrun.pyw"); //python script for the AP+PW button, run AspenPlus and PowerWorld model sequentially
  	
  	public static String XVALUE = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/XVALUE.CSV"); //ZL-151217  x Value required by pr PW model
  	
@@ -535,6 +539,15 @@ public class PWServlet extends HttpServlet {
 		    System.out.println(appCallFlag[0]+" button was pressed!");
 		    runPrPowerWorld(editStack); //run Parametrised Power world model when run Parametrised PowerWorld Button was pressed
 		    break;
+/*		    
+		case "APHR":
+			System.out.println(appCallFlag[0]+" button was pressed!");
+			runAspenPlusWithHeatRecovery();
+			break;
+*/			
+		case "APPW":
+			System.out.println(appCallFlag[0]+" button was pressed!");
+//			runCombinedAspenPlusPowerWorld(editStack);			
 			} //ZL-151126
 		
 	} // of doPost()
@@ -605,10 +618,175 @@ public class PWServlet extends HttpServlet {
 			    }
 			    line = br1.readLine();
 			    break;
+			case("APPW"):  //when appCallFlag=APPW indicating that the run AspenPuls+PowerWorld button has been pressed, then the following actions are going to be taken
+				System.out.println(appCallFlag+" Button was pressed");
+			    Process p2 = Runtime.getRuntime().exec(runPythonCommandAPPW);
+		        p2.waitFor();
+		        System.out.println("Exit Value (0 means success): " + p2.exitValue()); // if console prints 0 it means success
+		        BufferedReader br2 = new BufferedReader(new InputStreamReader(p2.getInputStream()));
+			    String line2; // retrieves console from python script
+			    System.out.println("Python input:");
+			    while ((line2=br2.readLine())!=null) {
+				    System.out.println(line2); // print input array from Python (see python code for more details)
+			    }
+			    line = br2.readLine();
+				break;
 			}		
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+//try to get the input for the combined AP+PW model	
+	public void getAPPWInput(ArrayList<String[]> editStack){
+		try {
+			String uri = "File:/C:/apache-tomcat-8.0.24/webapps/ROOT/BiodieselPlant.owl";
+	        OWLModel owlModel = ProtegeOWL.createJenaOWLModelFromURI(uri);
+		        
+		for (int i=0; i<editStack.size(); i++) {// for each feature in editStack, append something to skeleton, attributeslist and layers
+			String[] layer=new String[10];
+			String[] OBJECTID=new String[10];			
+			layer[i] = (String) editStack.get(i)[0];
+			OBJECTID[i] = (String) editStack.get(i)[2]; 
+			System.out.println("layer="+layer[i]+" OBJECTID="+OBJECTID[i]);
+			
+			ArrayList<Map<String, Object>> attributeslist_HX = new ArrayList<Map<String, Object>>();		// additional ArrayList for mixer
+			ArrayList<Map<String, Object>> attributeslist_MX = new ArrayList<Map<String, Object>>();		// additional ArrayList for mixer
+			UserCredentials user = new UserCredentials();
+		    user.setUserAccount("jparksimulator", "c4tjpark");
+		    
+			FileWriter filewriterAPPWIN =null;
+			filewriterAPPWIN = new FileWriter(APPWIN); //to put the input values for the AspenPlus subset model
+			if(layer[i].equals("Mixer")||layer[i].equals("heat_exchanger")||layer[i].equals("PlantReactor")||layer[i].equals("FlashDrum")||layer[i].equals("Decanter")){
+				
+//check if the input OIL flowrate has been changed by the user, if yes get the new value from the arcgis database, if no get the value from the temporary database (BiodieselPlant.owl)			
+				if(layer[i].equals("heat_exchanger")&&OBJECTIDtoHXNum.get(OBJECTID[i]).equals("10E01")){
+//					for(Integer key: OBJECTIDtoMXNum.keySet()){	
+							QueryParameters qParameter_HX = new QueryParameters();		// create an instance of QueryParameters to be used for querying ArcGIS database for predefined data
+//							qParameter_HX.setWhere("OBJECTID='" + key + "'");			// define FID address of an ArcGIS element
+							qParameter_HX.setWhere("OBJECTID='" + OBJECTID[i] + "'");
+							qParameter_HX.setOutFields(new String[] {"*"});				// fetch all attributes of an ArcGIS element using *
+							QueryTask qTask_HX = null;									// create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
+							Feature graphic_HX = null;									// create an instance of Feature to store an ArcGIS element
+							
+							qTask_HX = new QueryTask("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/heat_exchanger/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
+							FeatureResult fResult_HX = qTask_HX.execute(qParameter_HX);			// FeatureResult is used to store information from ArcGIS database requested using qParameter_LP and qTask_LP
+							graphic_HX = (Feature) fResult_HX.iterator().next();				// queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
+							attributeslist_HX.add(graphic_HX.getAttributes());					// append information about the element in graphic_LP to ArrayList attributeslist_LP						
+							
+							filewriterAPPWIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")));
+							filewriterAPPWIN.append(",");
+							filewriterAPPWIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T")));
+							filewriterAPPWIN.append(",");
+						
+					}else{
+						OWLIndividual OIL = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#raw_material_1_oil");           
+						String FOIL = OIL.getPropertyValueLiteral(owlModel.getOWLProperty("BiodieselPlant:hasMolarFlowrate")).getString();
+						String TOIL = OIL.getPropertyValueLiteral(owlModel.getOWLProperty("BiodieselPlant:hasTemperature")).getString();
+						String POIL = OIL.getPropertyValueLiteral(owlModel.getOWLProperty("BiodieselPlant:hasPressure")).getString();
+			            filewriterAPPWIN.append(FOIL);
+			            filewriterAPPWIN.append(",");
+			            filewriterAPPWIN.append(TOIL);
+			            filewriterAPPWIN.append(",");
+			            filewriterAPPWIN.append(POIL);
+			            filewriterAPPWIN.append(",");
+					}
+				
+//check if the input MEOH flowrate has been changed by the user, if yes get the new value from the arcgis database, if no get the value from the temporary database (BiodieselPlant.owl)					
+				if(layer[i].equals("Mixer")&&OBJECTIDtoMXNum.get(OBJECTID[i]).equals("mx01")){	 				
+																		
+							QueryParameters qParameter_MX = new QueryParameters();		// create an instance of QueryParameters to be used for querying ArcGIS database for predefined data
+							qParameter_MX.setWhere("OBJECTID='" + OBJECTID[i] + "'");
+							qParameter_MX.setOutFields(new String[] {"*"});				// fetch all attributes of an ArcGIS element using *
+							QueryTask qTask_MX = null;									// create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
+							Feature graphic_MX = null;									// create an instance of Feature to store an ArcGIS element
+							
+							qTask_MX = new QueryTask("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/Mixer/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
+							FeatureResult fResult_MX = qTask_MX.execute(qParameter_MX);			// FeatureResult is used to store information from ArcGIS database requested using qParameter_LP and qTask_LP
+							graphic_MX = (Feature) fResult_MX.iterator().next();				// queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
+							attributeslist_MX.add(graphic_MX.getAttributes());					// append information about the element in graphic_LP to ArrayList attributeslist_LP						
+							
+							filewriterAPPWIN.append(String.valueOf(attributeslist_MX.get(i).get("MatIn2Qnt")));
+							filewriterAPPWIN.append(",");
+							filewriterAPPWIN.append(String.valueOf(attributeslist_MX.get(i).get("MatIn2_T")));
+							filewriterAPPWIN.append(",");
+						
+					}else{
+						OWLIndividual MEOH = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#raw_material_2_meoh");           
+						String FMEOH = MEOH.getPropertyValueLiteral(owlModel.getOWLProperty("BiodieselPlant:hasMolarFlowrate")).getString();
+						String TMEOH = MEOH.getPropertyValueLiteral(owlModel.getOWLProperty("BiodieselPlant:hasTemperature")).getString();
+						String PMEOH = MEOH.getPropertyValueLiteral(owlModel.getOWLProperty("BiodieselPlant:hasPressure")).getString();
+			            filewriterAPPWIN.append(FMEOH);
+			            filewriterAPPWIN.append(",");
+			            filewriterAPPWIN.append(TMEOH);
+			            filewriterAPPWIN.append(",");
+			            filewriterAPPWIN.append(PMEOH);
+			            filewriterAPPWIN.append(",");
+					}
+
+//check if the input RE-WATER flowrate has been changed by the user, if yes get the new value from the arcgis database, if no get the value from the temporary database (BiodieselPlamt.owl)
+				if(layer[i].equals("")&&OBJECTIDtoMXNum.get(OBJECTID[i]).equals("")){	 				
+					
+					QueryParameters qParameter_ = new QueryParameters();		// create an instance of QueryParameters to be used for querying ArcGIS database for predefined data
+					qParameter_.setWhere("OBJECTID='" + OBJECTID[i] + "'");
+					qParameter_.setOutFields(new String[] {"*"});				// fetch all attributes of an ArcGIS element using *
+					QueryTask qTask_ = null;									// create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
+					Feature graphic_ = null;									// create an instance of Feature to store an ArcGIS element
+					
+					qTask_ = new QueryTask("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services//FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
+					FeatureResult fResult_ = qTask_.execute(qParameter_);			// FeatureResult is used to store information from ArcGIS database requested using qParameter_LP and qTask_LP
+					graphic_ = (Feature) fResult_.iterator().next();				// queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
+					attributeslist_.add(graphic_.getAttributes());					// append information about the element in graphic_LP to ArrayList attributeslist_LP						
+					
+					filewriterAPPWIN.append(String.valueOf(attributeslist_.get(i).get(""))); 
+					filewriterAPPWIN.append(",");					
+				
+			      }else{
+				    OWLIndividual REWATWE = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#re_water");           
+				    String FREWATER = REWATWE.getPropertyValueLiteral(owlModel.getOWLProperty("BiodieselPlant:hasMolarFlowrate")).getString();				    
+	                filewriterAPPWIN.append(FREWATER);
+	                filewriterAPPWIN.append(",");
+			     }
+//****************************************************************************************				
+//check if the input operation pressure of the boiler has been changed by the user, if yes get the new value from the arcgis database, if no get the value from the temporary database (BiodieselPlamt.owl)
+				if(layer[i].equals("")&&OBJECTIDtoMXNum.get(OBJECTID[i]).equals("")){	 				
+					
+					QueryParameters qParameter_ = new QueryParameters();		// create an instance of QueryParameters to be used for querying ArcGIS database for predefined data
+					qParameter_.setWhere("OBJECTID='" + OBJECTID[i] + "'");
+					qParameter_.setOutFields(new String[] {"*"});				// fetch all attributes of an ArcGIS element using *
+					QueryTask qTask_ = null;									// create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
+					Feature graphic_ = null;									// create an instance of Feature to store an ArcGIS element
+					
+					qTask_ = new QueryTask("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services//FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
+					FeatureResult fResult_ = qTask_.execute(qParameter_);			// FeatureResult is used to store information from ArcGIS database requested using qParameter_LP and qTask_LP
+					graphic_ = (Feature) fResult_.iterator().next();				// queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
+					attributeslist_.add(graphic_.getAttributes());					// append information about the element in graphic_LP to ArrayList attributeslist_LP						
+					
+					filewriterAPPWIN.append(String.valueOf(attributeslist_.get(i).get(""))); 
+					filewriterAPPWIN.append(",");					
+				
+			      }else{
+				    OWLIndividual BOILER = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#boiler");           
+				    String PBOILER = BOILER.getPropertyValueLiteral(owlModel.getOWLProperty("BiodieselPlant:hasOperationPressure")).getString();				    
+	                filewriterAPPWIN.append(PBOILER);
+	                filewriterAPPWIN.append(",");
+			     }
+//****************************************************************************************
+				
+			}
+			filewriterAPPWIN.flush();
+			filewriterAPPWIN.close();
+		}
+		}catch (OntologyLoadException ex) {
+            Logger.getLogger(PWServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }catch (Exception e) {
+			e.printStackTrace(); // It prints the stack trace of the Exception to System.err. It's a very simple, but very useful tool for diagnosing an Exception. It tells you what happened and where in the code this happened.
+		}	
+	}
+	
+	public void runAspenPlusandPowerWorld(ArrayList<String[]> editStack){
+		getAPPWInput(editStack);
+		runPyScript(editStack);
+//		readAPPWCSV();		
 	}
 	
 	public void runPrAspenPlus(ArrayList<String[]> editStack){
@@ -744,9 +922,9 @@ public class PWServlet extends HttpServlet {
 						filewriterHX.append("\n");
 						
 						if(OBJECTIDtoHXNum.get(i+1).equals("10E01")){                                   //"10E01" is the heat exchanger for oil to be heated before feeding to the reactor
-							filewriterAPIN.append(String.valueOf(attributeslist_MX.get(i).get("MatIn1Qnt")));
+							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")));
 							filewriterAPIN.append(",");
-							filewriterAPIN.append(String.valueOf(attributeslist_MX.get(i).get("MatIn1_T")));
+							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T")));
 							filewriterAPIN.append(",");
 							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt"))));  //add the feeding mole flowrate of oil to xRow
 							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T"))));    //add the temperature of oil to xRow
