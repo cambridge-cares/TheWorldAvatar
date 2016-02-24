@@ -65,12 +65,14 @@ public class PWServlet extends HttpServlet {
 	public static Map<String, Integer> BusNumtoXPoint = new HashMap<>();      // Maps BusNum to X point for the parametrised model
 	public static Map<Integer, String> XPointtoBusNum = new HashMap<>();      //reverse mapping
 
-	public static Map<String, String> APSimNamtoOBJECTID = new HashMap<>();   // ZL-151125 Maps the old Chemical Process icon to the aspen plus model
+	public static Map<String, String> APSimNamtoOBJECTID = new HashMap<>();   // ZL-151125 Maps the old Chemical Process icon to the aspen plus model	
 	public static Map<Integer, String> OBJECTIDtoMXNum = new HashMap<>();     //ZL-160114 Maps ArcGIS OBJECTID to the mixer in chemical plant
 	public static Map<Integer, String> OBJECTIDtoHXNum = new HashMap<>();     //ZL-160114 Maps ArcGIS OBJECTID to the heat exchanger in chemical plant
 	public static Map<Integer, String> OBJECTIDtoCRNum = new HashMap<>();     //ZL-160114 Maps ArcGIS OBJECTID to the reactor in chemical plant
 	public static Map<Integer, String> OBJECTIDtoSPNum = new HashMap<>();     //ZL-160114 Maps ArcGIS OBJECTID to the separator in chemical plant
 	public static Map<Integer, String> OBJECTIDtoDCNum = new HashMap<>();     //ZL-160114 Maps ArcGIS OBJECTID to the decanter in chemical plant
+	
+	public static Map<String, String> OBJECTIDtoMLNum = new HashMap<>();     //Maps ArcGIS OBJECTID to the Material Lines in chemical plant
 	
  	public static String INCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/IN.CSV");
  	public static String LPPIN = new String("C:/apache-tomcat-8.0.24/webapps/input/LPPIN.CSV");
@@ -108,7 +110,7 @@ public class PWServlet extends HttpServlet {
  	 	
  	public static String APINCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/APIN.CSV"); //ZL-151124 input CSV for aspen plus
  	public static String APOUTCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/APOUT.CSV"); //ZL-151124 output CSV from Aspen plus
- 	public static String PrAPMXin = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPMXin.CSV"); 
+ 	public static String PrAPMLin = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPMXin.CSV"); 
  	public static String PrAPHXin = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPHXin.CSV"); 
  	public static String PrAPCRin = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPCRXin.CSV"); 
  	public static String PrAPSPin = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPSPXin.CSV"); 
@@ -498,6 +500,10 @@ public class PWServlet extends HttpServlet {
 		
 		OBJECTIDtoDCNum.put(1,"10D02D");
 		
+		OBJECTIDtoMLNum.put("104", "MeOH");
+		OBJECTIDtoMLNum.put("126", "OIL");
+		
+		
     } // of constructor
 
     
@@ -792,7 +798,7 @@ public class PWServlet extends HttpServlet {
 	}
 	
 	public void runPrAspenPlus(ArrayList<String[]> editStack){
-		ArrayList<Map<String, Object>> attributeslist_MX = new ArrayList<Map<String, Object>>();		// additional ArrayList for mixer
+		ArrayList<Map<String, Object>> attributeslist_ML = new ArrayList<Map<String, Object>>();		// additional ArrayList for mixer
 		ArrayList<Map<String, Object>> attributeslist_HX = new ArrayList<Map<String, Object>>();		// additional ArrayList for heat exchanger
 		ArrayList<Map<String, Object>> attributeslist_CR = new ArrayList<Map<String, Object>>();		// additional ArrayList for chemical reactor
 		ArrayList<Map<String, Object>> attributeslist_SP = new ArrayList<Map<String, Object>>();		// additional ArrayList for separator
@@ -804,18 +810,18 @@ public class PWServlet extends HttpServlet {
 	    ArrayList<ArrayList<Double>> xData = new ArrayList<>(1);  //arraylist to store the input x-values 
 		ArrayList<ArrayList<Double>> yData;	  //output of the pr aspenplus model
 	    
-	    for(Integer key: OBJECTIDtoMXNum.keySet()){
+	    for(Integer key: OBJECTIDtoMLNum.keySet()){
 			try {
-				QueryParameters qParameter_MX = new QueryParameters();		// create an instance of QueryParameters to be used for querying ArcGIS database for predefined data
-				qParameter_MX.setWhere("OBJECTID='" + key + "'");			// define FID address of an ArcGIS element
-				qParameter_MX.setOutFields(new String[] {"*"});				// fetch all attributes of an ArcGIS element using *
-				QueryTask qTask_MX = null;									// create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
-				Feature graphic_MX = null;									// create an instance of Feature to store an ArcGIS element
+				QueryParameters qParameter_ML = new QueryParameters();		// create an instance of QueryParameters to be used for querying ArcGIS database for predefined data
+				qParameter_ML.setWhere("OBJECTID='" + key + "'");			// define FID address of an ArcGIS element
+				qParameter_ML.setOutFields(new String[] {"*"});				// fetch all attributes of an ArcGIS element using *
+				QueryTask qTask_ML = null;									// create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
+				Feature graphic_ML = null;									// create an instance of Feature to store an ArcGIS element
 				
-				qTask_MX = new QueryTask("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Mixer/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
-				FeatureResult fResult_MX = qTask_MX.execute(qParameter_MX);			// FeatureResult is used to store information from ArcGIS database requested using qParameter_LP and qTask_LP
-				graphic_MX = (Feature) fResult_MX.iterator().next();				// queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
-				attributeslist_MX.add(graphic_MX.getAttributes());					// append information about the element in graphic_LP to ArrayList attributeslist_LP						
+				qTask_ML = new QueryTask("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Material_line/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
+				FeatureResult fResult_ML = qTask_ML.execute(qParameter_ML);			// FeatureResult is used to store information from ArcGIS database requested using qParameter_LP and qTask_LP
+				graphic_ML = (Feature) fResult_ML.iterator().next();				// queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
+				attributeslist_ML.add(graphic_ML.getAttributes());					// append information about the element in graphic_LP to ArrayList attributeslist_LP						
 										
 			} catch (Exception e) {
 				e.printStackTrace(); // It prints the stack trace of the Exception to System.err. It's a very simple, but very useful tool for diagnosing an Exception. It tells you what happened and where in the code this happened.
@@ -890,7 +896,7 @@ public class PWServlet extends HttpServlet {
 			}
 		}
 		
-		FileWriter filewriterMX =null;
+		FileWriter filewriterML =null;
 		FileWriter filewriterHX =null;
 		FileWriter filewriterCR =null;
 		FileWriter filewriterSP =null;
@@ -898,7 +904,7 @@ public class PWServlet extends HttpServlet {
 		FileWriter filewriterAPIN =null;
 		
 		try{
-			filewriterMX = new FileWriter(PrAPMXin); //to put the input x-values from the mixer to a CSV file in order to check if the commands works properly when neccessary
+			filewriterML = new FileWriter(PrAPMLin); //to put the input x-values from the mixer to a CSV file in order to check if the commands works properly when neccessary
 			filewriterHX = new FileWriter(PrAPHXin); //to put the input x-values from the heat exchanger to a CSV file in order to check if the commands works properly when neccessary
 			filewriterCR = new FileWriter(PrAPCRin); //to put the input x-values from the chemical reactor to a CSV file in order to check if the commands works properly when neccessary
 			filewriterSP = new FileWriter(PrAPSPin); //to put the input x-values from the separator to a CSV file in order to check if the commands works properly when neccessary
@@ -906,24 +912,28 @@ public class PWServlet extends HttpServlet {
 			filewriterAPIN = new FileWriter(APINsub); //to put the input values for the AspenPlus subset model
 			
 			filewriterAPIN.append("FOIL, TOIL, FMEOH, TMEOH, TCR, VCR, TSP, TDC, TOIL, TESTER, TESTER2");
-			for(int i=0; i<attributeslist_HX.size();i++){
-				for(String key: attributeslist_HX.get(i).keySet()){                                      //go through all the heat exchangers in biodiesel plant
+			for(int i=0; i<attributeslist_ML.size();i++){
+				for(String key: attributeslist_ML.get(i).keySet()){                                      //go through all the heat exchangers in biodiesel plant
 					if(key == "OBJECTID"){						
-						filewriterHX.append(key);
-						filewriterHX.append(",");
-						filewriterHX.append(String.valueOf(attributeslist_HX.get(i).get(key)));
-						filewriterHX.append(", FOIL");
-						filewriterHX.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")));  //to get the feeding mole flowrate of oil
-						filewriterHX.append("\n");
+						filewriterML.append(key);
+						filewriterML.append(", ");
+						filewriterML.append(String.valueOf(attributeslist_ML.get(i).get(key)));
+						filewriterML.append(", ");
+						filewriterML.append(String.valueOf(attributeslist_ML.get(i).get("Name")));  //to get the feeding mole flowrate of oil
+						filewriterML.append(", F=");
+						filewriterML.append(String.valueOf(attributeslist_ML.get(i).get("Mat_1_qnt")));  //to get the feeding mole flowrate of oil
+						filewriterML.append(", T=");
+						filewriterML.append(String.valueOf(attributeslist_ML.get(i).get("Mat_T")));  //to get the feeding mole flowrate of oil
+						filewriterML.append("\n");
 						
-						filewriterHX.append(key);
-						filewriterHX.append(",");
-						filewriterHX.append(String.valueOf(attributeslist_HX.get(i).get(key)));
-						filewriterHX.append(", TOIL");
-						filewriterHX.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T")));  //to get the temperature of the feeding oil
-						filewriterHX.append("\n");
+//						filewriterML.append(key);
+//						filewriterML.append(",");
+//						filewriterML.append(String.valueOf(attributeslist_HX.get(i).get(key)));
+//						filewriterML.append(", TOIL");
+//						filewriterML.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T")));  //to get the temperature of the feeding oil
+//						filewriterML.append("\n");
 						
-						if(OBJECTIDtoHXNum.get(i+1).equals("10E01")){                                   //"10E01" is the heat exchanger for oil to be heated before feeding to the reactor
+						if(OBJECTIDtoMLNum.get(i+1).equals("OIL")){                                   //"10E01" is the heat exchanger for oil to be heated before feeding to the reactor
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")));
 							filewriterAPIN.append(",");
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T")));
@@ -1897,17 +1907,21 @@ public class PWServlet extends HttpServlet {
 			fileReader.readLine();																		// Read the CSV file header to skip it
 			QueryParameters loadAllFeatures = new QueryParameters();
 			loadAllFeatures.setWhere("OBJECTID IS NOT NULL");												// Load all features using SQL command
-			
-			GeodatabaseFeatureServiceTable LoadPointsTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Load_points/FeatureServer/0", user, 0);
+			                                                                                     
+			GeodatabaseFeatureServiceTable LoadPointsTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Load_points/FeatureServer", user, 0);
 			LoadPointsTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
 			LoadPointsTable.initialize();
-			GeodatabaseFeatureServiceTable UHTSubstationTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/UHT_substations/FeatureServer/0", user, 0);
+			System.out.println("whaaaat?");
+			System.out.println(LoadPointsTable.initialize());
+			GeodatabaseFeatureServiceTable UHTSubstationTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/UHT_substations/FeatureServer", user, 0);
 			UHTSubstationTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
 			UHTSubstationTable.initialize();
-			GeodatabaseFeatureServiceTable EHTSubstationTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/EHT_substation/FeatureServer/0", user, 0);
+			System.out.println(UHTSubstationTable.initialize());
+			GeodatabaseFeatureServiceTable EHTSubstationTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/EHT_substation/FeatureServer", user, 0);
 			EHTSubstationTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
 			EHTSubstationTable.initialize();
-			GeodatabaseFeatureServiceTable PowerGenTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Generators/FeatureServer/0", user, 0);
+			System.out.println("whaaaat3?");
+			GeodatabaseFeatureServiceTable PowerGenTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Generators/FeatureServer", user, 0);
 			PowerGenTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
 			PowerGenTable.initialize();
 			//
@@ -1915,6 +1929,7 @@ public class PWServlet extends HttpServlet {
 			//
 			
 			final CountDownLatch latch = new CountDownLatch(4);													// handles four asynchronous processes, only continues Thread when it reaches 0
+			System.out.println("whaaaat4?");
 			LoadPointsTable.populateFromService(loadAllFeatures, false, new CallbackListener<Boolean>() {				
 				@Override
 				public void onCallback(Boolean status) {														// Asynchronous callback: code must wait for populate from service to finish loading features
@@ -1926,6 +1941,7 @@ public class PWServlet extends HttpServlet {
 				public void onError(Throwable e) {
 					e.printStackTrace();
 				}});
+			System.out.println("whaaaat6?");
 			UHTSubstationTable.populateFromService(loadAllFeatures, false, new CallbackListener<Boolean>() {
 				@Override
 				public void onCallback(Boolean status) {
