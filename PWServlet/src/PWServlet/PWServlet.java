@@ -504,18 +504,19 @@ public class PWServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ArrayList<String[]> editStack = new ArrayList<String[]>(); // reconstruct editStack from query string received
 		String[] layers = request.getParameter("layers").split(",");
-		String[] FIDs = request.getParameter("FIDs").split(","); //ZL-151209  FID indicating parameter of which facility in power world has been changed
+//		String[] FIDs = request.getParameter("FIDs").split(","); //ZL-151209  FID indicating parameter of which facility in power world has been changed
 		String[] OBJECTIDs = request.getParameter("OBJECTIDs").split(","); //ZL-151209	OBJECTID indicating parameter of which unit in chemical process has been changed	
 		String[] appCallFlag = request.getParameter("appCallFlag").split(","); // (mjk, 151115) adding flag indicating which function has been called: PowerWorld, parameterised PW, AspenPlus, parameterised AP
 		
 		for (int i=0; i<layers.length; i++) {
-			editStack.add(new String[] {layers[i], FIDs[i], OBJECTIDs[i], appCallFlag[i]}); // Here, "editStack" for only one layer modification looks like this: [Load_Points,103,PW]
+//			editStack.add(new String[] {layers[i], FIDs[i], OBJECTIDs[i], appCallFlag[i]}); // Here, "editStack" for only one layer modification looks like this: [Load_Points,103,PW]
+			editStack.add(new String[] {layers[i], OBJECTIDs[i], appCallFlag[i]}); // Here, "editStack" for only one layer modification looks like this: [Load_Points,103,PW]
 		}
 		
 		FileWriter flag1 = null; // (mjk, 151115) testing structure of DataOutputStream object and of wr object
 		flag1 = new FileWriter(httpReqCSV);
 		flag1.append("layers=" + layers[0]);
-		flag1.append(", FIDs=" + FIDs[0]);
+//		flag1.append(", FIDs=" + FIDs[0]);
 		flag1.append(", OBJECTIDs=" + OBJECTIDs[0]);
 		flag1.append(", appCallFlag=" + appCallFlag[0]);
 		flag1.flush();
@@ -557,12 +558,12 @@ public class PWServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ArrayList<String[]> editStack = new ArrayList<String[]>();		
 		String[] layers = request.getParameter("layers").split(",");
-		String[] FIDs = request.getParameter("OBJECTIDs").split(",");
+//		String[] FIDs = request.getParameter("OBJECTIDs").split(",");
 		String[] OBJECTIDs = request.getParameter("OBJECTIDs").split(","); //ZL-151209	OBJECTID indicating parameter of which unit in chemical process has been changed	
 		String[] appCallFlag = request.getParameter("appCallFlag").split(","); // (mjk, 151115) adding flag indicating which function has been called: PowerWorld, parameterised PW, AspenPlus, parameterised AP
 		
 		for (int i=0; i<layers.length; i++) {
-			editStack.add(new String[] {layers[i], FIDs[i], OBJECTIDs[i], appCallFlag[i]}); // Here, "editStack" for only one layer modification looks like this: [Load_Points,103,PW]
+			editStack.add(new String[] {layers[i], OBJECTIDs[i], appCallFlag[i]}); // Here, "editStack" for only one layer modification looks like this: [Load_Points,103,PW]
 		}										
 		switch(appCallFlag[0]) {
 		case "AP":
@@ -586,7 +587,7 @@ public class PWServlet extends HttpServlet {
 
 	public void runPyScript(ArrayList<String[]> editStack) {
 		String appCallFlag = null ;			
-		appCallFlag = editStack.get(0)[3];    //flag indicating which function has been called (PowerWorld, parameterised PW, AspenPlus, parameterised AP)
+		appCallFlag = editStack.get(0)[2];    //flag indicating which function has been called (PowerWorld, parameterised PW, AspenPlus, parameterised AP)
 		
 		try {
 			System.out.println(appCallFlag);
@@ -637,6 +638,7 @@ public class PWServlet extends HttpServlet {
 		}
 	}
 //try to get the input for the combined AP+PW model	
+/*	
 	public void getAPPWInput(ArrayList<String[]> editStack){
 		try {
 			String uri = "File:/C:/apache-tomcat-8.0.24/webapps/ROOT/BiodieselPlant.owl";
@@ -652,7 +654,7 @@ public class PWServlet extends HttpServlet {
 			ArrayList<Map<String, Object>> attributeslist_HX = new ArrayList<Map<String, Object>>();		// additional ArrayList for mixer
 			ArrayList<Map<String, Object>> attributeslist_MX = new ArrayList<Map<String, Object>>();		// additional ArrayList for mixer
 			UserCredentials user = new UserCredentials();
-		    user.setUserAccount("jparksimulator", "c4tjpark");
+		    user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
 		    
 			FileWriter filewriterAPPWIN =null;
 			filewriterAPPWIN = new FileWriter(APPWIN); //to put the input values for the AspenPlus subset model
@@ -668,7 +670,7 @@ public class PWServlet extends HttpServlet {
 							QueryTask qTask_HX = null;									// create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
 							Feature graphic_HX = null;									// create an instance of Feature to store an ArcGIS element
 							
-							qTask_HX = new QueryTask("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/heat_exchanger/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
+							qTask_HX = new QueryTask("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/heater_cooler/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
 							FeatureResult fResult_HX = qTask_HX.execute(qParameter_HX);			// FeatureResult is used to store information from ArcGIS database requested using qParameter_LP and qTask_LP
 							graphic_HX = (Feature) fResult_HX.iterator().next();				// queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
 							attributeslist_HX.add(graphic_HX.getAttributes());					// append information about the element in graphic_LP to ArrayList attributeslist_LP						
@@ -700,7 +702,7 @@ public class PWServlet extends HttpServlet {
 							QueryTask qTask_MX = null;									// create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
 							Feature graphic_MX = null;									// create an instance of Feature to store an ArcGIS element
 							
-							qTask_MX = new QueryTask("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/Mixer/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
+							qTask_MX = new QueryTask("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Mixer/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
 							FeatureResult fResult_MX = qTask_MX.execute(qParameter_MX);			// FeatureResult is used to store information from ArcGIS database requested using qParameter_LP and qTask_LP
 							graphic_MX = (Feature) fResult_MX.iterator().next();				// queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
 							attributeslist_MX.add(graphic_MX.getAttributes());					// append information about the element in graphic_LP to ArrayList attributeslist_LP						
@@ -724,7 +726,7 @@ public class PWServlet extends HttpServlet {
 					}
 
 //check if the input RE-WATER flowrate has been changed by the user, if yes get the new value from the arcgis database, if no get the value from the temporary database (BiodieselPlamt.owl)
-				if(layer[i].equals("")&&OBJECTIDtoMXNum.get(OBJECTID[i]).equals("")){	 				
+				if(layer[i].equals("")&&OBJECTIDtoWLNum.get(OBJECTID[i]).equals("")){	 				
 					
 					QueryParameters qParameter_ = new QueryParameters();		// create an instance of QueryParameters to be used for querying ArcGIS database for predefined data
 					qParameter_.setWhere("OBJECTID='" + OBJECTID[i] + "'");
@@ -732,7 +734,7 @@ public class PWServlet extends HttpServlet {
 					QueryTask qTask_ = null;									// create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
 					Feature graphic_ = null;									// create an instance of Feature to store an ArcGIS element
 					
-					qTask_ = new QueryTask("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services//FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
+					qTask_ = new QueryTask("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/water_line/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
 					FeatureResult fResult_ = qTask_.execute(qParameter_);			// FeatureResult is used to store information from ArcGIS database requested using qParameter_LP and qTask_LP
 					graphic_ = (Feature) fResult_.iterator().next();				// queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
 					attributeslist_.add(graphic_.getAttributes());					// append information about the element in graphic_LP to ArrayList attributeslist_LP						
@@ -748,7 +750,7 @@ public class PWServlet extends HttpServlet {
 			     }
 //****************************************************************************************				
 //check if the input operation pressure of the boiler has been changed by the user, if yes get the new value from the arcgis database, if no get the value from the temporary database (BiodieselPlamt.owl)
-				if(layer[i].equals("")&&OBJECTIDtoMXNum.get(OBJECTID[i]).equals("")){	 				
+				if(layer[i].equals("")&&OBJECTIDtoBoilerNum.get(OBJECTID[i]).equals("")){	 				
 					
 					QueryParameters qParameter_ = new QueryParameters();		// create an instance of QueryParameters to be used for querying ArcGIS database for predefined data
 					qParameter_.setWhere("OBJECTID='" + OBJECTID[i] + "'");
@@ -756,7 +758,7 @@ public class PWServlet extends HttpServlet {
 					QueryTask qTask_ = null;									// create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
 					Feature graphic_ = null;									// create an instance of Feature to store an ArcGIS element
 					
-					qTask_ = new QueryTask("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services//FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
+					qTask_ = new QueryTask("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/heater_cooler/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
 					FeatureResult fResult_ = qTask_.execute(qParameter_);			// FeatureResult is used to store information from ArcGIS database requested using qParameter_LP and qTask_LP
 					graphic_ = (Feature) fResult_.iterator().next();				// queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
 					attributeslist_.add(graphic_.getAttributes());					// append information about the element in graphic_LP to ArrayList attributeslist_LP						
@@ -782,9 +784,9 @@ public class PWServlet extends HttpServlet {
 			e.printStackTrace(); // It prints the stack trace of the Exception to System.err. It's a very simple, but very useful tool for diagnosing an Exception. It tells you what happened and where in the code this happened.
 		}	
 	}
-	
+*/	
 	public void runAspenPlusandPowerWorld(ArrayList<String[]> editStack){
-		getAPPWInput(editStack);
+//		getAPPWInput(editStack);
 		runPyScript(editStack);
 //		readAPPWCSV();		
 	}
@@ -796,7 +798,7 @@ public class PWServlet extends HttpServlet {
 		ArrayList<Map<String, Object>> attributeslist_SP = new ArrayList<Map<String, Object>>();		// additional ArrayList for separator
 		ArrayList<Map<String, Object>> attributeslist_DC = new ArrayList<Map<String, Object>>();		// additional ArrayList for Decanter		
 		UserCredentials user = new UserCredentials();
-	    user.setUserAccount("jparksimulator", "c4tjpark");
+	    user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
 	    	    	    
 	    ArrayList<Double> xRow = new ArrayList<Double>();  //extra arraylist to collect the x-value required as input to the pr aspen plus model  
 	    ArrayList<ArrayList<Double>> xData = new ArrayList<>(1);  //arraylist to store the input x-values 
@@ -810,7 +812,7 @@ public class PWServlet extends HttpServlet {
 				QueryTask qTask_MX = null;									// create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
 				Feature graphic_MX = null;									// create an instance of Feature to store an ArcGIS element
 				
-				qTask_MX = new QueryTask("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/Mixer/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
+				qTask_MX = new QueryTask("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Mixer/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
 				FeatureResult fResult_MX = qTask_MX.execute(qParameter_MX);			// FeatureResult is used to store information from ArcGIS database requested using qParameter_LP and qTask_LP
 				graphic_MX = (Feature) fResult_MX.iterator().next();				// queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
 				attributeslist_MX.add(graphic_MX.getAttributes());					// append information about the element in graphic_LP to ArrayList attributeslist_LP						
@@ -827,7 +829,7 @@ public class PWServlet extends HttpServlet {
 				QueryTask qTask_HX = null;									// create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
 				Feature graphic_HX = null;									// create an instance of Feature to store an ArcGIS element
 				
-				qTask_HX = new QueryTask("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/heat_exchanger/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
+				qTask_HX = new QueryTask("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/heater_cooler/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
 				FeatureResult fResult_HX = qTask_HX.execute(qParameter_HX);			// FeatureResult is used to store information from ArcGIS database requested using qParameter_LP and qTask_LP
 				graphic_HX = (Feature) fResult_HX.iterator().next();				// queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
 				attributeslist_HX.add(graphic_HX.getAttributes());					// append information about the element in graphic_LP to ArrayList attributeslist_LP						
@@ -844,7 +846,7 @@ public class PWServlet extends HttpServlet {
 				QueryTask qTask_CR = null;									// create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
 				Feature graphic_CR = null;									// create an instance of Feature to store an ArcGIS element
 				
-				qTask_CR = new QueryTask("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/PlantReactor/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
+				qTask_CR = new QueryTask("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Reactor/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
 				FeatureResult fResult_CR = qTask_CR.execute(qParameter_CR);			// FeatureResult is used to store information from ArcGIS database requested using qParameter_LP and qTask_LP
 				graphic_CR = (Feature) fResult_CR.iterator().next();				// queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
 				attributeslist_CR.add(graphic_CR.getAttributes());					// append information about the element in graphic_LP to ArrayList attributeslist_LP						
@@ -861,7 +863,7 @@ public class PWServlet extends HttpServlet {
 				QueryTask qTask_SP = null;									// create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
 				Feature graphic_SP = null;									// create an instance of Feature to store an ArcGIS element
 				
-				qTask_SP = new QueryTask("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/FlashDrum/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
+				qTask_SP = new QueryTask("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Flashdrum/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
 				FeatureResult fResult_SP = qTask_SP.execute(qParameter_SP);			// FeatureResult is used to store information from ArcGIS database requested using qParameter_LP and qTask_LP
 				graphic_SP = (Feature) fResult_SP.iterator().next();				// queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
 				attributeslist_SP.add(graphic_SP.getAttributes());					// append information about the element in graphic_LP to ArrayList attributeslist_LP						
@@ -878,7 +880,7 @@ public class PWServlet extends HttpServlet {
 				QueryTask qTask_DC = null;									// create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
 				Feature graphic_DC = null;									// create an instance of Feature to store an ArcGIS element
 				
-				qTask_DC = new QueryTask("http://services6.arcgis.com/MXY8H7lIySnKUlD3/ArcGIS/rest/services/Decanter/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
+				qTask_DC = new QueryTask("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Decanter/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
 				FeatureResult fResult_DC = qTask_DC.execute(qParameter_DC);			// FeatureResult is used to store information from ArcGIS database requested using qParameter_LP and qTask_LP
 				graphic_DC = (Feature) fResult_DC.iterator().next();				// queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
 				attributeslist_DC.add(graphic_DC.getAttributes());					// append information about the element in graphic_LP to ArrayList attributeslist_LP						
@@ -1125,18 +1127,18 @@ public class PWServlet extends HttpServlet {
 		ArrayList<Map<String, Object>> attributeslist_LP = new ArrayList<Map<String, Object>>();		// additional ArrayList for loadpoints
 		ArrayList<Map<String, Object>> attributeslist_PG = new ArrayList<Map<String, Object>>();		// additional ArrayList for powergen
 		UserCredentials user = new UserCredentials();
-	    user.setUserAccount("jparksimulator", "c4tjpark");
+	    user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
 	    
 		int counter = 0;													// the following loop iterates over FID numbers of load points stored within ArcGISFIDtoPWBusNum ArrayList and appends the attributes of each load point to ArrayList attributeslist_LP
 		for(String key: ArcGISFIDtoPWBusNum.keySet()){
 			try {
 				QueryParameters qParameter_LP = new QueryParameters();		// create an instance of QueryParameters to be used for querying ArcGIS database for predefined data
-				qParameter_LP.setWhere("FID='" + key + "'");				// define FID address of an ArcGIS element
+				qParameter_LP.setWhere("OBJECTID='" + key + "'");				// define FID address of an ArcGIS element
 				qParameter_LP.setOutFields(new String[] {"*"});				// fetch all attributes of an ArcGIS element using *
 				QueryTask qTask_LP = null;									// create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
 				Feature graphic_LP = null;									// create an instance of Feature to store an ArcGIS element
 				
-				qTask_LP = new QueryTask("http://services6.arcgis.com/MXY8H7lIySnKUlD3/arcgis/rest/services/Load_Points/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
+				qTask_LP = new QueryTask("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Load_points/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
 				FeatureResult fResult_LP = qTask_LP.execute(qParameter_LP);			// FeatureResult is used to store information from ArcGIS database requested using qParameter_LP and qTask_LP
 				graphic_LP = (Feature) fResult_LP.iterator().next();				// queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
 				attributeslist_LP.add(graphic_LP.getAttributes());					// append information about the element in graphic_LP to ArrayList attributeslist_LP						
@@ -1153,12 +1155,12 @@ public class PWServlet extends HttpServlet {
 			try {
 			
 				QueryParameters qParameter_PG = new QueryParameters();		// create an instance of QueryParameters to be used for querying ArcGIS database for predefined data
-				qParameter_PG.setWhere("FID='" + key + "'");				// define FID address of an ArcGIS element
+				qParameter_PG.setWhere("OBJECTID='" + key + "'");				// define FID address of an ArcGIS element
 				qParameter_PG.setOutFields(new String[] {"*"});				// fetch all attributes of an ArcGIS element using *
 				QueryTask qTask_PG = null;									// create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
 				Feature graphic_PG = null;									// create an instance of Feature to store an ArcGIS element
 				
-				qTask_PG = new QueryTask("http://services6.arcgis.com/MXY8H7lIySnKUlD3/arcgis/rest/services/PowerGen/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
+				qTask_PG = new QueryTask("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Generators/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
 				FeatureResult fResult_PG = qTask_PG.execute(qParameter_PG);			// FeatureResult is used to store information from ArcGIS database requested using qParameter_PG and qTask_PG
 				graphic_PG = (Feature) fResult_PG.iterator().next();				// queryResult.iterator() iterates over the elements in fResult_PG and stores it in graphic_PG; qParameter_PG requests information about a single element only
 				attributeslist_PG.add(graphic_PG.getAttributes());					// append information about the element in graphic_PG to ArrayList attributeslist_LP
@@ -1292,52 +1294,52 @@ public class PWServlet extends HttpServlet {
 		ArrayList<Map<String, Object>> attributeslist	 = new ArrayList<Map<String, Object>>();		
 		ArrayList<String> layers						 = new ArrayList<String>();
 	    UserCredentials user = new UserCredentials();
-	    user.setUserAccount("jparksimulator", "c4tjpark");												// Access secure feature layer service using login username and password
+	    user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");												// Access secure feature layer service using login username and password
 		
 		for (int i=0; i<editStack.size(); i++) {														// for each feature in editStack, append something to skeleton, attributeslist and layers
 			String layer = (String) editStack.get(i)[0];
 			String graphicFID = (String) editStack.get(i)[1];
+			
 //			String appCallFlag = (String) editStack.get(i)[3];
 			
 			QueryParameters qParameter = new QueryParameters();
-			qParameter.setWhere("FID='" + graphicFID + "'");											// find graphic using FID
+			qParameter.setWhere("OBJECTID='" + graphicFID + "'");											// find graphic using FID
 			qParameter.setOutFields(new String[] {"*"});												// fetch all attributes using *
 			QueryTask qTask = null;
 			Feature graphic = null;
-			
-			
+						
 			if (layer.equals("UHT_Substation_(230_66kV)")||layer.equals("UHT_Lines_(230kV)")||layer.equals("EHT_Substation_(66_22kV)")||layer.equals("EHT_Lines")	// check if feature in editStack is part of power grid
 					||layer.equals("HT_Lines")||layer.equals("PowerGen")||layer.equals("Load_Points")||layer.equals("Bus_Coupler")) {								// PW variable names can be found in Case Object Fields.xslx
 
 				if (layer.equals("Load_Points")) {																	// variable names specific to load points (e.g. LoadMW=pwr_P, LoadMVR=pwr_Q)
-					skeleton.add(new String[]{"BusNum,BusNomVolt","FID,volt_nom","Bus"});
-					skeleton.add(new String[]{"BusNum,LoadID,LoadMW,LoadMVR","FID,LoadID,pwr_P,pwr_Q","Load"});		// can only modify MW and MVR at load, not bus
+					skeleton.add(new String[]{"BusNum,BusNomVolt","OBJECTID,volt_nom","Bus"});					
+					skeleton.add(new String[]{"BusNum,LoadID,LoadMW,LoadMVR","OBJECTID,LoadID,pwr_P,pwr_Q","Load"});		// can only modify MW and MVR at load, not bus
 					try {
-						qTask = new QueryTask("http://services6.arcgis.com/MXY8H7lIySnKUlD3/arcgis/rest/services/Load_Points/FeatureServer/0", user);
+						qTask = new QueryTask("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Load_points/FeatureServer/0", user);
 					} catch (EsriSecurityException e) {
 						e.printStackTrace();
 					}
 				} else if (layer.equals("UHT_Substation_(230_66kV)")) {
-					skeleton.add(new String[]{"BusNum,BusNomVolt","FID,HV_kV","Bus"});					// high voltage bus
-					skeleton.add(new String[]{"BusNum,BusNomVolt","FID,LV_kV","Bus"});					// low voltage bus
+					skeleton.add(new String[]{"BusNum,BusNomVolt","OBJECTID,HV_kV","Bus"});					// high voltage bus
+					skeleton.add(new String[]{"BusNum,BusNomVolt","OBJECTID,LV_kV","Bus"});					// low voltage bus
 					try {
-						qTask = new QueryTask("http://services6.arcgis.com/MXY8H7lIySnKUlD3/arcgis/rest/services/UHT_Substation_(230_66kV)/FeatureServer/0", user);
+						qTask = new QueryTask("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/UHT_substations/FeatureServer/0", user);
 					} catch (EsriSecurityException e) {
 						e.printStackTrace();
 					}
 				} else if (layer.equals("EHT_Substation_(66_22kV)")) {
-					skeleton.add(new String[]{"BusNum,BusNomVolt","FID,HV_kV","Bus"});
-					skeleton.add(new String[]{"BusNum,BusNomVolt","FID,LV_kV","Bus"});
+					skeleton.add(new String[]{"BusNum,BusNomVolt","OBJECTID,HV_kV","Bus"});
+					skeleton.add(new String[]{"BusNum,BusNomVolt","OBJECTID,LV_kV","Bus"});
 					try {
-						qTask = new QueryTask("http://services6.arcgis.com/MXY8H7lIySnKUlD3/arcgis/rest/services/EHT_Substation_(66_22kV)/FeatureServer/0", user);
+						qTask = new QueryTask("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/EHT_substation/FeatureServer/0", user);
 					} catch (EsriSecurityException e) {
 						e.printStackTrace();
 					}					
 				} else if (layer.equals("PowerGen")) {
-					skeleton.add(new String[]{"BusNum,GenID,GenMW,GenMVR","FID,GenID,PowerGenMW,PowerGenMVR","Gen"});
-					skeleton.add(new String[]{"BusNum,GenID,GenMW,GenMVR","FID,GenID,PowerGenMW,PowerGenMVR","Gen"});			// duplicate because generator only needs to update one bus
+					skeleton.add(new String[]{"BusNum,GenID,GenMW,GenMVR","OBJECTID,GenID,PowerGenMW,PowerGenMVR","Gen"});
+					skeleton.add(new String[]{"BusNum,GenID,GenMW,GenMVR","OBJECTID,GenID,PowerGenMW,PowerGenMVR","Gen"});			// duplicate because generator only needs to update one bus
 					try {
-						qTask = new QueryTask("http://services6.arcgis.com/MXY8H7lIySnKUlD3/arcgis/rest/services/PowerGen/FeatureServer/0", user);
+						qTask = new QueryTask("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Generators/FeatureServer/0", user);
 					} catch (EsriSecurityException e) {
 						e.printStackTrace();
 					}					
@@ -1355,7 +1357,8 @@ public class PWServlet extends HttpServlet {
 				attributeslist.add(graphic.getAttributes());						// map of attributes
 				attributeslist.add(graphic.getAttributes());						// each feature has to update two elements in PowerWorld, hence duplicate
 				layers.add(layer);													// layer reference
-				layers.add(layer);																
+				layers.add(layer);	
+				
 			}
 		} // of for()
 		
@@ -1376,11 +1379,11 @@ public class PWServlet extends HttpServlet {
 		ArrayList<Map<String, Object>> attributeslist = new ArrayList<Map<String, Object>>(); 		
 		ArrayList<String> layers = new ArrayList<String>();
 	    UserCredentials user = new UserCredentials();
-	    user.setUserAccount("jparksimulator", "c4tjpark"); 
+	    user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp"); 
 	    
 	    for (int i=0; i<editStack.size(); i++){
 	    	String layer = (String) editStack.get(i)[0];	            //get the name of the layer which has been edited
-			String graphicFID = (String) editStack.get(i)[2];           //get the FID of the edited process
+			String graphicFID = (String) editStack.get(i)[1];           //get the FID of the edited process
 			
 			QueryParameters query = new QueryParameters();
 			query.setWhere("OBJECTID='" + graphicFID + "'");			// find graphic using FID
@@ -1455,7 +1458,7 @@ public class PWServlet extends HttpServlet {
   	public void readPrAPCSV(){
   		  BufferedReader fileReader =null;
 		  UserCredentials user = new UserCredentials();
-		  user.setUserAccount("jparksimulator", "c4tjpark");
+		  user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
 		  
 		  try{
 			  long start =System.currentTimeMillis();               //start a timer
@@ -1464,7 +1467,7 @@ public class PWServlet extends HttpServlet {
 				 fileReader.readLine();                             //Read the CSV flie header to skip it
 				 QueryParameters loadAllFeatures =new QueryParameters();
 				 loadAllFeatures.setWhere("OBJECTID IS NOT NULL");							
-				 GeodatabaseFeatureServiceTable HeatexchangerTable = new GeodatabaseFeatureServiceTable("http://services6.arcgis.com/MXY8H7lIySnKUlD3/arcgis/rest/services/heat_exchanger/FeatureServer", user, 0);
+				 GeodatabaseFeatureServiceTable HeatexchangerTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/heater_cooler/FeatureServer/0", user, 0);
 				 HeatexchangerTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);			 						 			 	
 				 HeatexchangerTable.initialize();
 				 
@@ -1522,7 +1525,7 @@ public class PWServlet extends HttpServlet {
 	public void readPrPWCSV(){
 		  BufferedReader fileReader =null;
 		  UserCredentials user = new UserCredentials();
-		  user.setUserAccount("jparksimulator", "c4tjpark");
+		  user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
 		  
 		  try{
 			  long start =System.currentTimeMillis(); //start a timer
@@ -1530,8 +1533,8 @@ public class PWServlet extends HttpServlet {
 				 fileReader =new BufferedReader(new FileReader(PrPWOUTCSV));
 				 fileReader.readLine();                             //Read the CSV flie header to skip it
 				 QueryParameters loadAllFeatures =new QueryParameters();
-				 loadAllFeatures.setWhere("FID IS NOT NULL");							
-				 GeodatabaseFeatureServiceTable LoadPointTable = new GeodatabaseFeatureServiceTable("http://services6.arcgis.com/MXY8H7lIySnKUlD3/arcgis/rest/services/Load_Points/FeatureServer", user, 0);
+				 loadAllFeatures.setWhere("OBJECID IS NOT NULL");							
+				 GeodatabaseFeatureServiceTable LoadPointTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Load_points/FeatureServer/0", user, 0);
 				 LoadPointTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);			 						 			 	
 				 LoadPointTable.initialize();
 				 
@@ -1599,7 +1602,7 @@ public class PWServlet extends HttpServlet {
 	public void readAPCSV(){
 		  BufferedReader fileReader =null;
 		  UserCredentials user = new UserCredentials();
-		  user.setUserAccount("jparksimulator", "c4tjpark");
+		  user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
 		  		  		 		  
 		  try{
 		     long start =System.currentTimeMillis();                        //start a timer
@@ -1662,7 +1665,7 @@ public class PWServlet extends HttpServlet {
 	public void readAPCSVsub(){
 		  BufferedReader fileReader =null;
 		  UserCredentials user = new UserCredentials();
-		  user.setUserAccount("jparksimulator", "c4tjpark");
+		  user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
 		  
 		  try{
 			  long start =System.currentTimeMillis();               //start a timer
@@ -1671,7 +1674,7 @@ public class PWServlet extends HttpServlet {
 				 fileReader.readLine();                             //Read the CSV flie header to skip it
 				 QueryParameters loadAllFeatures =new QueryParameters();
 				 loadAllFeatures.setWhere("OBJECTID IS NOT NULL");							
-				 GeodatabaseFeatureServiceTable HeatexchangerTable = new GeodatabaseFeatureServiceTable("http://services6.arcgis.com/MXY8H7lIySnKUlD3/arcgis/rest/services/heat_exchanger/FeatureServer", user, 0);
+				 GeodatabaseFeatureServiceTable HeatexchangerTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/heater_cooler/FeatureServer/0", user, 0);
 				 HeatexchangerTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);			 						 			 	
 				 HeatexchangerTable.initialize();
 				 
@@ -1743,7 +1746,7 @@ public class PWServlet extends HttpServlet {
 		for(int i=0; i<attributeslist_LP.size(); i++){												// iterate over all members of the Load_Point attributeslist (total of 108), which contains information on multiple graphic elements
 	         if (i == 175) {break;}	
 	         for(String key: attributeslist_LP.get(i).keySet()){										// access all feature fields ("key") of the Load_Point ("LP") layer
-		         if (key == "FID") {
+		         if (key == "OBJECTID") {
 			         fW_LP_P.append(key);															// add the header "FID" to the data stream of the file that will contain the pwr_P value.
 			         fW_LP_P.append(","); //ZL-151218
 			         fW_LP_P.append(String.valueOf(attributeslist_LP.get(i).get(key)));				// capture the FID value, convert it to a string and add it to the data stream
@@ -1769,7 +1772,7 @@ public class PWServlet extends HttpServlet {
 		for(int i=0; i<attributeslist_PG.size(); i++){												// iterate over all members of the PowerGen attributeslist (total of 5), which contains information on multiple graphic elements
 			if (i == 5) {break;}	
 			for(String key: attributeslist_PG.get(i).keySet()){										// access all feature fields ("key") of the PowerGen ("PG") layer
-				if (key == "FID") {
+				if (key == "OBJECTID") {
 					fW_PG_P.append(key);															// add key to the data stream
 					fW_PG_P.append("=");
 					fW_PG_P.append(String.valueOf(attributeslist_PG.get(i).get(key)));				// convert Object to a string and add to the data stream
@@ -1817,8 +1820,8 @@ public class PWServlet extends HttpServlet {
 
 	                  for (int j=0; j<ArcGISfields.length; j++) {												// for each ArcGIS field, append corresponding values
 		                   if (layer.equals("Load_Points")) {													// specific to load point
-			                   if (ArcGISfields[j].equals("FID")) {											// ArcGIS element is FID
-				                   String ArcGISFID = String.valueOf(attributes.get("FID"));					// String.valueOf() converts any data type (in this case an integer) to string
+			                   if (ArcGISfields[j].equals("OBJECTID")) {											// ArcGIS element is FID
+				                   String ArcGISFID = String.valueOf(attributes.get("OBJECTID"));					// String.valueOf() converts any data type (in this case an integer) to string				                   
 				                   fW_PWIN.append(ArcGISFIDtoPWBusNum.get(ArcGISFID));							// converts FID to BusNum using the hard coded map
 			                   } else if (ArcGISfields[j].equals("LoadID")) {	
 				                          fW_PWIN.append("1");														// LoadID is 1 by default in the jparksimulator.pwb
@@ -1826,10 +1829,10 @@ public class PWServlet extends HttpServlet {
 				                           fW_PWIN.append(String.valueOf(Float.parseFloat(String.valueOf(attributes.get(ArcGISfields[j])))*1.0)); // float values from ArcGIS converted to string
 			                               }
 		                   } else if (layer.equals("UHT_Substation_(230_66kV)")) {
-			                          String substationID = "UHT" + String.valueOf(attributes.get("FID"));
+			                          String substationID = "UHT" + String.valueOf(attributes.get("OBJECTID"));
 			                          String HVNomVolt = SubstationtoPWBusNum.get(substationID+"HV");
 			                          String LVNomVolt = SubstationtoPWBusNum.get(substationID+"LV");
-			                          if (ArcGISfields[j].equals("FID")) {
+			                          if (ArcGISfields[j].equals("OBJECTID")) {
 				                          if (ArcGISfields[j+1].equals("HV_kV")) {									// check if current entry is looking for HV or LV bus
 					                          fW_PWIN.append(HVNomVolt);
 				                          } else {
@@ -1839,10 +1842,10 @@ public class PWServlet extends HttpServlet {
 				                                 fW_PWIN.append(String.valueOf(attributes.get(ArcGISfields[j])));
 			                            }
 		                   } else if (layer.equals("EHT_Substation_(66_22kV)")) {								// essentially same as UHT substation
-			                          String substationID = "EHT" + String.valueOf(attributes.get("FID"));
+			                          String substationID = "EHT" + String.valueOf(attributes.get("OBJECTID"));
 			                          String HVNomVolt = SubstationtoPWBusNum.get(substationID+"HV");
 			                          String LVNomVolt = SubstationtoPWBusNum.get(substationID+"LV");
-			                          if (ArcGISfields[j].equals("FID")) {
+			                          if (ArcGISfields[j].equals("OBJECTID")) {
 				                          if (ArcGISfields[j+1].equals("HV_kV")) {
 					                          fW_PWIN.append(HVNomVolt);
 				                          } else {
@@ -1852,8 +1855,8 @@ public class PWServlet extends HttpServlet {
 				                                 fW_PWIN.append(String.valueOf(attributes.get(ArcGISfields[j])));
 			                            }
 		                   } else if (layer.equals("PowerGen")) {
-			                          if (ArcGISfields[j].equals("FID")) {
-				                      int BusNum = (int) attributes.get("FID") + 4;								// special case where PowerWorld bus number is ArcGIS FID + 4
+			                          if (ArcGISfields[j].equals("OBJECTID")) {
+				                      int BusNum = (int) attributes.get("OBJECTID") + 4;								// special case where PowerWorld bus number is ArcGIS FID + 4
 				                      fW_PWIN.append(String.valueOf(BusNum));
 			                          } else if (ArcGISfields[j].equals("GenID")) {
 				                                 fW_PWIN.append("1");														// GenID is 1 by default in jparksimulator.pwb
@@ -1886,25 +1889,25 @@ public class PWServlet extends HttpServlet {
 	public void readCSV() {
 		BufferedReader fileReader = null;
 	    UserCredentials user = new UserCredentials();
-	    user.setUserAccount("jparksimulator", "c4tjpark");												// Access secure feature layer service using login username and password
+	    user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");												// Access secure feature layer service using login username and password
 		try {
 			long start = System.currentTimeMillis();													// start a timer
 			String line = null;
 			fileReader = new BufferedReader(new FileReader(BUSCSV));
 			fileReader.readLine();																		// Read the CSV file header to skip it
 			QueryParameters loadAllFeatures = new QueryParameters();
-			loadAllFeatures.setWhere("FID IS NOT NULL");												// Load all features using SQL command
+			loadAllFeatures.setWhere("OBJECTID IS NOT NULL");												// Load all features using SQL command
 			
-			GeodatabaseFeatureServiceTable LoadPointsTable = new GeodatabaseFeatureServiceTable("http://services6.arcgis.com/MXY8H7lIySnKUlD3/arcgis/rest/services/Load_Points/FeatureServer", user, 0);
+			GeodatabaseFeatureServiceTable LoadPointsTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Load_points/FeatureServer/0", user, 0);
 			LoadPointsTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
 			LoadPointsTable.initialize();
-			GeodatabaseFeatureServiceTable UHTSubstationTable = new GeodatabaseFeatureServiceTable("http://services6.arcgis.com/MXY8H7lIySnKUlD3/arcgis/rest/services/UHT_Substation_(230_66kV)/FeatureServer", user, 0);
+			GeodatabaseFeatureServiceTable UHTSubstationTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/UHT_substations/FeatureServer/0", user, 0);
 			UHTSubstationTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
 			UHTSubstationTable.initialize();
-			GeodatabaseFeatureServiceTable EHTSubstationTable = new GeodatabaseFeatureServiceTable("http://services6.arcgis.com/MXY8H7lIySnKUlD3/arcgis/rest/services/EHT_Substation_(66_22kV)/FeatureServer", user, 0);
+			GeodatabaseFeatureServiceTable EHTSubstationTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/EHT_substation/FeatureServer/0", user, 0);
 			EHTSubstationTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
 			EHTSubstationTable.initialize();
-			GeodatabaseFeatureServiceTable PowerGenTable = new GeodatabaseFeatureServiceTable("http://services6.arcgis.com/MXY8H7lIySnKUlD3/arcgis/rest/services/PowerGen/FeatureServer", user, 0);
+			GeodatabaseFeatureServiceTable PowerGenTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Generators/FeatureServer/0", user, 0);
 			PowerGenTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
 			PowerGenTable.initialize();
 			//
@@ -1912,7 +1915,7 @@ public class PWServlet extends HttpServlet {
 			//
 			
 			final CountDownLatch latch = new CountDownLatch(4);													// handles four asynchronous processes, only continues Thread when it reaches 0
-			LoadPointsTable.populateFromService(loadAllFeatures, false, new CallbackListener<Boolean>() {
+			LoadPointsTable.populateFromService(loadAllFeatures, false, new CallbackListener<Boolean>() {				
 				@Override
 				public void onCallback(Boolean status) {														// Asynchronous callback: code must wait for populate from service to finish loading features
 					if (status==true) {
