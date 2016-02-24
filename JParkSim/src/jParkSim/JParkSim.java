@@ -94,6 +94,7 @@ public class JParkSim {
 		final static SimpleLineSymbol EHTLinescolor = new SimpleLineSymbol(new Color(204,204,0), 3);
 		final static SimpleMarkerSymbol EHTSubstationcolor = new SimpleMarkerSymbol(Color.blue, 20, Style.CIRCLE);
 		final static SimpleLineSymbol HTLinescolor = new SimpleLineSymbol(new Color(0,100,0), 3);
+		final static SimpleMarkerSymbol HTSubstationcolor = new SimpleMarkerSymbol(Color.green, 20, Style.CIRCLE);
 		final static SimpleMarkerSymbol LoadPointscolor = new SimpleMarkerSymbol(new Color(127,0,255), 10, Style.DIAMOND);
 		final static SimpleMarkerSymbol BusCouplercolor = new SimpleMarkerSymbol(Color.magenta, 10, Style.TRIANGLE);
 		// chemical plant
@@ -136,6 +137,7 @@ public class JParkSim {
 	public static ArcGISFeatureLayer EHTLineslayer;  
 	public static ArcGISFeatureLayer EHTSubstationlayer;   
 	public static ArcGISFeatureLayer HTLineslayer;
+	public static ArcGISFeatureLayer HTSubstationlayer; 
 	public static ArcGISFeatureLayer LoadPointslayer;
 	public static ArcGISFeatureLayer BusCouplerlayer;
 	
@@ -203,6 +205,7 @@ public class JParkSim {
     EHTLineslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/EHT_Lines/FeatureServer/0", user);
     EHTSubstationlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/EHT_substation/FeatureServer/0", user);   
     HTLineslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/HTLines/FeatureServer/0", user);
+    HTSubstationlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/HTSubstation/FeatureServer/0", user);
     LoadPointslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Load_points/FeatureServer/0", user);
     BusCouplerlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/bus_couplers/FeatureServer/0", user);
     
@@ -244,6 +247,7 @@ public class JParkSim {
     createRenderer(layers, new ArcGISFeatureLayer [] {EHTLineslayer}, EHTLinescolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {EHTSubstationlayer}, EHTSubstationcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {HTLineslayer}, HTLinescolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {HTSubstationlayer}, HTSubstationcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {LoadPointslayer}, LoadPointscolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {BusCouplerlayer}, BusCouplercolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {heatercoolerlayer}, heatercoolercolor);
@@ -307,6 +311,7 @@ public class JParkSim {
     editlayer.put("EHT Line", EHTLineslayer);
     editlayer.put("EHT Substation", EHTSubstationlayer);
     editlayer.put("HT Line", HTLineslayer);
+    editlayer.put("HT Substation", HTSubstationlayer);
     editlayer.put("Load Point", LoadPointslayer);
     editlayer.put("Bus Coupler", BusCouplerlayer);
     editlayer.put("Heater/Cooler", heatercoolerlayer);
