@@ -118,8 +118,8 @@ public class JParkSim {
 		final static SimpleFillSymbol blowercolor = new SimpleFillSymbol(new Color(100,50,30));
 		final static SimpleFillSymbol valvecolor = new SimpleFillSymbol(new Color(40,130,30));
 		final static SimpleFillSymbol splittercolor = new SimpleFillSymbol(new Color(130,20,89));
-		
-	
+		final static SimpleFillSymbol vesselcolor = new SimpleFillSymbol(Color.magenta);
+		final static SimpleFillSymbol filtercolor = new SimpleFillSymbol(new Color(204,255,153));
 	
 	private JFrame window;
 	private JMap map;
@@ -160,6 +160,8 @@ public class JParkSim {
 	public static ArcGISFeatureLayer blowerlayer;
 	public static ArcGISFeatureLayer valvelayer;
 	public static ArcGISFeatureLayer splitterlayer;
+	public static ArcGISFeatureLayer vessellayer;
+	public static ArcGISFeatureLayer filterlayer;
 	
  	public static String httpStringCSV = new String("D:/httpReq.CSV"); // (mjk, 151115) investigating structure of DataOutputStream object
  	public static String httpStringCSV1 = new String("D:/httpReq1.CSV"); // (ZL-151203) investigating structure of DataOutputStream object
@@ -228,12 +230,15 @@ public class JParkSim {
     blowerlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/blower/FeatureServer/0", user);
     valvelayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/valve/FeatureServer/0", user);
     splitterlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/splitter/FeatureServer/0", user);
-	// UPDATE THIS LIST whenever new layers are added: first layer is the bottom most layer *see currently known issues #3
+    vessellayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/vessel/FeatureServer/0", user);
+    filterlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Filter/FeatureServer/0", user);
+    
+    // UPDATE THIS LIST whenever new layers are added: first layer is the bottom most layer *see currently known issues #3
     
 	ArcGISFeatureLayer[] completeLayerList = {Landlotslayer, Buildingslayer, Storagelayer, TLPmainlayer, Roadlayer, PowerGenlayer, UHTLineslayer, UHTSubstationlayer,
-			EHTLineslayer, EHTSubstationlayer, HTLineslayer, LoadPointslayer, BusCouplerlayer, heatercoolerlayer,
+			EHTLineslayer, EHTSubstationlayer, HTLineslayer,HTSubstationlayer, LoadPointslayer, BusCouplerlayer, heatercoolerlayer,
 			GasLinelayer,AirLinelayer,EnergyStreamlayer,MaterialLinelayer,TLP2layer,TLP3layer,WaterLinelayer,PlantReactorlayer,Decanterlayer,Extractorlayer,
-			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer};
+			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer,vessellayer,filterlayer};
 
     // render layers
 	createRenderer(layers, new ArcGISFeatureLayer [] {Landlotslayer}, Landlotscolor);
@@ -269,6 +274,8 @@ public class JParkSim {
     createRenderer(layers, new ArcGISFeatureLayer [] {blowerlayer}, blowercolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {valvelayer}, valvecolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {splitterlayer}, splittercolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {vessellayer}, vesselcolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {filterlayer}, filtercolor);
     
     // initialize window
     window = new JFrame("J-Park Simulator");
@@ -333,7 +340,11 @@ public class JParkSim {
     editlayer.put("Blower", blowerlayer);
     editlayer.put("Valve", valvelayer);
     editlayer.put("Splitter", splitterlayer);
+    editlayer.put("Vessel", vessellayer);
+    editlayer.put("Filter", filterlayer);
+    
 
+    
     final JComboBox<String> cbxLayer = new JComboBox<>(editlayer.keySet().toArray(new String[0]));	// initialize dropdown box
     cbxLayer.setMaximumSize(new Dimension(220, 25));
     cbxLayer.setAlignmentX(Component.LEFT_ALIGNMENT);
