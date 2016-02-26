@@ -12,6 +12,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.concurrent.CountDownLatch;
@@ -73,6 +74,7 @@ public class PWServlet extends HttpServlet {
 	public static Map<Integer, String> OBJECTIDtoDCNum = new HashMap<>();     //ZL-160114 Maps ArcGIS OBJECTID to the decanter in chemical plant
 	
 	public static Map<String, String> OBJECTIDtoMLNum = new HashMap<>();     //Maps ArcGIS OBJECTID to the Material Lines in chemical plant
+	public static Map<String, String> MLNumtoOBJECTID = new HashMap<>();     //Maps ArcGIS OBJECTID to the Material Lines in chemical plant
 	
  	public static String INCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/IN.CSV");
  	public static String LPPIN = new String("C:/apache-tomcat-8.0.24/webapps/input/LPPIN.CSV");
@@ -116,7 +118,6 @@ public class PWServlet extends HttpServlet {
  	public static String PrAPSPin = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPSPXin.CSV"); 
  	public static String PrAPDCin = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPDCXin.CSV"); 
  	public static String APINsub = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/APINsub.CSV");
- 	public static String APOUTsub = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/APOUTsub.CSV");
  	
  	public static String APPWIN = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/APPWIN.CSV"); //input CSV file for the combined AP+PW model
  	
@@ -129,6 +130,7 @@ public class PWServlet extends HttpServlet {
  	public static String XVALUE = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/XVALUE.CSV"); //ZL-151217  x Value required by pr PW model
  	
  	public static String Sim1 = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/Sim1"); 
+ 	public static String Sim1_partial = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/Sim1_partial"); 
  	public static String PrPWOUTCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrPWOUT.CSV");   //output CSV file from the pr power world model
  	public static String APSim1 = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/APSim1"); 
  	public static String PrAPOUTCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPOUT.CSV");   //output CSV file from the pr aspen plus model
@@ -241,7 +243,8 @@ public class PWServlet extends HttpServlet {
 		ArcGISFIDtoPWBusNum.put("77","197"); //Vopak
 		ArcGISFIDtoPWBusNum.put("10","65"); //YTL PowerSeraya
 		ArcGISFIDtoPWBusNum.put("148","202"); //Zeon Chemicals
-		ArcGISFIDtoPWBusNum.put("67", "106"); //Public Building (00856N)
+		ArcGISFIDtoPWBusNum.put("67", "106"); //Public Building (00856N)		
+		
 		// unidentified load points
 		ArcGISFIDtoPWBusNum.put("62", "81"); //02451C
 		ArcGISFIDtoPWBusNum.put("169", "142"); //01228T
@@ -313,10 +316,12 @@ public class PWServlet extends HttpServlet {
 		ArcGISFIDtoPWBusNum.put("63", "96"); //01384X
 		ArcGISFIDtoPWBusNum.put("1", "42"); //03033X
 		
+		ArcGISFIDtoPWBusNum.put("59", "73"); //Carotino
+		ArcGISFIDtoPWBusNum.put("128", "159"); //Oiltanking Helios Singapore
+		
 		for (Map.Entry<String, String> entry : ArcGISFIDtoPWBusNum.entrySet()) { // reverse mapping
 			PWBusNumtoArcGISFID.put(entry.getValue(), entry.getKey());
 		}
-
 		
 		BusNumtoXPoint.put("31", 0);
 		BusNumtoXPoint.put("32", 1);		
@@ -426,11 +431,11 @@ public class PWServlet extends HttpServlet {
 		BusNumtoXPoint.put("206", 105);
 		BusNumtoXPoint.put("207", 106);
 		BusNumtoXPoint.put("208", 107);
-		
-//		BusNumtoXPoint.put("93", 0);
-//		BusNumtoXPoint.put("94", 1);
-//		BusNumtoXPoint.put("95", 2);
-	
+/*		
+		BusNumtoXPoint.put("93", 0);
+		BusNumtoXPoint.put("94", 1);
+		BusNumtoXPoint.put("95", 2);
+*/	
 		for (Map.Entry<String, Integer> entry : BusNumtoXPoint.entrySet()) { // reverse mapping
 			XPointtoBusNum.put(entry.getValue(), entry.getKey());
 		}
@@ -503,6 +508,9 @@ public class PWServlet extends HttpServlet {
 		OBJECTIDtoMLNum.put("104", "MeOH");
 		OBJECTIDtoMLNum.put("126", "OIL");
 		
+		for (Map.Entry<String, String> entry : OBJECTIDtoMLNum.entrySet()) { // reverse mapping
+			MLNumtoOBJECTID.put(entry.getValue(), entry.getKey());
+			}
 		
     } // of constructor
 
@@ -574,7 +582,7 @@ public class PWServlet extends HttpServlet {
 		switch(appCallFlag[0]) {
 		case "AP":
 			System.out.println(appCallFlag[0]+" button was pressed!");
-			runAspenPlus(editStack); 	//run Aspen Plus model when run AspenPlus Button was pressed
+			runPrAspenPlus(editStack); 	//run Aspen Plus model when run AspenPlus Button was pressed
 			break;
 		case "PrAP": //if PrAP button was pressed, then the following action will be taken
 			System.out.println(appCallFlag[0]+" button was pressed!");
@@ -798,7 +806,7 @@ public class PWServlet extends HttpServlet {
 	}
 	
 	public void runPrAspenPlus(ArrayList<String[]> editStack){
-		ArrayList<Map<String, Object>> attributeslist_ML = new ArrayList<Map<String, Object>>();		// additional ArrayList for mixer
+		ArrayList<Map<String, Object>> attributeslist_MX = new ArrayList<Map<String, Object>>();		// additional ArrayList for mixer
 		ArrayList<Map<String, Object>> attributeslist_HX = new ArrayList<Map<String, Object>>();		// additional ArrayList for heat exchanger
 		ArrayList<Map<String, Object>> attributeslist_CR = new ArrayList<Map<String, Object>>();		// additional ArrayList for chemical reactor
 		ArrayList<Map<String, Object>> attributeslist_SP = new ArrayList<Map<String, Object>>();		// additional ArrayList for separator
@@ -809,24 +817,27 @@ public class PWServlet extends HttpServlet {
 	    ArrayList<Double> xRow = new ArrayList<Double>();  //extra arraylist to collect the x-value required as input to the pr aspen plus model  
 	    ArrayList<ArrayList<Double>> xData = new ArrayList<>(1);  //arraylist to store the input x-values 
 		ArrayList<ArrayList<Double>> yData;	  //output of the pr aspenplus model
-	    
-	    for(Integer key: OBJECTIDtoMLNum.keySet()){
+
+	    for(int key: OBJECTIDtoMXNum.keySet()){	
+	    	System.out.println(key);
 			try {
-				QueryParameters qParameter_ML = new QueryParameters();		// create an instance of QueryParameters to be used for querying ArcGIS database for predefined data
-				qParameter_ML.setWhere("OBJECTID='" + key + "'");			// define FID address of an ArcGIS element
-				qParameter_ML.setOutFields(new String[] {"*"});				// fetch all attributes of an ArcGIS element using *
-				QueryTask qTask_ML = null;									// create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
-				Feature graphic_ML = null;									// create an instance of Feature to store an ArcGIS element
+				QueryParameters qParameter_MX = new QueryParameters();		// create an instance of QueryParameters to be used for querying ArcGIS database for predefined data
+				qParameter_MX.setWhere("OBJECTID='" + key + "'");			// define FID address of an ArcGIS element
+				qParameter_MX.setOutFields(new String[] {"*"});				// fetch all attributes of an ArcGIS element using *
+				QueryTask qTask_MX = null;									// create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
+				Feature graphic_MX = null;									// create an instance of Feature to store an ArcGIS element
 				
-				qTask_ML = new QueryTask("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Material_line/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
-				FeatureResult fResult_ML = qTask_ML.execute(qParameter_ML);			// FeatureResult is used to store information from ArcGIS database requested using qParameter_LP and qTask_LP
-				graphic_ML = (Feature) fResult_ML.iterator().next();				// queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
-				attributeslist_ML.add(graphic_ML.getAttributes());					// append information about the element in graphic_LP to ArrayList attributeslist_LP						
-										
+				qTask_MX = new QueryTask("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Mixer/FeatureServer/0", user);		// store URL address of appropriate databaseand user credentials
+				
+				FeatureResult fResult_MX = qTask_MX.execute(qParameter_MX);			// FeatureResult is used to store information from ArcGIS database requested using qParameter_LP and qTask_LP
+				graphic_MX = (Feature) fResult_MX.iterator().next();				// queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
+				attributeslist_MX.add(graphic_MX.getAttributes());					// append information about the element in graphic_LP to ArrayList attributeslist_LP						
+			
 			} catch (Exception e) {
 				e.printStackTrace(); // It prints the stack trace of the Exception to System.err. It's a very simple, but very useful tool for diagnosing an Exception. It tells you what happened and where in the code this happened.
 			}
 		}
+	    
 		for(Integer key: OBJECTIDtoHXNum.keySet()){
 			try {
 				QueryParameters qParameter_HX = new QueryParameters();		// create an instance of QueryParameters to be used for querying ArcGIS database for predefined data
@@ -895,26 +906,31 @@ public class PWServlet extends HttpServlet {
 				e.printStackTrace(); // It prints the stack trace of the Exception to System.err. It's a very simple, but very useful tool for diagnosing an Exception. It tells you what happened and where in the code this happened.
 			}
 		}
-		
-		FileWriter filewriterML =null;
+
+	    
+		FileWriter filewriterMX =null;
 		FileWriter filewriterHX =null;
 		FileWriter filewriterCR =null;
 		FileWriter filewriterSP =null;
 		FileWriter filewriterDC =null;			
 		FileWriter filewriterAPIN =null;
-		
+				
 		try{
-			filewriterML = new FileWriter(PrAPMLin); //to put the input x-values from the mixer to a CSV file in order to check if the commands works properly when neccessary
+			filewriterMX = new FileWriter(PrAPMLin); //to put the input x-values from the mixer to a CSV file in order to check if the commands works properly when neccessary
 			filewriterHX = new FileWriter(PrAPHXin); //to put the input x-values from the heat exchanger to a CSV file in order to check if the commands works properly when neccessary
 			filewriterCR = new FileWriter(PrAPCRin); //to put the input x-values from the chemical reactor to a CSV file in order to check if the commands works properly when neccessary
 			filewriterSP = new FileWriter(PrAPSPin); //to put the input x-values from the separator to a CSV file in order to check if the commands works properly when neccessary
 			filewriterDC = new FileWriter(PrAPDCin); //to put the input x-values from the decanter to a CSV file in order to check if the commands works properly when neccessary	
-			filewriterAPIN = new FileWriter(APINsub); //to put the input values for the AspenPlus subset model
+			filewriterAPIN = new FileWriter(APINCSV); //to put the input values for the AspenPlus subset model
 			
-			filewriterAPIN.append("FOIL, TOIL, FMEOH, TMEOH, TCR, VCR, TSP, TDC, TOIL, TESTER, TESTER2");
+			filewriterAPIN.append("FOIL, TOIL, FMEOH, TMEOH, TCR, VCR, TSP, TDC, T10E01, T10E02, T10E03");
+			filewriterAPIN.append("\n");
+/*			
 			for(int i=0; i<attributeslist_ML.size();i++){
 				for(String key: attributeslist_ML.get(i).keySet()){                                      //go through all the heat exchangers in biodiesel plant
-					if(key == "OBJECTID"){						
+					System.out.println("1"+key);
+					if(key == "OBJECTID"){	
+						
 						filewriterML.append(key);
 						filewriterML.append(", ");
 						filewriterML.append(String.valueOf(attributeslist_ML.get(i).get(key)));
@@ -925,15 +941,49 @@ public class PWServlet extends HttpServlet {
 						filewriterML.append(", T=");
 						filewriterML.append(String.valueOf(attributeslist_ML.get(i).get("Mat_T")));  //to get the feeding mole flowrate of oil
 						filewriterML.append("\n");
-						
+												
 //						filewriterML.append(key);
 //						filewriterML.append(",");
 //						filewriterML.append(String.valueOf(attributeslist_HX.get(i).get(key)));
 //						filewriterML.append(", TOIL");
 //						filewriterML.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T")));  //to get the temperature of the feeding oil
 //						filewriterML.append("\n");
+						System.out.println("2"+key+OBJECTIDtoMLNum.get(key));
+						if(OBJECTIDtoMLNum.get(key).equals("OIL")){                                   //"10E01" is the heat exchanger for oil to be heated before feeding to the reactor
+							
+							filewriterAPIN.append(String.valueOf(attributeslist_ML.get(i).get("Mat_1_qnt")));
+							filewriterAPIN.append(",");
+							filewriterAPIN.append(String.valueOf(attributeslist_ML.get(i).get("Mat_T")));
+							filewriterAPIN.append(",");
+							xRow.add(Double.parseDouble(String.valueOf(attributeslist_ML.get(i).get("Mat_1_qnt"))));  //add the feeding mole flowrate of oil to xRow
+							xRow.add(Double.parseDouble(String.valueOf(attributeslist_ML.get(i).get("Mat_T"))));    //add the temperature of oil to xRow
+						}					
+					}
+				}
+			}			
+			System.out.println("xRow=" + xRow);
+			filewriterAPIN.flush();
+			filewriterAPIN.close();
+*/			
 						
-						if(OBJECTIDtoMLNum.get(i+1).equals("OIL")){                                   //"10E01" is the heat exchanger for oil to be heated before feeding to the reactor
+			for(int i=0; i<attributeslist_HX.size();i++){
+				for(String key: attributeslist_HX.get(i).keySet()){                                      //go through all the heat exchangers in biodiesel plant
+					if(key == "OBJECTID"){						
+						filewriterHX.append(key);
+						filewriterHX.append(",");
+						filewriterHX.append(String.valueOf(attributeslist_HX.get(i).get(key)));
+						filewriterHX.append(", FOIL");
+						filewriterHX.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")));  //to get the feeding mole flowrate of oil
+						filewriterHX.append("\n");
+						
+						filewriterHX.append(key);
+						filewriterHX.append(",");
+						filewriterHX.append(String.valueOf(attributeslist_HX.get(i).get(key)));
+						filewriterHX.append(", TOIL");
+						filewriterHX.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T")));  //to get the temperature of the feeding oil
+						filewriterHX.append("\n");
+						
+						if(OBJECTIDtoHXNum.get(i+1).equals("10E01")){                                   //"10E01" is the heat exchanger for oil to be heated before feeding to the reactor
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")));
 							filewriterAPIN.append(",");
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T")));
@@ -943,8 +993,8 @@ public class PWServlet extends HttpServlet {
 						}					
 					}
 				}
-			}			
-			System.out.println("xRow=" + xRow);
+			}
+			
 			for(int i=0; i<attributeslist_MX.size();i++){
 				for(String key: attributeslist_MX.get(i).keySet()){                                     //go through all the mixers in biodiesel plant
 					if(key == "OBJECTID"){						
@@ -972,7 +1022,8 @@ public class PWServlet extends HttpServlet {
 						}				
 					}
 				}
-			}			
+			}
+			
 			System.out.println("xRow=" + xRow);			
 			for(int i=0; i<attributeslist_CR.size();i++){
 				for(String key: attributeslist_CR.get(i).keySet()){                                      //go through all the reactors in biodiesel plant
@@ -1039,6 +1090,7 @@ public class PWServlet extends HttpServlet {
 					}
 				}
 			}
+			System.out.println("xRow=" + xRow);
 			for(int i=0; i<attributeslist_HX.size();i++){
 				for(String key: attributeslist_HX.get(i).keySet()){                                   //go through all the heat exchanger in biodiesel plant
 					if(key == "OBJECTID"){						
@@ -1050,9 +1102,9 @@ public class PWServlet extends HttpServlet {
 						filewriterHX.append("\n");
 						
 						if(OBJECTIDtoHXNum.get(i+1).equals("10E01")||OBJECTIDtoHXNum.get(i+1).equals("10E02")||OBJECTIDtoHXNum.get(i+1).equals("10E03")){
-							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("T_Cold_Out")));
+							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatOut1_T")));
 							filewriterAPIN.append(",");
-							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("T_Cold_Out"))));	//add the temperature of the outlet cold stream	to xRow				
+							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatOut1_T"))));	//add the temperature of the outlet cold stream	to xRow				
 						}						
 					}
 				}
@@ -1071,17 +1123,21 @@ public class PWServlet extends HttpServlet {
 			filewriterDC.close();
 			filewriterAPIN.flush();
 			filewriterAPIN.close();
+			
 		}catch (Exception e) {
 			e.printStackTrace();
 	     } 	
 //as the input x-value set for the AP-subset model and the Pr AP model are the same, so we can use the same code to extract them 		
 		for (int i=0; i<editStack.size(); i++) {														// for each feature in editStack, append something to skeleton, attributeslist and layers
-			String appCallFlag = (String) editStack.get(i)[3];
+			String appCallFlag = (String) editStack.get(i)[2];
 			switch(appCallFlag){
 			case "AP":
+				System.out.println(appCallFlag+"was pressed");
 				runPyScript(editStack);    //call python script to run aspen plus model
 				readAPCSVsub();
+				break;
 			case "PrAP":
+				System.out.println(appCallFlag+"was pressed");
 				xData.add(xRow);                                                                                   // pass all the collected input x-value to xData 
 			    System.out.println("xData="+xData);
 				String simDir = APSim1;                                                                            // pass the directory of the aspenplus sorrogate model to simDir
@@ -1127,8 +1183,9 @@ public class PWServlet extends HttpServlet {
 							e.printStackTrace();
 						}
 					}
-				}	
+				}				
 				readPrAPCSV(); 
+				break;
 			}
 	    }								
 	}
@@ -1154,7 +1211,7 @@ public class PWServlet extends HttpServlet {
 				attributeslist_LP.add(graphic_LP.getAttributes());					// append information about the element in graphic_LP to ArrayList attributeslist_LP						
 				
 				counter++;
-				if(counter == 175){ break;}
+				if(counter == 178){ break;}
 			} catch (Exception e) {
 				e.printStackTrace(); // It prints the stack trace of the Exception to System.err. It's a very simple, but very useful tool for diagnosing an Exception. It tells you what happened and where in the code this happened.
 			}
@@ -1186,7 +1243,9 @@ public class PWServlet extends HttpServlet {
 		
 //the following code extract the required input data set from arcgis database
 		ArrayList<ArrayList<Double>> xData = new ArrayList<>(1);
+//		List<List<Double>> xData = null;
 		ArrayList<Double> xRow = new ArrayList<Double>();
+//		List<Double> xRow = new ArrayList<Double>();
 		ArrayList<ArrayList<Double>> yData;	
 		
 		String[] ArcGISFID = null; 
@@ -1195,47 +1254,71 @@ public class PWServlet extends HttpServlet {
 	    for(int j=0; j < 108; j++){				    	
         	String BusNum = XPointtoBusNum.get(j);                              //get the BusNum so that we can look for the ArcGIS FID, then extract the input x-value
         	System.out.println(BusNum);
-        	ArcGISFID[j] = PWBusNumtoArcGISFID.get(BusNum);				        //get the ArcGIS FID for the input x-values    		            			            			         	
+        	ArcGISFID[j] = PWBusNumtoArcGISFID.get(BusNum);				        //get the ArcGIS FID for the input x-values          	
         } 
 	    
 	    BufferedReader fileReader =null;
 	    BufferedReader fileReader1 =null;
+	    BufferedReader fileReader2 =null;
+	    BufferedReader fileReader3 =null;
 	    FileWriter XValue=null;
 	    
 	    try{
-			 String line =null, line1=null;
-			 fileReader =new BufferedReader(new FileReader(LPPIN));           //read the pwr_p data from CSV file
-			 fileReader1 =new BufferedReader(new FileReader(LPQIN));          //read the pwr_Q data from CSV file
+			 String line2 =null, line3=null;;
+			 fileReader2 =new BufferedReader(new FileReader(PGPIN));          //read the pwr_p data for powerGen from CSV file
+			 fileReader3 =new BufferedReader(new FileReader(PGQIN));          //read the pwr_Q data for powerGen from CSV file
+			 
 			 XValue = new FileWriter(XVALUE);						 
-			 						 
-			 while((line=fileReader.readLine())!=null){
-			    String[] data =line.split(",");
-			    			    
-			    	for(int k=0; k<108; k++){	
+			 						 			 		    
+			    for(int k=0; k<108; k++){
+			    	String line =null;
+			    	fileReader  =new BufferedReader(new FileReader(LPPIN));           //read the pwr_p data from CSV file
+			    	fileReader.readLine();                             //Read the CSV flie header to skip it
+			    		while((line=fileReader.readLine())!=null){
+						    String[] data =line.split(",");
+						    System.out.println(ArcGISFID[k]+" & "+data[1]);
 			    		if (ArcGISFID[k].equals(data[1])) {	                //append the pwr_P value if the ArcGIS FID is the demanded FID
-	            			XValue.append(data[2].trim());
+	            			XValue.append("X"+k+"="+data[2].trim());
 	            			XValue.append("\n");
-	            			System.out.println("Xvalue"+k+"="+data[2]);
+	            			System.out.println("Xvalue"+k+"="+data[2]);	            			
 	            			xRow.add(Double.parseDouble(data[2].trim()));  //convert string to double and add it to xRow
-	            			System.out.println("xRow="+xRow);
 	            			break;
-	            		}						    		
+	            		}   					    		
 			    	}						    	
 			 }
-			 while((line1=fileReader1.readLine())!=null){
-				    String[] data =line1.split(",");
-				    						    
-				    	for(int k=0; k<108; k++){	
-				    		if (ArcGISFID[k].equals(data[1])) {	         //append the pwr_Q value if the ArcGIS FID is the demanded FID
+			 			 				    						    
+				 for(int k=0; k<108; k++){	
+					 String line1=null;
+					 fileReader1 =new BufferedReader(new FileReader(LPQIN));          //read the pwr_Q data from CSV file
+				    	 while((line1=fileReader1.readLine())!=null){
+							    String[] data =line1.split(",");
+				    	 if (ArcGISFID[k].equals(data[1])) {	         //append the pwr_Q value if the ArcGIS FID is the demanded FID
 		            			XValue.append(data[2].trim());
 		            			XValue.append("\n");
 		            			System.out.println("Xvalue1"+k+"="+data[2]);
 		            			xRow.add(Double.parseDouble(data[2].trim()));  //convert string to double and add to xRow
-		            			System.out.println("xRow="+xRow);
 		            			break;
-		            		}							    		
+		            		}						    		
 				    	}						    	
 				 }
+			 
+//to get the data for the powerGen			 
+				while((line2=fileReader2.readLine())!=null){
+					 String[] data =line2.split(","); 
+					 XValue.append(data[2].trim());
+	            	 XValue.append("\n");
+	            	 System.out.println("Xvalue2"+"="+data[2]);
+	            	 xRow.add(Double.parseDouble(data[2].trim()));  //convert string to double and add to xRow	            										    		
+			    	}				 
+//			 }			 
+				while((line3=fileReader3.readLine())!=null){
+					 String[] data =line3.split(",");
+					 XValue.append(data[2].trim());
+	            	 XValue.append("\n");
+	            	 System.out.println("Xvalue3"+"="+data[2]);
+	            	 xRow.add(Double.parseDouble(data[2].trim()));  //convert string to double and add to xRow            										    		
+			    	}				 
+//			 }
 				 XValue.flush();				// passes the data from LPPIN to XValue.csv
 				 XValue.close();
 			 
@@ -1244,6 +1327,9 @@ public class PWServlet extends HttpServlet {
 			} finally {
 				try {
 					fileReader.close();
+					fileReader1.close();
+					fileReader2.close();
+					fileReader3.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -1252,9 +1338,12 @@ public class PWServlet extends HttpServlet {
 	    
 	    xData.add(xRow);                                                    // pass all the collected input x-value to xData
 	    System.out.println("xData="+xData);
+	    
 		String simDir = Sim1;                                               // pass the directory of the power world sorrogate model to simDir
-        // String modelName = "HDMR_Alg_1";
-        String modelName = "Polynomial_Alg_1";
+        String modelName = "HDMR_1";
+//		String simDir = Sim1_partial; 
+//      String modelName = "HDMR_Alg_1";
+//      String modelName = "Polynomial_Alg_1";
         FileWriter fileWriter = null;
         try{
         	//System.out.println(MoDSAPI.class);
@@ -1275,7 +1364,7 @@ public class PWServlet extends HttpServlet {
         			        				        
         yData = MoDSAPI.evaluateSurrogate(simDir, modelName, xData);	            //call MoDS API to evaluate the surrogate model basing on the MoDS simulation file "simDir -> modelNam" and the input xData that was collected before    		        
         System.out.println("yData="+yData);	                                        //write the output data to console
-        					
+/*        					
 		for(int j=0;j<yData.size();j++){
 			try {
 				fileWriter.append("\n");
@@ -1295,8 +1384,10 @@ public class PWServlet extends HttpServlet {
 					e.printStackTrace();
 				}
 			}
-		}	
-		readPrPWCSV();    
+		}
+*/		
+//		readPrPWCSV();  
+		
 	}
 	
 	public void runPowerWorld(ArrayList<String[]> editStack) {
@@ -1308,8 +1399,7 @@ public class PWServlet extends HttpServlet {
 		
 		for (int i=0; i<editStack.size(); i++) {														// for each feature in editStack, append something to skeleton, attributeslist and layers
 			String layer = (String) editStack.get(i)[0];
-			String graphicFID = (String) editStack.get(i)[1];
-			
+			String graphicFID = (String) editStack.get(i)[1];			
 //			String appCallFlag = (String) editStack.get(i)[3];
 			
 			QueryParameters qParameter = new QueryParameters();
@@ -1477,7 +1567,7 @@ public class PWServlet extends HttpServlet {
 				 fileReader.readLine();                             //Read the CSV flie header to skip it
 				 QueryParameters loadAllFeatures =new QueryParameters();
 				 loadAllFeatures.setWhere("OBJECTID IS NOT NULL");							
-				 GeodatabaseFeatureServiceTable HeatexchangerTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/heater_cooler/FeatureServer/0", user, 0);
+				 GeodatabaseFeatureServiceTable HeatexchangerTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/heater_cooler/FeatureServer", user, 0);
 				 HeatexchangerTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);			 						 			 	
 				 HeatexchangerTable.initialize();
 				 
@@ -1544,7 +1634,7 @@ public class PWServlet extends HttpServlet {
 				 fileReader.readLine();                             //Read the CSV flie header to skip it
 				 QueryParameters loadAllFeatures =new QueryParameters();
 				 loadAllFeatures.setWhere("OBJECID IS NOT NULL");							
-				 GeodatabaseFeatureServiceTable LoadPointTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Load_points/FeatureServer/0", user, 0);
+				 GeodatabaseFeatureServiceTable LoadPointTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Load_points/FeatureServer", user, 0);
 				 LoadPointTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);			 						 			 	
 				 LoadPointTable.initialize();
 				 
@@ -1610,58 +1700,60 @@ public class PWServlet extends HttpServlet {
 	}
 //update the ArcGIS database according to the output of the PrPW model	ZL-20160111
 	public void readAPCSV(){
-		  BufferedReader fileReader =null;
+		BufferedReader fileReader =null;
 		  UserCredentials user = new UserCredentials();
 		  user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
-		  		  		 		  
+		  
 		  try{
-		     long start =System.currentTimeMillis();                        //start a timer
-			 String line =null;
-			 fileReader =new BufferedReader(new FileReader(APOUTCSV));
-			 fileReader.readLine();                                         //Read the CSV flie header to skip it
-			 QueryParameters loadAllFeatures =new QueryParameters();
-			 loadAllFeatures.setWhere("OBJECTID IS NOT NULL");				//ZL-151207 "FID" -> "OBJECTID" 			
-			 GeodatabaseFeatureServiceTable ChemProcessTable = new GeodatabaseFeatureServiceTable("http://services6.arcgis.com/MXY8H7lIySnKUlD3/arcgis/rest/services/MyMapService/FeatureServer", user, 0);
-			 ChemProcessTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);			 						 			 	
-			 ChemProcessTable.initialize();	
-			 
-			  final CountDownLatch latch = new CountDownLatch(1);           // ZL-151207 handles one asynchronous processes, only continues Thread when it reaches 0			  
-			  ChemProcessTable.populateFromService(loadAllFeatures, false, new CallbackListener<Boolean>() {
-					@Override
-					public void onCallback(Boolean status) {                // Asynchronous callback: code must wait for populate from service to finish loading features
-						if (status==true) {
-							latch.countDown();                              // latch decrement if feature service table is ready
+			  long start =System.currentTimeMillis();               //start a timer
+				 String line =null;
+				 fileReader =new BufferedReader(new FileReader(APOUTCSV));
+				 fileReader.readLine();                             //Read the CSV flie header to skip it
+				 QueryParameters loadAllFeatures =new QueryParameters();
+				 loadAllFeatures.setWhere("OBJECTID IS NOT NULL");							
+				 GeodatabaseFeatureServiceTable HeatexchangerTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/heater_cooler/FeatureServer", user, 0);
+				 HeatexchangerTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);			 						 			 	
+				 HeatexchangerTable.initialize();
+				 
+				 final CountDownLatch latch = new CountDownLatch(1); // ZL-151207 handles one asynchronous processes, only continues Thread when it reaches 0			  
+				 HeatexchangerTable.populateFromService(loadAllFeatures, false, new CallbackListener<Boolean>() {
+						@Override
+						public void onCallback(Boolean status) {     // Asynchronous callback: code must wait for populate from service to finish loading features
+							if (status==true) {
+								latch.countDown();                   // latch decrement if feature service table is ready
+							}
 						}
-					}
-					@Override
-					public void onError(Throwable e) {
-						e.printStackTrace();
-					}});
-			 latch.await();                                                //ZL-151207 wait until all feature service tables are ready then continue
+						@Override
+						public void onError(Throwable e) {
+							e.printStackTrace();
+						}});
+				 latch.await();                                     //wait until all feature service tables are ready then continue
+				 
+				 while((line=fileReader.readLine())!=null){
+					    String[] data =line.split(",");
+						System.out.println("data= "+data);
+						String[] ArcGISOBJECTID = null; 
+						ArcGISOBJECTID=new String[7];              
 
-			 while((line=fileReader.readLine())!=null){
-			    String[] data =line.split(",");
-				//data[0]=SimName
-				//data[1]=BIOD_FLOW
-			    //data[3]=GLYC_FLOW
-				
-//				String SimName =String.valueOf(data[0].trim());           //data[0] is the simulation name			    
-				String ArcGISOBJECTID =APSimNamtoOBJECTID.get(data[0].trim()); //trim() removes trailing white spaces
-  
-				if(ArcGISOBJECTID !=null){
-				  Map<String,Object> ChemProcessAttributes =ChemProcessTable.getFeature(Long.parseLong(ArcGISOBJECTID)).getAttributes();
-				  if(!data[1].trim().isEmpty()) {
-				    ChemProcessAttributes.put("MatOut3Qnt",Float.parseFloat(data[1].trim()));
-				  }
-				  if(!data[3].trim().isEmpty()) {
-				    ChemProcessAttributes.put("MatOut4Qnt",Float.parseFloat(data[3].trim()));
-					  }
-				  ChemProcessTable.updateFeature(Long.parseLong(ArcGISOBJECTID),ChemProcessAttributes); //update feature table locally
-				}
-				
-			 }
-			 ChemProcessTable.applyEdits(null); // commit local updates onto server	    
-			 System.out.println("Updating process took " + String.valueOf(System.currentTimeMillis()-start) + "ms");  //tells how long it took to update
+					    for(int j=0; j < 7; j++){				    	
+				        	ArcGISOBJECTID[j] = String.valueOf(j+1);	
+				        	System.out.println(ArcGISOBJECTID);
+				        	
+				        	if(OBJECTIDtoHXNum.get(j+1).equals("10E03")){       //heat exchanger 10E03 is for now where the output data should be upgraded to
+								  Map<String,Object> DecanterAttributes =HeatexchangerTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
+								  if(!data[1].trim().isEmpty()) {
+									  DecanterAttributes.put("MatOut3Qnt",Float.parseFloat(data[1].trim()));        //upgrade the new mole flowrate of ester3 that calculated by the pr aspen plus model to ArcGIS databse
+								  }
+								  if(!data[2].trim().isEmpty()) {
+									  DecanterAttributes.put("MatOut3_T",Float.parseFloat(data[2].trim()));         //upgrade the new temperature of ester3 that calculated by the pr aspen plus model to ArcGIS databse
+									  }							
+								  HeatexchangerTable.updateFeature(Long.parseLong(ArcGISOBJECTID[j]),DecanterAttributes); //update feature table locally
+								  break;
+								}
+				        } 						  									
+					 }
+				     HeatexchangerTable.applyEdits(null); // commit local updates onto server	    
+					 System.out.println("Updating process took " + String.valueOf(System.currentTimeMillis()-start) + "ms");  //tells how long it took to update
 		  }catch (Exception e) {
 				e.printStackTrace();
 			} finally {
@@ -1670,8 +1762,9 @@ public class PWServlet extends HttpServlet {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			}	  
+			}
 		}
+	
 	public void readAPCSVsub(){
 		  BufferedReader fileReader =null;
 		  UserCredentials user = new UserCredentials();
@@ -1680,11 +1773,11 @@ public class PWServlet extends HttpServlet {
 		  try{
 			  long start =System.currentTimeMillis();               //start a timer
 				 String line =null;
-				 fileReader =new BufferedReader(new FileReader(APOUTsub));
+				 fileReader =new BufferedReader(new FileReader(APOUTCSV));
 				 fileReader.readLine();                             //Read the CSV flie header to skip it
 				 QueryParameters loadAllFeatures =new QueryParameters();
 				 loadAllFeatures.setWhere("OBJECTID IS NOT NULL");							
-				 GeodatabaseFeatureServiceTable HeatexchangerTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/heater_cooler/FeatureServer/0", user, 0);
+				 GeodatabaseFeatureServiceTable HeatexchangerTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/heater_cooler/FeatureServer", user, 0);
 				 HeatexchangerTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);			 						 			 	
 				 HeatexchangerTable.initialize();
 				 
@@ -1754,7 +1847,7 @@ public class PWServlet extends HttpServlet {
             fW_LP_P.append("   ,FID, pwr_P, pwr_Q, pwr_P_act, pwr_Q_act");
             fW_LP_P.append("\n");
 		for(int i=0; i<attributeslist_LP.size(); i++){												// iterate over all members of the Load_Point attributeslist (total of 108), which contains information on multiple graphic elements
-	         if (i == 175) {break;}	
+	         if (i == 178) {break;}	
 	         for(String key: attributeslist_LP.get(i).keySet()){										// access all feature fields ("key") of the Load_Point ("LP") layer
 		         if (key == "OBJECTID") {
 			         fW_LP_P.append(key);															// add the header "FID" to the data stream of the file that will contain the pwr_P value.
@@ -1784,16 +1877,16 @@ public class PWServlet extends HttpServlet {
 			for(String key: attributeslist_PG.get(i).keySet()){										// access all feature fields ("key") of the PowerGen ("PG") layer
 				if (key == "OBJECTID") {
 					fW_PG_P.append(key);															// add key to the data stream
-					fW_PG_P.append("=");
+					fW_PG_P.append(",");
 					fW_PG_P.append(String.valueOf(attributeslist_PG.get(i).get(key)));				// convert Object to a string and add to the data stream
 					fW_PG_P.append(", ");
 					fW_PG_P.append(String.valueOf(attributeslist_PG.get(i).get("PowerGenMW")));		// convert Object to a string and add to the data stream
 					fW_PG_P.append("\n");
 					fW_PG_Q.append(key);															// add key to the data stream
-					fW_PG_Q.append("=");
+					fW_PG_Q.append(",");
 					fW_PG_Q.append(String.valueOf(attributeslist_PG.get(i).get(key)));				// convert Object to a string and add to the data stream
 					fW_PG_Q.append(", ");
-					fW_PG_Q.append(String.valueOf(attributeslist_PG.get(i).get("PowerGenMVR")));	// convert Object to a string and add to the data stream
+					fW_PG_Q.append(String.valueOf(attributeslist_PG.get(i).get("PowerGenMV")));	// convert Object to a string and add to the data stream
 					fW_PG_Q.append("\n");
 				}
 			}
@@ -1911,8 +2004,9 @@ public class PWServlet extends HttpServlet {
 			GeodatabaseFeatureServiceTable LoadPointsTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Load_points/FeatureServer", user, 0);
 			LoadPointsTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
 			LoadPointsTable.initialize();
-			System.out.println("whaaaat?");
-			System.out.println(LoadPointsTable.initialize());
+			System.out.println(LoadPointsTable.getStatus());
+			LoadPointsTable.getInitializationError();
+			System.out.println("whaaaat?");			
 			GeodatabaseFeatureServiceTable UHTSubstationTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/UHT_substations/FeatureServer", user, 0);
 			UHTSubstationTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
 			UHTSubstationTable.initialize();
@@ -1920,10 +2014,11 @@ public class PWServlet extends HttpServlet {
 			GeodatabaseFeatureServiceTable EHTSubstationTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/EHT_substation/FeatureServer", user, 0);
 			EHTSubstationTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
 			EHTSubstationTable.initialize();
-			System.out.println("whaaaat3?");
+			System.out.println(EHTSubstationTable.initialize());
 			GeodatabaseFeatureServiceTable PowerGenTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Generators/FeatureServer", user, 0);
 			PowerGenTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
 			PowerGenTable.initialize();
+			System.out.println(PowerGenTable.initialize());
 			//
 			// EXPAND CODE HERE
 			//
@@ -2016,8 +2111,8 @@ public class PWServlet extends HttpServlet {
 					}
 					LoadPointsTable.updateFeature(Long.parseLong(ArcGISFID), LoadPointsAttributes);			// update feature table locally
 				}
-				if (PWBusNum>=5 && PWBusNum<=9) {															// PowerGen buses
-					Map<String, Object> PowerGenAttributes = PowerGenTable.getFeature((long) (PWBusNum-4)).getAttributes(); // subtract 4 from PWBusNum to get FID
+				if (PWBusNum>=5 && PWBusNum<=9) {															// PowerGen buses					
+					Map<String, Object> PowerGenAttributes = PowerGenTable.getFeature((long) (PWBusNum-4)).getAttributes(); // subtract 4 from PWBusNum to get FID					
 					if (!data[4].trim().isEmpty()) {
 						PowerGenAttributes.put("volt_nom", Float.parseFloat(data[4].trim()));				// BUSNOMVOLT
 					}
@@ -2033,7 +2128,7 @@ public class PWServlet extends HttpServlet {
 					if (!data[8].trim().isEmpty()) {
 						PowerGenAttributes.put("PowerGenMVR", Float.parseFloat(data[8].trim()));			// BUSGENMVR
 					}
-					PowerGenTable.updateFeature((long) (PWBusNum-4), PowerGenAttributes);
+//					PowerGenTable.updateFeature((long) (PWBusNum-4), PowerGenAttributes);   
 				}
 				if ((PWBusNum>=2 && PWBusNum<=4)||(PWBusNum>=10 && PWBusNum<=12)) {							// UHT Substation
 					String SubstationFID = PWBusNumtoSubstation.get(String.valueOf(PWBusNum));

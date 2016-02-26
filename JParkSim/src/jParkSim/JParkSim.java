@@ -939,7 +939,7 @@ public class JParkSim {
     APPWButton.setEnabled(true);
     APPWButton.setVisible(true);
     APPWButton.setSize(190,30);
-    APPWButton.setLocation(690, 80);
+    APPWButton.setLocation(490, 115);
 
     JButton refreshButton = new JButton("Refresh Map");
     refreshButton.addActionListener(new ActionListener() {
