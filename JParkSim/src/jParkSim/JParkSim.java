@@ -205,7 +205,6 @@ public class JParkSim {
     HTLineslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/HTLines/FeatureServer/0", user);
     LoadPointslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Load_points/FeatureServer/0", user);
     BusCouplerlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/bus_couplers/FeatureServer/0", user);
-    
     heatercoolerlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/heater_cooler/FeatureServer/0", user);
     GasLinelayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Gas_line/FeatureServer/0", user);
     AirLinelayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/airline/FeatureServer/0", user);
@@ -425,6 +424,27 @@ public class JParkSim {
       }
     });
 
+    
+    
+    
+    
+    
+    JButton PrAPPWButton = new JButton("Run Parameterized AP+PW");
+    PrAPPWButton.setEnabled(true);
+    PrAPPWButton.setVisible(true);
+    PrAPPWButton.setSize(190,30);
+    PrAPPWButton.setLocation(690, 80);   
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     // Run PowerWorld button
     JButton PWbutton = new JButton("Run PowerWorld");
     PWbutton.addActionListener(new ActionListener() {
@@ -434,7 +454,8 @@ public class JParkSim {
     		OutputStreamWriter out;
     		URL url;
     		try {
-				url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
+    			url = new URL("http://172.25.182.41/PWServlet/");
+//				url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
@@ -455,7 +476,7 @@ public class JParkSim {
 						layers.append(item[0]);
 						layers.append(",");
 //						FIDs.append(item[1]);
-//						FIDs.append(",");
+//					FIDs.append(",");
 						OBJECTIDs.append(item[1]);
 						OBJECTIDs.append(",");
 						appCallFlag.append("PW");
@@ -527,8 +548,10 @@ public class JParkSim {
     		OutputStreamWriter out;
     		URL url;
     		try {
-				url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
-				urlCon = (HttpURLConnection) url.openConnection();
+			//	url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
+    			url = new URL("http://172.25.182.41/PWServlet/"); // URL of servlet
+    			
+    			urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
 				
@@ -617,7 +640,7 @@ public class JParkSim {
     		URL url;
     		try {
 //				url = new URL("http://www.jparksimulator.com/APServlet/"); // URL of servlet
-				url = new URL("http://www.jparksimulator.com/PWServlet/");  //ZL-151203  
+				url = new URL("http://172.25.182.41/PWServlet/");  //ZL-151203  
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
@@ -707,7 +730,10 @@ public class JParkSim {
     		OutputStreamWriter out;
     		URL url;
     		try {
-				url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
+    			
+    			
+    			url = new URL("http://172.25.182.41/PWServlet/");
+		//		url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
@@ -788,7 +814,8 @@ public class JParkSim {
     		OutputStreamWriter out;
     		URL url;
     		try {
-				url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
+    			url = new URL("http://172.25.182.41/PWServlet/");
+			//	url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
@@ -869,7 +896,7 @@ public class JParkSim {
     		OutputStreamWriter out;
     		URL url;
     		try {
-				url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
+				url = new URL("http://172.25.182.41/PWServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
@@ -888,8 +915,8 @@ public class JParkSim {
 						layers.append(",");
 //						FIDs.append(item[1]);
 //						FIDs.append(",");
-						OBJECTIDs.append(item[2]);
-						OBJECTIDs.append(",");
+			 			OBJECTIDs.append(item[1]); // ZHOU CHANGED ITEM[2] TO ITEM[1]
+					    OBJECTIDs.append(",");
 						appCallFlag.append("APPW");
 						appCallFlag.append(",");
 					}
@@ -919,7 +946,7 @@ public class JParkSim {
 					wr.close();
 					
 					if (urlCon.getResponseCode()==200) {
-						JOptionPane.showMessageDialog(null, "AspenPlus model with heat recovery has finished running!");
+						JOptionPane.showMessageDialog(null, "AP & PW has finished running!");
 						editStack.clear(); // delete all items in editStack
 					} else {
 						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
@@ -973,6 +1000,8 @@ public class JParkSim {
     legend.setBorder(new LineBorder(new Color(205, 205, 255), 3));
     
     // initialize contentPane and add contents
+    
+    // ZHOU add new buttons
     contentPane = new JLayeredPane();
     contentPane.setLayout(new BorderLayout(0,0));
     contentPane.setVisible(true);
@@ -984,6 +1013,7 @@ public class JParkSim {
     contentPane.add(APPWButton);
     contentPane.add(refreshButton);
     contentPane.add(panel);
+    contentPane.add(PrAPPWButton);
     contentPane.add(legend, BorderLayout.WEST);
     contentPane.add(map, BorderLayout.CENTER);
     window.add(contentPane);

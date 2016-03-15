@@ -1,0 +1,292 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY system "file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#" >
+    <!ENTITY topology "file:/C:/OntoCAPE/meta_model/topology/topology.owl#" >
+    <!ENTITY substance "file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#" >
+    <!ENTITY plant "file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#" >
+    <!ENTITY machine "file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/machine.owl#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.jparksimulator.com/BiodieselPlant.owl#"
+     xml:base="http://www.jparksimulator.com/BiodieselPlant.owl"
+     xmlns:system="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:machine="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/machine.owl#"
+     xmlns:topology="file:/C:/OntoCAPE/meta_model/topology/topology.owl#"
+     xmlns:plant="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#"
+     xmlns:substance="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl">
+        <owl:imports rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl"/>
+        <owl:imports rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#hasPressureIncrease -->
+
+    <owl:ObjectProperty rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#hasPressureIncrease">
+        <rdfs:domain rdf:resource="&machine;Pump"/>
+        <rdfs:subPropertyOf rdf:resource="&system;hasCharacteristic"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#LETDOWN -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#LETDOWN">
+        <rdf:type rdf:resource="&machine;Valve"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#PUMP -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#PUMP">
+        <rdf:type rdf:resource="&machine;Pump"/>
+        <machine:hasOutletPressure rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#P_discharge_PUMP"/>
+        <topology:isDirectlyConnectedTo rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#RE_WATER"/>
+        <plant:hasEfficiency rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#efficiency_PUMP"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#P_discharge_LETDOWN -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#P_discharge_LETDOWN">
+        <rdf:type rdf:resource="&system;QuantitativeValue"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">131.325</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kPa"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#P_discharge_PUMP -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#P_discharge_PUMP">
+        <rdf:type rdf:resource="&system;QuantitativeValue"/>
+        <system:numericalValue rdf:datatype="&xsd;integer">400</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kPa"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#RE_WATER -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#RE_WATER">
+        <rdf:type rdf:resource="&plant;PipeSegment"/>
+        <topology:isDirectlyConnectedTo rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#PUMP"/>
+        <plant:hasConstructionMaterial rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#water"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#air -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#air">
+        <rdf:type rdf:resource="&substance;Mixture"/>
+        <system:containsDirectly rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#nitrogen"/>
+        <system:containsDirectly rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#oxygen"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#carbon-dioxide -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#carbon-dioxide">
+        <rdf:type rdf:resource="&substance;ChemicalSpecies"/>
+        <substance:molecularFormula>CO2</substance:molecularFormula>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#carbon-monoxide -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#carbon-monoxide">
+        <rdf:type rdf:resource="&substance;ChemicalSpecies"/>
+        <substance:molecularFormula>CO</substance:molecularFormula>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#deltaP_P01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#deltaP_P01">
+        <rdf:type rdf:resource="&system;QuantitativeValue"/>
+        <system:numericalValue rdf:datatype="&xsd;integer">100</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kPa"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#efficiency_PUMP -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#efficiency_PUMP">
+        <rdf:type rdf:resource="&system;QuantitativeValue"/>
+        <system:numericalValue rdf:datatype="&xsd;integer">1</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#ethane -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#ethane">
+        <rdf:type rdf:resource="&substance;ChemicalSpecies"/>
+        <substance:molecularFormula>C2H6</substance:molecularFormula>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#glycerol -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#glycerol">
+        <rdf:type rdf:resource="&substance;ChemicalSpecies"/>
+        <substance:molecularFormula>C3H8O3</substance:molecularFormula>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#methane -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#methane">
+        <rdf:type rdf:resource="&substance;ChemicalSpecies"/>
+        <substance:molecularFormula>CH4</substance:molecularFormula>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#methanol -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#methanol">
+        <rdf:type rdf:resource="&substance;ChemicalSpecies"/>
+        <substance:molecularFormula>CH4O</substance:molecularFormula>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#methyl-palmitate -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#methyl-palmitate">
+        <rdf:type rdf:resource="&substance;ChemicalSpecies"/>
+        <substance:molecularFormula>C17H34O2</substance:molecularFormula>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#nitric-oxide -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#nitric-oxide">
+        <rdf:type rdf:resource="&substance;ChemicalSpecies"/>
+        <substance:molecularFormula>NO</substance:molecularFormula>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#nitrogen -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#nitrogen">
+        <rdf:type rdf:resource="&substance;ChemicalSpecies"/>
+        <substance:molecularFormula>N2</substance:molecularFormula>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#nitrogen-dioxide -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#nitrogen-dioxide">
+        <rdf:type rdf:resource="&substance;ChemicalSpecies"/>
+        <substance:molecularFormula>NO2</substance:molecularFormula>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#nitrous-oxide -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#nitrous-oxide">
+        <rdf:type rdf:resource="&substance;ChemicalSpecies"/>
+        <substance:molecularFormula>N2O</substance:molecularFormula>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#oxygen -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#oxygen">
+        <rdf:type rdf:resource="&substance;ChemicalSpecies"/>
+        <substance:molecularFormula>O2</substance:molecularFormula>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#propane -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#propane">
+        <rdf:type rdf:resource="&substance;ChemicalSpecies"/>
+        <substance:molecularFormula>C3H8</substance:molecularFormula>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#tripalmitin -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#tripalmitin">
+        <rdf:type rdf:resource="&substance;ChemicalSpecies"/>
+        <substance:molecularFormula>C51H98O6</substance:molecularFormula>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#water -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#water">
+        <rdf:type rdf:resource="&substance;ChemicalSpecies"/>
+        <substance:molecularFormula>H2O</substance:molecularFormula>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10P01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10P01">
+        <rdf:type rdf:resource="&machine;Pump"/>
+        <hasPressureIncrease rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#deltaP_P01"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.5.1) http://owlapi.sourceforge.net -->
+
