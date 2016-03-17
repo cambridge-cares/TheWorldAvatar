@@ -115,6 +115,7 @@ public class JParkSim {
 		final static SimpleFillSymbol RadFraccolor = new SimpleFillSymbol(new Color(0,150,30));
 		final static SimpleFillSymbol heatercoolercolor = new SimpleFillSymbol(Color.red);
 		final static SimpleLineSymbol GasLinecolor = new SimpleLineSymbol(Color.black, 3);
+		final static SimpleLineSymbol Fluidcolor = new SimpleLineSymbol(new Color(218,165,32), 3);
 		final static SimpleLineSymbol AirLinecolor = new SimpleLineSymbol(new Color(200,100,0), 3);
 		final static SimpleLineSymbol EnergyStreamcolor = new SimpleLineSymbol(new Color(250,0,250), 3);
 		final static SimpleLineSymbol MaterialLinecolor = new SimpleLineSymbol(Color.red, 3);
@@ -126,6 +127,9 @@ public class JParkSim {
 		final static SimpleFillSymbol splittercolor = new SimpleFillSymbol(new Color(130,20,89));
 		final static SimpleFillSymbol vesselcolor = new SimpleFillSymbol(Color.magenta);
 		final static SimpleFillSymbol filtercolor = new SimpleFillSymbol(new Color(204,255,153));
+		final static SimpleFillSymbol expandercolor = new SimpleFillSymbol(new Color(219,112,147));
+		final static SimpleFillSymbol compressorcolor = new SimpleFillSymbol(Color.white);
+		
 	
 	private JFrame window;
 	private JMap map;
@@ -159,6 +163,7 @@ public class JParkSim {
 	public static ArcGISFeatureLayer heatercoolerlayer;
 	public static ArcGISFeatureLayer GasLinelayer;
 	public static ArcGISFeatureLayer AirLinelayer;
+	public static ArcGISFeatureLayer Fluidlayer;
 	public static ArcGISFeatureLayer EnergyStreamlayer;
 	public static ArcGISFeatureLayer MaterialLinelayer;
 	public static ArcGISFeatureLayer WaterLinelayer;
@@ -173,6 +178,8 @@ public class JParkSim {
 	public static ArcGISFeatureLayer splitterlayer;
 	public static ArcGISFeatureLayer vessellayer;
 	public static ArcGISFeatureLayer filterlayer;
+	public static ArcGISFeatureLayer expanderlayer;
+	public static ArcGISFeatureLayer compressorlayer;
 	
  	public static String httpStringCSV = new String("D:/httpReq.CSV"); // (mjk, 151115) investigating structure of DataOutputStream object
  	public static String httpStringCSV1 = new String("D:/httpReq1.CSV"); // (ZL-151203) investigating structure of DataOutputStream object
@@ -209,7 +216,7 @@ public class JParkSim {
     user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp"); // Access secure feature layer service using login username and password
     Landlotslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Landlots/FeatureServer/0", user);
     Buildingslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Building/FeatureServer/0", user);
-    Storagelayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Storage/FeatureServer/0", user);
+    Storagelayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Storage/FeatureServer/0", user);
     TLPmainlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TLPlantmain/FeatureServer/0", user);
     Roadlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/road/FeatureServer/0", user);
     PowerGenlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Generators/FeatureServer/0", user);
@@ -225,11 +232,11 @@ public class JParkSim {
     
     LoadPointslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Load_points/FeatureServer/0", user);
     BusCouplerlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/bus_couplers/FeatureServer/0", user);
-    
+    Fluidlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Working_Fluid/FeatureServer/0", user);
     heatercoolerlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/heater_cooler/FeatureServer/0", user);
     GasLinelayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Gas_line/FeatureServer/0", user);
     AirLinelayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/airline/FeatureServer/0", user);
-    EnergyStreamlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Energy_stream/FeatureServer/0", user);
+    EnergyStreamlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/EnergyStream/FeatureServer/0", user);
     MaterialLinelayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Material_line/FeatureServer/0", user);
     WaterLinelayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/water_line/FeatureServer/0", user);
     TLP2layer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/TLPlant2/FeatureServer/0", user);
@@ -249,19 +256,20 @@ public class JParkSim {
     splitterlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/splitter/FeatureServer/0", user);
     vessellayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/vessel/FeatureServer/0", user);
     filterlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Filter/FeatureServer/0", user);
+    expanderlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/expander/FeatureServer/0", user);
+    compressorlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/compressor/FeatureServer/0", user);
     
     // UPDATE THIS LIST whenever new layers are added: first layer is the bottom most layer *see currently known issues #3
     
 	ArcGISFeatureLayer[] completeLayerList = {Landlotslayer, Buildingslayer, Storagelayer, TLPmainlayer, Roadlayer, PowerGenlayer, UHTLineslayer, UHTSubstationlayer,
 			EHTLineslayer, EHTSubstationlayer, HTLineslayer,HTSubstation1layer,HTSubstation2layer,LTSubstation1layer,LTSubstation2layer, LoadPointslayer, BusCouplerlayer, heatercoolerlayer,
 			GasLinelayer,AirLinelayer,EnergyStreamlayer,MaterialLinelayer,TLP2layer,TLP3layer,TLP2alayer,TLP4layer,WaterLinelayer,PlantReactorlayer,Decanterlayer,Extractorlayer,
-			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer,vessellayer,filterlayer};
+			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer,vessellayer,filterlayer,Fluidlayer,expanderlayer,compressorlayer};
 
     // render layers
 	createRenderer(layers, new ArcGISFeatureLayer [] {Landlotslayer}, Landlotscolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Buildingslayer}, Buildingscolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Storagelayer}, Storagecolor);
-    createRenderer(layers, new ArcGISFeatureLayer [] {TLPmainlayer}, TLPmaincolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Roadlayer}, Roadcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {PowerGenlayer}, PowerGencolor);   
     createRenderer(layers, new ArcGISFeatureLayer [] {UHTLineslayer}, UHTLinescolor);
@@ -271,6 +279,11 @@ public class JParkSim {
     createRenderer(layers, new ArcGISFeatureLayer [] {HTLineslayer}, HTLinescolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {HTSubstation1layer}, HTSubstation1color);
     createRenderer(layers, new ArcGISFeatureLayer [] {HTSubstation2layer}, HTSubstation2color);
+    createRenderer(layers, new ArcGISFeatureLayer [] {TLPmainlayer}, TLPmaincolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {TLP2layer}, TLP2color);
+    createRenderer(layers, new ArcGISFeatureLayer [] {TLP3layer}, TLP3color);
+    createRenderer(layers, new ArcGISFeatureLayer [] {TLP2alayer}, TLP2acolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {TLP4layer}, TLP4color);
     createRenderer(layers, new ArcGISFeatureLayer [] {LTSubstation1layer}, LTSubstation1color);
     createRenderer(layers, new ArcGISFeatureLayer [] {LTSubstation2layer}, LTSubstation2color);
     createRenderer(layers, new ArcGISFeatureLayer [] {LoadPointslayer}, LoadPointscolor);
@@ -281,10 +294,6 @@ public class JParkSim {
     createRenderer(layers, new ArcGISFeatureLayer [] {EnergyStreamlayer}, EnergyStreamcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {MaterialLinelayer}, MaterialLinecolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {WaterLinelayer}, WaterLinecolor);
-    createRenderer(layers, new ArcGISFeatureLayer [] {TLP2layer}, TLP2color);
-    createRenderer(layers, new ArcGISFeatureLayer [] {TLP3layer}, TLP3color);
-    createRenderer(layers, new ArcGISFeatureLayer [] {TLP2alayer}, TLP2acolor);
-    createRenderer(layers, new ArcGISFeatureLayer [] {TLP4layer}, TLP4color);
     createRenderer(layers, new ArcGISFeatureLayer [] {PlantReactorlayer}, PlantReactorcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Decanterlayer}, Decantercolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Extractorlayer}, Extractorcolor);
@@ -298,7 +307,9 @@ public class JParkSim {
     createRenderer(layers, new ArcGISFeatureLayer [] {splitterlayer}, splittercolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {vessellayer}, vesselcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {filterlayer}, filtercolor);
-    
+    createRenderer(layers, new ArcGISFeatureLayer [] {Fluidlayer}, Fluidcolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {expanderlayer}, expandercolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {compressorlayer}, compressorcolor);
     // initialize window
     window = new JFrame("J-Park Simulator");
     window.setSize(1200, 900);
@@ -369,6 +380,9 @@ public class JParkSim {
     editlayer.put("Splitter", splitterlayer);
     editlayer.put("Vessel", vessellayer);
     editlayer.put("Filter", filterlayer);
+    editlayer.put("Working fluid", Fluidlayer);
+    editlayer.put("Expander/Turbine", expanderlayer);
+    editlayer.put("compressor", compressorlayer);
     
 
     
@@ -903,7 +917,7 @@ public class JParkSim {
     APHrButton.setSize(190,30);
     APHrButton.setLocation(490, 80);
 
- // Run AspenPlus model with heat recovery button
+ // Run AspenPlus model with PowerWorld button
     JButton APPWButton = new JButton("Run AP and PW");
     APPWButton.addActionListener(new ActionListener() {
     	@Override
@@ -918,7 +932,7 @@ public class JParkSim {
 				urlCon.setDoOutput(true);
 				
 				if (editStack.isEmpty()) {
-					JOptionPane.showMessageDialog(null, "You did not edit any features for AspenPlus!");
+					JOptionPane.showMessageDialog(null, "You did not edit any features for AspenPlus or PowerWorld!");
 				} else {
 					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
 					StringBuilder layers = new StringBuilder();
@@ -931,7 +945,7 @@ public class JParkSim {
 						layers.append(",");
 //						FIDs.append(item[1]);
 //						FIDs.append(",");
-						OBJECTIDs.append(item[2]);
+						OBJECTIDs.append(item[1]);
 						OBJECTIDs.append(",");
 						appCallFlag.append("APPW");
 						appCallFlag.append(",");
@@ -982,8 +996,9 @@ public class JParkSim {
     APPWButton.setEnabled(true);
     APPWButton.setVisible(true);
     APPWButton.setSize(190,30);
-    APPWButton.setLocation(690, 80);
-
+    APPWButton.setLocation(490, 115);
+    
+    //refresh map button
     JButton refreshButton = new JButton("Refresh Map");
     refreshButton.addActionListener(new ActionListener() {
     	@Override
@@ -998,6 +1013,98 @@ public class JParkSim {
     refreshButton.setVisible(true);
     refreshButton.setSize(130,30);
     refreshButton.setLocation(890, 10);
+    
+    // Run Parameterised PowerWorld & AspenPlus button
+    JButton PRAPPWbutton = new JButton("Run Parameterized PW+AP");
+    PRAPPWbutton.addActionListener(new ActionListener() {
+    	@Override
+    	public void actionPerformed(ActionEvent arg0) {
+    		HttpURLConnection urlCon;
+    		OutputStreamWriter out;
+    		URL url;
+    		try {
+				url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
+				urlCon = (HttpURLConnection) url.openConnection();
+				urlCon.setRequestMethod("POST");
+				urlCon.setDoOutput(true);
+				String[] PWFIDs = null;   //ZL-151209 
+				for(int i=0; i<editStack.size(); i++){  //ZL-151209
+					PWFIDs = new String[] {editStack.get(i)[1]};	 //ZL-151209
+				}
+//				if (editStack.isEmpty()) {
+				if (PWFIDs == null) {  //ZL-151209
+					JOptionPane.showMessageDialog(null, "You did not edit any features for AspenPlus or PowerWorld!");
+				} else {
+					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
+					StringBuilder layers = new StringBuilder();
+//					StringBuilder FIDs = new StringBuilder();
+					StringBuilder OBJECTIDs = new StringBuilder();
+					StringBuilder appCallFlag = new StringBuilder(); // (mjk, 151115) creates a flag indicating which function has been called: PowerWorld, parameterised PW, AspenPlus, parameterised AP
+					for (String[] item : editStack) { // create comma separated values
+						layers.append(item[0]);
+						layers.append(",");
+//						FIDs.append(item[1]);
+//						FIDs.append(",");
+						OBJECTIDs.append(item[1]);
+						OBJECTIDs.append(",");
+						appCallFlag.append("PRAPPW");
+						appCallFlag.append(",");
+					}
+					StringBuilder outputString = new StringBuilder();
+					// Only URL encoded string values can be sent over a HTTP connection
+					outputString.append(URLEncoder.encode("layers", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(layers.toString(), "UTF-8"));
+					outputString.append("&");
+//					outputString.append(URLEncoder.encode("FIDs", "UTF-8"));
+//					outputString.append("=");
+//					outputString.append(URLEncoder.encode(FIDs.toString(), "UTF-8"));
+//					outputString.append("&");
+					outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(OBJECTIDs.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					System.out.println("outputString=" + outputString);
+					
+					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
+					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
+					wr.writeBytes(outputString.toString()); // write query string into servlet doPost() method
+
+					FileWriter httpString = null; // (mjk, 151115) testing structure of DataOutputStream object and of wr object
+					httpString = new FileWriter(httpStringCSV);
+					httpString.append("wr=");
+					httpString.append(outputString.toString());
+					httpString.flush();				
+					httpString.close();
+
+					wr.flush();
+					wr.close();
+					
+					if (urlCon.getResponseCode()==200) {
+						JOptionPane.showMessageDialog(null, "Parameterized AspenPlus and PowerWorld has finished running!");
+						editStack.clear(); // delete all items in editStack
+					} else {
+						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
+								+ "\nPlease try running Parameterized PW + AP again");
+					}
+					out.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+    		for (ArcGISFeatureLayer layer : completeLayerList) {
+    			layer.requery();
+    			layer.refresh();
+    		}
+    	}
+    });
+    PRAPPWbutton.setEnabled(true);
+    PRAPPWbutton.setVisible(true);
+    PRAPPWbutton.setSize(190,30);
+    PRAPPWbutton.setLocation(690, 80);
 
     
     // combine text, label and dropdown list into one panel for selecting layer to edit
@@ -1025,6 +1132,7 @@ public class JParkSim {
     contentPane.add(APPrButton); 
     contentPane.add(APHrButton);
     contentPane.add(APPWButton);
+    contentPane.add(PRAPPWbutton);
     contentPane.add(refreshButton);
     contentPane.add(panel);
     contentPane.add(legend, BorderLayout.WEST);
@@ -1076,4 +1184,5 @@ public class JParkSim {
 
 
 //sdvgfgfsd
+
 //fdbgb
