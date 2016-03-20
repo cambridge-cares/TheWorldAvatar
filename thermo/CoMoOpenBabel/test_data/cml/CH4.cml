@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<molecule xmlns="http://www.xml-cml.org/schema" id="CH4">
+ <atomArray>
+  <atom id="a1" elementType="C" x3="1.058250" y3="0.935230" z3="0.810300"/>
+  <atom id="a2" elementType="H" x3="1.416230" y3="1.569450" z3="-0.004060"/>
+  <atom id="a3" elementType="H" x3="1.207210" y3="1.447800" z3="1.763520"/>
+  <atom id="a4" elementType="H" x3="-0.005320" y3="0.728440" z3="0.670300"/>
+  <atom id="a5" elementType="H" x3="1.614930" y3="-0.004810" z3="0.811430"/>
+ </atomArray>
+ <bondArray>
+  <bond atomRefs2="a2 a1" order="1"/>
+  <bond atomRefs2="a4 a1" order="1"/>
+  <bond atomRefs2="a1 a5" order="1"/>
+  <bond atomRefs2="a1 a3" order="1"/>
+ </bondArray>
+</molecule>

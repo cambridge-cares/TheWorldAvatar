@@ -1,0 +1,84 @@
+Problem:    C2H4O
+Rows:       42
+Columns:    18 (18 integer, 0 binary)
+Non-zeros:  99
+Status:     INTEGER OPTIMAL
+Objective:  R0 = 12 (MINimum)
+
+   No.   Row name        Activity     Lower bound   Upper bound
+------ ------------    ------------- ------------- -------------
+     1 R0                         12                             
+     2 R1                          0                           0 
+     3 R2                          0                           0 
+     4 R3                          0                           0 
+     5 R4                          0                           0 
+     6 R5                          0                           0 
+     7 R6                          0                           0 
+     8 R7                          0                           0 
+     9 R8                         -2                           0 
+    10 R9                          0                           0 
+    11 R10                         0                           0 
+    12 R11                         0                           0 
+    13 R12                         0                           0 
+    14 R13                         0                           0 
+    15 R14                         0                           0 
+    16 R15                        -2                           0 
+    17 R16                         0                           0 
+    18 R17                         0                           0 
+    19 R18                         0                           0 
+    20 R19                         0             0             = 
+    21 R20                         0             0             = 
+    22 R21                         0             0             = 
+    23 R22                         0             0             = 
+    24 R23                         0             0             = 
+    25 R24                         0             0             = 
+    26 R25                         0             0             = 
+    27 R26                         0             0             = 
+    28 R27                         0             0             = 
+    29 R28                         0             0             = 
+    30 R29                         0             0             = 
+    31 R30                         0             0             = 
+    32 R31                         0             0             = 
+    33 R32                         0             0             = 
+    34 R33                         0             0             = 
+    35 R34                         0             0             = 
+    36 R35                         0             0             = 
+    37 R36                         0             0             = 
+    38 R37                         0             0             = 
+    39 R38                         0             0             = 
+    40 R39                         0             0             = 
+    41 R40                         0             0             = 
+    42 main                        1             1               
+
+   No. Column name       Activity     Lower bound   Upper bound
+------ ------------    ------------- ------------- -------------
+     1 v[0]         *              1                             
+     2 v[2]         *              0                             
+     3 v[1]         *              0                             
+     4 absV[8]      *              0                             
+     5 absV[7]      *              1                             
+     6 absV[6]      *              0                             
+     7 absV[5]      *              0                             
+     8 absV[0]      *              1                             
+     9 absV[4]      *              0                             
+    10 absV[3]      *              0                             
+    11 absV[2]      *              0                             
+    12 absV[1]      *              0                             
+    13 v[3]         *              0                             
+    14 v[4]         *              0                             
+    15 v[5]         *              0                             
+    16 v[6]         *              0                             
+    17 v[7]         *             -1                             
+    18 v[8]         *              0                             
+
+Integer feasibility conditions:
+
+KKT.PE: max.abs.err = 0.00e+000 on row 0
+        max.rel.err = 0.00e+000 on row 0
+        High quality
+
+KKT.PB: max.abs.err = 0.00e+000 on row 0
+        max.rel.err = 0.00e+000 on row 0
+        High quality
+
+End of output

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module serial="1.0" convention="convention:compchem" xmlns="http://www.xml-cml.org/schema" xmlns:convention="http://www.xml-cml.org/convention/" xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:units="http://www.xml-cml.org/units/units" xmlns:chemid="http://www.xml-cml.org/chemid/" xmlns:g="http://www.xml-cml.org/dictionary/compchem/gaussian/" xmlns:iupac="http://www.iupac.org/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/" xmlns:si="http://www.xml-cml.org/unit/si/">
+    <module dictRef="cc:jobList">
+        <module dictRef="cc:job">
+            <module dictRef="cc:initialization">
+                <molecule convention="convention:molecular" id="mol-init-1" formalCharge="-1" spinMultiplicity="2">
+                    <atomArray>
+                        <atom id="a1" elementType="O" x3="-2.2" y3="0.9" z3="-0.6"/>
+                        <atom id="a2" elementType="C" x3="-3.0" y3="1.2" z3="-1.8"/>
+                        <atom id="a3" elementType="Ti" x3="-0.8" y3="0.1" z3="0.1"/>
+                        <atom id="a4" elementType="C" x3="-2.9" y3="2.7" z3="-2.1"/>
+                        <atom id="a5" elementType="C" x3="-4.4" y3="0.8" z3="-1.5"/>
+                        <atom id="a6" elementType="H" x3="-2.6" y3="0.6" z3="-2.6"/>
+                        <atom id="a7" elementType="O" x3="0.0" y3="-0.9" z3="-1.0"/>
+                        <atom id="a8" elementType="O" x3="0.3" y3="1.3" z3="0.8"/>
+                        <atom id="a9" elementType="O" x3="-1.5" y3="-0.8" z3="1.4"/>
+                        <atom id="a10" elementType="H" x3="-3.2" y3="3.3" z3="-1.3"/>
+                        <atom id="a11" elementType="H" x3="-3.5" y3="3.0" z3="-3.0"/>
+                        <atom id="a12" elementType="H" x3="-1.8" y3="3.0" z3="-2.3"/>
+                        <atom id="a13" elementType="H" x3="-4.5" y3="-0.2" z3="-1.2"/>
+                        <atom id="a14" elementType="H" x3="-5.1" y3="1.0" z3="-2.3"/>
+                        <atom id="a15" elementType="H" x3="-4.8" y3="1.4" z3="-0.6"/>
+                        <atom id="a18" elementType="H" x3="-1.2" y3="-1.0" z3="2.3"/>
+                    </atomArray>
+                    <bondArray>
+                        <bond atomRefs2="a1 a2" id="a1_a2" order="S"/>
+                        <bond atomRefs2="a1 a3" id="a1_a3" order="S"/>
+                        <bond atomRefs2="a2 a4" id="a2_a4" order="S"/>
+                        <bond atomRefs2="a2 a5" id="a2_a5" order="S"/>
+                        <bond atomRefs2="a2 a6" id="a2_a6" order="S"/>
+                        <bond atomRefs2="a3 a7" id="a3_a7" order="S"/>
+                        <bond atomRefs2="a3 a8" id="a3_a8" order="S"/>
+                        <bond atomRefs2="a3 a9" id="a3_a9" order="S"/>
+                        <bond atomRefs2="a4 a10" id="a4_a10" order="S"/>
+                        <bond atomRefs2="a4 a11" id="a4_a11" order="S"/>
+                        <bond atomRefs2="a5 a14" id="a5_a14" order="S"/>
+                        <bond atomRefs2="a5 a15" id="a5_a15" order="S"/>
+                        <bond atomRefs2="a9 a18" id="a9_a18" order="S"/>
+                    </bondArray>
+                </molecule>
+                <parameterList>
+                    <parameter dictRef="cc:basis">
+                        <scalar dataType="xsd:string">6-311+G(d,p)</scalar>
+                    </parameter>
+                    <parameter dictRef="cc:method">
+                        <scalar dataType="xsd:string">RB971</scalar>
+                    </parameter>
+                    <parameter dictRef="g:goal">
+                        <scalar dataType="xsd:string">FOpt</scalar>
+                    </parameter>
+                    <parameter dictRef="cc:goal">
+                        <scalar dataType="xsd:string">Full geometry optimization by Gaussian Program (i.e., that the variables including inactive variables are linearly independent and span the degrees of freedom allowed by the molecular symmetry)</scalar>
+                    </parameter>
+                    <parameter dictRef="g:route">
+                        <scalar dataType="xsd:string">#p rB971/6-311+G(d,p) Opt=(Tight, NewEstmFC, MaxCyc=400) Freq=(ReadHinderedRotor) GFInput Population=None Integral(Grid=UltraFine) SCF=(MaxCyc=400, XQC) Guess=Mix NoSymmetry</scalar>
+                    </parameter>
+                </parameterList>
+            </module>
+            <module dictRef="cc:finalization">
+                <molecule convention="convention:molecular" id="mol-final-2" formalCharge="0" spinMultiplicity="1">
+                    <atomArray>
+                        <atom id="a1" elementType="O" x3="-2.21654" y3="0.9927" z3="-0.69488"/>
+                        <atom id="a2" elementType="C" x3="-3.0357" y3="1.28537" z3="-1.81589"/>
+                        <atom id="a3" elementType="Ti" x3="-0.88482" y3="0.14809" z3="0.13101"/>
+                        <atom id="a4" elementType="C" x3="-2.91485" y3="2.77415" z3="-2.14954"/>
+                        <atom id="a5" elementType="C" x3="-4.47453" y3="0.86402" z3="-1.50884"/>
+                        <atom id="a6" elementType="H" x3="-2.6599" y3="0.69606" z3="-2.66597"/>
+                        <atom id="a7" elementType="O" x3="-0.03241" y3="-0.93039" z3="-1.05748"/>
+                        <atom id="a8" elementType="O" x3="0.31434" y3="1.33394" z3="0.80146"/>
+                        <atom id="a9" elementType="O" x3="-1.58203" y3="-0.86862" z3="1.46882"/>
+                        <atom id="a10" elementType="H" x3="-3.26838" y3="3.38094" z3="-1.30877"/>
+                        <atom id="a11" elementType="H" x3="-3.51652" y3="3.01782" z3="-3.032"/>
+                        <atom id="a12" elementType="H" x3="-1.87365" y3="3.03836" z3="-2.35805"/>
+                        <atom id="a13" elementType="H" x3="-4.51839" y3="-0.20031" z3="-1.25978"/>
+                        <atom id="a14" elementType="H" x3="-5.11888" y3="1.04546" z3="-2.37619"/>
+                        <atom id="a15" elementType="H" x3="-4.86333" y3="1.43427" z3="-0.65844"/>
+                        <atom id="a16" elementType="H" x3="-0.04881" y3="-1.87995" z3="-1.18956"/>
+                        <atom id="a17" elementType="H" x3="0.3122" y3="2.28744" z3="0.90063"/>
+                        <atom id="a18" elementType="H" x3="-1.28732" y3="-1.01106" z3="2.37039"/>
+                    </atomArray>
+                    <bondArray>
+                        <bond atomRefs2="a1 a2" id="a1_a2" order="S"/>
+                        <bond atomRefs2="a1 a3" id="a1_a3" order="S"/>
+                        <bond atomRefs2="a2 a4" id="a2_a4" order="S"/>
+                        <bond atomRefs2="a2 a5" id="a2_a5" order="S"/>
+                        <bond atomRefs2="a2 a6" id="a2_a6" order="S"/>
+                        <bond atomRefs2="a3 a7" id="a3_a7" order="S"/>
+                        <bond atomRefs2="a3 a8" id="a3_a8" order="S"/>
+                        <bond atomRefs2="a3 a9" id="a3_a9" order="S"/>
+                        <bond atomRefs2="a4 a10" id="a4_a10" order="S"/>
+                        <bond atomRefs2="a4 a11" id="a4_a11" order="S"/>
+                        <bond atomRefs2="a4 a12" id="a4_a12" order="S"/>
+                        <bond atomRefs2="a5 a13" id="a5_a13" order="S"/>
+                        <bond atomRefs2="a5 a14" id="a5_a14" order="S"/>
+                        <bond atomRefs2="a5 a15" id="a5_a15" order="S"/>
+                        <bond atomRefs2="a7 a16" id="a7_a16" order="S"/>
+                        <bond atomRefs2="a8 a17" id="a8_a17" order="S"/>
+                        <bond atomRefs2="a9 a18" id="a9_a18" order="S"/>
+                    </bondArray>
+                </molecule>
+                <propertyList>
+                    <property dictRef="cc:vibrations">
+                        <table>
+                            <array dataType="xsd:string" size="48" dictRef="cc:labels">f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 f17 f18 f19 f20 f21 f22 f23 f24 f25 f26 f27 f28 f29 f30 f31 f32 f33 f34 f35 f36 f37 f38 f39 f40 f41 f42 f43 f44 f45 f46 f47 f48</array>
+                            <array dataType="xsd:double" size="48" units="nonSi:cm^-1" dictRef="cc:frequencies">15.572 26.147 42.0864 125.4584 164.1975 178.606 190.0894 213.8459 219.467 224.1991 244.0796 261.4719 282.3035 322.3117 413.3672 432.885 443.7119 451.8867 469.1831 613.6769 701.8506 729.63 750.2117 862.4081 923.4653 936.504 1043.1221 1141.6551 1155.6493 1181.2299 1355.1666 1357.3925 1389.7296 1405.4699 1474.8222 1480.7955 1487.335 1502.4313 2987.3867 3019.3448 3023.8634 3091.6832 3098.7324 3101.0222 3104.8988 3933.7808 3938.871 3943.2299</array>
+                            <array dataType="xsd:double" size="48" units="nonSi:amu" dictRef="cc:reduced_masses">3.1399 4.3031 4.8933 1.9487 2.5081 2.7888 1.9574 2.343 1.0997 1.8738 1.2773 1.2664 1.9982 2.6197 2.0411 2.0444 1.552 1.567 1.6737 3.2171 7.0192 7.9347 6.8015 2.6801 1.2987 1.326 2.533 2.1232 2.8031 1.9851 1.3345 1.1793 1.323 1.2476 1.0484 1.046 1.0474 1.0495 1.0842 1.0342 1.0347 1.1021 1.1014 1.1025 1.1022 1.0669 1.0669 1.0679</array>
+                            <array dataType="xsd:double" size="48" units="nonSi:A^4/amu" dictRef="cc:ir_internal">0.028 2.1489 3.5133 14.8948 22.8223 6.1576 28.6514 11.7351 2.4016 43.1451 71.1936 110.481 74.9603 28.1307 96.3366 19.6767 130.5144 81.8159 154.4262 27.4089 206.3768 220.8216 245.2923 28.0254 0.1796 0.2101 279.0895 12.8193 310.2025 57.3619 5.9324 23.4339 19.3592 10.7332 1.5558 0.0708 7.1802 5.819 30.0746 19.1834 20.3164 0.3476 55.4544 21.9243 28.3308 171.3344 288.7865 60.7271</array>
+                            <array dataType="xsd:double" size="48" units="nonSi:mDyne/A^-1" dictRef="cc:force_consts">4.0E-4 0.0017 0.0051 0.0181 0.0398 0.0524 0.0417 0.0631 0.0312 0.0555 0.0448 0.051 0.0938 0.1603 0.2055 0.2257 0.18 0.1885 0.2171 0.7138 2.0372 2.4888 2.2554 1.1744 0.6526 0.6852 1.6239 1.6305 2.2057 1.6319 1.444 1.2803 1.5055 1.4521 1.3435 1.3513 1.3651 1.3958 5.7007 5.5549 5.5745 6.2065 6.2309 6.2463 6.2605 9.727 9.7528 9.7831</array>
+                        </table>
+                    </property>
+                    <property dictRef="cc:scfenergy">
+                        <scalar dataType="xsd:double" units="nonSi:hartree">-1270.84027999</scalar>
+                    </property>
+                    <property dictRef="cc:rotational_symmetry">
+                        <scalar dataType="xsd:integer" units="si:none">1</scalar>
+                    </property>
+                    <property dictRef="cc:hindered_rotations">
+                        <propertyList dictRef="cc:bond_a1_a2">
+                            <property dictRef="cc:vibrational_mode">
+                                <scalar dataType="xsd:integer" units="si:none">1</scalar>
+                            </property>
+                            <property dictRef="cc:multiplicity">
+                                <scalar dataType="xsd:integer" units="si:none">1</scalar>
+                            </property>
+                            <property dictRef="cc:periodicity">
+                                <scalar dataType="xsd:integer" units="si:none">3</scalar>
+                            </property>
+                            <property dictRef="cc:symmetry">
+                                <scalar dataType="xsd:integer" units="si:none">1</scalar>
+                            </property>
+                            <property dictRef="cc:internal_rotational_frequency">
+                                <scalar dataType="xsd:double" units="nonSi:cm^-1">16.1414</scalar>
+                            </property>
+                            <property dictRef="cc:reduced_moment">
+                                <scalar dataType="xsd:double" units="nonSi:amu*Bohr^2">18.1689</scalar>
+                            </property>
+                            <property dictRef="cc:top_composition">
+                                <array dataType="xsd:string" size="9" dictRef="cc:top_composition">a4 a5 a6 a10 a11 a12 a13 a14 a15</array>
+                            </property>
+                        </propertyList>
+                        <propertyList dictRef="cc:bond_a2_a4">
+                            <property dictRef="cc:vibrational_mode">
+                                <scalar dataType="xsd:integer" units="si:none">9</scalar>
+                            </property>
+                            <property dictRef="cc:multiplicity">
+                                <scalar dataType="xsd:integer" units="si:none">1</scalar>
+                            </property>
+                            <property dictRef="cc:periodicity">
+                                <scalar dataType="xsd:integer" units="si:none">3</scalar>
+                            </property>
+                            <property dictRef="cc:symmetry">
+                                <scalar dataType="xsd:integer" units="si:none">3</scalar>
+                            </property>
+                            <property dictRef="cc:internal_rotational_frequency">
+                                <scalar dataType="xsd:double" units="nonSi:cm^-1">223.7377</scalar>
+                            </property>
+                            <property dictRef="cc:reduced_moment">
+                                <scalar dataType="xsd:double" units="nonSi:amu*Bohr^2">1.2437</scalar>
+                            </property>
+                            <property dictRef="cc:top_composition">
+                                <array dataType="xsd:string" size="3" dictRef="cc:top_composition">a10 a11 a12</array>
+                            </property>
+                        </propertyList>
+                        <propertyList dictRef="cc:bond_a2_a5">
+                            <property dictRef="cc:vibrational_mode">
+                                <scalar dataType="xsd:integer" units="si:none">13</scalar>
+                            </property>
+                            <property dictRef="cc:multiplicity">
+                                <scalar dataType="xsd:integer" units="si:none">1</scalar>
+                            </property>
+                            <property dictRef="cc:periodicity">
+                                <scalar dataType="xsd:integer" units="si:none">3</scalar>
+                            </property>
+                            <property dictRef="cc:symmetry">
+                                <scalar dataType="xsd:integer" units="si:none">3</scalar>
+                            </property>
+                            <property dictRef="cc:internal_rotational_frequency">
+                                <scalar dataType="xsd:double" units="nonSi:cm^-1">253.2013</scalar>
+                            </property>
+                            <property dictRef="cc:reduced_moment">
+                                <scalar dataType="xsd:double" units="nonSi:amu*Bohr^2">1.2539</scalar>
+                            </property>
+                            <property dictRef="cc:top_composition">
+                                <array dataType="xsd:string" size="3" dictRef="cc:top_composition">a13 a14 a15</array>
+                            </property>
+                        </propertyList>
+                    </property>
+                </propertyList>
+            </module>
+        </module>
+    </module>
+</module>

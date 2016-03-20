@@ -1,0 +1,101 @@
+Problem:    2348-55-2
+Rows:       39
+Columns:    30
+Non-zeros:  151
+Status:     OPTIMAL
+Objective:  R0 = 24 (MINimum)
+
+   No.   Row name   St   Activity     Lower bound   Upper bound    Marginal
+------ ------------ -- ------------- ------------- ------------- -------------
+     1 R0           B             24                             
+     2 R1           B              0                           0 
+     3 R2           NU             0                           0           -17 
+     4 R3           B             -2                           0 
+     5 R4           NU             0                           0            -9 
+     6 R5           B      -0.333333                           0 
+     7 R6           NU             0                           0            -7 
+     8 R7           B              0                           0 
+     9 R8           NU             0                           0           -14 
+    10 R9           B              0                           0 
+    11 R10          NU             0                           0           -14 
+    12 R11          B      -0.333333                           0 
+    13 R12          NU             0                           0           -11 
+    14 R13          NU             0                           0           -12 
+    15 R14          B             -2                           0 
+    16 R15          B              0                           0 
+    17 R16          NU             0                           0           -20 
+    18 R17          B              0                           0 
+    19 R18          NU             0                           0           -14 
+    20 R19          B              0                           0 
+    21 R20          NU             0                           0           -17 
+    22 R21          B              0                           0 
+    23 R22          NU             0                           0           -20 
+    24 R23          B              0                           0 
+    25 R24          NU             0                           0           -17 
+    26 R25          B              0                           0 
+    27 R26          NU             0                           0           -15 
+    28 R27          B              0                           0 
+    29 R28          NU             0                           0           -17 
+    30 R29          B              0                           0 
+    31 R30          NU             0                           0            -4 
+    32 R31          NS             0             0             =         < eps
+    33 R32          NS             0             0             =            -1 
+    34 R33          NS             0             0             =            -2 
+    35 R34          B              0             0             = 
+    36 R35          NS             0             0             =            -1 
+    37 R36          B              0             0             = 
+    38 R37          NS             0             0             =             1 
+    39 main         NL             1             1                          24 
+
+   No. Column name  St   Activity     Lower bound   Upper bound    Marginal
+------ ------------ -- ------------- ------------- ------------- -------------
+     1 v[1]         B      -0.166667                             
+     2 absV[7]      B              0                             
+     3 absV[5]      B              0                             
+     4 absV[9]      B              0                             
+     5 absV[0]      B              1                             
+     6 v[11]        NF             0                                     < eps
+     7 absV[4]      NF             0                                     < eps
+     8 absV[2]      B              0                             
+     9 v[3]         NF             0                                     < eps
+    10 v[5]         NF             0                                     < eps
+    11 absV[14]     B              0                             
+    12 v[7]         NF             0                                     < eps
+    13 absV[12]     B              1                             
+    14 v[9]         NF             0                                     < eps
+    15 v[13]        B              0                             
+    16 absV[10]     B       0.166667                             
+    17 v[0]         B              1                             
+    18 v[2]         NF             0                                     < eps
+    19 absV[8]      NF             0                                     < eps
+    20 absV[6]      B              0                             
+    21 v[10]        B      -0.166667                             
+    22 absV[3]      B              0                             
+    23 absV[1]      B       0.166667                             
+    24 v[4]         B              0                             
+    25 v[6]         B              0                             
+    26 absV[13]     NF             0                                     < eps
+    27 v[8]         B              0                             
+    28 v[14]        B              0                             
+    29 absV[11]     B              0                             
+    30 v[12]        B             -1                             
+
+Karush-Kuhn-Tucker optimality conditions:
+
+KKT.PE: max.abs.err = 8.88e-016 on row 32
+        max.rel.err = 9.87e-017 on row 32
+        High quality
+
+KKT.PB: max.abs.err = 8.88e-016 on row 37
+        max.rel.err = 8.88e-016 on row 37
+        High quality
+
+KKT.DE: max.abs.err = 3.55e-015 on column 12
+        max.rel.err = 9.35e-017 on column 13
+        High quality
+
+KKT.DB: max.abs.err = 3.11e-015 on column 9
+        max.rel.err = 3.11e-015 on column 9
+        High quality
+
+End of output

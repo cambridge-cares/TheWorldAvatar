@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<molecule xmlns="http://www.xml-cml.org/schema" id="C2H6">
+ <atomArray>
+  <atom id="a1" elementType="H" x3="0.539760" y3="1.766810" z3="-0.001850"/>
+  <atom id="a2" elementType="C" x3="0.714860" y3="0.898010" z3="0.641840"/>
+  <atom id="a3" elementType="H" x3="0.490300" y3="0.000900" z3="0.054820"/>
+  <atom id="a4" elementType="H" x3="-0.007450" y3="0.944620" z3="1.463970"/>
+  <atom id="a5" elementType="C" x3="2.155810" y3="0.874490" z3="1.166560"/>
+  <atom id="a6" elementType="H" x3="2.330920" y3="0.005690" z3="1.810250"/>
+  <atom id="a7" elementType="H" x3="2.878120" y3="0.827880" z3="0.344430"/>
+  <atom id="a8" elementType="H" x3="2.380370" y3="1.771590" z3="1.753580"/>
+ </atomArray>
+ <bondArray>
+  <bond atomRefs2="a1 a2" order="1"/>
+  <bond atomRefs2="a3 a2" order="1"/>
+  <bond atomRefs2="a7 a5" order="1"/>
+  <bond atomRefs2="a2 a5" order="1"/>
+  <bond atomRefs2="a2 a4" order="1"/>
+  <bond atomRefs2="a5 a8" order="1"/>
+  <bond atomRefs2="a5 a6" order="1"/>
+ </bondArray>
+</molecule>

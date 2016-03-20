@@ -1,0 +1,63 @@
+Problem:    C2H4
+Rows:       21
+Columns:    10
+Non-zeros:  46
+Status:     UNDEFINED
+Objective:  R0 = 0 (MINimum)
+
+   No.   Row name   St   Activity     Lower bound   Upper bound    Marginal
+------ ------------ -- ------------- ------------- ------------- -------------
+     1 R0           B              0                             
+     2 R1           B              0                           0 
+     3 R2           B              0                           0 
+     4 R3           B              0                           0 
+     5 R4           B              0                           0 
+     6 R5           B              0                           0 
+     7 R6           B              0                           0 
+     8 R7           B              0                           0 
+     9 R8           B              0                           0 
+    10 R9           B              0                           0 
+    11 R10          B              0                           0 
+    12 R11          B              0             0             = 
+    13 R12          B              0             0             = 
+    14 R13          B              0             0             = 
+    15 R14          B              0             0             = 
+    16 R15          B              0             0             = 
+    17 R16          B              0             0             = 
+    18 R17          B              0             0             = 
+    19 R18          B              0             0             = 
+    20 R19          B              0             0             = 
+    21 main         B              0             1               
+
+   No. Column name  St   Activity     Lower bound   Upper bound    Marginal
+------ ------------ -- ------------- ------------- ------------- -------------
+     1 absV[0]      NF             0                                     < eps
+     2 absV[4]      NF             0                                     < eps
+     3 v[0]         NF             0                                     < eps
+     4 absV[3]      NF             0                                     < eps
+     5 absV[2]      NF             0                                     < eps
+     6 v[2]         NF             0                                     < eps
+     7 absV[1]      NF             0                                     < eps
+     8 v[1]         NF             0                                     < eps
+     9 v[3]         NF             0                                     < eps
+    10 v[4]         NF             0                                     < eps
+
+Karush-Kuhn-Tucker optimality conditions:
+
+KKT.PE: max.abs.err = 0.00e+000 on row 0
+        max.rel.err = 0.00e+000 on row 0
+        High quality
+
+KKT.PB: max.abs.err = 1.00e+000 on row 21
+        max.rel.err = 5.00e-001 on row 21
+        PRIMAL SOLUTION IS INFEASIBLE
+
+KKT.DE: max.abs.err = 8.00e+000 on column 7
+        max.rel.err = 8.89e-001 on column 7
+        DUAL SOLUTION IS WRONG
+
+KKT.DB: max.abs.err = 0.00e+000 on row 0
+        max.rel.err = 0.00e+000 on row 0
+        High quality
+
+End of output
