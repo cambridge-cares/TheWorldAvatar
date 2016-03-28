@@ -27,6 +27,6 @@
 	<classpathentry kind="lib" path="C:/Program Files (x86)/ArcGIS SDKs/java10.2.4/sdk/Eclipse Plugin/content.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files (x86)/ArcGIS SDKs/java10.2.4/sdk/samples/samplecode/ArcGIS_Runtime_Java_Samples.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files (x86)/ArcGIS SDKs/java10.2.4/sdk/samples/samplecode/lucene-core-3.4.0.jar"/>
-	<classpathentry kind="lib" path="D:/JParkSimulator/workspace 151123/PWServlet/MoDS_API-j-Git-0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="D:/MoDS_API/MoDS_Java_API_v0.1/MoDS_API-j-Git-0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
