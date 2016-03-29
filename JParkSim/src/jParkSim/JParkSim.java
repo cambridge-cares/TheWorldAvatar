@@ -241,9 +241,9 @@ public class JParkSim {
     ArcGISTiledMapServiceLayer tiledLayer = new ArcGISTiledMapServiceLayer("http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer");
     layers.add(tiledLayer); // add basemap layer
     
-    //new map layer for webmap
-    map2= new JMap();
-    map2.setVisible(true);
+    ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
+            "http://localhost:6080/arcgis/rest/services/co2_emission/MapServer");
+                layers.add(emissionLayer);
     
     
     // map centered on Jurong Island
@@ -313,6 +313,7 @@ public class JParkSim {
 			GasLinelayer,AirLinelayer,EnergyStreamlayer,MaterialLinelayer,TLP2layer,TLP3layer,TLP2alayer,TLP4layer,WaterLinelayer,PlantReactorlayer,Decanterlayer,Extractorlayer,
 			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer,vessellayer,filterlayer,Fluidlayer,expanderlayer,compressorlayer};
 
+	
     // render layers
 	createRenderer(layers, new ArcGISFeatureLayer [] {Landlotslayer}, Landlotscolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Buildingslayer}, Buildingscolor);
@@ -423,8 +424,8 @@ public class JParkSim {
     final Map<String, ArcGISFeatureLayer> editlayer = new LinkedHashMap<>();
     // dropdown options with key = String layer name and value = layer object
     
-    editlayer.put("Building", Buildingslayer);
     editlayer.put("Landlot", Landlotslayer);
+    editlayer.put("Building", Buildingslayer);
     editlayer.put("Public Road", Roadlayer);
     editlayer.put("Storage", Storagelayer);
     editlayer.put("Bus Coupler", BusCouplerlayer);
@@ -504,11 +505,17 @@ public class JParkSim {
     		              public void onCommitEdit(PopupViewEvent popupViewEvent, Feature feature) {			// save button
 //    		            	  String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("OBJECTID"))}; // newFeature is a new String[] element to be added to editStack (e.g. {Load_Points, 103})
     //		            	  String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("FID")), String.valueOf(hitGraphic.getAttributes().get("OBJECTID"))};  //ZL-151209 try to get FID and OBJECTID 
-    		            	  String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("OBJECTID"))}; 
+    		            	  String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("OBJECTID")), String.valueOf(hitGraphic.getAttributes().get("boilingpt"))}; 
 //    		            	  String[] paramFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes())};
-//    		            	  System.out.println("newFeature[0]=" + newFeature[0] + ", newFeature[1]=" + newFeature[1] +", newFeature[2]=" + newFeature[2]"); //ZL-151209
-    		            	  System.out.println("newFeature[0]=" + newFeature[0] + ", newFeature[1]=" + newFeature[1]); //ZL-151209
-//    		            	  System.out.println("paramFeature[0]=" + paramFeature[0] + ", paramFeature[1]" + paramFeature[1]);
+    		            	  //    		            	  System.out.println("newFeature[0]=" + newFeature[0] + ", newFeature[1]=" + newFeature[1] +", newFeature[2]=" + newFeature[2]"); //ZL-151209
+    		            	  System.out.println("newFeature[0]=" + newFeature[0] + ", newFeature[1]=" + newFeature[1] + ", newFeature[2]=" + newFeature[2]); //ZL-151209
+double y= Double.parseDouble(newFeature[2]);
+double z=2*y;
+System.out.println("new function=" +z);
+    		            	  //    		            	  System.out.println("paramFeature[0]=" + paramFeature[0] + ", paramFeature[1]" + paramFeature[1]);
+    		            	  
+    		            	  //try to expand new button
+    		            	  
     		            	  boolean addtoStack = true;
     		            	  System.out.println("editStack size=" + editStack.size());
     		            	  for (int i=0; i<editStack.size(); i++) {							// (mjk, 151120) check through (i) elements in editStack where (i) is the number of modified feature objects in the layers.
@@ -1285,7 +1292,7 @@ change.setLocation(890, 45);
     });
   } // of public JParkSim()
   
-  //attach the webmap trial until line 1254 
+  //attach the webmap trial until return jmap 
   private JMap createMap() {
 
 	    final JMap jMap = new JMap();
