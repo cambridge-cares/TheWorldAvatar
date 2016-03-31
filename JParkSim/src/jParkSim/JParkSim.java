@@ -49,6 +49,7 @@ import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 
+import com.esri.client.local.ArcGISLocalDynamicMapServiceLayer;
 import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.Point;
 import com.esri.core.io.EsriSecurityException;
@@ -89,6 +90,7 @@ import com.esri.toolkit.overlays.HitTestListener;
 import com.esri.toolkit.overlays.HitTestOverlay;
 import com.esri.toolkit.overlays.InfoPopupOverlay;
 import com.esri.core.symbol.PictureMarkerSymbol;
+
 
 
 import java.awt.image.BufferedImage;
@@ -144,7 +146,7 @@ public class JParkSim {
 		final static SimpleFillSymbol filtercolor = new SimpleFillSymbol(new Color(204,255,153));
 		final static SimpleFillSymbol expandercolor = new SimpleFillSymbol(new Color(219,112,147));
 		final static SimpleFillSymbol compressorcolor = new SimpleFillSymbol(Color.white);
-		
+		final static SimpleLineSymbol steamcolor =  new SimpleLineSymbol(Color.orange, 3);;
 		
 		
 		
@@ -208,6 +210,8 @@ public class JParkSim {
 	public static ArcGISFeatureLayer filterlayer;
 	public static ArcGISFeatureLayer expanderlayer;
 	public static ArcGISFeatureLayer compressorlayer;
+	public static ArcGISFeatureLayer steamlayer;
+	
 	
 	
 	
@@ -242,9 +246,10 @@ public class JParkSim {
     layers.add(tiledLayer); // add basemap layer
     
     ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
-            "http://localhost:6080/arcgis/rest/services/co2_emission/MapServer");
+            "http://localhost:6080/arcgis/rest/services/emission/MapServer");
                 layers.add(emissionLayer);
-    
+                
+                
     
     // map centered on Jurong Island
     Point mapCenter = new Point(11543665,141400);
@@ -258,7 +263,9 @@ public class JParkSim {
   
     // adds layers uploaded onto ArcGIS for Developers
     UserCredentials user = new UserCredentials();
-    user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp"); // Access secure feature layer service using login username and password
+    user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
+    UserCredentials user2 = new UserCredentials();
+    user2.setUserAccount("jparksimulator", "c4tjpark");// Access secure feature layer service using login username and password
     Landlotslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Landlots/FeatureServer/0", user);
     Buildingslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Building/FeatureServer/0", user);
     Storagelayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Storage/FeatureServer/0", user);
@@ -303,6 +310,7 @@ public class JParkSim {
     filterlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Filter/FeatureServer/0", user);
     expanderlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/expander/FeatureServer/0", user);
     compressorlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/compressor/FeatureServer/0", user);
+    steamlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/steam_interplants/FeatureServer/0", user);
     
     
     
@@ -311,7 +319,7 @@ public class JParkSim {
 	ArcGISFeatureLayer[] completeLayerList = {Landlotslayer, Buildingslayer, Storagelayer, TLPmainlayer, Roadlayer, PowerGenlayer, UHTLineslayer, UHTSubstationlayer,
 			EHTLineslayer, EHTSubstationlayer, HTLineslayer,HTSubstation1layer,HTSubstation2layer,LTSubstation1layer,LTSubstation2layer, LoadPointslayer, BusCouplerlayer, heatercoolerlayer,
 			GasLinelayer,AirLinelayer,EnergyStreamlayer,MaterialLinelayer,TLP2layer,TLP3layer,TLP2alayer,TLP4layer,WaterLinelayer,PlantReactorlayer,Decanterlayer,Extractorlayer,
-			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer,vessellayer,filterlayer,Fluidlayer,expanderlayer,compressorlayer};
+			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer,vessellayer,filterlayer,Fluidlayer,expanderlayer,compressorlayer,steamlayer};
 
 	
     // render layers
@@ -358,6 +366,7 @@ public class JParkSim {
     createRenderer(layers, new ArcGISFeatureLayer [] {Fluidlayer}, Fluidcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {expanderlayer}, expandercolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {compressorlayer}, compressorcolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {steamlayer}, steamcolor);
     
     
     
@@ -366,10 +375,12 @@ public class JParkSim {
     
     
     ArcGISDynamicMapServiceLayer highwayLayer = new ArcGISDynamicMapServiceLayer(
-            "http://localhost:6080/arcgis/rest/services/graph/MapServer");
+            "http://localhost:6080/arcgis/rest/services/opex/MapServer");
                 layers.add(highwayLayer);
           
-                
+                ArcGISDynamicMapServiceLayer sensitivityLayer = new ArcGISDynamicMapServiceLayer(
+                        "http://localhost:6080/arcgis/rest/services/sensitivity/MapServer");
+                            layers.add(sensitivityLayer);        
                 
                 
     // initialize window
@@ -464,6 +475,7 @@ public class JParkSim {
     editlayer.put("RadFrac", RadFraclayer);
     editlayer.put("Reactor", PlantReactorlayer);
     editlayer.put("Splitter", splitterlayer);
+    editlayer.put("Steam network", steamlayer);
     editlayer.put("Valve", valvelayer);
     editlayer.put("Vessel", vessellayer);
     editlayer.put("Working fluid", Fluidlayer);
