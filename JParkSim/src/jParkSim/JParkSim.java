@@ -146,7 +146,11 @@ public class JParkSim {
 		final static SimpleFillSymbol filtercolor = new SimpleFillSymbol(new Color(204,255,153));
 		final static SimpleFillSymbol expandercolor = new SimpleFillSymbol(new Color(219,112,147));
 		final static SimpleFillSymbol compressorcolor = new SimpleFillSymbol(Color.white);
+<<<<<<< dev-featurevisualization
 		final static SimpleLineSymbol steamcolor =  new SimpleLineSymbol(Color.orange, 3);;
+=======
+		final static SimpleLineSymbol steamcolor = new SimpleLineSymbol(Color.orange, 3);
+>>>>>>> local
 		
 		
 		
@@ -211,8 +215,12 @@ public class JParkSim {
 	public static ArcGISFeatureLayer expanderlayer;
 	public static ArcGISFeatureLayer compressorlayer;
 	public static ArcGISFeatureLayer steamlayer;
+<<<<<<< dev-featurevisualization
 	
 	
+=======
+		
+>>>>>>> local
 	
 	
 	
@@ -310,9 +318,14 @@ public class JParkSim {
     filterlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Filter/FeatureServer/0", user);
     expanderlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/expander/FeatureServer/0", user);
     compressorlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/compressor/FeatureServer/0", user);
+<<<<<<< dev-featurevisualization
     steamlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/steam_interplants/FeatureServer/0", user);
     
     
+=======
+    steamlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/steam_interplants/FeatureServer/0", user);
+        
+>>>>>>> local
     
     // UPDATE THIS LIST whenever new layers are added: first layer is the bottom most layer *see currently known issues #3
     
@@ -367,7 +380,10 @@ public class JParkSim {
     createRenderer(layers, new ArcGISFeatureLayer [] {expanderlayer}, expandercolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {compressorlayer}, compressorcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {steamlayer}, steamcolor);
+<<<<<<< dev-featurevisualization
     
+=======
+>>>>>>> local
     
     
     //map.getLayers().add(graphlayer);
@@ -378,9 +394,16 @@ public class JParkSim {
             "http://localhost:6080/arcgis/rest/services/opex/MapServer");
                 layers.add(highwayLayer);
           
+<<<<<<< dev-featurevisualization
                 ArcGISDynamicMapServiceLayer sensitivityLayer = new ArcGISDynamicMapServiceLayer(
                         "http://localhost:6080/arcgis/rest/services/sensitivity/MapServer");
                             layers.add(sensitivityLayer);        
+=======
+
+                ArcGISDynamicMapServiceLayer sensitivityLayer = new ArcGISDynamicMapServiceLayer(
+                        "http://localhost:6080/arcgis/rest/services/sensitivity/MapServer");
+                            layers.add(sensitivityLayer);
+>>>>>>> local
                 
                 
     // initialize window
