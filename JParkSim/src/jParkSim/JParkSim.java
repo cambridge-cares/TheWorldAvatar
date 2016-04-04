@@ -231,7 +231,7 @@ public class JParkSim {
 	//add link for webmap graph
 	Portal portal = new Portal("http://www.arcgis.com",null);
 	  // item ID of a public map on arcgis.com with charts
-	  final String MAP_ID = "f809dccb780a4af0a506e56aaa84d084";
+	  final String MAP_ID = "e0f5fa4cab3c4aafaf3cb7ae2d3f3966";
 	  
 	  
 	
@@ -244,6 +244,7 @@ public class JParkSim {
     final LayerList layers = map.getLayers(); // object storing all the map layers (NOT AN ARRAY - use completelayerlist instead)
     ArcGISTiledMapServiceLayer tiledLayer = new ArcGISTiledMapServiceLayer("http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer");
     layers.add(tiledLayer); // add basemap layer
+    
     
     ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
             "http://localhost:6080/arcgis/rest/services/emission/MapServer");
@@ -264,8 +265,7 @@ public class JParkSim {
     // adds layers uploaded onto ArcGIS for Developers
     UserCredentials user = new UserCredentials();
     user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
-    UserCredentials user2 = new UserCredentials();
-    user2.setUserAccount("jparksimulator", "c4tjpark");// Access secure feature layer service using login username and password
+    // Access secure feature layer service using login username and password
     Landlotslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Landlots/FeatureServer/0", user);
     Buildingslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Building/FeatureServer/0", user);
     Storagelayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Storage/FeatureServer/0", user);
