@@ -616,7 +616,7 @@ change.setLocation(890, 45);
     		OutputStreamWriter out;
     		URL url;
     		try {
-				url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
+				url = new URL("http://172.25.182.41/PWServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
@@ -709,7 +709,7 @@ change.setLocation(890, 45);
     		OutputStreamWriter out;
     		URL url;
     		try {
-				url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
+				url = new URL("http://172.25.182.41/PWServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
@@ -799,7 +799,7 @@ change.setLocation(890, 45);
     		URL url;
     		try {
 //				url = new URL("http://www.jparksimulator.com/APServlet/"); // URL of servlet
-				url = new URL("http://www.jparksimulator.com/PWServlet/");  //ZL-151203  
+				url = new URL("http://172.25.182.41/PWServlet/");  //ZL-151203  
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
@@ -889,7 +889,7 @@ change.setLocation(890, 45);
     		OutputStreamWriter out;
     		URL url;
     		try {
-				url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
+				url = new URL("http://172.25.182.41/PWServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
@@ -970,7 +970,7 @@ change.setLocation(890, 45);
     		OutputStreamWriter out;
     		URL url;
     		try {
-				url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
+				url = new URL("http://172.25.182.41/PWServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
@@ -1051,7 +1051,7 @@ change.setLocation(890, 45);
     		OutputStreamWriter out;
     		URL url;
     		try {
-				url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
+				url = new URL("http://172.25.182.41/PWServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
@@ -1148,7 +1148,7 @@ change.setLocation(890, 45);
     		OutputStreamWriter out;
     		URL url;
     		try {
-				url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
+				url = new URL("http://172.25.182.41/PWServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
