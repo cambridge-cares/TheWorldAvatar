@@ -7,30 +7,62 @@
     <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY material "file:/C:/OntoCAPE/OntoCAPE/material/material.owl#" >
     <!ENTITY system "file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#" >
     <!ENTITY topology "file:/C:/OntoCAPE/meta_model/topology/topology.owl#" >
+    <!ENTITY mathematical_model "file:/C:/OntoCAPE/OntoCAPE/model/mathematical_model.owl#" >
+    <!ENTITY technical_system "file:/C:/OntoCAPE/OntoCAPE/upper_level/technical_system.owl#" >
     <!ENTITY substance "file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#" >
+    <!ENTITY geometry "file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/geometry/geometry.owl#" >
     <!ENTITY plant "file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#" >
+    <!ENTITY behavior "file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#" >
+    <!ENTITY chemical_process_system "file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#" >
+    <!ENTITY economic_performance "file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#" >
     <!ENTITY machine "file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/machine.owl#" >
 ]>
 
 
 <rdf:RDF xmlns="http://www.jparksimulator.com/BiodieselPlant.owl#"
      xml:base="http://www.jparksimulator.com/BiodieselPlant.owl"
-     xmlns:system="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#"
-     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:owl="http://www.w3.org/2002/07/owl#"
-     xmlns:machine="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/machine.owl#"
-     xmlns:topology="file:/C:/OntoCAPE/meta_model/topology/topology.owl#"
      xmlns:plant="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#"
+     xmlns:chemical_process_system="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#"
+     xmlns:behavior="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#"
+     xmlns:economic_performance="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#"
+     xmlns:technical_system="file:/C:/OntoCAPE/OntoCAPE/upper_level/technical_system.owl#"
+     xmlns:machine="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/machine.owl#"
+     xmlns:material="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#"
+     xmlns:geometry="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/geometry/geometry.owl#"
      xmlns:substance="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:system="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+     xmlns:mathematical_model="file:/C:/OntoCAPE/OntoCAPE/model/mathematical_model.owl#"
      xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:topology="file:/C:/OntoCAPE/meta_model/topology/topology.owl#">
     <owl:Ontology rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl">
         <owl:imports rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl"/>
+        <owl:imports rdf:resource="file:/C:/OntoCAPE/OntoCAPE/model/numerical_solution_strategy.owl"/>
         <owl:imports rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl"/>
     </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/machine.owl#hasOutletPressure -->
+
+    <owl:AnnotationProperty rdf:about="&machine;hasOutletPressure"/>
     
 
 
@@ -57,11 +89,928 @@
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate -->
+
+    <owl:Class rdf:about="&behavior;ConvectiveMassFlowrate"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#ShellTubeApparatus -->
+
+    <owl:Class rdf:about="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#ShellTubeApparatus"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#StirredTank -->
+
+    <owl:Class rdf:about="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#StirredTank"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/machine.owl#Pump -->
+
+    <owl:Class rdf:about="&machine;Pump"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/machine.owl#Valve -->
+
+    <owl:Class rdf:about="&machine;Valve"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
     // Individuals
     //
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kPa -->
+
+    <owl:NamedIndividual rdf:about="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kPa"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_hr -->
+
+    <owl:NamedIndividual rdf:about="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_hr"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol_per_hr -->
+
+    <owl:NamedIndividual rdf:about="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol_per_hr"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/derived_dimensions.owl#mass_flowrate -->
+
+    <owl:NamedIndividual rdf:about="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/derived_dimensions.owl#mass_flowrate"/>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10E01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10E01">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#ShellTubeApparatus"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#heatEX_01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10E01_EquipmentCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10E01_EquipmentCost">
+        <rdf:type rdf:resource="&economic_performance;EquipmentCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">10,800.00</system:numericalValue>
+        <economic_performance:isCostOfPlantItem rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#10E01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10E02 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10E02"/>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10E02_EquipmentCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10E02_EquipmentCost">
+        <rdf:type rdf:resource="&economic_performance;EquipmentCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">15,100.00</system:numericalValue>
+        <economic_performance:isCostOfPlantItem rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#10E02"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10E03 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10E03"/>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10E03_EquipmnetCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10E03_EquipmnetCost">
+        <rdf:type rdf:resource="&economic_performance;EquipmentCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">10,900.00</system:numericalValue>
+        <economic_performance:isCostOfPlantItem rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#10E03"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10E04 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10E04"/>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10E04_EquipmentCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10E04_EquipmentCost">
+        <rdf:type rdf:resource="&economic_performance;EquipmentCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">12,800.00</system:numericalValue>
+        <economic_performance:isCostOfPlantItem rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#10E04"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10E05 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10E05"/>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10E05_EquipmnetCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10E05_EquipmnetCost">
+        <rdf:type rdf:resource="&economic_performance;EquipmentCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">15,400.00</system:numericalValue>
+        <economic_performance:isCostOfPlantItem rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#10E05"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10P01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10P01">
+        <rdf:type rdf:resource="&machine;Pump"/>
+        <hasPressureIncrease rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#deltaP_P01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10P01_EquipmentCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10P01_EquipmentCost">
+        <rdf:type rdf:resource="&economic_performance;EquipmentCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">4,600.00</system:numericalValue>
+        <economic_performance:isCostOfPlantItem rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#10P01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10d02 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10d02">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Flashing"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#T_D02"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10d02_EquipmentCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10d02_EquipmentCost">
+        <rdf:type rdf:resource="&economic_performance;EquipmentCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">29,100.00</system:numericalValue>
+        <economic_performance:isCostOfPlantItem rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#10d02"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10d02d -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10d02d">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Leaching"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#T_D02D"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10d02d_EquipmentCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10d02d_EquipmentCost">
+        <rdf:type rdf:resource="&economic_performance;EquipmentCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">28,300.00</system:numericalValue>
+        <economic_performance:isCostOfPlantItem rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#10d02d"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10d03 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10d03"/>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10d03_EquipmnetCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10d03_EquipmnetCost">
+        <rdf:type rdf:resource="&economic_performance;EquipmentCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">148,300.00</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10d03d -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10d03d"/>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10d03d_EquipmnetCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10d03d_EquipmnetCost">
+        <rdf:type rdf:resource="&economic_performance;EquipmentCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">28,200.00</system:numericalValue>
+        <economic_performance:isCostOfPlantItem rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#10d03d"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10d04 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10d04"/>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10d04_EquipmentCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10d04_EquipmentCost">
+        <rdf:type rdf:resource="&economic_performance;EquipmentCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">28,200.00</system:numericalValue>
+        <economic_performance:isCostOfPlantItem rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#10d04"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10d06 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10d06"/>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10d06_EquipmentCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10d06_EquipmentCost">
+        <rdf:type rdf:resource="&economic_performance;EquipmentCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">1,404,900</system:numericalValue>
+        <economic_performance:isCostOfPlantItem rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#10d06"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10d07 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10d07"/>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10d07_EquipmentCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10d07_EquipmentCost">
+        <rdf:type rdf:resource="&economic_performance;EquipmentCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">242,800.00</system:numericalValue>
+        <economic_performance:isCostOfPlantItem rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#10d07"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10d08 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10d08"/>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10d08_EquipmentCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10d08_EquipmentCost">
+        <rdf:type rdf:resource="&economic_performance;EquipmentCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">38,900.00</system:numericalValue>
+        <economic_performance:isCostOfPlantItem rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#10d08"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A01_MathM_FinalProduct_F -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A01_MathM_FinalProduct_F">
+        <rdf:type rdf:resource="&mathematical_model;Parameter"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A01_MathM_FinalProduct_F_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A01_MathM_FinalProduct_F_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A01_MathM_FinalProduct_F_V">
+        <rdf:type rdf:resource="&mathematical_model;ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">7.86297</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A01_MathM_FinalProduct_T -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A01_MathM_FinalProduct_T">
+        <rdf:type rdf:resource="&mathematical_model;Parameter"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A01_MathM_FinalProduct_T_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A01_MathM_FinalProduct_T_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A01_MathM_FinalProduct_T_V">
+        <rdf:type rdf:resource="&mathematical_model;ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">-0.76666</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A01_MathM_FinalProduct_y -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A01_MathM_FinalProduct_y">
+        <rdf:type rdf:resource="&mathematical_model;Parameter"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A01_MathM_FinalProduct_y_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A01_MathM_FinalProduct_y_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A01_MathM_FinalProduct_y_V">
+        <rdf:type rdf:resource="&mathematical_model;ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">-0.00526178</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A11_MathM_FinalProduct_F -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A11_MathM_FinalProduct_F">
+        <rdf:type rdf:resource="&mathematical_model;Parameter"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A11_MathM_FinalProduct_F_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A11_MathM_FinalProduct_F_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A11_MathM_FinalProduct_F_V">
+        <rdf:type rdf:resource="&mathematical_model;ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">0.014304</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A11_MathM_FinalProduct_T -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A11_MathM_FinalProduct_T">
+        <rdf:type rdf:resource="&mathematical_model;Parameter"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A11_MathM_FinalProduct_T_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A11_MathM_FinalProduct_T_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A11_MathM_FinalProduct_T_V">
+        <rdf:type rdf:resource="&mathematical_model;ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">-0.0013759</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A11_MathM_FinalProduct_y -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A11_MathM_FinalProduct_y">
+        <rdf:type rdf:resource="&mathematical_model;Parameter"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A11_MathM_FinalProduct_y_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A11_MathM_FinalProduct_y_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A11_MathM_FinalProduct_y_V">
+        <rdf:type rdf:resource="&mathematical_model;ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">-0.00000498529</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A21_MathM_FinalProduct_F -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A21_MathM_FinalProduct_F">
+        <rdf:type rdf:resource="&mathematical_model;Parameter"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A21_MathM_FinalProduct_F_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A21_MathM_FinalProduct_F_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A21_MathM_FinalProduct_F_V">
+        <rdf:type rdf:resource="&mathematical_model;ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">0.627999</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A21_MathM_FinalProduct_T -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A21_MathM_FinalProduct_T">
+        <rdf:type rdf:resource="&mathematical_model;Parameter"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A21_MathM_FinalProduct_T_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A21_MathM_FinalProduct_T_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A21_MathM_FinalProduct_T_V">
+        <rdf:type rdf:resource="&mathematical_model;ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">-0.0134586</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A21_MathM_FinalProduct_y -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A21_MathM_FinalProduct_y">
+        <rdf:type rdf:resource="&mathematical_model;Parameter"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A21_MathM_FinalProduct_y_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A21_MathM_FinalProduct_y_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A21_MathM_FinalProduct_y_V">
+        <rdf:type rdf:resource="&mathematical_model;ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">0.00376407</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A31_MathM_FinalProduct_F -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A31_MathM_FinalProduct_F">
+        <rdf:type rdf:resource="&mathematical_model;Parameter"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A31_MathM_FinalProduct_F_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A31_MathM_FinalProduct_F_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A31_MathM_FinalProduct_F_V">
+        <rdf:type rdf:resource="&mathematical_model;ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">0.0109493</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A31_MathM_FinalProduct_T -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A31_MathM_FinalProduct_T">
+        <rdf:type rdf:resource="&mathematical_model;Parameter"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A31_MathM_FinalProduct_T_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A31_MathM_FinalProduct_T_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A31_MathM_FinalProduct_T_V">
+        <rdf:type rdf:resource="&mathematical_model;ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">-0.00106773</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A31_MathM_FinalProduct_y -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A31_MathM_FinalProduct_y">
+        <rdf:type rdf:resource="&mathematical_model;Parameter"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A31_MathM_FinalProduct_y_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A31_MathM_FinalProduct_y_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A31_MathM_FinalProduct_y_V">
+        <rdf:type rdf:resource="&mathematical_model;ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">-0.00000959398</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A41_MathM_FinalProduct_F -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A41_MathM_FinalProduct_F">
+        <rdf:type rdf:resource="&mathematical_model;Parameter"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A41_MathM_FinalProduct_F_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A41_MathM_FinalProduct_F_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A41_MathM_FinalProduct_F_V">
+        <rdf:type rdf:resource="&mathematical_model;ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">0.0183763</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A41_MathM_FinalProduct_T -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A41_MathM_FinalProduct_T">
+        <rdf:type rdf:resource="&mathematical_model;Parameter"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A41_MathM_FinalProduct_T_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A41_MathM_FinalProduct_T_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A41_MathM_FinalProduct_T_V">
+        <rdf:type rdf:resource="&mathematical_model;ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">-0.0019239</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A41_MathM_FinalProduct_y -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A41_MathM_FinalProduct_y">
+        <rdf:type rdf:resource="&mathematical_model;Parameter"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A41_MathM_FinalProduct_y_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A41_MathM_FinalProduct_y_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A41_MathM_FinalProduct_y_V">
+        <rdf:type rdf:resource="&mathematical_model;ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">-0.00000768574</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A51_MathM_FinalProduct_F -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A51_MathM_FinalProduct_F">
+        <rdf:type rdf:resource="&mathematical_model;Parameter"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A51_MathM_FinalProduct_F_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A51_MathM_FinalProduct_F_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A51_MathM_FinalProduct_F_V">
+        <rdf:type rdf:resource="&mathematical_model;ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">-0.00559328</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A51_MathM_FinalProduct_T -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A51_MathM_FinalProduct_T">
+        <rdf:type rdf:resource="&mathematical_model;Parameter"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A51_MathM_FinalProduct_T_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A51_MathM_FinalProduct_T_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A51_MathM_FinalProduct_T_V">
+        <rdf:type rdf:resource="&mathematical_model;ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">0.000812114</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A51_MathM_FinalProduct_y -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A51_MathM_FinalProduct_y">
+        <rdf:type rdf:resource="&mathematical_model;Parameter"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A51_MathM_FinalProduct_y_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#A51_MathM_FinalProduct_y_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#A51_MathM_FinalProduct_y_V">
+        <rdf:type rdf:resource="&mathematical_model;ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">0.00000221848</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#BLOWER -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#BLOWER"/>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#BLOWER_EquipmentCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#BLOWER_EquipmentCost">
+        <rdf:type rdf:resource="&economic_performance;EquipmentCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">707,000.00</system:numericalValue>
+        <economic_performance:isCostOfPlantItem rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#BLOWER"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#BOILER -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#BOILER">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#ShellTubeApparatus"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#Boiling"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#BOILER_EquipmentCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#BOILER_EquipmentCost">
+        <rdf:type rdf:resource="&economic_performance;EquipmentCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">27,700.00</system:numericalValue>
+        <economic_performance:isCostOfPlantItem rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#BOILER"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#Boiling -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#Boiling">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#TemperatureChange"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#P_Boiling"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#COMBUST -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#COMBUST"/>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#COMBUST_EquipmentCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#COMBUST_EquipmentCost">
+        <rdf:type rdf:resource="&economic_performance;EquipmentCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">94,300.00</system:numericalValue>
+        <economic_performance:isCostOfPlantItem rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#COMBUST"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#C_MathM_FinalProduct_F -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#C_MathM_FinalProduct_F">
+        <rdf:type rdf:resource="&mathematical_model;Constant"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#C_MathM_FinalProduct_F_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#C_MathM_FinalProduct_F_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#C_MathM_FinalProduct_F_V">
+        <rdf:type rdf:resource="&mathematical_model;ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">86.5675</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol_per_hr"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#C_MathM_FinalProduct_T -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#C_MathM_FinalProduct_T">
+        <rdf:type rdf:resource="&mathematical_model;Constant"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#C_MathM_FinalProduct_T_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#C_MathM_FinalProduct_T_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#C_MathM_FinalProduct_T_V">
+        <rdf:type rdf:resource="&mathematical_model;ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">49.1223</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#C_MathM_FinalProduct_y -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#C_MathM_FinalProduct_y">
+        <rdf:type rdf:resource="&mathematical_model;Constant"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#C_MathM_FinalProduct_y_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#C_MathM_FinalProduct_y_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#C_MathM_FinalProduct_y_V">
+        <rdf:type rdf:resource="&mathematical_model;ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">0.977546</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#Contingencies -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#Contingencies">
+        <rdf:type rdf:resource="&economic_performance;NonManufacturingFixedCapitalInvestment"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">2,833,620.00</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#ContractFee -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#ContractFee">
+        <rdf:type rdf:resource="&economic_performance;NonManufacturingFixedCapitalInvestment"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">653,316.00</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#CoolingWaterCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#CoolingWaterCost">
+        <rdf:type rdf:resource="&economic_performance;UtilityCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">141,134.00</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#D01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#D01">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#StirredTank"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#R_D01"/>
+        <geometry:has_volume rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#V_D01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#D01_EquipmentCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#D01_EquipmentCost">
+        <rdf:type rdf:resource="&economic_performance;EquipmentCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">149,400.00</system:numericalValue>
+        <economic_performance:isCostOfPlantItem rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#D01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#ElectricityCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#ElectricityCost">
+        <rdf:type rdf:resource="&economic_performance;UtilityCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">194,794.00</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#F_MEOH -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#F_MEOH">
+        <rdf:type rdf:resource="&behavior;ConvectiveMassFlowrate"/>
+        <system:hasDimension rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/derived_dimensions.owl#mass_flowrate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#F_MEOH_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#F_MEOH_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#F_MEOH_V">
+        <rdf:type rdf:resource="&system;QuantitativeValue"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">5767.59</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_hr"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#F_OIL -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#F_OIL">
+        <rdf:type rdf:resource="&behavior;ConvectiveMassFlowrate"/>
+        <system:hasDimension rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/derived_dimensions.owl#mass_flowrate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#F_OIL_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#F_OIL_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#F_OIL_V">
+        <rdf:type rdf:resource="&system;QuantitativeValue"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">24220.1</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_hr"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#F_RE-WATER -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#F_RE-WATER">
+        <rdf:type rdf:resource="&behavior;ConvectiveMassFlowrate"/>
+        <system:hasDimension rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/derived_dimensions.owl#mass_flowrate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#F_RE-WATER_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#F_RE-WATER_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#F_RE-WATER_V">
+        <rdf:type rdf:resource="&system;QuantitativeValue"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">4199.99</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_hr"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#G&amp;ACost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#G&amp;ACost">
+        <rdf:type rdf:resource="&economic_performance;GeneralExpense"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">9,708,820.00</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#G&amp;AOverheads -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#G&amp;AOverheads">
+        <rdf:type rdf:resource="&economic_performance;NonManufacturingFixedCapitalInvestment"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">353,910.00</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#HRSG -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#HRSG"/>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#HRSG_EquipmentCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#HRSG_EquipmentCost">
+        <rdf:type rdf:resource="&economic_performance;EquipmentCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">46,400.00</system:numericalValue>
+        <economic_performance:isCostOfPlantItem rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#HRSG"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#HeatEX_02 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#HeatEX_02">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#TemperatureChange"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#T_E02_COLD_OUT"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#HeatEX_03 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#HeatEX_03">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#TemperatureChange"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#T_E03_COLD_OUT"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#InstrumentationCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#InstrumentationCost">
+        <rdf:type rdf:resource="&economic_performance;InstrumentationCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">1,795,160.00</system:numericalValue>
+    </owl:NamedIndividual>
     
 
 
@@ -73,6 +1022,112 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#MA_MEOH -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#MA_MEOH">
+        <rdf:type rdf:resource="&behavior;MaterialAmount"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#F_MEOH"/>
+        <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#METHANOL"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#MA_OIL -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#MA_OIL">
+        <rdf:type rdf:resource="&behavior;MaterialAmount"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#F_OIL"/>
+        <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#TRIPALMITIN"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#MA_RE-WATER -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#MA_RE-WATER">
+        <rdf:type rdf:resource="&behavior;MaterialAmount"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#F_RE-WATER"/>
+        <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#WATER"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#METHANOL -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#METHANOL">
+        <rdf:type rdf:resource="&material;Material"/>
+        <material:intrinsicCharacteristics rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#methanol"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#Maintenance&amp;RepairCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#Maintenance&amp;RepairCost">
+        <rdf:type rdf:resource="&economic_performance;Maintenance&amp;RepairCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">228,690.00</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#MathModel_FinalProduct_F -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#MathModel_FinalProduct_F">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/model/equation_system.owl#AlgebraicEquationSystem"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A01_MathM_FinalProduct_F"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A11_MathM_FinalProduct_F"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A21_MathM_FinalProduct_F"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A31_MathM_FinalProduct_F"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A41_MathM_FinalProduct_F"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#A51_MathM_FinalProduct_F"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#C_MathM_FinalProduct_F"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#MathModel_FinalProduct_T -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#MathModel_FinalProduct_T">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/model/equation_system.owl#AlgebraicEquationSystem"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#MathModel_FinalProduct_y -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#MathModel_FinalProduct_y">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/model/equation_system.owl#AlgebraicEquationSystem"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#OperatingCharges -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#OperatingCharges">
+        <rdf:type rdf:resource="&economic_performance;IndirectManufacturingCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">267,300.00</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#OperatingLaborCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#OperatingLaborCost">
+        <rdf:type rdf:resource="&economic_performance;OperatingLaborCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">792,000.00</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#OperatingSupervisionCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#OperatingSupervisionCost">
+        <rdf:type rdf:resource="&economic_performance;OperatingSupervisionCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">277,200.00</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant.owl#PUMP -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#PUMP">
@@ -80,6 +1135,93 @@
         <machine:hasOutletPressure rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#P_discharge_PUMP"/>
         <topology:isDirectlyConnectedTo rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#RE_WATER"/>
         <plant:hasEfficiency rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#efficiency_PUMP"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#pump"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#PUMP_EquipmentCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#PUMP_EquipmentCost">
+        <rdf:type rdf:resource="&economic_performance;EquipmentCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">3,800.00</system:numericalValue>
+        <economic_performance:isCostOfPlantItem rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#PUMP"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#P_Boiling -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#P_Boiling">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#P_Boiling_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#P_Boiling_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#P_Boiling_V">
+        <rdf:type rdf:resource="&system;QuantitativeValue"/>
+        <system:numericalValue rdf:datatype="&xsd;integer">400</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kPa"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#P_MEOH -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#P_MEOH">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#P_MEOH_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#P_MEOH_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#P_MEOH_V">
+        <rdf:type rdf:resource="&system;QuantitativeValue"/>
+        <system:numericalValue rdf:datatype="&xsd;integer">100</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kPa"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#P_OIL -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#P_OIL">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#P_OIL_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#P_OIL_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#P_OIL_V">
+        <rdf:type rdf:resource="&system;QuantitativeValue"/>
+        <system:numericalValue rdf:datatype="&xsd;integer">100</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kPa"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#P_RE-WATER -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#P_RE-WATER">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#P_RE-WATER_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#P_RE-WATER_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#P_RE-WATER_V">
+        <rdf:type rdf:resource="&system;QuantitativeValue"/>
+        <system:numericalValue rdf:datatype="&xsd;integer">100</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kPa"/>
     </owl:NamedIndividual>
     
 
@@ -104,12 +1246,290 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#PipingCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#PipingCost">
+        <rdf:type rdf:resource="&economic_performance;PipeCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">2,262,000.00</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#PlantOverhead -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#PlantOverhead">
+        <rdf:type rdf:resource="&economic_performance;IndirectManufacturingCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">648,945.00</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant.owl#RE_WATER -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#RE_WATER">
         <rdf:type rdf:resource="&plant;PipeSegment"/>
         <topology:isDirectlyConnectedTo rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#PUMP"/>
         <plant:hasConstructionMaterial rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#water"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#RM_MEOH -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#RM_MEOH">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#RawMaterial"/>
+        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#MA_MEOH"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#P_MEOH"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#T_MEOH"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#RM_OIL -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#RM_OIL">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#RawMaterial"/>
+        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#MA_OIL"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#P_OIL"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#T_OIL"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#RM_RE-WATER -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#RM_RE-WATER">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#RawMaterial"/>
+        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#MA_RE-WATER"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#P_RE-WATER"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#T_RE-WATER"/>
+        <topology:enters rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#pump"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#R_D01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#R_D01">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Reaction"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#T_D01"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#SteamCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#SteamCost">
+        <rdf:type rdf:resource="&economic_performance;UtilityCosts"/>
+        <system:numericalValue rdf:datatype="&xsd;decimal">1,787,679.00</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#TRIPALMITIN -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#TRIPALMITIN">
+        <rdf:type rdf:resource="&material;Material"/>
+        <material:intrinsicCharacteristics rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#tripalmitin"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#T_D01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#T_D01">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#T_D01_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#T_D01_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#T_D01_V">
+        <rdf:type rdf:resource="&system;QuantitativeValue"/>
+        <system:numericalValue rdf:datatype="&xsd;integer">60</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#T_D02 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#T_D02">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#T_D02_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#T_D02D -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#T_D02D">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#T_D02D_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#T_D02D_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#T_D02D_V">
+        <rdf:type rdf:resource="&system;QuantitativeValue"/>
+        <system:numericalValue rdf:datatype="&xsd;integer">30</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#T_D02_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#T_D02_V">
+        <rdf:type rdf:resource="&system;QuantitativeValue"/>
+        <system:numericalValue rdf:datatype="&xsd;integer">90</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#T_E01_COLD_OUT -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#T_E01_COLD_OUT">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#T_E01_COLD_OUT_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#T_E01_COLD_OUT_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#T_E01_COLD_OUT_V">
+        <rdf:type rdf:resource="&system;QuantitativeValue"/>
+        <system:numericalValue rdf:datatype="&xsd;integer">70</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#T_E02_COLD_OUT -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#T_E02_COLD_OUT">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#T_E02_COLD_OUT_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#T_E02_COLD_OUT_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#T_E02_COLD_OUT_V">
+        <rdf:type rdf:resource="&system;QuantitativeValue"/>
+        <system:numericalValue rdf:datatype="&xsd;integer">90</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#T_E03_COLD_OUT -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#T_E03_COLD_OUT">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#T_E03_COLD_OUT_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#T_E03_COLD_OUT_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#T_E03_COLD_OUT_V">
+        <rdf:type rdf:resource="&system;QuantitativeValue"/>
+        <system:numericalValue rdf:datatype="&xsd;integer">70</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#T_MEOH -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#T_MEOH">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#T_MEOH_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#T_MEOH_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#T_MEOH_V">
+        <rdf:type rdf:resource="&system;QuantitativeValue"/>
+        <system:numericalValue rdf:datatype="&xsd;integer">30</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#T_OIL -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#T_OIL">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#T_OIL_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#T_OIL_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#T_OIL_V">
+        <rdf:type rdf:resource="&system;QuantitativeValue"/>
+        <system:numericalValue rdf:datatype="&xsd;integer">30</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#T_RE-WATER -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#T_RE-WATER">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#T_RE-WATER_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#T_RE-WATER_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#T_RE-WATER_V">
+        <rdf:type rdf:resource="&system;QuantitativeValue"/>
+        <system:numericalValue rdf:datatype="&xsd;integer">30</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#V_D01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#V_D01">
+        <rdf:type rdf:resource="&geometry;Volume"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#V_D01_V"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#V_D01_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#V_D01_V">
+        <rdf:type rdf:resource="&system;QuantitativeValue"/>
+        <system:numericalValue rdf:datatype="&xsd;integer">46</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#m.m.m"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#WATER -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#WATER">
+        <rdf:type rdf:resource="&material;Material"/>
+        <material:intrinsicCharacteristics rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#water"/>
     </owl:NamedIndividual>
     
 
@@ -175,6 +1595,15 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#glycerol">
         <rdf:type rdf:resource="&substance;ChemicalSpecies"/>
         <substance:molecularFormula>C3H8O3</substance:molecularFormula>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#heatEX_01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#heatEX_01">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#TemperatureChange"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#T_E01_COLD_OUT"/>
     </owl:NamedIndividual>
     
 
@@ -260,6 +1689,15 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#pump -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#pump">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#PressureChangeOfLiquid"/>
+        <topology:hasInput rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#RM_RE-WATER"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant.owl#tripalmitin -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#tripalmitin">
@@ -278,15 +1716,86 @@
     
 
 
-    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#10P01 -->
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#x0_MathM_F_OIL -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#10P01">
-        <rdf:type rdf:resource="&machine;Pump"/>
-        <hasPressureIncrease rdf:resource="http://www.jparksimulator.com/BiodieselPlant.owl#deltaP_P01"/>
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#x0_MathM_F_OIL">
+        <rdf:type rdf:resource="&mathematical_model;StateVariable"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#x0_MathM_F_OIL_V -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#x0_MathM_F_OIL_V">
+        <rdf:type rdf:resource="&mathematical_model;ModelVariableSpecification"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#x1_MathM_T_OIL -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#x1_MathM_T_OIL">
+        <rdf:type rdf:resource="&mathematical_model;StateVariable"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#x2_MathM_F_MEOH -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#x2_MathM_F_MEOH">
+        <rdf:type rdf:resource="&mathematical_model;StateVariable"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#x3_MathM_T_MEOH -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#x3_MathM_T_MEOH">
+        <rdf:type rdf:resource="&mathematical_model;StateVariable"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#x4_MathM_F_RE-WATER -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#x4_MathM_F_RE-WATER">
+        <rdf:type rdf:resource="&mathematical_model;StateVariable"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#x5_MathM_T_BOILER -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#x5_MathM_T_BOILER">
+        <rdf:type rdf:resource="&mathematical_model;StateVariable"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#y_MathM_FinalProduct_F -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#y_MathM_FinalProduct_F">
+        <rdf:type rdf:resource="&mathematical_model;StateVariable"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#y_MathM_FinalProduct_T -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#y_MathM_FinalProduct_T">
+        <rdf:type rdf:resource="&mathematical_model;StateVariable"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant.owl#y_MathM_FinalProduct_y -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant.owl#y_MathM_FinalProduct_y">
+        <rdf:type rdf:resource="&mathematical_model;StateVariable"/>
     </owl:NamedIndividual>
 </rdf:RDF>
 
 
 
-<!-- Generated by the OWL API (version 3.5.1) http://owlapi.sourceforge.net -->
+<!-- Generated by the OWL API (version 3.4.2) http://owlapi.sourceforge.net -->
 
