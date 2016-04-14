@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
-    <uri id="User Entered Import Resolution" name="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl" uri="BiodieselPlant.owl"/>
     <uri id="Imports Wizard Entry" name="http://www.jparksimulator.com/derived_SI_units_extended.owl" uri="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units_extended.owl"/>
     <group id="Folder Repository, directory=, recursive=true, Auto-Update=true, version=2" prefer="public" xml:base="">
-        <uri id="Automatically generated entry, Timestamp=1458177342790" name="http://www.jparksimulator.com/BiodieselPlant.owl" uri="BiodieselPlant.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1458177917796" name="http://www.jparksimulator.com/BiodieselPlant.owl" uri="BiodieselPlant.owl"/>
     </group>
 </catalog>
