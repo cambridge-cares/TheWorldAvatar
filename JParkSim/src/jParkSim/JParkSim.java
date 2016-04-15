@@ -516,7 +516,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     lblLayer2.setAlignmentX(Component.LEFT_ALIGNMENT);
         
     //other combo box
-    final JComboBox<String> querylayer = new JComboBox<>(totallayer);
+    final JComboBox<String> querylayer = new JComboBox<>(editlayer.keySet().toArray(new String[0]));
     querylayer.setAlignmentX(Component.LEFT_ALIGNMENT);
     querylayer.setMaximumSize(new Dimension(220, 25));
     
