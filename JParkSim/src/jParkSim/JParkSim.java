@@ -50,6 +50,7 @@ import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 
 import com.esri.core.geometry.Envelope;
+import com.esri.core.geometry.MultiPoint;
 import com.esri.core.geometry.Point;
 import com.esri.core.io.EsriSecurityException;
 import com.esri.core.io.UserCredentials;
@@ -69,6 +70,7 @@ import com.esri.core.tasks.query.QueryTask;
 import com.esri.map.ArcGISDynamicMapServiceLayer;
 import com.esri.map.ArcGISFeatureLayer;
 import com.esri.map.ArcGISTiledMapServiceLayer;
+import com.esri.map.GraphicsLayer;
 import com.esri.map.GroupLayer;
 import com.esri.map.JMap;
 import com.esri.map.Layer;
@@ -89,6 +91,8 @@ import com.esri.toolkit.overlays.HitTestListener;
 import com.esri.toolkit.overlays.HitTestOverlay;
 import com.esri.toolkit.overlays.InfoPopupOverlay;
 import com.esri.core.symbol.PictureMarkerSymbol;
+
+
 
 
 import java.awt.image.BufferedImage;
@@ -153,10 +157,35 @@ public class JParkSim {
 	private JFrame window;
 	private JMap map;
 	//try to put new variable
-	private JMap map2;
 	
+	private GraphicsLayer graphicsLayer;
+	private void addGraphics(GraphicsLayer gLayer) {
+    
+
+    MultiPoint planes = new MultiPoint();
+    PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol(
+        "http://static.arcgis.com/images/Symbols/Basic/RedShinyPin.png");
+    planeSymbol.setSize(50, 50);
+    //pump for biodiesel
+    Point plane1 = new Point(11541447.629, 140110.305);
+    planes.add(plane1);
+    Point plane2 = new Point(11541461.652, 140132.107);
+    planes.add(plane2);
+    Point plane3 = new Point(11541426.198, 140129.461);
+    planes.add(plane3);
+    Point plane4 = new Point(11541440.115, 140152.692);
+    planes.add(plane4);
+   
+    Graphic gPlanes = new Graphic(planes, planeSymbol);
+    gLayer.addGraphic(gPlanes);
+
+    
+  }
+	 private final String[] totallayer = { "pump", "reactor", "compressor", "Radfrac",
+		      "extractor", "heat exchanger", "heater/cooler" };
 		
-	private HashMap<String, String> idMap;
+	//if want to add new map
+	 private HashMap<String, String> idMap;
 	  private JComboBox<String> mapIds;
 	  private Portal arcgisPortal = new Portal("https://www.arcgis.com", null);
 	  
@@ -248,11 +277,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
             "http://localhost:6080/arcgis/rest/services/emission/MapServer");
                 layers.add(emissionLayer);
     
-    ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
-            "http://localhost:6080/arcgis/rest/services/emission/MapServer");
-                layers.add(emissionLayer);
-    
-    
+        
     // map centered on Jurong Island
     Point mapCenter = new Point(11543665,141400);
     map.setExtent(new Envelope(mapCenter,7200,5400));
@@ -393,7 +418,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 	// create panel to select layer to edit
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    panel.setSize(220, 80);
+    panel.setSize(220, 175);
     panel.setLocation(260, 10); // located near top left next to legend
     
     // command to switch the map 22/3/2016
@@ -485,6 +510,26 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     cbxLayer.setMaximumSize(new Dimension(220, 25));
     cbxLayer.setAlignmentX(Component.LEFT_ALIGNMENT);
     
+ // create text
+    JLabel lblLayer2 = new JLabel("feature list to query:");
+    lblLayer2.setForeground(Color.WHITE);
+    lblLayer2.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+    //other combo box
+    final JComboBox<String> querylayer = new JComboBox<>(totallayer);
+    querylayer.setAlignmentX(Component.LEFT_ALIGNMENT);
+    querylayer.setMaximumSize(new Dimension(220, 25));
+    
+ // create text
+    JTextArea description3 = new JTextArea("press refresh to delete pin point marking");
+    description3.setFont(new Font("Verdana", Font.PLAIN, 11));
+    description3.setForeground(Color.WHITE);
+    description3.setBackground(new Color(0, 0, 0, 0));
+    description3.setEditable(false);
+    description3.setLineWrap(true);
+    description3.setWrapStyleWord(true);
+    description3.setAlignmentX(Component.LEFT_ALIGNMENT);
+    
     
     ArrayList<String[]> editStack = new ArrayList<String[]>();									// create a stack of edited features for PowerWorld to execute on
 //	ArrayList<String[]> editStackDataset = new ArrayList<String[]>(); 							// (mjk, 151110) initialise a new variable to capture the field attributes directly from the popup window.
@@ -523,7 +568,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     		            	  System.out.println("newFeature[0]=" + newFeature[0] + ", newFeature[1]=" + newFeature[1] + ", newFeature[2]=" + newFeature[2]); //ZL-151209
 double y= Double.parseDouble(newFeature[2]);
 double z=2*y;
-System.out.println("new function=" +z);
+//System.out.println("new function=" +z);
     		            	  //    		            	  System.out.println("paramFeature[0]=" + paramFeature[0] + ", paramFeature[1]" + paramFeature[1]);
     		            	  
     		            	  //try to expand new button
@@ -1308,12 +1353,31 @@ change.setLocation(890, 45);
     			layer.requery();
     			layer.refresh();
     		}
+    		layers.remove(graphicsLayer);
     	}
     });
     refreshButton.setEnabled(true);
     refreshButton.setVisible(true);
     refreshButton.setSize(130,30);
     refreshButton.setLocation(1090, 10);
+    
+  //button for query (15-04-2016))
+    final JButton queryButton = new JButton("Query Features");
+    queryButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+    queryButton.setEnabled(true);
+    queryButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+    	
+    	    graphicsLayer = new GraphicsLayer();
+    	    graphicsLayer.setName("simple graphics");
+    	    layers.remove(graphicsLayer);
+    	    addGraphics(graphicsLayer);
+    	    layers.add(graphicsLayer);
+      }
+    });
+    queryButton.setSize(130, 30);
+    queryButton.setLocation(1090, 45);
 
     
     // combine text, label and dropdown list into one panel for selecting layer to edit
@@ -1323,6 +1387,12 @@ change.setLocation(890, 45);
     panel.add(lblLayer);
     panel.add(Box.createRigidArea(new Dimension(0, 5)));
     panel.add(cbxLayer);
+    panel.add(Box.createRigidArea(new Dimension(0, 5)));
+    panel.add(lblLayer2);
+    panel.add(Box.createRigidArea(new Dimension(0, 5)));
+    panel.add(querylayer);
+    panel.add(Box.createRigidArea(new Dimension(0, 5)));
+    panel.add(description3);
     panel.add(Box.createRigidArea(new Dimension(0, 5)));
     panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
     
@@ -1349,6 +1419,7 @@ change.setLocation(890, 45);
     contentPane.add(panel);
     contentPane.add(PrAPPWButton);
     contentPane.add(PrAPOButton);
+    contentPane.add(queryButton);
     contentPane.add(map, BorderLayout.CENTER);
     contentPane.add(legend, BorderLayout.WEST);
     
