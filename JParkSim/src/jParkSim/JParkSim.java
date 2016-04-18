@@ -30,6 +30,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -49,23 +50,33 @@ import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 
 import com.esri.core.geometry.Envelope;
+import com.esri.core.geometry.MultiPoint;
 import com.esri.core.geometry.Point;
 import com.esri.core.io.EsriSecurityException;
 import com.esri.core.io.UserCredentials;
 import com.esri.core.map.Feature;
 import com.esri.core.map.FeatureResult;
 import com.esri.core.map.Graphic;
+import com.esri.core.portal.Portal;
+import com.esri.core.portal.WebMap;
 import com.esri.core.renderer.SimpleRenderer;
+import com.esri.core.symbol.PictureFillSymbol;
 import com.esri.core.symbol.SimpleFillSymbol;
 import com.esri.core.symbol.SimpleLineSymbol;
 import com.esri.core.symbol.SimpleMarkerSymbol;
 import com.esri.core.symbol.SimpleMarkerSymbol.Style;
 import com.esri.core.symbol.Symbol;
 import com.esri.core.tasks.query.QueryTask;
+import com.esri.map.ArcGISDynamicMapServiceLayer;
 import com.esri.map.ArcGISFeatureLayer;
 import com.esri.map.ArcGISTiledMapServiceLayer;
+import com.esri.map.GraphicsLayer;
+import com.esri.map.GroupLayer;
 import com.esri.map.JMap;
+import com.esri.map.Layer;
+import com.esri.map.LayerEvent;
 import com.esri.map.LayerList;
+import com.esri.map.LayerListEventListenerAdapter;
 import com.esri.map.MapEvent;
 import com.esri.map.MapEventListenerAdapter;
 import com.esri.map.popup.PopupDialog;
@@ -78,52 +89,109 @@ import com.esri.toolkit.legend.JLegend;
 import com.esri.toolkit.overlays.HitTestEvent;
 import com.esri.toolkit.overlays.HitTestListener;
 import com.esri.toolkit.overlays.HitTestOverlay;
+import com.esri.toolkit.overlays.InfoPopupOverlay;
+import com.esri.core.symbol.PictureMarkerSymbol;
+
+
+
+
+import java.awt.image.BufferedImage;
 
 public class JParkSim {
+	
 	
 	// style of different layers
 		final static SimpleFillSymbol Landlotscolor = new SimpleFillSymbol(Color.cyan, new SimpleLineSymbol(Color.cyan, 1), SimpleFillSymbol.Style.NULL);
 		final static SimpleFillSymbol Buildingscolor = new SimpleFillSymbol(Color.orange);
 		final static SimpleFillSymbol Storagecolor = new SimpleFillSymbol(new Color(139,69,19));
-		final static SimpleLineSymbol TLPmaincolor = new SimpleLineSymbol(Color.pink,3);
 		final static SimpleFillSymbol Roadcolor = new SimpleFillSymbol(Color.gray);
 		// power grid
 		final static SimpleFillSymbol PowerGencolor = new SimpleFillSymbol(Color.red);
 		final static SimpleLineSymbol UHTLinescolor = new SimpleLineSymbol(Color.green, 3);
 		final static SimpleMarkerSymbol UHTSubstationcolor = new SimpleMarkerSymbol(Color.red, 20, Style.CROSS);
 		final static SimpleLineSymbol EHTLinescolor = new SimpleLineSymbol(new Color(204,204,0), 3);
-		final static SimpleMarkerSymbol EHTSubstationcolor = new SimpleMarkerSymbol(Color.blue, 20, Style.CIRCLE);
+		final static SimpleMarkerSymbol EHTSubstationcolor = new SimpleMarkerSymbol(Color.blue, 20, Style.X);
 		final static SimpleLineSymbol HTLinescolor = new SimpleLineSymbol(new Color(0,100,0), 3);
+		final static SimpleMarkerSymbol HTSubstation1color = new SimpleMarkerSymbol(Color.green, 15, Style.CIRCLE);
+		final static SimpleMarkerSymbol HTSubstation2color = new SimpleMarkerSymbol(Color.black, 15, Style.CIRCLE);
+		final static SimpleMarkerSymbol LTSubstation1color = new SimpleMarkerSymbol(Color.cyan, 15, Style.SQUARE);
+		final static SimpleMarkerSymbol LTSubstation2color = new SimpleMarkerSymbol(Color.gray, 15, Style.SQUARE);
 		final static SimpleMarkerSymbol LoadPointscolor = new SimpleMarkerSymbol(new Color(127,0,255), 10, Style.DIAMOND);
 		final static SimpleMarkerSymbol BusCouplercolor = new SimpleMarkerSymbol(Color.magenta, 10, Style.TRIANGLE);
+		final static SimpleLineSymbol TLPmaincolor = new SimpleLineSymbol(Color.pink,3);
+		final static SimpleLineSymbol TLP2color = new SimpleLineSymbol(new Color(124,252,0), 3);
+		final static SimpleLineSymbol TLP3color = new SimpleLineSymbol(Color.magenta, 3);
+		final static SimpleLineSymbol TLP4color = new SimpleLineSymbol(new Color(153,51,255), 3);
+		final static SimpleLineSymbol TLP2acolor = new SimpleLineSymbol(new Color(0,128,128), 3);
+		
 		// chemical plant
 		
 		final static SimpleFillSymbol PlantReactorcolor = new SimpleFillSymbol(Color.pink);
 		final static SimpleFillSymbol Decantercolor = new SimpleFillSymbol(Color.cyan);
 		final static SimpleFillSymbol Extractorcolor = new SimpleFillSymbol(new Color(225,134,225));
 		final static SimpleFillSymbol FlashDrumcolor = new SimpleFillSymbol(Color.gray);
-		final static SimpleFillSymbol Mixercolor = new SimpleFillSymbol(new Color(225,225,20));
+		final static SimpleFillSymbol Mixercolor = new SimpleFillSymbol(Color.blue);
 		final static SimpleFillSymbol RadFraccolor = new SimpleFillSymbol(new Color(0,150,30));
 		final static SimpleFillSymbol heatercoolercolor = new SimpleFillSymbol(Color.red);
 		final static SimpleLineSymbol GasLinecolor = new SimpleLineSymbol(Color.black, 3);
+		final static SimpleLineSymbol Fluidcolor = new SimpleLineSymbol(new Color(218,165,32), 3);
 		final static SimpleLineSymbol AirLinecolor = new SimpleLineSymbol(new Color(200,100,0), 3);
 		final static SimpleLineSymbol EnergyStreamcolor = new SimpleLineSymbol(new Color(250,0,250), 3);
 		final static SimpleLineSymbol MaterialLinecolor = new SimpleLineSymbol(Color.red, 3);
 		final static SimpleLineSymbol WaterLinecolor = new SimpleLineSymbol(Color.blue, 3);
-		final static SimpleLineSymbol TLP2color = new SimpleLineSymbol(Color.orange, 3);
-		final static SimpleLineSymbol TLP3color = new SimpleLineSymbol(Color.magenta, 3);
 		final static SimpleFillSymbol Exchangercolor = new SimpleFillSymbol(new Color(100,100,30));
 		final static SimpleFillSymbol pumpcolor = new SimpleFillSymbol(new Color(200,100,30));
 		final static SimpleFillSymbol blowercolor = new SimpleFillSymbol(new Color(100,50,30));
 		final static SimpleFillSymbol valvecolor = new SimpleFillSymbol(new Color(40,130,30));
 		final static SimpleFillSymbol splittercolor = new SimpleFillSymbol(new Color(130,20,89));
+		final static SimpleFillSymbol vesselcolor = new SimpleFillSymbol(Color.magenta);
+		final static SimpleFillSymbol filtercolor = new SimpleFillSymbol(new Color(204,255,153));
+		final static SimpleFillSymbol expandercolor = new SimpleFillSymbol(new Color(219,112,147));
+		final static SimpleFillSymbol compressorcolor = new SimpleFillSymbol(Color.white);
+		final static SimpleLineSymbol steamcolor = new SimpleLineSymbol(Color.orange, 3);
 		
-	
+		
+		
+		
 	
 	private JFrame window;
 	private JMap map;
+	//try to put new variable
+	
+	private GraphicsLayer graphicsLayer;
+	private void addGraphics(GraphicsLayer gLayer) {
+    
+
+    MultiPoint planes = new MultiPoint();
+    PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol(
+        "http://static.arcgis.com/images/Symbols/Basic/RedShinyPin.png");
+    planeSymbol.setSize(50, 50);
+    //pump for biodiesel
+    Point plane1 = new Point(11541447.629, 140110.305);
+    planes.add(plane1);
+    Point plane2 = new Point(11541461.652, 140132.107);
+    planes.add(plane2);
+    Point plane3 = new Point(11541426.198, 140129.461);
+    planes.add(plane3);
+    Point plane4 = new Point(11541440.115, 140152.692);
+    planes.add(plane4);
+   
+    Graphic gPlanes = new Graphic(planes, planeSymbol);
+    gLayer.addGraphic(gPlanes);
+
+    
+  }
+	 private final String[] totallayer = { "pump", "reactor", "compressor", "Radfrac",
+		      "extractor", "heat exchanger", "heater/cooler" };
+		
+	//if want to add new map
+	 private HashMap<String, String> idMap;
+	  private JComboBox<String> mapIds;
+	  private Portal arcgisPortal = new Portal("https://www.arcgis.com", null);
+	  
 //	private JLayerTree jLayerTree;  //ZL-151207 add layertree
 	public static JLayeredPane contentPane;
+		
 	// initialize layers
 	public static ArcGISFeatureLayer Landlotslayer;
 	public static ArcGISFeatureLayer Buildingslayer;
@@ -136,6 +204,10 @@ public class JParkSim {
 	public static ArcGISFeatureLayer EHTLineslayer;  
 	public static ArcGISFeatureLayer EHTSubstationlayer;   
 	public static ArcGISFeatureLayer HTLineslayer;
+	public static ArcGISFeatureLayer HTSubstation1layer; 
+	public static ArcGISFeatureLayer HTSubstation2layer;
+	public static ArcGISFeatureLayer LTSubstation1layer;
+	public static ArcGISFeatureLayer LTSubstation2layer;
 	public static ArcGISFeatureLayer LoadPointslayer;
 	public static ArcGISFeatureLayer BusCouplerlayer;
 	
@@ -148,16 +220,27 @@ public class JParkSim {
 	public static ArcGISFeatureLayer heatercoolerlayer;
 	public static ArcGISFeatureLayer GasLinelayer;
 	public static ArcGISFeatureLayer AirLinelayer;
+	public static ArcGISFeatureLayer Fluidlayer;
 	public static ArcGISFeatureLayer EnergyStreamlayer;
 	public static ArcGISFeatureLayer MaterialLinelayer;
 	public static ArcGISFeatureLayer WaterLinelayer;
 	public static ArcGISFeatureLayer TLP2layer;
 	public static ArcGISFeatureLayer TLP3layer;
+	public static ArcGISFeatureLayer TLP2alayer;
+	public static ArcGISFeatureLayer TLP4layer;
 	public static ArcGISFeatureLayer Exchangerlayer;
 	public static ArcGISFeatureLayer pumplayer;
 	public static ArcGISFeatureLayer blowerlayer;
 	public static ArcGISFeatureLayer valvelayer;
 	public static ArcGISFeatureLayer splitterlayer;
+	public static ArcGISFeatureLayer vessellayer;
+	public static ArcGISFeatureLayer filterlayer;
+	public static ArcGISFeatureLayer expanderlayer;
+	public static ArcGISFeatureLayer compressorlayer;
+	public static ArcGISFeatureLayer steamlayer;
+		
+	
+	
 	
  	public static String httpStringCSV = new String("D:/httpReq.CSV"); // (mjk, 151115) investigating structure of DataOutputStream object
  	public static String httpStringCSV1 = new String("D:/httpReq1.CSV"); // (ZL-151203) investigating structure of DataOutputStream object
@@ -171,14 +254,30 @@ public class JParkSim {
 		}
 	}
 	
+	//add link for webmap graph
+	Portal portal = new Portal("http://www.arcgis.com",null);
+	  // item ID of a public map on arcgis.com with charts
+	  final String MAP_ID = "f809dccb780a4af0a506e56aaa84d084";
+	  
+	  
+	
   public JParkSim() {
+	  
+	  
 	  
     // empty JMap constructor and add a tiled basemap layer
     map = new JMap();
     final LayerList layers = map.getLayers(); // object storing all the map layers (NOT AN ARRAY - use completelayerlist instead)
     ArcGISTiledMapServiceLayer tiledLayer = new ArcGISTiledMapServiceLayer("http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer");
     layers.add(tiledLayer); // add basemap layer
+
+
+// layer for the emission
+ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
+            "http://localhost:6080/arcgis/rest/services/emission/MapServer");
+                layers.add(emissionLayer);
     
+        
     // map centered on Jurong Island
     Point mapCenter = new Point(11543665,141400);
     map.setExtent(new Envelope(mapCenter,7200,5400));
@@ -194,7 +293,7 @@ public class JParkSim {
     user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp"); // Access secure feature layer service using login username and password
     Landlotslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Landlots/FeatureServer/0", user);
     Buildingslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Building/FeatureServer/0", user);
-    Storagelayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Storage/FeatureServer/0", user);
+    Storagelayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Storage/FeatureServer/0", user);
     TLPmainlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TLPlantmain/FeatureServer/0", user);
     Roadlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/road/FeatureServer/0", user);
     PowerGenlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Generators/FeatureServer/0", user);
@@ -203,16 +302,24 @@ public class JParkSim {
     EHTLineslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/EHT_Lines/FeatureServer/0", user);
     EHTSubstationlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/EHT_substation/FeatureServer/0", user);   
     HTLineslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/HTLines/FeatureServer/0", user);
+    HTSubstation1layer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/HTSubstation_22to11/FeatureServer/0", user);
+    HTSubstation2layer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/HTSubstation_22to3_4/FeatureServer/0", user);
+    LTSubstation1layer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/LTSubstation_3_4to3/FeatureServer/0", user);
+    LTSubstation2layer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/LTSubstation_3to0_4/FeatureServer/0", user);
+    
     LoadPointslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Load_points/FeatureServer/0", user);
     BusCouplerlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/bus_couplers/FeatureServer/0", user);
+    Fluidlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Working_Fluid/FeatureServer/0", user);
     heatercoolerlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/heater_cooler/FeatureServer/0", user);
     GasLinelayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Gas_line/FeatureServer/0", user);
     AirLinelayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/airline/FeatureServer/0", user);
-    EnergyStreamlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Energy_stream/FeatureServer/0", user);
+    EnergyStreamlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/EnergyStream/FeatureServer/0", user);
     MaterialLinelayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Material_line/FeatureServer/0", user);
     WaterLinelayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/water_line/FeatureServer/0", user);
     TLP2layer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/TLPlant2/FeatureServer/0", user);
     TLP3layer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TLPlant3/FeatureServer/0", user);
+    TLP2alayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TLPlant2a/FeatureServer/0", user);
+    TLP4layer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/TLPlant4/FeatureServer/0", user);
     PlantReactorlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Reactor/FeatureServer/0", user);
     Decanterlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Decanter/FeatureServer/0",user);
     Extractorlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Extractor/FeatureServer/0", user);
@@ -224,18 +331,26 @@ public class JParkSim {
     blowerlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/blower/FeatureServer/0", user);
     valvelayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/valve/FeatureServer/0", user);
     splitterlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/splitter/FeatureServer/0", user);
-	// UPDATE THIS LIST whenever new layers are added: first layer is the bottom most layer *see currently known issues #3
+    vessellayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/vessel/FeatureServer/0", user);
+    filterlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Filter/FeatureServer/0", user);
+    expanderlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/expander/FeatureServer/0", user);
+    compressorlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/compressor/FeatureServer/0", user);
+    steamlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/steam_interplants/FeatureServer/0", user);
+        
+    
+    // UPDATE THIS LIST whenever new layers are added: first layer is the bottom most layer *see currently known issues #3
     
 	ArcGISFeatureLayer[] completeLayerList = {Landlotslayer, Buildingslayer, Storagelayer, TLPmainlayer, Roadlayer, PowerGenlayer, UHTLineslayer, UHTSubstationlayer,
-			EHTLineslayer, EHTSubstationlayer, HTLineslayer, LoadPointslayer, BusCouplerlayer, heatercoolerlayer,
-			GasLinelayer,AirLinelayer,EnergyStreamlayer,MaterialLinelayer,TLP2layer,TLP3layer,WaterLinelayer,PlantReactorlayer,Decanterlayer,Extractorlayer,
-			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer};
+			EHTLineslayer, EHTSubstationlayer, HTLineslayer,HTSubstation1layer,HTSubstation2layer,LTSubstation1layer,LTSubstation2layer, LoadPointslayer, BusCouplerlayer, heatercoolerlayer,
+			GasLinelayer,AirLinelayer,EnergyStreamlayer,MaterialLinelayer,TLP2layer,TLP3layer,TLP2alayer,TLP4layer,WaterLinelayer,PlantReactorlayer,Decanterlayer,Extractorlayer,
+			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer,vessellayer,filterlayer,Fluidlayer,expanderlayer,compressorlayer,steamlayer};
 
+	
     // render layers
-	createRenderer(layers, new ArcGISFeatureLayer [] {Landlotslayer}, Landlotscolor);
+	
+    createRenderer(layers, new ArcGISFeatureLayer [] {Landlotslayer}, Landlotscolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Buildingslayer}, Buildingscolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Storagelayer}, Storagecolor);
-    createRenderer(layers, new ArcGISFeatureLayer [] {TLPmainlayer}, TLPmaincolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Roadlayer}, Roadcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {PowerGenlayer}, PowerGencolor);   
     createRenderer(layers, new ArcGISFeatureLayer [] {UHTLineslayer}, UHTLinescolor);
@@ -243,6 +358,15 @@ public class JParkSim {
     createRenderer(layers, new ArcGISFeatureLayer [] {EHTLineslayer}, EHTLinescolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {EHTSubstationlayer}, EHTSubstationcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {HTLineslayer}, HTLinescolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {HTSubstation1layer}, HTSubstation1color);
+    createRenderer(layers, new ArcGISFeatureLayer [] {HTSubstation2layer}, HTSubstation2color);
+    createRenderer(layers, new ArcGISFeatureLayer [] {TLPmainlayer}, TLPmaincolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {TLP2layer}, TLP2color);
+    createRenderer(layers, new ArcGISFeatureLayer [] {TLP3layer}, TLP3color);
+    createRenderer(layers, new ArcGISFeatureLayer [] {TLP2alayer}, TLP2acolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {TLP4layer}, TLP4color);
+    createRenderer(layers, new ArcGISFeatureLayer [] {LTSubstation1layer}, LTSubstation1color);
+    createRenderer(layers, new ArcGISFeatureLayer [] {LTSubstation2layer}, LTSubstation2color);
     createRenderer(layers, new ArcGISFeatureLayer [] {LoadPointslayer}, LoadPointscolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {BusCouplerlayer}, BusCouplercolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {heatercoolerlayer}, heatercoolercolor);
@@ -251,8 +375,6 @@ public class JParkSim {
     createRenderer(layers, new ArcGISFeatureLayer [] {EnergyStreamlayer}, EnergyStreamcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {MaterialLinelayer}, MaterialLinecolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {WaterLinelayer}, WaterLinecolor);
-    createRenderer(layers, new ArcGISFeatureLayer [] {TLP2layer}, TLP2color);
-    createRenderer(layers, new ArcGISFeatureLayer [] {TLP3layer}, TLP3color);
     createRenderer(layers, new ArcGISFeatureLayer [] {PlantReactorlayer}, PlantReactorcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Decanterlayer}, Decantercolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Extractorlayer}, Extractorcolor);
@@ -264,7 +386,28 @@ public class JParkSim {
     createRenderer(layers, new ArcGISFeatureLayer [] {blowerlayer}, blowercolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {valvelayer}, valvecolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {splitterlayer}, splittercolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {vessellayer}, vesselcolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {filterlayer}, filtercolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {Fluidlayer}, Fluidcolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {expanderlayer}, expandercolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {compressorlayer}, compressorcolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {steamlayer}, steamcolor);
     
+    
+    //map.getLayers().add(graphlayer);
+  //try to add some graphs
+    
+    
+    ArcGISDynamicMapServiceLayer highwayLayer = new ArcGISDynamicMapServiceLayer(
+            "http://localhost:6080/arcgis/rest/services/opex/MapServer");
+                layers.add(highwayLayer);
+          
+
+                ArcGISDynamicMapServiceLayer sensitivityLayer = new ArcGISDynamicMapServiceLayer(
+                        "http://localhost:6080/arcgis/rest/services/sensitivity/MapServer");
+                            layers.add(sensitivityLayer);
+                
+                
     // initialize window
     window = new JFrame("J-Park Simulator");
     window.setSize(1200, 900);
@@ -275,8 +418,29 @@ public class JParkSim {
 	// create panel to select layer to edit
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    panel.setSize(220, 80);
+    panel.setSize(220, 175);
     panel.setLocation(260, 10); // located near top left next to legend
+    
+    // command to switch the map 22/3/2016
+    
+    String[] mapStrings = {
+        
+    "cost of reactors"};
+    String[] idStrings = {
+         
+    "f809dccb780a4af0a506e56aaa84d084"};
+    idMap = new HashMap<>();
+    for (int i = 0; i < idStrings.length; i++) {
+      idMap.put(mapStrings[i], idStrings[i]);
+    }
+
+    mapIds = new JComboBox<>(mapStrings);
+    mapIds.setSelectedIndex(0);
+    mapIds.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+    //JButton button = createButton();
+
+       
     
     // create text
     JTextArea description = new JTextArea("Click on a feature to start editing");
@@ -295,42 +459,76 @@ public class JParkSim {
     // create dropdown selector for layer via key-value pairs
     final Map<String, ArcGISFeatureLayer> editlayer = new LinkedHashMap<>();
     // dropdown options with key = String layer name and value = layer object
+    
     editlayer.put("Landlot", Landlotslayer);
     editlayer.put("Building", Buildingslayer);
-    editlayer.put("Storage", Storagelayer);
-    editlayer.put("TLPmain", TLPmainlayer);
     editlayer.put("Public Road", Roadlayer);
-    editlayer.put("PowerGen", PowerGenlayer);
-    editlayer.put("UHT Line", UHTLineslayer);
-    editlayer.put("UHT Substation", UHTSubstationlayer);
+    editlayer.put("Storage", Storagelayer);
+    editlayer.put("Bus Coupler", BusCouplerlayer);
     editlayer.put("EHT Line", EHTLineslayer);
     editlayer.put("EHT Substation", EHTSubstationlayer);
     editlayer.put("HT Line", HTLineslayer);
+    editlayer.put("HT Substation(22kV-11kV)", HTSubstation1layer);
+    editlayer.put("HT Substation(22kV-3.4kV)", HTSubstation2layer);
     editlayer.put("Load Point", LoadPointslayer);
-    editlayer.put("Bus Coupler", BusCouplerlayer);
-    editlayer.put("Heater/Cooler", heatercoolerlayer);
-    editlayer.put("GasLine", GasLinelayer);
+    editlayer.put("LT Substation(3.4kV-3kV)", LTSubstation1layer);
+    editlayer.put("LT Substation(3kV-0.4kV)", LTSubstation2layer);
+    editlayer.put("TLP(main-22kV)", TLPmainlayer);
+    editlayer.put("TLP(22kV-11kV)", TLP2alayer);
+    editlayer.put("TLP(22kV-3.4kV)", TLP2layer);
+    editlayer.put("TLP(3.4kV-3kV)", TLP3layer);
+    editlayer.put("TLP(3kV-0.4kV)", TLP4layer);
+    editlayer.put("PowerGen", PowerGenlayer);
+    editlayer.put("UHT Line", UHTLineslayer);
+    editlayer.put("UHT Substation", UHTSubstationlayer);
     editlayer.put("AirLine", AirLinelayer);
     editlayer.put("Energy Stream", EnergyStreamlayer);
+    editlayer.put("GasLine", GasLinelayer);
     editlayer.put("Material Line", MaterialLinelayer);     
     editlayer.put("WaterLine", WaterLinelayer);
-    editlayer.put("TLP2", TLP2layer);
-    editlayer.put("TLP3", TLP3layer);
-    editlayer.put("ChemReactor", PlantReactorlayer);
-    editlayer.put("Decanter", Decanterlayer);
-    editlayer.put("Extractor", Extractorlayer);
-    editlayer.put("FlashDrum", FlashDrumlayer);
-    editlayer.put("Mixer", Mixerlayer);
-    editlayer.put("RadFrac", RadFraclayer);
-    editlayer.put("Heat Exchanger", Exchangerlayer);
-    editlayer.put("Pump", pumplayer);
     editlayer.put("Blower", blowerlayer);
-    editlayer.put("Valve", valvelayer);
+    editlayer.put("compressor", compressorlayer);
+    editlayer.put("Decanter", Decanterlayer);
+    editlayer.put("Expander/Turbine", expanderlayer);
+    editlayer.put("Extractor", Extractorlayer);
+    editlayer.put("Filter", filterlayer);
+    editlayer.put("FlashDrum", FlashDrumlayer);
+    editlayer.put("Heater/Cooler", heatercoolerlayer);
+    editlayer.put("Heat Exchanger", Exchangerlayer);
+    editlayer.put("Mixer", Mixerlayer);
+    editlayer.put("Pump", pumplayer);
+    editlayer.put("RadFrac", RadFraclayer);
+    editlayer.put("Reactor", PlantReactorlayer);
     editlayer.put("Splitter", splitterlayer);
-
+    editlayer.put("Steam network", steamlayer);
+    editlayer.put("Valve", valvelayer);
+    editlayer.put("Vessel", vessellayer);
+    editlayer.put("Working fluid", Fluidlayer);
+    
+      
     final JComboBox<String> cbxLayer = new JComboBox<>(editlayer.keySet().toArray(new String[0]));	// initialize dropdown box
     cbxLayer.setMaximumSize(new Dimension(220, 25));
     cbxLayer.setAlignmentX(Component.LEFT_ALIGNMENT);
+    
+ // create text
+    JLabel lblLayer2 = new JLabel("feature list to query:");
+    lblLayer2.setForeground(Color.WHITE);
+    lblLayer2.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+    //other combo box
+    final JComboBox<String> querylayer = new JComboBox<>(editlayer.keySet().toArray(new String[0]));
+    querylayer.setAlignmentX(Component.LEFT_ALIGNMENT);
+    querylayer.setMaximumSize(new Dimension(220, 25));
+    
+ // create text
+    JTextArea description3 = new JTextArea("press refresh to delete pin point marking");
+    description3.setFont(new Font("Verdana", Font.PLAIN, 11));
+    description3.setForeground(Color.WHITE);
+    description3.setBackground(new Color(0, 0, 0, 0));
+    description3.setEditable(false);
+    description3.setLineWrap(true);
+    description3.setWrapStyleWord(true);
+    description3.setAlignmentX(Component.LEFT_ALIGNMENT);
     
     
     ArrayList<String[]> editStack = new ArrayList<String[]>();									// create a stack of edited features for PowerWorld to execute on
@@ -364,11 +562,17 @@ public class JParkSim {
     		              public void onCommitEdit(PopupViewEvent popupViewEvent, Feature feature) {			// save button
 //    		            	  String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("OBJECTID"))}; // newFeature is a new String[] element to be added to editStack (e.g. {Load_Points, 103})
     //		            	  String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("FID")), String.valueOf(hitGraphic.getAttributes().get("OBJECTID"))};  //ZL-151209 try to get FID and OBJECTID 
-    		            	  String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("OBJECTID"))}; 
+    		            	  String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("OBJECTID")), String.valueOf(hitGraphic.getAttributes().get("boilingpt"))}; 
 //    		            	  String[] paramFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes())};
-//    		            	  System.out.println("newFeature[0]=" + newFeature[0] + ", newFeature[1]=" + newFeature[1] +", newFeature[2]=" + newFeature[2]"); //ZL-151209
-    		            	  System.out.println("newFeature[0]=" + newFeature[0] + ", newFeature[1]=" + newFeature[1]); //ZL-151209
-//    		            	  System.out.println("paramFeature[0]=" + paramFeature[0] + ", paramFeature[1]" + paramFeature[1]);
+    		            	  //    		            	  System.out.println("newFeature[0]=" + newFeature[0] + ", newFeature[1]=" + newFeature[1] +", newFeature[2]=" + newFeature[2]"); //ZL-151209
+    		            	  System.out.println("newFeature[0]=" + newFeature[0] + ", newFeature[1]=" + newFeature[1] + ", newFeature[2]=" + newFeature[2]); //ZL-151209
+double y= Double.parseDouble(newFeature[2]);
+double z=2*y;
+//System.out.println("new function=" +z);
+    		            	  //    		            	  System.out.println("paramFeature[0]=" + paramFeature[0] + ", paramFeature[1]" + paramFeature[1]);
+    		            	  
+    		            	  //try to expand new button
+    		            	  
     		            	  boolean addtoStack = true;
     		            	  System.out.println("editStack size=" + editStack.size());
     		            	  for (int i=0; i<editStack.size(); i++) {							// (mjk, 151120) check through (i) elements in editStack where (i) is the number of modified feature objects in the layers.
@@ -423,7 +627,38 @@ public class JParkSim {
         }
       }
     });
-  
+    
+    
+    
+   //try to make new button 
+   
+JButton change = new JButton("change to fin.data");
+change.addActionListener(new ActionListener() {
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		
+		try {
+			String newId = idMap.get(mapIds.getSelectedItem());
+        WebMap webMap = WebMap.newInstance(newId, arcgisPortal);
+        map.loadWebMap(webMap);
+        
+        
+		} catch (Exception e)  {
+			e.printStackTrace();
+		}
+		
+		
+	}
+});
+
+change.setEnabled(true);
+change.setVisible(true);
+change.setSize(190,30);
+change.setLocation(890, 45);
+    
+
+
+
     // Run PowerWorld button
     JButton PWbutton = new JButton("Run PowerWorld");
     PWbutton.addActionListener(new ActionListener() {
@@ -455,7 +690,7 @@ public class JParkSim {
 						layers.append(item[0]);
 						layers.append(",");
 //						FIDs.append(item[1]);
-//					FIDs.append(",");
+//						FIDs.append(",");
 						OBJECTIDs.append(item[1]);
 						OBJECTIDs.append(",");
 						appCallFlag.append("PW");
@@ -864,7 +1099,7 @@ public class JParkSim {
     APHrButton.setEnabled(true);
     APHrButton.setVisible(true);
     APHrButton.setSize(190,30);
-    APHrButton.setLocation(490, 80);
+    APHrButton.setLocation(490, 115);
 
  // Run combined AspenPlus and power world model 
     JButton APPWButton = new JButton("Run AP and PW");
@@ -881,7 +1116,7 @@ public class JParkSim {
 				urlCon.setDoOutput(true);
 				
 				if (editStack.isEmpty()) {
-					JOptionPane.showMessageDialog(null, "You did not edit any features for AspenPlus!");
+					JOptionPane.showMessageDialog(null, "You did not edit any features for AspenPlus or PowerWorld!");
 				} else {
 					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
 					StringBuilder layers = new StringBuilder();
@@ -929,7 +1164,7 @@ public class JParkSim {
 						editStack.clear(); // delete all items in editStack
 					} else {
 						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
-								+ "\nPlease try running Parameterised AP again");
+								+ "\nPlease try running AP+PW model again");
 					}
 					out.close();
 				}
@@ -945,7 +1180,7 @@ public class JParkSim {
     APPWButton.setEnabled(true);
     APPWButton.setVisible(true);
     APPWButton.setSize(190,30);
-    APPWButton.setLocation(490, 115);
+    APPWButton.setLocation(490, 80);
     
     // Run combined AspenPlus and power world model 
     JButton PrAPPWButton = new JButton("Run Parameterized AP+PW");
@@ -1118,12 +1353,31 @@ public class JParkSim {
     			layer.requery();
     			layer.refresh();
     		}
+    		layers.remove(graphicsLayer);
     	}
     });
     refreshButton.setEnabled(true);
     refreshButton.setVisible(true);
     refreshButton.setSize(130,30);
     refreshButton.setLocation(1090, 10);
+    
+  //button for query (15-04-2016))
+    final JButton queryButton = new JButton("Query Features");
+    queryButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+    queryButton.setEnabled(true);
+    queryButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+    	
+    	    graphicsLayer = new GraphicsLayer();
+    	    graphicsLayer.setName("simple graphics");
+    	    layers.remove(graphicsLayer);
+    	    addGraphics(graphicsLayer);
+    	    layers.add(graphicsLayer);
+      }
+    });
+    queryButton.setSize(130, 30);
+    queryButton.setLocation(1090, 45);
 
     
     // combine text, label and dropdown list into one panel for selecting layer to edit
@@ -1133,6 +1387,12 @@ public class JParkSim {
     panel.add(lblLayer);
     panel.add(Box.createRigidArea(new Dimension(0, 5)));
     panel.add(cbxLayer);
+    panel.add(Box.createRigidArea(new Dimension(0, 5)));
+    panel.add(lblLayer2);
+    panel.add(Box.createRigidArea(new Dimension(0, 5)));
+    panel.add(querylayer);
+    panel.add(Box.createRigidArea(new Dimension(0, 5)));
+    panel.add(description3);
     panel.add(Box.createRigidArea(new Dimension(0, 5)));
     panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
     
@@ -1145,21 +1405,33 @@ public class JParkSim {
     
     // ZHOU add new buttons
     contentPane = new JLayeredPane();
+  
     contentPane.setLayout(new BorderLayout(0,0));
-    contentPane.setVisible(true);
-    contentPane.add(PWbutton);
+      contentPane.setVisible(true);
+      contentPane.add(PWbutton);
     contentPane.add(PWPrButton); 
     contentPane.add(APbutton);
     contentPane.add(APPrButton); 
     contentPane.add(APHrButton);
     contentPane.add(APPWButton);
     contentPane.add(refreshButton);
+    //contentPane.add(change);
     contentPane.add(panel);
     contentPane.add(PrAPPWButton);
     contentPane.add(PrAPOButton);
-    contentPane.add(legend, BorderLayout.WEST);
+    contentPane.add(queryButton);
     contentPane.add(map, BorderLayout.CENTER);
+    contentPane.add(legend, BorderLayout.WEST);
+    
+  
+  //adding the graph here
+    //map = createMap();
+   //contentPane.add(map);
+    
+    //only until here
+   
     window.add(contentPane);
+    
     
     // dispose map just before application window is closed.
     window.addWindowListener(new WindowAdapter() {
@@ -1180,6 +1452,58 @@ public class JParkSim {
     });
   } // of public JParkSim()
   
+  //attach the webmap trial until return jmap 
+  private JMap createMap() {
+
+	    final JMap jMap = new JMap();
+	        final InfoPopupOverlay popupOverlay = new InfoPopupOverlay();
+	    jMap.addMapOverlay(popupOverlay);
+	        // grab the ArcGISFeatureLayer when added to the map and associate it with the infopopup overlay
+	    jMap.getLayers().addLayerListEventListener(new LayerListEventListenerAdapter() {
+	            @Override
+	      public void multipleLayersAdded(LayerEvent event) {
+	        for (Layer layer : event.getChangedLayers().values()) {
+	          if (layer instanceof ArcGISFeatureLayer) {
+	            popupOverlay.addLayer(layer);
+	          }
+	          else if(layer instanceof GroupLayer) {
+	            for(Layer groupedLayer: ((GroupLayer) layer).getLayers()) {
+	              if(groupedLayer instanceof ArcGISFeatureLayer) {
+	                popupOverlay.addLayer(groupedLayer);
+	              }
+	            }
+	          }
+	        }
+	      }
+	            @Override
+	      public void layerAdded(LayerEvent event) {
+	        Layer layer = event.getChangedLayer();
+	        if (layer instanceof ArcGISFeatureLayer) {
+	          popupOverlay.addLayer(layer);
+	        } else if(layer instanceof GroupLayer) {
+	            for(Layer groupedLayer: ((GroupLayer) layer).getLayers()) {
+	              if(groupedLayer instanceof ArcGISFeatureLayer) {
+	                popupOverlay.addLayer(groupedLayer);
+	              }
+	            }
+	          }
+	               }
+	    });
+
+	    // create and load the web map
+	    WebMap webMap = null;
+	    try {
+	      webMap = WebMap.newInstance(MAP_ID, portal);
+	      jMap.loadWebMap(webMap);
+	      
+	    } catch (Exception e) {
+	      e.printStackTrace();
+	    }
+
+	    return jMap;
+	  }
+  
+  
   /**
    * Starting point of this application.
    * @param args
@@ -1198,7 +1522,11 @@ public class JParkSim {
         }
       }
     });
+ 
   }
+  
+  
+  
 }
 
 
@@ -1206,4 +1534,5 @@ public class JParkSim {
 
 
 //sdvgfgfsd
+
 //fdbgb
