@@ -46,6 +46,7 @@ import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 
@@ -91,6 +92,7 @@ import com.esri.toolkit.overlays.HitTestListener;
 import com.esri.toolkit.overlays.HitTestOverlay;
 import com.esri.toolkit.overlays.InfoPopupOverlay;
 import com.esri.core.symbol.PictureMarkerSymbol;
+
 
 
 
@@ -159,10 +161,14 @@ public class JParkSim {
 	//try to put new variable
 	
 	private GraphicsLayer graphicsLayer;
+	private GraphicsLayer graphicsLayer2;
+	private MultiPoint planes;
+	private MultiPoint planes2;
+	private String input;
 	private void addGraphics(GraphicsLayer gLayer) {
     
 
-    MultiPoint planes = new MultiPoint();
+     planes = new MultiPoint();
     PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol(
         "http://static.arcgis.com/images/Symbols/Basic/RedShinyPin.png");
     planeSymbol.setSize(50, 50);
@@ -181,8 +187,42 @@ public class JParkSim {
 
     
   }
-	 private final String[] totallayer = { "pump", "reactor", "compressor", "Radfrac",
-		      "extractor", "heat exchanger", "heater/cooler" };
+	
+	private void addGraphics3(GraphicsLayer gLayer) {
+	    
+		
+		{
+		    planes2 = new MultiPoint();
+		    PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol(
+		        "http://static.arcgis.com/images/Symbols/Basic/RedShinyPin.png");
+		    planeSymbol.setSize(50, 50);
+		    
+		    
+		    
+		    //reactor for biodiesel
+		    Point plane5 = new Point(11541453.967, 140109.621);
+		    planes2.add(plane5);
+		    Point plane6 = new Point(11541460.529, 140120.575);
+		    planes2.add(plane6);
+		    Point plane7 = new Point(11541447.776, 140117.347);
+		    planes2.add(plane7);
+		    Point plane8 = new Point(11541432.007, 140129.941);
+		    planes2.add(plane8);
+		    Point plane9 = new Point(11541439.044, 140141.265);
+		    planes2.add(plane9);
+		    Point plane10 = new Point(11541425.074, 140137.720);
+		    planes2.add(plane10);
+		    
+		    
+		    Graphic gPlanes2 = new Graphic(planes2, planeSymbol);
+		    
+		    gLayer.addGraphic(gPlanes2);
+		    
+		    
+		}
+		    
+		  }
+	
 		
 	//if want to add new map
 	 private HashMap<String, String> idMap;
@@ -516,9 +556,10 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     lblLayer2.setAlignmentX(Component.LEFT_ALIGNMENT);
         
     //other combo box
-    final JComboBox<String> querylayer = new JComboBox<>(editlayer.keySet().toArray(new String[0]));
+    final JTextField querylayer = new JTextField();
     querylayer.setAlignmentX(Component.LEFT_ALIGNMENT);
     querylayer.setMaximumSize(new Dimension(220, 25));
+    querylayer.setEditable(true);
     
  // create text
     JTextArea description3 = new JTextArea("press refresh to delete pin point marking");
@@ -1354,12 +1395,19 @@ change.setLocation(890, 45);
     			layer.refresh();
     		}
     		layers.remove(graphicsLayer);
+    		layers.remove(graphicsLayer2);
     	}
     });
     refreshButton.setEnabled(true);
     refreshButton.setVisible(true);
     refreshButton.setSize(130,30);
     refreshButton.setLocation(1090, 10);
+    
+    
+    graphicsLayer = new GraphicsLayer();
+    graphicsLayer.setName("simple graphics");
+    graphicsLayer2 = new GraphicsLayer();
+    graphicsLayer2.setName("simple graphics");
     
   //button for query (15-04-2016))
     final JButton queryButton = new JButton("Query Features");
@@ -1369,11 +1417,25 @@ change.setLocation(890, 45);
       @Override
       public void actionPerformed(ActionEvent e) {
     	
-    	    graphicsLayer = new GraphicsLayer();
-    	    graphicsLayer.setName("simple graphics");
-    	    layers.remove(graphicsLayer);
-    	    addGraphics(graphicsLayer);
-    	    layers.add(graphicsLayer);
+input= querylayer.getText();
+    	  
+    	  if (input.equals("pump"))
+    	  {
+    		  
+    		    addGraphics(graphicsLayer);
+    		    //layers.remove(graphicsLayer);
+    		    layers.add(graphicsLayer);
+    		   // layers.remove(graphicsLayer2);
+    		    
+    	  }
+    	  if (input.equals("reactor"))
+    	  {
+    		  
+    		    addGraphics3(graphicsLayer2);
+    		    //layers.remove(graphicsLayer2);
+    		    layers.add(graphicsLayer2);
+    		    //layers.remove(graphicsLayer);
+    	  }
       }
     });
     queryButton.setSize(130, 30);
