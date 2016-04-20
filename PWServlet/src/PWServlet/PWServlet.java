@@ -24,22 +24,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlNs;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import com.cmclinnovations.modsapi.MoDSAPI;
 import com.esri.core.geodatabase.GeodatabaseFeatureServiceTable;
@@ -544,16 +529,12 @@ public class PWServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ArrayList<String[]> editStack = new ArrayList<String[]>(); // reconstructeditStack from query string received
 		String[] layers = request.getParameter("layers").split(",");
-		// String[] FIDs = request.getParameter("FIDs").split(","); //ZL-151209 FID indicating parameter of which facility in power world has been changed
 		String[] OBJECTIDs = request.getParameter("OBJECTIDs").split(","); // ZL-151209 OBJECTID indicating parameter of which unit in chemical process has been changed
 		String[] appCallFlag = request.getParameter("appCallFlag").split(","); // (mjk, 151115) adding flag indicating which  function has been called: PowerWorld,  parameterised  PW, AspenPlus, parameterised AP
-		String[] QueryTask = request.getParameter("QueryTask").split(","); 
+
 
 		for (int i = 0; i < layers.length; i++) {
-			// editStack.add(new String[] {layers[i], FIDs[i], OBJECTIDs[i],
-			// appCallFlag[i]}); // Here, "editStack" for only one layer modification looks like this: [Load_Points,103,PW]
-//			editStack.add(new String[] { layers[i], OBJECTIDs[i], appCallFlag[i]}); // Here, "editStack" for only one layer modification looks like this: [Load_Points,103,PW]
-			editStack.add(new String[] { layers[i], OBJECTIDs[i], appCallFlag[i], QueryTask[i] }); 
+			editStack.add(new String[] { layers[i], OBJECTIDs[i], appCallFlag[i]}); // Here, "editStack" for only one layer modification looks like this: [Load_Points,103,PW]
 		}
 
 		FileWriter flag1 = null; // (mjk, 151115) testing structure of DataOutputStream object and of wr object
@@ -561,7 +542,6 @@ public class PWServlet extends HttpServlet {
 		flag1.append("layers=" + layers[0]);
 		flag1.append(", OBJECTIDs=" + OBJECTIDs[0]);
 		flag1.append(", appCallFlag=" + appCallFlag[0]);
-		flag1.append(", QueryTask=" + QueryTask[0]);
 		flag1.flush();
 		flag1.close(); // (mjk, 151115) writing this file works fine.
 
@@ -620,8 +600,7 @@ public class PWServlet extends HttpServlet {
 	} // of doPost()
 
 	// allows manual updating using a browser e.g. entering  http://localhost:8080/PWServlet/?layers=Load_Points&FIDs=103
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ArrayList<String[]> editStack = new ArrayList<String[]>();
 		String[] layers = request.getParameter("layers").split(",");
 		// String[] FIDs = request.getParameter("OBJECTIDs").split(",");
@@ -669,7 +648,7 @@ public class PWServlet extends HttpServlet {
 			switch (appCallFlag) {
 
 			case ("AP"):                                                          // when appCallFlag=AP indicating that the run Aspenplus button has been pressed, then the following actions are going to be taken
-				System.out.println(appCallFlag + " Button was pressed");          // for double checking
+				System.out.println(appCallFlag + " Button was pressed! (runPyScript)");          // for double checking
 				Process p = Runtime.getRuntime().exec(runPythonCommandAP);         // call python script to run aspenplus
 				p.waitFor();
 				System.out.println("Exit Value (0 means success): " + p.exitValue()); // if console prints 0 it means success
@@ -682,7 +661,7 @@ public class PWServlet extends HttpServlet {
 				line = br.readLine();
 				break;
 			case ("PW"):                                                           // when appCallFlag=pw indicating that the run powerworld button has been pressed, then the following actions are going to be taken
-				System.out.println(appCallFlag + " Button was pressed");
+				System.out.println(appCallFlag + " Button was pressed! (runPyScript)");
 				Process p1 = Runtime.getRuntime().exec(runPythonCommand);
 				p1.waitFor();
 				System.out.println("Exit Value (0 means success): " + p1.exitValue()); // if console prints 0 it means success
@@ -1280,6 +1259,9 @@ public class PWServlet extends HttpServlet {
 		
  
 	public void runAspenPlus(ArrayList<String[]> editStack) {
+		getAPPWInput(editStack);
+		runPyScript(editStack);                                                                  // call python script to run aspen plus model
+		readAPCSV();
 /*		
 		ArrayList<Map<String, Object>> attributeslist_MX = new ArrayList<Map<String, Object>>(); // additional ArrayList for mixer
 		ArrayList<Map<String, Object>> attributeslist_HX = new ArrayList<Map<String, Object>>(); // additional ArrayList for heat exchanger
@@ -1505,9 +1487,7 @@ public class PWServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 */
-		getAPPWInput(editStack);
-		runPyScript(editStack);                                                                  // call python script to run aspen plus model
-		readAPCSV();
+		
 /*		
 		for (int i = 0; i < editStack.size(); i++) {                                                      // for each feature in editStack, append something to skeleton, attributeslist and layers
 			String appCallFlag = (String) editStack.get(i)[2];
@@ -2837,8 +2817,7 @@ public class PWServlet extends HttpServlet {
 			PowerGenTable.applyEdits(null);
 			UHTSubstationTable.applyEdits(null);
 			EHTSubstationTable.applyEdits(null);
-			System.out
-					.println("Updating process took " + String.valueOf(System.currentTimeMillis() - start) + "ms"); // tells you how long it took to update
+			System.out.println("Updating process took " + String.valueOf(System.currentTimeMillis() - start) + "ms"); // tells you how long it took to update
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -2850,7 +2829,7 @@ public class PWServlet extends HttpServlet {
 		}
 	}
 
-	
+/*	
 //multi-thread 	
 	class Set_MX extends Thread{
 		@Override 
@@ -3000,7 +2979,7 @@ public class PWServlet extends HttpServlet {
 					}
 		}
 	}
-	
+*/	
 		
 }
 
