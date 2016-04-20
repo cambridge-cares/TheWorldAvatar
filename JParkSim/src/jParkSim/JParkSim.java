@@ -607,8 +607,8 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 //    		            	  String[] paramFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes())};
     		            	  //    		            	  System.out.println("newFeature[0]=" + newFeature[0] + ", newFeature[1]=" + newFeature[1] +", newFeature[2]=" + newFeature[2]"); //ZL-151209
     		            	  System.out.println("newFeature[0]=" + newFeature[0] + ", newFeature[1]=" + newFeature[1] + ", newFeature[2]=" + newFeature[2]); //ZL-151209
-double y= Double.parseDouble(newFeature[2]);
-double z=2*y;
+//double y= Double.parseDouble(newFeature[2]);
+//double z=2*y;
 //System.out.println("new function=" +z);
     		            	  //    		            	  System.out.println("paramFeature[0]=" + paramFeature[0] + ", paramFeature[1]" + paramFeature[1]);
     		            	  
