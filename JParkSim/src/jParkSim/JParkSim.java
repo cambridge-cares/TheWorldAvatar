@@ -1223,7 +1223,7 @@ change.setLocation(890, 45);
     APPWButton.setSize(190,30);
     APPWButton.setLocation(490, 80);
     
-    // Run combined AspenPlus and power world model 
+    // Run combined parameterized AspenPlus and power world model 
     JButton PrAPPWButton = new JButton("Run Parameterized AP+PW");
     PrAPPWButton.addActionListener(new ActionListener() {
     	@Override
@@ -1282,7 +1282,7 @@ change.setLocation(890, 45);
 					wr.close();
 					
 					if (urlCon.getResponseCode()==200) {
-						JOptionPane.showMessageDialog(null, "AP & PW has finished running!");
+						JOptionPane.showMessageDialog(null, "Parameterized AP & PW has finished running!");
 						editStack.clear(); // delete all items in editStack
 					} else {
 						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
@@ -1418,7 +1418,10 @@ change.setLocation(890, 45);
       public void actionPerformed(ActionEvent e) {
     	
 input= querylayer.getText();
-    	  
+    	  if (input.isEmpty())
+    	  {JOptionPane.showMessageDialog(null,"you don't query anything!");
+    		  
+    	  }
     	  if (input.equals("pump"))
     	  {
     		  
