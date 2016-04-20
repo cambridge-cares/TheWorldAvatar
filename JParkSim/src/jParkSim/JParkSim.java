@@ -14,6 +14,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,6 +47,7 @@ import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 
@@ -91,6 +93,8 @@ import com.esri.toolkit.overlays.HitTestListener;
 import com.esri.toolkit.overlays.HitTestOverlay;
 import com.esri.toolkit.overlays.InfoPopupOverlay;
 import com.esri.core.symbol.PictureMarkerSymbol;
+
+
 
 
 
@@ -150,7 +154,7 @@ public class JParkSim {
 		final static SimpleFillSymbol compressorcolor = new SimpleFillSymbol(Color.white);
 		final static SimpleLineSymbol steamcolor = new SimpleLineSymbol(Color.orange, 3);
 		
-		
+
 		
 		
 	
@@ -181,11 +185,11 @@ public class JParkSim {
 
     
   }
-	 private final String[] totallayer = { "pump", "reactor", "compressor", "Radfrac",
+	  private final String[] totallayer = { "pump", "reactor", "compressor", "Radfrac",
 		      "extractor", "heat exchanger", "heater/cooler" };
 		
 	//if want to add new map
-	 private HashMap<String, String> idMap;
+	  private HashMap<String, String> idMap;
 	  private JComboBox<String> mapIds;
 	  private Portal arcgisPortal = new Portal("https://www.arcgis.com", null);
 	  
@@ -520,6 +524,8 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     querylayer.setAlignmentX(Component.LEFT_ALIGNMENT);
     querylayer.setMaximumSize(new Dimension(220, 25));
     
+    
+    
  // create text
     JTextArea description3 = new JTextArea("press refresh to delete pin point marking");
     description3.setFont(new Font("Verdana", Font.PLAIN, 11));
@@ -536,6 +542,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     																							// This would be the direct method involving the applet only, without using the servlet:
 
     HitTestOverlay[] listenerList = new HitTestOverlay[completeLayerList.length];				// container for listeners arranged by index of layers in completeLayerList
+    
     for (ArcGISFeatureLayer layer : completeLayerList) {										// add event listener to all layers in completeLayerList
         final HitTestOverlay hitTestOverlay = new HitTestOverlay(layer);						// listener is of type HitTestOverlay
         hitTestOverlay.addHitTestListener(new HitTestListener() {								// listens for MOUSE CLICK on feature
@@ -561,11 +568,10 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     		              @Override
     		              public void onCommitEdit(PopupViewEvent popupViewEvent, Feature feature) {			// save button
 //    		            	  String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("OBJECTID"))}; // newFeature is a new String[] element to be added to editStack (e.g. {Load_Points, 103})
-    //		            	  String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("FID")), String.valueOf(hitGraphic.getAttributes().get("OBJECTID"))};  //ZL-151209 try to get FID and OBJECTID 
-    		            	  String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("OBJECTID")), String.valueOf(hitGraphic.getAttributes().get("boilingpt"))}; 
-//    		            	  String[] paramFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes())};
-    		            	  //    		            	  System.out.println("newFeature[0]=" + newFeature[0] + ", newFeature[1]=" + newFeature[1] +", newFeature[2]=" + newFeature[2]"); //ZL-151209
-    		            	  System.out.println("newFeature[0]=" + newFeature[0] + ", newFeature[1]=" + newFeature[1] + ", newFeature[2]=" + newFeature[2]); //ZL-151209
+//		               	      String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("FID")), String.valueOf(hitGraphic.getAttributes().get("OBJECTID"))};  //ZL-151209 try to get FID and OBJECTID 
+//    		            	  String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("OBJECTID")), String.valueOf(hitGraphic.getAttributes().get("boilingpt"))}; 
+    		            	  String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("OBJECTID"))}; 
+    		            	  System.out.println("newFeature[0]=" + newFeature[0] + ", newFeature[1]=" + newFeature[1]); //ZL-151209
 double y= Double.parseDouble(newFeature[2]);
 double z=2*y;
 //System.out.println("new function=" +z);
@@ -606,7 +612,7 @@ double z=2*y;
         map.addMapOverlay(hitTestOverlay);															// add all layer listeners to map
     }
     listenerList[0].setActive(true);																// default layer listener enabled is the first one (landlots layer)
-    
+ 
     cbxLayer.addItemListener(new ItemListener() {													// dropdown list event listener
       @Override
       public void itemStateChanged(ItemEvent arg0) {
@@ -713,6 +719,10 @@ change.setLocation(890, 45);
 					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("QueryTask", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
 					System.out.println("outputString=" + outputString);
 					
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
@@ -804,6 +814,10 @@ change.setLocation(890, 45);
 					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("QueryTask", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
 					System.out.println("outputString=" + outputString);
 					
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
@@ -895,6 +909,10 @@ change.setLocation(890, 45);
 					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("QueryTask", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
 					System.out.println("outputString="+outputString);
 					
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
@@ -988,6 +1006,10 @@ change.setLocation(890, 45);
 					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("QueryTask", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
 					System.out.println("outputString="+outputString);
 					
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
@@ -1070,6 +1092,10 @@ change.setLocation(890, 45);
 					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("QueryTask", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
 					System.out.println("outputString="+outputString);
 					
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
@@ -1151,6 +1177,10 @@ change.setLocation(890, 45);
 					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("QueryTask", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
 					System.out.println("outputString="+outputString);
 					
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
@@ -1232,6 +1262,10 @@ change.setLocation(890, 45);
 					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("QueryTask", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
 					System.out.println("outputString="+outputString);
 					
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
@@ -1313,6 +1347,10 @@ change.setLocation(890, 45);
 					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("QueryTask", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
 					System.out.println("outputString="+outputString);
 					
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
@@ -1369,11 +1407,11 @@ change.setLocation(890, 45);
       @Override
       public void actionPerformed(ActionEvent e) {
     	
-    	    graphicsLayer = new GraphicsLayer();
-    	    graphicsLayer.setName("simple graphics");
-    	    layers.remove(graphicsLayer);
-    	    addGraphics(graphicsLayer);
-    	    layers.add(graphicsLayer);
+//    	    graphicsLayer = new GraphicsLayer();
+//    	    graphicsLayer.setName("simple graphics");
+//    	    layers.remove(graphicsLayer);
+//    	    addGraphics(graphicsLayer);
+//   	    layers.add(graphicsLayer);
       }
     });
     queryButton.setSize(130, 30);
@@ -1407,8 +1445,8 @@ change.setLocation(890, 45);
     contentPane = new JLayeredPane();
   
     contentPane.setLayout(new BorderLayout(0,0));
-      contentPane.setVisible(true);
-      contentPane.add(PWbutton);
+    contentPane.setVisible(true);
+    contentPane.add(PWbutton);
     contentPane.add(PWPrButton); 
     contentPane.add(APbutton);
     contentPane.add(APPrButton); 
@@ -1429,9 +1467,9 @@ change.setLocation(890, 45);
    //contentPane.add(map);
     
     //only until here
-   
-    window.add(contentPane);
+	
     
+    window.add(contentPane);
     
     // dispose map just before application window is closed.
     window.addWindowListener(new WindowAdapter() {
@@ -1450,6 +1488,9 @@ change.setLocation(890, 45);
     	  }
       }
     });
+  
+
+  
   } // of public JParkSim()
   
   //attach the webmap trial until return jmap 
@@ -1503,6 +1544,113 @@ change.setLocation(890, 45);
 	    return jMap;
 	  }
   
+  //*************try to add a new window						
+	class Query implements ActionListener{
+		ArrayList<String[]> editStack = new ArrayList<String[]>();	
+		
+		JTextField jtf;
+		JButton jbtnQuery;
+		JLabel jlabPrompt, jlabContents;
+		
+		Query(){
+			JFrame jfrm = new JFrame ("Query Window");
+			jfrm.setLayout(new FlowLayout());	
+			jfrm.setSize(240,120);
+			jtf = new JTextField(10);
+			jbtnQuery = new JButton ("Perform Query");
+			jlabPrompt = new JLabel ("Enter your query content:");
+			jlabContents = new JLabel (" ");
+				
+			jtf.addActionListener(this);
+			jbtnQuery.addActionListener(this);
+			
+			jfrm.add(jlabPrompt);
+			jfrm.add(jtf);
+			jfrm.add(jbtnQuery);
+			jfrm.add(jlabContents);
+			
+			jfrm.setVisible(true);
+		}
+
+		  	  		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			HttpURLConnection urlCon;
+			OutputStreamWriter out;
+			URL url;
+			
+			if(e.getActionCommand().equals ("Perform Query"));{
+				String graphicFID = " ";
+			    String graphicOBJECTID =  " ";
+			    String appCallFlag = " ";   
+				String QueryString = jtf.getText();
+//				String resStr = "";
+				System.out.println("the text you type in is: " + QueryString);
+				String[] newFeature = new String[] {graphicFID, graphicOBJECTID, appCallFlag, QueryString}; 
+				boolean addtoStack = true;			  		            		  
+			  	  if (addtoStack) {		
+			  		  editStack.add(newFeature);
+
+			  		  System.out.println("editStack = " + editStack);
+			  	  }
+			}
+									
+			try{
+				url = new URL("http://172.25.182.41/PWServlet/");
+				urlCon = (HttpURLConnection) url.openConnection();
+				urlCon.setRequestMethod("POST");
+				urlCon.setDoOutput(true);
+				
+				out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
+				
+				StringBuilder layers = new StringBuilder();
+				StringBuilder OBJECTIDs = new StringBuilder();
+				StringBuilder appCallFlag = new StringBuilder();
+				StringBuilder QueryTask = new StringBuilder();
+				
+				for (String[] item : editStack) { // create comma separated values
+					layers.append(item[0]);
+					layers.append(",");
+		 			OBJECTIDs.append(item[1]); // ZHOU CHANGED ITEM[2] TO ITEM[1]
+				    OBJECTIDs.append(",");
+					appCallFlag.append(item[2]);
+					appCallFlag.append(",");
+					QueryTask.append(jtf.getText());
+				}
+				
+				StringBuilder outputString = new StringBuilder();
+				outputString.append(URLEncoder.encode("layers", "UTF-8"));
+				outputString.append("=");
+				outputString.append(URLEncoder.encode(" ", "UTF-8"));
+				outputString.append("&");
+				outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
+				outputString.append("=");
+				outputString.append(URLEncoder.encode(" ", "UTF-8"));
+				outputString.append("&");
+				outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
+				outputString.append("=");
+				outputString.append(URLEncoder.encode(" ", "UTF-8"));
+				outputString.append("&");
+				outputString.append (URLEncoder.encode("QueryTask", "UTF-8"));
+				outputString.append ("=");
+				outputString.append (URLEncoder.encode(QueryTask.toString(), "UTF-8"));
+				
+				DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
+				System.out.println("wr = "+ wr);
+				wr.writeBytes(outputString.toString());
+				wr.flush();
+				wr.close();
+				if(urlCon.getResponseCode()==200){
+					JOptionPane.showMessageDialog(null, "Query has been successfully performed!");
+					
+				}
+				out.close();
+			}catch (IOException equery){
+				equery.printStackTrace();
+			}
+			// TODO Auto-generated method stub			
+		}
+	}
   
   /**
    * Starting point of this application.
@@ -1517,9 +1665,11 @@ change.setLocation(890, 45);
           JParkSim application = new JParkSim(); // instance of this application
           application.window.setVisible(true);
           ArcGISRuntime.setClientID("aSg9q12qgnN4OQq2"); // license app
+          application.new Query();
         } catch (Exception e) {
           e.printStackTrace();
         }
+       
       }
     });
  
