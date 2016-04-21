@@ -162,8 +162,8 @@ public class JParkSim {
 	
 	private GraphicsLayer graphicsLayer;
 	private GraphicsLayer graphicsLayer2;
+	private GraphicsLayer graphicsLayer3;
 	private MultiPoint planes;
-	private MultiPoint planes2;
 	private String input;
 	private void addGraphics(GraphicsLayer gLayer) {
     
@@ -188,35 +188,66 @@ public class JParkSim {
     
   }
 	
-	private void addGraphics3(GraphicsLayer gLayer) {
+	private void addGraphics2(GraphicsLayer gLayer) {
 	    
 		
 		{
-		    planes2 = new MultiPoint();
+		    planes = new MultiPoint();
 		    PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol(
 		        "http://static.arcgis.com/images/Symbols/Basic/RedShinyPin.png");
 		    planeSymbol.setSize(50, 50);
-		    
-		    
-		    
+		    	    
 		    //reactor for biodiesel
 		    Point plane5 = new Point(11541453.967, 140109.621);
-		    planes2.add(plane5);
+		    planes.add(plane5);
 		    Point plane6 = new Point(11541460.529, 140120.575);
-		    planes2.add(plane6);
+		    planes.add(plane6);
 		    Point plane7 = new Point(11541447.776, 140117.347);
-		    planes2.add(plane7);
+		    planes.add(plane7);
 		    Point plane8 = new Point(11541432.007, 140129.941);
-		    planes2.add(plane8);
+		    planes.add(plane8);
 		    Point plane9 = new Point(11541439.044, 140141.265);
-		    planes2.add(plane9);
+		    planes.add(plane9);
 		    Point plane10 = new Point(11541425.074, 140137.720);
-		    planes2.add(plane10);
+		    planes.add(plane10);
 		    
 		    
-		    Graphic gPlanes2 = new Graphic(planes2, planeSymbol);
+		    Graphic gPlanes2 = new Graphic(planes, planeSymbol);
 		    
 		    gLayer.addGraphic(gPlanes2);
+		    
+		    
+		}
+		    
+		  }
+	
+private void addGraphics3(GraphicsLayer gLayer) {
+	    
+		
+		{
+		    planes = new MultiPoint();
+		    PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol(
+		        "http://static.arcgis.com/images/Symbols/Basic/RedShinyPin.png");
+		    planeSymbol.setSize(50, 50);
+		    	    
+		    //plants in JPS
+		    Point planea = new Point(11541057.312, 140992.719);
+		    planes.add(planea);
+		    Point planeb = new Point(11540224.253, 141049.174);
+		    planes.add(planeb);
+		    Point planec = new Point(11541038.861, 140182.695);
+		    planes.add(planec);
+		    Point planed = new Point(11541441.546, 140139.129);
+		    planes.add(planed);
+		    Point planee = new Point(11541457.950, 140117.830);
+		    planes.add(planee);
+		    Point planef = new Point(11544165.746, 141363.877);
+		    planes.add(planef);
+		    
+		    
+		    Graphic gPlanes3 = new Graphic(planes, planeSymbol);
+		    
+		    gLayer.addGraphic(gPlanes3);
 		    
 		    
 		}
@@ -317,7 +348,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
             "http://localhost:6080/arcgis/rest/services/emission/MapServer");
                 layers.add(emissionLayer);
     
-        
+                
     // map centered on Jurong Island
     Point mapCenter = new Point(11543665,141400);
     map.setExtent(new Envelope(mapCenter,7200,5400));
@@ -1396,7 +1427,8 @@ change.setLocation(890, 45);
     		}
     		layers.remove(graphicsLayer);
     		layers.remove(graphicsLayer2);
-    	}
+    		layers.remove(graphicsLayer3);
+    		    	}
     });
     refreshButton.setEnabled(true);
     refreshButton.setVisible(true);
@@ -1408,38 +1440,92 @@ change.setLocation(890, 45);
     graphicsLayer.setName("simple graphics");
     graphicsLayer2 = new GraphicsLayer();
     graphicsLayer2.setName("simple graphics");
-    
+    graphicsLayer3 = new GraphicsLayer();
+    graphicsLayer3.setName("simple graphics");
   //button for query (15-04-2016))
     final JButton queryButton = new JButton("Query Features");
     queryButton.setAlignmentX(Component.CENTER_ALIGNMENT);
     queryButton.setEnabled(true);
     queryButton.addActionListener(new ActionListener() {
       @Override
-      public void actionPerformed(ActionEvent e) {
-    	
-input= querylayer.getText();
-    	  if (input.isEmpty())
-    	  {JOptionPane.showMessageDialog(null,"you don't query anything!");
-    		  
-    	  }
-    	  if (input.equals("pump"))
-    	  {
-    		  
-    		    addGraphics(graphicsLayer);
-    		    //layers.remove(graphicsLayer);
-    		    layers.add(graphicsLayer);
-    		   // layers.remove(graphicsLayer2);
-    		    
-    	  }
-    	  if (input.equals("reactor"))
-    	  {
-    		  
-    		    addGraphics3(graphicsLayer2);
-    		    //layers.remove(graphicsLayer2);
-    		    layers.add(graphicsLayer2);
-    		    //layers.remove(graphicsLayer);
-    	  }
-      }
+      public void actionPerformed(ActionEvent arg0) {
+    	  	HttpURLConnection urlCon;
+      		OutputStreamWriter out;
+      		URL url;
+      		input= querylayer.getText();
+      		try {
+				url = new URL("http://172.25.182.41/PWServlet/"); // URL of servlet
+				urlCon = (HttpURLConnection) url.openConnection();
+				urlCon.setRequestMethod("POST");
+				urlCon.setDoOutput(true);
+				
+				if (input.isEmpty())
+		    	  {JOptionPane.showMessageDialog(null,"you don't query anything!");
+		    		  
+		    	  }
+				 if (input.equals("pump"))
+		    	  {
+		    		  
+		    		    addGraphics(graphicsLayer);
+		    		    //layers.remove(graphicsLayer);
+		    		    layers.add(graphicsLayer);
+		    		   // layers.remove(graphicsLayer2);
+		    		    
+		    	  }
+		    	  if (input.equals("reactor"))
+		    	  {
+		    		  
+		    		    addGraphics2(graphicsLayer2);
+		    		    //layers.remove(graphicsLayer2);
+		    		    layers.add(graphicsLayer2);
+		    		    //layers.remove(graphicsLayer);
+		    	  }
+		    	  if (input.equals("plant"))
+		    	  {
+		    		  
+		    		    addGraphics3(graphicsLayer3);
+		    		    //layers.remove(graphicsLayer2);
+		    		    layers.add(graphicsLayer3);
+		    		    //layers.remove(graphicsLayer);
+		    	  }
+		    	  else {
+					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
+					StringBuilder layers = new StringBuilder();
+//					StringBuilder FIDs = new StringBuilder();
+					//StringBuilder inputquery = new StringBuilder();
+					
+					
+					/*for (String[] item : editStack) { // create comma separated values
+						layers.append(item[0]);
+						layers.append(",");
+//						FIDs.append(item[1]);
+//						FIDs.append(",");
+			 			OBJECTIDs.append(item[1]); // ZHOU CHANGED ITEM[2] TO ITEM[1]
+					    OBJECTIDs.append(",");
+						appCallFlag.append("PrAPO");
+						appCallFlag.append(",");
+					}*/
+					StringBuilder outputString = new StringBuilder();
+					// Only URL encoded string values can be sent over a HTTP connection
+					
+					outputString.append(URLEncoder.encode("query","UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(input, "UTF-8"));
+					
+					System.out.println("outputString="+outputString);
+					
+					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
+					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
+					wr.writeBytes(outputString.toString()); // write query string into servlet doPost() method
+					wr.flush();
+					wr.close();
+					
+					out.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+    	}
     });
     queryButton.setSize(130, 30);
     queryButton.setLocation(1090, 45);
