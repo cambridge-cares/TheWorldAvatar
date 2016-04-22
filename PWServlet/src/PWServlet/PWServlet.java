@@ -532,13 +532,13 @@ public class PWServlet extends HttpServlet {
 		// String[] FIDs = request.getParameter("FIDs").split(","); //ZL-151209 FID indicating parameter of which facility in power world has been changed
 		String[] OBJECTIDs = request.getParameter("OBJECTIDs").split(","); // ZL-151209 OBJECTID indicating parameter of which unit in chemical process has been changed
 		String[] appCallFlag = request.getParameter("appCallFlag").split(","); // (mjk, 151115) adding flag indicating which  function has been called: PowerWorld,  parameterised  PW, AspenPlus, parameterised AP
-//		String[] QueryT = request.getParameter("QueryT").split(",");
+		String[] QueryT = request.getParameter("QueryT").split(",");
 
 		for (int i = 0; i < layers.length; i++) {
 			// editStack.add(new String[] {layers[i], FIDs[i], OBJECTIDs[i],
 			// appCallFlag[i]}); // Here, "editStack" for only one layer modification looks like this: [Load_Points,103,PW]
-			editStack.add(new String[] { layers[i], OBJECTIDs[i], appCallFlag[i]}); // Here, "editStack" for only one layer modification looks like this: [Load_Points,103,PW]
-//			editStack.add(new String[] { layers[i], OBJECTIDs[i], appCallFlag[i], QueryT[i]});
+//			editStack.add(new String[] { layers[i], OBJECTIDs[i], appCallFlag[i]}); // Here, "editStack" for only one layer modification looks like this: [Load_Points,103,PW]
+			editStack.add(new String[] { layers[i], OBJECTIDs[i], appCallFlag[i], QueryT[i]});
 		}
 
 		FileWriter flag1 = null; // (mjk, 151115) testing structure of DataOutputStream object and of wr object
@@ -546,7 +546,7 @@ public class PWServlet extends HttpServlet {
 		flag1.append("layers=" + layers[0]);
 		flag1.append(", OBJECTIDs=" + OBJECTIDs[0]);
 		flag1.append(", appCallFlag=" + appCallFlag[0]);
-//		flag1.append(", QueryT=" + QueryT[0]);
+		flag1.append(", QueryT=" + QueryT[0]);
 		flag1.flush();
 		flag1.close(); // (mjk, 151115) writing this file works fine.
 
