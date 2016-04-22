@@ -14,6 +14,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,6 +31,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -45,28 +47,38 @@ import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 
 import com.esri.core.geometry.Envelope;
+import com.esri.core.geometry.MultiPoint;
 import com.esri.core.geometry.Point;
 import com.esri.core.io.EsriSecurityException;
 import com.esri.core.io.UserCredentials;
 import com.esri.core.map.Feature;
 import com.esri.core.map.FeatureResult;
 import com.esri.core.map.Graphic;
-import com.esri.map.ArcGISDynamicMapServiceLayer;
+import com.esri.core.portal.Portal;
+import com.esri.core.portal.WebMap;
 import com.esri.core.renderer.SimpleRenderer;
+import com.esri.core.symbol.PictureFillSymbol;
 import com.esri.core.symbol.SimpleFillSymbol;
 import com.esri.core.symbol.SimpleLineSymbol;
 import com.esri.core.symbol.SimpleMarkerSymbol;
 import com.esri.core.symbol.SimpleMarkerSymbol.Style;
 import com.esri.core.symbol.Symbol;
 import com.esri.core.tasks.query.QueryTask;
+import com.esri.map.ArcGISDynamicMapServiceLayer;
 import com.esri.map.ArcGISFeatureLayer;
 import com.esri.map.ArcGISTiledMapServiceLayer;
+import com.esri.map.GraphicsLayer;
+import com.esri.map.GroupLayer;
 import com.esri.map.JMap;
+import com.esri.map.Layer;
+import com.esri.map.LayerEvent;
 import com.esri.map.LayerList;
+import com.esri.map.LayerListEventListenerAdapter;
 import com.esri.map.MapEvent;
 import com.esri.map.MapEventListenerAdapter;
 import com.esri.map.popup.PopupDialog;
@@ -79,8 +91,17 @@ import com.esri.toolkit.legend.JLegend;
 import com.esri.toolkit.overlays.HitTestEvent;
 import com.esri.toolkit.overlays.HitTestListener;
 import com.esri.toolkit.overlays.HitTestOverlay;
+import com.esri.toolkit.overlays.InfoPopupOverlay;
+import com.esri.core.symbol.PictureMarkerSymbol;
+
+
+
+
+
+import java.awt.image.BufferedImage;
 
 public class JParkSim {
+	
 	
 	// style of different layers
 		final static SimpleFillSymbol Landlotscolor = new SimpleFillSymbol(Color.cyan, new SimpleLineSymbol(Color.cyan, 1), SimpleFillSymbol.Style.NULL);
@@ -105,6 +126,7 @@ public class JParkSim {
 		final static SimpleLineSymbol TLP3color = new SimpleLineSymbol(Color.magenta, 3);
 		final static SimpleLineSymbol TLP4color = new SimpleLineSymbol(new Color(153,51,255), 3);
 		final static SimpleLineSymbol TLP2acolor = new SimpleLineSymbol(new Color(0,128,128), 3);
+		
 		// chemical plant
 		
 		final static SimpleFillSymbol PlantReactorcolor = new SimpleFillSymbol(Color.pink);
@@ -120,7 +142,6 @@ public class JParkSim {
 		final static SimpleLineSymbol EnergyStreamcolor = new SimpleLineSymbol(new Color(250,0,250), 3);
 		final static SimpleLineSymbol MaterialLinecolor = new SimpleLineSymbol(Color.red, 3);
 		final static SimpleLineSymbol WaterLinecolor = new SimpleLineSymbol(Color.blue, 3);
-		final static SimpleLineSymbol steamcolor = new SimpleLineSymbol(Color.orange, 3);
 		final static SimpleFillSymbol Exchangercolor = new SimpleFillSymbol(new Color(100,100,30));
 		final static SimpleFillSymbol pumpcolor = new SimpleFillSymbol(new Color(200,100,30));
 		final static SimpleFillSymbol blowercolor = new SimpleFillSymbol(new Color(100,50,30));
@@ -130,13 +151,88 @@ public class JParkSim {
 		final static SimpleFillSymbol filtercolor = new SimpleFillSymbol(new Color(204,255,153));
 		final static SimpleFillSymbol expandercolor = new SimpleFillSymbol(new Color(219,112,147));
 		final static SimpleFillSymbol compressorcolor = new SimpleFillSymbol(Color.white);
+		final static SimpleLineSymbol steamcolor = new SimpleLineSymbol(Color.orange, 3);
 		
-	
+
+		
+		
 	
 	private JFrame window;
 	private JMap map;
+	//try to put new variable
+	
+	private GraphicsLayer graphicsLayer;
+	private GraphicsLayer graphicsLayer2;
+	private MultiPoint planes;
+	private MultiPoint planes2;
+	private String input;
+	private void addGraphics(GraphicsLayer gLayer) {
+    
+
+     planes = new MultiPoint();
+    PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol(
+        "http://static.arcgis.com/images/Symbols/Basic/RedShinyPin.png");
+    planeSymbol.setSize(50, 50);
+    //pump for biodiesel
+    Point plane1 = new Point(11541447.629, 140110.305);
+    planes.add(plane1);
+    Point plane2 = new Point(11541461.652, 140132.107);
+    planes.add(plane2);
+    Point plane3 = new Point(11541426.198, 140129.461);
+    planes.add(plane3);
+    Point plane4 = new Point(11541440.115, 140152.692);
+    planes.add(plane4);
+   
+    Graphic gPlanes = new Graphic(planes, planeSymbol);
+    gLayer.addGraphic(gPlanes);
+
+    
+  }
+	
+	private void addGraphics3(GraphicsLayer gLayer) {
+	    
+		
+		{
+		    planes2 = new MultiPoint();
+		    PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol(
+		        "http://static.arcgis.com/images/Symbols/Basic/RedShinyPin.png");
+		    planeSymbol.setSize(50, 50);
+		    
+		    
+		    
+		    //reactor for biodiesel
+		    Point plane5 = new Point(11541453.967, 140109.621);
+		    planes2.add(plane5);
+		    Point plane6 = new Point(11541460.529, 140120.575);
+		    planes2.add(plane6);
+		    Point plane7 = new Point(11541447.776, 140117.347);
+		    planes2.add(plane7);
+		    Point plane8 = new Point(11541432.007, 140129.941);
+		    planes2.add(plane8);
+		    Point plane9 = new Point(11541439.044, 140141.265);
+		    planes2.add(plane9);
+		    Point plane10 = new Point(11541425.074, 140137.720);
+		    planes2.add(plane10);
+		    
+		    
+		    Graphic gPlanes2 = new Graphic(planes2, planeSymbol);
+		    
+		    gLayer.addGraphic(gPlanes2);
+		    
+		    
+		}
+		    
+		  }
+	
+		
+	//if want to add new map
+	  private HashMap<String, String> idMap;
+	  private JComboBox mapIds;
+	  private Portal arcgisPortal = new Portal("https://www.arcgis.com", null);
+	  
 //	private JLayerTree jLayerTree;  //ZL-151207 add layertree
 	public static JLayeredPane contentPane;
+		
 	// initialize layers
 	public static ArcGISFeatureLayer Landlotslayer;
 	public static ArcGISFeatureLayer Buildingslayer;
@@ -166,7 +262,6 @@ public class JParkSim {
 	public static ArcGISFeatureLayer GasLinelayer;
 	public static ArcGISFeatureLayer AirLinelayer;
 	public static ArcGISFeatureLayer Fluidlayer;
-	public static ArcGISFeatureLayer steamlayer;
 	public static ArcGISFeatureLayer EnergyStreamlayer;
 	public static ArcGISFeatureLayer MaterialLinelayer;
 	public static ArcGISFeatureLayer WaterLinelayer;
@@ -183,6 +278,10 @@ public class JParkSim {
 	public static ArcGISFeatureLayer filterlayer;
 	public static ArcGISFeatureLayer expanderlayer;
 	public static ArcGISFeatureLayer compressorlayer;
+	public static ArcGISFeatureLayer steamlayer;
+		
+	
+	
 	
  	public static String httpStringCSV = new String("D:/httpReq.CSV"); // (mjk, 151115) investigating structure of DataOutputStream object
  	public static String httpStringCSV1 = new String("D:/httpReq1.CSV"); // (ZL-151203) investigating structure of DataOutputStream object
@@ -196,7 +295,16 @@ public class JParkSim {
 		}
 	}
 	
+	//add link for webmap graph
+	Portal portal = new Portal("http://www.arcgis.com",null);
+	  // item ID of a public map on arcgis.com with charts
+	  final String MAP_ID = "f809dccb780a4af0a506e56aaa84d084";
+	  
+	  
+	
   public JParkSim() {
+	  
+	  
 	  
     // empty JMap constructor and add a tiled basemap layer
     map = new JMap();
@@ -210,6 +318,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
             "http://localhost:6080/arcgis/rest/services/emission/MapServer");
                 layers.add(emissionLayer);
     
+        
     // map centered on Jurong Island
     Point mapCenter = new Point(11543665,141400);
     map.setExtent(new Envelope(mapCenter,7200,5400));
@@ -268,14 +377,16 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     expanderlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/expander/FeatureServer/0", user);
     compressorlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/compressor/FeatureServer/0", user);
     steamlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/steam_interplants/FeatureServer/0", user);
+        
     
-	// UPDATE THIS LIST whenever new layers are added: first layer is the bottom most layer *see currently known issues #3
+    // UPDATE THIS LIST whenever new layers are added: first layer is the bottom most layer *see currently known issues #3
     
 	ArcGISFeatureLayer[] completeLayerList = {Landlotslayer, Buildingslayer, Storagelayer, TLPmainlayer, Roadlayer, PowerGenlayer, UHTLineslayer, UHTSubstationlayer,
 			EHTLineslayer, EHTSubstationlayer, HTLineslayer,HTSubstation1layer,HTSubstation2layer,LTSubstation1layer,LTSubstation2layer, LoadPointslayer, BusCouplerlayer, heatercoolerlayer,
 			GasLinelayer,AirLinelayer,EnergyStreamlayer,MaterialLinelayer,TLP2layer,TLP3layer,TLP2alayer,TLP4layer,WaterLinelayer,PlantReactorlayer,Decanterlayer,Extractorlayer,
 			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer,vessellayer,filterlayer,Fluidlayer,expanderlayer,compressorlayer,steamlayer};
 
+	
     // render layers
 	
     createRenderer(layers, new ArcGISFeatureLayer [] {Landlotslayer}, Landlotscolor);
@@ -322,16 +433,22 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     createRenderer(layers, new ArcGISFeatureLayer [] {expanderlayer}, expandercolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {compressorlayer}, compressorcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {steamlayer}, steamcolor);
-
-// graph layer added
- ArcGISDynamicMapServiceLayer highwayLayer = new ArcGISDynamicMapServiceLayer(
+    
+    
+    //map.getLayers().add(graphlayer);
+  //try to add some graphs
+    
+    
+    ArcGISDynamicMapServiceLayer highwayLayer = new ArcGISDynamicMapServiceLayer(
             "http://localhost:6080/arcgis/rest/services/opex/MapServer");
                 layers.add(highwayLayer);
+          
 
                 ArcGISDynamicMapServiceLayer sensitivityLayer = new ArcGISDynamicMapServiceLayer(
                         "http://localhost:6080/arcgis/rest/services/sensitivity/MapServer");
                             layers.add(sensitivityLayer);
-
+                
+                
     // initialize window
     window = new JFrame("J-Park Simulator");
     window.setSize(1200, 900);
@@ -342,8 +459,29 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 	// create panel to select layer to edit
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    panel.setSize(220, 80);
+    panel.setSize(220, 175);
     panel.setLocation(260, 10); // located near top left next to legend
+    
+    // command to switch the map 22/3/2016
+    
+    String[] mapStrings = {
+        
+    "cost of reactors"};
+    String[] idStrings = {
+         
+    "f809dccb780a4af0a506e56aaa84d084"};
+    idMap = new HashMap<>();
+    for (int i = 0; i < idStrings.length; i++) {
+      idMap.put(mapStrings[i], idStrings[i]);
+    }
+
+    mapIds = new JComboBox(mapStrings);
+    mapIds.setSelectedIndex(0);
+    mapIds.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+    //JButton button = createButton();
+
+       
     
     // create text
     JTextArea description = new JTextArea("Click on a feature to start editing");
@@ -362,6 +500,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     // create dropdown selector for layer via key-value pairs
     final Map<String, ArcGISFeatureLayer> editlayer = new LinkedHashMap<>();
     // dropdown options with key = String layer name and value = layer object
+    
     editlayer.put("Landlot", Landlotslayer);
     editlayer.put("Building", Buildingslayer);
     editlayer.put("Public Road", Roadlayer);
@@ -406,10 +545,34 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     editlayer.put("Valve", valvelayer);
     editlayer.put("Vessel", vessellayer);
     editlayer.put("Working fluid", Fluidlayer);
-
-    final JComboBox<String> cbxLayer = new JComboBox<>(editlayer.keySet().toArray(new String[0]));	// initialize dropdown box
+    
+      
+    final JComboBox cbxLayer = new JComboBox(editlayer.keySet().toArray(new String[0]));	// initialize dropdown box
     cbxLayer.setMaximumSize(new Dimension(220, 25));
     cbxLayer.setAlignmentX(Component.LEFT_ALIGNMENT);
+    
+ // create text
+    JLabel lblLayer2 = new JLabel("feature list to query:");
+    lblLayer2.setForeground(Color.WHITE);
+    lblLayer2.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+    //other combo box
+    final JTextField querylayer = new JTextField();
+    querylayer.setAlignmentX(Component.LEFT_ALIGNMENT);
+    querylayer.setMaximumSize(new Dimension(220, 25));
+    querylayer.setEditable(true);
+    
+    
+    
+ // create text
+    JTextArea description3 = new JTextArea("press refresh to delete pin point marking");
+    description3.setFont(new Font("Verdana", Font.PLAIN, 11));
+    description3.setForeground(Color.WHITE);
+    description3.setBackground(new Color(0, 0, 0, 0));
+    description3.setEditable(false);
+    description3.setLineWrap(true);
+    description3.setWrapStyleWord(true);
+    description3.setAlignmentX(Component.LEFT_ALIGNMENT);
     
     
     ArrayList<String[]> editStack = new ArrayList<String[]>();									// create a stack of edited features for PowerWorld to execute on
@@ -417,6 +580,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     																							// This would be the direct method involving the applet only, without using the servlet:
 
     HitTestOverlay[] listenerList = new HitTestOverlay[completeLayerList.length];				// container for listeners arranged by index of layers in completeLayerList
+    
     for (ArcGISFeatureLayer layer : completeLayerList) {										// add event listener to all layers in completeLayerList
         final HitTestOverlay hitTestOverlay = new HitTestOverlay(layer);						// listener is of type HitTestOverlay
         hitTestOverlay.addHitTestListener(new HitTestListener() {								// listens for MOUSE CLICK on feature
@@ -442,12 +606,17 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     		              @Override
     		              public void onCommitEdit(PopupViewEvent popupViewEvent, Feature feature) {			// save button
 //    		            	  String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("OBJECTID"))}; // newFeature is a new String[] element to be added to editStack (e.g. {Load_Points, 103})
-    //		            	  String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("FID")), String.valueOf(hitGraphic.getAttributes().get("OBJECTID"))};  //ZL-151209 try to get FID and OBJECTID 
+//		               	      String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("FID")), String.valueOf(hitGraphic.getAttributes().get("OBJECTID"))};  //ZL-151209 try to get FID and OBJECTID 
+//    		            	  String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("OBJECTID")), String.valueOf(hitGraphic.getAttributes().get("boilingpt"))}; 
     		            	  String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("OBJECTID"))}; 
-//    		            	  String[] paramFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes())};
-//    		            	  System.out.println("newFeature[0]=" + newFeature[0] + ", newFeature[1]=" + newFeature[1] +", newFeature[2]=" + newFeature[2]"); //ZL-151209
     		            	  System.out.println("newFeature[0]=" + newFeature[0] + ", newFeature[1]=" + newFeature[1]); //ZL-151209
-//    		            	  System.out.println("paramFeature[0]=" + paramFeature[0] + ", paramFeature[1]" + paramFeature[1]);
+//double y= Double.parseDouble(newFeature[2]);
+//double z=2*y;
+//System.out.println("new function=" +z);
+    		            	  //    		            	  System.out.println("paramFeature[0]=" + paramFeature[0] + ", paramFeature[1]" + paramFeature[1]);
+    		            	  
+    		            	  //try to expand new button
+    		            	  
     		            	  boolean addtoStack = true;
     		            	  System.out.println("editStack size=" + editStack.size());
     		            	  for (int i=0; i<editStack.size(); i++) {							// (mjk, 151120) check through (i) elements in editStack where (i) is the number of modified feature objects in the layers.
@@ -481,7 +650,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
         map.addMapOverlay(hitTestOverlay);															// add all layer listeners to map
     }
     listenerList[0].setActive(true);																// default layer listener enabled is the first one (landlots layer)
-    
+ 
     cbxLayer.addItemListener(new ItemListener() {													// dropdown list event listener
       @Override
       public void itemStateChanged(ItemEvent arg0) {
@@ -502,7 +671,38 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
         }
       }
     });
-  
+    
+    
+    
+   //try to make new button 
+   
+JButton change = new JButton("change to fin.data");
+change.addActionListener(new ActionListener() {
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		
+		try {
+			String newId = idMap.get(mapIds.getSelectedItem());
+        WebMap webMap = WebMap.newInstance(newId, arcgisPortal);
+        map.loadWebMap(webMap);
+        
+        
+		} catch (Exception e)  {
+			e.printStackTrace();
+		}
+		
+		
+	}
+});
+
+change.setEnabled(true);
+change.setVisible(true);
+change.setSize(190,30);
+change.setLocation(890, 45);
+    
+
+
+
     // Run PowerWorld button
     JButton PWbutton = new JButton("Run PowerWorld");
     PWbutton.addActionListener(new ActionListener() {
@@ -534,7 +734,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 						layers.append(item[0]);
 						layers.append(",");
 //						FIDs.append(item[1]);
-//					FIDs.append(",");
+//						FIDs.append(",");
 						OBJECTIDs.append(item[1]);
 						OBJECTIDs.append(",");
 						appCallFlag.append("PW");
@@ -557,6 +757,10 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("QueryT", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
 					System.out.println("outputString=" + outputString);
 					
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
@@ -648,6 +852,10 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("QueryT", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
 					System.out.println("outputString=" + outputString);
 					
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
@@ -739,6 +947,10 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("QueryT", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
 					System.out.println("outputString="+outputString);
 					
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
@@ -832,6 +1044,10 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("QueryT", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
 					System.out.println("outputString="+outputString);
 					
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
@@ -914,6 +1130,10 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("QueryT", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
 					System.out.println("outputString="+outputString);
 					
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
@@ -960,7 +1180,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 				urlCon.setDoOutput(true);
 				
 				if (editStack.isEmpty()) {
-					JOptionPane.showMessageDialog(null, "You did not edit any features for AspenPlus!");
+					JOptionPane.showMessageDialog(null, "You did not edit any features for AspenPlus or PowerWorld!");
 				} else {
 					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
 					StringBuilder layers = new StringBuilder();
@@ -995,6 +1215,10 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("QueryT", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
 					System.out.println("outputString="+outputString);
 					
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
@@ -1026,7 +1250,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     APPWButton.setSize(190,30);
     APPWButton.setLocation(490, 80);
     
-    // Run combined AspenPlus and power world model 
+    // Run combined parameterized AspenPlus and power world model 
     JButton PrAPPWButton = new JButton("Run Parameterized AP+PW");
     PrAPPWButton.addActionListener(new ActionListener() {
     	@Override
@@ -1076,6 +1300,10 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("QueryT", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
 					System.out.println("outputString="+outputString);
 					
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
@@ -1085,7 +1313,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 					wr.close();
 					
 					if (urlCon.getResponseCode()==200) {
-						JOptionPane.showMessageDialog(null, "AP & PW has finished running!");
+						JOptionPane.showMessageDialog(null, "Parameterized AP & PW has finished running!");
 						editStack.clear(); // delete all items in editStack
 					} else {
 						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
@@ -1157,6 +1385,10 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("QueryT", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
 					System.out.println("outputString="+outputString);
 					
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
@@ -1197,12 +1429,135 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     			layer.requery();
     			layer.refresh();
     		}
+    		layers.remove(graphicsLayer);
+    		layers.remove(graphicsLayer2);
     	}
     });
     refreshButton.setEnabled(true);
     refreshButton.setVisible(true);
     refreshButton.setSize(130,30);
     refreshButton.setLocation(1090, 10);
+    
+    
+    graphicsLayer = new GraphicsLayer();
+    graphicsLayer.setName("simple graphics");
+    graphicsLayer2 = new GraphicsLayer();
+    graphicsLayer2.setName("simple graphics");
+    
+  //button for query (15-04-2016))
+    final JButton queryButton = new JButton("Query Features");
+    queryButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+    queryButton.setEnabled(true);
+    queryButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+			HttpURLConnection urlCon;
+			OutputStreamWriter out;
+			URL url;
+			
+//			input= querylayer.getText();
+			
+			if(e.getActionCommand().equals ("Query Features"));{
+				String graphicFID = " ";
+			    String graphicOBJECTID =  " ";
+			    String appCallFlag = " ";   
+				String QueryString = querylayer.getText();
+//				String resStr = "";
+				System.out.println("the text you type in is: " + QueryString);
+				String[] newFeature = new String[] {graphicFID, graphicOBJECTID, appCallFlag, QueryString}; 
+				boolean addtoStack = true;			  		            		  
+			  	  if (addtoStack) {		
+			  		  editStack.add(newFeature);
+
+			  		  System.out.println("editStack = " + editStack);
+			  	  }
+			}
+									
+			try{
+				url = new URL("http://172.25.182.41/PWServlet/");
+				urlCon = (HttpURLConnection) url.openConnection();
+				urlCon.setRequestMethod("POST");
+				urlCon.setDoOutput(true);
+				
+				out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
+				
+				StringBuilder layers = new StringBuilder();
+				StringBuilder OBJECTIDs = new StringBuilder();
+				StringBuilder appCallFlag = new StringBuilder();
+				StringBuilder QueryT = new StringBuilder();
+				
+				for (String[] item : editStack) { 
+					layers.append(item[0]);
+					layers.append(",");
+		 			OBJECTIDs.append(item[1]); 
+				    OBJECTIDs.append(",");
+					appCallFlag.append(item[2]);
+					appCallFlag.append(",");
+					QueryT.append(querylayer.getText());
+				}
+				
+				StringBuilder outputString = new StringBuilder();
+				outputString.append(URLEncoder.encode("layers", "UTF-8"));
+				outputString.append("=");
+				outputString.append(URLEncoder.encode("haha ", "UTF-8"));
+				outputString.append("&");
+				outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
+				outputString.append("=");
+				outputString.append(URLEncoder.encode(" ", "UTF-8"));
+				outputString.append("&");
+				outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
+				outputString.append("=");
+				outputString.append(URLEncoder.encode(" ", "UTF-8"));
+				outputString.append("&");
+				outputString.append (URLEncoder.encode("QueryT", "UTF-8"));
+				outputString.append ("=");
+				outputString.append (URLEncoder.encode(QueryT.toString(), "UTF-8"));
+				
+				DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
+				System.out.println("wr = "+ wr);
+				wr.writeBytes(outputString.toString());
+				wr.flush();
+				wr.close();
+				if(urlCon.getResponseCode()==200){
+					JOptionPane.showMessageDialog(null, "Query has been successfully performed!");
+					
+				}
+				out.close();
+			}catch (IOException equery){
+				equery.printStackTrace();
+			}
+			// TODO Auto-generated method stub			
+		}
+/*      
+      public void actionPerformed(ActionEvent e) {
+    	
+input= querylayer.getText();
+    	  if (input.isEmpty())
+    	  {JOptionPane.showMessageDialog(null,"you don't query anything!");
+    		  
+    	  }
+    	  if (input.equals("pump"))
+    	  {
+    		  
+    		    addGraphics(graphicsLayer);
+    		    //layers.remove(graphicsLayer);
+    		    layers.add(graphicsLayer);
+    		   // layers.remove(graphicsLayer2);
+    		    
+    	  }
+    	  if (input.equals("reactor"))
+    	  {
+    		  
+    		    addGraphics3(graphicsLayer2);
+    		    //layers.remove(graphicsLayer2);
+    		    layers.add(graphicsLayer2);
+    		    //layers.remove(graphicsLayer);
+    	  }
+      }
+*/      
+    });
+    queryButton.setSize(130, 30);
+    queryButton.setLocation(1090, 45);
 
     
     // combine text, label and dropdown list into one panel for selecting layer to edit
@@ -1212,6 +1567,12 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     panel.add(lblLayer);
     panel.add(Box.createRigidArea(new Dimension(0, 5)));
     panel.add(cbxLayer);
+    panel.add(Box.createRigidArea(new Dimension(0, 5)));
+    panel.add(lblLayer2);
+    panel.add(Box.createRigidArea(new Dimension(0, 5)));
+    panel.add(querylayer);
+    panel.add(Box.createRigidArea(new Dimension(0, 5)));
+    panel.add(description3);
     panel.add(Box.createRigidArea(new Dimension(0, 5)));
     panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
     
@@ -1224,6 +1585,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     
     // ZHOU add new buttons
     contentPane = new JLayeredPane();
+  
     contentPane.setLayout(new BorderLayout(0,0));
     contentPane.setVisible(true);
     contentPane.add(PWbutton);
@@ -1233,11 +1595,22 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     contentPane.add(APHrButton);
     contentPane.add(APPWButton);
     contentPane.add(refreshButton);
+    //contentPane.add(change);
     contentPane.add(panel);
     contentPane.add(PrAPPWButton);
     contentPane.add(PrAPOButton);
-    contentPane.add(legend, BorderLayout.WEST);
+    contentPane.add(queryButton);
     contentPane.add(map, BorderLayout.CENTER);
+    contentPane.add(legend, BorderLayout.WEST);
+    
+  
+  //adding the graph here
+    //map = createMap();
+   //contentPane.add(map);
+    
+    //only until here
+	
+    
     window.add(contentPane);
     
     // dispose map just before application window is closed.
@@ -1257,8 +1630,170 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     	  }
       }
     });
+  
+
+  
   } // of public JParkSim()
   
+  //attach the webmap trial until return jmap 
+  private JMap createMap() {
+
+	    final JMap jMap = new JMap();
+	        final InfoPopupOverlay popupOverlay = new InfoPopupOverlay();
+	    jMap.addMapOverlay(popupOverlay);
+	        // grab the ArcGISFeatureLayer when added to the map and associate it with the infopopup overlay
+	    jMap.getLayers().addLayerListEventListener(new LayerListEventListenerAdapter() {
+	            @Override
+	      public void multipleLayersAdded(LayerEvent event) {
+	        for (Layer layer : event.getChangedLayers().values()) {
+	          if (layer instanceof ArcGISFeatureLayer) {
+	            popupOverlay.addLayer(layer);
+	          }
+	          else if(layer instanceof GroupLayer) {
+	            for(Layer groupedLayer: ((GroupLayer) layer).getLayers()) {
+	              if(groupedLayer instanceof ArcGISFeatureLayer) {
+	                popupOverlay.addLayer(groupedLayer);
+	              }
+	            }
+	          }
+	        }
+	      }
+	            @Override
+	      public void layerAdded(LayerEvent event) {
+	        Layer layer = event.getChangedLayer();
+	        if (layer instanceof ArcGISFeatureLayer) {
+	          popupOverlay.addLayer(layer);
+	        } else if(layer instanceof GroupLayer) {
+	            for(Layer groupedLayer: ((GroupLayer) layer).getLayers()) {
+	              if(groupedLayer instanceof ArcGISFeatureLayer) {
+	                popupOverlay.addLayer(groupedLayer);
+	              }
+	            }
+	          }
+	               }
+	    });
+
+	    // create and load the web map
+	    WebMap webMap = null;
+	    try {
+	      webMap = WebMap.newInstance(MAP_ID, portal);
+	      jMap.loadWebMap(webMap);
+	      
+	    } catch (Exception e) {
+	      e.printStackTrace();
+	    }
+
+	    return jMap;
+	  }
+/*  
+  //*************try to add a new window						
+	class Query implements ActionListener{
+		ArrayList<String[]> editStack = new ArrayList<String[]>();	
+		
+		JTextField jtf;
+		JButton jbtnQuery;
+		JLabel jlabPrompt, jlabContents;
+		
+		Query(){
+			JFrame jfrm = new JFrame ("Query Window");
+			jfrm.setLayout(new FlowLayout());	
+			jfrm.setSize(240,120);
+			jtf = new JTextField(10);
+			jbtnQuery = new JButton ("Perform Query");
+			jlabPrompt = new JLabel ("Enter your query content:");
+			jlabContents = new JLabel (" ");
+				
+			jtf.addActionListener(this);
+			jbtnQuery.addActionListener(this);
+			
+			jfrm.add(jlabPrompt);
+			jfrm.add(jtf);
+			jfrm.add(jbtnQuery);
+			jfrm.add(jlabContents);
+			
+			jfrm.setVisible(true);
+		}
+
+		  	  		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			HttpURLConnection urlCon;
+			OutputStreamWriter out;
+			URL url;
+			
+			if(e.getActionCommand().equals ("Perform Query"));{
+				String graphicFID = " ";
+			    String graphicOBJECTID =  " ";
+			    String appCallFlag = " ";   
+				String QueryString = jtf.getText();
+//				String resStr = "";
+				System.out.println("the text you type in is: " + QueryString);
+				String[] newFeature = new String[] {graphicFID, graphicOBJECTID, appCallFlag, QueryString}; 
+				boolean addtoStack = true;			  		            		  
+			  	  if (addtoStack) {		
+			  		  editStack.add(newFeature);
+
+			  		  System.out.println("editStack = " + editStack);
+			  	  }
+			}
+									
+			try{
+				url = new URL("http://172.25.182.41/PWServlet/");
+				urlCon = (HttpURLConnection) url.openConnection();
+				urlCon.setRequestMethod("POST");
+				urlCon.setDoOutput(true);
+				
+				out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
+				
+				StringBuilder layers = new StringBuilder();
+				StringBuilder OBJECTIDs = new StringBuilder();
+				StringBuilder appCallFlag = new StringBuilder();
+				StringBuilder QueryT = new StringBuilder();
+				
+				for (String[] item : editStack) { // create comma separated values
+					layers.append(item[0]);
+					layers.append(",");
+		 			OBJECTIDs.append(item[1]); // ZHOU CHANGED ITEM[2] TO ITEM[1]
+				    OBJECTIDs.append(",");
+					appCallFlag.append(item[2]);
+					appCallFlag.append(",");
+					QueryT.append(jtf.getText());
+				}
+				
+				StringBuilder outputString = new StringBuilder();
+				outputString.append(URLEncoder.encode("layers", "UTF-8"));
+				outputString.append("=");
+				outputString.append(URLEncoder.encode(" ", "UTF-8"));
+				outputString.append("&");
+				outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
+				outputString.append("=");
+				outputString.append(URLEncoder.encode(" ", "UTF-8"));
+				outputString.append("&");
+				outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
+				outputString.append("=");
+				outputString.append(URLEncoder.encode(" ", "UTF-8"));
+				outputString.append("&");
+				outputString.append (URLEncoder.encode("QueryT", "UTF-8"));
+				outputString.append ("=");
+				outputString.append (URLEncoder.encode(QueryT.toString(), "UTF-8"));
+				
+				DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
+				System.out.println("wr = "+ wr);
+				wr.writeBytes(outputString.toString());
+				wr.flush();
+				wr.close();
+				if(urlCon.getResponseCode()==200){
+					JOptionPane.showMessageDialog(null, "Query has been successfully performed!");
+					
+				}
+				out.close();
+			}catch (IOException equery){
+				equery.printStackTrace();
+			}
+			// TODO Auto-generated method stub			
+		}
+	}
+*/  
   /**
    * Starting point of this application.
    * @param args
@@ -1272,12 +1807,18 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
           JParkSim application = new JParkSim(); // instance of this application
           application.window.setVisible(true);
           ArcGISRuntime.setClientID("aSg9q12qgnN4OQq2"); // license app
+//          application.new Query();
         } catch (Exception e) {
           e.printStackTrace();
         }
+       
       }
     });
+ 
   }
+  
+  
+  
 }
 
 
@@ -1285,4 +1826,5 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 
 
 //sdvgfgfsd
+
 //fdbgb

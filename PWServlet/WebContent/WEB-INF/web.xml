@@ -6,6 +6,6 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>PWServlet</servlet-name>
-    <url-pattern>/</url-pattern>
+    <url-pattern>/</url-p attern>
   </servlet-mapping>
 </web-app>
