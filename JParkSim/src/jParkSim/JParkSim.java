@@ -1450,7 +1450,6 @@ change.setLocation(890, 45);
     graphicsLayer2.setName("simple graphics");
     
   //button for query (15-04-2016))
-    String QueryCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/QueryOut.CSV"); 
     
     final JButton queryButton = new JButton("Query Features");
     queryButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -1526,11 +1525,7 @@ change.setLocation(890, 45);
 				wr.flush();
 				wr.close();
 				if(urlCon.getResponseCode()==200){
-/*					
-					BufferedReader fileReader = null;
-					fileReader = new BufferedReader(new FileReader(PrAPPWOUTCSV));
-					fileReader.readLine(); 
-*/					
+					
 					JOptionPane.showMessageDialog(null, "Query has been successfully performed!");
 					
 				}
@@ -1540,33 +1535,7 @@ change.setLocation(890, 45);
 			}
 			// TODO Auto-generated method stub			
 		}
-/*      
-      public void actionPerformed(ActionEvent e) {
-    	
-input= querylayer.getText();
-    	  if (input.isEmpty())
-    	  {JOptionPane.showMessageDialog(null,"you don't query anything!");
-    		  
-    	  }
-    	  if (input.equals("pump"))
-    	  {
-    		  
-    		    addGraphics(graphicsLayer);
-    		    //layers.remove(graphicsLayer);
-    		    layers.add(graphicsLayer);
-    		   // layers.remove(graphicsLayer2);
-    		    
-    	  }
-    	  if (input.equals("reactor"))
-    	  {
-    		  
-    		    addGraphics3(graphicsLayer2);
-    		    //layers.remove(graphicsLayer2);
-    		    layers.add(graphicsLayer2);
-    		    //layers.remove(graphicsLayer);
-    	  }
-      }
-*/      
+      
     });
     queryButton.setSize(130, 30);
     queryButton.setLocation(1090, 45);
