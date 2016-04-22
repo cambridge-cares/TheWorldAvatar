@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
+
 import com.cmclinnovations.modsapi.MoDSAPI;
 import com.esri.core.geodatabase.GeodatabaseFeatureServiceTable;
 import com.esri.core.io.EsriSecurityException;
@@ -134,6 +135,7 @@ public class PWServlet extends HttpServlet {
 	public static String PrAPOUTCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPOUT.CSV"); // output CSV file from the pr aspen plus model
 	public static String PrAPPWOUTCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPPWOUT.CSV"); // output CSV file from the pr aspen plus model
 	public static String APPWOUTCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/APPWOUT.CSV"); // output CSV file from the pr aspen plus model
+	public static String QueryCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/QueryOut.CSV"); 
 	
 	public PWServlet() {
 		super();
@@ -546,9 +548,11 @@ public class PWServlet extends HttpServlet {
 		flag1.append("layers=" + layers[0]);
 		flag1.append(", OBJECTIDs=" + OBJECTIDs[0]);
 		flag1.append(", appCallFlag=" + appCallFlag[0]);
+		flag1.append(", appCallFlag=" + appCallFlag[0]);
 		flag1.append(", QueryT=" + QueryT[0]);
 		flag1.flush();
 		flag1.close(); // (mjk, 151115) writing this file works fine.
+				
 
 		switch (appCallFlag[0]) {
 		case "AP":
@@ -600,7 +604,9 @@ public class PWServlet extends HttpServlet {
 		    runParameterisedAPwithOntoCAPE(editStack);	
 		    end_time = System.currentTimeMillis();
 			System.out.println("runPrAPO takes: "+(end_time-start_time));
-		    break;		    
+		    break;	
+		case ("Query"):
+			PerformQuery(QueryT[0]);
 		} // ZL-151126
 	} // of doPost()
 
@@ -644,6 +650,49 @@ public class PWServlet extends HttpServlet {
 		} // ZL-151126
 	}
 
+	public void PerformQuery(String queryT) throws IOException{
+		String QueryTask = queryT;
+		
+		String uri = "File:/C:/apache-tomcat-8.0.24/webapps/ROOT/BiodieselPlant.owl";
+		System.out.println("1");
+		try{			
+            OWLModel owlModel = ProtegeOWL.createJenaOWLModelFromURI(uri);
+            System.out.println("2");
+            System.out.println("QueryTask="+ QueryTask);
+            if(QueryTask.equals("Pump")){
+            	System.out.println("3");
+            	OWLIndividual Pump101Lat = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#P101_Latitude");                       
+                String Pump101LatValue = Pump101Lat.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();  
+                OWLIndividual Pump101Log = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#P101_Longitude"); 
+                String Pump101LogValue = Pump101Log.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();	
+                
+                OWLIndividual Pump01Lat = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#P01_Latitude");                       
+                String Pump01LatValue = Pump01Lat.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();  
+                OWLIndividual Pump01Log = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#P01_Longitude"); 
+                String Pump01LogValue = Pump01Log.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();
+                System.out.println("Lat1="+Pump101LatValue+" Longi1="+Pump101LogValue+" Lat2="+Pump01LatValue+" Logi2="+Pump01LogValue);
+                FileWriter Query = null; // (mjk, 151115) testing structure of DataOutputStream object and of wr object
+        		Query = new FileWriter(QueryCSV);
+        		Query.append("Latitude, " + "Longitude");
+        		Query.append("\n");
+        		Query.append(Pump101LatValue);
+        		Query.append(",");
+        		Query.append(Pump101LogValue);
+        		Query.append("\n");
+        		Query.append(Pump01LatValue);
+        		Query.append(",");
+        		Query.append(Pump01LogValue);
+        		Query.flush();
+        		Query.close(); // (mjk, 151115) writing this file works fine.
+            }
+            
+		}catch (OntologyLoadException ex) {
+	           Logger.getLogger(PWServlet.class.getName()).log(Level.SEVERE, null, ex); 
+	           System.out.println(ex);
+	        } 
+		
+	}
+	
 	public void runPyScript(ArrayList<String[]> editStack) {
 		String appCallFlag = null;
 		appCallFlag = editStack.get(0)[2];                                               // flag indicating which function has been called (PowerWorld, parameterised PW, AspenPlus, parameterised AP)

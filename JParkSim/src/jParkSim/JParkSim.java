@@ -22,7 +22,9 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -93,6 +95,9 @@ import com.esri.toolkit.overlays.HitTestListener;
 import com.esri.toolkit.overlays.HitTestOverlay;
 import com.esri.toolkit.overlays.InfoPopupOverlay;
 import com.esri.core.symbol.PictureMarkerSymbol;
+
+
+
 
 
 
@@ -1445,6 +1450,8 @@ change.setLocation(890, 45);
     graphicsLayer2.setName("simple graphics");
     
   //button for query (15-04-2016))
+    String QueryCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/QueryOut.CSV"); 
+    
     final JButton queryButton = new JButton("Query Features");
     queryButton.setAlignmentX(Component.CENTER_ALIGNMENT);
     queryButton.setEnabled(true);
@@ -1499,7 +1506,7 @@ change.setLocation(890, 45);
 				StringBuilder outputString = new StringBuilder();
 				outputString.append(URLEncoder.encode("layers", "UTF-8"));
 				outputString.append("=");
-				outputString.append(URLEncoder.encode("haha ", "UTF-8"));
+				outputString.append(URLEncoder.encode(" ", "UTF-8"));
 				outputString.append("&");
 				outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
 				outputString.append("=");
@@ -1507,10 +1514,10 @@ change.setLocation(890, 45);
 				outputString.append("&");
 				outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
 				outputString.append("=");
-				outputString.append(URLEncoder.encode(" ", "UTF-8"));
+				outputString.append(URLEncoder.encode("Query", "UTF-8"));
 				outputString.append("&");
 				outputString.append (URLEncoder.encode("QueryT", "UTF-8"));
-				outputString.append ("=");
+				outputString.append ("=");				
 				outputString.append (URLEncoder.encode(QueryT.toString(), "UTF-8"));
 				
 				DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
@@ -1519,6 +1526,11 @@ change.setLocation(890, 45);
 				wr.flush();
 				wr.close();
 				if(urlCon.getResponseCode()==200){
+/*					
+					BufferedReader fileReader = null;
+					fileReader = new BufferedReader(new FileReader(PrAPPWOUTCSV));
+					fileReader.readLine(); 
+*/					
 					JOptionPane.showMessageDialog(null, "Query has been successfully performed!");
 					
 				}
