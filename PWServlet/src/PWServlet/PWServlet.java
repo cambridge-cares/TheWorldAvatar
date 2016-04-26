@@ -539,10 +539,10 @@ public class PWServlet extends HttpServlet {
 		
 		ArrayList<String[]> editStack = new ArrayList<String[]>(); // reconstructeditStack from query string received
 		String[] layers = request.getParameter("layers").split(",");
-		// String[] FIDs = request.getParameter("FIDs").split(","); //ZL-151209 FID indicating parameter of which facility in power world has been changed
 		String[] OBJECTIDs = request.getParameter("OBJECTIDs").split(","); // ZL-151209 OBJECTID indicating parameter of which unit in chemical process has been changed
 		String[] appCallFlag = request.getParameter("appCallFlag").split(","); // (mjk, 151115) adding flag indicating which  function has been called: PowerWorld,  parameterised  PW, AspenPlus, parameterised AP
 		String[] QueryT = request.getParameter("QueryT").split(",");
+
 
 		for (int i = 0; i < layers.length; i++) {
 			// editStack.add(new String[] {layers[i], FIDs[i], OBJECTIDs[i],

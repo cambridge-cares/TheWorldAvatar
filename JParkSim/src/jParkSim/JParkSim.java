@@ -1543,7 +1543,7 @@ change.setLocation(890, 45);
 				    final char[] buffer=new char[Integer.parseInt(urlCon.getHeaderField("Content-Length"))];
 				    JOptionPane.showMessageDialog(null, buffer.length );
 				    int bytesRead=0;
-				    JOptionPane.showMessageDialog(null, "2" + buffer);
+//				    JOptionPane.showMessageDialog(null, "2" + buffer);
 				    while (bytesRead < buffer.length){
 				        bytesRead += br.read(buffer, bytesRead, buffer.length - bytesRead + 1);
 				    }
