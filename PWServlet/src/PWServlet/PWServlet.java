@@ -27,6 +27,12 @@ import javax.servlet.http.HttpServletResponse;
 
 
 
+
+
+
+
+import org.json.JSONArray;
+
 import com.cmclinnovations.modsapi.MoDSAPI;
 import com.esri.core.geodatabase.GeodatabaseFeatureServiceTable;
 import com.esri.core.io.EsriSecurityException;
@@ -41,6 +47,7 @@ import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 
 public class PWServlet extends HttpServlet {
 		
@@ -529,6 +536,7 @@ public class PWServlet extends HttpServlet {
 	} // of constructor
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		ArrayList<String[]> editStack = new ArrayList<String[]>(); // reconstructeditStack from query string received
 		String[] layers = request.getParameter("layers").split(",");
 		// String[] FIDs = request.getParameter("FIDs").split(","); //ZL-151209 FID indicating parameter of which facility in power world has been changed
@@ -606,7 +614,15 @@ public class PWServlet extends HttpServlet {
 			System.out.println("runPrAPO takes: "+(end_time-start_time));
 		    break;	
 		case ("Query"):
-			PerformQuery(QueryT[0]);
+//			GISInformation=PerformQuery(QueryT[0]);
+		
+		    final String GISInformation=(PerformQuery(QueryT[0])).toString();
+		    System.out.println("GISC="+GISInformation);
+		    response.setContentLength(GISInformation.length());
+		    response.getOutputStream().write(GISInformation.getBytes());		    
+		    response.getOutputStream().flush();
+		    response.getOutputStream().close();
+		    System.out.println("Success!");
 		} // ZL-151126
 	} // of doPost()
 
@@ -650,27 +666,33 @@ public class PWServlet extends HttpServlet {
 		} // ZL-151126
 	}
 
-	public void PerformQuery(String queryT) throws IOException{
+	public JSONArray PerformQuery(String queryT) throws IOException{
+		final JSONArray arr=new JSONArray();
 		String QueryTask = queryT;
 		
 		String uri = "File:/C:/apache-tomcat-8.0.24/webapps/ROOT/BiodieselPlant.owl";
-		System.out.println("1");
 		try{			
             OWLModel owlModel = ProtegeOWL.createJenaOWLModelFromURI(uri);
-            System.out.println("2");
             System.out.println("QueryTask="+ QueryTask);
             if(QueryTask.equals("Pump")){
-            	System.out.println("3");
             	OWLIndividual Pump101Lat = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#P101_Latitude");                       
                 String Pump101LatValue = Pump101Lat.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();  
                 OWLIndividual Pump101Log = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#P101_Longitude"); 
                 String Pump101LogValue = Pump101Log.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();	
                 
+                arr.put(Pump101LatValue);
+                arr.put(Pump101LogValue);
+                
                 OWLIndividual Pump01Lat = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#P01_Latitude");                       
                 String Pump01LatValue = Pump01Lat.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();  
                 OWLIndividual Pump01Log = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#P01_Longitude"); 
                 String Pump01LogValue = Pump01Log.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();
+                
+                arr.put(Pump01LatValue);
+                arr.put(Pump01LogValue);
+                
                 System.out.println("Lat1="+Pump101LatValue+" Longi1="+Pump101LogValue+" Lat2="+Pump01LatValue+" Logi2="+Pump01LogValue);
+                System.out.println("GISInformation="+arr);
                 FileWriter Query = null; // (mjk, 151115) testing structure of DataOutputStream object and of wr object
         		Query = new FileWriter(QueryCSV);
         		Query.append("Latitude, " + "Longitude");
@@ -690,7 +712,7 @@ public class PWServlet extends HttpServlet {
 	           Logger.getLogger(PWServlet.class.getName()).log(Level.SEVERE, null, ex); 
 	           System.out.println(ex);
 	        } 
-		
+		return arr;
 	}
 	
 	public void runPyScript(ArrayList<String[]> editStack) {

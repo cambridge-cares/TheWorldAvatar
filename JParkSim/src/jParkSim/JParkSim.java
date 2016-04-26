@@ -27,6 +27,8 @@ import java.io.DataOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -52,6 +54,9 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.MultiPoint;
@@ -95,6 +100,11 @@ import com.esri.toolkit.overlays.HitTestListener;
 import com.esri.toolkit.overlays.HitTestOverlay;
 import com.esri.toolkit.overlays.InfoPopupOverlay;
 import com.esri.core.symbol.PictureMarkerSymbol;
+
+
+
+
+
 
 
 
@@ -1459,6 +1469,7 @@ change.setLocation(890, 45);
       public void actionPerformed(ActionEvent e) {
 			HttpURLConnection urlCon;
 			OutputStreamWriter out;
+			InputStreamReader in;
 			URL url;
 			
 //			input= querylayer.getText();
@@ -1525,15 +1536,38 @@ change.setLocation(890, 45);
 				wr.flush();
 				wr.close();
 				if(urlCon.getResponseCode()==200){
-					
-					JOptionPane.showMessageDialog(null, "Query has been successfully performed!");
+					JOptionPane.showMessageDialog(null, "1" );
+//****************************	
+					in = new InputStreamReader(urlCon.getInputStream());
+					final BufferedReader br = new BufferedReader(in);
+				    final char[] buffer=new char[Integer.parseInt(urlCon.getHeaderField("Content-Length"))];
+				    JOptionPane.showMessageDialog(null, buffer.length );
+				    int bytesRead=0;
+				    JOptionPane.showMessageDialog(null, "2" + buffer);
+				    while (bytesRead < buffer.length){
+				        bytesRead += br.read(buffer, bytesRead, buffer.length - bytesRead + 1);
+				    }
+				    final JSONArray arr = new JSONArray(new String(buffer));
+				    final ArrayList<String> ret = new ArrayList<String>(arr.length());	
+				    for(int i=0; i<arr.length();i++){
+				    	ret.add((String) arr.get(i));
+				    }
+				    JOptionPane.showMessageDialog(null, "3" );
+//*****************************		
+				    
+					JOptionPane.showMessageDialog(null, "Query has been successfully performed!" );
 					
 				}
 				out.close();
 			}catch (IOException equery){
 				equery.printStackTrace();
 			}
-			// TODO Auto-generated method stub			
+		
+ catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
 		}
       
     });
