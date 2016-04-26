@@ -21,18 +21,29 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+
+
+
+
+
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -49,6 +60,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
+
+import org.json.JSONArray;
 
 import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.MultiPoint;
@@ -92,6 +105,18 @@ import com.esri.toolkit.overlays.HitTestListener;
 import com.esri.toolkit.overlays.HitTestOverlay;
 import com.esri.toolkit.overlays.InfoPopupOverlay;
 import com.esri.core.symbol.PictureMarkerSymbol;
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -163,95 +188,32 @@ public class JParkSim {
 	private GraphicsLayer graphicsLayer;
 	private GraphicsLayer graphicsLayer2;
 	private GraphicsLayer graphicsLayer3;
+	private GraphicsLayer graphicsLayer4;
 	private MultiPoint planes;
 	private String input;
-	private void addGraphics(GraphicsLayer gLayer) {
-    
-
-     planes = new MultiPoint();
-    PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol(
-        "http://static.arcgis.com/images/Symbols/Basic/RedShinyPin.png");
-    planeSymbol.setSize(50, 50);
-    //pump for biodiesel
-    Point plane1 = new Point(11541447.629, 140110.305);
-    planes.add(plane1);
-    Point plane2 = new Point(11541461.652, 140132.107);
-    planes.add(plane2);
-    Point plane3 = new Point(11541426.198, 140129.461);
-    planes.add(plane3);
-    Point plane4 = new Point(11541440.115, 140152.692);
-    planes.add(plane4);
-   
-    Graphic gPlanes = new Graphic(planes, planeSymbol);
-    gLayer.addGraphic(gPlanes);
-
-    
-  }
-	
-	private void addGraphics2(GraphicsLayer gLayer) {
-	    
 		
-		{
-		    planes = new MultiPoint();
-		    PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol(
-		        "http://static.arcgis.com/images/Symbols/Basic/RedShinyPin.png");
-		    planeSymbol.setSize(50, 50);
-		    	    
-		    //reactor for biodiesel
-		    Point plane5 = new Point(11541453.967, 140109.621);
-		    planes.add(plane5);
-		    Point plane6 = new Point(11541460.529, 140120.575);
-		    planes.add(plane6);
-		    Point plane7 = new Point(11541447.776, 140117.347);
-		    planes.add(plane7);
-		    Point plane8 = new Point(11541432.007, 140129.941);
-		    planes.add(plane8);
-		    Point plane9 = new Point(11541439.044, 140141.265);
-		    planes.add(plane9);
-		    Point plane10 = new Point(11541425.074, 140137.720);
-		    planes.add(plane10);
-		    
-		    
-		    Graphic gPlanes2 = new Graphic(planes, planeSymbol);
-		    
-		    gLayer.addGraphic(gPlanes2);
-		    
-		    
-		}
-		    
-		  }
-	
+		
 private void addGraphics3(GraphicsLayer gLayer) {
 	    
 		
-		{
 		    planes = new MultiPoint();
 		    PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol(
 		        "http://static.arcgis.com/images/Symbols/Basic/RedShinyPin.png");
 		    planeSymbol.setSize(50, 50);
 		    	    
 		    //plants in JPS
-		    Point planea = new Point(11541057.312, 140992.719);
-		    planes.add(planea);
-		    Point planeb = new Point(11540224.253, 141049.174);
-		    planes.add(planeb);
-		    Point planec = new Point(11541038.861, 140182.695);
-		    planes.add(planec);
-		    Point planed = new Point(11541441.546, 140139.129);
-		    planes.add(planed);
-		    Point planee = new Point(11541457.950, 140117.830);
-		    planes.add(planee);
-		    Point planef = new Point(11544165.746, 141363.877);
-		    planes.add(planef);
+		    double[] x ={11541057.312,11540224.253,11541038.861,11541441.546,11541457.950,11544165.746};
+		    double[] y ={140992.719,141049.174,140182.695,140139.129,140117.830,141363.877};
+		    int z = x.length;
 		    
+		    for (int k=0 ; k< z ; k++)
+		    { planes.add(x[k],y[k]); 
+		     }
+		    	    
+		    Graphic gPlanes = new Graphic(planes, planeSymbol);
 		    
-		    Graphic gPlanes3 = new Graphic(planes, planeSymbol);
-		    
-		    gLayer.addGraphic(gPlanes3);
-		    
-		    
-		}
-		    
+		    gLayer.addGraphic(gPlanes); 
+		 
 		  }
 	
 		
@@ -805,7 +767,7 @@ change.setLocation(890, 45);
 						JOptionPane.showMessageDialog(null, "PowerWorld has finished running!");
 						editStack.clear(); // delete all items in editStack
 					} else {
-						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
+						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode() 
 								+ "\nPlease try running PowerWorld again");
 					}
 					out.close();
@@ -1428,6 +1390,8 @@ change.setLocation(890, 45);
     		layers.remove(graphicsLayer);
     		layers.remove(graphicsLayer2);
     		layers.remove(graphicsLayer3);
+    		layers.remove(graphicsLayer4);
+    		
     		    	}
     });
     refreshButton.setEnabled(true);
@@ -1442,6 +1406,9 @@ change.setLocation(890, 45);
     graphicsLayer2.setName("simple graphics");
     graphicsLayer3 = new GraphicsLayer();
     graphicsLayer3.setName("simple graphics");
+    graphicsLayer4 = new GraphicsLayer();
+    graphicsLayer4.setName("simple graphics");
+    
   //button for query (15-04-2016))
     final JButton queryButton = new JButton("Query Features");
     queryButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -1449,7 +1416,8 @@ change.setLocation(890, 45);
     queryButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent arg0) {
-    	  	HttpURLConnection urlCon;
+    	      	        	       	    
+    	  HttpURLConnection urlCon;
       		OutputStreamWriter out;
       		URL url;
       		input= querylayer.getText();
@@ -1459,38 +1427,65 @@ change.setLocation(890, 45);
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
 				
+				
 				if (input.isEmpty())
 		    	  {JOptionPane.showMessageDialog(null,"you don't query anything!");
 		    		  
 		    	  }
 				 if (input.equals("pump"))
 		    	  {
+					 planes = new MultiPoint();
+					    PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol(
+					        "http://static.arcgis.com/images/Symbols/Basic/RedShinyPin.png");
+					    planeSymbol.setSize(50, 50);
+					    
+					    
+					  //pump for biodiesel
+					    double[] x ={11541447.629,11541461.652,11541426.198,11541440.115};
+					    double[] y ={140110.305,140132.107,140129.461,140152.692};
+					    int z = x.length;
+					    
+					    for (int k=0 ; k< z ; k++)
+					    { planes.add(x[k],y[k]); 
+					    	
+					    }
+						Graphic gPlanes = new Graphic(planes, planeSymbol);
+					    graphicsLayer.addGraphic(gPlanes);
 		    		  
-		    		    addGraphics(graphicsLayer);
-		    		    //layers.remove(graphicsLayer);
 		    		    layers.add(graphicsLayer);
-		    		   // layers.remove(graphicsLayer2);
+		    		   
 		    		    
 		    	  }
 		    	  if (input.equals("reactor"))
 		    	  {
-		    		  
-		    		    addGraphics2(graphicsLayer2);
-		    		    //layers.remove(graphicsLayer2);
-		    		    layers.add(graphicsLayer2);
-		    		    //layers.remove(graphicsLayer);
+		    		  planes = new MultiPoint();
+		  		    PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol(
+		  		        "http://static.arcgis.com/images/Symbols/Basic/RedShinyPin.png");
+		  		    planeSymbol.setSize(50, 50);
+		  		    
+		  		    //reactor for biodiesel
+		  		    double[] x ={11541453.967,11541460.529,11541447.776,11541432.007,11541439.044,11541425.074};
+		  		    double[] y ={140109.621,140120.575,140117.347,140129.941,140141.265,140137.720};
+		  		    int z = x.length;
+		  		    for (int k=0 ; k< z ; k++)
+		  		    { planes.add(x[k],y[k]); 
+		  		     }
+		  				
+		  		   Graphic gPlanes = new Graphic(planes, planeSymbol);
+		  		     graphicsLayer2.addGraphic(gPlanes);
+		    		 layers.add(graphicsLayer2);
 		    	  }
 		    	  if (input.equals("plant"))
 		    	  {
-		    		  
 		    		    addGraphics3(graphicsLayer3);
-		    		    //layers.remove(graphicsLayer2);
-		    		    layers.add(graphicsLayer3);
-		    		    //layers.remove(graphicsLayer);
+		    		    layers.add(graphicsLayer3);    
 		    	  }
+		    	  
 		    	  else {
+		    		  
+		    		  
 					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
-					StringBuilder layers = new StringBuilder();
+					
 //					StringBuilder FIDs = new StringBuilder();
 					//StringBuilder inputquery = new StringBuilder();
 					
@@ -1519,8 +1514,44 @@ change.setLocation(890, 45);
 					wr.writeBytes(outputString.toString()); // write query string into servlet doPost() method
 					wr.flush();
 					wr.close();
-					
+						
+					/*if (urlCon.getResponseCode()==200) {
+						JOptionPane.showMessageDialog(null, "AspenPlus has finished running!");
+						editStack.clear(); // delete all items in editStack
+					} else {
+						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode() urlCon.get
+								+ "\nPlease try running AspenPlus again");
+					}
+					*/
 					out.close();
+					
+					planes = new MultiPoint();
+		  		    PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol(
+		  		        "http://static.arcgis.com/images/Symbols/Basic/RedShinyPin.png");
+		  		    planeSymbol.setSize(50, 50);
+		  		    
+		  		  BufferedReader br = new BufferedReader(new InputStreamReader(urlCon.getInputStream()));
+		  		    
+		  		  String b = urlCon.getRequestProperty(input);
+		  		  String[] bsplit = b.split(";");
+		  		  double[] longi = new double[bsplit.length];
+		  		  for(int i = 0; i<bsplit.length;i++)
+		  		  {String numberAsString = bsplit[i];
+		  		  longi[i] = Double.parseDouble(numberAsString);
+		  		  }
+		  		  
+		  		    //random for biodiesel
+		  		    double[] x ={11541453.967};
+		  		    double[] y ={140109.621};
+		  		 	  				
+		  		    int z = x.length;
+		  		    for (int k=0 ; k< z ; k++)
+		  		    { planes.add(x[k],y[k]); 
+		  		     }
+		  				
+		  		   Graphic gPlanes = new Graphic(planes, planeSymbol);
+		  		     graphicsLayer4.addGraphic(gPlanes);
+		    		 layers.add(graphicsLayer4);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
