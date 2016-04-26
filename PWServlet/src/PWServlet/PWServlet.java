@@ -24,22 +24,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlNs;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+
+
+
+
+
+
+import org.json.JSONArray;
 
 import com.cmclinnovations.modsapi.MoDSAPI;
 import com.esri.core.geodatabase.GeodatabaseFeatureServiceTable;
@@ -55,6 +47,7 @@ import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 
 public class PWServlet extends HttpServlet {
 		
@@ -149,6 +142,7 @@ public class PWServlet extends HttpServlet {
 	public static String PrAPOUTCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPOUT.CSV"); // output CSV file from the pr aspen plus model
 	public static String PrAPPWOUTCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPPWOUT.CSV"); // output CSV file from the pr aspen plus model
 	public static String APPWOUTCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/APPWOUT.CSV"); // output CSV file from the pr aspen plus model
+	public static String QueryCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/QueryOut.CSV"); 
 	
 	public PWServlet() {
 		super();
@@ -542,16 +536,19 @@ public class PWServlet extends HttpServlet {
 	} // of constructor
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		ArrayList<String[]> editStack = new ArrayList<String[]>(); // reconstructeditStack from query string received
 		String[] layers = request.getParameter("layers").split(",");
-		// String[] FIDs = request.getParameter("FIDs").split(","); //ZL-151209 FID indicating parameter of which facility in power world has been changed
 		String[] OBJECTIDs = request.getParameter("OBJECTIDs").split(","); // ZL-151209 OBJECTID indicating parameter of which unit in chemical process has been changed
 		String[] appCallFlag = request.getParameter("appCallFlag").split(","); // (mjk, 151115) adding flag indicating which  function has been called: PowerWorld,  parameterised  PW, AspenPlus, parameterised AP
+		String[] QueryT = request.getParameter("QueryT").split(",");
+
 
 		for (int i = 0; i < layers.length; i++) {
 			// editStack.add(new String[] {layers[i], FIDs[i], OBJECTIDs[i],
 			// appCallFlag[i]}); // Here, "editStack" for only one layer modification looks like this: [Load_Points,103,PW]
-			editStack.add(new String[] { layers[i], OBJECTIDs[i], appCallFlag[i] }); // Here, "editStack" for only one layer modification looks like this: [Load_Points,103,PW]
+//			editStack.add(new String[] { layers[i], OBJECTIDs[i], appCallFlag[i]}); // Here, "editStack" for only one layer modification looks like this: [Load_Points,103,PW]
+			editStack.add(new String[] { layers[i], OBJECTIDs[i], appCallFlag[i], QueryT[i]});
 		}
 
 		FileWriter flag1 = null; // (mjk, 151115) testing structure of DataOutputStream object and of wr object
@@ -559,8 +556,11 @@ public class PWServlet extends HttpServlet {
 		flag1.append("layers=" + layers[0]);
 		flag1.append(", OBJECTIDs=" + OBJECTIDs[0]);
 		flag1.append(", appCallFlag=" + appCallFlag[0]);
+		flag1.append(", appCallFlag=" + appCallFlag[0]);
+		flag1.append(", QueryT=" + QueryT[0]);
 		flag1.flush();
 		flag1.close(); // (mjk, 151115) writing this file works fine.
+				
 
 		switch (appCallFlag[0]) {
 		case "AP":
@@ -568,7 +568,7 @@ public class PWServlet extends HttpServlet {
 			start_time = System.currentTimeMillis();
 			runAspenPlus(editStack);                                                    // run Aspen Plus model when run AspenPlus Button was pressed
 			end_time = System.currentTimeMillis();
-			System.out.println("runAspenPlus takes: "+(end_time-start_time));
+			System.out.println("runAspenPlus takes: "+(end_time-start_time));			
 			break;
 		case "PrAP":                                                                     // if PrAP button was pressed, then the following action will be taken
 			System.out.println(appCallFlag[0] + " button was pressed! (doPOST)");
@@ -612,13 +612,22 @@ public class PWServlet extends HttpServlet {
 		    runParameterisedAPwithOntoCAPE(editStack);	
 		    end_time = System.currentTimeMillis();
 			System.out.println("runPrAPO takes: "+(end_time-start_time));
-		    break;		    
+		    break;	
+		case ("Query"):
+//			GISInformation=PerformQuery(QueryT[0]);
+		
+		    final String GISInformation=(PerformQuery(QueryT[0])).toString();
+		    System.out.println("GISC="+GISInformation);
+		    response.setContentLength(GISInformation.length());
+		    response.getOutputStream().write(GISInformation.getBytes());		    
+		    response.getOutputStream().flush();
+		    response.getOutputStream().close();
+		    System.out.println("Success!");
 		} // ZL-151126
 	} // of doPost()
 
 	// allows manual updating using a browser e.g. entering  http://localhost:8080/PWServlet/?layers=Load_Points&FIDs=103
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ArrayList<String[]> editStack = new ArrayList<String[]>();
 		String[] layers = request.getParameter("layers").split(",");
 		// String[] FIDs = request.getParameter("OBJECTIDs").split(",");
@@ -657,6 +666,55 @@ public class PWServlet extends HttpServlet {
 		} // ZL-151126
 	}
 
+	public JSONArray PerformQuery(String queryT) throws IOException{
+		final JSONArray arr=new JSONArray();
+		String QueryTask = queryT;
+		
+		String uri = "File:/C:/apache-tomcat-8.0.24/webapps/ROOT/BiodieselPlant.owl";
+		try{			
+            OWLModel owlModel = ProtegeOWL.createJenaOWLModelFromURI(uri);
+            System.out.println("QueryTask="+ QueryTask);
+            if(QueryTask.equals("Pump")){
+            	OWLIndividual Pump101Lat = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#P101_Latitude");                       
+                String Pump101LatValue = Pump101Lat.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();  
+                OWLIndividual Pump101Log = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#P101_Longitude"); 
+                String Pump101LogValue = Pump101Log.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();	
+                
+                arr.put(Pump101LatValue);
+                arr.put(Pump101LogValue);
+                
+                OWLIndividual Pump01Lat = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#P01_Latitude");                       
+                String Pump01LatValue = Pump01Lat.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();  
+                OWLIndividual Pump01Log = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#P01_Longitude"); 
+                String Pump01LogValue = Pump01Log.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();
+                
+                arr.put(Pump01LatValue);
+                arr.put(Pump01LogValue);
+                
+                System.out.println("Lat1="+Pump101LatValue+" Longi1="+Pump101LogValue+" Lat2="+Pump01LatValue+" Logi2="+Pump01LogValue);
+                System.out.println("GISInformation="+arr);
+                FileWriter Query = null; // (mjk, 151115) testing structure of DataOutputStream object and of wr object
+        		Query = new FileWriter(QueryCSV);
+        		Query.append("Latitude, " + "Longitude");
+        		Query.append("\n");
+        		Query.append(Pump101LatValue);
+        		Query.append(",");
+        		Query.append(Pump101LogValue);
+        		Query.append("\n");
+        		Query.append(Pump01LatValue);
+        		Query.append(",");
+        		Query.append(Pump01LogValue);
+        		Query.flush();
+        		Query.close(); // (mjk, 151115) writing this file works fine.
+            }
+            
+		}catch (OntologyLoadException ex) {
+	           Logger.getLogger(PWServlet.class.getName()).log(Level.SEVERE, null, ex); 
+	           System.out.println(ex);
+	        } 
+		return arr;
+	}
+	
 	public void runPyScript(ArrayList<String[]> editStack) {
 		String appCallFlag = null;
 		appCallFlag = editStack.get(0)[2];                                               // flag indicating which function has been called (PowerWorld, parameterised PW, AspenPlus, parameterised AP)
@@ -666,7 +724,7 @@ public class PWServlet extends HttpServlet {
 			switch (appCallFlag) {
 
 			case ("AP"):                                                          // when appCallFlag=AP indicating that the run Aspenplus button has been pressed, then the following actions are going to be taken
-				System.out.println(appCallFlag + " Button was pressed");          // for double checking
+				System.out.println(appCallFlag + " Button was pressed! (runPyScript)");          // for double checking
 				Process p = Runtime.getRuntime().exec(runPythonCommandAP);         // call python script to run aspenplus
 				p.waitFor();
 				System.out.println("Exit Value (0 means success): " + p.exitValue()); // if console prints 0 it means success
@@ -679,7 +737,7 @@ public class PWServlet extends HttpServlet {
 				line = br.readLine();
 				break;
 			case ("PW"):                                                           // when appCallFlag=pw indicating that the run powerworld button has been pressed, then the following actions are going to be taken
-				System.out.println(appCallFlag + " Button was pressed");
+				System.out.println(appCallFlag + " Button was pressed! (runPyScript)");
 				Process p1 = Runtime.getRuntime().exec(runPythonCommand);
 				p1.waitFor();
 				System.out.println("Exit Value (0 means success): " + p1.exitValue()); // if console prints 0 it means success
@@ -1277,6 +1335,9 @@ public class PWServlet extends HttpServlet {
 		
  
 	public void runAspenPlus(ArrayList<String[]> editStack) {
+		getAPPWInput(editStack);
+		runPyScript(editStack);                                                                  // call python script to run aspen plus model
+		readAPCSV();
 /*		
 		ArrayList<Map<String, Object>> attributeslist_MX = new ArrayList<Map<String, Object>>(); // additional ArrayList for mixer
 		ArrayList<Map<String, Object>> attributeslist_HX = new ArrayList<Map<String, Object>>(); // additional ArrayList for heat exchanger
@@ -1502,9 +1563,7 @@ public class PWServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 */
-		getAPPWInput(editStack);
-		runPyScript(editStack);                                                                  // call python script to run aspen plus model
-		readAPCSV();
+		
 /*		
 		for (int i = 0; i < editStack.size(); i++) {                                                      // for each feature in editStack, append something to skeleton, attributeslist and layers
 			String appCallFlag = (String) editStack.get(i)[2];
@@ -2834,8 +2893,7 @@ public class PWServlet extends HttpServlet {
 			PowerGenTable.applyEdits(null);
 			UHTSubstationTable.applyEdits(null);
 			EHTSubstationTable.applyEdits(null);
-			System.out
-					.println("Updating process took " + String.valueOf(System.currentTimeMillis() - start) + "ms"); // tells you how long it took to update
+			System.out.println("Updating process took " + String.valueOf(System.currentTimeMillis() - start) + "ms"); // tells you how long it took to update
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -2847,7 +2905,7 @@ public class PWServlet extends HttpServlet {
 		}
 	}
 
-	
+/*	
 //multi-thread 	
 	class Set_MX extends Thread{
 		@Override 
@@ -2997,7 +3055,7 @@ public class PWServlet extends HttpServlet {
 					}
 		}
 	}
-	
+*/	
 		
 }
 

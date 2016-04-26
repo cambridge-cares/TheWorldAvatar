@@ -35,6 +35,7 @@ public class APServlet extends HttpServlet {
 	public static String BUSCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/BUS.CSV");
 	public static String runPythonCommand = new String("python C:/apache-tomcat-8.0.24/webapps/ROOT/PWrun.pyw"); // ensure that python environment variable is set to python34
  	public static String httpReqCSV = new String("C:/apache-tomcat-8.0.24/webapps/APtest/httpReq.CSV"); // (mjk, 151115) differentiating function calls "Run PowerWorld" and "Run parameterised PW"
+ 	public static String httpReqCSVAPS = new String("C:/apache-tomcat-8.0.24/webapps/APtest/httpReqAPS.CSV"); 
  	public static String flag2CSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/flag2.CSV"); // (mjk, 151115) to see how far runPowerWorld() is being executed
 
  	public static Map<String, String> APSimNamtoFID = new HashMap<>(); // ZL-151125 Maps 
@@ -65,25 +66,25 @@ public class APServlet extends HttpServlet {
  
         protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {        
 		ArrayList<String[]> editStack = new ArrayList<String[]>(); // reconstruct editStack from query string received
-		String[] layers = request.getParameter("layers").split(",");
-		String[] FIDs = request.getParameter("OBJECTID").split(",");
-		String[] appCallFlag = request.getParameter("appCallFlag").split(","); // (mjk, 151115) adding flag indicating which function has been called: PowerWorld, parameterised PW, AspenPlus, parameterised AP		
-		for (int i=0; i<layers.length; i++) {
+		String[] QueryTask = request.getParameter("QueryTask").split(",");
+//		String[] FIDs = request.getParameter("OBJECTID").split(",");
+//		String[] appCallFlag = request.getParameter("appCallFlag").split(","); // (mjk, 151115) adding flag indicating which function has been called: PowerWorld, parameterised PW, AspenPlus, parameterised AP		
+		for (int i=0; i<QueryTask.length; i++) {
 //			editStack.add(new String[] {layers[i], FIDs[i]});
-			editStack.add(new String[] {layers[i], FIDs[i], appCallFlag[i]}); // Here, "editStack" for only one layer modification looks like this: [Load_Points,103,PW]
+			editStack.add(new String[] {QueryTask[i]}); // Here, "editStack" for only one layer modification looks like this: [Load_Points,103,PW]
 		}
 
 		FileWriter flag1 = null; // (mjk, 151115) testing structure of DataOutputStream object and of wr object
-		flag1 = new FileWriter(httpReqCSV);
-		flag1.append("layers=" + layers[0]);
-		flag1.append(", FIDs=" + FIDs[0]);
-		flag1.append(", appCallFlag=" + appCallFlag[0]);
+		flag1 = new FileWriter(httpReqCSVAPS);
+		flag1.append("QueryTask=" + QueryTask[0]);
+//		flag1.append(", FIDs=" + FIDs[0]);
+//		flag1.append(", appCallFlag=" + appCallFlag[0]);
 		flag1.flush();
 		flag1.close(); // (mjk, 151115) writing this file works fine.
 		
 //		if(appCallFlag[0]=="PW") {
 
-		runAspenPlus(editStack);  //ZL-151126
+//		runAspenPlus(editStack);  //ZL-151126
 		
 	} // of doPost()
 	
