@@ -18,7 +18,7 @@ public class SurrogateModel_test {
 		}
 		System.out.println("xData="+xData);
 		
-		String simDir = "C:/Users/Zhou Li/Desktop/AP+PW/APPWSim";
+		String simDir = "C:/Users/Zhou Li/Desktop/APPWSim";
 //		System.load("D:/MoDS_API/MoDS_Java_API_v0.1/MoDS_Java_API.dll");
 	    // String modelName = "HDMR_Alg_1";
 //	    String modelName = "Polynomial_Alg_1";
