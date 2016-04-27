@@ -62,5 +62,6 @@
 	<classpathentry kind="lib" path="C:/Program Files/Protege_3.4.8/plugins/edu.stanford.smi.protegex.owl/wstx-asl-3.2.9.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Protege_3.4.8/plugins/edu.stanford.smi.protegex.owl/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Protege_3.4.8/plugins/edu.stanford.smi.protegex.owl/xml-apis.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Zhou Li/Downloads/commons-io-2.5-src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
