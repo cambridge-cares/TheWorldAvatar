@@ -1455,7 +1455,7 @@ change.setLocation(890, 45);
 			InputStreamReader in;
 			URL url;
 			
-//			input= querylayer.getText();
+
 			String QueryString = null;
 			if(e.getActionCommand().equals ("Query Features"));{
 				String graphicFID = " ";
@@ -1512,7 +1512,7 @@ change.setLocation(890, 45);
 				outputString.append (URLEncoder.encode(QueryT.toString(), "UTF-8"));
 				
 				DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
-				System.out.println("wr = "+ wr);
+				//System.out.println("wr = "+ wr);
 				wr.writeBytes(outputString.toString());
 				wr.flush();
 				wr.close();
@@ -1521,11 +1521,23 @@ change.setLocation(890, 45);
 
 					in = new InputStreamReader(urlCon.getInputStream());
 					final BufferedReader br = new BufferedReader(in);
-					String[] strTemp = null;
-					while (null != (strTemp = br.readLine().split(","))){
-						for(int i=0; i<strTemp.length; i++)
-						JOptionPane.showMessageDialog(null,strTemp[i]);
+					String[] strTemp = br.readLine().split(",");
+					int k= strTemp.length;
+					String modif = strTemp.toString().replace("[","").replace("]", "").trim(); 
+					String[] coordinate= modif.split(",");
+					
+					for (int b=0 ; b<k ;b++)
+					{
+						double c =Double.parseDouble(coordinate[b]);
+						System.out.println ("element"+b+ "="+coordinate[b]);
 					}
+					
+					
+					//while (null != (strTemp = br.readLine().split(","))){
+					//	for(int i=0; i<strTemp.length; i++)
+					//	JOptionPane.showMessageDialog(null,strTemp);
+						
+					//}
 					br.close();
 					JOptionPane.showMessageDialog(null, "Query has been successfully performed!" );
 					
