@@ -1473,20 +1473,18 @@ change.setLocation(890, 45);
 			URL url;
 			
 //			input= querylayer.getText();
-			
+			String QueryString = null;
 			if(e.getActionCommand().equals ("Query Features"));{
 				String graphicFID = " ";
 			    String graphicOBJECTID =  " ";
 			    String appCallFlag = " ";   
-				String QueryString = querylayer.getText();
+				QueryString = querylayer.getText();
 //				String resStr = "";
 				System.out.println("the text you type in is: " + QueryString);
 				String[] newFeature = new String[] {graphicFID, graphicOBJECTID, appCallFlag, QueryString}; 
 				boolean addtoStack = true;			  		            		  
 			  	  if (addtoStack) {		
 			  		  editStack.add(newFeature);
-
-			  		  System.out.println("editStack = " + editStack);
 			  	  }
 			}
 									
@@ -1535,26 +1533,17 @@ change.setLocation(890, 45);
 				wr.writeBytes(outputString.toString());
 				wr.flush();
 				wr.close();
+				
 				if(urlCon.getResponseCode()==200){
-					JOptionPane.showMessageDialog(null, "1" );
-//****************************	
+
 					in = new InputStreamReader(urlCon.getInputStream());
 					final BufferedReader br = new BufferedReader(in);
-				    final char[] buffer=new char[Integer.parseInt(urlCon.getHeaderField("Content-Length"))];
-				    JOptionPane.showMessageDialog(null, buffer.length );
-				    int bytesRead=0;
-//				    JOptionPane.showMessageDialog(null, "2" + buffer);
-				    while (bytesRead < buffer.length){
-				        bytesRead += br.read(buffer, bytesRead, buffer.length - bytesRead + 1);
-				    }
-				    final JSONArray arr = new JSONArray(new String(buffer));
-				    final ArrayList<String> ret = new ArrayList<String>(arr.length());	
-				    for(int i=0; i<arr.length();i++){
-				    	ret.add((String) arr.get(i));
-				    }
-				    JOptionPane.showMessageDialog(null, "3" );
-//*****************************		
-				    
+					String[] strTemp = null;
+					while (null != (strTemp = br.readLine().split(","))){
+						for(int i=0; i<strTemp.length; i++)
+						JOptionPane.showMessageDialog(null,strTemp[i]);
+					}
+					br.close();
 					JOptionPane.showMessageDialog(null, "Query has been successfully performed!" );
 					
 				}
@@ -1563,10 +1552,6 @@ change.setLocation(890, 45);
 				equery.printStackTrace();
 			}
 		
- catch (JSONException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
 			
 		}
       
@@ -1645,9 +1630,7 @@ change.setLocation(890, 45);
     	  }
       }
     });
-  
-
-  
+    
   } // of public JParkSim()
   
   //attach the webmap trial until return jmap 
@@ -1700,115 +1683,7 @@ change.setLocation(890, 45);
 
 	    return jMap;
 	  }
-/*  
-  //*************try to add a new window						
-	class Query implements ActionListener{
-		ArrayList<String[]> editStack = new ArrayList<String[]>();	
-		
-		JTextField jtf;
-		JButton jbtnQuery;
-		JLabel jlabPrompt, jlabContents;
-		
-		Query(){
-			JFrame jfrm = new JFrame ("Query Window");
-			jfrm.setLayout(new FlowLayout());	
-			jfrm.setSize(240,120);
-			jtf = new JTextField(10);
-			jbtnQuery = new JButton ("Perform Query");
-			jlabPrompt = new JLabel ("Enter your query content:");
-			jlabContents = new JLabel (" ");
-				
-			jtf.addActionListener(this);
-			jbtnQuery.addActionListener(this);
-			
-			jfrm.add(jlabPrompt);
-			jfrm.add(jtf);
-			jfrm.add(jbtnQuery);
-			jfrm.add(jlabContents);
-			
-			jfrm.setVisible(true);
-		}
-
-		  	  		
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			HttpURLConnection urlCon;
-			OutputStreamWriter out;
-			URL url;
-			
-			if(e.getActionCommand().equals ("Perform Query"));{
-				String graphicFID = " ";
-			    String graphicOBJECTID =  " ";
-			    String appCallFlag = " ";   
-				String QueryString = jtf.getText();
-//				String resStr = "";
-				System.out.println("the text you type in is: " + QueryString);
-				String[] newFeature = new String[] {graphicFID, graphicOBJECTID, appCallFlag, QueryString}; 
-				boolean addtoStack = true;			  		            		  
-			  	  if (addtoStack) {		
-			  		  editStack.add(newFeature);
-
-			  		  System.out.println("editStack = " + editStack);
-			  	  }
-			}
-									
-			try{
-				url = new URL("http://172.25.182.41/PWServlet/");
-				urlCon = (HttpURLConnection) url.openConnection();
-				urlCon.setRequestMethod("POST");
-				urlCon.setDoOutput(true);
-				
-				out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
-				
-				StringBuilder layers = new StringBuilder();
-				StringBuilder OBJECTIDs = new StringBuilder();
-				StringBuilder appCallFlag = new StringBuilder();
-				StringBuilder QueryT = new StringBuilder();
-				
-				for (String[] item : editStack) { // create comma separated values
-					layers.append(item[0]);
-					layers.append(",");
-		 			OBJECTIDs.append(item[1]); // ZHOU CHANGED ITEM[2] TO ITEM[1]
-				    OBJECTIDs.append(",");
-					appCallFlag.append(item[2]);
-					appCallFlag.append(",");
-					QueryT.append(jtf.getText());
-				}
-				
-				StringBuilder outputString = new StringBuilder();
-				outputString.append(URLEncoder.encode("layers", "UTF-8"));
-				outputString.append("=");
-				outputString.append(URLEncoder.encode(" ", "UTF-8"));
-				outputString.append("&");
-				outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
-				outputString.append("=");
-				outputString.append(URLEncoder.encode(" ", "UTF-8"));
-				outputString.append("&");
-				outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
-				outputString.append("=");
-				outputString.append(URLEncoder.encode(" ", "UTF-8"));
-				outputString.append("&");
-				outputString.append (URLEncoder.encode("QueryT", "UTF-8"));
-				outputString.append ("=");
-				outputString.append (URLEncoder.encode(QueryT.toString(), "UTF-8"));
-				
-				DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
-				System.out.println("wr = "+ wr);
-				wr.writeBytes(outputString.toString());
-				wr.flush();
-				wr.close();
-				if(urlCon.getResponseCode()==200){
-					JOptionPane.showMessageDialog(null, "Query has been successfully performed!");
-					
-				}
-				out.close();
-			}catch (IOException equery){
-				equery.printStackTrace();
-			}
-			// TODO Auto-generated method stub			
-		}
-	}
-*/  
+  
   /**
    * Starting point of this application.
    * @param args
@@ -1822,7 +1697,6 @@ change.setLocation(890, 45);
           JParkSim application = new JParkSim(); // instance of this application
           application.window.setVisible(true);
           ArcGISRuntime.setClientID("aSg9q12qgnN4OQq2"); // license app
-//          application.new Query();
         } catch (Exception e) {
           e.printStackTrace();
         }
