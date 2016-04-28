@@ -14,7 +14,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,11 +23,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -63,27 +59,20 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.MultiPoint;
 import com.esri.core.geometry.Point;
-import com.esri.core.io.EsriSecurityException;
 import com.esri.core.io.UserCredentials;
 import com.esri.core.map.Feature;
-import com.esri.core.map.FeatureResult;
 import com.esri.core.map.Graphic;
 import com.esri.core.portal.Portal;
 import com.esri.core.portal.WebMap;
 import com.esri.core.renderer.SimpleRenderer;
-import com.esri.core.symbol.PictureFillSymbol;
 import com.esri.core.symbol.SimpleFillSymbol;
 import com.esri.core.symbol.SimpleLineSymbol;
 import com.esri.core.symbol.SimpleMarkerSymbol;
 import com.esri.core.symbol.SimpleMarkerSymbol.Style;
 import com.esri.core.symbol.Symbol;
-import com.esri.core.tasks.query.QueryTask;
 import com.esri.map.ArcGISDynamicMapServiceLayer;
 import com.esri.map.ArcGISFeatureLayer;
 import com.esri.map.ArcGISTiledMapServiceLayer;
@@ -101,7 +90,6 @@ import com.esri.map.popup.PopupView;
 import com.esri.map.popup.PopupViewEvent;
 import com.esri.map.popup.PopupViewListener;
 import com.esri.runtime.ArcGISRuntime;
-import com.esri.toolkit.JLayerTree;
 import com.esri.toolkit.legend.JLegend;
 import com.esri.toolkit.overlays.HitTestEvent;
 import com.esri.toolkit.overlays.HitTestListener;
@@ -109,19 +97,6 @@ import com.esri.toolkit.overlays.HitTestOverlay;
 import com.esri.toolkit.overlays.InfoPopupOverlay;
 import com.esri.core.symbol.PictureMarkerSymbol;
 
-
-
-
-
-
-
-
-
-
-
-
-
-import java.awt.image.BufferedImage;
 
 public class JParkSim {
 	
@@ -190,32 +165,7 @@ public class JParkSim {
 	private GraphicsLayer graphicsLayer4;
 	private MultiPoint planes;
 	private String input;
-		
-		
-private void addGraphics3(GraphicsLayer gLayer) {
-	    
-		
-		    planes = new MultiPoint();
-		    PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol(
-		        "http://static.arcgis.com/images/Symbols/Basic/RedShinyPin.png");
-		    planeSymbol.setSize(50, 50);
-		    	    
-		    //plants in JPS
-		    double[] x ={11541057.312,11540224.253,11541038.861,11541441.546,11541457.950,11544165.746};
-		    double[] y ={140992.719,141049.174,140182.695,140139.129,140117.830,141363.877};
-		    int z = x.length;
-		    
-		    for (int k=0 ; k< z ; k++)
-		    { planes.add(x[k],y[k]); 
-		     }
-		    	    
-		    Graphic gPlanes = new Graphic(planes, planeSymbol);
-		    
-		    gLayer.addGraphic(gPlanes); 
-		 
-		  }
-	
-		
+				
 	//if want to add new map
 	  private HashMap<String, String> idMap;
 	  private JComboBox mapIds;
@@ -603,16 +553,13 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     		            	  System.out.println("newFeature[0]=" + newFeature[0] + ", newFeature[1]=" + newFeature[1]); //ZL-151209
 //double y= Double.parseDouble(newFeature[2]);
 //double z=2*y;
-//System.out.println("new function=" +z);
-    		            	  //    		            	  System.out.println("paramFeature[0]=" + paramFeature[0] + ", paramFeature[1]" + paramFeature[1]);
-    		            	  
+//System.out.println("new function=" +z);    		            	  
     		            	  //try to expand new button
     		            	  
     		            	  boolean addtoStack = true;
     		            	  System.out.println("editStack size=" + editStack.size());
     		            	  for (int i=0; i<editStack.size(); i++) {							// (mjk, 151120) check through (i) elements in editStack where (i) is the number of modified feature objects in the layers.
     		            		  String itemlayer = editStack.get(i)[0];
-    //		            		  String graphicFID = editStack.get(i)[1];
     		            		  String graphicOBJECTID = editStack.get(i)[1];
 //    		            		  String appCallFlag = editStack.get(i)[2];   //ZL-151208
     		            		  if (layer.getName().equals(itemlayer) && (String.valueOf(hitGraphic.getAttributes().get("OBJECTID")).equals(graphicOBJECTID))) { 
@@ -718,14 +665,11 @@ change.setLocation(890, 45);
 				} else {
 					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
 					StringBuilder layers = new StringBuilder();
-//					StringBuilder FIDs = new StringBuilder();
 					StringBuilder OBJECTIDs = new StringBuilder();
 					StringBuilder appCallFlag = new StringBuilder(); // (mjk, 151115) creates a flag indicating which function has been called: PowerWorld, parameterised PW, AspenPlus, parameterised AP
 					for (String[] item : editStack) { // create comma separated values
 						layers.append(item[0]);
 						layers.append(",");
-//						FIDs.append(item[1]);
-//						FIDs.append(",");
 						OBJECTIDs.append(item[1]);
 						OBJECTIDs.append(",");
 						appCallFlag.append("PW");
@@ -737,10 +681,6 @@ change.setLocation(890, 45);
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(layers.toString(), "UTF-8"));
 					outputString.append("&");
-//					outputString.append(URLEncoder.encode("FIDs", "UTF-8"));
-//					outputString.append("=");
-//					outputString.append(URLEncoder.encode(FIDs.toString(), "UTF-8"));
-//					outputString.append("&");
 					outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(OBJECTIDs.toString(), "UTF-8"));
@@ -819,8 +759,6 @@ change.setLocation(890, 45);
 					for (String[] item : editStack) { // create comma separated values
 						layers.append(item[0]);
 						layers.append(",");
-//						FIDs.append(item[1]);
-//						FIDs.append(",");
 						OBJECTIDs.append(item[1]);
 						OBJECTIDs.append(",");
 						appCallFlag.append("PWPr");
@@ -832,10 +770,6 @@ change.setLocation(890, 45);
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(layers.toString(), "UTF-8"));
 					outputString.append("&");
-//					outputString.append(URLEncoder.encode("FIDs", "UTF-8"));
-//					outputString.append("=");
-//					outputString.append(URLEncoder.encode(FIDs.toString(), "UTF-8"));
-//					outputString.append("&");
 					outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(OBJECTIDs.toString(), "UTF-8"));
@@ -908,14 +842,11 @@ change.setLocation(890, 45);
 					
 					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
 					StringBuilder layers = new StringBuilder();
-//					StringBuilder FIDs = new StringBuilder();
 					StringBuilder OBJECTIDs = new StringBuilder();
 					StringBuilder appCallFlag = new StringBuilder();
 					for (String[] item : editStack) { // create comma separated values
 						layers.append(item[0]);
 						layers.append(",");
-//						FIDs.append(item[1]);
-//						FIDs.append(",");
 						OBJECTIDs.append(item[1]);
 						OBJECTIDs.append(",");
 						appCallFlag.append("AP");
@@ -927,10 +858,6 @@ change.setLocation(890, 45);
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(layers.toString(), "UTF-8"));
 					outputString.append("&");
-//					outputString.append(URLEncoder.encode("FIDs", "UTF-8"));
-//					outputString.append("=");
-//					outputString.append(URLEncoder.encode(FIDs.toString(), "UTF-8"));
-//					outputString.append("&");
 					outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(OBJECTIDs.toString(), "UTF-8"));
@@ -1004,15 +931,12 @@ change.setLocation(890, 45);
 				} else {
 					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
 					StringBuilder layers = new StringBuilder();
-//					StringBuilder FIDs = new StringBuilder();
 					StringBuilder OBJECTIDs = new StringBuilder();
 					StringBuilder appCallFlag = new StringBuilder();
 					
 					for (String[] item : editStack) { // create comma separated values
 						layers.append(item[0]);
 						layers.append(",");
-//						FIDs.append(item[1]);
-//						FIDs.append(",");
 						OBJECTIDs.append(item[1]);
 						OBJECTIDs.append(",");
 						appCallFlag.append("PrAP");
@@ -1024,10 +948,6 @@ change.setLocation(890, 45);
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(layers.toString(), "UTF-8"));
 					outputString.append("&");
-//					outputString.append(URLEncoder.encode("FIDs", "UTF-8"));
-//					outputString.append("=");
-//					outputString.append(URLEncoder.encode(FIDs.toString(), "UTF-8"));
-//					outputString.append("&");
 					outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(OBJECTIDs.toString(), "UTF-8"));
@@ -1090,15 +1010,12 @@ change.setLocation(890, 45);
 				} else {
 					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
 					StringBuilder layers = new StringBuilder();
-//					StringBuilder FIDs = new StringBuilder();
 					StringBuilder OBJECTIDs = new StringBuilder();
 					StringBuilder appCallFlag = new StringBuilder();
 					
 					for (String[] item : editStack) { // create comma separated values
 						layers.append(item[0]);
 						layers.append(",");
-//						FIDs.append(item[1]);
-//						FIDs.append(",");
 						OBJECTIDs.append(item[1]);
 						OBJECTIDs.append(",");
 						appCallFlag.append("APHR");
@@ -1110,10 +1027,6 @@ change.setLocation(890, 45);
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(layers.toString(), "UTF-8"));
 					outputString.append("&");
-//					outputString.append(URLEncoder.encode("FIDs", "UTF-8"));
-//					outputString.append("=");
-//					outputString.append(URLEncoder.encode(FIDs.toString(), "UTF-8"));
-//					outputString.append("&");
 					outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(OBJECTIDs.toString(), "UTF-8"));
@@ -1175,15 +1088,12 @@ change.setLocation(890, 45);
 				} else {
 					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
 					StringBuilder layers = new StringBuilder();
-//					StringBuilder FIDs = new StringBuilder();
 					StringBuilder OBJECTIDs = new StringBuilder();
 					StringBuilder appCallFlag = new StringBuilder();
 					
 					for (String[] item : editStack) { // create comma separated values
 						layers.append(item[0]);
 						layers.append(",");
-//						FIDs.append(item[1]);
-//						FIDs.append(",");
 			 			OBJECTIDs.append(item[1]); // ZHOU CHANGED ITEM[2] TO ITEM[1]
 					    OBJECTIDs.append(",");
 						appCallFlag.append("APPW");
@@ -1195,10 +1105,6 @@ change.setLocation(890, 45);
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(layers.toString(), "UTF-8"));
 					outputString.append("&");
-//					outputString.append(URLEncoder.encode("FIDs", "UTF-8"));
-//					outputString.append("=");
-//					outputString.append(URLEncoder.encode(FIDs.toString(), "UTF-8"));
-//					outputString.append("&");
 					outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(OBJECTIDs.toString(), "UTF-8"));
@@ -1260,15 +1166,12 @@ change.setLocation(890, 45);
 				} else {
 					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
 					StringBuilder layers = new StringBuilder();
-//					StringBuilder FIDs = new StringBuilder();
 					StringBuilder OBJECTIDs = new StringBuilder();
 					StringBuilder appCallFlag = new StringBuilder();
 					
 					for (String[] item : editStack) { // create comma separated values
 						layers.append(item[0]);
 						layers.append(",");
-//						FIDs.append(item[1]);
-//						FIDs.append(",");
 			 			OBJECTIDs.append(item[1]); // ZHOU CHANGED ITEM[2] TO ITEM[1]
 					    OBJECTIDs.append(",");
 						appCallFlag.append("PrAPPW");
@@ -1280,10 +1183,6 @@ change.setLocation(890, 45);
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(layers.toString(), "UTF-8"));
 					outputString.append("&");
-//					outputString.append(URLEncoder.encode("FIDs", "UTF-8"));
-//					outputString.append("=");
-//					outputString.append(URLEncoder.encode(FIDs.toString(), "UTF-8"));
-//					outputString.append("&");
 					outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(OBJECTIDs.toString(), "UTF-8"));
@@ -1345,15 +1244,12 @@ change.setLocation(890, 45);
 				} else {
 					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
 					StringBuilder layers = new StringBuilder();
-//					StringBuilder FIDs = new StringBuilder();
 					StringBuilder OBJECTIDs = new StringBuilder();
 					StringBuilder appCallFlag = new StringBuilder();
 					
 					for (String[] item : editStack) { // create comma separated values
 						layers.append(item[0]);
 						layers.append(",");
-//						FIDs.append(item[1]);
-//						FIDs.append(",");
 			 			OBJECTIDs.append(item[1]); // ZHOU CHANGED ITEM[2] TO ITEM[1]
 					    OBJECTIDs.append(",");
 						appCallFlag.append("PrAPO");
@@ -1365,10 +1261,6 @@ change.setLocation(890, 45);
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(layers.toString(), "UTF-8"));
 					outputString.append("&");
-//					outputString.append(URLEncoder.encode("FIDs", "UTF-8"));
-//					outputString.append("=");
-//					outputString.append(URLEncoder.encode(FIDs.toString(), "UTF-8"));
-//					outputString.append("&");
 					outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(OBJECTIDs.toString(), "UTF-8"));
@@ -1521,16 +1413,8 @@ change.setLocation(890, 45);
 
 					in = new InputStreamReader(urlCon.getInputStream());
 					final BufferedReader br = new BufferedReader(in);
-					String[] strTemp = br.readLine().split(",");
-					int k= strTemp.length;
-					String modif = strTemp.toString().replace("[","").replace("]", "").trim(); 
-					String[] coordinate= modif.split(",");
-					
-					for (int b=0 ; b<k ;b++)
-					{
-						double c =Double.parseDouble(coordinate[b]);
-						System.out.println ("element"+b+ "="+coordinate[b]);
-					}
+					String[] strTemp = null;
+					strTemp = br.readLine().split("\"");									
 					
 					
 					//while (null != (strTemp = br.readLine().split(","))){
@@ -1539,14 +1423,30 @@ change.setLocation(890, 45);
 						
 					//}
 					br.close();
-					JOptionPane.showMessageDialog(null, "Query has been successfully performed!" );
 					
+					planes = new MultiPoint();
+			        PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol("http://static.arcgis.com/images/Symbols/Basic/RedShinyPin.png");
+			        planeSymbol.setSize(50, 50);			         			         
+			         
+			        double[] x= new double[4];
+			        for(int i=0; i<4; i++){
+			        	 x[i] = Double.parseDouble(strTemp[2*i+1]);
+			         }
+			         
+			         for (int k=0 ; k<2 ; k++){ 
+			        	 planes.add(x[2*k],x[2*k+1]); 			          
+			         }
+			         Graphic gPlanes = new Graphic(planes, planeSymbol);
+			         graphicsLayer.addGraphic(gPlanes);
+			          			            			            
+					JOptionPane.showMessageDialog(null, "Query has been successfully performed!" );
+					editStack.clear(); 
 				}
 				out.close();
 			}catch (IOException equery){
 				equery.printStackTrace();
 			}
-		
+			layers.add(graphicsLayer);
 			
 		}
       

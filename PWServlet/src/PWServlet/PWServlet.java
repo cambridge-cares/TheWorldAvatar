@@ -1,21 +1,15 @@
 package PWServlet;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,12 +18,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-
-
-
-
-
 
 import org.json.JSONArray;
 
@@ -47,7 +35,6 @@ import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 
 public class PWServlet extends HttpServlet {
 		
@@ -556,7 +543,6 @@ public class PWServlet extends HttpServlet {
 		flag1.append("layers=" + layers[0]);
 		flag1.append(", OBJECTIDs=" + OBJECTIDs[0]);
 		flag1.append(", appCallFlag=" + appCallFlag[0]);
-		flag1.append(", appCallFlag=" + appCallFlag[0]);
 		flag1.append(", QueryT=" + QueryT[0]);
 		flag1.flush();
 		flag1.close(); // (mjk, 151115) writing this file works fine.
@@ -613,17 +599,15 @@ public class PWServlet extends HttpServlet {
 		    end_time = System.currentTimeMillis();
 			System.out.println("runPrAPO takes: "+(end_time-start_time));
 		    break;	
-		case ("Query"):
-//			GISInformation=PerformQuery(QueryT[0]);
-		
+		case ("Query"):		
 		    final String GISInformation=(PerformQuery(QueryT[0])).toString();
-		    System.out.println("GISC="+GISInformation);
 		    response.setContentLength(GISInformation.length());
 		    response.getOutputStream().write(GISInformation.getBytes());		    
 		    response.getOutputStream().flush();
 		    response.getOutputStream().close();
 		    System.out.println("Success!");
-		} // ZL-151126
+		    break;
+		} 
 	} // of doPost()
 
 	// allows manual updating using a browser e.g. entering  http://localhost:8080/PWServlet/?layers=Load_Points&FIDs=103
@@ -892,8 +876,8 @@ public class PWServlet extends HttpServlet {
 		}
 		
 		ArrayList<Double> xRow = new ArrayList<Double>();                                      // extra arraylist to collect the x-value required as input to the pr aspen plus model
-		ArrayList<ArrayList<Double>> xData = new ArrayList<>(1);                               // arraylist to
-		ArrayList<ArrayList<Double>> yData;                                                    // output of the pr aspenplus model
+//		ArrayList<ArrayList<Double>> xData = new ArrayList<>(1);                               // arraylist to
+//		ArrayList<ArrayList<Double>> yData;                                                    // output of the pr aspenplus model
 		
 /*																	
 		Thread thread_MX = new Thread(new Set_MX());
@@ -942,7 +926,7 @@ public class PWServlet extends HttpServlet {
 //							filewriterAPIN.append(String.valueOf(attributeslist_MX.get(i).get("MatIn2_P")));
 //							filewriterAPIN.append(",");
 							xRow.add(Double.parseDouble(String.valueOf(attributeslist_MX.get(i).get("MatIn2Qnt")))); // add the feeding mole flowrate of methanol  to xRow
-							xRow.add(Double.parseDouble(String.valueOf(attributeslist_MX.get(i).get("MatIn2_T")))); // add the temperature of the feeding methanol flow to xRow
+							xRow.add(Double.parseDouble(String.valueOf(attributeslist_MX.get(i).get("MatIn2_T")))); // add the temperature of the feeding methanol flow to xRow							
 //							xRow.add(Double.parseDouble(String.valueOf(attributeslist_MX.get(i).get("MatIn2_P")))); // add the pressure of the feeding methanol flow to xRow
 						}
 					}
@@ -1804,7 +1788,7 @@ public class PWServlet extends HttpServlet {
 			fileWriter = new FileWriter(PrPWOUTCSV); // filewriter for the
 			System.load("C:/apache-tomcat-8.0.24/webapps/ROOT/MoDS_Java_API.dll");                     // not recommended--Messing with the library path on the command line		
 			
-			ArrayList<String> xNames = MoDSAPI.getXVarNamesFromAPI(simDir, modelName);
+//			ArrayList<String> xNames = MoDSAPI.getXVarNamesFromAPI(simDir, modelName);
 			ArrayList<String> yNames = MoDSAPI.getYVarNamesFromAPI(simDir, modelName);
 
 				for (int j = 0; j < yNames.size(); j++) {
@@ -2019,8 +2003,7 @@ public class PWServlet extends HttpServlet {
 			MaterialLineTable.getInitializationError();
 
 			final CountDownLatch latch = new CountDownLatch(1);                                                                             // ZL-151207 handles one asynchronous processes, only continues  Thread when it reaches 0
-			MaterialLineTable.populateFromService(loadAllFeatures, false,
-					new CallbackListener<Boolean>() {
+			MaterialLineTable.populateFromService(loadAllFeatures, false, new CallbackListener<Boolean>() {
 						@Override
 						public void onCallback(Boolean status) {                                                                            // Asynchronous callback: code must wait for populate from service to finish loading features
 							if (status == true) {
@@ -2060,8 +2043,7 @@ public class PWServlet extends HttpServlet {
 				}
 			}
 			MaterialLineTable.applyEdits(null);                                                                                        // commit local updates onto Server
-			System.out
-					.println("Updating process took " + String.valueOf(System.currentTimeMillis() - start) + "ms");                     // tells how long it took to update
+			System.out.println("Updating process took " + String.valueOf(System.currentTimeMillis() - start) + "ms");                     // tells how long it took to update
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
