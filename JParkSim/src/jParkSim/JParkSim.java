@@ -29,12 +29,19 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+
+
+
+
+
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -154,63 +161,11 @@ public class JParkSim {
 	
 	private GraphicsLayer graphicsLayer;
 	private GraphicsLayer graphicsLayer2;
-	private MultiPoint planes2;
+	private GraphicsLayer graphicsLayer3;
+	private GraphicsLayer graphicsLayer4;
 	private MultiPoint planes;
-	private void addGraphics(GraphicsLayer gLayer) {
-    
-     planes = new MultiPoint();
-    PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol(
-        "http://static.arcgis.com/images/Symbols/Basic/RedShinyPin.png");
-    planeSymbol.setSize(50, 50);
-    //pump for biodiesel
-    Point plane1 = new Point(11541447.629, 140110.305);
-    planes.add(plane1);
-    Point plane2 = new Point(11541461.652, 140132.107);
-    planes.add(plane2);
-    Point plane3 = new Point(11541426.198, 140129.461);
-    planes.add(plane3);
-    Point plane4 = new Point(11541440.115, 140152.692);
-    planes.add(plane4);
-   
-    Graphic gPlanes = new Graphic(planes, planeSymbol);
-    gLayer.addGraphic(gPlanes);
-
-    
-  }
-	
-	private void addGraphics3(GraphicsLayer gLayer) {
-	    		
-		{
-		    planes2 = new MultiPoint();
-		    PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol(
-		        "http://static.arcgis.com/images/Symbols/Basic/RedShinyPin.png");
-		    planeSymbol.setSize(50, 50);
-		    		   		    
-		    //reactor for biodiesel
-		    Point plane5 = new Point(11541453.967, 140109.621);
-		    planes2.add(plane5);
-		    Point plane6 = new Point(11541460.529, 140120.575);
-		    planes2.add(plane6);
-		    Point plane7 = new Point(11541447.776, 140117.347);
-		    planes2.add(plane7);
-		    Point plane8 = new Point(11541432.007, 140129.941);
-		    planes2.add(plane8);
-		    Point plane9 = new Point(11541439.044, 140141.265);
-		    planes2.add(plane9);
-		    Point plane10 = new Point(11541425.074, 140137.720);
-		    planes2.add(plane10);
-		    
-		    
-		    Graphic gPlanes2 = new Graphic(planes2, planeSymbol);
-		    
-		    gLayer.addGraphic(gPlanes2);
-		    
-		    
-		}
-		    
-		  }
-	
-		
+	private String input;
+				
 	//if want to add new map
 	  private HashMap<String, String> idMap;
 	  private JComboBox mapIds;
@@ -304,7 +259,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
             "http://localhost:6080/arcgis/rest/services/emission/MapServer");
                 layers.add(emissionLayer);
     
-        
+                
     // map centered on Jurong Island
     Point mapCenter = new Point(11543665,141400);
     map.setExtent(new Envelope(mapCenter,7200,5400));
@@ -757,7 +712,7 @@ change.setLocation(890, 45);
 						JOptionPane.showMessageDialog(null, "PowerWorld has finished running!");
 						editStack.clear(); // delete all items in editStack
 					} else {
-						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
+						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode() 
 								+ "\nPlease try running PowerWorld again");
 					}
 					out.close();
@@ -1359,7 +1314,10 @@ change.setLocation(890, 45);
     		}
     		layers.remove(graphicsLayer);
     		layers.remove(graphicsLayer2);
-    	}
+    		layers.remove(graphicsLayer3);
+    		layers.remove(graphicsLayer4);
+    		
+    		    	}
     });
     refreshButton.setEnabled(true);
     refreshButton.setVisible(true);
@@ -1371,6 +1329,10 @@ change.setLocation(890, 45);
     graphicsLayer.setName("simple graphics");
     graphicsLayer2 = new GraphicsLayer();
     graphicsLayer2.setName("simple graphics");
+    graphicsLayer3 = new GraphicsLayer();
+    graphicsLayer3.setName("simple graphics");
+    graphicsLayer4 = new GraphicsLayer();
+    graphicsLayer4.setName("simple graphics");
     
   //button for query (15-04-2016))
     
@@ -1385,7 +1347,7 @@ change.setLocation(890, 45);
 			InputStreamReader in;
 			URL url;
 			
-//			input= querylayer.getText();
+
 			String QueryString = null;
 			if(e.getActionCommand().equals ("Query Features"));{
 				String graphicFID = " ";
@@ -1442,7 +1404,7 @@ change.setLocation(890, 45);
 				outputString.append (URLEncoder.encode(QueryT.toString(), "UTF-8"));
 				
 				DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
-				System.out.println("wr = "+ wr);
+				//System.out.println("wr = "+ wr);
 				wr.writeBytes(outputString.toString());
 				wr.flush();
 				wr.close();
@@ -1453,6 +1415,13 @@ change.setLocation(890, 45);
 					final BufferedReader br = new BufferedReader(in);
 					String[] strTemp = null;
 					strTemp = br.readLine().split("\"");									
+					
+					
+					//while (null != (strTemp = br.readLine().split(","))){
+					//	for(int i=0; i<strTemp.length; i++)
+					//	JOptionPane.showMessageDialog(null,strTemp);
+						
+					//}
 					br.close();
 					
 					planes = new MultiPoint();

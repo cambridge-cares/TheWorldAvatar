@@ -1,12 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="con" path="com.esri.arcgis.javase.core.project.ARCGIS_RUNTIME_JAVA_SDK_DEPENDS/C|/Users/Daryl Yong/.eclipse/org.eclipse.platform_4.4.2_135501703_win32_win32_x86_64/configuration/org.eclipse.osgi/431/0/.cp/lib/"/>
-	<classpathentry kind="var" path="ARCGIS_RUNTIME_FOR_JAVA_TOOLKIT/ArcGIS_Runtime_Java_Toolkit.jar" sourcepath="ARCGIS_RUNTIME_FOR_JAVA_TOOLKIT/ArcGIS_Runtime_Java_Toolkit-sources.jar">
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry exported="true" kind="var" path="ARCGIS_RUNTIME_FOR_JAVA_TOOLKIT/ArcGIS_Runtime_Java_Toolkit.jar" sourcepath="ARCGIS_RUNTIME_FOR_JAVA_TOOLKIT/ArcGIS_Runtime_Java_Toolkit-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:file:C:\Users\Daryl Yong\.eclipse\org.eclipse.platform_4.4.2_135501703_win32_win32_x86_64\configuration\org.eclipse.osgi\433\0\.cp\lib\/ArcGIS_Runtime_Java_Toolkit-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/apache-mime4j.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/ArcGIS_Runtime_Java.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/ArcGIS_Runtime_Java_Toolkit.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/ArcGIS_Runtime_Java_Toolkit-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/commons-codec.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/commons-logging.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/httpclient.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/httpcore.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/httpmime.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/jackson-core-lgpl.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/jackson-mapper-lgpl.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/jcifs.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/jcommon.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/jfreechart.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/json.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
