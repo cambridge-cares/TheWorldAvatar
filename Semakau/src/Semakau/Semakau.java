@@ -330,7 +330,7 @@ public class Semakau {
     		          contentPanel.setGraphic(layer, hitGraphic);
     		          // highlight selected graphic and unselect previously selected graphic by searching all layers
     		          for (ArcGISFeatureLayer somelayer : completeLayerList) {
-    		        	  System.out.println(somelayer);
+    		        	  
     		        	  if (somelayer.getSelectedFeatures() != null) {  // layers outside map extent will produce null error, ignore these
 	    			          for (Graphic graphic : somelayer.getSelectedFeatures()) { // search for selected features
 	    			        	  somelayer.unselect((int) graphic.getId()); // unselect them by graphic Id
