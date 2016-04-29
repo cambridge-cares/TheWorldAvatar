@@ -1415,8 +1415,9 @@ change.setLocation(890, 45);
 					final BufferedReader br = new BufferedReader(in);
 					String[] strTemp = null;
 					strTemp = br.readLine().split("\"");									
-					
-					
+					int a=strTemp.length;
+					int b= a/4;
+					int c= a/2;
 					//while (null != (strTemp = br.readLine().split(","))){
 					//	for(int i=0; i<strTemp.length; i++)
 					//	JOptionPane.showMessageDialog(null,strTemp);
@@ -1428,12 +1429,12 @@ change.setLocation(890, 45);
 			        PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol("http://static.arcgis.com/images/Symbols/Basic/RedShinyPin.png");
 			        planeSymbol.setSize(50, 50);			         			         
 			         
-			        double[] x= new double[4];
-			        for(int i=0; i<4; i++){
+			        double[] x= new double[c];
+			        for(int i=0; i<c; i++){
 			        	 x[i] = Double.parseDouble(strTemp[2*i+1]);
 			         }
 			         
-			         for (int k=0 ; k<2 ; k++){ 
+			         for (int k=0 ; k<b ; k++){ 
 			        	 planes.add(x[2*k],x[2*k+1]); 			          
 			         }
 			         Graphic gPlanes = new Graphic(planes, planeSymbol);
