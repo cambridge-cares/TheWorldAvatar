@@ -160,11 +160,9 @@ public class JParkSim {
 	//try to put new variable
 	
 	private GraphicsLayer graphicsLayer;
-	private GraphicsLayer graphicsLayer2;
-	private GraphicsLayer graphicsLayer3;
-	private GraphicsLayer graphicsLayer4;
+	
 	private MultiPoint planes;
-	private String input;
+	
 				
 	//if want to add new map
 	  private HashMap<String, String> idMap;
@@ -1312,10 +1310,9 @@ change.setLocation(890, 45);
     			layer.requery();
     			layer.refresh();
     		}
+    		graphicsLayer.removeAll();
     		layers.remove(graphicsLayer);
-    		layers.remove(graphicsLayer2);
-    		layers.remove(graphicsLayer3);
-    		layers.remove(graphicsLayer4);
+    		
     		
     		    	}
     });
@@ -1327,12 +1324,7 @@ change.setLocation(890, 45);
     
     graphicsLayer = new GraphicsLayer();
     graphicsLayer.setName("simple graphics");
-    graphicsLayer2 = new GraphicsLayer();
-    graphicsLayer2.setName("simple graphics");
-    graphicsLayer3 = new GraphicsLayer();
-    graphicsLayer3.setName("simple graphics");
-    graphicsLayer4 = new GraphicsLayer();
-    graphicsLayer4.setName("simple graphics");
+    
     
   //button for query (15-04-2016))
     
@@ -1437,6 +1429,7 @@ change.setLocation(890, 45);
 			         for (int k=0 ; k<b ; k++){ 
 			        	 planes.add(x[2*k],x[2*k+1]); 			          
 			         }
+			         
 			         Graphic gPlanes = new Graphic(planes, planeSymbol);
 			         graphicsLayer.addGraphic(gPlanes);
 			          			            			            
