@@ -1,11 +1,16 @@
 package PWServlet;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -607,6 +612,8 @@ public class PWServlet extends HttpServlet {
 		    response.getOutputStream().close();
 		    System.out.println("Success!");
 		    break;
+		case (" "):
+			callOPART ();
 		} 
 	} // of doPost()
 
@@ -650,46 +657,101 @@ public class PWServlet extends HttpServlet {
 		} // ZL-151126
 	}
 
+	public void callOPART () {
+		HttpURLConnection urlCon;
+		OutputStreamWriter out;
+		URL url;
+		
+		try{
+			url = new URL("caresremote1.dyndns.org:1700");
+			urlCon = (HttpURLConnection) url.openConnection();
+			urlCon.setRequestMethod("POST");
+			urlCon.setDoOutput(true);				
+			out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
+			
+			StringBuilder outputString = new StringBuilder();
+			outputString.append(URLEncoder.encode("layers", "UTF-8"));
+			outputString.append("=");
+			outputString.append(URLEncoder.encode("1", "UTF-8"));
+			outputString.append("&");
+			outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
+			outputString.append("=");
+			outputString.append(URLEncoder.encode("2", "UTF-8"));
+			outputString.append("&");
+			outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
+			outputString.append("=");
+			outputString.append(URLEncoder.encode("3", "UTF-8"));
+			outputString.append("&");
+			outputString.append (URLEncoder.encode("QueryT", "UTF-8"));
+			outputString.append ("=");				
+			outputString.append (URLEncoder.encode("4", "UTF-8"));
+			
+			DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
+			wr.writeBytes(outputString.toString());
+			wr.flush();
+			wr.close();
+			
+			out.close();
+			System.out.println(wr);
+		}catch (IOException equery){
+			equery.printStackTrace();
+		}
+	}
+	
 	public JSONArray PerformQuery(String queryT) throws IOException{
 		final JSONArray arr=new JSONArray();
-		String QueryTask = queryT;
+		String QueryTask = null;
+		QueryTask = queryT;
 		
 		String uri = "File:/C:/apache-tomcat-8.0.24/webapps/ROOT/BiodieselPlant.owl";
 		try{			
             OWLModel owlModel = ProtegeOWL.createJenaOWLModelFromURI(uri);
             System.out.println("QueryTask="+ QueryTask);
-            if(QueryTask.equals("Pump")){
-            	OWLIndividual Pump101Lat = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#P101_Latitude");                       
+            if(QueryTask.equals("Pump")||QueryTask.equals("pump")){            	
+            	OWLIndividual Pump101Lat = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#ValueOf_x_P101");  
                 String Pump101LatValue = Pump101Lat.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();  
-                OWLIndividual Pump101Log = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#P101_Longitude"); 
+                OWLIndividual Pump101Log = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#ValueOf_y_P101");
                 String Pump101LogValue = Pump101Log.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();	
                 
                 arr.put(Pump101LatValue);
                 arr.put(Pump101LogValue);
                 
-                OWLIndividual Pump01Lat = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#P01_Latitude");                       
-                String Pump01LatValue = Pump01Lat.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();  
-                OWLIndividual Pump01Log = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#P01_Longitude"); 
-                String Pump01LogValue = Pump01Log.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();
+                OWLIndividual Pump10P01Lat = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#ValueOf_x_10P01");
+                String Pump01LatValue = Pump10P01Lat.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();  
+                OWLIndividual Pump10P101Log = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#ValueOf_y_10P01");
+                String Pump01LogValue = Pump10P101Log.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();
                 
                 arr.put(Pump01LatValue);
                 arr.put(Pump01LogValue);
                 
-                System.out.println("Lat1="+Pump101LatValue+" Longi1="+Pump101LogValue+" Lat2="+Pump01LatValue+" Logi2="+Pump01LogValue);
-                System.out.println("GISInformation="+arr);
-                FileWriter Query = null; // (mjk, 151115) testing structure of DataOutputStream object and of wr object
-        		Query = new FileWriter(QueryCSV);
-        		Query.append("Latitude, " + "Longitude");
-        		Query.append("\n");
-        		Query.append(Pump101LatValue);
-        		Query.append(",");
-        		Query.append(Pump101LogValue);
-        		Query.append("\n");
-        		Query.append(Pump01LatValue);
-        		Query.append(",");
-        		Query.append(Pump01LogValue);
-        		Query.flush();
-        		Query.close(); // (mjk, 151115) writing this file works fine.
+                System.out.println("GISInformation="+arr);        		
+            }
+            if(QueryTask.equals("Reactor")||QueryTask.equals("reactor")){       
+            	OWLIndividual Reactor_combustor_Lat = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#ValueOf_x_combustor");  
+                String Reactor_combustor_LatValue = Reactor_combustor_Lat.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();  
+                OWLIndividual Reactor_combustor_Log = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#ValueOf_y_combustor");
+                String Reactor_combustor_LogValue = Reactor_combustor_Log.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();	
+                
+                arr.put(Reactor_combustor_LatValue);
+                arr.put(Reactor_combustor_LogValue);
+                
+            	OWLIndividual Reactor_10D01_Lat = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#ValueOf_x_10D01");  
+                String Reactor_10D01_LatValue = Reactor_10D01_Lat.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();  
+                OWLIndividual Reactor_10D01_Log = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#ValueOf_y_10D01");
+                String Reactor_10D01_LogValue = Reactor_10D01_Log.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();	
+                
+                arr.put(Reactor_10D01_LatValue);
+                arr.put(Reactor_10D01_LogValue);
+                
+                OWLIndividual Reactor_10D03_Lat = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#ValueOf_x_10D03");
+                String Reactor_10D03_LatValue = Reactor_10D03_Lat.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();  
+                OWLIndividual Reactor_10D03_Log = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#ValueOf_y_10D03");
+                String Reactor_10D03_LogValue = Reactor_10D03_Log.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();
+                
+                arr.put(Reactor_10D03_LatValue);
+                arr.put(Reactor_10D03_LogValue);
+                
+                System.out.println("GISInformation="+arr);        		
             }
             
 		}catch (OntologyLoadException ex) {

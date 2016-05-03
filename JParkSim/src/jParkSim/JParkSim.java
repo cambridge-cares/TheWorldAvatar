@@ -495,15 +495,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
  // create text
     JLabel lblLayer2 = new JLabel("feature list to query:");
     lblLayer2.setForeground(Color.WHITE);
-    lblLayer2.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
-    //other combo box
-    final JTextField querylayer = new JTextField();
-    querylayer.setAlignmentX(Component.LEFT_ALIGNMENT);
-    querylayer.setMaximumSize(new Dimension(220, 25));
-    querylayer.setEditable(true);
-    
-    
+    lblLayer2.setAlignmentX(Component.LEFT_ALIGNMENT);    
     
  // create text
     JTextArea description3 = new JTextArea("press refresh to delete pin point marking");
@@ -1317,7 +1309,7 @@ change.setLocation(890, 45);
     		layers.remove(graphicsLayer3);
     		layers.remove(graphicsLayer4);
     		
-    		    	}
+    	}
     });
     refreshButton.setEnabled(true);
     refreshButton.setVisible(true);
@@ -1335,6 +1327,10 @@ change.setLocation(890, 45);
     graphicsLayer4.setName("simple graphics");
     
   //button for query (15-04-2016))
+    final JTextField querylayer = new JTextField();
+    querylayer.setAlignmentX(Component.LEFT_ALIGNMENT);
+    querylayer.setMaximumSize(new Dimension(220, 25));
+    querylayer.setEditable(true);
     
     final JButton queryButton = new JButton("Query Features");
     queryButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -1342,24 +1338,22 @@ change.setLocation(890, 45);
     queryButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
+    	    ArrayList<String[]> editStack2 = new ArrayList<String[]>();	
 			HttpURLConnection urlCon;
 			OutputStreamWriter out;
 			InputStreamReader in;
 			URL url;
 			
-
 			String QueryString = null;
 			if(e.getActionCommand().equals ("Query Features"));{
 				String graphicFID = " ";
 			    String graphicOBJECTID =  " ";
-			    String appCallFlag = " ";   
+			    String appCallFlag = " ";
 				QueryString = querylayer.getText();
-//				String resStr = "";
-				System.out.println("the text you type in is: " + QueryString);
 				String[] newFeature = new String[] {graphicFID, graphicOBJECTID, appCallFlag, QueryString}; 
 				boolean addtoStack = true;			  		            		  
 			  	  if (addtoStack) {		
-			  		  editStack.add(newFeature);
+			  		editStack2.add(newFeature);
 			  	  }
 			}
 									
@@ -1367,16 +1361,14 @@ change.setLocation(890, 45);
 				url = new URL("http://172.25.182.41/PWServlet/");
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
-				urlCon.setDoOutput(true);
-				
+				urlCon.setDoOutput(true);				
 				out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
 				
 				StringBuilder layers = new StringBuilder();
 				StringBuilder OBJECTIDs = new StringBuilder();
 				StringBuilder appCallFlag = new StringBuilder();
 				StringBuilder QueryT = new StringBuilder();
-				
-				for (String[] item : editStack) { 
+				for (String[] item : editStack2) { 
 					layers.append(item[0]);
 					layers.append(",");
 		 			OBJECTIDs.append(item[1]); 
@@ -1404,7 +1396,6 @@ change.setLocation(890, 45);
 				outputString.append (URLEncoder.encode(QueryT.toString(), "UTF-8"));
 				
 				DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
-				//System.out.println("wr = "+ wr);
 				wr.writeBytes(outputString.toString());
 				wr.flush();
 				wr.close();
@@ -1414,33 +1405,27 @@ change.setLocation(890, 45);
 					in = new InputStreamReader(urlCon.getInputStream());
 					final BufferedReader br = new BufferedReader(in);
 					String[] strTemp = null;
-					strTemp = br.readLine().split("\"");									
-					
-					
-					//while (null != (strTemp = br.readLine().split(","))){
-					//	for(int i=0; i<strTemp.length; i++)
-					//	JOptionPane.showMessageDialog(null,strTemp);
-						
-					//}
+					strTemp = br.readLine().split("\"");																			
 					br.close();
 					
 					planes = new MultiPoint();
 			        PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol("http://static.arcgis.com/images/Symbols/Basic/RedShinyPin.png");
 			        planeSymbol.setSize(50, 50);			         			         
 			         
-			        double[] x= new double[4];
-			        for(int i=0; i<4; i++){
+			        double[] x= new double[(strTemp.length-1)/2];
+			        for(int i=0; i<(strTemp.length-1)/2; i++){
 			        	 x[i] = Double.parseDouble(strTemp[2*i+1]);
 			         }
 			         
-			         for (int k=0 ; k<2 ; k++){ 
+			         for (int k=0 ; k<x.length/2 ; k++){ 
 			        	 planes.add(x[2*k],x[2*k+1]); 			          
 			         }
 			         Graphic gPlanes = new Graphic(planes, planeSymbol);
 			         graphicsLayer.addGraphic(gPlanes);
 			          			            			            
-					JOptionPane.showMessageDialog(null, "Query has been successfully performed!" );
-					editStack.clear(); 
+					 JOptionPane.showMessageDialog(null, "Query has been successfully performed!" );
+					//editStack.clear(); 
+					
 				}
 				out.close();
 			}catch (IOException equery){

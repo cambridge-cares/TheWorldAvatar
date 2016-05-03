@@ -1,11 +1,16 @@
 package callAP;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Array;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -52,13 +57,61 @@ public class CallAP {
 	}
 ZL-151203*/	
 	public static void main(String args[]){
-		ArrayList<String[]> skeleton = new ArrayList<String[]>(); 
-		
+//		ArrayList<String[]> skeleton = new ArrayList<String[]>(); 
+		callOPART ();
+		System.out.println("success!");
 //		initiate(); //initiate editStack ZL-151202
-		skeleton.add(new String[] {"OIL,MEOH","FOIL,FMEOH"});  //manually add elements to skeleton ZL-151202
-		writeAPCSV(skeleton,APINCSV); //write the APIN.CSV i.e. the input data for Aspen Plus ZL-151202
-		runPyScript(editStack); //call python script to run Aspen Plus model "BiodiesePlant" ZL-151202
+//		skeleton.add(new String[] {"OIL,MEOH","FOIL,FMEOH"});  //manually add elements to skeleton ZL-151202
+//		writeAPCSV(skeleton,APINCSV); //write the APIN.CSV i.e. the input data for Aspen Plus ZL-151202
+//		runPyScript(editStack); //call python script to run Aspen Plus model "BiodiesePlant" ZL-151202
 		
+	}
+	
+	public static void callOPART () {
+//		ArrayList<String[]> editStack2 = new ArrayList<String[]>();	
+		HttpURLConnection urlCon;
+		OutputStreamWriter out;
+		URL url;
+		
+		try{
+			url = new URL("http://172.25.182.41/PWServlet/");
+			urlCon = (HttpURLConnection) url.openConnection();
+			urlCon.setRequestMethod("POST");
+			urlCon.setDoOutput(true);				
+			out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
+			
+			StringBuilder outputString = new StringBuilder();
+			outputString.append(URLEncoder.encode("layers", "UTF-8"));
+			outputString.append("=");
+			outputString.append(URLEncoder.encode("@", "UTF-8"));
+			outputString.append("&");
+			outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
+			outputString.append("=");
+			outputString.append(URLEncoder.encode("#", "UTF-8"));
+			outputString.append("&");
+			outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
+			outputString.append("=");
+			outputString.append(URLEncoder.encode("$", "UTF-8"));
+			outputString.append("&");
+			outputString.append (URLEncoder.encode("QueryT", "UTF-8"));
+			outputString.append ("=");				
+			outputString.append (URLEncoder.encode("%", "UTF-8"));
+			
+			DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
+			wr.writeBytes(outputString.toString());
+			wr.flush();
+			wr.close();
+			
+			if(urlCon.getResponseCode()==200){
+				System.out.println("Message received!");
+			}
+			
+			out.close();
+			System.out.println(outputString);
+			System.out.println(wr);
+		}catch (IOException equery){
+			equery.printStackTrace();
+		}
 	}
 	
  	public static void writeAPCSV(ArrayList<String[]> skeleton, String APINCSV){  
