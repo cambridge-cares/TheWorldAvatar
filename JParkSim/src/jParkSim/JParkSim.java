@@ -1226,7 +1226,7 @@ change.setLocation(890, 45);
     		OutputStreamWriter out;
     		URL url;
     		try {
-				url = new URL("http://172.25.182.41/PWServlet/"); // URL of servlet
+				url = new URL("http://172.25.182.41/PWServlet/"); // URL of servlet				
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
@@ -1359,6 +1359,7 @@ change.setLocation(890, 45);
 									
 			try{
 				url = new URL("http://172.25.182.41/PWServlet/");
+//				url = new URL("http://172.25.182.41/OPARTServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);				

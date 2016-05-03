@@ -7,16 +7,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Map;
-
-import javax.script.*;
-
-import com.esri.core.tasks.query.QueryParameters;
 
 //testing script for the "runPyScript" command  ZL-151202
 public class CallAP {
@@ -74,7 +68,8 @@ ZL-151203*/
 		URL url;
 		
 		try{
-			url = new URL("http://172.25.182.41/PWServlet/");
+			url = new URL("http://172.25.182.41/OPARTServlet/");
+//			url = new URL("http://172.25.182.41/PWServlet/");
 			urlCon = (HttpURLConnection) url.openConnection();
 			urlCon.setRequestMethod("POST");
 			urlCon.setDoOutput(true);				
@@ -95,7 +90,7 @@ ZL-151203*/
 			outputString.append("&");
 			outputString.append (URLEncoder.encode("QueryT", "UTF-8"));
 			outputString.append ("=");				
-			outputString.append (URLEncoder.encode("%", "UTF-8"));
+			outputString.append (URLEncoder.encode("*&", "UTF-8"));
 			
 			DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
 			wr.writeBytes(outputString.toString());
@@ -104,6 +99,9 @@ ZL-151203*/
 			
 			if(urlCon.getResponseCode()==200){
 				System.out.println("Message received!");
+			} else {
+				System.out.println( "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
+						+ "\nPlease try testing your code again");
 			}
 			
 			out.close();
