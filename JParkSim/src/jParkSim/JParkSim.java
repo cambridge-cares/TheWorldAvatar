@@ -137,7 +137,7 @@ public class JParkSim {
 		final static SimpleLineSymbol GasLinecolor = new SimpleLineSymbol(Color.black, 3);
 		final static SimpleLineSymbol Fluidcolor = new SimpleLineSymbol(new Color(218,165,32), 3);
 		final static SimpleLineSymbol AirLinecolor = new SimpleLineSymbol(new Color(200,100,0), 3);
-		final static SimpleLineSymbol EnergyStreamcolor = new SimpleLineSymbol(new Color(250,0,250), 3);
+		final static SimpleLineSymbol EnergyStreamcolor = new SimpleLineSymbol(new Color(250,0,250), 2);
 		final static SimpleLineSymbol MaterialLinecolor = new SimpleLineSymbol(Color.red, 3);
 		final static SimpleLineSymbol WaterLinecolor = new SimpleLineSymbol(Color.blue, 3);
 		final static SimpleFillSymbol Exchangercolor = new SimpleFillSymbol(new Color(100,100,30));
@@ -149,7 +149,9 @@ public class JParkSim {
 		final static SimpleFillSymbol filtercolor = new SimpleFillSymbol(new Color(204,255,153));
 		final static SimpleFillSymbol expandercolor = new SimpleFillSymbol(new Color(219,112,147));
 		final static SimpleFillSymbol compressorcolor = new SimpleFillSymbol(Color.white);
-		final static SimpleLineSymbol steamcolor = new SimpleLineSymbol(Color.orange, 3);
+		final static SimpleLineSymbol steamcolor = new SimpleLineSymbol(new Color(128,0,128), 3);
+		final static PictureMarkerSymbol waterpointcolor = new PictureMarkerSymbol("http://static.arcgis.com/images/Symbols/Animated/EnlargeGradientSymbol.png");
+		final static SimpleLineSymbol waternetworkcolor = new SimpleLineSymbol(new Color(0,0,128), 3);
 		
 
 		
@@ -218,8 +220,8 @@ public class JParkSim {
 	public static ArcGISFeatureLayer expanderlayer;
 	public static ArcGISFeatureLayer compressorlayer;
 	public static ArcGISFeatureLayer steamlayer;
-		
-	
+	public static ArcGISFeatureLayer waterpointlayer;	
+	public static ArcGISFeatureLayer waternetworklayer;
 	
 	
  	public static String httpStringCSV = new String("D:/httpReq.CSV"); // (mjk, 151115) investigating structure of DataOutputStream object
@@ -316,6 +318,8 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     expanderlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/expander/FeatureServer/0", user);
     compressorlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/compressor/FeatureServer/0", user);
     steamlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/steam_interplants/FeatureServer/0", user);
+    waterpointlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/waterpoint/FeatureServer/0", user);
+    waternetworklayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/WaterNetwork/FeatureServer/0", user);
         
     
     // UPDATE THIS LIST whenever new layers are added: first layer is the bottom most layer *see currently known issues #3
@@ -323,7 +327,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 	ArcGISFeatureLayer[] completeLayerList = {Landlotslayer, Buildingslayer, Storagelayer, TLPmainlayer, Roadlayer, PowerGenlayer, UHTLineslayer, UHTSubstationlayer,
 			EHTLineslayer, EHTSubstationlayer, HTLineslayer,HTSubstation1layer,HTSubstation2layer,LTSubstation1layer,LTSubstation2layer, LoadPointslayer, BusCouplerlayer, heatercoolerlayer,
 			GasLinelayer,AirLinelayer,EnergyStreamlayer,MaterialLinelayer,TLP2layer,TLP3layer,TLP2alayer,TLP4layer,WaterLinelayer,PlantReactorlayer,Decanterlayer,Extractorlayer,
-			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer,vessellayer,filterlayer,Fluidlayer,expanderlayer,compressorlayer,steamlayer};
+			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer,vessellayer,filterlayer,Fluidlayer,expanderlayer,compressorlayer,steamlayer,waterpointlayer,waternetworklayer};
 
 	
     // render layers
@@ -372,8 +376,9 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     createRenderer(layers, new ArcGISFeatureLayer [] {expanderlayer}, expandercolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {compressorlayer}, compressorcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {steamlayer}, steamcolor);
-    
-    
+    createRenderer(layers, new ArcGISFeatureLayer [] {waterpointlayer}, waterpointcolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {waternetworklayer}, waternetworkcolor);
+       
     //map.getLayers().add(graphlayer);
   //try to add some graphs
     
@@ -484,6 +489,9 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     editlayer.put("Valve", valvelayer);
     editlayer.put("Vessel", vessellayer);
     editlayer.put("Working fluid", Fluidlayer);
+    editlayer.put("Water Point", waterpointlayer);
+    editlayer.put("Water network", waternetworklayer);
+    
     
       
     final JComboBox cbxLayer = new JComboBox(editlayer.keySet().toArray(new String[0]));	// initialize dropdown box
@@ -1401,7 +1409,7 @@ change.setLocation(890, 45);
 					br.close();
 					
 					planes = new MultiPoint();
-			        PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol("http://static.arcgis.com/images/Symbols/Basic/RedShinyPin.png");
+			        PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol("http://static.arcgis.com/images/Symbols/Basic/GreenShinyPin.png");
 			        planeSymbol.setSize(50, 50);			         			         
 			         
 			        double[] x= new double[(strTemp.length-1)/2];
