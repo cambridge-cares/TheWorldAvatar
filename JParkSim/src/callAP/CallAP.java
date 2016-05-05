@@ -68,8 +68,9 @@ ZL-151203*/
 		URL url;
 		
 		try{
-			url = new URL("http://172.25.182.41/OPARTServlet/");
-//			url = new URL("http://172.25.182.41/PWServlet/");
+			System.out.println("1");
+			url = new URL("http://14.100.26.181:1700/OPARTServlet/");
+//			url = new URL("http://caresremote1.dyndns.org:1700/OPARTServlet/");
 			urlCon = (HttpURLConnection) url.openConnection();
 			urlCon.setRequestMethod("POST");
 			urlCon.setDoOutput(true);				
@@ -78,25 +79,25 @@ ZL-151203*/
 			StringBuilder outputString = new StringBuilder();
 			outputString.append(URLEncoder.encode("layers", "UTF-8"));
 			outputString.append("=");
-			outputString.append(URLEncoder.encode("@", "UTF-8"));
+			outputString.append(URLEncoder.encode("hehe", "UTF-8"));
 			outputString.append("&");
 			outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
 			outputString.append("=");
-			outputString.append(URLEncoder.encode("#", "UTF-8"));
+			outputString.append(URLEncoder.encode("hehehe", "UTF-8"));
 			outputString.append("&");
 			outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
 			outputString.append("=");
-			outputString.append(URLEncoder.encode("$", "UTF-8"));
+			outputString.append(URLEncoder.encode("hehehehe", "UTF-8"));
 			outputString.append("&");
 			outputString.append (URLEncoder.encode("QueryT", "UTF-8"));
 			outputString.append ("=");				
-			outputString.append (URLEncoder.encode("*&", "UTF-8"));
+			outputString.append (URLEncoder.encode("hehehehehe", "UTF-8"));
 			
 			DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
 			wr.writeBytes(outputString.toString());
 			wr.flush();
 			wr.close();
-			
+			System.out.println("wr");
 			if(urlCon.getResponseCode()==200){
 				System.out.println("Message received!");
 			} else {

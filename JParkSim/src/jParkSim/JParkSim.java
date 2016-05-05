@@ -1292,8 +1292,86 @@ change.setLocation(890, 45);
     PrAPOButton.setVisible(true);
     PrAPOButton.setSize(190,30);
     PrAPOButton.setLocation(890, 10);
-//zl-20160322    
-    
+//zl-20160322   
+//*******************************************************************    
+ // Run combined parameterized AspenPlus and power world model 
+    JButton OPALRT = new JButton("Run PW from OPALRT");
+    OPALRT.addActionListener(new ActionListener() {
+    	@Override
+    	public void actionPerformed(ActionEvent arg0) {
+    		HttpURLConnection urlCon;
+    		OutputStreamWriter out;
+    		URL url;
+    		try {
+				url = new URL("http://172.25.182.41/PWServlet/"); // URL of servlet
+				urlCon = (HttpURLConnection) url.openConnection();
+				urlCon.setRequestMethod("POST");
+				urlCon.setDoOutput(true);
+				
+				if (editStack.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "You did not edit any features for PowerWorld!");
+				} else {
+					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
+					StringBuilder layers = new StringBuilder();
+					StringBuilder OBJECTIDs = new StringBuilder();
+					StringBuilder appCallFlag = new StringBuilder();
+					
+					for (String[] item : editStack) { // create comma separated values
+						layers.append(item[0]);
+						layers.append(",");
+			 			OBJECTIDs.append(item[1]); // ZHOU CHANGED ITEM[2] TO ITEM[1]
+					    OBJECTIDs.append(",");
+						appCallFlag.append("OPALRT");
+						appCallFlag.append(",");
+					}
+					StringBuilder outputString = new StringBuilder();
+					// Only URL encoded string values can be sent over a HTTP connection
+					outputString.append(URLEncoder.encode("layers", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(layers.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(OBJECTIDs.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("QueryT", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
+					System.out.println("outputString="+outputString);
+					
+					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
+					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
+					wr.writeBytes(outputString.toString()); // write query string into servlet doPost() method
+					wr.flush();
+					wr.close();
+					
+					if (urlCon.getResponseCode()==200) {
+						JOptionPane.showMessageDialog(null, "OPALRT has finished running!");
+						editStack.clear(); // delete all items in editStack
+					} else {
+						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
+								+ "\nPlease try again");
+					}
+					out.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+    		for (ArcGISFeatureLayer layer : completeLayerList) {
+    			layer.requery();
+    			layer.refresh();
+    		}
+    	}
+    });
+    OPALRT.setEnabled(true);
+    OPALRT.setVisible(true);
+    OPALRT.setSize(190,30);
+    OPALRT.setLocation(890, 80);    
+//***************************************************************************    
     JButton refreshButton = new JButton("Refresh Map");
     refreshButton.addActionListener(new ActionListener() {
     	@Override
@@ -1382,6 +1460,7 @@ change.setLocation(890, 45);
 				outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
 				outputString.append("=");
 				outputString.append(URLEncoder.encode("Query", "UTF-8"));
+//				outputString.append(URLEncoder.encode("OPALRT", "UTF-8"));
 				outputString.append("&");
 				outputString.append (URLEncoder.encode("QueryT", "UTF-8"));
 				outputString.append ("=");				
@@ -1472,6 +1551,7 @@ change.setLocation(890, 45);
     contentPane.add(panel);
     contentPane.add(PrAPPWButton);
     contentPane.add(PrAPOButton);
+    contentPane.add(OPALRT);
     contentPane.add(queryButton);
     contentPane.add(map, BorderLayout.CENTER);
     contentPane.add(legend, BorderLayout.WEST);
