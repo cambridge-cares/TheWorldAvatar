@@ -98,6 +98,8 @@ import com.esri.toolkit.overlays.InfoPopupOverlay;
 import com.esri.core.symbol.PictureMarkerSymbol;
 
 
+
+
 public class JParkSim {
 	
 	
@@ -120,13 +122,12 @@ public class JParkSim {
 		final static SimpleMarkerSymbol LoadPointscolor = new SimpleMarkerSymbol(new Color(127,0,255), 10, Style.DIAMOND);
 		final static SimpleMarkerSymbol BusCouplercolor = new SimpleMarkerSymbol(Color.magenta, 10, Style.TRIANGLE);
 		final static SimpleLineSymbol TLPmaincolor = new SimpleLineSymbol(Color.pink,3);
-		final static SimpleLineSymbol TLP2color = new SimpleLineSymbol(new Color(124,252,0), 3);
-		final static SimpleLineSymbol TLP3color = new SimpleLineSymbol(Color.magenta, 3);
-		final static SimpleLineSymbol TLP4color = new SimpleLineSymbol(new Color(153,51,255), 3);
-		final static SimpleLineSymbol TLP2acolor = new SimpleLineSymbol(new Color(0,128,128), 3);
+		final static SimpleLineSymbol TLP2color = new SimpleLineSymbol(new Color(124,252,0), 3,com.esri.core.symbol.SimpleLineSymbol.Style.DOT );
+		final static SimpleLineSymbol TLP3color = new SimpleLineSymbol(Color.magenta, 3,com.esri.core.symbol.SimpleLineSymbol.Style.DOT );
+		final static SimpleLineSymbol TLP4color = new SimpleLineSymbol(new Color(153,51,255), 3,com.esri.core.symbol.SimpleLineSymbol.Style.DOT );
+		final static SimpleLineSymbol TLP2acolor = new SimpleLineSymbol(new Color(0,128,128), 3,com.esri.core.symbol.SimpleLineSymbol.Style.DOT );
 		
 		// chemical plant
-		
 		final static SimpleFillSymbol PlantReactorcolor = new SimpleFillSymbol(Color.pink);
 		final static SimpleFillSymbol Decantercolor = new SimpleFillSymbol(Color.cyan);
 		final static SimpleFillSymbol Extractorcolor = new SimpleFillSymbol(new Color(225,134,225));
@@ -137,7 +138,7 @@ public class JParkSim {
 		final static SimpleLineSymbol GasLinecolor = new SimpleLineSymbol(Color.black, 3);
 		final static SimpleLineSymbol Fluidcolor = new SimpleLineSymbol(new Color(218,165,32), 3);
 		final static SimpleLineSymbol AirLinecolor = new SimpleLineSymbol(new Color(200,100,0), 3);
-		final static SimpleLineSymbol EnergyStreamcolor = new SimpleLineSymbol(new Color(250,0,250), 2);
+		final static SimpleLineSymbol EnergyStreamcolor = new SimpleLineSymbol(Color.darkGray, 2, com.esri.core.symbol.SimpleLineSymbol.Style.DASH );
 		final static SimpleLineSymbol MaterialLinecolor = new SimpleLineSymbol(Color.red, 3);
 		final static SimpleLineSymbol WaterLinecolor = new SimpleLineSymbol(Color.blue, 3);
 		final static SimpleFillSymbol Exchangercolor = new SimpleFillSymbol(new Color(100,100,30));
