@@ -780,11 +780,11 @@ public class PWServlet extends HttpServlet {
 		try{
 			
 //			url = new URL("http://caresremote1.dyndns.org:1700/OPARTServlet/");
-			url = new URL("http://14.100.26.181:1700/OPARTServlet/");
+//			url = new URL("http://14.100.26.181:1700/OPARTServlet/");
+			url = new URL("http://caresremote1.dyndns.org/OPARTServlet/");
 			urlCon = (HttpURLConnection) url.openConnection();
 			urlCon.setRequestMethod("POST");
 			urlCon.setDoOutput(true);
-//			urlCon.setConnectTimeout(1000);
 			out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
 			
 			StringBuilder outputString = new StringBuilder();
@@ -800,9 +800,9 @@ public class PWServlet extends HttpServlet {
 			outputString.append("=");
 			outputString.append(URLEncoder.encode("OPALRT", "UTF-8"));
 			outputString.append("&");
-			outputString.append (URLEncoder.encode("QueryT", "UTF-8"));
-			outputString.append ("=");				
-			outputString.append (URLEncoder.encode(" ", "UTF-8"));
+			outputString.append(URLEncoder.encode("QueryT", "UTF-8"));
+			outputString.append("=");				
+			outputString.append(URLEncoder.encode(" ", "UTF-8"));
 			
 			DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
 			wr.writeBytes(outputString.toString());

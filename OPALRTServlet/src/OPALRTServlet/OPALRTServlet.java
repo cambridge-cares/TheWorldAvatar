@@ -2,7 +2,7 @@
 **set up of the WEB-INF folder of this project (OPARTServlet\WebContent): 1) a web.xml file; 2) include the necessary libraries in the lib folder.
 */
 
-package OPARTServlet;
+package OPALRTServlet;
 
 import java.io.BufferedReader;
 import java.io.FileWriter;
@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class OPARTServlet extends HttpServlet {
+public class OPALRTServlet extends HttpServlet {
 	
 	/**
 	 * 
@@ -26,18 +26,17 @@ public class OPARTServlet extends HttpServlet {
 	
 	public static String runPythonCommand = new String("python C:/apache-tomcat-8.0.24/webapps/ROOTT/sample_static_running.py"); // ensure that python environment variable is set to python34
 	
-	public OPARTServlet() {
+	public OPALRTServlet() {
 		
 		
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {    //doPost method to handle the httpRequest and httpResponse
-		ArrayList<String[]> editStack = new ArrayList<String[]>(); // 
+		ArrayList<String[]> editStack = new ArrayList<String[]>(); // variable for receiving/storing the httpRequest information, and passing the message to relevant methods
 		String[] layers = request.getParameter("layers").split(",");
-		String[] OBJECTIDs = request.getParameter("OBJECTIDs").split(","); //
-		String[] appCallFlag = request.getParameter("appCallFlag").split(","); // 
-		String[] QueryT = request.getParameter("QueryT").split(",");
-
+		String[] OBJECTIDs = request.getParameter("OBJECTIDs").split(","); //OBJECTID indicate which particular entity being modified, not fully used at the moment, might be very useful in the future(can be used to improve the efficiency of JPS) 
+		String[] appCallFlag = request.getParameter("appCallFlag").split(","); // appCallFlage indicate which function of the JPS being called from the applet side
+		String[] QueryT = request.getParameter("QueryT").split(",");  //new parameter for the query function
 
 		for (int i = 0; i < layers.length; i++) {
 			editStack.add(new String[] { layers[i], OBJECTIDs[i], appCallFlag[i], QueryT[i]});
