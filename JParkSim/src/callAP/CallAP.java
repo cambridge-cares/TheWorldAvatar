@@ -85,7 +85,7 @@ ZL-151203*/
 			StringBuilder outputString = new StringBuilder();
 			outputString.append(URLEncoder.encode("layers", "UTF-8"));
 			outputString.append("=");
-			outputString.append(URLEncoder.encode(" ", "UTF-8"));
+			outputString.append(URLEncoder.encode("ss", "UTF-8"));
 			outputString.append("&");
 			outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
 			outputString.append("=");
