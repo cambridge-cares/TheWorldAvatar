@@ -225,7 +225,7 @@ public class APWOWHRServlet extends HttpServlet {
 		}
 		
 // end of evaluating the surrogate model
-		readPrAPCSV();
+//		readPrAPCSV();
 	}
 	
 	public ArrayList<Double> getAPPWInput(ArrayList<String[]> editStack){ 

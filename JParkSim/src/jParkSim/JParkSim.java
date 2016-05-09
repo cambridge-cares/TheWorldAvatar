@@ -1149,7 +1149,7 @@ change.setLocation(890, 45);
     PrAPHrButton.setLocation(690, 115);
     
  // Run combined AspenPlus and power world model 
-    JButton APPWButton = new JButton("Run AP and PW");
+    JButton APPWButton = new JButton("Run AP + PW");
     APPWButton.addActionListener(new ActionListener() {
     	@Override
     	public void actionPerformed(ActionEvent arg0) {
@@ -1227,7 +1227,7 @@ change.setLocation(890, 45);
     APPWButton.setLocation(490, 80);
     
     // Run combined parameterized AspenPlus and power world model 
-    JButton PrAPPWButton = new JButton("Run Pr AP+PW");
+    JButton PrAPPWButton = new JButton("Run Pr AP + PW");
     PrAPPWButton.addActionListener(new ActionListener() {
     	@Override
     	public void actionPerformed(ActionEvent arg0) {
