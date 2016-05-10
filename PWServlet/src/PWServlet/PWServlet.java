@@ -330,8 +330,7 @@ public class PWServlet extends HttpServlet {
 		ArcGISFIDtoPWBusNum.put("59", "73"); // Carotino
 		ArcGISFIDtoPWBusNum.put("128", "159"); // Oiltanking Helios Singapore
 
-		for (Map.Entry<String, String> entry : ArcGISFIDtoPWBusNum.entrySet()) { // reverse
-																					// mapping
+		for (Map.Entry<String, String> entry : ArcGISFIDtoPWBusNum.entrySet()) { // reverse mapping
 			PWBusNumtoArcGISFID.put(entry.getValue(), entry.getKey());
 		}
 
@@ -443,10 +442,7 @@ public class PWServlet extends HttpServlet {
 		BusNumtoXPoint.put("206", 105);
 		BusNumtoXPoint.put("207", 106);
 		BusNumtoXPoint.put("208", 107);
-		/*
-		 * BusNumtoXPoint.put("93", 0); BusNumtoXPoint.put("94", 1);
-		 * BusNumtoXPoint.put("95", 2);
-		 */
+		
 		for (Map.Entry<String, Integer> entry : BusNumtoXPoint.entrySet()) { // reverse
 																				// mapping
 			XPointtoBusNum.put(entry.getValue(), entry.getKey());
@@ -501,17 +497,96 @@ public class PWServlet extends HttpServlet {
 		//
 		APSimNamtoOBJECTID.put("Jbiod", "1"); // ZL-151127
 
-		OBJECTIDtoMXNum.put(1, "mx01");
+		/*OBJECTIDtoMXNum.put(1, "mx01");
 		OBJECTIDtoMXNum.put(2, "mx02");
-		OBJECTIDtoMXNum.put(3, "mx03");
+		OBJECTIDtoMXNum.put(3, "mx03");*/
+		
+		OBJECTIDtoMXNum.put(1, "mx01B1");   //Biodiesel 1
+		OBJECTIDtoMXNum.put(2, "mx02B1");   //Biodiesel 1
+		OBJECTIDtoMXNum.put(3, "mx03B1");   //Biodiesel 1
+		OBJECTIDtoMXNum.put(4, "S6");     //air liquide
+		OBJECTIDtoMXNum.put(5, "S7");     //air liquide
+		OBJECTIDtoMXNum.put(6, "S3");     //air liquide
+		OBJECTIDtoMXNum.put(7, "S5");     //air liquide
+		OBJECTIDtoMXNum.put(8, "B5");     //hydrocracking
+		OBJECTIDtoMXNum.put(9, "mx01B2");   //Biodiesel 2
+		OBJECTIDtoMXNum.put(10, "mx03B2");  //Biodiesel 2
+		OBJECTIDtoMXNum.put(11, "mx02B2");  //Biodiesel 2
+		OBJECTIDtoMXNum.put(12, "mx-whr");//Biodiesel 2
+		OBJECTIDtoMXNum.put(13, "mx01ZN");  //Zeon
+		OBJECTIDtoMXNum.put(14, "B8");    //Hydrocracking
+		OBJECTIDtoMXNum.put(15, "MIX");   //lanxess
+		OBJECTIDtoMXNum.put(16, "SOLVMIX");  //lanxess
+		OBJECTIDtoMXNum.put(17, "MXEX");    //Biodiesel1
+		OBJECTIDtoMXNum.put(18, "MXEX-WHR");  //Biodiesel2
+		OBJECTIDtoMXNum.put(19, "mx01B3");    //Biodiesel3
+		OBJECTIDtoMXNum.put(20, "mx02B3");    //Biodiesel3
+		OBJECTIDtoMXNum.put(21, "mx03B3");    //Biodiesel3
 
-		OBJECTIDtoHXNum.put(4, "HRSG");
+		/*OBJECTIDtoHXNum.put(4, "HRSG");
 		OBJECTIDtoHXNum.put(1, "Boiler");
 		OBJECTIDtoHXNum.put(3, "10E01");
 		OBJECTIDtoHXNum.put(2, "10E02");
 		OBJECTIDtoHXNum.put(5, "10E03");
 		OBJECTIDtoHXNum.put(6, "10E04");
-		OBJECTIDtoHXNum.put(7, "10E05");
+		OBJECTIDtoHXNum.put(7, "10E05");*/
+		
+		OBJECTIDtoHXNum.put(1, "Boiler1"); //Biodiesel1
+		OBJECTIDtoHXNum.put(2, "10E02B1");   //Biodiesel1
+		OBJECTIDtoHXNum.put(3, "10E01B1");   //Biodiesel1
+		OBJECTIDtoHXNum.put(4, "HRSG1B1");   //Biodiesel1
+		OBJECTIDtoHXNum.put(5, "10E03B1");   //Biodiesel1
+		OBJECTIDtoHXNum.put(6, "10E04B1");   //Biodiesel1
+		OBJECTIDtoHXNum.put(7, "10E05B1");   //Biodiesel1
+		OBJECTIDtoHXNum.put(8, "10E02B2");   //Biodiesel2
+		OBJECTIDtoHXNum.put(9, "10E03B2");   //Biodiesel2
+		OBJECTIDtoHXNum.put(10, "10E04B2");  //Biodiesel2
+		OBJECTIDtoHXNum.put(11, "10E05B2");  //Biodiesel2
+		OBJECTIDtoHXNum.put(12, "C001");   //Zeon
+		OBJECTIDtoHXNum.put(13, "C002");   //Zeon
+		OBJECTIDtoHXNum.put(14, "C002");   //Evonik
+		OBJECTIDtoHXNum.put(15, "C002");   //Evonik
+		OBJECTIDtoHXNum.put(16, "C002");   //Evonik
+		OBJECTIDtoHXNum.put(17, "C002");   //Evonik
+		OBJECTIDtoHXNum.put(18, "C002");   //Evonik
+		OBJECTIDtoHXNum.put(19, "B3");     //hydrocracking
+		OBJECTIDtoHXNum.put(20, "Cool1");  //lanxess
+		OBJECTIDtoHXNum.put(21, "Eva");    //zeon
+		OBJECTIDtoHXNum.put(22, "Cond");   //zeon
+		OBJECTIDtoHXNum.put(23, "heat1");  //lanxess
+		OBJECTIDtoHXNum.put(24, "Heat2");  //lanxess
+		OBJECTIDtoHXNum.put(25, "COol2");  //lanxess
+		OBJECTIDtoHXNum.put(26, "SOLVCOND");//lanxess
+		OBJECTIDtoHXNum.put(27, "B2");     //zeon
+		OBJECTIDtoHXNum.put(28, "B3");     //lanxess
+		OBJECTIDtoHXNum.put(29, "B1");     //lanxess
+		OBJECTIDtoHXNum.put(30, "B5");     //lanxess
+		OBJECTIDtoHXNum.put(31, "B3");     //hydrocracking
+		OBJECTIDtoHXNum.put(32, "B6");     //hydrocracking
+		OBJECTIDtoHXNum.put(33, "Eva");    //cogen
+		OBJECTIDtoHXNum.put(34, "Cond");   //cogen
+		OBJECTIDtoHXNum.put(35, "HRSG2B1");   //Biodiesel1
+		OBJECTIDtoHXNum.put(36, "Boiler2B1"); //Biodiesel1
+		OBJECTIDtoHXNum.put(37, "Boiler3B1"); //Biodiesel1
+		OBJECTIDtoHXNum.put(38, "Boiler4B1"); //Biodiesel1
+		OBJECTIDtoHXNum.put(39, "HRSG3B1");   //Biodiesel1
+		OBJECTIDtoHXNum.put(40, "HRSG1B2");   //Biodiesel2
+		OBJECTIDtoHXNum.put(41, "10E01B2");   //Biodiesel2
+		OBJECTIDtoHXNum.put(42, "Boiler4B2"); //Biodiesel2
+		OBJECTIDtoHXNum.put(43, "Boiler3B2"); //Biodiesel2
+		OBJECTIDtoHXNum.put(44, "Boiler1B2"); //Biodiesel2
+		OBJECTIDtoHXNum.put(45, "Boiler2B2"); //Biodiesel2
+		OBJECTIDtoHXNum.put(46, "HRSG2B2");   //Biodiesel2
+		OBJECTIDtoHXNum.put(47, "HRSG3B2");   //Biodiesel2
+		OBJECTIDtoHXNum.put(48, "PREHEATB2"); //Biodiesel2
+		OBJECTIDtoHXNum.put(49, "WHR-EXB2");  //Biodiesel2
+		OBJECTIDtoHXNum.put(50, "10E04B3");   //Biodiesel3
+		OBJECTIDtoHXNum.put(51, "10E03B3");   //Biodiesel3
+		OBJECTIDtoHXNum.put(52, "10E05B3");   //Biodiesel3
+		OBJECTIDtoHXNum.put(53, "10E02B3");   //Biodiesel3
+		OBJECTIDtoHXNum.put(54, "HRSG1B3");   //Biodiesel3
+		OBJECTIDtoHXNum.put(55, "10E01B3");   //Biodiesel3
+		OBJECTIDtoHXNum.put(56, "Boiler1B3"); //Biodiesel3
 
 		OBJECTIDtoCRNum.put(1, "10D01");
 		OBJECTIDtoCRNum.put(2, "10D03");
@@ -520,16 +595,46 @@ public class PWServlet extends HttpServlet {
 
 		OBJECTIDtoDCNum.put(1, "10D02D");
 
-		OBJECTIDtoRadF.put(1, "10D06");
-		OBJECTIDtoRadF.put(2, "10D08");
+		/*OBJECTIDtoRadF.put(1, "10D06");
+		OBJECTIDtoRadF.put(2, "10D08");*/
 		
-		OBJECTIDtoReactor.put(1, "10D01");
-		OBJECTIDtoReactor.put(2, "10D03");
+		OBJECTIDtoRadF.put(1, "10D06B1"); //Biodiesel1
+		OBJECTIDtoRadF.put(2, "10D08B1"); //Biodiesel1
+		OBJECTIDtoRadF.put(3, "C1");
+		OBJECTIDtoRadF.put(4, "B7");  
+		OBJECTIDtoRadF.put(5, "10D08B2"); //Biodiesel2
+		OBJECTIDtoRadF.put(6, "10D06B2"); //Biodiesel2
+		
+		OBJECTIDtoRadF.put(11, "10D08B3"); //Biodiesel3
+		OBJECTIDtoRadF.put(12, "10D06B3"); //Biodiesel3
+		
+		/*OBJECTIDtoReactor.put(1, "10D01");
+		OBJECTIDtoReactor.put(2, "10D03");*/
+		
+		OBJECTIDtoReactor.put(1, "10D01B1");//Biodiesel1
+		OBJECTIDtoReactor.put(2, "10D03B1");//Biodiesel1
+		OBJECTIDtoReactor.put(3, "COmbust1B1");//Biodiesel1
+		OBJECTIDtoReactor.put(4, "R101");//EVONIK
+		OBJECTIDtoReactor.put(5, "R102");//EVONIK
+		OBJECTIDtoReactor.put(6, "R201");//EVONIK
+		OBJECTIDtoReactor.put(7, "B20");//HYDROCRACKING
+		OBJECTIDtoReactor.put(8, "10D01B2");//Biodiesel2
+		OBJECTIDtoReactor.put(9, "10D03B2");//Biodiesel2
+		OBJECTIDtoReactor.put(10, "POLYBRT1");//ZEON
+		OBJECTIDtoReactor.put(11, "B1");//HYDROCRACKING
+		OBJECTIDtoReactor.put(12, "Reactor");//LANXESS
+		OBJECTIDtoReactor.put(13, "COMBUST2B1");//Biodiesel1
+		OBJECTIDtoReactor.put(14, "COMBUST3B1");//Biodiesel1
+		OBJECTIDtoReactor.put(15, "COMBUST1B2");//Biodiesel2
+		OBJECTIDtoReactor.put(16, "COMBUST2B2");//Biodiesel2
+		OBJECTIDtoReactor.put(17, "COMBUST3B2");//Biodiesel2
+		OBJECTIDtoReactor.put(18, "10D03B3");//Biodiesel3
+		OBJECTIDtoReactor.put(19, "10D01B3");//Biodiesel3
+		OBJECTIDtoReactor.put(20, "COMBUST1B3");//Biodiesel3
 
 		OBJECTIDtoMaterialL.put("104", "MeOH");
 		OBJECTIDtoMaterialL.put("126", "OIL");
 		OBJECTIDtoMaterialL.put("100", "FINALPRD");
-
 
 		for (Map.Entry<String, String> entry : OBJECTIDtoMaterialL.entrySet()) { // reverse mapping
 			MaterialLtoOBJECTID.put(entry.getValue(), entry.getKey());
@@ -571,20 +676,20 @@ public class PWServlet extends HttpServlet {
 			end_time = System.currentTimeMillis();
 			System.out.println("runAspenPlus takes: "+(end_time-start_time));			
 			break;
-		case "PrAP":                                                                     // if PrAP button was pressed, then the following action will be taken
+		case "PrAPWOWHR":                                                                     // if PrAP button was pressed, then the following action will be taken
 			System.out.println(appCallFlag[0] + " button was pressed! (doPOST)");
-			start_time = System.currentTimeMillis();
+//			start_time = System.currentTimeMillis();
 //			runPrAspenPlus(editStack);                                                   // run Parametrised Aspen Plus model when run Parametrised AspenPlus Button was pressed
 			runPrAspenPlusandPowerWorld(editStack);
-			end_time = System.currentTimeMillis();
-			System.out.println("runPrAspenPlus takes: "+(end_time-start_time));
+//			end_time = System.currentTimeMillis();
+//			System.out.println("runPrAspenPlus takes: "+(end_time-start_time));
 			break;
 		case "PW":
 			System.out.println(appCallFlag[0] + " button was pressed! (doPOST)");
-			start_time = System.currentTimeMillis();
+//			start_time = System.currentTimeMillis();
 			runPowerWorld(editStack);                                                    // run Power World model when run PowerWorld Button was pressed
-			end_time = System.currentTimeMillis();
-			System.out.println("runPowerWorld takes: "+(end_time-start_time));
+//			end_time = System.currentTimeMillis();
+//			System.out.println("runPowerWorld takes: "+(end_time-start_time));
 			break;
 		case "PWPr":
 			System.out.println(appCallFlag[0] + " button was pressed! (doPOST)");
@@ -1023,7 +1128,7 @@ public class PWServlet extends HttpServlet {
 		try {
 	
 			fileWriter = new FileWriter(PrAPPWOUTCSV);                                        // filewriter for the output of pr aspenplus model
-//			System.load("C:/apache-tomcat-8.0.24/webapps/ROOT/MoDS_Java_API.dll"); 
+			System.load("C:/apache-tomcat-8.0.24/webapps/ROOT/MoDS_Java_API_0.1.dll"); 
 			
 			ArrayList<String> xNames = MoDSAPI.getXVarNamesFromAPI(simDir, modelName);		
 			System.out.println("xNames= " + xNames);
@@ -1065,13 +1170,9 @@ public class PWServlet extends HttpServlet {
 // end of evaluating the surrogate model
 		
 		switch (appCallFlag){
-		case ("PrAPPW"):
-			System.out.println(appCallFlag + " Button was pressed! (runPrAspenPlusandPowerWorld)");			    
+		case ("PrAPPW"):		    
 		    readPrAPPWCSV();
 		    break;
-	    case ("PrAP"):
-	    	System.out.println(appCallFlag + " Button was pressed! (runPrAspenPlusandPowerWorld)");	
-	        readPrAPCSV();
 		}		
 	}
 	
@@ -1144,7 +1245,7 @@ public class PWServlet extends HttpServlet {
 				for (String key : attributeslist_HX.get(i).keySet()) { // go through  all the  heat exchangers in biodiesel plant
 					if (key == "OBJECTID") {
 
-						if (OBJECTIDtoHXNum.get(i + 1).equals("10E01")) { // "10E01" is the heat exchanger for oil to be heated before feeding to the reactor
+						if (OBJECTIDtoHXNum.get(i + 1).equals("10E01B3")) { // "10E01" is the heat exchanger for oil to be heated before feeding to the reactor
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")));
 							filewriterAPIN.append(",");
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T")));
@@ -1163,7 +1264,7 @@ public class PWServlet extends HttpServlet {
 				for (String key : attributeslist_MX.get(i).keySet()) { // go through all  the mixers in biodiesel plant
 					if (key == "OBJECTID") {
 
-						if (OBJECTIDtoMXNum.get(i + 1).equals("mx01")) { // "mx01" is the mixer for methanol and the catalyst to be mixed before feeding to the reactor
+						if (OBJECTIDtoMXNum.get(i + 1).equals("mx01B3")) { // "mx01" is the mixer for methanol and the catalyst to be mixed before feeding to the reactor
 							filewriterAPIN.append(String.valueOf(attributeslist_MX.get(i).get("MatIn2Qnt")));
 							filewriterAPIN.append(",");
 							filewriterAPIN.append(String.valueOf(attributeslist_MX.get(i).get("MatIn2_T")));
@@ -1182,7 +1283,7 @@ public class PWServlet extends HttpServlet {
 				for (String key : attributeslist_HX.get(i).keySet()) { // go through all the heat exchanger in biodiesel plant
 					if (key == "OBJECTID") {
 
-						if (OBJECTIDtoHXNum.get(i + 1).equals("Boiler")) {
+						if (OBJECTIDtoHXNum.get(i + 1).equals("Boiler1B3")) {
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatOut6Qnt")));
 							filewriterAPIN.append(",");
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("Operate_P")));
@@ -1224,7 +1325,7 @@ public class PWServlet extends HttpServlet {
 	    double[] C = new double [j];
 	    double x0A=30, x0B=3, x1A=30, x1B=3, x2A=180, x2B=18, x3A=30, x3B=3, x4A=233.135, x4B=23.3135, x5A=4, x5B=0.4;
 	    	    					
-		String uri = "File:/C:/apache-tomcat-8.0.24/webapps/ROOT/BiodieselPlant.owl";
+		String uri = "File:/C:/apache-tomcat-8.0.24/webapps/ROOT/BiodieselPlant-1.owl";
 													
 			try{			
                 OWLModel owlModel = ProtegeOWL.createJenaOWLModelFromURI(uri);
@@ -1255,7 +1356,7 @@ public class PWServlet extends HttpServlet {
             				for (String key : attributeslist_HX.get(k).keySet()) { // go through all  the mixers in biodiesel plant
             					if (key == "OBJECTID") {
 
-            						if (OBJECTIDtoHXNum.get(k + 1).equals("10E01")) { // "mx01" is the mixer for methanol and the catalyst to be mixed before feeding to the reactor
+            						if (OBJECTIDtoHXNum.get(k + 1).equals("10E01B3")) { // "mx01" is the mixer for methanol and the catalyst to be mixed before feeding to the reactor
             							x[0] = (Double.parseDouble(String.valueOf(attributeslist_HX.get(k).get("MatIn1Qnt"))));
             		           		    xc[0] = (x[0]-x0A)/x0B;   //convert the true number to the space of (-1,1);
             		           		    x[1] = (Double.parseDouble(String.valueOf(attributeslist_HX.get(k).get("MatIn1_T"))));
@@ -1279,7 +1380,7 @@ public class PWServlet extends HttpServlet {
                     		for (int k = 0; k < attributeslist_HX.size(); k++) {
                 				for (String key : attributeslist_HX.get(k).keySet()) { // go through all the heat exchanger in biodiesel plant
                 					if (key == "OBJECTID") {
-                						if (OBJECTIDtoHXNum.get(k + 1).equals("Boiler")) {
+                						if (OBJECTIDtoHXNum.get(k + 1).equals("BoilerB3")) {
                 							x[4] = (Double.parseDouble(String.valueOf(attributeslist_MX.get(k).get("MatOut6Qnt"))))/18.01;
                 		           		    xc[4] = (x[4]-x4A)/x4B;              //convert the true number to the space of (-1,1);
                 		           		    x[5] = (Double.parseDouble(String.valueOf(attributeslist_MX.get(k).get("Operate_P"))))/100;
@@ -1342,7 +1443,7 @@ public class PWServlet extends HttpServlet {
                     	for (int k = 0; k < attributeslist_MX.size(); k++) {
                     		for (String key : attributeslist_MX.get(k).keySet()) { // go through all  the mixers in biodiesel plant
             					if (key == "OBJECTID") {
-            						if (OBJECTIDtoMXNum.get(k + 1).equals("mx01")) { // "mx01" is the mixer for methanol and the catalyst to be mixed before feeding to the reactor
+            						if (OBJECTIDtoMXNum.get(k + 1).equals("mx01B3")) { // "mx01" is the mixer for methanol and the catalyst to be mixed before feeding to the reactor
             							x[2] = (Double.parseDouble(String.valueOf(attributeslist_MX.get(k).get("MatIn2Qnt"))));
             		           		    xc[2] = (x[2]-x2A)/x2B;   //convert the true number to the space of (-1,1);
             		           		    x[3] = (Double.parseDouble(String.valueOf(attributeslist_MX.get(k).get("MatIn2_T"))));
@@ -1537,13 +1638,13 @@ public class PWServlet extends HttpServlet {
 			latch.await(); // wait until all feature service tables are ready then continue
 
 				String[] ArcGISOBJECTID = null;
-				ArcGISOBJECTID = new String[7];
+				ArcGISOBJECTID = new String[50];
 
-				for (int j = 0; j < 2; j++) {
+				for (int j = 10; j < 12; j++) {
 					ArcGISOBJECTID[j] = String.valueOf(j + 1);
 					System.out.println(ArcGISOBJECTID);
 
-					if (OBJECTIDtoRadF.get(j + 1).equals("10D08")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
+					if (OBJECTIDtoRadF.get(j + 1).equals("10D08B3")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
 						Map<String, Object> RadFracAttributes = RadFracTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 							RadFracAttributes.put("MatOut3Qnt",result[0]);                                                               // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
 							System.out.println("F="+result[0]);
@@ -2031,7 +2132,7 @@ public class PWServlet extends HttpServlet {
 		try {			
 			// System.out.println(MoDSAPI.class);
 			fileWriter = new FileWriter(PrPWOUTCSV); // filewriter for the
-			System.load("C:/apache-tomcat-8.0.24/webapps/ROOT/MoDS_Java_API.dll");                     // not recommended--Messing with the library path on the command line		
+			System.load("C:/apache-tomcat-8.0.24/webapps/ROOT/MoDS_Java_API_0.1.dll");                     // not recommended--Messing with the library path on the command line		
 			
 //			ArrayList<String> xNames = MoDSAPI.getXVarNamesFromAPI(simDir, modelName);
 			ArrayList<String> yNames = MoDSAPI.getYVarNamesFromAPI(simDir, modelName);
@@ -2045,19 +2146,38 @@ public class PWServlet extends HttpServlet {
 		e.printStackTrace();
 				
 			} catch (IOException e) {
-			// TODO Auto-generated catch block
 		e.printStackTrace();			
 			}
 
 		yData = MoDSAPI.evaluateSurrogate(simDir, modelName, xData); // call MoDS API to evaluate the surrogate model basing on the MoDS simulation file "simDir -> modelNam" and the input xData that was collected before
 		System.out.println("Success!");														
 		System.out.println("yData=" + yData); 
+		
+		for (int j = 0; j < yData.size(); j++) {
+			try {
+				fileWriter.append("\n");
+				for (int k = 0; k < yData.get(j).size(); k++) {
+					fileWriter.append(Double.toString(yData.get(j).get(k)));                        // write the yData to the output CSV file
+					fileWriter.append(",");
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					fileWriter.flush();
+					fileWriter.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
 		end_time = System.currentTimeMillis();
 		interval = end_time - start_time;
 		System.out.println("The Process Took You: "+ interval + "ms");
 
 		// write the output data to console
-		// readPrPWCSV();
+	    readPrPWCSV();
 
 	}
 
@@ -2269,11 +2389,11 @@ public class PWServlet extends HttpServlet {
 				String[] ArcGISOBJECTID = null;
 				ArcGISOBJECTID = new String[7];
 
-				for (int j = 0; j < 2; j++) {
+				for (int j = 0; j < 6; j++) {
 					ArcGISOBJECTID[j] = String.valueOf(j + 1);
 					System.out.println(ArcGISOBJECTID);
 
-					if (OBJECTIDtoRadF.get(j + 1).equals("10D08")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
+					if (OBJECTIDtoRadF.get(j + 1).equals("10D08B1")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
 						Map<String, Object> MaterialLineAttributes = MaterialLineTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[0].trim().isEmpty()) {
 							MaterialLineAttributes.put("MatOut3Qnt",Float.parseFloat(data[0].trim()));   // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
@@ -2310,12 +2430,15 @@ public class PWServlet extends HttpServlet {
 			long start = System.currentTimeMillis(); // start a timer
 			String line = null;
 			fileReader = new BufferedReader(new FileReader(PrPWOUTCSV));
-			fileReader.readLine(); // Read the CSV flie header to skip it
+			fileReader.readLine();     // Read the CSV flie header to skip it
 			QueryParameters loadAllFeatures = new QueryParameters();
-			loadAllFeatures.setWhere("OBJECID IS NOT NULL");
+			loadAllFeatures.setWhere("OBJECTID IS NOT NULL");
+			
 			GeodatabaseFeatureServiceTable LoadPointTable = new GeodatabaseFeatureServiceTable( "http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Load_points/FeatureServer", user, 0);
 			LoadPointTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
 			LoadPointTable.initialize();
+			System.out.println(LoadPointTable.getStatus());
+			LoadPointTable.getInitializationError();								                                  
 
 			final CountDownLatch latch = new CountDownLatch(1); // ZL-151207 handles one asynchronous processes, only continues Thread when it reaches 0
 			LoadPointTable.populateFromService(loadAllFeatures, false,
@@ -2332,47 +2455,47 @@ public class PWServlet extends HttpServlet {
 							e.printStackTrace();
 						}
 					});
-			latch.await(); // ZL-151207 wait until all feature service tables are ready then continue
-
+			
+			latch.await(); // wait until all feature service tables are ready then continue
 			while ((line = fileReader.readLine()) != null) {
 				String[] data = line.split(",");
-				System.out.println("data= " + data);
-				String[] ArcGISFID = null;
-				ArcGISFID = new String[208]; // only 3 BusNum involved for this simplified pr power world model
+//				System.out.println("data= " + data);
+				
+//				String[] ArcGISFID = null;
+//				ArcGISFID = new String[209]; 
+				
 
+				
 				for (int j = 0; j < 209; j++) {
-					String BusNum = XPointtoBusNum.get(j);
-					System.out.println(BusNum);
-					ArcGISFID[j] = PWBusNumtoArcGISFID.get(BusNum);
+					String PWBusNum = String.valueOf(j+1);
+					String ArcGISFID = PWBusNumtoArcGISFID.get(PWBusNum);
+					
+//					String BusNum = XPointtoBusNum.get(j);
+//					System.out.println(BusNum);
+//					ArcGISFID = PWBusNumtoArcGISFID.get(BusNum);
 					System.out.println(ArcGISFID);
 
-					if (ArcGISFID[j] != null) {
-						Map<String, Object> LoadPointAttributes = LoadPointTable .getFeature(Long.parseLong(ArcGISFID[j])) .getAttributes();
-						if (!data[0].trim().isEmpty()) {
-							LoadPointAttributes .put("theta_act", Float.parseFloat(data[0 + 5 * j] .trim()) * 2 * 3.146 / 360); // convert the bus angle to radian and upgrade it to the corressponding BusNum attributes
+					if (ArcGISFID != null) {
+						Map<String, Object> LoadPointAttributes = LoadPointTable.getFeature(Long.parseLong(ArcGISFID)).getAttributes();
+						if (!data[1 + 5 * j].trim().isEmpty()) {
+							LoadPointAttributes .put("theta_act", Float.parseFloat(data[1 + 5 * j] .trim()) * 2 * 3.146 / 360); // convert the bus angle to radian and upgrade it to the corressponding BusNum attributes
 						}
-						if (!data[1].trim().isEmpty()) { 
-							LoadPointAttributes.put("volt_act", Float.parseFloat(data[1 + 5 * j].trim()));
+						if (!data[2 + 5 * j].trim().isEmpty()) { 
+							LoadPointAttributes.put("volt_act", Float.parseFloat(data[2 + 5 * j].trim()));
 						}
-						if (!data[2].trim().isEmpty()) {
-							LoadPointAttributes.put("pwr_P_act",Float.parseFloat(data[2 + 5 * j].trim()));
+						if (!data[3 + 5 * j].trim().isEmpty()) {
+							LoadPointAttributes.put("pwr_P_act",Float.parseFloat(data[3 + 5 * j].trim()));
 						}
-						if (!data[3].trim().isEmpty()) {
-							LoadPointAttributes.put("pwr_Q_act",Float.parseFloat(data[3 + 5 * j].trim()));
-						}
-						if (!data[4].trim().isEmpty()) {
+						if (!data[4 + 5 * j].trim().isEmpty()) {
 							LoadPointAttributes.put("pwr_Q_act",Float.parseFloat(data[4 + 5 * j].trim()));
 						}
-						LoadPointTable.updateFeature(
-								Long.parseLong(ArcGISFID[j]),
-								LoadPointAttributes); // update feature table
-														// locally
+						
+						LoadPointTable.updateFeature( Long.parseLong(ArcGISFID), LoadPointAttributes); // update feature table locally
 					}
 				}
 			}
 			LoadPointTable.applyEdits(null); // commit local updates onto server
-			System.out
-					.println("Updating process took "+ String.valueOf(System.currentTimeMillis() - start)+ "ms"); // tells how long it took to update
+			System.out.println("Updating process took "+ String.valueOf(System.currentTimeMillis() - start)+ "ms"); // tells how long it took to update
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2384,9 +2507,7 @@ public class PWServlet extends HttpServlet {
 			}
 		}
 	}
-
 // update the ArcGIS database according to the output of the PrPW model
-// ZL-20160328 change the readAPCSV method to updat
 	
 	public void readAPCSV() {
 		BufferedReader fileReader = null;
@@ -2427,11 +2548,11 @@ public class PWServlet extends HttpServlet {
 				String[] ArcGISOBJECTID = null;
 				ArcGISOBJECTID = new String[7];
 
-				for (int j = 0; j < 2; j++) {
+				for (int j = 0; j < 6; j++) {
 					ArcGISOBJECTID[j] = String.valueOf(j + 1);
 					System.out.println(ArcGISOBJECTID);
 
-					if (OBJECTIDtoRadF.get(j + 1).equals("10D08")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
+					if (OBJECTIDtoRadF.get(j + 1).equals("10D08B1")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
 						Map<String, Object> RadFracAttributes = RadFracTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[1].trim().isEmpty()) {
 							RadFracAttributes.put("MatOut3Qnt",Float.parseFloat(data[1].trim()));   // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
@@ -2499,11 +2620,11 @@ public class PWServlet extends HttpServlet {
 				String[] ArcGISOBJECTID = null;
 				ArcGISOBJECTID = new String[7];
 
-				for (int j = 0; j < 2; j++) {
+				for (int j = 0; j < 20; j++) {
 					ArcGISOBJECTID[j] = String.valueOf(j + 1);
 					System.out.println(ArcGISOBJECTID);
 
-					if (OBJECTIDtoReactor.get(j + 1).equals("10D01")) {                                                                     
+					if (OBJECTIDtoReactor.get(j + 1).equals("10D01B3")) {                                                                     
 						Map<String, Object> ReactorAttributes = ReactorTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[26].trim().isEmpty()) {
 							ReactorAttributes.put("Heat_Duty",Float.parseFloat(data[26].trim())*1000);                                     // upgrade the heat duty of reactor 10D01 to ArcGIS  databse
@@ -2524,7 +2645,7 @@ public class PWServlet extends HttpServlet {
 						System.out.println("V_act_kv="+ Float.parseFloat(data[114].trim()));
 						ReactorTable.updateFeature(Long.parseLong(ArcGISOBJECTID[j]),ReactorAttributes);                                // update feature table locally
 					}
-					if (OBJECTIDtoReactor.get(j + 1).equals("10D03")) {                                                                     
+					if (OBJECTIDtoReactor.get(j + 1).equals("10D03B3")) {                                                                     
 						Map<String, Object> ReactorAttributes = ReactorTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[23].trim().isEmpty()) {
 							ReactorAttributes.put("Heat_Duty",Float.parseFloat(data[23].trim())*1000);                                // upgrade the heat duty of reactor 10D03 to ArcGIS  databse
@@ -2598,13 +2719,13 @@ public class PWServlet extends HttpServlet {
 				String[] data = line.split(",");
 				System.out.println("data= " + data);
 				String[] ArcGISOBJECTID = null;
-				ArcGISOBJECTID = new String[7];
+				ArcGISOBJECTID = new String[50];
 
-				for (int j = 0; j < 2; j++) {
+				for (int j = 0; j < 20; j++) {
 					ArcGISOBJECTID[j] = String.valueOf(j + 1);
 					System.out.println(ArcGISOBJECTID);
-
-					if (OBJECTIDtoReactor.get(j + 1).equals("10D01")) {                                                                     
+					
+					if (OBJECTIDtoReactor.get(j + 1).equals("10D01B3")) {                                                                     
 						Map<String, Object> ReactorAttributes = ReactorTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[25].trim().isEmpty()) {
 							ReactorAttributes.put("Heat_Duty",Float.parseFloat(data[25].trim())*1000);                                     // upgrade the heat duty of reactor 10D01 to ArcGIS  databse
@@ -2625,7 +2746,7 @@ public class PWServlet extends HttpServlet {
 						System.out.println("V_act_kv="+ Float.parseFloat(data[113].trim()));
 						ReactorTable.updateFeature(Long.parseLong(ArcGISOBJECTID[j]),ReactorAttributes);                                // update feature table locally
 					}
-					if (OBJECTIDtoReactor.get(j + 1).equals("10D03")) {                                                                     
+					if (OBJECTIDtoReactor.get(j + 1).equals("10D03B3")) {                                                                     
 						Map<String, Object> ReactorAttributes = ReactorTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[22].trim().isEmpty()) {
 							ReactorAttributes.put("Heat_Duty",Float.parseFloat(data[22].trim())*1000);                                // upgrade the heat duty of reactor 10D03 to ArcGIS  databse

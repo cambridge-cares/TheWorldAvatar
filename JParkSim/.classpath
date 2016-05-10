@@ -29,5 +29,6 @@
 	<classpathentry kind="lib" path="C:/Program Files (x86)/ArcGIS SDKs/java10.2.4/sdk/samples/samplecode/lucene-core-3.4.0.jar"/>
 	<classpathentry kind="lib" path="D:/Downloads/MoDS_Java_API_v0.1.1"/>
 	<classpathentry kind="src" path="/Dialog box with an image"/>
+	<classpathentry kind="lib" path="D:/MoDS_API/MoDS_Java_API_v0.1.1/MoDS_API-j-Git-0.1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

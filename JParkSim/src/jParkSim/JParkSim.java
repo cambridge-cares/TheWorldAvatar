@@ -732,7 +732,7 @@ change.setLocation(890, 45);
 
     
     // Run Parameterised PowerWorld button
-    JButton PWPrButton = new JButton("Run Parameterised PW");
+    JButton PWPrButton = new JButton("Run Pr PowerWorld");
     PWPrButton.addActionListener(new ActionListener() {
     	@Override
     	public void actionPerformed(ActionEvent arg0) {
@@ -797,11 +797,11 @@ change.setLocation(890, 45);
 					wr.close();
 					
 					if (urlCon.getResponseCode()==200) {
-						JOptionPane.showMessageDialog(null, "Parameterised PW has finished running!");
+						JOptionPane.showMessageDialog(null, "PrPowerWorld has finished evaluating!");
 						editStack.clear(); // delete all items in editStack
 					} else {
 						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
-								+ "\nPlease try running Parameterised PW again");
+								+ "\nPlease try evaluating PrPowerWorld again");
 					}
 					out.close();
 				}
@@ -909,7 +909,7 @@ change.setLocation(890, 45);
 
 
     // Run Parameterised AspenPlus button
-    JButton APPrButton = new JButton("Run Parameterised AP");
+    JButton APPrButton = new JButton("Run Pr APWOWHR");
     APPrButton.addActionListener(new ActionListener() {
     	@Override
     	public void actionPerformed(ActionEvent arg0) {
@@ -917,11 +917,9 @@ change.setLocation(890, 45);
     		OutputStreamWriter out;
     		URL url;
     		try {
-    			
-    			
+    			    			
 //    			url = new URL("http://172.25.182.41/PWServlet/");
-//    			url = new URL("http://172.25.182.41/APServletWOWHR/");
-    			url = new URL("http://caresremote1.dyndns.org/OPALRTServlet/"); 
+    			url = new URL("http://172.25.182.41/APWOWHRServlet/");
 //	        	url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
@@ -969,11 +967,11 @@ change.setLocation(890, 45);
 					wr.close();
 					
 					if (urlCon.getResponseCode()==200) {
-						JOptionPane.showMessageDialog(null, "Parameterised AP has finished running!");
+						JOptionPane.showMessageDialog(null, "Pr APWOWHR has finished running!");
 						editStack.clear(); // delete all items in editStack
 					} else {
 						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
-								+ "\nPlease try running Parameterised AP again");
+								+ "\nPlease try running Pr APWOWHR again");
 					}
 					out.close();
 				}
@@ -1070,8 +1068,87 @@ change.setLocation(890, 45);
     APHrButton.setSize(190,30);
     APHrButton.setLocation(490, 115);
 
+    // Run AspenPlus model with heat recovery button
+    JButton PrAPHrButton = new JButton("Run Pr APWWHR");
+    PrAPHrButton.addActionListener(new ActionListener() {
+    	@Override
+    	public void actionPerformed(ActionEvent arg0) {
+    		HttpURLConnection urlCon;
+    		OutputStreamWriter out;
+    		URL url;
+    		try {
+    			url = new URL("http://172.25.182.41/APWWHRServlet/");
+			//	url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
+				urlCon = (HttpURLConnection) url.openConnection();
+				urlCon.setRequestMethod("POST");
+				urlCon.setDoOutput(true);
+				
+				if (editStack.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "You did not edit any features for AspenPlus!");
+				} else {
+					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
+					StringBuilder layers = new StringBuilder();
+					StringBuilder OBJECTIDs = new StringBuilder();
+					StringBuilder appCallFlag = new StringBuilder();
+					
+					for (String[] item : editStack) { // create comma separated values
+						layers.append(item[0]);
+						layers.append(",");
+						OBJECTIDs.append(item[1]);
+						OBJECTIDs.append(",");
+						appCallFlag.append("PrAPHR");
+						appCallFlag.append(",");
+					}
+					StringBuilder outputString = new StringBuilder();
+					// Only URL encoded string values can be sent over a HTTP connection
+					outputString.append(URLEncoder.encode("layers", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(layers.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(OBJECTIDs.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("QueryT", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
+					System.out.println("outputString="+outputString);
+					
+					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
+					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
+					wr.writeBytes(outputString.toString()); // write query string into servlet doPost() method
+					wr.flush();
+					wr.close();
+					
+					if (urlCon.getResponseCode()==200) {
+						JOptionPane.showMessageDialog(null, "Pr APWWHR has finished running!");
+						editStack.clear(); // delete all items in editStack
+					} else {
+						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
+								+ "\nPlease try running Pr APWWHR again");
+					}
+					out.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+    		for (ArcGISFeatureLayer layer : completeLayerList) {
+    			layer.requery();
+    			layer.refresh();
+    		}
+    	}
+    });
+    PrAPHrButton.setEnabled(true);
+    PrAPHrButton.setVisible(true);
+    PrAPHrButton.setSize(190,30);
+    PrAPHrButton.setLocation(690, 115);
+    
  // Run combined AspenPlus and power world model 
-    JButton APPWButton = new JButton("Run AP and PW");
+    JButton APPWButton = new JButton("Run AP + PW");
     APPWButton.addActionListener(new ActionListener() {
     	@Override
     	public void actionPerformed(ActionEvent arg0) {
@@ -1149,7 +1226,7 @@ change.setLocation(890, 45);
     APPWButton.setLocation(490, 80);
     
     // Run combined parameterized AspenPlus and power world model 
-    JButton PrAPPWButton = new JButton("Run Parameterized AP+PW");
+    JButton PrAPPWButton = new JButton("Run Pr AP + PW");
     PrAPPWButton.addActionListener(new ActionListener() {
     	@Override
     	public void actionPerformed(ActionEvent arg0) {
@@ -1304,9 +1381,9 @@ change.setLocation(890, 45);
     PrAPOButton.setSize(190,30);
     PrAPOButton.setLocation(890, 10);
 //zl-20160322   
-//*******************************************************************    
+ 
  // Run combined parameterized AspenPlus and power world model 
-    JButton OPALRT = new JButton("Run PW from OPALRT");
+    JButton OPALRT = new JButton("Run OPAL-RT"); 
     OPALRT.addActionListener(new ActionListener() {
     	@Override
     	public void actionPerformed(ActionEvent arg0) {
@@ -1330,7 +1407,7 @@ change.setLocation(890, 45);
 					for (String[] item : editStack) { // create comma separated values
 						layers.append(item[0]);
 						layers.append(",");
-			 			OBJECTIDs.append(item[1]); // ZHOU CHANGED ITEM[2] TO ITEM[1]
+			 			OBJECTIDs.append(item[1]);    // ZHOU CHANGED ITEM[2] TO ITEM[1]
 					    OBJECTIDs.append(",");
 						appCallFlag.append("OPALRT");
 						appCallFlag.append(",");
@@ -1382,7 +1459,7 @@ change.setLocation(890, 45);
     OPALRT.setVisible(true);
     OPALRT.setSize(190,30);
     OPALRT.setLocation(890, 80);    
-//***************************************************************************    
+  
     JButton refreshButton = new JButton("Refresh Map");
     refreshButton.addActionListener(new ActionListener() {
     	@Override
@@ -1562,6 +1639,7 @@ change.setLocation(890, 45);
     contentPane.add(panel);
     contentPane.add(PrAPPWButton);
     contentPane.add(PrAPOButton);
+    contentPane.add(PrAPHrButton);
     contentPane.add(OPALRT);
     contentPane.add(queryButton);
     contentPane.add(map, BorderLayout.CENTER);
