@@ -27,11 +27,14 @@ import com.esri.core.tasks.query.QueryTask;
 public class APWWHRServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
-	public static long start_time;
-	public static long end_time;
+	public static long start_time1;
+	public static long end_time1;
+	public static long start_time2;
+	public static long end_time2;
 	public static ArrayList<String[]> editStack;	 //global variable for receiving and storing the httpRequest information
 	
-	public static Map<Integer, String> OBJECTIDtoHXNum = new HashMap<>();                      // ZL-160114 Maps ArcGIS OBJECTID to the heat exchanger in chemical plant
+	public static Map<Integer, String> OBJECTIDtoHXNum = new HashMap<>();                      //Maps ArcGIS OBJECTID to the heat exchanger in chemical plant
+	public static Map<Integer, String> OBJECTIDtoHXB2 = new HashMap<>();                      // Maps ArcGIS OBJECTID to the heat exchanger in Biodiesel plant 1
 	public static Map<Integer, String> OBJECTIDtoRadF = new HashMap<>(); 	                   //Maps ArcGIS OBJECTID to the RadFrac
 	public static Map<Integer, String> OBJECTIDtoMXNum = new HashMap<>(); 	                   //Maps ArcGIS OBJECTID to the Mixer
 	public static Map<Integer, String> OBJECTIDtogaslinenum = new HashMap<>(); 	                   //Maps ArcGIS OBJECTID to the GasLine
@@ -44,14 +47,17 @@ public class APWWHRServlet extends HttpServlet {
 	public static String BD_WWHR_Sim = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/BD_WWHR_Sim");
 	
 	public APWWHRServlet() {
-		super();		
-		OBJECTIDtoHXNum.put(1, "Boiler1"); //Biodiesel1
+		super();
+		OBJECTIDtoHXB2.put(41, "10E01B2");   //Biodiesel1
+		
+		OBJECTIDtoHXNum.put(1, "BoilerB1"); //Biodiesel1
 		OBJECTIDtoHXNum.put(2, "10E02B1");   //Biodiesel1
 		OBJECTIDtoHXNum.put(3, "10E01B1");   //Biodiesel1
 		OBJECTIDtoHXNum.put(4, "HRSG1B1");   //Biodiesel1
 		OBJECTIDtoHXNum.put(5, "10E03B1");   //Biodiesel1
 		OBJECTIDtoHXNum.put(6, "10E04B1");   //Biodiesel1
 		OBJECTIDtoHXNum.put(7, "10E05B1");   //Biodiesel1
+		
 		OBJECTIDtoHXNum.put(8, "10E02B2");   //Biodiesel2
 		OBJECTIDtoHXNum.put(9, "10E03B2");   //Biodiesel2
 		OBJECTIDtoHXNum.put(10, "10E04B2");  //Biodiesel2
@@ -153,10 +159,10 @@ public class APWWHRServlet extends HttpServlet {
 		String[] layers = request.getParameter("layers").split(",");
 		String[] OBJECTIDs = request.getParameter("OBJECTIDs").split(","); //OBJECTID indicate which particular entity being modified, not fully used at the moment, might be very useful in the future(can be used to improve the efficiency of JPS) 
 		String[] appCallFlag = request.getParameter("appCallFlag").split(","); // appCallFlage indicate which function of the JPS being called from the applet side
-		String[] QueryT = request.getParameter("QueryT").split(",");  //new parameter for the query function
+//		String[] QueryT = request.getParameter("QueryT").split(",");  //new parameter for the query function
 
 		for (int i = 0; i < layers.length; i++) {
-			editStack.add(new String[] { layers[i], OBJECTIDs[i], appCallFlag[i], QueryT[i]});
+			editStack.add(new String[] { layers[i], OBJECTIDs[i], appCallFlag[i]});
 		}
 
 		/*FileWriter flag1 = null;                                                      //filewriter to check whether the httpRequest have been correctly received
@@ -168,31 +174,36 @@ public class APWWHRServlet extends HttpServlet {
 		flag1.flush();
 		flag1.close();*/  		
 		
-//		switch (appCallFlag[0]) {
-//		case "PrAPHR":                                                                     // if PrAP button was pressed, then the following action will be taken
-//			System.out.println(appCallFlag[0] + " button was pressed! (doPOST)");
-		start_time = System.currentTimeMillis();
-		runPrAspenPlusWWHR(editStack);
-		end_time = System.currentTimeMillis();
-		System.out.println("runAspenPlus takes: "+(end_time-start_time));
-//			break;
-//		}
+		switch (appCallFlag[0]) {
+		case "PrAPHR":                                                                     // if PrAP button was pressed, then the following action will be taken
+		    System.out.println(appCallFlag[0] + " button was pressed! (APWWHRS)");
+
+		    runPrAspenPlusWWHR(editStack);
+
+			break;
+		}
 	}
 	
 	public void runPrAspenPlusWWHR(ArrayList<String[]> editStack) {
+		
 //		String appCallFlag = null;
 //		appCallFlag = editStack.get(0)[2];                                               // flag indicating which function has been called (PowerWorld, parameterised PW, AspenPlus, parameterised AP)
 		List<Double> xRow = new ArrayList<>();                                            // extra arraylist to collect the x-value required as input to the pr aspen plus model
-		List<Double> yData;                                                         // output of the pr aspenplus model
+		List<List<Double>> xData = new ArrayList<>(1);                                    // arraylist to
+		List<List<Double>> yData; 
 		
+		start_time1 = System.currentTimeMillis();
 		xRow=getAPPWInput(editStack);
-		                                                             
+		end_time1 = System.currentTimeMillis();
+		xData.add(xRow); 
+		
 		String simDir = BD_WWHR_Sim;
 		String modelName = "HDMR_Alg_1";
 		FileWriter fileWriter = null;
 		try {
-	
+			
 			fileWriter = new FileWriter(PrAPWWHROUTCSV);                                        // filewriter for the output of pr aspenplus model
+            System.load("C:/apache-tomcat-8.0.24/webapps/ROOT/MoDS_Java_API_0.1.dll"); 
 			
 			ArrayList<String> xNames = MoDSAPI.getXVarNamesFromAPI(simDir, modelName);		
 			System.out.println("xNames= " + xNames);
@@ -208,15 +219,15 @@ public class APWWHRServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 		
-		yData = MoDSAPI.evaluateSurrogate(simDir, modelName, xRow);                       // call MoDS API to evaluate the surrogate model basing on the MoDS simulation file "simDir -> modelNam"  and  the input xData that was collected before
+		yData = MoDSAPI.evaluateSurrogate(simDir, modelName, xData);                       // call MoDS API to evaluate the surrogate model basing on the MoDS simulation file "simDir -> modelNam"  and  the input xData that was collected before
 		System.out.println("xRow=" + xRow);
 		System.out.println("yData=" + yData);                                              // print out the output yData to console
 
 		for (int j = 0; j < yData.size(); j++) {
 			try {
 				fileWriter.append("\n");
-				for (int k = 0; k < yData.size(); k++) {
-					fileWriter.append(Double.toString(yData.get(k)));                        // write the yData to the output CSV file
+				for (int k = 0; k < yData.get(j).size(); k++) {
+					fileWriter.append(Double.toString(yData.get(j).get(k)));                        // write the yData to the output CSV file
 					fileWriter.append(",");
 				}
 			} catch (IOException e) {
@@ -233,7 +244,11 @@ public class APWWHRServlet extends HttpServlet {
 		}
 		
 // end of evaluating the surrogate model
-		readPrAPCSV();
+		start_time2 = System.currentTimeMillis();
+		readPrAPWWHRCSV();
+		end_time2 = System.currentTimeMillis();
+		System.out.println("getAPWOWHRInput takes: "+( end_time1-start_time1));
+		System.out.println("readPrAPCSV takes: "+( end_time2-start_time2));
 	}
 	
 	public ArrayList<Double> getAPPWInput(ArrayList<String[]> editStack){ 
@@ -242,7 +257,7 @@ public class APWWHRServlet extends HttpServlet {
 		UserCredentials user = new UserCredentials();
 		user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
 						
-		for (Integer key : OBJECTIDtoHXNum.keySet()) {
+		for (Integer key : OBJECTIDtoHXB2.keySet()) {
 			try {
 				QueryParameters qParameter_HX = new QueryParameters();                       // create an instance  of QueryParameters to be used  for querying  ArcGIS database for predefined data
 				qParameter_HX.setWhere("OBJECTID='" + key + "'");                            // define FID address of an ArcGIS element
@@ -272,8 +287,8 @@ public class APWWHRServlet extends HttpServlet {
 			for (int i = 0; i < attributeslist_HX.size(); i++) {
 				for (String key : attributeslist_HX.get(i).keySet()) { // go through  all the  heat exchangers in biodiesel plant
 					if (key == "OBJECTID") {
-						
-						if (OBJECTIDtoHXNum.get(i + 1).equals("10E01B2")) { // "10E01" is the heat exchanger for oil to be heated before feeding to the reactor
+//41						
+						if (OBJECTIDtoHXB2.get(i + 41).equals("10E01B2")) { // "10E01" is the heat exchanger for oil to be heated before feeding to the reactor
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")));
 							filewriterAPIN.append(",");
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T")));
@@ -300,7 +315,7 @@ public class APWWHRServlet extends HttpServlet {
 		return xRow;
 	}
 	
-	public void readPrAPCSV() {
+	public void readPrAPWWHRCSV() {
 		BufferedReader fileReader = null;
 		UserCredentials user = new UserCredentials();
 		user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
@@ -564,7 +579,11 @@ public class APWWHRServlet extends HttpServlet {
 			MixerTable.applyEdits(null); 
 			HeaterCoolerTable.applyEdits(null); 
 			GasLineTable.applyEdits(null); 
-									
+			RadFracTable.dispose();
+			MixerTable.dispose(); 
+			HeaterCoolerTable.dispose();
+			GasLineTable.dispose();
+			
 			System.out.println("Updating process took " + String.valueOf(System.currentTimeMillis() - start) + "ms");                     // tells how long it took to update
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -1112,11 +1112,10 @@ change.setLocation(890, 45);
 					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
-					outputString.append("&");
-					outputString.append(URLEncoder.encode("QueryT", "UTF-8"));
-					outputString.append("=");
-					outputString.append(URLEncoder.encode(" ", "UTF-8"));
-					System.out.println("outputString="+outputString);
+//					outputString.append("&");
+//					outputString.append(URLEncoder.encode("QueryT", "UTF-8"));
+//					outputString.append("=");
+//					outputString.append(URLEncoder.encode(" ", "UTF-8"));
 					
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
 					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());

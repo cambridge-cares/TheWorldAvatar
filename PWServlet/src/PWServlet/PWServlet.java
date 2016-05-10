@@ -1,3 +1,8 @@
+/*
+ * what is the whole thing about? What is its structure? What is the point?
+ * 
+ */
+
 package PWServlet;
 
 import java.io.BufferedReader;
@@ -25,8 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
-
-import arq.cmdline.CmdMain;
 
 import com.cmclinnovations.modsapi.MoDSAPI;
 import com.esri.core.geodatabase.GeodatabaseFeatureServiceTable;
@@ -64,8 +67,10 @@ public class PWServlet extends HttpServlet {
 	public static Map<Integer, String> XPointtoBusNum = new HashMap<>(); // reverse mapping
 
 	public static Map<String, String> APSimNamtoOBJECTID = new HashMap<>(); // ZL-151125 Maps the old Chemical Process icon to the aspen plus model
-	public static Map<Integer, String> OBJECTIDtoMXNum = new HashMap<>(); // ZL-160114 Maps ArcGIS OBJECTID to the mixer in chemical plant
+	public static Map<Integer, String> OBJECTIDtoMXNum = new HashMap<>(); // ZL-160114 Maps ArcGIS OBJECTID to the mixer in chemical plant 
+	public static Map<Integer, String> OBJECTIDtoMXB3 = new HashMap<>(); // ZL-160114 Maps ArcGIS OBJECTID to the mixer in chemical plant
 	public static Map<Integer, String> OBJECTIDtoHXNum = new HashMap<>(); // ZL-160114 Maps ArcGIS OBJECTID to the heat exchanger in chemical plant
+	public static Map<Integer, String> OBJECTIDtoHXB3 = new HashMap<>(); // ZL-160114 Maps ArcGIS OBJECTID to the heat exchanger in chemical plant
 	public static Map<Integer, String> OBJECTIDtoCRNum = new HashMap<>(); // ZL-160114 Maps ArcGIS OBJECTID to the reactor in chemical plant
 	public static Map<Integer, String> OBJECTIDtoSPNum = new HashMap<>(); // ZL-160114 Maps ArcGIS OBJECTID to the separator in chemical plant
 	public static Map<Integer, String> OBJECTIDtoDCNum = new HashMap<>(); // ZL-160114 Maps ArcGIS OBJECTID to the decanter in chemical plant
@@ -521,6 +526,10 @@ public class PWServlet extends HttpServlet {
 		OBJECTIDtoMXNum.put(20, "mx02B3");    //Biodiesel3
 		OBJECTIDtoMXNum.put(21, "mx03B3");    //Biodiesel3
 
+		OBJECTIDtoMXB3.put(19, "mx01B3");    //Biodiesel3
+		OBJECTIDtoMXB3.put(20, "mx02B3");    //Biodiesel3
+		OBJECTIDtoMXB3.put(21, "mx03B3");    //Biodiesel3
+		
 		/*OBJECTIDtoHXNum.put(4, "HRSG");
 		OBJECTIDtoHXNum.put(1, "Boiler");
 		OBJECTIDtoHXNum.put(3, "10E01");
@@ -585,6 +594,14 @@ public class PWServlet extends HttpServlet {
 		OBJECTIDtoHXNum.put(54, "HRSG1B3");   //Biodiesel3
 		OBJECTIDtoHXNum.put(55, "10E01B3");   //Biodiesel3
 		OBJECTIDtoHXNum.put(56, "Boiler1B3"); //Biodiesel3
+		
+		OBJECTIDtoHXB3.put(50, "10E04B3");   //Biodiesel3
+		OBJECTIDtoHXB3.put(51, "10E03B3");   //Biodiesel3
+		OBJECTIDtoHXB3.put(52, "10E05B3");   //Biodiesel3
+		OBJECTIDtoHXB3.put(53, "10E02B3");   //Biodiesel3
+		OBJECTIDtoHXB3.put(54, "HRSG1B3");   //Biodiesel3
+		OBJECTIDtoHXB3.put(55, "10E01B3");   //Biodiesel3
+		OBJECTIDtoHXB3.put(56, "BoilerB3"); //Biodiesel3
 
 		OBJECTIDtoCRNum.put(1, "10D01");
 		OBJECTIDtoCRNum.put(2, "10D03");
@@ -628,7 +645,7 @@ public class PWServlet extends HttpServlet {
 		OBJECTIDtoReactor.put(17, "COMBUST3B2");//Biodiesel2
 		OBJECTIDtoReactor.put(18, "10D03B3");//Biodiesel3
 		OBJECTIDtoReactor.put(19, "10D01B3");//Biodiesel3
-		OBJECTIDtoReactor.put(20, "COMBUST1B3");//Biodiesel3
+		OBJECTIDtoReactor.put(20, "COMBUST1B3");//Biodiesel3			
 
 		OBJECTIDtoMaterialL.put("104", "MeOH");
 		OBJECTIDtoMaterialL.put("126", "OIL");
@@ -1188,8 +1205,8 @@ public class PWServlet extends HttpServlet {
 		UserCredentials user = new UserCredentials();
 		user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
 		
-		for (int key : OBJECTIDtoMXNum.keySet()) {
-			System.out.println(key);
+		for (int key : OBJECTIDtoMXB3.keySet()) {
+//			System.out.println(key);
 			try {
 				QueryParameters qParameter_MX = new QueryParameters(); // create an instance of QueryParameters to be used for querying ArcGIS database for predefined data
 				qParameter_MX.setWhere("OBJECTID='" + key + "'"); // define FID address of an ArcGIS element
@@ -1208,7 +1225,7 @@ public class PWServlet extends HttpServlet {
 			}
 		}
 		
-		for (Integer key : OBJECTIDtoHXNum.keySet()) {
+		for (Integer key : OBJECTIDtoHXB3.keySet()) {
 			try {
 				QueryParameters qParameter_HX = new QueryParameters();                       // create an instance  of QueryParameters to be used  for querying  ArcGIS database for predefined data
 				qParameter_HX.setWhere("OBJECTID='" + key + "'");                            // define FID address of an ArcGIS element
@@ -1249,8 +1266,8 @@ public class PWServlet extends HttpServlet {
 			for (int i = 0; i < attributeslist_HX.size(); i++) {
 				for (String key : attributeslist_HX.get(i).keySet()) { // go through  all the  heat exchangers in biodiesel plant
 					if (key == "OBJECTID") {
-
-						if (OBJECTIDtoHXNum.get(i + 1).equals("10E01B3")) { // "10E01" is the heat exchanger for oil to be heated before feeding to the reactor
+//50-56
+						if (OBJECTIDtoHXB3.get(i + 50).equals("10E01B3")) { // "10E01" is the heat exchanger for oil to be heated before feeding to the reactor
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")));
 							filewriterAPIN.append(",");
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T")));
@@ -1268,8 +1285,8 @@ public class PWServlet extends HttpServlet {
 			for (int i = 0; i < attributeslist_MX.size(); i++) {
 				for (String key : attributeslist_MX.get(i).keySet()) { // go through all  the mixers in biodiesel plant
 					if (key == "OBJECTID") {
-
-						if (OBJECTIDtoMXNum.get(i + 1).equals("mx01B3")) { // "mx01" is the mixer for methanol and the catalyst to be mixed before feeding to the reactor
+//19-21
+						if (OBJECTIDtoMXB3.get(i + 19).equals("mx01B3")) { // "mx01" is the mixer for methanol and the catalyst to be mixed before feeding to the reactor
 							filewriterAPIN.append(String.valueOf(attributeslist_MX.get(i).get("MatIn2Qnt")));
 							filewriterAPIN.append(",");
 							filewriterAPIN.append(String.valueOf(attributeslist_MX.get(i).get("MatIn2_T")));
@@ -1288,7 +1305,7 @@ public class PWServlet extends HttpServlet {
 				for (String key : attributeslist_HX.get(i).keySet()) { // go through all the heat exchanger in biodiesel plant
 					if (key == "OBJECTID") {
 
-						if (OBJECTIDtoHXNum.get(i + 1).equals("Boiler1B3")) {
+						if (OBJECTIDtoHXB3.get(i + 50).equals("BoilerB3")) {
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatOut6Qnt")));
 							filewriterAPIN.append(",");
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("Operate_P")));
@@ -2774,6 +2791,7 @@ public class PWServlet extends HttpServlet {
 				}
 			}
 			ReactorTable.applyEdits(null); // commit local updates onto server
+//			ReactorTable.dispose();
 			System.out.println("Updating process took " + String.valueOf(System.currentTimeMillis() - start) + "ms"); // tells how long it took to update
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3407,8 +3425,7 @@ public class PWServlet extends HttpServlet {
 						}
 					}
 		}
-	}
-*/	
-		
+	}	
+*/		
 }
 

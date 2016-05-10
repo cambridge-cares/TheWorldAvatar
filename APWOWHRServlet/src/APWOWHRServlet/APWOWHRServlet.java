@@ -1,3 +1,9 @@
+
+/*
+ * what is the whole thing about? What is its structure? What is the point?
+ * 
+ */
+
 package APWOWHRServlet;
 
 import java.io.BufferedReader;
@@ -27,9 +33,14 @@ import com.esri.core.tasks.query.QueryTask;
 public class APWOWHRServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
+	public static long start_time1;
+	public static long end_time1;
+	public static long start_time2;
+	public static long end_time2;
 	public static ArrayList<String[]> editStack;	 //global variable for receiving and storing the httpRequest information
 	
 	public static Map<Integer, String> OBJECTIDtoHXNum = new HashMap<>();                      // ZL-160114 Maps ArcGIS OBJECTID to the heat exchanger in chemical plant
+	public static Map<Integer, String> OBJECTIDtoHXB1 = new HashMap<>();                      // Maps ArcGIS OBJECTID to the heat exchanger in Biodiesel plant 1
 	public static Map<Integer, String> OBJECTIDtoRadF = new HashMap<>(); 	                   //Maps ArcGIS OBJECTID to the RadFrac
 	public static Map<Integer, String> OBJECTIDtoMXNum = new HashMap<>(); 	                   //Maps ArcGIS OBJECTID to the Mixer
 	public static Map<Integer, String> OBJECTIDtogaslinenum = new HashMap<>(); 	                   //Maps ArcGIS OBJECTID to the GasLine
@@ -42,7 +53,9 @@ public class APWOWHRServlet extends HttpServlet {
 	public static String BD_WOWHR_Sim = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/BD_WOWHR_Sim");
 	
 	public APWOWHRServlet() {
-		super();		
+		super();	
+		OBJECTIDtoHXB1.put(3, "10E01B1");   //Biodiesel1
+		
 		OBJECTIDtoHXNum.put(1, "Boiler1"); //Biodiesel1
 		OBJECTIDtoHXNum.put(2, "10E02B1");   //Biodiesel1
 		OBJECTIDtoHXNum.put(3, "10E01B1");   //Biodiesel1
@@ -168,8 +181,10 @@ public class APWOWHRServlet extends HttpServlet {
 		
 		switch (appCallFlag[0]) {
 		case "PrAP":                                                                     // if PrAP button was pressed, then the following action will be taken
-			System.out.println(appCallFlag[0] + " button was pressed! (doPOST)");
+			System.out.println(appCallFlag[0] + " button was pressed! (APWOWHR)");
+//			start_time = System.currentTimeMillis();
 			runPrAspenPlusWOWHR(editStack);
+//			System.out.println("runPrAspenPlusWOWHR takes: "+( System.currentTimeMillis()-start_time));
 			break;
 		}
 	}
@@ -178,17 +193,20 @@ public class APWOWHRServlet extends HttpServlet {
 //		String appCallFlag = null;
 //		appCallFlag = editStack.get(0)[2];                                               // flag indicating which function has been called (PowerWorld, parameterised PW, AspenPlus, parameterised AP)
 		List<Double> xRow = new ArrayList<>();                                            // extra arraylist to collect the x-value required as input to the pr aspen plus model
-		List<Double> yData;                                                         // output of the pr aspenplus model
-		
+		List<List<Double>> xData = new ArrayList<>(1);                                    // arraylist to
+		List<List<Double>> yData;                                                         // output of the pr aspenplus model
+		start_time1 = System.currentTimeMillis();
 		xRow=getAPWOWHRInput(editStack);
-		                                                            
+		end_time1 = System.currentTimeMillis();
+		xData.add(xRow);  
+		
 		String simDir = BD_WOWHR_Sim;
 		String modelName = "HDMR_Alg_1";
 		FileWriter fileWriter = null;
 		try {
 	
 			fileWriter = new FileWriter(PrAPWOWHROUTCSV);                                        // filewriter for the output of pr aspenplus model
-			System.load("C:/apache-tomcat-8.0.24/webapps/ROOT/MoDS_Java_API.dll"); 
+			System.load("C:/apache-tomcat-8.0.24/webapps/ROOT/MoDS_Java_API_0.1.dll"); 
 			
 			ArrayList<String> xNames = MoDSAPI.getXVarNamesFromAPI(simDir, modelName);		
 			System.out.println("xNames= " + xNames);
@@ -204,15 +222,15 @@ public class APWOWHRServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 		
-		yData = MoDSAPI.evaluateSurrogate(simDir, modelName, xRow);                       // call MoDS API to evaluate the surrogate model basing on the MoDS simulation file "simDir -> modelNam"  and  the input xData that was collected before
+		yData = MoDSAPI.evaluateSurrogate(simDir, modelName, xData);                       // call MoDS API to evaluate the surrogate model basing on the MoDS simulation file "simDir -> modelNam"  and  the input xData that was collected before
 		System.out.println("xRow=" + xRow);
 		System.out.println("yData=" + yData);                                              // print out the output yData to console
 
 		for (int j = 0; j < yData.size(); j++) {
 			try {
 				fileWriter.append("\n");
-				for (int k = 0; k < yData.size(); k++) {
-					fileWriter.append(Double.toString(yData.get(k)));                        // write the yData to the output CSV file
+				for (int k = 0; k < yData.get(j).size(); k++) {
+					fileWriter.append(Double.toString(yData.get(j).get(k)));                        // write the yData to the output CSV file
 					fileWriter.append(",");
 				}
 			} catch (IOException e) {
@@ -229,7 +247,11 @@ public class APWOWHRServlet extends HttpServlet {
 		}
 		
 // end of evaluating the surrogate model
+		start_time2 = System.currentTimeMillis();
 		readPrAPCSV();
+		end_time2 = System.currentTimeMillis();
+		System.out.println("getAPWOWHRInput takes: "+( end_time1-start_time1));
+		System.out.println("readPrAPCSV takes: "+( end_time2-start_time2));
 	}
 	
 	public ArrayList<Double> getAPWOWHRInput(ArrayList<String[]> editStack){ 
@@ -238,7 +260,7 @@ public class APWOWHRServlet extends HttpServlet {
 		UserCredentials user = new UserCredentials();
 		user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
 						
-		for (Integer key : OBJECTIDtoHXNum.keySet()) {
+		for (Integer key : OBJECTIDtoHXB1.keySet()) {
 			try {
 				QueryParameters qParameter_HX = new QueryParameters();                       // create an instance  of QueryParameters to be used  for querying  ArcGIS database for predefined data
 				qParameter_HX.setWhere("OBJECTID='" + key + "'");                            // define FID address of an ArcGIS element
@@ -265,11 +287,29 @@ public class APWOWHRServlet extends HttpServlet {
 			filewriterAPIN.append("FOIL, TOILin, TOILout");
 			filewriterAPIN.append("\n");
 
+			/*for (Integer key : OBJECTIDtoHXB1.keySet()) {
+				int OBJECTID = key; //3
+				System.out.println("key = "+OBJECTID);
+				
+				if(OBJECTIDtoHXB1.get(OBJECTID).equals("10E01B1")) {
+					filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")));
+					filewriterAPIN.append(",");
+					filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T")));
+					filewriterAPIN.append(",");
+					filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatOut1_T")));
+					filewriterAPIN.append(",");
+					xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")))); // add the feeding mole flowrate of oil to xRow
+					xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T")))); // add the temperature of oil to xRow
+					xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatOut1_T")))); // add the temperature of oil to xRow
+				}
+			}*/
+					
 			for (int i = 0; i < attributeslist_HX.size(); i++) {
-				for (String key : attributeslist_HX.get(i).keySet()) { // go through  all the  heat exchangers in biodiesel plant
+				for (String key : attributeslist_HX.get(i).keySet()) {                                       // go through  all the  heat exchangers in biodiesel plant
 					if (key == "OBJECTID") {
-						
-						if (OBJECTIDtoHXNum.get(i + 1).equals("10E01B1")) { // "10E01" is the heat exchanger for oil to be heated before feeding to the reactor
+						System.out.println("key="+key);
+						if (OBJECTIDtoHXB1.get(i + 3).equals("10E01B1")) {
+//						if (OBJECTIDtoHXB1.get(i + 1).equals("10E01B1")) {                                         // "10E01" is the heat exchanger for oil to be heated before feeding to the reactor
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")));
 							filewriterAPIN.append(",");
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T")));
@@ -310,7 +350,9 @@ public class APWOWHRServlet extends HttpServlet {
 			loadAllFeatures.setWhere("OBJECTID IS NOT NULL");
 			
 			GeodatabaseFeatureServiceTable RadFracTable = new GeodatabaseFeatureServiceTable( "http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/RadFrac/FeatureServer", user, 0);
+			System.out.println("1");
 			RadFracTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
+			System.out.println("2");
 			RadFracTable.initialize();
 			System.out.println(RadFracTable.getStatus());
 			RadFracTable.getInitializationError();
@@ -554,8 +596,14 @@ public class APWOWHRServlet extends HttpServlet {
 			RadFracTable.applyEdits(null);                                                                                        // commit local updates onto Server
 			MixerTable.applyEdits(null); 
 			HeaterCoolerTable.applyEdits(null);
-			GasLineTable.applyEdits(null); 
-									
+			GasLineTable.applyEdits(null);
+			RadFracTable.dispose();
+			MixerTable.dispose(); 
+			HeaterCoolerTable.dispose();
+			GasLineTable.dispose();
+			
+			
+			
 			System.out.println("Updating process took " + String.valueOf(System.currentTimeMillis() - start) + "ms");                     // tells how long it took to update
 		} catch (Exception e) {
 			e.printStackTrace();
