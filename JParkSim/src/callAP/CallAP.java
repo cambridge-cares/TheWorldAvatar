@@ -8,8 +8,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import MouseDrag.MouseDrag;
-
 //testing script for the "runPyScript" command  ZL-151202
 public class CallAP {
 
@@ -27,9 +25,6 @@ public class CallAP {
 	public static void callOPART () {
 		URL url;
 		
-//		String[] av = {"C:\\Users\\janusz\\Desktop\\Eddy FOO\\CurrentA.png"};
-		
-//		MouseDrag.Printing(av);
 /*		
 		UserCredentials user = new UserCredentials();
 		user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
