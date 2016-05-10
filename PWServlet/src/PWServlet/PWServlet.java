@@ -14,7 +14,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -895,51 +897,44 @@ public class PWServlet extends HttpServlet {
 	}
 	
 	public void callOPALRT () {
-		HttpURLConnection urlCon;
-		OutputStreamWriter out;
+		
 		URL url;
-						
 		try{
-			
-//			url = new URL("http://caresremote1.dyndns.org:1700/OPARTServlet/");
-//			url = new URL("http://14.100.26.181:1700/OPARTServlet/");
-			url = new URL("http://caresremote1.dyndns.org/OPARTServlet/");
-			urlCon = (HttpURLConnection) url.openConnection();
-			urlCon.setRequestMethod("POST");
-			urlCon.setDoOutput(true);
-			out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
+			System.out.println("1_o");
+//			url = new URL("http://14.100.26.181/OPALRTServlet/");
+//			url = new URL("http://172.25.182.41/OPALRTServlet/");
+			url = new URL("http://caresremote1.dyndns.org:1700/OPALRTServlet/"); 
+//			url = new URL("http://jparksimulator.com:80/OPALRTServlet/"); 
+
 			
 			StringBuilder outputString = new StringBuilder();
-			outputString.append(URLEncoder.encode("layers", "UTF-8"));
-			outputString.append("=");
-			outputString.append(URLEncoder.encode(" ", "UTF-8"));
-			outputString.append("&");
-			outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
-			outputString.append("=");
-			outputString.append(URLEncoder.encode(" ", "UTF-8"));
-			outputString.append("&");
-			outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
-			outputString.append("=");
-			outputString.append(URLEncoder.encode("OPALRT", "UTF-8"));
-			outputString.append("&");
-			outputString.append(URLEncoder.encode("QueryT", "UTF-8"));
-			outputString.append("=");				
-			outputString.append(URLEncoder.encode(" ", "UTF-8"));
+			outputString.append("ping");	
 			
-			DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
-			wr.writeBytes(outputString.toString());
-			wr.flush();
-			wr.close();
-			
-			if(urlCon.getResponseCode()==200){
-				System.out.println("Message received!");
-			} else {
-				System.out.println( "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
-						+ "\nPlease try testing your code again");
+			try {
+			    URL myURL = url;
+			    URLConnection myURLConnection = myURL.openConnection();
+			    System.out.println("sucessful_connection");
+			    myURLConnection.setDoOutput(true);
+			    OutputStreamWriter out = new OutputStreamWriter(myURLConnection.getOutputStream());
+			    out.write(outputString.toString());
+				out.close();
+			    System.out.println("sucessful_outputwriting");
+			    BufferedReader in = new BufferedReader(new InputStreamReader(myURLConnection.getInputStream()));
+				String decodedString;
+				while ((decodedString = in.readLine()) != null) {
+					System.out.println(decodedString);
+				}
+				in.close();
+
+			} 
+			catch (MalformedURLException e) { 
+				e.printStackTrace();
+			} 
+			catch (IOException e) {   
+				e.printStackTrace();
 			}
 			
-			out.close();
-			System.out.println(wr);
+			
 		}catch (IOException equery){
 			equery.printStackTrace();
 		}
