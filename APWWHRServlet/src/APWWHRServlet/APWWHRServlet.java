@@ -27,6 +27,8 @@ import com.esri.core.tasks.query.QueryTask;
 public class APWWHRServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
+	public static long start_time;
+	public static long end_time;
 	public static ArrayList<String[]> editStack;	 //global variable for receiving and storing the httpRequest information
 	
 	public static Map<Integer, String> OBJECTIDtoHXNum = new HashMap<>();                      // ZL-160114 Maps ArcGIS OBJECTID to the heat exchanger in chemical plant
@@ -129,6 +131,7 @@ public class APWWHRServlet extends HttpServlet {
 		OBJECTIDtoMXNum.put(20, "mx02B3");    //Biodiesel3
 		OBJECTIDtoMXNum.put(21, "mx03B3");    //Biodiesel3
 		
+		OBJECTIDtogaslinenum.put(7, "FUELSUPPLY"); //Biodiesel2
 		OBJECTIDtogaslinenum.put(8, "FUEL1B1"); //Biodiesel1
 		OBJECTIDtogaslinenum.put(9, "FUEL2B1"); //Biodiesel1
 		OBJECTIDtogaslinenum.put(10, "FUEL3B1"); //Biodiesel1
@@ -137,6 +140,8 @@ public class APWWHRServlet extends HttpServlet {
 		OBJECTIDtogaslinenum.put(13, "COMBGAS1B1"); //Biodiesel1
 		OBJECTIDtogaslinenum.put(14, "FUEL2B2"); //Biodiesel2		
 		OBJECTIDtogaslinenum.put(15, "FUEL3B2"); //Biodiesel2
+		
+		OBJECTIDtogaslinenum.put(20, "FUELSUPPLYWHR"); //Biodiesel2
 		
 		OBJECTIDtogaslinenum.put(24, "FLUEGASB1"); //Biodiesel1
 		OBJECTIDtogaslinenum.put(28, "FLUEGASB2"); //Biodiesel2
@@ -154,21 +159,24 @@ public class APWWHRServlet extends HttpServlet {
 			editStack.add(new String[] { layers[i], OBJECTIDs[i], appCallFlag[i], QueryT[i]});
 		}
 
-		FileWriter flag1 = null;                                                      //filewriter to check whether the httpRequest have been correctly received
+		/*FileWriter flag1 = null;                                                      //filewriter to check whether the httpRequest have been correctly received
 		flag1 = new FileWriter(httpReqCSV);
 		flag1.append("layers=" + layers[0]);
 		flag1.append(", OBJECTIDs=" + OBJECTIDs[0]);
 		flag1.append(", appCallFlag=" + appCallFlag[0]);
 		flag1.append(", QueryT=" + QueryT[0]);
 		flag1.flush();
-		flag1.close();  		
+		flag1.close();*/  		
 		
-		switch (appCallFlag[0]) {
-		case "PrAPHR":                                                                     // if PrAP button was pressed, then the following action will be taken
-			System.out.println(appCallFlag[0] + " button was pressed! (doPOST)");
-			runPrAspenPlusWWHR(editStack);
-			break;
-		}
+//		switch (appCallFlag[0]) {
+//		case "PrAPHR":                                                                     // if PrAP button was pressed, then the following action will be taken
+//			System.out.println(appCallFlag[0] + " button was pressed! (doPOST)");
+		start_time = System.currentTimeMillis();
+		runPrAspenPlusWWHR(editStack);
+		end_time = System.currentTimeMillis();
+		System.out.println("runAspenPlus takes: "+(end_time-start_time));
+//			break;
+//		}
 	}
 	
 	public void runPrAspenPlusWWHR(ArrayList<String[]> editStack) {
@@ -527,8 +535,29 @@ public class APWWHRServlet extends HttpServlet {
 						
 						GasLineTable.updateFeature(Long.parseLong(ArcGISOBJECTID[j]),GasLineAttributes);                          // update feature table locally
 						
+					}										
+				}
+				
+				for (int j = 19; j < 20; j++) {
+					ArcGISOBJECTID[j] = String.valueOf(j + 1);
+					System.out.println(ArcGISOBJECTID);
+					
+					if (OBJECTIDtogaslinenum.get(j + 1).equals("FUELSUPPLYWHR")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
+					Map<String, Object> GasLineAttributes = GasLineTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
+											
+					if (!data[10].trim().isEmpty()) {
+						Float FuelCost1=Float.parseFloat(data[8].trim());
+						Float FuelCost2=Float.parseFloat(data[9].trim());
+						Float FuelCost3=Float.parseFloat(data[10].trim());
+						GasLineAttributes.put("Cost",(FuelCost1+FuelCost2+FuelCost3));   // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
+						System.out.println("TotalFuel Cost="+(FuelCost1+FuelCost2+FuelCost3));
 					}
-				}				
+										
+					GasLineTable.updateFeature(Long.parseLong(ArcGISOBJECTID[j]),GasLineAttributes);                          // update feature table locally
+					
+				}
+				}
+				
 				
 			}
 			RadFracTable.applyEdits(null);                                                                                        // commit local updates onto Server

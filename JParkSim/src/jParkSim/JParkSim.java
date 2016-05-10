@@ -920,7 +920,6 @@ change.setLocation(890, 45);
     			    			
 //    			url = new URL("http://172.25.182.41/PWServlet/");
     			url = new URL("http://172.25.182.41/APWOWHRServlet/");
-//    			url = new URL("http://caresremote1.dyndns.org/OPALRTServlet/"); 
 //	        	url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");

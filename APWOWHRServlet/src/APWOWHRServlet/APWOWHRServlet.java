@@ -42,7 +42,7 @@ public class APWOWHRServlet extends HttpServlet {
 	public static String BD_WOWHR_Sim = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/BD_WOWHR_Sim");
 	
 	public APWOWHRServlet() {
-		super();
+		super();		
 		OBJECTIDtoHXNum.put(1, "Boiler1"); //Biodiesel1
 		OBJECTIDtoHXNum.put(2, "10E02B1");   //Biodiesel1
 		OBJECTIDtoHXNum.put(3, "10E01B1");   //Biodiesel1
@@ -103,7 +103,7 @@ public class APWOWHRServlet extends HttpServlet {
 		OBJECTIDtoRadF.put(1, "10D06B1"); //Biodiesel1
 		OBJECTIDtoRadF.put(2, "10D08B1"); //Biodiesel1
 		OBJECTIDtoRadF.put(3, "C1");
-		OBJECTIDtoRadF.put(4, "B7");  //not found in the map
+		OBJECTIDtoRadF.put(4, "B7");  
 		OBJECTIDtoRadF.put(5, "10D08B2"); //Biodiesel2
 		OBJECTIDtoRadF.put(6, "10D06B2"); //Biodiesel2
 		
@@ -129,6 +129,7 @@ public class APWOWHRServlet extends HttpServlet {
 		OBJECTIDtoMXNum.put(20, "mx02B3");    //Biodiesel3
 		OBJECTIDtoMXNum.put(21, "mx03B3");    //Biodiesel3
 		
+		OBJECTIDtogaslinenum.put(7, "FUELSUPPLY"); //Biodiesel2
 		OBJECTIDtogaslinenum.put(8, "FUEL1B1"); //Biodiesel1
 		OBJECTIDtogaslinenum.put(9, "FUEL2B1"); //Biodiesel1
 		OBJECTIDtogaslinenum.put(10, "FUEL3B1"); //Biodiesel1
@@ -136,7 +137,9 @@ public class APWOWHRServlet extends HttpServlet {
 		OBJECTIDtogaslinenum.put(12, "LPGAS1B2"); //Biodiesel2
 		OBJECTIDtogaslinenum.put(13, "COMBGAS1B1"); //Biodiesel1
 		OBJECTIDtogaslinenum.put(14, "FUEL2B2"); //Biodiesel2		
-		OBJECTIDtogaslinenum.put(15, "FUEL3B2"); //Biodiesel2   
+		OBJECTIDtogaslinenum.put(15, "FUEL3B2"); //Biodiesel2
+		
+		OBJECTIDtogaslinenum.put(20, "FUELSUPPLYWHR"); //Biodiesel2
 		
 		OBJECTIDtogaslinenum.put(24, "FLUEGASB1"); //Biodiesel1
 		OBJECTIDtogaslinenum.put(28, "FLUEGASB2"); //Biodiesel2
@@ -177,7 +180,7 @@ public class APWOWHRServlet extends HttpServlet {
 		List<Double> xRow = new ArrayList<>();                                            // extra arraylist to collect the x-value required as input to the pr aspen plus model
 		List<Double> yData;                                                         // output of the pr aspenplus model
 		
-		xRow=getAPPWInput(editStack);
+		xRow=getAPWOWHRInput(editStack);
 		                                                            
 		String simDir = BD_WOWHR_Sim;
 		String modelName = "HDMR_Alg_1";
@@ -185,6 +188,7 @@ public class APWOWHRServlet extends HttpServlet {
 		try {
 	
 			fileWriter = new FileWriter(PrAPWOWHROUTCSV);                                        // filewriter for the output of pr aspenplus model
+			System.load("C:/apache-tomcat-8.0.24/webapps/ROOT/MoDS_Java_API.dll"); 
 			
 			ArrayList<String> xNames = MoDSAPI.getXVarNamesFromAPI(simDir, modelName);		
 			System.out.println("xNames= " + xNames);
@@ -225,10 +229,10 @@ public class APWOWHRServlet extends HttpServlet {
 		}
 		
 // end of evaluating the surrogate model
-//		readPrAPCSV();
+		readPrAPCSV();
 	}
 	
-	public ArrayList<Double> getAPPWInput(ArrayList<String[]> editStack){ 
+	public ArrayList<Double> getAPWOWHRInput(ArrayList<String[]> editStack){ 
 		ArrayList<Map<String, Object>> attributeslist_HX = new ArrayList<Map<String, Object>>(); // additional ArrayList for heat exchanger
 		
 		UserCredentials user = new UserCredentials();
@@ -399,7 +403,7 @@ public class APWOWHRServlet extends HttpServlet {
 				ArcGISOBJECTID = new String[100];
 
 				//the following code is used for updating the flowrate of the FINALPRD to ArcGIS database
-				for (int j = 0; j < 6; j++) {
+				for (int j = 1; j < 2; j++) {
 					ArcGISOBJECTID[j] = String.valueOf(j + 1);
 					System.out.println(ArcGISOBJECTID);
 
@@ -415,7 +419,7 @@ public class APWOWHRServlet extends HttpServlet {
 					}
 				}
 				//the following code is used for updating the heat duty of the heater-coolers to ArcGIS database
-				for (int j = 0; j < 10; j++) {
+				for (int j = 1; j < 6; j++) {
 					ArcGISOBJECTID[j] = String.valueOf(j + 1);
 					System.out.println(ArcGISOBJECTID);
 
@@ -477,7 +481,7 @@ public class APWOWHRServlet extends HttpServlet {
 					}
 				}
 				//the following code is used for updating the flowrate and cost of the fuel gas to ArcGIS database
-				for (int j = 7; j < 9; j++) {
+				for (int j = 6; j < 10; j++) {
 					ArcGISOBJECTID[j] = String.valueOf(j + 1);
 					System.out.println(ArcGISOBJECTID);
 
@@ -525,6 +529,22 @@ public class APWOWHRServlet extends HttpServlet {
 						}
 						System.out.println("Fuel3 Cost="+data[10]);
 						
+						GasLineTable.updateFeature(Long.parseLong(ArcGISOBJECTID[j]),GasLineAttributes);                          // update feature table locally
+						
+					}
+					
+					if (OBJECTIDtogaslinenum.get(j + 1).equals("FUELSUPPLY")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
+						Map<String, Object> GasLineAttributes = GasLineTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
+												
+						if (!data[10].trim().isEmpty()) {
+							Float FuelCost1=Float.parseFloat(data[8].trim());
+							Float FuelCost2=Float.parseFloat(data[9].trim());
+							Float FuelCost3=Float.parseFloat(data[10].trim());
+							GasLineAttributes.put("Cost",(FuelCost1+FuelCost2+FuelCost3));   // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
+							
+							System.out.println("TotalFuel Cost="+(FuelCost1+FuelCost2+FuelCost3));
+						}
+												
 						GasLineTable.updateFeature(Long.parseLong(ArcGISOBJECTID[j]),GasLineAttributes);                          // update feature table locally
 						
 					}
