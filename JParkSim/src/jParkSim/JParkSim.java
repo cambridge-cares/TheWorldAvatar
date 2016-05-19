@@ -102,6 +102,7 @@ import com.esri.core.symbol.PictureMarkerSymbol;
 
 public class JParkSim {
 	
+	//declare the variable which contains the modification of each layer, such as the color, thickness, icon
 	
 	// style of different layers
 		final static SimpleFillSymbol Landlotscolor = new SimpleFillSymbol(Color.cyan, new SimpleLineSymbol(Color.cyan, 1), SimpleFillSymbol.Style.NULL);
@@ -175,7 +176,8 @@ public class JParkSim {
 //	private JLayerTree jLayerTree;  //ZL-151207 add layertree
 	public static JLayeredPane contentPane;
 		
-	// initialize layers
+	
+	// initialize layers for all the arcgis feature layers
 	public static ArcGISFeatureLayer Landlotslayer;
 	public static ArcGISFeatureLayer Buildingslayer;
 	public static ArcGISFeatureLayer Storagelayer;
@@ -237,11 +239,6 @@ public class JParkSim {
 		}
 	}
 	
-	//add link for webmap graph
-	Portal portal = new Portal("http://www.arcgis.com",null);
-	  // item ID of a public map on arcgis.com with charts
-	  final String MAP_ID = "f809dccb780a4af0a506e56aaa84d084";
-	  
 	  
 	
   public JParkSim() {
@@ -255,7 +252,7 @@ public class JParkSim {
     layers.add(tiledLayer); // add basemap layer
 
 
-// layer for the emission
+// dynamic map layer for the emission
 ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
             "http://localhost:6080/arcgis/rest/services/emission/MapServer");
                 layers.add(emissionLayer);
@@ -271,7 +268,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     	}
     });
   
-    // adds layers uploaded onto ArcGIS for Developers
+    // adds layers source uploaded onto ArcGIS for Developers 
     UserCredentials user = new UserCredentials();
     user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp"); // Access secure feature layer service using login username and password
     Landlotslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Landlots/FeatureServer/0", user);
@@ -323,7 +320,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     waternetworklayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/WaterNetwork/FeatureServer/0", user);
         
     
-    // UPDATE THIS LIST whenever new layers are added: first layer is the bottom most layer *see currently known issues #3
+    // UPDATE THIS LIST whenever new layers are added: first layer is the bottom most layer *see currently known issues #3 (array containing all the feature layers)
     
 	ArcGISFeatureLayer[] completeLayerList = {Landlotslayer, Buildingslayer, Storagelayer, TLPmainlayer, Roadlayer, PowerGenlayer, UHTLineslayer, UHTSubstationlayer,
 			EHTLineslayer, EHTSubstationlayer, HTLineslayer,HTSubstation1layer,HTSubstation2layer,LTSubstation1layer,LTSubstation2layer, LoadPointslayer, BusCouplerlayer, heatercoolerlayer,
@@ -331,7 +328,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer,vessellayer,filterlayer,Fluidlayer,expanderlayer,compressorlayer,steamlayer,waterpointlayer,waternetworklayer};
 
 	
-    // render layers
+    // render layers ( to show the feature layers in the map combined with the modification format declared) 
 	
     createRenderer(layers, new ArcGISFeatureLayer [] {Landlotslayer}, Landlotscolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Buildingslayer}, Buildingscolor);
@@ -383,12 +380,12 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     //map.getLayers().add(graphlayer);
   //try to add some graphs
     
-    
+    //add dynamic map layer for the opex bar chart
     ArcGISDynamicMapServiceLayer highwayLayer = new ArcGISDynamicMapServiceLayer(
             "http://localhost:6080/arcgis/rest/services/opex/MapServer");
                 layers.add(highwayLayer);
           
-
+              //add dynamic map layer for the sensitivity bar chart
                 ArcGISDynamicMapServiceLayer sensitivityLayer = new ArcGISDynamicMapServiceLayer(
                         "http://localhost:6080/arcgis/rest/services/sensitivity/MapServer");
                             layers.add(sensitivityLayer);
@@ -424,11 +421,9 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     mapIds.setSelectedIndex(0);
     mapIds.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-    //JButton button = createButton();
-
-       
+          
     
-    // create text
+    // create text 
     JTextArea description = new JTextArea("Click on a feature to start editing");
     description.setFont(new Font("Verdana", Font.PLAIN, 11));
     description.setForeground(Color.WHITE);
@@ -444,8 +439,8 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     lblLayer.setAlignmentX(Component.LEFT_ALIGNMENT);
     // create dropdown selector for layer via key-value pairs
     final Map<String, ArcGISFeatureLayer> editlayer = new LinkedHashMap<>();
-    // dropdown options with key = String layer name and value = layer object
     
+    // dropdown options with key = String layer name and value = layer object (list of the feature layers that can be edited and appear in the drop down box)
     editlayer.put("Landlot", Landlotslayer);
     editlayer.put("Building", Buildingslayer);
     editlayer.put("Public Road", Roadlayer);
@@ -979,10 +974,16 @@ change.setLocation(890, 45);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-    		for (ArcGISFeatureLayer layer : completeLayerList) {
+    		/*for (ArcGISFeatureLayer layer : completeLayerList) {
     			layer.requery();
     			layer.refresh();
-    		}
+    		}*/
+    	heatercoolerlayer.requery();
+    	heatercoolerlayer.refresh();
+    	GasLinelayer.requery();
+    	GasLinelayer.refresh();
+    	RadFraclayer.requery();
+    	RadFraclayer.refresh();
     	}
     });
     APPrButton.setEnabled(true);
@@ -1141,6 +1142,11 @@ change.setLocation(890, 45);
     			layer.requery();
     			layer.refresh();
     		}
+    		/*heatercoolerlayer.requery();
+    		heatercoolerlayer.refresh();
+    		GasLinelayer.requery();
+    		GasLinelayer.refresh();*/
+    		
     	}
     });
     PrAPHrButton.setEnabled(true);
@@ -1293,12 +1299,16 @@ change.setLocation(890, 45);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-    		for (ArcGISFeatureLayer layer : completeLayerList) {
+    		/*for (ArcGISFeatureLayer layer : completeLayerList) {
     			layer.requery();
     			layer.refresh();
-    		}
+    		}*/
+    		heatercoolerlayer.requery();
+    		heatercoolerlayer.refresh();
+    		PlantReactorlayer.requery();
+    		PlantReactorlayer.refresh();
     	}
-    });
+    	    });
     PrAPPWButton.setEnabled(true);
     PrAPPWButton.setVisible(true);
     PrAPPWButton.setSize(190,30);
@@ -1715,7 +1725,7 @@ change.setLocation(890, 45);
 	    });
 
 	    // create and load the web map
-	    WebMap webMap = null;
+	    /*WebMap webMap = null;
 	    try {
 	      webMap = WebMap.newInstance(MAP_ID, portal);
 	      jMap.loadWebMap(webMap);
@@ -1723,7 +1733,7 @@ change.setLocation(890, 45);
 	    } catch (Exception e) {
 	      e.printStackTrace();
 	    }
-
+*/
 	    return jMap;
 	  }
   
