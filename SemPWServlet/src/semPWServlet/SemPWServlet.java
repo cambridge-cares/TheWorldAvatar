@@ -41,41 +41,69 @@ import com.esri.core.tasks.query.QueryTask;
 
 public class SemPWServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	public static Map<String, String> ArcGISFIDtoPWBusNum = new HashMap<>();                                           // Maps ArcGIS FID (key) to BusNum (value) in PowerWorld
-	public static Map<String, String> PWBusNumtoArcGISFID = new HashMap<>();                                           // reverse mapping BusNum to ArcGIS FID
-//	public static Map<String, String> SubstationtoPWBusNum = new HashMap<>();                                          // Maps Substation number to HV and LV bus numbers
-//	public static Map<String, String> PWBusNumtoWindTurbine = new HashMap<>();                                         // reverse mapping
+	public static Map<String, String> ArcGISFIDloadtoPWBusNum = new HashMap<>();                                           // Maps ArcGIS FID (key) to BusNum (value) in PowerWorld
+	public static Map<String, String> PWBusNumtoArcGISFIDload = new HashMap<>();                                           // reverse mapping BusNum to ArcGIS FID
+	public static Map<String, String> ArcGISFIDgentoPWBusNum = new HashMap<>();                                          // Maps Substation number to HV and LV bus numbers
+	public static Map<String, String> PWBusNumtoArcGISFIDgen = new HashMap<>(); 
+	public static Map<String, String> ArcGISFIDbattoPWBusNum = new HashMap<>();                                          // Maps Substation number to HV and LV bus numbers
+	public static Map<String, String> PWBusNumtoArcGISFIDbat = new HashMap<>(); 
+	
+	// reverse mapping
  	public static String SMGINCSV = new String("C:/apache-tomcat-8.0.24/webapps/semakausimulator/SMGIN.CSV");                   // specifies where the SMGIN.CSV file is written to and read from.
 	public static String SMGBUSCSV = new String("C:/apache-tomcat-8.0.24/webapps/semakausimulator/SMGBUS.CSV");                 // specifies where the SMGBUS.CSV file is written to and read from.
 	public static String runPythonCommand = new String("python C:/apache-tomcat-8.0.24/webapps/semakausimulator/SemPWrun.pyw"); // ensure that python environment variable is set to python34
 
     public SemPWServlet() {
         super();
-		// Hard Coded ArcGISFIDtoPWBusNum
-		ArcGISFIDtoPWBusNum.put( "0","1");    // NEA transfer Hub         AC Load
-		ArcGISFIDtoPWBusNum.put( "1","5");    // Microgrid 1 Windturbine  AC generator
-		ArcGISFIDtoPWBusNum.put( "2","7");    // Microgrid 2 Windturbine  AC generator
-		ArcGISFIDtoPWBusNum.put( "3","9");    // Microgrid 3 Windturbine  AC generator
-//		ArcGISFIDtoPWBusNum.put( "4","6");    // Microgrid 1 Solarfarm    DC generator
-//		ArcGISFIDtoPWBusNum.put( "5","8");    // Microgrid 2 Solarfarm    DC generator
-//		ArcGISFIDtoPWBusNum.put( "6","10");   // Microgrid 3 Solarfarm    DC generator
-//		ArcGISFIDtoPWBusNum.put( "6","11");   // Diesel                   AC generator
-		ArcGISFIDtoPWBusNum.put( "5","13");   // Desalination Plant 3     AC Load
-		ArcGISFIDtoPWBusNum.put( "6","14");   // Fish Hatchery            AC Load
-		ArcGISFIDtoPWBusNum.put( "7","15");   // Desalination Plant 2     AC Load
-		ArcGISFIDtoPWBusNum.put( "8","16");   // Desalination Plant 1     AC Load
-		ArcGISFIDtoPWBusNum.put( "9","17");   // Phase1 (admin buildings) AC Load
-		ArcGISFIDtoPWBusNum.put("10","18");   // sub loads1 (microgrid 1 Windturbine AC load)
-		ArcGISFIDtoPWBusNum.put("11","19");   // DC  loads1 (microgrid 1 Solarfarm   DC load)
-		ArcGISFIDtoPWBusNum.put("12","20");   // sub loads2 (microgrid 2 Windturbine AC load)
-		ArcGISFIDtoPWBusNum.put("13","21");   // DC  loads2 (microgrid 2 Solarfarm   DC load)
-		ArcGISFIDtoPWBusNum.put("14","22");   // sub loads3 (microgrid 3 Windturbine AC load)
-		ArcGISFIDtoPWBusNum.put("15","23");   // DC  loads3 (microgrid 3 Solarfarm   DC load)
+		// Hard Coded ArcGISFIDloadtoPWBusNum (from the load points layer)
+        
+		ArcGISFIDloadtoPWBusNum.put( "1","1");    // NEA transfer hall/ Hub         AC Load
+		ArcGISFIDloadtoPWBusNum.put( "2","17");    // Phase1 (admin buildings1) AC Load 
+		ArcGISFIDloadtoPWBusNum.put( "6","16");   // Desalination Plant 1     AC Load 
+		ArcGISFIDloadtoPWBusNum.put( "7","15");   // Desalination Plant 2     AC Load 
+		ArcGISFIDloadtoPWBusNum.put( "8","13");   // Desalination Plant 3     AC Load 
+		ArcGISFIDloadtoPWBusNum.put( "9","14");   // Fish Hatchery            AC Load 
+		ArcGISFIDloadtoPWBusNum.put("10","19");   // DC  loads1 (microgrid 1 Solarfarm   DC load) 
+		ArcGISFIDloadtoPWBusNum.put("11","21");   // DC  loads2 (microgrid 2 Solarfarm   DC load)
+		ArcGISFIDloadtoPWBusNum.put("12","23");   // DC loads3 (microgrid 3 solarfarm    DC load)
+		ArcGISFIDloadtoPWBusNum.put("14","18");   // AC  loads1 (microgrid 1 Windfarm    AC load)
+		ArcGISFIDloadtoPWBusNum.put("15","20");   // AC  loads2 (microgrid 2 Windfarm    AC load)
+		ArcGISFIDloadtoPWBusNum.put("16","22");   // AC  loads3 (microgrid 3 Windfarm    AC load) 
 
-		for (Map.Entry<String, String> entry : ArcGISFIDtoPWBusNum.entrySet()) { // reverse mapping
-			PWBusNumtoArcGISFID.put(entry.getValue(), entry.getKey());
+		//Hard Coded ArcGISFIDgentoPWBusNum (from the wind turbine, solarfarm, and dieselgen layers)
+		ArcGISFIDgentoPWBusNum.put( "1","2");    // Large Windturbine  AC generator 
+		ArcGISFIDgentoPWBusNum.put( "2","5");    // Microgrid 1 Windturbine  AC generator 
+		ArcGISFIDgentoPWBusNum.put( "3","7");    // Microgrid 2 Windturbine  AC generator 
+		ArcGISFIDgentoPWBusNum.put( "4","9");    // Microgrid 3 Windturbine  AC generator 
+		ArcGISFIDgentoPWBusNum.put( "1","6");    // Microgrid 1 Solarfarm  DC generator  
+		ArcGISFIDgentoPWBusNum.put( "14","8");   // Microgrid 2 Solarfarm  DC generator 
+		ArcGISFIDgentoPWBusNum.put( "26","10");  // Microgrid 3 Solarfarm  DC generator 
+		ArcGISFIDgentoPWBusNum.put( "1","11");  //  Diesel generator active 
+		ArcGISFIDgentoPWBusNum.put( "2","12");  //  Diesel generator standby 
+		
+		//Hard Coded ArcGISFIDbattoPWBusNum (from the energy storage layer)
+				ArcGISFIDbattoPWBusNum.put( "1","8");    // Microgrid 2 energy storage 
+				ArcGISFIDbattoPWBusNum.put( "2","10");    // Microgrid 3 energy storage 
+				ArcGISFIDbattoPWBusNum.put( "3","6");    // Microgrid 1 energy storage 
+				ArcGISFIDbattoPWBusNum.put( "4","2");    // Large energy storage 
+				
+		
+		  //ArcGISFIDloadtoPWBusNum.put( "5","8");    // Microgrid 2 Solarfarm    DC generator
+//		ArcGISFIDloadtoPWBusNum.put( "6","10");   // Microgrid 3 Solarfarm    DC generator
+//		ArcGISFIDloadtoPWBusNum.put( "6","11");   // Diesel                   AC generator
+		
+		
+		
+		for (Map.Entry<String, String> entry : ArcGISFIDloadtoPWBusNum.entrySet()) { // reverse mapping
+			PWBusNumtoArcGISFIDload.put(entry.getValue(), entry.getKey());
 		}
 
+		for (Map.Entry<String, String> entry : ArcGISFIDgentoPWBusNum.entrySet()) { // reverse mapping
+			PWBusNumtoArcGISFIDgen.put(entry.getValue(), entry.getKey());
+		}
+		for (Map.Entry<String, String> entry : ArcGISFIDbattoPWBusNum.entrySet()) { // reverse mapping
+			PWBusNumtoArcGISFIDbat.put(entry.getValue(), entry.getKey());
+		}
 
 // Each DC/AC transformer is uniquely described by two reference numbers in PowerWorld, one for the ACbus and one for the DCbus.
 // The ArcGIS reference is a string ending in either "AC" or "DC". The PowerWorld reference is an integer.
@@ -140,7 +168,8 @@ public class SemPWServlet extends HttpServlet {
 			Feature graphic = null;
 			
 			// check if feature in editStack is part of power grid
-			if (layer.equals("Loadpoint")                                     // implement
+			if (layer.equals("Loadpoint") 
+					||layer.equals("DieselGen")                                // implement
 					||layer.equals("EnergyStorage")                           //
 					||layer.equals("LoadTLine")                               //
 					||layer.equals("MarinePowerGen")                          //
@@ -163,7 +192,17 @@ public class SemPWServlet extends HttpServlet {
 					} catch (EsriSecurityException e) {
 						e.printStackTrace();
 					}
-//  2
+					
+//2  (not sure)
+					} else if (layer.equals("DieselGen")) {
+					skeleton.add(new String[]{"BusNum,BusNomVolt","FID,volt_nom","Bus"});                        // variable names specific to EnergyStorage (e.g. LoadMW=pwr_P, LoadMVR=pwr_Q)
+					skeleton.add(new String[]{"BusNum,LoadID,LoadMW,LoadMVR","FID,LoadID,pwr_P,pwr_Q","Load"});  // can only modify MW and MVR at load, not bus
+					try {
+						task = new QueryTask("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/DieselGen/FeatureServer/0", user);
+					} catch (EsriSecurityException e) {
+						e.printStackTrace();
+					}
+//3					
 				} else if (layer.equals("EnergyStorage")) {
 					skeleton.add(new String[]{"BusNum,BusNomVolt","FID,volt_nom","Bus"});                        // variable names specific to EnergyStorage (e.g. LoadMW=pwr_P, LoadMVR=pwr_Q)
 					skeleton.add(new String[]{"BusNum,LoadID,LoadMW,LoadMVR","FID,LoadID,pwr_P,pwr_Q","Load"});  // can only modify MW and MVR at load, not bus
@@ -172,7 +211,7 @@ public class SemPWServlet extends HttpServlet {
 					} catch (EsriSecurityException e) {
 						e.printStackTrace();
 					}
-//  3
+//  4
 				} else if (layer.equals("LoadTLine")) {
 					skeleton.add(new String[]{"BusNum,BusNomVolt","FID,volt_nom","Bus"});                        // variable names specific to LoadTLine (e.g. LoadMW=pwr_P, LoadMVR=pwr_Q)
 					skeleton.add(new String[]{"BusNum,LoadID,LoadMW,LoadMVR","FID,LoadID,pwr_P,pwr_Q","Load"});  // can only modify MW and MVR at load, not bus
@@ -181,7 +220,7 @@ public class SemPWServlet extends HttpServlet {
 					} catch (EsriSecurityException e) {
 						e.printStackTrace();
 					}
-//  4
+//  5
 				} else if (layer.equals("MarinePowerGen")) {
 					skeleton.add(new String[]{"BusNum,BusNomVolt","FID,volt_nom","Bus"});                        // variable names specific to MarinePowerGen (e.g. LoadMW=pwr_P, LoadMVR=pwr_Q)
 					skeleton.add(new String[]{"BusNum,LoadID,LoadMW,LoadMVR","FID,LoadID,pwr_P,pwr_Q","Load"});  // can only modify MW and MVR at load, not bus
@@ -190,7 +229,7 @@ public class SemPWServlet extends HttpServlet {
 					} catch (EsriSecurityException e) {
 						e.printStackTrace();
 					}
-//  5
+//  6
 				} else if (layer.equals("MarineTLine")) {
 					skeleton.add(new String[]{"BusNum,BusNomVolt","FID,volt_nom","Bus"});                        // variable names specific to MarineTLine (e.g. LoadMW=pwr_P, LoadMVR=pwr_Q)
 					skeleton.add(new String[]{"BusNum,LoadID,LoadMW,LoadMVR","FID,LoadID,pwr_P,pwr_Q","Load"});  // can only modify MW and MVR at load, not bus
@@ -199,7 +238,7 @@ public class SemPWServlet extends HttpServlet {
 					} catch (EsriSecurityException e) {
 						e.printStackTrace();
 					}
-//  6
+//  7
 				} else if (layer.equals("Solarfarm")) {
 					skeleton.add(new String[]{"BusNum,BusNomVolt","FID,volt_nom","Bus"});                        // variable names specific to Solarfarm (e.g. LoadMW=pwr_P, LoadMVR=pwr_Q)
 					skeleton.add(new String[]{"BusNum,LoadID,LoadMW,LoadMVR","FID,LoadID,pwr_P,pwr_Q","Load"});  // can only modify MW and MVR at load, not bus
@@ -208,7 +247,7 @@ public class SemPWServlet extends HttpServlet {
 					} catch (EsriSecurityException e) {
 						e.printStackTrace();
 					}
-//  7
+//  8
 				} else if (layer.equals("SolarInverter")) {
 					skeleton.add(new String[]{"BusNum,BusNomVolt","FID,volt_nom","Bus"});                        // variable names specific to SolarInverter (e.g. LoadMW=pwr_P, LoadMVR=pwr_Q)
 					skeleton.add(new String[]{"BusNum,LoadID,LoadMW,LoadMVR","FID,LoadID,pwr_P,pwr_Q","Load"});  // can only modify MW and MVR at load, not bus
@@ -217,7 +256,7 @@ public class SemPWServlet extends HttpServlet {
 					} catch (EsriSecurityException e) {
 						e.printStackTrace();
 					}
-//  8
+//  9
 				} else if (layer.equals("SolarPowerTLine")) {
 					skeleton.add(new String[]{"BusNum,BusNomVolt","FID,volt_nom","Bus"});                        // variable names specific to SolarPowerTLine (e.g. LoadMW=pwr_P, LoadMVR=pwr_Q)
 					skeleton.add(new String[]{"BusNum,LoadID,LoadMW,LoadMVR","FID,LoadID,pwr_P,pwr_Q","Load"});  // can only modify MW and MVR at load, not bus
@@ -226,7 +265,7 @@ public class SemPWServlet extends HttpServlet {
 					} catch (EsriSecurityException e) {
 						e.printStackTrace();
 					}
-//  9
+//  10
 				} else if (layer.equals("Windfarm")) {
 					skeleton.add(new String[]{"BusNum,BusNomVolt","FID,volt_nom","Bus"});                        // variable names specific to Windfarm (e.g. LoadMW=pwr_P, LoadMVR=pwr_Q)
 					skeleton.add(new String[]{"BusNum,LoadID,LoadMW,LoadMVR","FID,LoadID,pwr_P,pwr_Q","Load"});  // can only modify MW and MVR at load, not bus
@@ -235,7 +274,7 @@ public class SemPWServlet extends HttpServlet {
 					} catch (EsriSecurityException e) {
 						e.printStackTrace();
 					}
-// 10
+// 11
 				} else if (layer.equals("WindPowerTLine")) {
 					skeleton.add(new String[]{"BusNum,BusNomVolt","FID,volt_nom","Bus"});                        // variable names specific to WindPowerTLine (e.g. LoadMW=pwr_P, LoadMVR=pwr_Q)
 					skeleton.add(new String[]{"BusNum,LoadID,LoadMW,LoadMVR","FID,LoadID,pwr_P,pwr_Q","Load"});  // can only modify MW and MVR at load, not bus
@@ -244,7 +283,7 @@ public class SemPWServlet extends HttpServlet {
 					} catch (EsriSecurityException e) {
 						e.printStackTrace();
 					}
-// 11
+// 12
 				} else if (layer.equals("WindTransformer")) {
 					skeleton.add(new String[]{"BusNum,BusNomVolt","FID,volt_nom","Bus"});                        // variable names specific to WindTransformer (e.g. LoadMW=pwr_P, LoadMVR=pwr_Q)
 					skeleton.add(new String[]{"BusNum,LoadID,LoadMW,LoadMVR","FID,LoadID,pwr_P,pwr_Q","Load"});  // can only modify MW and MVR at load, not bus
@@ -253,7 +292,7 @@ public class SemPWServlet extends HttpServlet {
 					} catch (EsriSecurityException e) {
 						e.printStackTrace();
 					}
-// 12
+// 13
 				} else if (layer.equals("WindTurbine")) {
 					skeleton.add(new String[]{"BusNum,BusNomVolt","FID,volt_nom","Bus"});                        // variable names specific to WindTurbine (e.g. BusGenMW=PwrGenMW, BusGenMVR=PwrGenMVR)
 					skeleton.add(new String[]{"BusNum,GenID,BusGenMW,BusGenMVR","FID,BusGenID,pwr_P,pwr_Q","Load"});  // can only modify MW and MVR at load, not bus
@@ -305,23 +344,60 @@ public class SemPWServlet extends HttpServlet {
 					if (layer.equals("Loadpoint")) {                                     // specific to "Loadpoint"
 						if (ArcGISfields[j].equals("FID")) {                                    // ArcGIS element is FID
 							String ArcGISFID = String.valueOf(attributes.get("FID"));           // String.valueOf() converts any data type (in this case an integer) to string
-							fileWriter.append(ArcGISFIDtoPWBusNum.get(ArcGISFID));              // converts FID to BusNum using the hard coded map
+							fileWriter.append(ArcGISFIDloadtoPWBusNum.get(ArcGISFID));              // converts FID to BusNum using the hard coded map
 						} else if (ArcGISfields[j].equals("LoadID")) {
 							fileWriter.append("1");                                             // LoadID is 1 by default in the jparksimulator.pwb
 						} else {
 							fileWriter.append(String.valueOf(attributes.get(ArcGISfields[j]))); // float values from ArcGIS converted to string
 						}
 //  2
-/*					} else if (layer.equals("EnergyStorage")) {                                 // specific to "EnergyStorage"
+					} else if (layer.equals("EnergyStorage")) {                                 // specific to "EnergyStorage"
 						if (ArcGISfields[j].equals("FID")) {                                    // ArcGIS element is FID
 							String ArcGISFID = String.valueOf(attributes.get("FID"));           // String.valueOf() converts any data type (in this case an integer) to string
-							fileWriter.append(ArcGISFIDtoPWBusNum.get(ArcGISFID));              // converts FID to BusNum using the hard coded map
+							fileWriter.append(ArcGISFIDbattoPWBusNum.get(ArcGISFID));              // converts FID to BusNum using the hard coded map
 						} else if (ArcGISfields[j].equals("LoadID")) {
 							fileWriter.append("1");                                             // LoadID is 1 by default in the jparksimulator.pwb
 						} else {
 							fileWriter.append(String.valueOf(attributes.get(ArcGISfields[j]))); // float values from ArcGIS converted to string
 						}
-*/
+						
+						
+//3a	
+						} else if (layer.equals("DieselGen")) {                                 // specific to "EnergyStorage"
+						if (ArcGISfields[j].equals("FID")) {                                    // ArcGIS element is FID
+							String ArcGISFID = String.valueOf(attributes.get("FID"));           // String.valueOf() converts any data type (in this case an integer) to string
+							fileWriter.append(ArcGISFIDgentoPWBusNum.get(ArcGISFID));              // converts FID to BusNum using the hard coded map
+						} else if (ArcGISfields[j].equals("LoadID")) {
+							fileWriter.append("1");                                             // LoadID is 1 by default in the jparksimulator.pwb
+						} else {
+							fileWriter.append(String.valueOf(attributes.get(ArcGISfields[j]))); // float values from ArcGIS converted to string
+						}
+						
+//3b
+						
+					} else if (layer.equals("Solarfarm")) {                                 // specific to "EnergyStorage"
+						if (ArcGISfields[j].equals("FID")) {                                    // ArcGIS element is FID
+							String ArcGISFID = String.valueOf(attributes.get("FID"));           // String.valueOf() converts any data type (in this case an integer) to string
+							fileWriter.append(ArcGISFIDgentoPWBusNum.get(ArcGISFID));              // converts FID to BusNum using the hard coded map
+						} else if (ArcGISfields[j].equals("LoadID")) {
+							fileWriter.append("1");                                             // LoadID is 1 by default in the jparksimulator.pwb
+						} else {
+							fileWriter.append(String.valueOf(attributes.get(ArcGISfields[j]))); // float values from ArcGIS converted to string
+						}
+						
+//3c						
+					} else if (layer.equals("WindTurbine")) {                                 // specific to "EnergyStorage"
+						if (ArcGISfields[j].equals("FID")) {                                    // ArcGIS element is FID
+							String ArcGISFID = String.valueOf(attributes.get("FID"));           // String.valueOf() converts any data type (in this case an integer) to string
+							fileWriter.append(ArcGISFIDgentoPWBusNum.get(ArcGISFID));              // converts FID to BusNum using the hard coded map
+						} else if (ArcGISfields[j].equals("LoadID")) {
+							fileWriter.append("1");                                             // LoadID is 1 by default in the jparksimulator.pwb
+						} else {
+							fileWriter.append(String.valueOf(attributes.get(ArcGISfields[j]))); // float values from ArcGIS converted to string
+						}
+						
+						
+
 //  3
 /*					} else if (layer.equals("LoadTLine")) {
 						if (ArcGISfields[j].equals("FID")) {
@@ -628,7 +704,9 @@ public class SemPWServlet extends HttpServlet {
 				// data[8]=BUSGENMVR
 
 				int PWBusNum = Integer.valueOf(data[0].trim());                              // data[0] is the bus number
-				String ArcGISFID = PWBusNumtoArcGISFID.get(data[0].trim());                  // .trim() removes trailing white spaces
+				String ArcGISFID = PWBusNumtoArcGISFIDload.get(data[0].trim());                  // .trim() removes trailing white spaces
+				String ArcGISbatFID = PWBusNumtoArcGISFIDbat.get(data[0].trim());
+				String ArcGISgenFID = PWBusNumtoArcGISFIDgen.get(data[0].trim());
 				
 				if (ArcGISFID != null) {                                                     // if PowerWorld bus number can map to an ArcGIS LoadPoint FID
 					Map<String, Object> LoadpointAttributes = LoadpointTable.getFeature(Long.parseLong(ArcGISFID)).getAttributes();

@@ -59,6 +59,7 @@ import com.esri.core.symbol.SimpleLineSymbol;
 import com.esri.core.symbol.SimpleMarkerSymbol;
 import com.esri.core.symbol.SimpleMarkerSymbol.Style;
 import com.esri.core.symbol.Symbol;
+import com.esri.map.ArcGISDynamicMapServiceLayer;
 import com.esri.map.ArcGISFeatureLayer;
 import com.esri.map.ArcGISTiledMapServiceLayer;
 import com.esri.map.JMap;
@@ -90,13 +91,24 @@ public class Semakau {
 	final static SimpleLineSymbol MarineTLinecolor     = new SimpleLineSymbol(Color.green, 3); // 1D
 	final static SimpleLineSymbol Roadscolor           = new SimpleLineSymbol(new Color(204,204,0), 3); // 1D
 	final static SimpleFillSymbol Solarfarmcolor       = new SimpleFillSymbol(Color.yellow); // 2D
-	final static SimpleMarkerSymbol SolarInvertercolor = new SimpleMarkerSymbol(Color.blue, 20, Style.CIRCLE); // 0D	
-	final static SimpleLineSymbol SolarPowerTLinecolor = new SimpleLineSymbol(Color.green, 3); // 1D
+	final static SimpleMarkerSymbol SolarInvertercolor = new SimpleMarkerSymbol(Color.blue, 10, Style.DIAMOND); // 0D	
+	final static SimpleLineSymbol SolarPowerTLinecolor = new SimpleLineSymbol(Color.black, 3); // 1D
 	final static SimpleFillSymbol Windfarmcolor        = new SimpleFillSymbol(Color.blue, new SimpleLineSymbol(Color.blue, 2), SimpleFillSymbol.Style.NULL); // 2D
-	final static SimpleLineSymbol WindPowerTLinecolor  = new SimpleLineSymbol(Color.green, 3); // 1D
+	final static SimpleLineSymbol WindPowerTLinecolor  = new SimpleLineSymbol(Color.LIGHT_GRAY, 3); // 1D
 	final static SimpleMarkerSymbol WindTransformercolor = new SimpleMarkerSymbol(Color.magenta, 10, Style.TRIANGLE); // 0D
 	final static SimpleMarkerSymbol WindTurbinecolor   = new SimpleMarkerSymbol(Color.red, 20, Style.CROSS); // 0D
 	final static SimpleFillSymbol dieselgencolor       = new SimpleFillSymbol(Color.pink);
+	final static SimpleMarkerSymbol Buscouplercolor    = new SimpleMarkerSymbol(Color.pink, 20, Style.X);
+	final static SimpleFillSymbol Marinefarmcolor       = new SimpleFillSymbol(Color.gray);
+	final static SimpleFillSymbol PVfarmcolor           = new SimpleFillSymbol(Color.magenta);
+	final static SimpleMarkerSymbol Slackpointcolor     = new SimpleMarkerSymbol(new Color(173,255,47), 10, Style.SQUARE);
+	final static SimpleMarkerSymbol Storageinvertercolor  = new SimpleMarkerSymbol(new Color(128,0,0), 10, Style.SQUARE);
+	final static SimpleLineSymbol Submic1color  = new SimpleLineSymbol(Color.RED, 3);
+	final static SimpleLineSymbol Submic2color  = new SimpleLineSymbol(new Color(160,82,45), 3);
+	final static SimpleLineSymbol Submic3color  = new SimpleLineSymbol(new Color(85,107,47), 3);
+	final static SimpleMarkerSymbol Substationcolor       = new SimpleMarkerSymbol(new Color(255,215,0), 15, Style.TRIANGLE);
+	
+	
 	
 	private JFrame window;
 	private JMap map;
@@ -121,6 +133,16 @@ public class Semakau {
 	public static ArcGISFeatureLayer WindTransformerlayer;
 	public static ArcGISFeatureLayer WindTurbinelayer;
 	public static ArcGISFeatureLayer dieselgenlayer;
+	public static ArcGISFeatureLayer Buscouplerlayer;
+	public static ArcGISFeatureLayer Marinefarmlayer;
+	public static ArcGISFeatureLayer PVfarmlayer;
+	public static ArcGISFeatureLayer Slackpointlayer;
+	public static ArcGISFeatureLayer Storageinverterlayer;
+	public static ArcGISFeatureLayer Submic1layer;
+	public static ArcGISFeatureLayer Submic2layer;
+	public static ArcGISFeatureLayer Submic3layer;
+	public static ArcGISFeatureLayer Substationlayer;
+	
 	
 	// method to render all layers in an array using a certain style (multiple layer renderer)
 	private void createRenderer(LayerList layers, ArcGISFeatureLayer[] arrayoflayers, Symbol col) {
@@ -159,6 +181,7 @@ public class Semakau {
     ArcGISTiledMapServiceLayer tiledLayer = new ArcGISTiledMapServiceLayer("http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer");
     layers.add(tiledLayer); // add basemap layer
     
+
     // map centered on Jurong Island
     Point mapCenter = new Point(11551580,134038);
     map.setExtent(new Envelope(mapCenter,7200,5400));
@@ -173,57 +196,79 @@ public class Semakau {
     UserCredentials user = new UserCredentials();
     user.setUserAccount("semakausimulator", "c4tsemakau"); // Access secure feature layer service using login username and password
     Buildingslayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Building/FeatureServer/0", user);
+    Buscouplerlayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Bus_coupler/FeatureServer/0", user);
     Desalinationlayer    = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Desalination/FeatureServer/0", user);
     EnergyStoragelayer   = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/EnergyStorage/FeatureServer/0", user);
     FishHatcherylayer    = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/FishHatchery/FeatureServer/0", user);
     LandLotslayer        = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/LandLots/FeatureServer/0", user);
     Loadpointlayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Loadpoint/FeatureServer/0", user);
     LoadTLinelayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/ArcGIS/rest/services/LoadTLine/FeatureServer/0", user);
+    Marinefarmlayer      = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Marinefarm/FeatureServer/0", user);
     MarinePowerGenlayer  = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/MarinePowerGen/FeatureServer/0", user);
     MarineTLinelayer     = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/MarineTLine/FeatureServer/0", user);
+    PVfarmlayer          = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/PVfarm/FeatureServer/0", user);
     Roadslayer           = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Roads/FeatureServer/0", user);  
+    Slackpointlayer      = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Slackpoints/FeatureServer/0", user);
     Solarfarmlayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Solarfarm/FeatureServer/0", user);
     SolarInverterlayer   = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/ArcGIS/rest/services/SolarInverter/FeatureServer/0", user);   
     SolarPowerTLinelayer = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/SolarPowerTLine/FeatureServer/0", user);
+    Storageinverterlayer = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Storage_Inverter/FeatureServer/0", user);
+    Submic1layer         = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/sub_microgrid1TL/FeatureServer/0", user);
+    Submic2layer         = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/sub_microgrid2TL/FeatureServer/0", user);
+    Submic3layer         = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/sub_microgrid3TL/FeatureServer/0", user);
+    Substationlayer      = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Substation/FeatureServer/0", user);
     Windfarmlayer        = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Windfarm/FeatureServer/0", user);
     WindPowerTLinelayer  = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/WindPowerTLine/FeatureServer/0", user);
     WindTransformerlayer = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/WindTransformer/FeatureServer/0", user);
     WindTurbinelayer     = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/WindTurbine/FeatureServer/0", user);
     dieselgenlayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/DieselGen/FeatureServer/0", user);
-	// UPDATE THIS LIST whenever new layers are added: first layer is the bottommost layer *see currently known issues #3
+	// UPDATE THIS LIST whenever new layers are added: first layer is the most bottom layer *see currently known issues #3
 
 
 	ArcGISFeatureLayer[] completeLayerList = {Buildingslayer, Desalinationlayer, EnergyStoragelayer, FishHatcherylayer, LandLotslayer, Loadpointlayer,
 			LoadTLinelayer, MarinePowerGenlayer, MarineTLinelayer, Roadslayer, Solarfarmlayer, SolarInverterlayer, SolarPowerTLinelayer, Windfarmlayer, 
-			WindPowerTLinelayer, WindTransformerlayer, WindTurbinelayer,dieselgenlayer};
+			WindPowerTLinelayer, WindTransformerlayer, WindTurbinelayer,dieselgenlayer,Buscouplerlayer,Marinefarmlayer,PVfarmlayer,Slackpointlayer,Storageinverterlayer,Submic1layer,Submic2layer,Submic3layer,Substationlayer};
 
     // render layers
 
     createRenderer(layers, new ArcGISFeatureLayer [] {Buildingslayer}, Buildingscolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {Buscouplerlayer}, Buscouplercolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Desalinationlayer}, Desalinationcolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {dieselgenlayer}, dieselgencolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {EnergyStoragelayer}, EnergyStoragecolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {FishHatcherylayer}, FishHatcherycolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {LandLotslayer}, LandLotscolor);
-    createRenderer(layers, new ArcGISFeatureLayer [] {Loadpointlayer}, Loadpointcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {LoadTLinelayer}, LoadTLinecolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {Marinefarmlayer}, Marinefarmcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {MarinePowerGenlayer}, MarinePowerGencolor);   
     createRenderer(layers, new ArcGISFeatureLayer [] {MarineTLinelayer}, MarineTLinecolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {PVfarmlayer}, PVfarmcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Roadslayer}, Roadscolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {Loadpointlayer}, Loadpointcolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {Slackpointlayer}, Slackpointcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Solarfarmlayer}, Solarfarmcolor);  
     createRenderer(layers, new ArcGISFeatureLayer [] {SolarInverterlayer}, SolarInvertercolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {SolarPowerTLinelayer}, SolarPowerTLinecolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {Storageinverterlayer}, Storageinvertercolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {Submic1layer}, Submic1color);
+    createRenderer(layers, new ArcGISFeatureLayer [] {Submic2layer}, Submic2color);
+    createRenderer(layers, new ArcGISFeatureLayer [] {Submic3layer}, Submic3color);
+    createRenderer(layers, new ArcGISFeatureLayer [] {Substationlayer}, Substationcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Windfarmlayer}, Windfarmcolor);  
     createRenderer(layers, new ArcGISFeatureLayer [] {WindPowerTLinelayer}, WindPowerTLinecolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {WindTransformerlayer}, WindTransformercolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {WindTurbinelayer}, WindTurbinecolor);
-    createRenderer(layers, new ArcGISFeatureLayer [] {dieselgenlayer}, dieselgencolor);
+    
         
     // initialize window and add contentPane to window
-    window = new JFrame("Semakau Simulator");
+    String x= "Semakau Simulator";
+    window = new JFrame(x);
     window.setSize(1200, 900);
     window.setLocationRelativeTo(null); // centered on screen
     window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     window.getContentPane().setLayout(new BorderLayout(0, 0));
+    
+    //x.setFont(new Font("Verdana", Font.BOLD, 30));
 
     
     // textbox indicating that PowerWorld finished running
@@ -287,25 +332,34 @@ public class Semakau {
     // dropdown options with key = String layer name and value = layer object
 
     editlayer.put("Building", Buildingslayer);
+    editlayer.put("Bus coupler", Buscouplerlayer);
     editlayer.put("Desalination", Desalinationlayer);
+    editlayer.put("Diesel Generator", dieselgenlayer);
     editlayer.put("EnergyStorage", EnergyStoragelayer);
     editlayer.put("FishHatchery", FishHatcherylayer);
     editlayer.put("LandLots", LandLotslayer);
     editlayer.put("Loadpoint", Loadpointlayer);
     editlayer.put("LoadTLine", LoadTLinelayer);
+    editlayer.put("Marine Farm", Marinefarmlayer);
     editlayer.put("MarinePowerGen", MarinePowerGenlayer);
     editlayer.put("MarineTLine", MarineTLinelayer);
+    editlayer.put("PV Farm", PVfarmlayer);
     editlayer.put("Roads", Roadslayer);
+    editlayer.put("Slack point", Slackpointlayer);
     editlayer.put("Solarfarm", Solarfarmlayer);
     editlayer.put("SolarInverter", SolarInverterlayer);
     editlayer.put("SolarPowerTLine", SolarPowerTLinelayer);
+    editlayer.put("Storageinverter", Storageinverterlayer);
+    editlayer.put("Submicrogrid1 TL", Submic1layer);
+    editlayer.put("Submicrogrid2 TL", Submic2layer);
+    editlayer.put("Submicrogrid3 TL", Submic3layer);
+    editlayer.put("Substations", Substationlayer);
     editlayer.put("Windfarm", Windfarmlayer);
     editlayer.put("WindPowerTLine", WindPowerTLinelayer);
     editlayer.put("WindTransformer", WindTransformerlayer);
     editlayer.put("WindTurbine", WindTurbinelayer);
-    editlayer.put("Diesel Generator", dieselgenlayer);
     
-
+    
     // initialize dropdown box
     final JComboBox<String> cbxLayer = new JComboBox<>(editlayer.keySet().toArray(new String[0]));
     cbxLayer.setMaximumSize(new Dimension(220, 25));
@@ -410,7 +464,7 @@ public class Semakau {
     		OutputStreamWriter out;
     		URL url;
     		try {
-				url = new URL("http://www.jparksimulator.com/semPWServlet/"); // URL of servlet
+				url = new URL("http://137.132.22.61/semPWServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
@@ -437,6 +491,7 @@ public class Semakau {
 					outputString.append(URLEncoder.encode("FIDs", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(FIDs.toString(), "UTF-8"));
+					System.out.println("outputString=" + outputString);
 					
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
 					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
@@ -513,6 +568,7 @@ public class Semakau {
     JLegend legend = new JLegend(map);
     legend.setPreferredSize(new Dimension(250, 700));
     legend.setBorder(new LineBorder(new Color(205, 205, 255), 3));
+    legend.setFont(new Font("Verdana", Font.BOLD, 40));
     
     // initialize contentPane and add contents
     contentPane = new JLayeredPane();
