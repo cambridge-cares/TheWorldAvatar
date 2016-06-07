@@ -96,6 +96,7 @@ public class Semakau {
 	final static SimpleLineSymbol WindPowerTLinecolor  = new SimpleLineSymbol(Color.green, 3); // 1D
 	final static SimpleMarkerSymbol WindTransformercolor = new SimpleMarkerSymbol(Color.magenta, 10, Style.TRIANGLE); // 0D
 	final static SimpleMarkerSymbol WindTurbinecolor   = new SimpleMarkerSymbol(Color.red, 20, Style.CROSS); // 0D
+	final static SimpleFillSymbol dieselgencolor       = new SimpleFillSymbol(Color.pink);
 	
 	private JFrame window;
 	private JMap map;
@@ -119,7 +120,8 @@ public class Semakau {
 	public static ArcGISFeatureLayer WindPowerTLinelayer;
 	public static ArcGISFeatureLayer WindTransformerlayer;
 	public static ArcGISFeatureLayer WindTurbinelayer;
-
+	public static ArcGISFeatureLayer dieselgenlayer;
+	
 	// method to render all layers in an array using a certain style (multiple layer renderer)
 	private void createRenderer(LayerList layers, ArcGISFeatureLayer[] arrayoflayers, Symbol col) {
 		for (ArcGISFeatureLayer layer : arrayoflayers) {
@@ -170,30 +172,30 @@ public class Semakau {
     // adds layers uploaded onto ArcGIS for Developers
     UserCredentials user = new UserCredentials();
     user.setUserAccount("semakausimulator", "c4tsemakau"); // Access secure feature layer service using login username and password
-    Buildingslayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Buildings/FeatureServer/0", user);
+    Buildingslayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Building/FeatureServer/0", user);
     Desalinationlayer    = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Desalination/FeatureServer/0", user);
     EnergyStoragelayer   = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/EnergyStorage/FeatureServer/0", user);
     FishHatcherylayer    = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/FishHatchery/FeatureServer/0", user);
     LandLotslayer        = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/LandLots/FeatureServer/0", user);
     Loadpointlayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Loadpoint/FeatureServer/0", user);
-    LoadTLinelayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/LoadTLine/FeatureServer/0", user);
+    LoadTLinelayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/ArcGIS/rest/services/LoadTLine/FeatureServer/0", user);
     MarinePowerGenlayer  = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/MarinePowerGen/FeatureServer/0", user);
     MarineTLinelayer     = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/MarineTLine/FeatureServer/0", user);
     Roadslayer           = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Roads/FeatureServer/0", user);  
     Solarfarmlayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Solarfarm/FeatureServer/0", user);
-    SolarInverterlayer   = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/SolarInverter/FeatureServer/0", user);   
+    SolarInverterlayer   = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/ArcGIS/rest/services/SolarInverter/FeatureServer/0", user);   
     SolarPowerTLinelayer = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/SolarPowerTLine/FeatureServer/0", user);
     Windfarmlayer        = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Windfarm/FeatureServer/0", user);
     WindPowerTLinelayer  = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/WindPowerTLine/FeatureServer/0", user);
     WindTransformerlayer = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/WindTransformer/FeatureServer/0", user);
     WindTurbinelayer     = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/WindTurbine/FeatureServer/0", user);
-
+    dieselgenlayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/DieselGen/FeatureServer/0", user);
 	// UPDATE THIS LIST whenever new layers are added: first layer is the bottommost layer *see currently known issues #3
 
 
 	ArcGISFeatureLayer[] completeLayerList = {Buildingslayer, Desalinationlayer, EnergyStoragelayer, FishHatcherylayer, LandLotslayer, Loadpointlayer,
 			LoadTLinelayer, MarinePowerGenlayer, MarineTLinelayer, Roadslayer, Solarfarmlayer, SolarInverterlayer, SolarPowerTLinelayer, Windfarmlayer, 
-			WindPowerTLinelayer, WindTransformerlayer, WindTurbinelayer};
+			WindPowerTLinelayer, WindTransformerlayer, WindTurbinelayer,dieselgenlayer};
 
     // render layers
 
@@ -214,7 +216,8 @@ public class Semakau {
     createRenderer(layers, new ArcGISFeatureLayer [] {WindPowerTLinelayer}, WindPowerTLinecolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {WindTransformerlayer}, WindTransformercolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {WindTurbinelayer}, WindTurbinecolor);
-    
+    createRenderer(layers, new ArcGISFeatureLayer [] {dieselgenlayer}, dieselgencolor);
+        
     // initialize window and add contentPane to window
     window = new JFrame("Semakau Simulator");
     window.setSize(1200, 900);
@@ -300,6 +303,8 @@ public class Semakau {
     editlayer.put("WindPowerTLine", WindPowerTLinelayer);
     editlayer.put("WindTransformer", WindTransformerlayer);
     editlayer.put("WindTurbine", WindTurbinelayer);
+    editlayer.put("Diesel Generator", dieselgenlayer);
+    
 
     // initialize dropdown box
     final JComboBox<String> cbxLayer = new JComboBox<>(editlayer.keySet().toArray(new String[0]));
