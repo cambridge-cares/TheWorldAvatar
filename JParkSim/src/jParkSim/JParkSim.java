@@ -43,6 +43,7 @@ import java.util.Map;
 
 
 
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -58,6 +59,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
+
+import MouseDrag.MouseDrag;
 
 import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.MultiPoint;
@@ -821,7 +824,7 @@ change.setLocation(890, 45);
 
     
     // Run AspenPlus button
-    JButton APbutton = new JButton("Run AspenPlus");
+    JButton APbutton = new JButton("Run BiodieselPlant-1");
     APbutton.addActionListener(new ActionListener() {
     	@Override
     	public void actionPerformed(ActionEvent arg0) {
@@ -909,7 +912,7 @@ change.setLocation(890, 45);
 
 
     // Run Parameterised AspenPlus button
-    JButton APPrButton = new JButton("Run Pr APWOWHR");
+    JButton APPrButton = new JButton("Run Pr BiodieselPlant-1");
     APPrButton.addActionListener(new ActionListener() {
     	@Override
     	public void actionPerformed(ActionEvent arg0) {
@@ -967,11 +970,11 @@ change.setLocation(890, 45);
 					wr.close();
 					
 					if (urlCon.getResponseCode()==200) {
-						JOptionPane.showMessageDialog(null, "Pr APWOWHR has finished running!");
+						JOptionPane.showMessageDialog(null, "I have finished evaluating new operational status for BiodieselPlant-1!");
 						editStack.clear(); // delete all items in editStack
 					} else {
 						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
-								+ "\nPlease try running Pr APWOWHR again");
+								+ "\nPlease try running Pr BiodieselPlant-1 again");
 					}
 					out.close();
 				}
@@ -990,7 +993,7 @@ change.setLocation(890, 45);
     APPrButton.setLocation(690, 45);
     
  // Run AspenPlus model with heat recovery button
-    JButton APHrButton = new JButton("Run AP with HeatRecovery");
+    JButton APHrButton = new JButton("Run BiodieselPlant-2");
     APHrButton.addActionListener(new ActionListener() {
     	@Override
     	public void actionPerformed(ActionEvent arg0) {
@@ -1066,10 +1069,10 @@ change.setLocation(890, 45);
     APHrButton.setEnabled(true);
     APHrButton.setVisible(true);
     APHrButton.setSize(190,30);
-    APHrButton.setLocation(490, 115);
+    APHrButton.setLocation(490, 80);
 
     // Run AspenPlus model with heat recovery button
-    JButton PrAPHrButton = new JButton("Run Pr APWWHR");
+    JButton PrAPHrButton = new JButton("Run Pr BiodieselPlant-2");
     PrAPHrButton.addActionListener(new ActionListener() {
     	@Override
     	public void actionPerformed(ActionEvent arg0) {
@@ -1124,11 +1127,11 @@ change.setLocation(890, 45);
 					wr.close();
 					
 					if (urlCon.getResponseCode()==200) {
-						JOptionPane.showMessageDialog(null, "Pr APWWHR has finished running!");
+						JOptionPane.showMessageDialog(null, "I have finished evaluating new operational status for BiodieselPlant-2!");
 						editStack.clear(); // delete all items in editStack
 					} else {
 						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
-								+ "\nPlease try running Pr APWWHR again");
+								+ "\nPlease try running Pr BiodieselPlant-2 again");
 					}
 					out.close();
 				}
@@ -1144,10 +1147,10 @@ change.setLocation(890, 45);
     PrAPHrButton.setEnabled(true);
     PrAPHrButton.setVisible(true);
     PrAPHrButton.setSize(190,30);
-    PrAPHrButton.setLocation(690, 115);
+    PrAPHrButton.setLocation(690, 80);
     
  // Run combined AspenPlus and power world model 
-    JButton APPWButton = new JButton("Run AP + PW");
+    JButton APPWButton = new JButton("Run BiodieselPlant-3");
     APPWButton.addActionListener(new ActionListener() {
     	@Override
     	public void actionPerformed(ActionEvent arg0) {
@@ -1222,10 +1225,10 @@ change.setLocation(890, 45);
     APPWButton.setEnabled(true);
     APPWButton.setVisible(true);
     APPWButton.setSize(190,30);
-    APPWButton.setLocation(490, 80);
+    APPWButton.setLocation(490, 115);
     
     // Run combined parameterized AspenPlus and power world model 
-    JButton PrAPPWButton = new JButton("Run Pr AP + PW");
+    JButton PrAPPWButton = new JButton("Run Pr BiodieselPlant-3");
     PrAPPWButton.addActionListener(new ActionListener() {
     	@Override
     	public void actionPerformed(ActionEvent arg0) {
@@ -1280,11 +1283,11 @@ change.setLocation(890, 45);
 					wr.close();
 					
 					if (urlCon.getResponseCode()==200) {
-						JOptionPane.showMessageDialog(null, "Parameterized AP & PW has finished running!");
+						JOptionPane.showMessageDialog(null, "I have finished evaluating new operational status for BiodieselPlant-3!");
 						editStack.clear(); // delete all items in editStack
 					} else {
 						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
-								+ "\nPlease try running Parameterised AP again");
+								+ "\nPlease try running Pr BiodieselPlant-3 again");
 					}
 					out.close();
 				}
@@ -1300,7 +1303,7 @@ change.setLocation(890, 45);
     PrAPPWButton.setEnabled(true);
     PrAPPWButton.setVisible(true);
     PrAPPWButton.setSize(190,30);
-    PrAPPWButton.setLocation(690, 80);
+    PrAPPWButton.setLocation(690, 115);
 
 // Run AspenPlus model with heat recovery button ZL-20160322
     JButton PrAPOButton = new JButton("Run PrAP from OntoCAPE");
@@ -1413,6 +1416,7 @@ change.setLocation(890, 45);
 					}
 					StringBuilder outputString = new StringBuilder();
 					// Only URL encoded string values can be sent over a HTTP connection
+//					outputString.append("ping");
 					outputString.append(URLEncoder.encode("layers", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(layers.toString(), "UTF-8"));
@@ -1439,6 +1443,29 @@ change.setLocation(890, 45);
 					if (urlCon.getResponseCode()==200) {
 						JOptionPane.showMessageDialog(null, "OPALRT has finished running!");
 						editStack.clear(); // delete all items in editStack
+						try{
+							Runtime rt = Runtime.getRuntime();
+							//rt.exec("cmd /c start C:/apache-tomcat-8.0.24/webapps/ROOT/download_from_NUS/download_from_NUS.bat");
+//							System.out.println("Inputs downloaded.");
+							Process ps = rt.exec("cmd /c D:/opalrt/download_from_NUS.bat");
+							System.out.println("Downloading commenced.");
+							ps.waitFor();
+							System.out.println("Downloading finished.");
+							if(ps.exitValue()==0){
+								System.out.println("Success!");
+							}else {
+								System.out.println("failed!");
+							}
+							ps.destroy();
+							//rt.exec("cmd /c start C:/apache-tomcat-8.0.24/webapps/ROOT/transmit_files_to_NUS/send_from_NTU.bat");
+//							System.out.println("Outputs uploaded."); 
+							
+							
+							}catch (Exception e) {
+								e.printStackTrace();
+							}
+						
+						
 					} else {
 						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
 								+ "\nPlease try again");
@@ -1448,6 +1475,12 @@ change.setLocation(890, 45);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+    		
+    		String[] av = {"D:/opalrt/CurrentA.png"};
+    		MouseDrag.Printing(av);
+    		
+    		
+    		
     		for (ArcGISFeatureLayer layer : completeLayerList) {
     			layer.requery();
     			layer.refresh();
@@ -1457,7 +1490,7 @@ change.setLocation(890, 45);
     OPALRT.setEnabled(true);
     OPALRT.setVisible(true);
     OPALRT.setSize(190,30);
-    OPALRT.setLocation(890, 80);    
+    OPALRT.setLocation(890, 45);    
   
     JButton refreshButton = new JButton("Refresh Map");
     refreshButton.addActionListener(new ActionListener() {
@@ -1515,7 +1548,7 @@ change.setLocation(890, 45);
 									
 			try{
 				url = new URL("http://172.25.182.41/PWServlet/");
-//				url = new URL("http://172.25.182.41/OPARTServlet/"); // URL of servlet
+//				url = new URL("http://172.25.182.41/QUERYServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);				
@@ -1547,7 +1580,6 @@ change.setLocation(890, 45);
 				outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
 				outputString.append("=");
 				outputString.append(URLEncoder.encode("Query", "UTF-8"));
-//				outputString.append(URLEncoder.encode("OPALRT", "UTF-8"));
 				outputString.append("&");
 				outputString.append (URLEncoder.encode("QueryT", "UTF-8"));
 				outputString.append ("=");				

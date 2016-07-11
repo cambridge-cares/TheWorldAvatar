@@ -185,9 +185,38 @@ public class APWOWHRServlet extends HttpServlet {
 //			start_time = System.currentTimeMillis();
 			runPrAspenPlusWOWHR(editStack);
 //			System.out.println("runPrAspenPlusWOWHR takes: "+( System.currentTimeMillis()-start_time));
+			System.out.println("Thread testing"+Thread.currentThread().isAlive()); 
+			if(Thread.currentThread().isAlive()){
+//				stopTread();
+				Thread.currentThread().interrupt();
+				return;
+			}
+			System.out.println("Thread testing"+Thread.currentThread().isAlive());
 			break;
 		}
 	}
+	
+	/*public class UsingInterruptToShutdownThread extends Thread {
+		  public void run() {
+		    while (true) {
+		      System.out.print(".");
+		      System.out.flush();
+		      try {
+		        Thread.sleep(1000);
+		      } catch (InterruptedException ex) {
+		        Thread.currentThread().interrupt(); // very important
+		        break;
+		      }
+		    }
+		    System.out.println("Shutting down thread");
+		  }
+		  public void stopTread(String[] args)  throws InterruptedException {
+		    Thread t = new UsingInterruptToShutdownThread();
+		    t.start();
+		    Thread.sleep(5000);
+		    t.interrupt();
+		  }
+		}*/
 	
 	public void runPrAspenPlusWOWHR(ArrayList<String[]> editStack) {
 //		String appCallFlag = null;
@@ -206,7 +235,7 @@ public class APWOWHRServlet extends HttpServlet {
 		try {
 	
 			fileWriter = new FileWriter(PrAPWOWHROUTCSV);                                        // filewriter for the output of pr aspenplus model
-			System.load("C:/apache-tomcat-8.0.24/webapps/ROOT/MoDS_Java_API_0.1.dll"); 
+			System.load("C:/apache-tomcat-8.0.24/webapps/ROOT/MoDS_Java_API.dll");  //the MoDS API at use is version 0.1
 			
 			ArrayList<String> xNames = MoDSAPI.getXVarNamesFromAPI(simDir, modelName);		
 			System.out.println("xNames= " + xNames);
@@ -259,7 +288,8 @@ public class APWOWHRServlet extends HttpServlet {
 		
 		UserCredentials user = new UserCredentials();
 		user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
-						
+		
+		System.out.println("keyset="+ OBJECTIDtoHXB1.keySet());				
 		for (Integer key : OBJECTIDtoHXB1.keySet()) {
 			try {
 				QueryParameters qParameter_HX = new QueryParameters();                       // create an instance  of QueryParameters to be used  for querying  ArcGIS database for predefined data
@@ -306,8 +336,7 @@ public class APWOWHRServlet extends HttpServlet {
 					
 			for (int i = 0; i < attributeslist_HX.size(); i++) {
 				for (String key : attributeslist_HX.get(i).keySet()) {                                       // go through  all the  heat exchangers in biodiesel plant
-					if (key == "OBJECTID") {
-						System.out.println("key="+key);
+					if (key == "OBJECTID") {						
 						if (OBJECTIDtoHXB1.get(i + 3).equals("10E01B1")) {
 //						if (OBJECTIDtoHXB1.get(i + 1).equals("10E01B1")) {                                         // "10E01" is the heat exchanger for oil to be heated before feeding to the reactor
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")));
@@ -437,15 +466,17 @@ public class APWOWHRServlet extends HttpServlet {
 			       });
 			
 			       latch.await();                                                                                                              // wait until all feature service tables are ready then continue
-			       
+			             
 			while ((line = fileReader.readLine()) != null) {
 				String[] data = line.split(",");
 				System.out.println("data= " + data);
-				String[] ArcGISOBJECTID = null;
-				ArcGISOBJECTID = new String[100];
+//				String[] ArcGISOBJECTID = null;
+//				ArcGISOBJECTID = new String[100];
 
 				//the following code is used for updating the flowrate of the FINALPRD to ArcGIS database
 				for (int j = 1; j < 2; j++) {
+					String[] ArcGISOBJECTID = null;
+					ArcGISOBJECTID = new String[3];
 					ArcGISOBJECTID[j] = String.valueOf(j + 1);
 					System.out.println(ArcGISOBJECTID);
 
@@ -462,13 +493,15 @@ public class APWOWHRServlet extends HttpServlet {
 				}
 				//the following code is used for updating the heat duty of the heater-coolers to ArcGIS database
 				for (int j = 1; j < 6; j++) {
+					String[] ArcGISOBJECTID = null;
+					ArcGISOBJECTID = new String[6];
 					ArcGISOBJECTID[j] = String.valueOf(j + 1);
 					System.out.println(ArcGISOBJECTID);
 
 					if (OBJECTIDtoHXNum.get(j + 1).equals("10E01B1")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
 						Map<String, Object> HeaterCoolerAttributes = HeaterCoolerTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[4].trim().isEmpty()) {
-							HeaterCoolerAttributes.put("Heat_Loads",Float.parseFloat(data[4].trim()));                               // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
+							HeaterCoolerAttributes.put("Heat_Loads",Float.parseFloat(data[4].trim())*4.1868e-3);                               // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
 						}
 						System.out.println("10E01Duty="+data[4]);
 						
@@ -478,7 +511,7 @@ public class APWOWHRServlet extends HttpServlet {
 					if (OBJECTIDtoHXNum.get(j + 1).equals("10E02B1")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
 						Map<String, Object> HeaterCoolerAttributes = HeaterCoolerTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[5].trim().isEmpty()) {
-							HeaterCoolerAttributes.put("Heat_Loads",Float.parseFloat(data[5].trim()));                               // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
+							HeaterCoolerAttributes.put("Heat_Loads",Float.parseFloat(data[5].trim())*4.1868e-3);                               // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
 						}
 						System.out.println("10E02Duty="+data[5]);
 						
@@ -488,7 +521,7 @@ public class APWOWHRServlet extends HttpServlet {
 					if (OBJECTIDtoHXNum.get(j + 1).equals("10E03B1")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
 						Map<String, Object> HeaterCoolerAttributes = HeaterCoolerTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[6].trim().isEmpty()) {
-							HeaterCoolerAttributes.put("Heat_Loads",Float.parseFloat(data[6].trim()));                               // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
+							HeaterCoolerAttributes.put("Heat_Loads",Float.parseFloat(data[6].trim())*4.1868e-3);                               // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
 						}
 						System.out.println("10E02Duty="+data[6]);
 						
@@ -498,7 +531,7 @@ public class APWOWHRServlet extends HttpServlet {
 					if (OBJECTIDtoHXNum.get(j + 1).equals("10E04B1")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
 						Map<String, Object> HeaterCoolerAttributes = HeaterCoolerTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[7].trim().isEmpty()) {
-							HeaterCoolerAttributes.put("Heat_Loads",Float.parseFloat(data[7].trim()));                               // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
+							HeaterCoolerAttributes.put("Heat_Loads",Float.parseFloat(data[7].trim())*4.1868e-3);                               // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
 						}
 						System.out.println("10E02Duty="+data[7]);
 						
@@ -508,6 +541,8 @@ public class APWOWHRServlet extends HttpServlet {
 				}
 				//the following code is used for updating the CO2 emission amount of the heater-coolers to ArcGIS database
 				for (int j = 23; j < 24; j++) {
+					String[] ArcGISOBJECTID = null;
+					ArcGISOBJECTID = new String[25];
 					ArcGISOBJECTID[j] = String.valueOf(j + 1);
 					System.out.println(ArcGISOBJECTID);
 					
@@ -524,6 +559,8 @@ public class APWOWHRServlet extends HttpServlet {
 				}
 				//the following code is used for updating the flowrate and cost of the fuel gas to ArcGIS database
 				for (int j = 6; j < 10; j++) {
+					String[] ArcGISOBJECTID = null;
+					ArcGISOBJECTID = new String[11];
 					ArcGISOBJECTID[j] = String.valueOf(j + 1);
 					System.out.println(ArcGISOBJECTID);
 
@@ -597,6 +634,7 @@ public class APWOWHRServlet extends HttpServlet {
 			MixerTable.applyEdits(null); 
 			HeaterCoolerTable.applyEdits(null);
 			GasLineTable.applyEdits(null);
+			
 			RadFracTable.dispose();
 			MixerTable.dispose(); 
 			HeaterCoolerTable.dispose();
@@ -607,13 +645,14 @@ public class APWOWHRServlet extends HttpServlet {
 			System.out.println("Updating process took " + String.valueOf(System.currentTimeMillis() - start) + "ms");                     // tells how long it took to update
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
+		}finally {
 			try {
 				fileReader.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+				
 	}
 
 }

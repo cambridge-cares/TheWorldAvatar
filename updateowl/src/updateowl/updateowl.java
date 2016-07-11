@@ -24,7 +24,7 @@ public static void main(String[] args) throws Exception {
    // TODO Auto-generated method stub
 
    //get model from an owl file
-   String filePath = "D:\\OntoCAPE/BiodieselPlant.owl";
+   String filePath = "D:\\OntoCAPE/BiodieselPlant/BiodieselPlant.owl";
    FileInputStream inFile= new FileInputStream(filePath);
    Reader in = new InputStreamReader(inFile,"UTF-8");
    JenaOWLModel jenaOwlModel = ProtegeOWL.createJenaOWLModelFromReader(in);
@@ -63,7 +63,7 @@ public static void main(String[] args) throws Exception {
    
    RDFIndividual holgi = personClass.createRDFIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#Holger");
    holgi.setPropertyValue(childrenProperty, darwin);
-   holgi.setPropertyValue(ageProperty, new Integer(33));
+   holgi.setPropertyValue(ageProperty, new Integer(73));
    
    
 //update the value of an individual

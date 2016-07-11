@@ -35,6 +35,7 @@ public class APWWHRServlet extends HttpServlet {
 	
 	public static Map<Integer, String> OBJECTIDtoHXNum = new HashMap<>();                      //Maps ArcGIS OBJECTID to the heat exchanger in chemical plant
 	public static Map<Integer, String> OBJECTIDtoHXB2 = new HashMap<>();                      // Maps ArcGIS OBJECTID to the heat exchanger in Biodiesel plant 1
+	public static Map<Integer, String> OBJECTIDtoHXB2in = new HashMap<>();                      // Maps ArcGIS OBJECTID to the heat exchanger in Biodiesel plant 1
 	public static Map<Integer, String> OBJECTIDtoRadF = new HashMap<>(); 	                   //Maps ArcGIS OBJECTID to the RadFrac
 	public static Map<Integer, String> OBJECTIDtoMXNum = new HashMap<>(); 	                   //Maps ArcGIS OBJECTID to the Mixer
 	public static Map<Integer, String> OBJECTIDtogaslinenum = new HashMap<>(); 	                   //Maps ArcGIS OBJECTID to the GasLine
@@ -48,7 +49,8 @@ public class APWWHRServlet extends HttpServlet {
 	
 	public APWWHRServlet() {
 		super();
-		OBJECTIDtoHXB2.put(41, "10E01B2");   //Biodiesel1
+		OBJECTIDtoHXB2.put(41, "10E01B2");   //Biodiesel2
+		OBJECTIDtoHXB2in.put(48, "PREHEATB2"); //Biodiesel2
 		
 		OBJECTIDtoHXNum.put(1, "BoilerB1"); //Biodiesel1
 		OBJECTIDtoHXNum.put(2, "10E02B1");   //Biodiesel1
@@ -179,7 +181,12 @@ public class APWWHRServlet extends HttpServlet {
 		    System.out.println(appCallFlag[0] + " button was pressed! (APWWHRS)");
 
 		    runPrAspenPlusWWHR(editStack);
-
+		    System.out.println("Thread testing"+Thread.currentThread().isAlive()); 
+			if(Thread.currentThread().isAlive()){
+				Thread.currentThread().interrupt();
+				return;
+			}
+			System.out.println("Thread testing"+Thread.currentThread().isAlive());
 			break;
 		}
 	}
@@ -203,7 +210,7 @@ public class APWWHRServlet extends HttpServlet {
 		try {
 			
 			fileWriter = new FileWriter(PrAPWWHROUTCSV);                                        // filewriter for the output of pr aspenplus model
-            System.load("C:/apache-tomcat-8.0.24/webapps/ROOT/MoDS_Java_API_0.1.dll"); 
+            System.load("C:/apache-tomcat-8.0.24/webapps/ROOT/MoDS_Java_API.dll");              //the MoDS API at use is version 0.1
 			
 			ArrayList<String> xNames = MoDSAPI.getXVarNamesFromAPI(simDir, modelName);		
 			System.out.println("xNames= " + xNames);
@@ -257,7 +264,7 @@ public class APWWHRServlet extends HttpServlet {
 		UserCredentials user = new UserCredentials();
 		user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
 						
-		for (Integer key : OBJECTIDtoHXB2.keySet()) {
+		for (Integer key : OBJECTIDtoHXB2in.keySet()) {
 			try {
 				QueryParameters qParameter_HX = new QueryParameters();                       // create an instance  of QueryParameters to be used  for querying  ArcGIS database for predefined data
 				qParameter_HX.setWhere("OBJECTID='" + key + "'");                            // define FID address of an ArcGIS element
@@ -287,17 +294,18 @@ public class APWWHRServlet extends HttpServlet {
 			for (int i = 0; i < attributeslist_HX.size(); i++) {
 				for (String key : attributeslist_HX.get(i).keySet()) { // go through  all the  heat exchangers in biodiesel plant
 					if (key == "OBJECTID") {
-//41						
-						if (OBJECTIDtoHXB2.get(i + 41).equals("10E01B2")) { // "10E01" is the heat exchanger for oil to be heated before feeding to the reactor
+//41, 48						
+						if (OBJECTIDtoHXB2in.get(i + 48).equals("PREHEATB2")) { // "10E01" is the heat exchanger for oil to be heated before feeding to the reactor
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")));
 							filewriterAPIN.append(",");
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T")));
 							filewriterAPIN.append(",");
-							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatOut1_T")));
-							filewriterAPIN.append(",");
+//							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatOut1_T")));
+//							filewriterAPIN.append(",");
 							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")))); // add the feeding mole flowrate of oil to xRow
 							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T")))); // add the temperature of oil to xRow
-							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatOut1_T")))); // add the temperature of oil to xRow
+//							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatOut1_T")))); // add the temperature of oil to xRow
+							xRow.add((double) 70);
 						break;
 						}
 					}
@@ -445,7 +453,7 @@ public class APWWHRServlet extends HttpServlet {
 					if (OBJECTIDtoHXNum.get(j + 1).equals("10E01B2")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
 						Map<String, Object> HeaterCoolerAttributes = HeaterCoolerTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[4].trim().isEmpty()) {
-							HeaterCoolerAttributes.put("Heat_Loads",Float.parseFloat(data[4].trim()));                               // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
+							HeaterCoolerAttributes.put("Heat_Loads",Float.parseFloat(data[4].trim())*4.1868e-3);                               // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
 						}
 						System.out.println("10E01Duty="+data[4]);
 						
@@ -455,7 +463,7 @@ public class APWWHRServlet extends HttpServlet {
 					if (OBJECTIDtoHXNum.get(j + 1).equals("10E02B2")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
 						Map<String, Object> HeaterCoolerAttributes = HeaterCoolerTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[5].trim().isEmpty()) {
-							HeaterCoolerAttributes.put("Heat_Loads",Float.parseFloat(data[5].trim()));                               // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
+							HeaterCoolerAttributes.put("Heat_Loads",Float.parseFloat(data[5].trim())*4.1868e-3);                               // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
 						}
 						System.out.println("10E02Duty="+data[5]);
 						
@@ -465,7 +473,7 @@ public class APWWHRServlet extends HttpServlet {
 					if (OBJECTIDtoHXNum.get(j + 1).equals("10E03B2")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
 						Map<String, Object> HeaterCoolerAttributes = HeaterCoolerTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[6].trim().isEmpty()) {
-							HeaterCoolerAttributes.put("Heat_Loads",Float.parseFloat(data[6].trim()));                               // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
+							HeaterCoolerAttributes.put("Heat_Loads",Float.parseFloat(data[6].trim())*4.1868e-3);                               // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
 						}
 						System.out.println("10E02Duty="+data[6]);
 						
@@ -475,7 +483,7 @@ public class APWWHRServlet extends HttpServlet {
 					if (OBJECTIDtoHXNum.get(j + 1).equals("10E04B2")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
 						Map<String, Object> HeaterCoolerAttributes = HeaterCoolerTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[7].trim().isEmpty()) {
-							HeaterCoolerAttributes.put("Heat_Loads",Float.parseFloat(data[7].trim()));                               // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
+							HeaterCoolerAttributes.put("Heat_Loads",Float.parseFloat(data[7].trim())*4.1868e-3);                               // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
 						}
 						System.out.println("10E02Duty="+data[7]);
 						
@@ -579,6 +587,7 @@ public class APWWHRServlet extends HttpServlet {
 			MixerTable.applyEdits(null); 
 			HeaterCoolerTable.applyEdits(null); 
 			GasLineTable.applyEdits(null); 
+			
 			RadFracTable.dispose();
 			MixerTable.dispose(); 
 			HeaterCoolerTable.dispose();
