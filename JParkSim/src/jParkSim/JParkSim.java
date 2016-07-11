@@ -152,6 +152,7 @@ public class JParkSim {
 		final static SimpleFillSymbol expandercolor = new SimpleFillSymbol(new Color(219,112,147));
 		final static SimpleFillSymbol compressorcolor = new SimpleFillSymbol(Color.white);
 		final static SimpleLineSymbol steamcolor = new SimpleLineSymbol(new Color(128,0,128), 3);
+		final static PictureMarkerSymbol intersectioncolor = new PictureMarkerSymbol("http://static.arcgis.com/images/Symbols/Animated/EnlargeRotatingWhiteMarkerSymbol.png");
 		final static PictureMarkerSymbol waterpointcolor = new PictureMarkerSymbol("http://static.arcgis.com/images/Symbols/Animated/EnlargeGradientSymbol.png");
 		final static SimpleLineSymbol waternetworkcolor = new SimpleLineSymbol(new Color(0,0,128), 3);
 		
@@ -225,6 +226,8 @@ public class JParkSim {
 	public static ArcGISFeatureLayer steamlayer;
 	public static ArcGISFeatureLayer waterpointlayer;	
 	public static ArcGISFeatureLayer waternetworklayer;
+	public static ArcGISFeatureLayer intersectionlayer;
+	
 	
 	
  	public static String httpStringCSV = new String("D:/httpReq.CSV"); // (mjk, 151115) investigating structure of DataOutputStream object
@@ -256,6 +259,11 @@ public class JParkSim {
 ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
             "http://localhost:6080/arcgis/rest/services/emission/MapServer");
                 layers.add(emissionLayer);
+                
+              //add dynamic map layer for the sensitivity bar chart
+                ArcGISDynamicMapServiceLayer dispersionLayer = new ArcGISDynamicMapServiceLayer(
+                        "http://localhost:6080/arcgis/rest/services/gasdispersion/MapServer");
+                            layers.add(dispersionLayer);
     
                 
     // map centered on Jurong Island
@@ -318,6 +326,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     steamlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/steam_interplants/FeatureServer/0", user);
     waterpointlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/waterpoint/FeatureServer/0", user);
     waternetworklayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/WaterNetwork/FeatureServer/0", user);
+    intersectionlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/RoadIntersection/FeatureServer/0", user);
         
     
     // UPDATE THIS LIST whenever new layers are added: first layer is the bottom most layer *see currently known issues #3 (array containing all the feature layers)
@@ -325,7 +334,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 	ArcGISFeatureLayer[] completeLayerList = {Landlotslayer, Buildingslayer, Storagelayer, TLPmainlayer, Roadlayer, PowerGenlayer, UHTLineslayer, UHTSubstationlayer,
 			EHTLineslayer, EHTSubstationlayer, HTLineslayer,HTSubstation1layer,HTSubstation2layer,LTSubstation1layer,LTSubstation2layer, LoadPointslayer, BusCouplerlayer, heatercoolerlayer,
 			GasLinelayer,AirLinelayer,EnergyStreamlayer,MaterialLinelayer,TLP2layer,TLP3layer,TLP2alayer,TLP4layer,WaterLinelayer,PlantReactorlayer,Decanterlayer,Extractorlayer,
-			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer,vessellayer,filterlayer,Fluidlayer,expanderlayer,compressorlayer,steamlayer,waterpointlayer,waternetworklayer};
+			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer,vessellayer,filterlayer,Fluidlayer,expanderlayer,compressorlayer,steamlayer,waterpointlayer,waternetworklayer,intersectionlayer};
 
 	
     // render layers ( to show the feature layers in the map combined with the modification format declared) 
@@ -334,6 +343,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     createRenderer(layers, new ArcGISFeatureLayer [] {Buildingslayer}, Buildingscolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Storagelayer}, Storagecolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Roadlayer}, Roadcolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {intersectionlayer}, intersectioncolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {PowerGenlayer}, PowerGencolor);   
     createRenderer(layers, new ArcGISFeatureLayer [] {UHTLineslayer}, UHTLinescolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {UHTSubstationlayer}, UHTSubstationcolor);
@@ -389,6 +399,8 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
                 ArcGISDynamicMapServiceLayer sensitivityLayer = new ArcGISDynamicMapServiceLayer(
                         "http://localhost:6080/arcgis/rest/services/sensitivity/MapServer");
                             layers.add(sensitivityLayer);
+                            
+                          
                 
                 
     // initialize window
@@ -444,6 +456,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     editlayer.put("Landlot", Landlotslayer);
     editlayer.put("Building", Buildingslayer);
     editlayer.put("Public Road", Roadlayer);
+    editlayer.put("Road Intersection", intersectionlayer);
     editlayer.put("Storage", Storagelayer);
     editlayer.put("Bus Coupler", BusCouplerlayer);
     editlayer.put("EHT Line", EHTLineslayer);
