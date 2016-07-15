@@ -23,6 +23,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.DataOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -59,7 +60,7 @@ import com.esri.core.symbol.SimpleLineSymbol;
 import com.esri.core.symbol.SimpleMarkerSymbol;
 import com.esri.core.symbol.SimpleMarkerSymbol.Style;
 import com.esri.core.symbol.Symbol;
-import com.esri.map.ArcGISDynamicMapServiceLayer;
+//import com.esri.map.ArcGISDynamicMapServiceLayer;
 import com.esri.map.ArcGISFeatureLayer;
 import com.esri.map.ArcGISTiledMapServiceLayer;
 import com.esri.map.JMap;
@@ -91,18 +92,18 @@ public class Semakau {
 	final static SimpleLineSymbol MarineTLinecolor     = new SimpleLineSymbol(Color.green, 3); // 1D
 	final static SimpleLineSymbol Roadscolor           = new SimpleLineSymbol(new Color(204,204,0), 3); // 1D
 	final static SimpleFillSymbol Solarfarmcolor       = new SimpleFillSymbol(Color.yellow); // 2D
-	final static SimpleMarkerSymbol SolarInvertercolor = new SimpleMarkerSymbol(Color.blue, 10, Style.DIAMOND); // 0D	
+	final static SimpleMarkerSymbol SolarInvertercolor = new SimpleMarkerSymbol(Color.blue, 10, Style.CIRCLE); // 0D	
 	final static SimpleLineSymbol SolarPowerTLinecolor = new SimpleLineSymbol(Color.black, 3); // 1D
 	final static SimpleFillSymbol Windfarmcolor        = new SimpleFillSymbol(Color.blue, new SimpleLineSymbol(Color.blue, 2), SimpleFillSymbol.Style.NULL); // 2D
 	final static SimpleLineSymbol WindPowerTLinecolor  = new SimpleLineSymbol(Color.LIGHT_GRAY, 3); // 1D
 	final static SimpleMarkerSymbol WindTransformercolor = new SimpleMarkerSymbol(Color.magenta, 10, Style.TRIANGLE); // 0D
 	final static SimpleMarkerSymbol WindTurbinecolor   = new SimpleMarkerSymbol(Color.red, 20, Style.CROSS); // 0D
 	final static SimpleFillSymbol dieselgencolor       = new SimpleFillSymbol(Color.pink);
-	final static SimpleMarkerSymbol Buscouplercolor    = new SimpleMarkerSymbol(Color.pink, 20, Style.X);
-	final static SimpleFillSymbol Marinefarmcolor       = new SimpleFillSymbol(Color.gray);
+	final static SimpleMarkerSymbol Buscouplercolor    = new SimpleMarkerSymbol(new Color(128,0,0), 10, Style.SQUARE);
+	final static SimpleFillSymbol Marinefarmcolor       = new SimpleFillSymbol(new Color(255,255,153));
 	final static SimpleFillSymbol PVfarmcolor           = new SimpleFillSymbol(Color.magenta);
 	final static SimpleMarkerSymbol Slackpointcolor     = new SimpleMarkerSymbol(new Color(173,255,47), 10, Style.SQUARE);
-	final static SimpleMarkerSymbol Storageinvertercolor  = new SimpleMarkerSymbol(new Color(128,0,0), 10, Style.SQUARE);
+	final static SimpleMarkerSymbol Storageinvertercolor  = new SimpleMarkerSymbol(Color.black, 15, Style.X);
 	final static SimpleLineSymbol Submic1color  = new SimpleLineSymbol(Color.RED, 3);
 	final static SimpleLineSymbol Submic2color  = new SimpleLineSymbol(new Color(160,82,45), 3);
 	final static SimpleLineSymbol Submic3color  = new SimpleLineSymbol(new Color(85,107,47), 3);
@@ -142,6 +143,9 @@ public class Semakau {
 	public static ArcGISFeatureLayer Submic2layer;
 	public static ArcGISFeatureLayer Submic3layer;
 	public static ArcGISFeatureLayer Substationlayer;
+	
+	public static String httpStringCSV = new String("D:/httpReq.CSV");
+	public static String httpStringCSV2 = new String("D:/httpReq2.CSV");
 	
 	
 	// method to render all layers in an array using a certain style (multiple layer renderer)
@@ -195,39 +199,38 @@ public class Semakau {
     // adds layers uploaded onto ArcGIS for Developers
     UserCredentials user = new UserCredentials();
     user.setUserAccount("semakausimulator", "c4tsemakau"); // Access secure feature layer service using login username and password
-    Buildingslayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Building/FeatureServer/0", user);
-    Buscouplerlayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Bus_coupler/FeatureServer/0", user);
-    Desalinationlayer    = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Desalination/FeatureServer/0", user);
-    EnergyStoragelayer   = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/EnergyStorage/FeatureServer/0", user);
-    FishHatcherylayer    = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/FishHatchery/FeatureServer/0", user);
-    LandLotslayer        = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/LandLots/FeatureServer/0", user);
-    Loadpointlayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Loadpoint/FeatureServer/0", user);
-    LoadTLinelayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/ArcGIS/rest/services/LoadTLine/FeatureServer/0", user);
-    Marinefarmlayer      = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Marinefarm/FeatureServer/0", user);
-    MarinePowerGenlayer  = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/MarinePowerGen/FeatureServer/0", user);
-    MarineTLinelayer     = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/MarineTLine/FeatureServer/0", user);
-    PVfarmlayer          = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/PVfarm/FeatureServer/0", user);
-    Roadslayer           = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Roads/FeatureServer/0", user);  
-    Slackpointlayer      = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Slackpoints/FeatureServer/0", user);
-    Solarfarmlayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Solarfarm/FeatureServer/0", user);
-    SolarInverterlayer   = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/ArcGIS/rest/services/SolarInverter/FeatureServer/0", user);   
-    SolarPowerTLinelayer = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/SolarPowerTLine/FeatureServer/0", user);
-    Storageinverterlayer = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Storage_Inverter/FeatureServer/0", user);
-    Submic1layer         = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/sub_microgrid1TL/FeatureServer/0", user);
-    Submic2layer         = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/sub_microgrid2TL/FeatureServer/0", user);
-    Submic3layer         = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/sub_microgrid3TL/FeatureServer/0", user);
-    Substationlayer      = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Substation/FeatureServer/0", user);
-    Windfarmlayer        = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Windfarm/FeatureServer/0", user);
-    WindPowerTLinelayer  = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/WindPowerTLine/FeatureServer/0", user);
-    WindTransformerlayer = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/WindTransformer/FeatureServer/0", user);
-    WindTurbinelayer     = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/WindTurbine/FeatureServer/0", user);
-    dieselgenlayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/DieselGen/FeatureServer/0", user);
+    Buildingslayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/ArcGIS/rest/services/Buildings2/FeatureServer/0", user);
+    Buscouplerlayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/ArcGIS/rest/services/bus_coupler2/FeatureServer/0", user);
+    Desalinationlayer    = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Desalination2/FeatureServer/0", user);
+    EnergyStoragelayer   = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/EnergyStorage2/FeatureServer/0", user);
+    FishHatcherylayer    = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/FishHatchery2/FeatureServer/0", user);
+    LandLotslayer        = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/LandLots2/FeatureServer/0", user);
+    Loadpointlayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Loadpoint2/FeatureServer/0", user);
+    LoadTLinelayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/ArcGIS/rest/services/LoadTLine2/FeatureServer/0", user);
+    Marinefarmlayer      = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Marinefarm2/FeatureServer/0", user);
+    MarinePowerGenlayer  = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/MarinePowerGen2/FeatureServer/0", user);
+    MarineTLinelayer     = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/MarineTLine2/FeatureServer/0", user);
+    PVfarmlayer          = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/PVfarm2/FeatureServer/0", user);
+    Roadslayer           = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Roads2/FeatureServer/0", user);  
+    Slackpointlayer      = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Slackpoints2/FeatureServer/0", user);
+    Solarfarmlayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Solarfarm2/FeatureServer/0", user);
+    SolarInverterlayer   = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/ArcGIS/rest/services/SolarInverter2/FeatureServer/0", user);   
+    SolarPowerTLinelayer = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/SolarPowerTLine2/FeatureServer/0", user);
+    Storageinverterlayer = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Storage_Inverter2/FeatureServer/0", user);
+    Submic1layer         = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/sub_microgrid1TL2/FeatureServer/0", user);
+    Submic2layer         = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/sub_microgrid2TL_new/FeatureServer/0", user);
+    Submic3layer         = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/sub_microgrid3TL2/FeatureServer/0", user);
+    Substationlayer      = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Substation2/FeatureServer/0", user);
+    Windfarmlayer        = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/Windfarm2/FeatureServer/0", user);
+    WindTransformerlayer = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/WindTransformer2/FeatureServer/0", user);
+    WindTurbinelayer     = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/ArcGIS/rest/services/windturbine2/FeatureServer/0", user);
+    dieselgenlayer       = new ArcGISFeatureLayer("http://services3.arcgis.com/785KAqvbaBANxwtT/arcgis/rest/services/DieselGen2/FeatureServer/0", user);
 	// UPDATE THIS LIST whenever new layers are added: first layer is the most bottom layer *see currently known issues #3
 
 
 	ArcGISFeatureLayer[] completeLayerList = {Buildingslayer, Desalinationlayer, EnergyStoragelayer, FishHatcherylayer, LandLotslayer, Loadpointlayer,
 			LoadTLinelayer, MarinePowerGenlayer, MarineTLinelayer, Roadslayer, Solarfarmlayer, SolarInverterlayer, SolarPowerTLinelayer, Windfarmlayer, 
-			WindPowerTLinelayer, WindTransformerlayer, WindTurbinelayer,dieselgenlayer,Buscouplerlayer,Marinefarmlayer,PVfarmlayer,Slackpointlayer,Storageinverterlayer,Submic1layer,Submic2layer,Submic3layer,Substationlayer};
+			 WindTransformerlayer, WindTurbinelayer,dieselgenlayer,Buscouplerlayer,Marinefarmlayer,PVfarmlayer,Slackpointlayer,Storageinverterlayer,Submic1layer,Submic2layer,Submic3layer,Substationlayer};
 
     // render layers
 
@@ -255,7 +258,7 @@ public class Semakau {
     createRenderer(layers, new ArcGISFeatureLayer [] {Submic3layer}, Submic3color);
     createRenderer(layers, new ArcGISFeatureLayer [] {Substationlayer}, Substationcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Windfarmlayer}, Windfarmcolor);  
-    createRenderer(layers, new ArcGISFeatureLayer [] {WindPowerTLinelayer}, WindPowerTLinecolor);
+    
     createRenderer(layers, new ArcGISFeatureLayer [] {WindTransformerlayer}, WindTransformercolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {WindTurbinelayer}, WindTurbinecolor);
     
@@ -355,7 +358,7 @@ public class Semakau {
     editlayer.put("Submicrogrid3 TL", Submic3layer);
     editlayer.put("Substations", Substationlayer);
     editlayer.put("Windfarm", Windfarmlayer);
-    editlayer.put("WindPowerTLine", WindPowerTLinelayer);
+    
     editlayer.put("WindTransformer", WindTransformerlayer);
     editlayer.put("WindTurbine", WindTurbinelayer);
     
@@ -402,12 +405,12 @@ public class Semakau {
     		              @Override
     		              public void onCommitEdit(PopupViewEvent popupViewEvent, Feature feature) { // save button
     		            	  // newFeature is a new String[] element to be added to editStack (e.g. {Load_Points, 103})
-    		            	  String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("FID"))};
+    		            	  String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("OBJECTID"))};
     		            	  boolean addtoStack = true;
     		            	  for (int i=0; i<editStack.size(); i++) { // check through each element in editStack
    		            		  String itemlayer = editStack.get(i)[0];
-    		            		  String graphicFID = editStack.get(i)[1];
-    		            		  if (layer.getName().equals(itemlayer) && String.valueOf(hitGraphic.getAttributes().get("FID")).equals(graphicFID)) {
+    		            		  String graphicOBJECTID = editStack.get(i)[1];
+    		            		  if (layer.getName().equals(itemlayer) && String.valueOf(hitGraphic.getAttributes().get("OBJECTID")).equals(graphicOBJECTID)) {
     		            			  addtoStack = false; // if identical is feature found, don't add to editStack
     		            		  }
     		            	  }
@@ -468,19 +471,22 @@ public class Semakau {
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
-				JOptionPane.showMessageDialog(null, "urlCon output is " + new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8"));
+				//JOptionPane.showMessageDialog(null, "urlCon output is " + new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8"));
 				
 				if (editStack.isEmpty()) {
 					JOptionPane.showMessageDialog(null, "You did not edit any features for PowerWorld!");
 				} else {
 					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
 					StringBuilder layers = new StringBuilder();
-					StringBuilder FIDs = new StringBuilder();
+					StringBuilder OBJECTIDs = new StringBuilder();
+					StringBuilder appCallFlag = new StringBuilder(); // (mjk, 151115) creates a flag indicating which function has been called: PowerWorld, parameterised PW, AspenPlus, parameterised AP
 					for (String[] item : editStack) { // create comma separated values
 						layers.append(item[0]);
 						layers.append(",");
-						FIDs.append(item[1]);
-						FIDs.append(",");
+						OBJECTIDs.append(item[1]);
+						OBJECTIDs.append(",");
+						appCallFlag.append("PW");
+						appCallFlag.append(",");
 					}
 					StringBuilder outputString = new StringBuilder();
 					// Only URL encoded string values can be sent over a HTTP connection
@@ -488,14 +494,27 @@ public class Semakau {
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(layers.toString(), "UTF-8"));
 					outputString.append("&");
-					outputString.append(URLEncoder.encode("FIDs", "UTF-8"));
+					outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
 					outputString.append("=");
-					outputString.append(URLEncoder.encode(FIDs.toString(), "UTF-8"));
+					outputString.append(URLEncoder.encode(OBJECTIDs.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
 					System.out.println("outputString=" + outputString);
 					
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
 					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
 					wr.writeBytes(outputString.toString()); // write query string into servlet doPost() method
+
+					FileWriter httpString = null; // (mjk, 151115) testing structure of DataOutputStream object and of wr object
+					httpString = new FileWriter(httpStringCSV);
+					httpString.append("wr=");
+					httpString.append(outputString.toString());
+					httpString.flush();				
+					httpString.close();
+
 					wr.flush();
 					wr.close();
 					
@@ -537,7 +556,92 @@ public class Semakau {
     PWbutton.setEnabled(true);
     PWbutton.setVisible(true);
     PWbutton.setSize(150,30);
-    PWbutton.setLocation(500, 10);    
+    PWbutton.setLocation(500, 10);   
+    
+ // Run Parameterized PowerWorld button
+    JButton PRPWbutton = new JButton("Run Pr PowerWorld");
+    PRPWbutton.addActionListener(new ActionListener() {
+    	@Override
+    	public void actionPerformed(ActionEvent arg0) {
+    		HttpURLConnection urlCon;
+    		OutputStreamWriter out;
+    		URL url;
+    		try {
+				url = new URL("http://137.132.22.61/semPWServlet/"); // URL of servlet
+				urlCon = (HttpURLConnection) url.openConnection();
+				urlCon.setRequestMethod("POST");
+				urlCon.setDoOutput(true);
+				//JOptionPane.showMessageDialog(null, "urlCon output is " + new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8"));
+				
+				if (editStack.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "You did not edit any features for PowerWorld!");
+				} else {
+					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
+					StringBuilder layers = new StringBuilder();
+//					StringBuilder FIDs = new StringBuilder();
+					StringBuilder OBJECTIDs = new StringBuilder();
+					StringBuilder appCallFlag = new StringBuilder();
+					for (String[] item : editStack) { // create comma separated values
+						layers.append(item[0]);
+						layers.append(",");
+						OBJECTIDs.append(item[1]);
+						OBJECTIDs.append(",");
+						appCallFlag.append("PWPr");
+						appCallFlag.append(",");
+					}
+					StringBuilder outputString = new StringBuilder();
+					// Only URL encoded string values can be sent over a HTTP connection
+					outputString.append(URLEncoder.encode("layers", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(layers.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(OBJECTIDs.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
+					System.out.println("outputString=" + outputString);
+					
+					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
+					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
+					wr.writeBytes(outputString.toString()); // write query string into servlet doPost() method
+					
+					FileWriter httpString = null; // (mjk, 151115) testing structure of DataOutputStream object and of wr object
+					httpString = new FileWriter(httpStringCSV2);
+					httpString.append("wr=");
+					httpString.append(outputString.toString());
+					httpString.flush();				
+					httpString.close();
+					
+					wr.flush();
+					wr.close();
+					
+					if (urlCon.getResponseCode()==200) {
+						JOptionPane.showMessageDialog(null, " Pr PowerWorld has finished running!");
+						editStack.clear(); // delete all items in editStack
+					} else {
+						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
+								+ "\nPlease try running Pr PowerWorld again");
+					}
+					out.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+    		for (ArcGISFeatureLayer layer : completeLayerList) {
+    			layer.requery();
+    			layer.refresh();
+
+			}
+		}	
+	});
+    PRPWbutton.setEnabled(true);
+    PRPWbutton.setVisible(true);
+    PRPWbutton.setSize(150,30);
+    PRPWbutton.setLocation(650, 10);    
 
     JButton refreshButton = new JButton("Refresh Map");
     refreshButton.addActionListener(new ActionListener() {
@@ -552,7 +656,7 @@ public class Semakau {
     refreshButton.setEnabled(true);
     refreshButton.setVisible(true);
     refreshButton.setSize(150,30);
-    refreshButton.setLocation(650, 10);
+    refreshButton.setLocation(800, 10);
     
     // combine text, label and dropdown list into one panel for selecting layer to edit
     panel.setBackground(new Color(0, 0, 0, 180));
@@ -575,6 +679,7 @@ public class Semakau {
     contentPane.setLayout(new BorderLayout(0,0));
     contentPane.setVisible(true);
     contentPane.add(PWbutton);
+    contentPane.add(PRPWbutton);
     contentPane.add(refreshButton);
     contentPane.add(panel);
     contentPane.add(panel2);

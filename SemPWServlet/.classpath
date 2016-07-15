@@ -9,6 +9,7 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/apache-tomcat-8.0.24/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="F:/servlet-api.jar"/>
+	<classpathentry kind="lib" path="D:/JParkSimulator-git/PWServlet/WebContent/WEB-INF/lib/MoDS_API-j-Git-0.1.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
