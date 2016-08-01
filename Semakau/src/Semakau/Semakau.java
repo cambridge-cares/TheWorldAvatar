@@ -467,7 +467,7 @@ public class Semakau {
     		OutputStreamWriter out;
     		URL url;
     		try {
-				url = new URL("http://137.132.22.61/semPWServlet/"); // URL of servlet
+				url = new URL("http://172.25.182.41/SemPWServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
@@ -567,7 +567,7 @@ public class Semakau {
     		OutputStreamWriter out;
     		URL url;
     		try {
-				url = new URL("http://137.132.22.61/semPWServlet/"); // URL of servlet
+				url = new URL("http://172.25.182.41/SemPWServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
