@@ -467,12 +467,12 @@ public class Semakau {
     		OutputStreamWriter out;
     		URL url;
     		try {
-				url = new URL("http://172.25.182.41/SemPWServlet/"); // URL of servlet
+				url = new URL("http://172.25.182.41/SemPrCombinedServlet/"); // URL of servlet using claudius servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
 				//JOptionPane.showMessageDialog(null, "urlCon output is " + new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8"));
-				
+				System.out.println(editStack);
 				if (editStack.isEmpty()) {
 					JOptionPane.showMessageDialog(null, "You did not edit any features for PowerWorld!");
 				} else {
@@ -532,7 +532,7 @@ public class Semakau {
 			}
     		for (ArcGISFeatureLayer layer : completeLayerList) {
     			layer.requery();
-    			layer.refresh();
+     			layer.refresh();
 /*
     		SemPowerWorld PWinstance = new SemPowerWorld();
     		PWinstance.runPowerWorld(editStack);
@@ -563,12 +563,54 @@ public class Semakau {
     PRPWbutton.addActionListener(new ActionListener() {
     	@Override
     	public void actionPerformed(ActionEvent arg0) {
+    		
     		HttpURLConnection urlCon;
     		OutputStreamWriter out;
     		URL url;
+    		URL url1;
+    		URL url2;
+    		URL url3;
+    		URL url4;
+    		URL url5;
     		try {
-				url = new URL("http://172.25.182.41/SemPWServlet/"); // URL of servlet
-				urlCon = (HttpURLConnection) url.openConnection();
+    			ArrayList<String> layer = new ArrayList<String>();
+    		
+    			for(String[]thing : editStack)
+    			{
+    				layer.add(thing[0]);
+    			}
+    			System.out.println(layer);
+    			url = new URL("http://172.25.182.42/SemPrCombinedServlet/");  //use hadrianus servlet
+    			
+    			/*for(int x=0; x<layer.size() ;x++)
+    			{
+    				if(layer.toArray()[x].equals("WindTurbine"))
+       			 {
+   				url1 = new URL("http://172.25.182.41/SemPWServlet2/"); 
+   				url = url1;
+       			 }
+    				
+    				if(layer.toArray()[x].equals("Loadpoint"))
+    			 {
+				url2 = new URL("http://172.25.182.41/SemLoadPointServlet/"); 
+				url = url2;
+    			 }
+    			if(layer.toArray()[x].equals("PVfarm"))
+   			 {
+				url3 = new URL("http://172.25.182.41/SemPVServlet/"); 
+				url = url3;
+   			 }
+    			if(layer.toArray()[x].equals("Marinefarm"))
+      			 {
+   				url4 = new URL("http://172.25.182.41/SemMGServlet/"); 
+   				url = url4;
+      			 }
+    			if(layer.toArray()[x].equals("EnergyStorage"))
+     			 {
+  				url5 = new URL("http://172.25.182.41/SemBatServlet/"); 
+  				url = url5;
+     			 }*/
+    			urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
 				//JOptionPane.showMessageDialog(null, "urlCon output is " + new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8"));
@@ -621,21 +663,32 @@ public class Semakau {
 					
 					if (urlCon.getResponseCode()==200) {
 						JOptionPane.showMessageDialog(null, " Pr PowerWorld has finished running!");
-						editStack.clear(); // delete all items in editStack
-					} else {
+						if(layer.size()==1)
+						{
+						editStack.clear(); // delete all items in editStack (need to press refresh if the layers editted more than 1)
+						}
+						} else {
 						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
 								+ "\nPlease try running Pr PowerWorld again");
 					}
 					out.close();
-				}
+    			}
+    			
+    			
+    			 // URL of servlet
+				for (ArcGISFeatureLayer layerlist : completeLayerList) {
+	    			layerlist.requery();
+	    			layerlist.refresh();
+
+			}
+				JOptionPane.showMessageDialog(null, " Values have finished updating!");
+				
+    		//}// (inactive temporarily because the loop choice for servlet is not used)
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-    		for (ArcGISFeatureLayer layer : completeLayerList) {
-    			layer.requery();
-    			layer.refresh();
-
-			}
+    		
+    		
 		}	
 	});
     PRPWbutton.setEnabled(true);
@@ -651,6 +704,7 @@ public class Semakau {
     			layer.requery();
     			layer.refresh();
     		}
+    		editStack.clear();
     	}
     });
     refreshButton.setEnabled(true);
