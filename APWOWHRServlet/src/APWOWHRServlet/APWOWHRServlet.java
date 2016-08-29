@@ -235,7 +235,7 @@ public class APWOWHRServlet extends HttpServlet {
 		try {
 	
 			fileWriter = new FileWriter(PrAPWOWHROUTCSV);                                        // filewriter for the output of pr aspenplus model
-			System.load("C:/apache-tomcat-8.0.24/webapps/ROOT/MoDS_Java_API.dll");  //the MoDS API at use is version 0.1
+			System.load("C:/apache-tomcat-8.0.24/webapps/APWOWHRServlet/WEB-INF/DLL/MoDS_Java_API.dll");  //the MoDS API at use is version 0.1
 			
 			ArrayList<String> xNames = MoDSAPI.getXVarNamesFromAPI(simDir, modelName);		
 			System.out.println("xNames= " + xNames);
