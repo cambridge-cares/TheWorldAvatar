@@ -19,15 +19,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -37,13 +45,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-
-
-
-
-
-
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -63,6 +64,7 @@ import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 
 //import MouseDrag.MouseDrag;
+import queryWindow.QueryWindow;
 
 import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.MultiPoint;
@@ -107,8 +109,6 @@ import com.esri.toolkit.overlays.InfoPopupOverlay;
 import com.esri.toolkit.sliders.JTimeSlider;
 import com.esri.toolkit.sliders.JTimeSlider.TimeMode;
 import com.esri.core.symbol.PictureMarkerSymbol;
-
-
 
 
 public class JParkSim {
@@ -175,7 +175,7 @@ public class JParkSim {
 	private JMap map;
 	//try to put new variable
 	
-	private GraphicsLayer graphicsLayer;
+	private static GraphicsLayer graphicsLayer;
 	private JTimeSlider timeSlider;
 	
 	private MultiPoint planes;
@@ -245,7 +245,8 @@ public class JParkSim {
  	public static String httpStringCSV = new String("D:/httpReq.CSV"); // (mjk, 151115) investigating structure of DataOutputStream object
  	public static String httpStringCSV1 = new String("D:/httpReq1.CSV"); // (ZL-151203) investigating structure of DataOutputStream object
  	public static String httpStringCSV2 = new String("D:/httpReq2.CSV"); // (ZL-151203) investigating structure of DataOutputStream object
-	
+ 	public static String GIS = new String("D:/JPS_Code_Test/GIS.CSV");
+ 	
 	// method to render all layers in an array using a certain style (multiple layer renderer)
 	private void createRenderer(LayerList layers, ArcGISFeatureLayer[] arrayoflayers, Symbol col) {
 		for (ArcGISFeatureLayer layer : arrayoflayers) {
@@ -484,7 +485,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 	// create panel to select layer to edit
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    panel.setSize(220, 175);
+    panel.setSize(220, 80);
     panel.setLocation(260, 10); // located near top left next to legend
     
     // command to switch the map 22/3/2016
@@ -579,19 +580,19 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     cbxLayer.setAlignmentX(Component.LEFT_ALIGNMENT);
     
  // create text
-    JLabel lblLayer2 = new JLabel("feature list to query:");
-    lblLayer2.setForeground(Color.WHITE);
-    lblLayer2.setAlignmentX(Component.LEFT_ALIGNMENT);    
+//    JLabel lblLayer2 = new JLabel("feature list to query:");
+ //   lblLayer2.setForeground(Color.WHITE);
+ //   lblLayer2.setAlignmentX(Component.LEFT_ALIGNMENT);    
     
  // create text
-    JTextArea description3 = new JTextArea("press refresh to delete pin point marking");
-    description3.setFont(new Font("Verdana", Font.PLAIN, 11));
-    description3.setForeground(Color.WHITE);
-    description3.setBackground(new Color(0, 0, 0, 0));
-    description3.setEditable(false);
-    description3.setLineWrap(true);
-    description3.setWrapStyleWord(true);
-    description3.setAlignmentX(Component.LEFT_ALIGNMENT);
+//    JTextArea description3 = new JTextArea("press refresh to delete pin point marking");
+//    description3.setFont(new Font("Verdana", Font.PLAIN, 11));
+ //   description3.setForeground(Color.WHITE);
+ //   description3.setBackground(new Color(0, 0, 0, 0));
+ //   description3.setEditable(false);
+ //   description3.setLineWrap(true);
+  //  description3.setWrapStyleWord(true);
+ //   description3.setAlignmentX(Component.LEFT_ALIGNMENT);
     
     
     ArrayList<String[]> editStack = new ArrayList<String[]>();									// create a stack of edited features for PowerWorld to execute on
@@ -1663,7 +1664,8 @@ change.setLocation(890, 45);
     OPALRT.setVisible(true);
     OPALRT.setSize(190,30);
     OPALRT.setLocation(890, 45);    
-  
+    
+    
     JButton refreshButton = new JButton("Refresh Map");
     refreshButton.addActionListener(new ActionListener() {
     	@Override
@@ -1672,8 +1674,8 @@ change.setLocation(890, 45);
     			layer.requery();
     			layer.refresh();
     		}
-    		graphicsLayer.removeAll();
-    		layers.remove(graphicsLayer);
+//    		graphicsLayer.removeAll();
+//    		layers.remove(graphicsLayer);
     		
     	}
     });
@@ -1686,7 +1688,7 @@ change.setLocation(890, 45);
     graphicsLayer = new GraphicsLayer();
     graphicsLayer.setName("simple graphics");
     
-    
+/*    
   //button for query (15-04-2016))
     final JTextField querylayer = new JTextField();
     querylayer.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -1698,7 +1700,7 @@ change.setLocation(890, 45);
     queryButton.setEnabled(true);
     queryButton.addActionListener(new ActionListener() {
       @Override
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(ActionEvent e) {    	      	  
     	    ArrayList<String[]> editStack2 = new ArrayList<String[]>();	
 			HttpURLConnection urlCon;
 			OutputStreamWriter out;
@@ -1719,8 +1721,8 @@ change.setLocation(890, 45);
 			}
 									
 			try{
-				url = new URL("http://172.25.182.41/PWServlet/");
-//				url = new URL("http://172.25.182.41/QUERYServlet/"); // URL of servlet
+//				url = new URL("http://172.25.182.41/PWServlet/");
+				url = new URL("http://172.25.182.41/QUERYServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);				
@@ -1760,16 +1762,23 @@ change.setLocation(890, 45);
 				DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
 				wr.writeBytes(outputString.toString());
 				wr.flush();
-				wr.close();
-				
+				wr.close();							
+		        
 				if(urlCon.getResponseCode()==200){
-
 					in = new InputStreamReader(urlCon.getInputStream());
 					final BufferedReader br = new BufferedReader(in);
 					String[] strTemp = null;
-					strTemp = br.readLine().split("\"");																			
-					br.close();
+					String strTemp1 = null;
+//					strTemp = br.readLine().split("\"");
+//****************************************test
 					
+					strTemp1 = br.readLine();
+					System.out.println("Query result is:" + strTemp);
+					QueryWindow.showQueryWindow(strTemp1);
+					
+//****************************************					
+					br.close();
+				
 					planes = new MultiPoint();
 			        PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol("http://static.arcgis.com/images/Symbols/Basic/GreenShinyPin.png");
 			        planeSymbol.setSize(50, 50);			         			         
@@ -1780,7 +1789,7 @@ change.setLocation(890, 45);
 			         }
 			         
 			         for (int k=0 ; k<x.length/2 ; k++){ 
-			        	 planes.add(x[2*k],x[2*k+1]); 			          
+//			        	 planes.add(x[2*k],x[2*k+1]); 
 			         }
 			         
 			         Graphic gPlanes = new Graphic(planes, planeSymbol);
@@ -1801,23 +1810,24 @@ change.setLocation(890, 45);
     });
     queryButton.setSize(130, 30);
     queryButton.setLocation(1090, 45);
-
+    
+*/
     
     // combine text, label and dropdown list into one panel for selecting layer to edit
-    panel.setBackground(new Color(0, 0, 0, 180));
+    panel.setBackground(new Color(0, 0, 0, 140));
     panel.add(description);
     panel.add(Box.createRigidArea(new Dimension(0, 5)));
     panel.add(lblLayer);
     panel.add(Box.createRigidArea(new Dimension(0, 5)));
     panel.add(cbxLayer);
     panel.add(Box.createRigidArea(new Dimension(0, 5)));
-    panel.add(lblLayer2);
-    panel.add(Box.createRigidArea(new Dimension(0, 5)));
-    panel.add(querylayer);
-    panel.add(Box.createRigidArea(new Dimension(0, 5)));
-    panel.add(description3);
-    panel.add(Box.createRigidArea(new Dimension(0, 5)));
-    panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+//    panel.add(lblLayer2);
+//    panel.add(Box.createRigidArea(new Dimension(0, 5)));
+//    panel.add(querylayer);
+//    panel.add(Box.createRigidArea(new Dimension(0, 5)));
+//    panel.add(description3);
+//    panel.add(Box.createRigidArea(new Dimension(0, 5)));
+    panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     
     // create legend
     JLegend legend = new JLegend(map);
@@ -1825,6 +1835,85 @@ change.setLocation(890, 45);
     legend.setBorder(new LineBorder(new Color(205, 205, 255), 3));
     
     // initialize contentPane and add contents
+   /**
+    * add new query button for pup-up query window ZL
+    */
+    planes = new MultiPoint();  //define new planes in order to add pin points
+    PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol("http://static.arcgis.com/images/Symbols/Basic/GreenShinyPin.png");
+    planeSymbol.setSize(40, 40);  //set the size of the pin points
+    
+    final javax.swing.JButton QueryButton;
+    QueryButton = new javax.swing.JButton();
+    QueryButton.setFont(new java.awt.Font("Times new roman", 0, 12)); // NOI18N
+    QueryButton.setText("Information Query");
+    QueryButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+    QueryButton.setEnabled(true);
+    QueryButton.addActionListener(new ActionListener() {
+    	
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			
+			QueryGuiNew QueryGUI = new QueryGuiNew();
+			QueryGUI.setVisible(true);
+			QueryGUI.setLocationRelativeTo(null);	 
+	        
+	        /** add action listener to the "Show Location" button, so that when user press the button, Location of the queried entity can be shown in the map*/
+			QueryGUI.btnShowLocation.addActionListener(new ActionListener(){
+
+				@SuppressWarnings("resource")
+				@Override
+				public void actionPerformed(ActionEvent e) {
+										
+					  BufferedReader fileReader = null;                                                   //define a file reader
+				      String line = null;
+				  	  try {
+						fileReader = new BufferedReader(new FileReader(GIS));                             //define source file
+						while ((line = fileReader.readLine()) != null) {
+					  		  String[] data = line.split(",");                                            //split the lines by comma and extract the x and y coordinates
+					  		  planes.add(Double.parseDouble(data[0]),Double.parseDouble(data[1]));	  	  //convert the coordinate from string to double format and add them to planes
+					  	  }
+					} catch (NumberFormatException | IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}	  	 	    				  	    				  	  
+			        Graphic gPlanes = new Graphic(planes, planeSymbol);
+			        graphicsLayer.addGraphic(gPlanes);                                                     //add the pin point layer
+			        layers.add(graphicsLayer);                                                             //visualize the pin pint layer
+				}
+				
+	        });
+	        
+	        /** add action listener to the "btnClear" button, so that when user press the button, Location of the queried entity can be shown in the map*/
+			QueryGUI.btnClear.addActionListener(new ActionListener(){
+	        	public void actionPerformed(ActionEvent e) {
+	        		graphicsLayer.removeAll();
+	        		layers.remove(graphicsLayer);
+	        	}
+			});
+	          
+		}     	
+    });
+    QueryButton.setSize(130, 30);
+    QueryButton.setLocation(1090, 45);
+    
+/**add new button for the plant optimization function Li ZHOU 27.08.2016*/
+    final javax.swing.JButton PlantOptButton;
+    PlantOptButton = new javax.swing.JButton();
+    PlantOptButton.setFont(new java.awt.Font("Times new roman", 0, 12)); // NOI18N
+    PlantOptButton.setText("Plant Optimization");
+    PlantOptButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+    PlantOptButton.setEnabled(true);
+    PlantOptButton.addActionListener(new ActionListener() {
+    	@Override
+		public void actionPerformed(ActionEvent e) {
+			
+    		OptimizationGUI PlantOptGUI = new OptimizationGUI();
+    		PlantOptGUI.setVisible(true);
+    		PlantOptGUI.setLocationRelativeTo(null);
+    	}
+    });
+    PlantOptButton.setSize(130, 30);
+    PlantOptButton.setLocation(1090, 80);
     
     // ZHOU add new buttons
     contentPane = new JLayeredPane();
@@ -1845,7 +1934,8 @@ change.setLocation(890, 45);
     contentPane.add(PrAPHrButton);
     contentPane.add(OPALRT);
     contentPane.add(PrhydroButton);
-    contentPane.add(queryButton);
+    contentPane.add(QueryButton);
+    contentPane.add(PlantOptButton);
     contentPane.add(map, BorderLayout.CENTER);
     contentPane.add(legend, BorderLayout.WEST);
     contentPane.add(timeSlider, BorderLayout.SOUTH);
@@ -1931,6 +2021,9 @@ change.setLocation(890, 45);
 	    return jMap;
 	  }
   
+
+  
+  
   /**
    * Starting point of this application.
    * @param args
@@ -1952,8 +2045,28 @@ change.setLocation(890, 45);
     });
  
   }
+ 
+
   
-  
+	  /** This new function add new pinpoint layers for the queryed entity
+	   * @return 
+	   * @throws IOException 
+	   * @throws NumberFormatException */ 
+	    @SuppressWarnings("resource")
+	  public void GISFeature () throws NumberFormatException, IOException {	  	
+	        
+	      BufferedReader fileReader = null;
+	      String line = null;
+	  	  fileReader = new BufferedReader(new FileReader(GIS));	  	 	    
+	  	    
+	  	  while ((line = fileReader.readLine()) != null) {
+	  		  String[] data = line.split(",");
+	  		  planes.add(Double.parseDouble(data[0]),Double.parseDouble(data[1]));	  	  
+
+	  	  }
+
+	    };
+ 
   
 }
 
