@@ -33,6 +33,7 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -57,10 +58,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 
-import MouseDrag.MouseDrag;
+//import MouseDrag.MouseDrag;
 
 import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.MultiPoint;
@@ -68,6 +70,8 @@ import com.esri.core.geometry.Point;
 import com.esri.core.io.UserCredentials;
 import com.esri.core.map.Feature;
 import com.esri.core.map.Graphic;
+import com.esri.map.TimeAwareLayer;
+import com.esri.core.map.TimeOptions.Units;
 import com.esri.core.portal.Portal;
 import com.esri.core.portal.WebMap;
 import com.esri.core.renderer.SimpleRenderer;
@@ -84,6 +88,8 @@ import com.esri.map.GroupLayer;
 import com.esri.map.JMap;
 import com.esri.map.Layer;
 import com.esri.map.LayerEvent;
+import com.esri.map.LayerInitializeCompleteEvent;
+import com.esri.map.LayerInitializeCompleteListener;
 import com.esri.map.LayerList;
 import com.esri.map.LayerListEventListenerAdapter;
 import com.esri.map.MapEvent;
@@ -98,6 +104,8 @@ import com.esri.toolkit.overlays.HitTestEvent;
 import com.esri.toolkit.overlays.HitTestListener;
 import com.esri.toolkit.overlays.HitTestOverlay;
 import com.esri.toolkit.overlays.InfoPopupOverlay;
+import com.esri.toolkit.sliders.JTimeSlider;
+import com.esri.toolkit.sliders.JTimeSlider.TimeMode;
 import com.esri.core.symbol.PictureMarkerSymbol;
 
 
@@ -168,6 +176,7 @@ public class JParkSim {
 	//try to put new variable
 	
 	private GraphicsLayer graphicsLayer;
+	private JTimeSlider timeSlider;
 	
 	private MultiPoint planes;
 	
@@ -245,9 +254,26 @@ public class JParkSim {
 		}
 	}
 	
+	private JTimeSlider createTimeSlider(TimeAwareLayer layer) {
+	    JTimeSlider jTimeSlider = new JTimeSlider();
+	    jTimeSlider.setTitle("time animation for dispersion");
+	    jTimeSlider.addLayer(layer);
+	    jTimeSlider.setTimeMode(TimeMode.TimeExtent);
+	    jTimeSlider.setPlaybackRate(1000); // 1 second per tick
+	    jTimeSlider.setVisible(false);
+	    return jTimeSlider;
+	  }
+	
+	 private String wrap(String str) {
+		    // create a HTML string that wraps text when longer
+		    return "<html><p style='width:200px;'>" + str + "</html>";
+		  }
+	
 	  
 	
   public JParkSim() {
+	  
+	  
 	  
 	  
 	  
@@ -397,6 +423,48 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     ArcGISDynamicMapServiceLayer highwayLayer = new ArcGISDynamicMapServiceLayer(
             "http://localhost:6080/arcgis/rest/services/opex/MapServer");
                 layers.add(highwayLayer);
+                
+              //add dynamic map layer for the dispersion bar chart
+                ArcGISDynamicMapServiceLayer dispersionanimationLayer = new ArcGISDynamicMapServiceLayer(
+                        " 	http://localhost:6080/arcgis/rest/services/dispersion/MapServer");
+                            layers.add(dispersionanimationLayer);
+                            
+                            dispersionanimationLayer.addLayerInitializeCompleteListener(new LayerInitializeCompleteListener() {
+
+                              @Override
+                              public void layerInitializeComplete(LayerInitializeCompleteEvent e) {
+                                if (e.getID() == LayerInitializeCompleteEvent.LOCALLAYERCREATE_ERROR) {
+                                  String errMsg = "Failed to initialize due to "
+                                      + dispersionanimationLayer.getInitializationError();
+                                  JOptionPane.showMessageDialog(map, wrap(errMsg), "",
+                                      JOptionPane.ERROR_MESSAGE);
+                                }
+                              }
+                            });
+                            // create the time slider with the dynamic layer
+                        timeSlider = createTimeSlider(dispersionanimationLayer);
+
+                        // set time extent of time slider once the dynamic layer is initialized
+                        dispersionanimationLayer.addLayerInitializeCompleteListener(new LayerInitializeCompleteListener() {
+
+                          @Override
+                          public void layerInitializeComplete(LayerInitializeCompleteEvent e) {
+                            SwingUtilities.invokeLater(new Runnable() {
+                              @Override
+                              public void run() {
+                                timeSlider.setTimeExtent(dispersionanimationLayer.getTimeInfo().getTimeExtent(), 1, Units.Seconds);
+                                Calendar calendar = dispersionanimationLayer.getTimeInfo().getTimeExtent().getStartDate();
+                                timeSlider.setTimeIntervalStart(calendar);
+                                calendar.add(Calendar.SECOND, 1);
+                                timeSlider.setTimeIntervalEnd(calendar);
+                                timeSlider.setVisible(true);
+                                
+                                //description.setVisible(true);
+                                //legend.setVisible(true);
+                              }
+                            });
+                          }
+                        });
           
               //add dynamic map layer for the sensitivity bar chart
                 ArcGISDynamicMapServiceLayer sensitivityLayer = new ArcGISDynamicMapServiceLayer(
@@ -1329,6 +1397,86 @@ change.setLocation(890, 45);
     PrAPPWButton.setSize(190,30);
     PrAPPWButton.setLocation(690, 115);
 
+ // Run combined parameterized AspenPlus and power world model 
+    JButton PrhydroButton = new JButton("Run Pr Hydrocracking");
+    PrhydroButton.addActionListener(new ActionListener() {
+    	@Override
+    	public void actionPerformed(ActionEvent arg0) {
+    		HttpURLConnection urlCon;
+    		OutputStreamWriter out;
+    		URL url;
+    		try {
+				url = new URL("http://172.25.182.42/PWServlet/"); // URL of servlet
+				urlCon = (HttpURLConnection) url.openConnection();
+				urlCon.setRequestMethod("POST");
+				urlCon.setDoOutput(true);
+				
+				if (editStack.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "You did not edit any features for AspenPlus!");
+				} else {
+					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
+					StringBuilder layers = new StringBuilder();
+					StringBuilder OBJECTIDs = new StringBuilder();
+					StringBuilder appCallFlag = new StringBuilder();
+					
+					for (String[] item : editStack) { // create comma separated values
+						layers.append(item[0]);
+						layers.append(",");
+			 			OBJECTIDs.append(item[1]); // ZHOU CHANGED ITEM[2] TO ITEM[1]
+					    OBJECTIDs.append(",");
+						appCallFlag.append("PrAPHC");
+						appCallFlag.append(",");
+					}
+					StringBuilder outputString = new StringBuilder();
+					// Only URL encoded string values can be sent over a HTTP connection
+					outputString.append(URLEncoder.encode("layers", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(layers.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(OBJECTIDs.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("QueryT", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
+					System.out.println("outputString="+outputString);
+					
+					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
+					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
+					wr.writeBytes(outputString.toString()); // write query string into servlet doPost() method
+					wr.flush();
+					wr.close();
+					
+					if (urlCon.getResponseCode()==200) {
+						heatercoolerlayer.requery();
+			    		heatercoolerlayer.refresh();
+			    		RadFraclayer.requery();
+			    		RadFraclayer.refresh();
+						JOptionPane.showMessageDialog(null, "I have finished evaluating new operational status for Hydrocracking!");
+						editStack.clear(); // delete all items in editStack
+					} else {
+						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
+								+ "\nPlease try running Pr Hydrocracking again");
+					}
+					out.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+    	
+    		
+    	}
+    	    });
+    PrhydroButton.setEnabled(true);
+    PrhydroButton.setVisible(true);
+    PrhydroButton.setSize(190,30);
+    PrhydroButton.setLocation(690, 150);
+    
 // Run AspenPlus model with heat recovery button ZL-20160322
     JButton PrAPOButton = new JButton("Run PrAP from OntoCAPE");
     PrAPOButton.addActionListener(new ActionListener() {
@@ -1500,8 +1648,8 @@ change.setLocation(890, 45);
 				e.printStackTrace();
 			}
     		
-    		String[] av = {"D:/opalrt/CurrentA.png"};
-    		MouseDrag.Printing(av);
+    		//String[] av = {"D:/opalrt/CurrentA.png"};
+    		//MouseDrag.Printing(av);
     		
     		
     		
@@ -1696,9 +1844,11 @@ change.setLocation(890, 45);
     contentPane.add(PrAPOButton);
     contentPane.add(PrAPHrButton);
     contentPane.add(OPALRT);
+    contentPane.add(PrhydroButton);
     contentPane.add(queryButton);
     contentPane.add(map, BorderLayout.CENTER);
     contentPane.add(legend, BorderLayout.WEST);
+    contentPane.add(timeSlider, BorderLayout.SOUTH);
     
   
   //adding the graph here
