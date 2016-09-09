@@ -744,8 +744,8 @@ change.setLocation(890, 45);
     		OutputStreamWriter out;
     		URL url;
     		try {
-			//	url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
-    			url = new URL("http://172.25.182.41/PWServlet/"); // URL of servlet
+			//	url = new URL("http://172.25.182.41/PWServlet/"); // URL of servlet
+    			url = new URL("http://172.25.182.41/PWServlet_New/"); // URL of servlet
     			
     			urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
@@ -756,7 +756,6 @@ change.setLocation(890, 45);
 				} else {
 					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
 					StringBuilder layers = new StringBuilder();
-//					StringBuilder FIDs = new StringBuilder();
 					StringBuilder OBJECTIDs = new StringBuilder();
 					StringBuilder appCallFlag = new StringBuilder();
 					for (String[] item : editStack) { // create comma separated values

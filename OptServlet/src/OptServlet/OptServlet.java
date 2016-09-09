@@ -181,7 +181,7 @@ public class OptServlet extends HttpServlet {
 			
 			/**associating Model1 to a JAVA OWLIndividual variable*/
 	        OWLIndividual M = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#GAMSModelOfB3");
-	        String GAMSModel = M.getPropertyValueLiteral(owlModel.getOWLProperty("mathematical_relation:nodeValue")).getString();  //This line needs to be modified!!
+	        String GAMSModel = M.getPropertyValueLiteral(owlModel.getOWLProperty("mathematical_model_extended:hasGAMSCode")).getString();  //This line needs to be modified!!
 	        
 			
 	        PriceOfProduct = P1;
