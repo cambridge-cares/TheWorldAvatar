@@ -64,11 +64,12 @@ import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 
 //import MouseDrag.MouseDrag;
-import queryWindow.QueryWindow;
+//import queryWindow.QueryWindow;
 
 import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.MultiPoint;
 import com.esri.core.geometry.Point;
+import com.esri.core.geometry.Polygon;
 import com.esri.core.io.UserCredentials;
 import com.esri.core.map.Feature;
 import com.esri.core.map.Graphic;
@@ -456,7 +457,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
                                 timeSlider.setTimeExtent(dispersionanimationLayer.getTimeInfo().getTimeExtent(), 1, Units.Seconds);
                                 Calendar calendar = dispersionanimationLayer.getTimeInfo().getTimeExtent().getStartDate();
                                 timeSlider.setTimeIntervalStart(calendar);
-                                calendar.add(Calendar.SECOND, 1);
+                                calendar.add(Calendar.SECOND,0);
                                 timeSlider.setTimeIntervalEnd(calendar);
                                 timeSlider.setVisible(true);
                                 
@@ -471,6 +472,25 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
                 ArcGISDynamicMapServiceLayer sensitivityLayer = new ArcGISDynamicMapServiceLayer(
                         "http://localhost:6080/arcgis/rest/services/sensitivity/MapServer");
                             layers.add(sensitivityLayer);
+                            
+                            final GraphicsLayer graphicsLayer2 = new GraphicsLayer();
+                            graphicsLayer2.setName("simple query graphics");
+                            map.addMapEventListener(new MapEventListenerAdapter() {
+                              @Override
+                              public void mapReady(final MapEvent arg0) {
+                                SwingUtilities.invokeLater(new Runnable() {
+                                  @Override
+                                  public void run() {
+                                    addSimpleFillGraphics(graphicsLayer2);
+                                    
+                                  }
+                                });
+                              }
+                            });
+
+                            layers.add(graphicsLayer2);
+                            
+                            
                             
                           
                 
@@ -1407,7 +1427,7 @@ change.setLocation(890, 45);
     		OutputStreamWriter out;
     		URL url;
     		try {
-				url = new URL("http://172.25.182.42/PWServlet/"); // URL of servlet
+				url = new URL("http://172.25.182.41/PWServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
 				urlCon.setDoOutput(true);
@@ -2021,6 +2041,22 @@ change.setLocation(890, 45);
 	    return jMap;
 	  }
   
+//make graphic for query
+  private void addSimpleFillGraphics(GraphicsLayer graphicsLayer2) {
+      Polygon polygon = new Polygon();
+      polygon.startPath(11541441.437, 140113.992);
+      polygon.lineTo(11541462.075, 140137.064);
+      polygon.lineTo(11541472.552, 140126.798);
+      polygon.lineTo(11541453.185, 140104.255);
+      polygon.closePathWithLine();
+
+      SimpleLineSymbol outline = new SimpleLineSymbol(new Color(0, 200, 0),
+          7, SimpleLineSymbol.Style.SOLID);
+      SimpleFillSymbol symbol = new SimpleFillSymbol(
+          new Color(255, 255, 255,130), outline);
+      Graphic graphic2 = new Graphic(polygon,symbol);
+      graphicsLayer2.addGraphic(graphic2);
+  }
 
   
   

@@ -523,7 +523,7 @@ public class APWOWHRServlet extends HttpServlet {
 						if (!data[6].trim().isEmpty()) {
 							HeaterCoolerAttributes.put("Heat_Loads",Float.parseFloat(data[6].trim())*4.1868e-3);                               // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
 						}
-						System.out.println("10E02Duty="+data[6]);
+						System.out.println("10E03Duty="+data[6]);
 						
 						HeaterCoolerTable.updateFeature(Long.parseLong(ArcGISOBJECTID[j]),HeaterCoolerAttributes);                          // update feature table locally
 						
@@ -533,7 +533,7 @@ public class APWOWHRServlet extends HttpServlet {
 						if (!data[7].trim().isEmpty()) {
 							HeaterCoolerAttributes.put("Heat_Loads",Float.parseFloat(data[7].trim())*4.1868e-3);                               // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
 						}
-						System.out.println("10E02Duty="+data[7]);
+						System.out.println("10E04Duty="+data[7]);
 						
 						HeaterCoolerTable.updateFeature(Long.parseLong(ArcGISOBJECTID[j]),HeaterCoolerAttributes);                          // update feature table locally
 						
