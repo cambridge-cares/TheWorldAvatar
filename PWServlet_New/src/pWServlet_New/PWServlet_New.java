@@ -6,15 +6,15 @@ package pWServlet_New;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.cmclinnovations.modsapi.MoDSAPI;
 import com.esri.core.io.UserCredentials;
 import com.esri.core.map.Feature;
 import com.esri.core.map.FeatureResult;
@@ -29,8 +29,10 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 
 public class PWServlet_New extends HttpServlet {	
 	
-	public static String httpReqCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/httpReq.CSV");
 	public static File PWSurrogateModel = new File("C:/apache-tomcat-8.0.24/webapps/ROOT/PW_SurrogateModel/PWSurrogateModel.txt");
+	
+	public static String httpReqCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/httpReq.CSV");	
+	public static String PrPWOUT = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrPWOUT.CSV");
 	
 	public static Map<String, String> ArcGISFIDtoPWBusNum = new HashMap<>(); // Maps ArcGIS FID/OBJECTID (key) to BusNum (value) in PowerWorld
 	public static Map<String, String> PWBusNumtoArcGISFID = new HashMap<>(); // reverse mapping BusNum to ArcGIS FID/OBJECTID
@@ -193,7 +195,7 @@ public class PWServlet_New extends HttpServlet {
 				ArcGISFIDtoPWBusNum.put("22", "50"); // 02382V
 				ArcGISFIDtoPWBusNum.put("20", "48"); // 02380M
 				ArcGISFIDtoPWBusNum.put("141", "169"); // 03303M
-				ArcGISFIDtoPWBusNum.put("140", "194"); // 03096L
+				ArcGISFIDtoPWBusNum.put("140", "194"); // 03096L                    ???
 				ArcGISFIDtoPWBusNum.put("139", "196"); // 03338T
 				ArcGISFIDtoPWBusNum.put("17", "58"); // 03280W
 				ArcGISFIDtoPWBusNum.put("138", "168"); // 03333C
@@ -270,7 +272,7 @@ public class PWServlet_New extends HttpServlet {
 		case "PWPr":
 			System.out.println(appCallFlag[0] + " button was pressed!");
 			start_time = System.currentTimeMillis();
-			getInputX(layers,OBJECTIDs);
+			RunPrPW(layers,OBJECTIDs);
 			end_time = System.currentTimeMillis();
 			System.out.println("runPrPowerWorld takes: "+(end_time-start_time));
 			break;			
@@ -278,15 +280,68 @@ public class PWServlet_New extends HttpServlet {
 		} 
 	} 
 
-	public void RunPrPW (ArrayList<String[]> editStack){
+	public void RunPrPW (String[] Layer, String[] ID){
 
+		List<List<Double>> xData = new ArrayList<>(1); 
+		List<List<Double>> yData;  
+		List<Double> X_Values = new ArrayList<>();                                                   // create an array to store all the x-values
+		String[] layers = Layer;                                                                     // get the modified layer
+		String[] OBJECTIDs = ID;
+		X_Values = getInputX(layers,OBJECTIDs);                                                      // get the input x-value set
+		
+		xData.add(X_Values);
+		String ModelUrl;
+		String ModelName;                                                 
+		
+		/**load the ontology file for electrical network*/
+		String uri = "File:/C:/apache-tomcat-8.0.24/webapps/OntologyFiles/ElectricalNetwork.owl";
+        OWLModel owlModel = null;
+		try {
+			owlModel = ProtegeOWL.createJenaOWLModelFromURI(uri);
+		} catch (OntologyLoadException e1) {
+			e1.printStackTrace();
+		}
+		
+		/**extract the ModelUrl and ModelName*/
+		OWLIndividual M = owlModel.getOWLIndividual("http://www.jparksimulator.com/ElectricalNetwork.owl#"+ "SurrogateMdel_ElectricalGridOfJPark");
+		ModelUrl = M.getPropertyValueLiteral(owlModel.getOWLProperty("mathematical_model_extended:hasModelUrl")).getString();
+		ModelName = M.getPropertyValueLiteral(owlModel.getOWLProperty("mathematical_model_extended:hasModelName")).getString();
+		
+		System.load("C:/apache-tomcat-8.0.24/webapps/PWServlet_New/WEB-INF/lib/MoDS_Java_API.dll");  // load the MoDS API, the MoDS API at use is version 0.1
+		
+		ArrayList<String> yNames = MoDSAPI.getYVarNamesFromAPI(ModelUrl, ModelName);
+		System.out.println("yNames= " + yNames);
+		
+		yData = MoDSAPI.evaluateSurrogate(ModelUrl, ModelName, xData);                               // call MoDS API to evaluate the surrogate model basing on the MoDS simulation file "simDir -> modelNam"  and  the input xData that was collected before
+		System.out.println("yData=" + yData);                                                        // print out the output yData to console
+		
+        /**filewriter to generate the output CSV file*/
+		FileWriter FileWriter = null;                                                               
+		try {
+			FileWriter = new FileWriter(PrPWOUT);
+			for (int j = 0; j < yNames.size(); j++) {
+				FileWriter.append(yNames.get(j));                                               // write the yNames to the output CSV file
+				FileWriter.append(",");
+			}
+			for (int j = 0; j < yData.size(); j++) {
+				FileWriter.append("\n");
+				for (int k = 0; k < yData.get(j).size(); k++) {
+					FileWriter.append(Double.toString(yData.get(j).get(k)));                        // write the yData to the output CSV file
+					FileWriter.append(",");
+				} 
+			}
+			FileWriter.flush();
+			FileWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 	}
 	
 	/**Get the input x-value for the Parameterized PowerWorld model*/
-	public void getInputX (String[] Layer, String[] ID){
+	public List<Double> getInputX (String[] Layer, String[] ID){
 		
-		ArrayList<String> X_Values = new ArrayList<String>();                                                   // create an array to store all the x-values
+		List<Double> X_Values = new ArrayList<>();                                                              // create an array to store all the x-values
 		String[] layers = Layer;                                                                                // get the modified layer
 		String[] OBJECTIDs = ID;  
 		String[] Temp = null;                                                                                   // get the modified OBJECTID		
@@ -299,7 +354,7 @@ public class PWServlet_New extends HttpServlet {
 		UserCredentials user = new UserCredentials();
 		user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
 		
-		//load owl file
+		/**load the ontology file for electrical network*/
 		String uri = "File:/C:/apache-tomcat-8.0.24/webapps/OntologyFiles/ElectricalNetwork.owl";
         OWLModel owlModel = null;
 		try {
@@ -322,9 +377,9 @@ public class PWServlet_New extends HttpServlet {
 				/**To extract the required x-value from owl file or ArcGIS database*/
 				Flag = false;                                                                                   // set the initial value of Flag to false
 				for(int i=0; i<layers.length; i++ ){	
-					System.out.println("Layer= " + LayerNam);
+					
 					if(LayerNam.equals("L") && LayerNam.equals(layers[i].substring(0, 1)) && BusNum.equals(ArcGISFIDtoPWBusNum.get(OBJECTIDs[0]))){
-						System.out.println("1");
+						
 						/**query ArcGIS database to extract the user modified data, if any parameter of the load points was modified*/
 						int counter = 0;
 						for (String key : OBJECTIDs) {
@@ -354,9 +409,9 @@ public class PWServlet_New extends HttpServlet {
 							for (String key : attributeslist_LP.get(j).keySet()) { 
 								if (key == "OBJECTID") {
 									if(ParNam.equals("LoadMW")){
-										X_Values.add(String.valueOf(attributeslist_LP.get(j).get("pwr_P")));
+										X_Values.add(Double.parseDouble(String.valueOf(attributeslist_LP.get(j).get("pwr_P"))));     //convert the extracted data from string to double
 									}else if(ParNam.equals("LoadMVR")){
-										X_Values.add(String.valueOf(attributeslist_LP.get(j).get("pwr_Q")));
+										X_Values.add(Double.parseDouble(String.valueOf(attributeslist_LP.get(j).get("pwr_Q"))));
 									}									
 								}
 							}
@@ -394,30 +449,29 @@ public class PWServlet_New extends HttpServlet {
 					}
 					
 				}
-				System.out.println("Flag = " + Flag);
 			if(!Flag){	
-				System.out.println("Parameter: " + Temp[Temp.length-2]);
+
 			    /**extract the the reactive power of the load points*/
 				if(Temp[Temp.length-2].equals("LoadMW")){
-					OWLIndividual M = owlModel.getOWLIndividual("http://www.jparksimulator.com/JParkElectricalNetwork.owl#V_ActualActivePower_LoadPoint_"+ BusNum);
-				    String LoadActivePower = M.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();
-				    X_Values.add(LoadActivePower);
+					OWLIndividual M = owlModel.getOWLIndividual("http://www.jparksimulator.com/ElectricalNetwork.owl#V_ActualActivePower_LoadPoint_"+ BusNum);
+					String LoadActivePower = M.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();
+				    X_Values.add(Double.parseDouble(LoadActivePower));
 					
 				}
 				else if(Temp[Temp.length-2].equals("LoadMVR")){
-					OWLIndividual M = owlModel.getOWLIndividual("http://www.jparksimulator.com/JParkElectricalNetwork.owl#V_ActualReactivePower_LoadPoint_"+ BusNum);
+					OWLIndividual M = owlModel.getOWLIndividual("http://www.jparksimulator.com/ElectricalNetwork.owl#V_ActualReactivePower_LoadPoint_"+ BusNum);
 				    String LoadReactivePower = M.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();
-				    X_Values.add(LoadReactivePower);
+				    X_Values.add(Double.parseDouble(LoadReactivePower));
 				}
 				else if(Temp[Temp.length-2].equals("GenMW")){
-					OWLIndividual M = owlModel.getOWLIndividual("http://www.jparksimulator.com/JParkElectricalNetwork.owl#V_P_PowerGen_"+ BusNum);
+					OWLIndividual M = owlModel.getOWLIndividual("http://www.jparksimulator.com/ElectricalNetwork.owl#V_P_PowerGen_"+ BusNum);
 				    String PowerGen_P = M.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();
-				    X_Values.add(PowerGen_P);
+				    X_Values.add(Double.parseDouble(PowerGen_P));
 				}
 				else if(Temp[Temp.length-2].equals("GenMVR")){
-					OWLIndividual M = owlModel.getOWLIndividual("http://www.jparksimulator.com/JParkElectricalNetwork.owl#V_Q_PowerGen_"+ BusNum);
+					OWLIndividual M = owlModel.getOWLIndividual("http://www.jparksimulator.com/ElectricalNetwork.owl#V_Q_PowerGen_"+ BusNum);
 				    String PowerGen_Q = M.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();
-				    X_Values.add(PowerGen_Q);
+				    X_Values.add(Double.parseDouble(PowerGen_Q));
 				}
 
 			}
@@ -428,8 +482,7 @@ public class PWServlet_New extends HttpServlet {
 		}catch (Exception e){
 			System.out.println(e.toString());
 		}
-		
-				
+		return X_Values;						
 	}
 
 	
