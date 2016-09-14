@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -15,7 +16,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cmclinnovations.modsapi.MoDSAPI;
+import com.esri.core.geodatabase.GeodatabaseFeatureServiceTable;
 import com.esri.core.io.UserCredentials;
+import com.esri.core.map.CallbackListener;
 import com.esri.core.map.Feature;
 import com.esri.core.map.FeatureResult;
 import com.esri.core.tasks.query.QueryParameters;
@@ -33,11 +36,14 @@ public class PWServlet_New extends HttpServlet {
 	
 	public static String httpReqCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/httpReq.CSV");	
 	public static String PrPWOUT = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrPWOUT.CSV");
+	public static String PrPWIN = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrPWIN.CSV");
 	
-	public static Map<String, String> ArcGISFIDtoPWBusNum = new HashMap<>(); // Maps ArcGIS FID/OBJECTID (key) to BusNum (value) in PowerWorld
-	public static Map<String, String> PWBusNumtoArcGISFID = new HashMap<>(); // reverse mapping BusNum to ArcGIS FID/OBJECTID
-	public static Map<String, String> ArcGISFIDtoPGBusNum = new HashMap<>(); // Maps ArcGIS FID (key) to BusNum (value) in PowerWorld
-	public static Map<String, String> PGBusNumtoArcGISFID = new HashMap<>(); // reverse mapping BusNum to ArcGIS FID
+	public static Map<String, String> ArcGISFIDtoPWBusNum = new HashMap<>();   // Maps ArcGIS FID/OBJECTID (key) to BusNum (value) in PowerWorld
+	public static Map<String, String> PWBusNumtoArcGISFID = new HashMap<>();   // reverse mapping BusNum to ArcGIS FID/OBJECTID
+	public static Map<String, String> ArcGISFIDtoPGBusNum = new HashMap<>();   // Maps ArcGIS FID (key) to BusNum (value) in PowerWorld
+	public static Map<String, String> PGBusNumtoArcGISFID = new HashMap<>();   // reverse mapping BusNum to ArcGIS FID
+	public static Map<String, String> SubstationtoPWBusNum = new HashMap<>();  // Maps substation number to HV and LV bus numbers
+	public static Map<String, String> PWBusNumtoSubstation = new HashMap<>();  // reverse mapping
 	
 	public PWServlet_New() {
 		super();
@@ -238,6 +244,36 @@ public class PWServlet_New extends HttpServlet {
 				for (Map.Entry<String, String> entry : ArcGISFIDtoPGBusNum.entrySet()) { // reverse mapping
 					PGBusNumtoArcGISFID.put(entry.getValue(), entry.getKey());
 				}
+				
+				// first bus number is high voltage bus, second bus number is low voltage bus
+				SubstationtoPWBusNum.put("UHT1HV", "2");
+				SubstationtoPWBusNum.put("UHT1LV", "10");
+				SubstationtoPWBusNum.put("UHT2HV", "3");
+				SubstationtoPWBusNum.put("UHT2LV", "11");
+				SubstationtoPWBusNum.put("UHT3HV", "4");
+				SubstationtoPWBusNum.put("UHT3LV", "12");
+				SubstationtoPWBusNum.put("EHT1HV", "13");
+				SubstationtoPWBusNum.put("EHT1LV", "22");
+				SubstationtoPWBusNum.put("EHT2HV", "14");
+				SubstationtoPWBusNum.put("EHT2LV", "23");
+				SubstationtoPWBusNum.put("EHT3HV", "15");
+				SubstationtoPWBusNum.put("EHT3LV", "24");
+				SubstationtoPWBusNum.put("EHT9HV", "16");
+				SubstationtoPWBusNum.put("EHT9LV", "25");
+				SubstationtoPWBusNum.put("EHT4HV", "17");
+				SubstationtoPWBusNum.put("EHT4LV", "26");
+				SubstationtoPWBusNum.put("EHT5HV", "18");
+				SubstationtoPWBusNum.put("EHT5LV", "27");
+				SubstationtoPWBusNum.put("EHT6HV", "19");
+				SubstationtoPWBusNum.put("EHT6LV", "28");
+				SubstationtoPWBusNum.put("EHT7HV", "20");
+				SubstationtoPWBusNum.put("EHT7LV", "29");
+				SubstationtoPWBusNum.put("EHT8HV", "21");
+				SubstationtoPWBusNum.put("EHT8LV", "30");
+
+				for (Map.Entry<String, String> entry : SubstationtoPWBusNum.entrySet()) {
+					PWBusNumtoSubstation.put(entry.getValue(), entry.getKey() .substring(3, 4)); // remove all characters from key, only need FID
+				}
 		
 	}
 	
@@ -273,6 +309,7 @@ public class PWServlet_New extends HttpServlet {
 			System.out.println(appCallFlag[0] + " button was pressed!");
 			start_time = System.currentTimeMillis();
 			RunPrPW(layers,OBJECTIDs);
+//			readPrPWCSV();
 			end_time = System.currentTimeMillis();
 			System.out.println("runPrPowerWorld takes: "+(end_time-start_time));
 			break;			
@@ -316,9 +353,15 @@ public class PWServlet_New extends HttpServlet {
 		System.out.println("yData=" + yData);                                                        // print out the output yData to console
 		
         /**filewriter to generate the output CSV file*/
-		FileWriter FileWriter = null;                                                               
+		FileWriter FileWriter = null;        
+		FileWriter FileWriter_ = null; 
 		try {
 			FileWriter = new FileWriter(PrPWOUT);
+			FileWriter_ = new FileWriter(PrPWIN);
+			for (int j = 0; j < X_Values.size(); j++) {
+				FileWriter_.append(Double.toString(X_Values.get(j)));                                               // write the yNames to the output CSV file
+				FileWriter_.append("\n");
+			}
 			for (int j = 0; j < yNames.size(); j++) {
 				FileWriter.append(yNames.get(j));                                               // write the yNames to the output CSV file
 				FileWriter.append(",");
@@ -332,10 +375,13 @@ public class PWServlet_New extends HttpServlet {
 			}
 			FileWriter.flush();
 			FileWriter.close();
+			FileWriter_.flush();
+			FileWriter_.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-		
+		}	
+		/**read the simulation result from csv file and update to ArgGIS database*/
+		readPrPWCSV();
 	}
 	
 	/**Get the input x-value for the Parameterized PowerWorld model*/
@@ -485,5 +531,190 @@ public class PWServlet_New extends HttpServlet {
 		return X_Values;						
 	}
 
+	
+	/**this method reads the csv file generated by the powerworld model and update to ArcGIS database */
+	public void readPrPWCSV() {
+		BufferedReader fileReader = null;
+		UserCredentials user = new UserCredentials();
+		user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp"); // Access secure feature layer service using login username and password
+		try {
+			long start = System.currentTimeMillis();                        // start a timer
+			String line = null;
+			fileReader = new BufferedReader(new FileReader(PrPWOUT));
+			fileReader.readLine();                                          // Read the CSV file header to skip it
+			QueryParameters loadAllFeatures = new QueryParameters();
+			loadAllFeatures.setWhere("OBJECTID IS NOT NULL");               // Load all features using SQL command
+
+			GeodatabaseFeatureServiceTable LoadPointsTable = new GeodatabaseFeatureServiceTable( "http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Load_points/FeatureServer", user, 0);
+			LoadPointsTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
+			LoadPointsTable.initialize();
+			System.out.println(LoadPointsTable.getStatus());
+			LoadPointsTable.getInitializationError();
+			GeodatabaseFeatureServiceTable UHTSubstationTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/UHT_substations/FeatureServer", user, 0);
+			UHTSubstationTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
+			UHTSubstationTable.initialize();
+			System.out.println(UHTSubstationTable.initialize());
+			GeodatabaseFeatureServiceTable EHTSubstationTable = new GeodatabaseFeatureServiceTable( "http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/EHT_substation/FeatureServer", user, 0);
+			EHTSubstationTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
+			EHTSubstationTable.initialize();
+			System.out.println(EHTSubstationTable.initialize());
+			GeodatabaseFeatureServiceTable PowerGenTable = new GeodatabaseFeatureServiceTable( "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Generators/FeatureServer", user, 0);
+			PowerGenTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
+			PowerGenTable.initialize();
+			System.out.println(PowerGenTable.initialize());
+			//
+			// EXPAND CODE HERE
+			//
+
+			final CountDownLatch latch = new CountDownLatch(4); // handles four asynchronous processes, only continues Thread when it reaches 0
+			LoadPointsTable.populateFromService(loadAllFeatures, false,
+					new CallbackListener<Boolean>() {
+						@Override
+						public void onCallback(Boolean status) { // Asynchronous callback: code must wait for populate from service to finish loading features
+							if (status == true) {
+								latch.countDown(); // latch decrement if feature service table is ready
+							}
+						}
+
+						@Override
+						public void onError(Throwable e) {
+							e.printStackTrace();
+						}
+					});
+			UHTSubstationTable.populateFromService(loadAllFeatures, false,
+					new CallbackListener<Boolean>() {
+						@Override
+						public void onCallback(Boolean status) {
+							if (status == true) {
+								latch.countDown();
+							}
+						}
+
+						@Override
+						public void onError(Throwable e) {
+							e.printStackTrace();
+						}
+					});
+			EHTSubstationTable.populateFromService(loadAllFeatures, false,
+					new CallbackListener<Boolean>() {
+						@Override
+						public void onCallback(Boolean status) {
+							if (status == true) {
+								latch.countDown();
+							}
+						}
+
+						@Override
+						public void onError(Throwable e) {
+							e.printStackTrace();
+						}
+					});
+			PowerGenTable.populateFromService(loadAllFeatures, false,
+					new CallbackListener<Boolean>() {
+						@Override
+						public void onCallback(Boolean status) {
+							if (status == true) {
+								latch.countDown();
+							}
+						}
+
+						@Override
+						public void onError(Throwable e) {
+							e.printStackTrace();
+						}
+					});
+
+			latch.await();                                   // wait until all feature service tables are ready then continue
+			while ((line = fileReader.readLine()) != null) { // Continue reading lines until none left
+				String[] data = line.split(",");             // split string by comma
+
+				for (int j = 0; j < data.length/5; j++) {
+					String PWBusNum = String.valueOf(j+1);
+					String ArcGISFID = PWBusNumtoArcGISFID.get(PWBusNum);
+					System.out.println("ArcGISFID= " + ArcGISFID);
+					
+					if (ArcGISFID != null) {
+						Map<String, Object> LoadPointAttributes = LoadPointsTable.getFeature(Long.parseLong(ArcGISFID)).getAttributes();
+						if (!data[1 + 5 * j].trim().isEmpty()) {
+							LoadPointAttributes .put("theta_act", Float.parseFloat(data[1 + 5 * j] .trim()) * 2 * 3.146 / 360); // convert the bus angle to radian and upgrade it to the corressponding BusNum attributes
+						}
+						if (!data[2 + 5 * j].trim().isEmpty()) { 
+							LoadPointAttributes.put("volt_act", Float.parseFloat(data[2 + 5 * j].trim()));
+						}
+						if (!data[3 + 5 * j].trim().isEmpty()) {
+							LoadPointAttributes.put("pwr_P_act",Float.parseFloat(data[3 + 5 * j].trim()));
+						}
+						if (!data[4 + 5 * j].trim().isEmpty()) {
+							LoadPointAttributes.put("pwr_Q_act",Float.parseFloat(data[4 + 5 * j].trim()));
+						}
+						
+						LoadPointsTable.updateFeature( Long.parseLong(ArcGISFID), LoadPointAttributes); // update feature table locally
+					}
+					if (j+1 >= 5 && j+1 <= 9) { // PowerGen buses
+						Map<String, Object> PowerGenAttributes = PowerGenTable.getFeature((long) (j+1 - 4)).getAttributes(); // subtract 4 from  PWBusNum to get  FID
+						if (!data[4 + 5 * j].trim().isEmpty()) {
+							PowerGenAttributes.put("volt_nom", Float.parseFloat(data[4 + 5 * j].trim())); // BUSNOMVOLT
+						} 
+						if (!data[5 + 5 * j].trim().isEmpty()) {
+							PowerGenAttributes.put("volt_act", Float.parseFloat(data[5 + 5 * j].trim())); // BUSKVVOLT
+						}				
+						 PowerGenTable.updateFeature((long) (j+1-4),PowerGenAttributes);
+					}
+					if ((j+1 >= 2 && j+1 <= 4) || (j+1 >= 10 && j+1 <= 12)) { // UHTSubstation
+						String SubstationFID = PWBusNumtoSubstation.get(String.valueOf(PWBusNum));
+						Map<String, Object> UHTSubstationAttributes = UHTSubstationTable.getFeature(Long.parseLong(SubstationFID)).getAttributes();
+						if (!data[4 + 5 * j].trim().isEmpty()) {
+							if (j+1 >= 2 && j+1 <= 4) { // high voltage bus
+								UHTSubstationAttributes.put("HV_kV", Float.parseFloat(data[4 + 5 * j].trim())); // BUSNOMVOLT
+							} else { // low voltage bus
+								UHTSubstationAttributes.put("LV_kV", Float.parseFloat(data[4 + 5 * j].trim())); // BUSNOMVOLT
+							}
+						}
+						if (!data[5 + 5 * j].trim().isEmpty()) {
+							if (j+1 >= 2 && j+1 <= 4) {
+								UHTSubstationAttributes.put("HV_kV_act", Float.parseFloat(data[5 + 5 * j].trim())); // BUSKVVOLT
+							} else {
+								UHTSubstationAttributes.put("LV_kV_act", Float.parseFloat(data[5 + 5 * j].trim())); // BUSKVVOLT
+							}
+						}
+						UHTSubstationTable.updateFeature( Long.parseLong(SubstationFID), UHTSubstationAttributes);
+					}
+					if (j+1 >= 13 && j+1 <= 30) { // EHT Substation
+						String SubstationFID = PWBusNumtoSubstation.get(String.valueOf(PWBusNum));
+						Map<String, Object> EHTSubstationAttributes = EHTSubstationTable.getFeature(Long.parseLong(SubstationFID)).getAttributes();
+						if (!data[4 + 5 * j].trim().isEmpty()) {
+							if (j+1 >= 13 && j+1 <= 21) { // high voltage bus
+								EHTSubstationAttributes.put("HV_kV", Float.parseFloat(data[4 + 5 * j].trim())); // BUSNOMVOLT
+							} else { // low voltage bus
+								EHTSubstationAttributes.put("LV_kV", Float.parseFloat(data[4 + 5 * j].trim())); // BUSNOMVOLT
+							}
+						}
+						if (!data[5 + 5 * j].trim().isEmpty()) {
+							if (j+1 >= 13 && j+1 <= 21) {
+								EHTSubstationAttributes.put("HV_kV_act", Float.parseFloat(data[5 + 5 * j].trim())); // BUSKVVOLT
+							} else {
+								EHTSubstationAttributes.put("LV_kV_act", Float.parseFloat(data[5 + 5 * j].trim())); // BUSKVVOLT
+							}
+						}
+						EHTSubstationTable.updateFeature(Long.parseLong(SubstationFID), EHTSubstationAttributes);
+					}					
+				}
+			}
+			LoadPointsTable.applyEdits(null); // commit local updates onto server
+			PowerGenTable.applyEdits(null);
+			UHTSubstationTable.applyEdits(null);
+			EHTSubstationTable.applyEdits(null);
+
+			System.out.println("Updating process took " + String.valueOf(System.currentTimeMillis() - start) + "ms"); // tells you how long it took to update
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				fileReader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 	
 }

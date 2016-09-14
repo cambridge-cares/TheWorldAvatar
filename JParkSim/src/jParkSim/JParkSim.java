@@ -67,6 +67,7 @@ import queryWindow.QueryWindow;
 import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.MultiPoint;
 import com.esri.core.geometry.Point;
+import com.esri.core.geometry.Polygon;
 import com.esri.core.io.UserCredentials;
 import com.esri.core.map.Feature;
 import com.esri.core.map.Graphic;
@@ -166,6 +167,7 @@ public class JParkSim {
 	//try to put new variable
 	
 	private static GraphicsLayer graphicsLayer;
+	final GraphicsLayer graphicsLayer_polygon = new GraphicsLayer();
 	
 	private MultiPoint planes;
 	
@@ -228,10 +230,11 @@ public class JParkSim {
 	public static ArcGISFeatureLayer waternetworklayer;
 	
 	
- 	public static String httpStringCSV = new String("D:/httpReq.CSV"); // (mjk, 151115) investigating structure of DataOutputStream object
- 	public static String httpStringCSV1 = new String("D:/httpReq1.CSV"); // (ZL-151203) investigating structure of DataOutputStream object
- 	public static String httpStringCSV2 = new String("D:/httpReq2.CSV"); // (ZL-151203) investigating structure of DataOutputStream object
- 	public static String GIS = new String("D:/JPS_Code_Test/GIS.CSV");
+ 	//public static String httpStringCSV = new String("D:/httpReq.CSV");              // investigating structure of DataOutputStream object
+ 	//public static String httpStringCSV1 = new String("D:/httpReq1.CSV");            // investigating structure of DataOutputStream object
+ 	//public static String httpStringCSV2 = new String("D:/httpReq2.CSV");            // investigating structure of DataOutputStream object
+ 	public static String GIS = new String("D:/JPS_Code_Test/GIS.CSV");              // csv file to store the GIS coordinate for the unit operations
+ 	public static String PlantGIS = new String("D:/JPS_Code_Test/PlantGIS.CSV");    // csv file to store the endpoints of the polygons for chemical plant
  	
 	// method to render all layers in an array using a certain style (multiple layer renderer)
 	private void createRenderer(LayerList layers, ArcGISFeatureLayer[] arrayoflayers, Symbol col) {
@@ -700,13 +703,13 @@ change.setLocation(890, 45);
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
 					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
 					wr.writeBytes(outputString.toString()); // write query string into servlet doPost() method
-
+/**
 					FileWriter httpString = null; // (mjk, 151115) testing structure of DataOutputStream object and of wr object
-					httpString = new FileWriter(httpStringCSV);
+//					httpString = new FileWriter(httpStringCSV);
 					httpString.append("wr=");
 					httpString.append(outputString.toString());
 					httpString.flush();				
-					httpString.close();
+					httpString.close();*/
 
 					wr.flush();
 					wr.close();
@@ -788,13 +791,13 @@ change.setLocation(890, 45);
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
 					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
 					wr.writeBytes(outputString.toString()); // write query string into servlet doPost() method
-					
+/*					
 					FileWriter httpString = null; // (mjk, 151115) testing structure of DataOutputStream object and of wr object
 					httpString = new FileWriter(httpStringCSV2);
 					httpString.append("wr=");
 					httpString.append(outputString.toString());
 					httpString.flush();				
-					httpString.close();
+					httpString.close();*/
 					
 					wr.flush();
 					wr.close();
@@ -876,13 +879,13 @@ change.setLocation(890, 45);
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
 					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
 					wr.writeBytes(outputString.toString()); // write query string into servlet doPost() method
-					
+					/**
 					FileWriter httpString = null; // (mjk, 151115) testing structure of DataOutputStream object and of wr object
-					httpString = new FileWriter(httpStringCSV1);
+//					httpString = new FileWriter(httpStringCSV1);
 					httpString.append("wr=");
 					httpString.append(outputString.toString());
 					httpString.flush();				
-					httpString.close();
+					httpString.close();*/
 
 					wr.flush();
 					wr.close();
@@ -1382,7 +1385,7 @@ change.setLocation(890, 45);
     PrAPOButton.setVisible(true);
     PrAPOButton.setSize(190,30);
     PrAPOButton.setLocation(890, 10);
-//zl-20160322   
+
  
  // Run combined parameterized AspenPlus and power world model 
     JButton OPALRT = new JButton("Run OPAL-RT"); 
@@ -1724,6 +1727,7 @@ change.setLocation(890, 45);
     QueryButton.setLocation(1090, 45);
     
 /**add new button for the plant optimization function Li ZHOU 27.08.2016*/
+    graphicsLayer_polygon.setName("simple query graphics");  //new layer for the polygon
     final javax.swing.JButton PlantOptButton;
     PlantOptButton = new javax.swing.JButton();
     PlantOptButton.setFont(new java.awt.Font("Times new roman", 0, 12)); // NOI18N
@@ -1737,6 +1741,64 @@ change.setLocation(890, 45);
     		OptimizationGUI PlantOptGUI = new OptimizationGUI();
     		PlantOptGUI.setVisible(true);
     		PlantOptGUI.setLocationRelativeTo(null);
+    		
+    		/** add action listener to the "clear button" on the optimization GUI --when "clear button" pressed, clear the new layer with polygon indicating the plant location*/
+    		OptimizationGUI.btnClear.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					graphicsLayer_polygon.removeAll();
+	        		layers.remove(graphicsLayer_polygon);					
+				}    			
+    		});
+    		
+    		/** add action listener to the "Show Location" button, so that when user press the button, Location of the queried entity can be shown in the map*/
+    		OptimizationGUI.btnShowPlantLocation.addActionListener(new ActionListener(){
+
+				@SuppressWarnings("resource")
+				@Override
+				public void actionPerformed(ActionEvent e) {
+										
+					  BufferedReader fileReader = null;                                             //define a file reader
+				      String line = null;
+				      Polygon polygon = new Polygon(); 
+				      ArrayList<Double> polygon_x = new ArrayList<Double>();                        //create new array list for the x coordinate
+					  ArrayList<Double> polygon_y = new ArrayList<Double>();                        //create new array list for the y coordinate
+						
+				  	  try {
+						fileReader = new BufferedReader(new FileReader(PlantGIS));                  //define source file
+						line = fileReader.readLine();                                               //skip the header
+						boolean flag = true;						
+						while ((line = fileReader.readLine()) != null) {
+					  		  String[] data = line.split(",");                                      //split the lines by comma and extract the x and y coordinates
+					  		  
+					  		  if(flag){
+					  			polygon_x.add(Double.parseDouble(data[0]));
+					  			polygon_y.add(Double.parseDouble(data[1]));	
+					  		  } 
+					  		  else if (!flag){
+					  			polygon_x.add(Double.parseDouble(data[0]));
+					  			polygon_y.add(Double.parseDouble(data[1]));	
+					  		  }
+					  		flag = false;
+					  	  }	
+					} catch (NumberFormatException | IOException e1) {
+						e1.printStackTrace();
+					}	
+				  	  
+				    polygon.startPath(polygon_x.get(0), polygon_y.get(0));
+				    polygon.lineTo(polygon_x.get(1), polygon_y.get(1));
+				    polygon.lineTo(polygon_x.get(2), polygon_y.get(2));
+				    polygon.lineTo(polygon_x.get(3), polygon_y.get(3));
+				    polygon.closePathWithLine();
+				  	SimpleLineSymbol outline = new SimpleLineSymbol(new Color(0, 200, 0),7, SimpleLineSymbol.Style.SOLID);
+				  	SimpleFillSymbol symbol = new SimpleFillSymbol(new Color(255, 255, 255,130), outline);
+			        Graphic graphic_polygon = new Graphic(polygon,symbol);
+			        graphicsLayer_polygon.addGraphic(graphic_polygon);
+
+			        layers.add(graphicsLayer_polygon);                                              //visualize the polygon layer
+				}
+				
+	        });
     	}
     });
     PlantOptButton.setSize(130, 30);

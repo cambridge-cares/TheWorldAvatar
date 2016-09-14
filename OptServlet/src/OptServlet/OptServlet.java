@@ -29,6 +29,7 @@ import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
 
 
 public class OptServlet extends HttpServlet {
@@ -64,17 +65,19 @@ public class OptServlet extends HttpServlet {
 		flag.close(); 
  				
 		switch (Flag[0]) {
+		/**extract model information when "Load" button was pressed*/
 		case("Load"):
 			System.out.println("start " + OptT[0] + "ing...");
 	    
-	        final String ModelInformation = LoadModelInformation().toString();	
+	        final String ModelInformation = LoadModelInformation(OptT[0]).toString();	
 	        response.setContentLength(ModelInformation.length());
 	        response.getOutputStream().write(ModelInformation.getBytes());		    
 	        response.getOutputStream().flush();
 	        response.getOutputStream().close();
 	        System.out.println("Successful loading!");
 	        break;
-	        
+	     
+	    /**execute model optimization when "Optimize" button was pressed*/
 		case("Optimize"):
 			System.out.println("start optimizing...");
 			
@@ -93,11 +96,13 @@ public class OptServlet extends HttpServlet {
     
     
 
-	public ArrayList<String> LoadModelInformation () {
+	public ArrayList<String> LoadModelInformation (String PlantN) {
     	ArrayList<String> ModelInformation =  new ArrayList<String>();
+    	String PlantName = PlantN;
     	
     	try {
-			String uri = "File:/C:/apache-tomcat-8.0.24/webapps/ROOT/BiodieselPlant_.owl";
+			String uri = "File:/C:/apache-tomcat-8.0.24/webapps/OntologyFiles/"+ PlantName + ".owl";
+			System.out.println("ontology uri = " + uri);
             OWLModel owlModel = ProtegeOWL.createJenaOWLModelFromURI(uri);
             
             /**associating P1 to a JAVA OWLIndividual variable*/
@@ -157,6 +162,36 @@ public class OptServlet extends HttpServlet {
             String[] x6unit = x6.getPropertyValue(owlModel.getOWLProperty("system:hasUnitOfMeasure")).toString().split("#");
             ModelInformation.add(x6unit[1].split(" ")[0]);	 
             ModelInformation.add(",");
+            
+            /**extracting the endpoints for the polygon that representing the building in which the plant resides*/
+            OWLIndividual Polygon = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#BiodieselPlant_3_2D");
+            OWLObjectProperty has_endpoint = owlModel.getOWLObjectProperty("file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#has_endpoint");
+//            int EndpointNum = Polygon.getPropertyValueCount(has_endpoint);
+
+            /**extracting all the coordinates for the endpoints of a polygon*/
+            ArrayList<String> Polygon_x = new ArrayList<String>(); 
+            ArrayList<String> Polygon_y = new ArrayList<String>();
+            
+            /**iterate all the endpoints in the collection*/
+            for(Object elem: Polygon.getPropertyValues(has_endpoint)){
+            	String Endpoint = elem.toString().split("of")[0].split("#")[1];   
+
+            	System.out.println(Endpoint.substring(0, Endpoint.length()-1));
+//            	if((Endpoint.substring(0, Endpoint.length()-1)).equals("BiodieselPlant_3_2D_A")){System.out.println("Very Li!!!!");}
+
+            	/**extract the the x and y coordinate for the endpoints*/  
+                OWLIndividual EPx = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#v_x_" + Endpoint.substring(0, Endpoint.length()-1));               
+                String x = EPx.getPropertyValue(owlModel.getOWLProperty("system:numericalValue")).toString();                
+                Polygon_x.add(x);
+                OWLIndividual EPy = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#v_y_" + Endpoint.substring(0, Endpoint.length()-1));
+                String y = EPy.getPropertyValue(owlModel.getOWLProperty("system:numericalValue")).toString();
+                Polygon_y.add(y);
+            }
+            ModelInformation.add("coordinate");     // use "coordinate" as the separate mark
+            ModelInformation.addAll(Polygon_x);     // pass all the x coordinates to the return variable
+            ModelInformation.add("coordinate");
+            ModelInformation.addAll(Polygon_y);     // pass all the y coordinates to the return variable
+            ModelInformation.add("coordinate");
 			
 		} catch (OntologyLoadException ex) {
             Logger.getLogger(OptServlet.class.getName()).log(Level.SEVERE, null, ex);
