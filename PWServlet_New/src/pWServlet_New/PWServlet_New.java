@@ -339,7 +339,7 @@ public class PWServlet_New extends HttpServlet {
 			e1.printStackTrace();
 		}
 		
-		/**extract the ModelUrl and ModelName*/
+		/**extract the ModelUrl and ModelName from the loaded ontology*/
 		OWLIndividual M = owlModel.getOWLIndividual("http://www.jparksimulator.com/ElectricalNetwork.owl#"+ "SurrogateMdel_ElectricalGridOfJPark");
 		ModelUrl = M.getPropertyValueLiteral(owlModel.getOWLProperty("mathematical_model_extended:hasModelUrl")).getString();
 		ModelName = M.getPropertyValueLiteral(owlModel.getOWLProperty("mathematical_model_extended:hasModelName")).getString();
@@ -353,15 +353,9 @@ public class PWServlet_New extends HttpServlet {
 		System.out.println("yData=" + yData);                                                        // print out the output yData to console
 		
         /**filewriter to generate the output CSV file*/
-		FileWriter FileWriter = null;        
-		FileWriter FileWriter_ = null; 
+		FileWriter FileWriter = null;         
 		try {
 			FileWriter = new FileWriter(PrPWOUT);
-			FileWriter_ = new FileWriter(PrPWIN);
-			for (int j = 0; j < X_Values.size(); j++) {
-				FileWriter_.append(Double.toString(X_Values.get(j)));                                               // write the yNames to the output CSV file
-				FileWriter_.append("\n");
-			}
 			for (int j = 0; j < yNames.size(); j++) {
 				FileWriter.append(yNames.get(j));                                               // write the yNames to the output CSV file
 				FileWriter.append(",");
@@ -375,8 +369,6 @@ public class PWServlet_New extends HttpServlet {
 			}
 			FileWriter.flush();
 			FileWriter.close();
-			FileWriter_.flush();
-			FileWriter_.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
@@ -416,9 +408,10 @@ public class PWServlet_New extends HttpServlet {
 			String line;
 			while ((line = br.readLine()) != null){
 				Temp = line.split("_");
-				BusNum = Temp[Temp.length-1].substring(0, Temp[Temp.length-1].length()-1);                      // extracting the Bus Number information from the x-variable name string, and exclude the last number "1" from the string
-				LayerNam = Temp[Temp.length-2].substring(0, 1);                                                 // extract the first letter of the layer name
-				ParNam = Temp[Temp.length-2];                                                                   // extracting the name of the required parameter, 
+//				BusNum = Temp[Temp.length-1].substring(0, Temp[Temp.length-1].length()-1);                      // extracting the Bus Number information from the x-variable name string, and exclude the last number "1" from the string
+				BusNum = Temp[Temp.length-2]; 
+				LayerNam = Temp[Temp.length-3].substring(0, 1);                                                 // extract the first letter of the layer name
+				ParNam = Temp[Temp.length-3];                                                                   // extracting the name of the required parameter, 
                 
 				/**To extract the required x-value from owl file or ArcGIS database*/
 				Flag = false;                                                                                   // set the initial value of Flag to false
@@ -498,26 +491,26 @@ public class PWServlet_New extends HttpServlet {
 			if(!Flag){	
 
 			    /**extract the the reactive power of the load points*/
-				if(Temp[Temp.length-2].equals("LoadMW")){
+				if(Temp[Temp.length-3].equals("LoadMW")){
 					OWLIndividual M = owlModel.getOWLIndividual("http://www.jparksimulator.com/ElectricalNetwork.owl#V_ActualActivePower_LoadPoint_"+ BusNum);
 					String LoadActivePower = M.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();
 				    X_Values.add(Double.parseDouble(LoadActivePower));
 					
 				}
-				else if(Temp[Temp.length-2].equals("LoadMVR")){
+				else if(Temp[Temp.length-3].equals("LoadMVR")){
 					OWLIndividual M = owlModel.getOWLIndividual("http://www.jparksimulator.com/ElectricalNetwork.owl#V_ActualReactivePower_LoadPoint_"+ BusNum);
 				    String LoadReactivePower = M.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();
 				    X_Values.add(Double.parseDouble(LoadReactivePower));
 				}
-				else if(Temp[Temp.length-2].equals("GenMW")){
+				else if(Temp[Temp.length-3].equals("GenMW")){
 					OWLIndividual M = owlModel.getOWLIndividual("http://www.jparksimulator.com/ElectricalNetwork.owl#V_P_PowerGen_"+ BusNum);
 				    String PowerGen_P = M.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();
 				    X_Values.add(Double.parseDouble(PowerGen_P));
 				}
-				else if(Temp[Temp.length-2].equals("GenMVR")){
-					OWLIndividual M = owlModel.getOWLIndividual("http://www.jparksimulator.com/ElectricalNetwork.owl#V_Q_PowerGen_"+ BusNum);
-				    String PowerGen_Q = M.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();
-				    X_Values.add(Double.parseDouble(PowerGen_Q));
+				else if(Temp[Temp.length-3].equals("GenVoltSet")){
+					OWLIndividual M = owlModel.getOWLIndividual("http://www.jparksimulator.com/ElectricalNetwork.owl#V_ActualV_PowerGen_"+ BusNum);
+				    String PowerGen_V = M.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();
+				    X_Values.add(Double.parseDouble(PowerGen_V));
 				}
 
 			}
@@ -528,7 +521,23 @@ public class PWServlet_New extends HttpServlet {
 		}catch (Exception e){
 			System.out.println(e.toString());
 		}
-		return X_Values;						
+		
+		/**filewriter to generate the Input CSV file*/      
+		FileWriter FileWriter = null; 
+		try {
+			FileWriter = new FileWriter(PrPWIN);
+			for (int j = 0; j < X_Values.size(); j++) {
+				FileWriter.append(Double.toString(X_Values.get(j)));       // write the x-values to the Input CSV file
+				FileWriter.append("\n");
+			}
+			FileWriter.flush();
+			FileWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return X_Values;
+				
 	}
 
 	
@@ -628,46 +637,46 @@ public class PWServlet_New extends HttpServlet {
 			while ((line = fileReader.readLine()) != null) { // Continue reading lines until none left
 				String[] data = line.split(",");             // split string by comma
 
-				for (int j = 0; j < data.length/5; j++) {
+				for (int j = 0; j < data.length/7; j++) {
 					String PWBusNum = String.valueOf(j+1);
 					String ArcGISFID = PWBusNumtoArcGISFID.get(PWBusNum);
 					System.out.println("ArcGISFID= " + ArcGISFID);
 					
 					if (ArcGISFID != null) {
 						Map<String, Object> LoadPointAttributes = LoadPointsTable.getFeature(Long.parseLong(ArcGISFID)).getAttributes();
-						if (!data[1 + 5 * j].trim().isEmpty()) {
-							LoadPointAttributes .put("theta_act", Float.parseFloat(data[1 + 5 * j] .trim()) * 2 * 3.146 / 360); // convert the bus angle to radian and upgrade it to the corressponding BusNum attributes
+						if (!data[1 + 7 * j].trim().isEmpty()) {
+							LoadPointAttributes .put("theta_act", Float.parseFloat(data[1 + 7 * j] .trim()) * 2 * 3.146 / 360); // convert the bus angle to radian and upgrade it to the corressponding BusNum attributes
 						}
-						if (!data[2 + 5 * j].trim().isEmpty()) { 
-							LoadPointAttributes.put("volt_act", Float.parseFloat(data[2 + 5 * j].trim()));
+						if (!data[2 + 7 * j].trim().isEmpty()) { 
+							LoadPointAttributes.put("volt_act", Float.parseFloat(data[2 + 7 * j].trim()));
 						}
-						if (!data[3 + 5 * j].trim().isEmpty()) {
-							LoadPointAttributes.put("pwr_P_act",Float.parseFloat(data[3 + 5 * j].trim()));
+						if (!data[3 + 7 * j].trim().isEmpty()) {
+							LoadPointAttributes.put("pwr_P_act",Float.parseFloat(data[3 + 7 * j].trim()));
 						}
-						if (!data[4 + 5 * j].trim().isEmpty()) {
-							LoadPointAttributes.put("pwr_Q_act",Float.parseFloat(data[4 + 5 * j].trim()));
+						if (!data[4 + 7 * j].trim().isEmpty()) {
+							LoadPointAttributes.put("pwr_Q_act",Float.parseFloat(data[4 + 7 * j].trim()));
 						}
 						
 						LoadPointsTable.updateFeature( Long.parseLong(ArcGISFID), LoadPointAttributes); // update feature table locally
 					}
 					if (j+1 >= 5 && j+1 <= 9) { // PowerGen buses
 						Map<String, Object> PowerGenAttributes = PowerGenTable.getFeature((long) (j+1 - 4)).getAttributes(); // subtract 4 from  PWBusNum to get  FID
-						if (!data[4 + 5 * j].trim().isEmpty()) {
+					/**	if (!data[4 + 5 * j].trim().isEmpty()) {
 							PowerGenAttributes.put("volt_nom", Float.parseFloat(data[4 + 5 * j].trim())); // BUSNOMVOLT
-						} 
-						if (!data[5 + 5 * j].trim().isEmpty()) {
-							PowerGenAttributes.put("volt_act", Float.parseFloat(data[5 + 5 * j].trim())); // BUSKVVOLT
+						}*/ 
+						if (!data[2 + 7 * j].trim().isEmpty()) {
+							PowerGenAttributes.put("volt_act", Float.parseFloat(data[2 + 7 * j].trim())); // BUSKVVOLT
 						}				
 						 PowerGenTable.updateFeature((long) (j+1-4),PowerGenAttributes);
 					}
-					if ((j+1 >= 2 && j+1 <= 4) || (j+1 >= 10 && j+1 <= 12)) { // UHTSubstation
+/**					if ((j+1 >= 2 && j+1 <= 4) || (j+1 >= 10 && j+1 <= 12)) { // UHTSubstation
 						String SubstationFID = PWBusNumtoSubstation.get(String.valueOf(PWBusNum));
 						Map<String, Object> UHTSubstationAttributes = UHTSubstationTable.getFeature(Long.parseLong(SubstationFID)).getAttributes();
-						if (!data[4 + 5 * j].trim().isEmpty()) {
+						if (!data[4 + 7 * j].trim().isEmpty()) {
 							if (j+1 >= 2 && j+1 <= 4) { // high voltage bus
-								UHTSubstationAttributes.put("HV_kV", Float.parseFloat(data[4 + 5 * j].trim())); // BUSNOMVOLT
+								UHTSubstationAttributes.put("HV_kV", Float.parseFloat(data[4 + 7 * j].trim())); // BUSNOMVOLT
 							} else { // low voltage bus
-								UHTSubstationAttributes.put("LV_kV", Float.parseFloat(data[4 + 5 * j].trim())); // BUSNOMVOLT
+								UHTSubstationAttributes.put("LV_kV", Float.parseFloat(data[4 + 7 * j].trim())); // BUSNOMVOLT
 							}
 						}
 						if (!data[5 + 5 * j].trim().isEmpty()) {
@@ -678,8 +687,8 @@ public class PWServlet_New extends HttpServlet {
 							}
 						}
 						UHTSubstationTable.updateFeature( Long.parseLong(SubstationFID), UHTSubstationAttributes);
-					}
-					if (j+1 >= 13 && j+1 <= 30) { // EHT Substation
+					}*/
+/**					if (j+1 >= 13 && j+1 <= 30) { // EHT Substation
 						String SubstationFID = PWBusNumtoSubstation.get(String.valueOf(PWBusNum));
 						Map<String, Object> EHTSubstationAttributes = EHTSubstationTable.getFeature(Long.parseLong(SubstationFID)).getAttributes();
 						if (!data[4 + 5 * j].trim().isEmpty()) {
@@ -697,7 +706,7 @@ public class PWServlet_New extends HttpServlet {
 							}
 						}
 						EHTSubstationTable.updateFeature(Long.parseLong(SubstationFID), EHTSubstationAttributes);
-					}					
+					}*/					
 				}
 			}
 			LoadPointsTable.applyEdits(null); // commit local updates onto server
