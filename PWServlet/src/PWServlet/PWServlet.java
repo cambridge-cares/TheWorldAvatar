@@ -7,15 +7,16 @@
 package PWServlet;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.MalformedURLException;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,11 +46,10 @@ import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-
-//import aspenPlusModels.AspenPlusModels;
-//import de.derivo.sparqldlapi.QueryEngine;
-//import prAspenPlusModels.PrAspenPlusModels;
-import informationQuery.InformationQuery;
+/*import aspenPlusModels.AspenPlusModels;
+import de.derivo.sparqldlapi.QueryEngine;
+import prAspenPlusModels.PrAspenPlusModels;
+import informationQuery.InformationQuery;*/
 
 public class PWServlet extends HttpServlet {
 		
@@ -57,6 +57,10 @@ public class PWServlet extends HttpServlet {
 	public static long start_time;
 	public static long end_time;
 	public static long interval;
+	public static long start_time1;
+	public static long end_time1;
+	public static long start_time2;
+	public static long end_time2;
 	
 	public static ArrayList<String[]> editStack;
 	
@@ -74,7 +78,6 @@ public class PWServlet extends HttpServlet {
 	public static Map<String, String> APSimNamtoOBJECTID = new HashMap<>(); // ZL-151125 Maps the old Chemical Process icon to the aspen plus model
 	public static Map<Integer, String> OBJECTIDtoMXNum = new HashMap<>(); // ZL-160114 Maps ArcGIS OBJECTID to the mixer in chemical plant 
 	public static Map<Integer, String> OBJECTIDtoMXB3 = new HashMap<>(); // ZL-160114 Maps ArcGIS OBJECTID to the mixer in chemical plant
-	public static Map<Integer, String> OBJECTIDtoReactorB3 = new HashMap<>();
 	public static Map<Integer, String> OBJECTIDtoHXNum = new HashMap<>(); // ZL-160114 Maps ArcGIS OBJECTID to the heat exchanger in chemical plant
 	public static Map<Integer, String> OBJECTIDtoHXB3 = new HashMap<>(); // ZL-160114 Maps ArcGIS OBJECTID to the heat exchanger in chemical plant
 	public static Map<Integer, String> OBJECTIDtoCRNum = new HashMap<>(); // ZL-160114 Maps ArcGIS OBJECTID to the reactor in chemical plant
@@ -83,6 +86,9 @@ public class PWServlet extends HttpServlet {
 	public static Map<Integer, String> OBJECTIDtoDCNum = new HashMap<>(); // ZL-160114 Maps ArcGIS OBJECTID to the decanter in chemical plant
 	public static Map<Integer, String> OBJECTIDtoRadF = new HashMap<>(); 	//Maps ArcGIS OBJECTID to the RadFrac
 	public static Map<Integer, String> OBJECTIDtoReactor = new HashMap<>(); 	//Maps ArcGIS OBJECTID to the Reactor
+	
+	public static Map<Integer, String> OBJECTIDtoHXB2 = new HashMap<>();
+	public static Map<Integer, String> OBJECTIDtoHXB2in = new HashMap<>();
 	
 	public static Map<String, String> OBJECTIDtoMaterialL = new HashMap<>(); // Maps ArcGIS OBJECTID to the Material Lines in chemical plant
 	public static Map<String, String> MaterialLtoOBJECTID = new HashMap<>(); // Maps ArcGIS OBJECTID to the Material Lines in chemical plant
@@ -163,8 +169,15 @@ public class PWServlet extends HttpServlet {
 	public static String APPWOUTCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/APPWOUT.CSV"); // output CSV file from the pr aspen plus model
 	public static String QueryCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/QueryOut.CSV"); 
 	
+	
+	public static String HC_Sim = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/simtest1");
+	public static String PrAPHCOUTCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPHCoutCSV.CSV");
+	public static String APHCINCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPHCinCSV.CSV");
+	
 	public PWServlet() {
 		super();
+		//OBJECTIDtoHXB2.put(41, "10E01B2");   //Hydrocracking
+		OBJECTIDtoHXB2in.put(29, "E-701"); //Hydrocracking
 		// Hard Coded ArcGISFIDtoPWBusNum
 		ArcGISFIDtoPWBusNum.put("2", "41"); // Oiltanking Asia Pacific
 		ArcGISFIDtoPWBusNum.put("3", "39"); // Oiltanking Asia Pacific
@@ -535,11 +548,11 @@ public class PWServlet extends HttpServlet {
 		OBJECTIDtoMXNum.put(20, "M-303");    //Biodiesel3
 		OBJECTIDtoMXNum.put(21, "M-601");    //Biodiesel3
 		OBJECTIDtoMXNum.put(21, "M-402");  
-/**		
+		
 		OBJECTIDtoMXB3.put(18, "M-301");  //Biodiesel2
 		OBJECTIDtoMXB3.put(19, "M-302");    //Biodiesel3
 		OBJECTIDtoMXB3.put(20, "M-303");    //Biodiesel3		
-*/		
+		
 		OBJECTIDtoHXNum.put(1, "E-107"); //Biodiesel1
 		OBJECTIDtoHXNum.put(2, "E-102");   //Biodiesel1
 		OBJECTIDtoHXNum.put(3, "E-101");   //Biodiesel1
@@ -596,7 +609,7 @@ public class PWServlet extends HttpServlet {
 		OBJECTIDtoHXNum.put(54, "E-307");   //Biodiesel3
 		OBJECTIDtoHXNum.put(55, "E-602");   //Biodiesel3
 		OBJECTIDtoHXNum.put(56, "E-601"); //Biodiesel3
-/**		
+		
 		OBJECTIDtoHXB3.put(48, "E-304"); //Biodiesel2
 		OBJECTIDtoHXB3.put(49, "E-303");  //Biodiesel2
 		OBJECTIDtoHXB3.put(50, "E-305");   //Biodiesel3
@@ -604,25 +617,7 @@ public class PWServlet extends HttpServlet {
 		OBJECTIDtoHXB3.put(52, "E-306");   //Biodiesel3
 		OBJECTIDtoHXB3.put(53, "E-301");   //Biodiesel3
 		OBJECTIDtoHXB3.put(54, "E-307");   //Biodiesel3
-*/
-		/** hashmap for biodiesel plant -3*/
-		/** heat exchanger*/
-		OBJECTIDtoHXB3.put(50, "10E04");   //Biodiesel3
-		OBJECTIDtoHXB3.put(51, "10E03");   //Biodiesel3
-		OBJECTIDtoHXB3.put(52, "10E05");   //Biodiesel3
-		OBJECTIDtoHXB3.put(53, "10E02");   //Biodiesel3
-		OBJECTIDtoHXB3.put(54, "HRSG1");   //Biodiesel3
-		OBJECTIDtoHXB3.put(55, "10E01");   //Biodiesel3
-		OBJECTIDtoHXB3.put(56, "boiler1");   //Biodiesel3
-		/** mixer*/
-		OBJECTIDtoMXB3.put(18, "MX03");  //Biodiesel2
-		OBJECTIDtoMXB3.put(19, "MX01");    //Biodiesel3
-		OBJECTIDtoMXB3.put(20, "MX02");    //Biodiesel3
-		/** reactor*/
-		OBJECTIDtoReactorB3.put(19, "10D01");
-		OBJECTIDtoReactorB3.put(18, "10D03");
-/** end of new hashmap for biodiesel plant -3*/	
-		
+
 		OBJECTIDtoCRNumB1.put(1, "10D01B1"); //Biodiesel1
 		OBJECTIDtoCRNumB1.put(2, "10D03B1"); //Biodiesel1
 		
@@ -787,15 +782,22 @@ public class PWServlet extends HttpServlet {
 		    end_time = System.currentTimeMillis();
 			System.out.println("runPrAPO takes: "+(end_time-start_time));
 		    break;	
+		case ("PrAPHC"):                                                                  //run parameterised aspen plus with OntoCAPE
+			System.out.println(appCallFlag[0] + " Button was pressed! (doPOST)");
+		    start_time = System.currentTimeMillis();
+		    runParameterisedAPhydrocracking(editStack);	
+		    end_time = System.currentTimeMillis();
+			System.out.println("runPrAPHC takes: "+(end_time-start_time));
+		    break;
 		case ("Query"):					
             System.out.println("start extracting information.");
 //		    final String GISInformation=(BiodieselPlantQuery.PerformQuery(QueryT[0])).toString();
-		    final String GISInformation=PerformQuery(QueryT[0]).toString();
-//		    System.out.println(QueryT[0]);
-//		    final String GISInformation=InformationQuery.Query(QueryT[0]);
-		    System.out.println(GISInformation);
-		    response.setContentLength(GISInformation.length());
-		    response.getOutputStream().write(GISInformation.getBytes());		    
+//		    final String GISInformation=PerformQuery(QueryT[0]).toString();
+		    System.out.println(QueryT[0]);
+		   // final String GISInformation=InformationQuery.Query(QueryT[0]);
+		   // System.out.println(GISInformation);
+		    //response.setContentLength(GISInformation.length());
+		    //response.getOutputStream().write(GISInformation.getBytes());		    
 		    response.getOutputStream().flush();
 		    response.getOutputStream().close();
 		    System.out.println("Success!");
@@ -854,7 +856,253 @@ public class PWServlet extends HttpServlet {
 			break;
 		} // ZL-151126
 	}
-/**when run AspenPlus for the first biodiesel plant (without waste heat recovery) was called, excute the following code: 
+
+public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
+		
+//		String appCallFlag = null;
+//		appCallFlag = editStack.get(0)[2];                                               // flag indicating which function has been called (PowerWorld, parameterised PW, AspenPlus, parameterised AP)
+		List<Double> xRow = new ArrayList<>();                                            // extra arraylist to collect the x-value required as input to the pr aspen plus model
+		List<List<Double>> xData = new ArrayList<>(1);                                    // arraylist to
+		List<List<Double>> yData; 
+		
+		start_time1 = System.currentTimeMillis();
+		xRow=getAPHCInput(editStack);
+		end_time1 = System.currentTimeMillis();
+		xData.add(xRow); 
+		
+		String simDir = HC_Sim;
+		String modelName = "HDMR_Alg_1";
+		FileWriter fileWriter = null;
+		try {
+			
+			fileWriter = new FileWriter(PrAPHCOUTCSV);                                        // filewriter for the output of pr aspenplus model
+            System.load("C:/apache-tomcat-8.0.24/webapps/HClib/MoDS_Java_API_0.1.dll");              //the MoDS API at use is version 0.1
+			
+			ArrayList<String> xNames = MoDSAPI.getXVarNamesFromAPI(simDir, modelName);		
+			System.out.println("xNames= " + xNames);
+			ArrayList<String> yNames = MoDSAPI.getYVarNamesFromAPI(simDir, modelName);
+			System.out.println("yNames= " + yNames);
+			for (int j = 0; j < yNames.size(); j++) {
+				fileWriter.append(yNames.get(j));                                               // write the yNames to the output CSV file
+				fileWriter.append(",");
+			}									
+		} catch (Error e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		yData = MoDSAPI.evaluateSurrogate(simDir, modelName, xData);                       // call MoDS API to evaluate the surrogate model basing on the MoDS simulation file "simDir -> modelNam"  and  the input xData that was collected before
+		System.out.println("xRow=" + xRow);
+		System.out.println("yData=" + yData);                                              // print out the output yData to console
+
+		for (int j = 0; j < yData.size(); j++) {
+			try {
+				fileWriter.append("\n");
+				for (int k = 0; k < yData.get(j).size(); k++) {
+					fileWriter.append(Double.toString(yData.get(j).get(k)));                        // write the yData to the output CSV file
+					fileWriter.append(",");
+				}
+			} catch (IOException e) {
+
+				e.printStackTrace();
+			} finally {
+				try {
+					fileWriter.flush();
+					fileWriter.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+// end of evaluating the surrogate model
+		start_time2 = System.currentTimeMillis();
+		readPrAPHCCSV();
+		end_time2 = System.currentTimeMillis();
+		System.out.println("getAPHCInput takes: "+( end_time1-start_time1));
+		System.out.println("readPrAPCSV takes: "+( end_time2-start_time2));
+	}
+	
+	public ArrayList<Double> getAPHCInput(ArrayList<String[]> editStack){ 
+		ArrayList<Map<String, Object>> attributeslist_HX = new ArrayList<Map<String, Object>>(); // additional ArrayList for heat exchanger
+		
+		UserCredentials user = new UserCredentials();
+		user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
+						
+		for (Integer key : OBJECTIDtoHXB2in.keySet()) {
+			try {
+				QueryParameters qParameter_HX = new QueryParameters();                       // create an instance  of QueryParameters to be used  for querying  ArcGIS database for predefined data
+				qParameter_HX.setWhere("OBJECTID='" + key + "'");                            // define FID address of an ArcGIS element
+				qParameter_HX.setOutFields(new String[] { "*" });                            // fetch all  attributes of an ArcGIS element using *
+				QueryTask qTask_HX = null;                                                   // create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
+				Feature graphic_HX = null;                                                   // create an instance of Feature to store an ArcGIS element
+
+				qTask_HX = new QueryTask( "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/heater_cooler/FeatureServer/0", user); // store URL address of appropriate databaseand user credentials
+				FeatureResult fResult_HX = qTask_HX.execute(qParameter_HX);                   // FeatureResult is used to store information from ArcGIS database requested using qParameter_LP  and qTask_LP
+				graphic_HX = (Feature) fResult_HX.iterator().next();                          // queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
+				attributeslist_HX.add(graphic_HX.getAttributes());                            // append information about the  element in graphic_LP to ArrayList attributeslist_LP
+
+			} catch (Exception e) {
+				e.printStackTrace();                                                            // It prints the stack trace of the Exception to System.err. It's a very simple, but very useful tool for diagnosing an Exception. It tells you what happened and where in the code this happened.
+			}
+		}
+		
+		ArrayList<Double> xRow = new ArrayList<Double>();                                      // extra arraylist to collect the x-value required as input to the pr aspen plus model
+	 		 
+		 FileWriter filewriterAPIN = null;
+
+		try {			
+			filewriterAPIN = new FileWriter(APHCINCSV); // to put the input values for the AspenPlus subset model
+			filewriterAPIN.append("Hydro, VGO");
+			filewriterAPIN.append("\n");
+
+			for (int i = 0; i < attributeslist_HX.size(); i++) {
+				for (String key : attributeslist_HX.get(i).keySet()) { // go through  all the  heat exchangers in biodiesel plant
+					if (key == "OBJECTID") {
+//41, 48						
+						if (OBJECTIDtoHXB2in.get(i + 29).equals("E-701")) { // "10E01" is the heat exchanger for oil to be heated before feeding to the reactor
+							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")));
+							filewriterAPIN.append(",");
+							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn3Qnt")));
+							filewriterAPIN.append(",");
+//							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatOut1_T")));
+//							filewriterAPIN.append(",");
+							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")))); // add the feeding mole flowrate of oil to xRow
+							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn3Qnt")))); // add the temperature of oil to xRow
+//							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatOut1_T")))); // add the temperature of oil to xRow
+							break;
+						}
+					}
+				}
+			}
+
+			System.out.println("xRow=" + xRow);                                                                    // print out all the x-data that has been collected to console
+			
+			filewriterAPIN.flush();
+			filewriterAPIN.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return xRow;
+	}
+	
+	public void readPrAPHCCSV() {
+		BufferedReader fileReader = null;
+		UserCredentials user = new UserCredentials();
+		user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
+
+		try {
+			long start = System.currentTimeMillis(); // start a timer
+			String line = null;
+			fileReader = new BufferedReader(new FileReader(PrAPHCOUTCSV));
+			fileReader.readLine();     // Read the CSV flie header to skip it
+			QueryParameters loadAllFeatures = new QueryParameters();
+			loadAllFeatures.setWhere("OBJECTID IS NOT NULL");
+			
+			GeodatabaseFeatureServiceTable RadFracTable = new GeodatabaseFeatureServiceTable( "http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/RadFrac/FeatureServer", user, 0);
+			RadFracTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
+			RadFracTable.initialize();
+			System.out.println(RadFracTable.getStatus());
+			RadFracTable.getInitializationError();
+			
+			/*GeodatabaseFeatureServiceTable HeaterCoolerTable = new GeodatabaseFeatureServiceTable( "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/heater_cooler/FeatureServer", user, 0);
+			HeaterCoolerTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
+			HeaterCoolerTable.initialize();
+			System.out.println(HeaterCoolerTable.getStatus());
+			HeaterCoolerTable.getInitializationError();
+			
+			GeodatabaseFeatureServiceTable MixerTable = new GeodatabaseFeatureServiceTable( "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Mixer/FeatureServer", user, 0);
+			MixerTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
+			MixerTable.initialize();
+			System.out.println(MixerTable.getStatus());
+			MixerTable.getInitializationError();
+						
+			GeodatabaseFeatureServiceTable GasLineTable = new GeodatabaseFeatureServiceTable( "http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Gas_line/FeatureServer", user, 0);
+			GasLineTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
+			GasLineTable.initialize();
+			System.out.println(GasLineTable.getStatus());
+			GasLineTable.getInitializationError();
+			*/
+			final CountDownLatch latch = new CountDownLatch(1);                                                                             // ZL-151207 handles one asynchronous processes, only continues  Thread when it reaches 0
+			RadFracTable.populateFromService(loadAllFeatures, false, 
+					new CallbackListener<Boolean>() {
+						@Override
+						public void onCallback(Boolean status) {                                                                            // Asynchronous callback: code must wait for populate from service to finish loading features
+							if (status == true) {
+								latch.countDown();                                                                                          // latch decrement if feature service table is ready
+							}
+						}
+
+						@Override
+						public void onError(Throwable e) {
+							e.printStackTrace();
+						}
+					});
+					
+			       latch.await();                                                                                                              // wait until all feature service tables are ready then continue
+			       
+			while ((line = fileReader.readLine()) != null) {
+				String[] data = line.split(",");
+//				System.out.println("data= " + data);
+				String[] ArcGISOBJECTID = null;
+				ArcGISOBJECTID = new String[6];
+
+				//the following code is used for updating the flowrate of the FINALPRD to ArcGIS database
+				for (int j = 3; j < 6; j++) {
+					ArcGISOBJECTID[j] = String.valueOf(j + 1);
+					System.out.println(ArcGISOBJECTID);
+
+					if (OBJECTIDtoRadF.get(j + 1).equals("T-701")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
+						Map<String, Object> RadFracAttributes = RadFracTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
+						
+						if (!data[2].trim().isEmpty()) {
+							RadFracAttributes.put("MatOut2Qnt",Float.parseFloat(data[2].trim()));   // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
+						}
+						System.out.println("F_propane="+data[2]);
+			 	       
+						if (!data[0].trim().isEmpty()) {
+							RadFracAttributes.put("MatOut4Qnt",Float.parseFloat(data[0].trim()));   // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
+						}
+						System.out.println("F_DIST="+data[0]);
+			 	       
+						if (!data[1].trim().isEmpty()) {
+							RadFracAttributes.put("MatOut5Qnt",Float.parseFloat(data[1].trim()));   // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
+						}
+						System.out.println("F_NAPHTHA="+data[1]);
+						
+												
+						if (!data[3].trim().isEmpty()) {
+							RadFracAttributes.put("MatOut2_T",Float.parseFloat(data[3].trim()));
+							RadFracAttributes.put("MatOut4_T",Float.parseFloat(data[3].trim()));
+							RadFracAttributes.put("MatOut5_T",Float.parseFloat(data[3].trim()));// upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
+						}
+						System.out.println("T_out="+data[3]);
+					    RadFracTable.updateFeature(Long.parseLong(ArcGISOBJECTID[j]),RadFracAttributes);                          // update feature table locally
+						break;
+					}
+				}										
+			}
+			RadFracTable.applyEdits(null);                                                                                        // commit local updates onto Server
+			
+			
+			
+			
+			System.out.println("Updating process took " + String.valueOf(System.currentTimeMillis() - start) + "ms");                     // tells how long it took to update
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				fileReader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	
+	/**when run AspenPlus for the first biodiesel plant (without waste heat recovery) was called, excute the following code: 
  * 1)get all the input state variables from ArcGIS database for the aspen plus model;
  * 2)call python script to run aspen plus model, and generate a output csv file;
  * 3)read from the csv file and update to ArcGIS database */
@@ -863,7 +1111,6 @@ public class PWServlet extends HttpServlet {
 		PCrunPyScript(editStack);                                                                  // call python script to run aspen plus model
 		PCreadAPCSV();
 	}
-	
 	/**when run AspenPlus for the second biodiesel plant (with waste heat recovery) was called, excute the following code: 
 	 * 1)get all the input state variables from ArcGIS database for the aspen plus model;
 	 * 2)call python script to run aspen plus model, and generate a output csv file;
@@ -1689,51 +1936,57 @@ public class PWServlet extends HttpServlet {
 	}
 	/**This method sends http request to OPAL-RT machine residing in NTU, in order to run the certain python script and RT-lab sim model*/
 	public void callOPALRT () {
-		
+		HttpURLConnection urlCon;
+		OutputStreamWriter out;
 		URL url;
+						
 		try{
-			System.out.println("1_o");
-//			url = new URL("http://14.100.26.181/OPALRTServlet/");
-//			url = new URL("http://172.25.182.41/OPALRTServlet/");
-			url = new URL("http://caresremote1.dyndns.org:1700/OPALRTServlet/"); 
-//			url = new URL("http://jparksimulator.com:80/OPALRTServlet/"); 
-
+			
+//			url = new URL("http://caresremote1.dyndns.org:1700/OPARTServlet/");
+//			url = new URL("http://14.100.26.181:1700/OPARTServlet/");
+			url = new URL("http://caresremote1.dyndns.org/OPARTServlet/");
+			urlCon = (HttpURLConnection) url.openConnection();
+			urlCon.setRequestMethod("POST");
+			urlCon.setDoOutput(true);
+			out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
 			
 			StringBuilder outputString = new StringBuilder();
-			outputString.append("ping");	
+			outputString.append(URLEncoder.encode("layers", "UTF-8"));
+			outputString.append("=");
+			outputString.append(URLEncoder.encode(" ", "UTF-8"));
+			outputString.append("&");
+			outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
+			outputString.append("=");
+			outputString.append(URLEncoder.encode(" ", "UTF-8"));
+			outputString.append("&");
+			outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
+			outputString.append("=");
+			outputString.append(URLEncoder.encode("OPALRT", "UTF-8"));
+			outputString.append("&");
+			outputString.append(URLEncoder.encode("QueryT", "UTF-8"));
+			outputString.append("=");				
+			outputString.append(URLEncoder.encode(" ", "UTF-8"));
 			
-			try {
-			    URL myURL = url;
-			    URLConnection myURLConnection = myURL.openConnection();
-			    System.out.println("sucessful_connection");
-			    myURLConnection.setDoOutput(true);
-			    OutputStreamWriter out = new OutputStreamWriter(myURLConnection.getOutputStream());
-			    out.write(outputString.toString());
-				out.close();
-			    System.out.println("sucessful_outputwriting");
-			    BufferedReader in = new BufferedReader(new InputStreamReader(myURLConnection.getInputStream()));
-				String decodedString;
-				while ((decodedString = in.readLine()) != null) {
-					System.out.println(decodedString);
-				}
-				in.close();
-
-			} 
-			catch (MalformedURLException e) { 
-				e.printStackTrace();
-			} 
-			catch (IOException e) {   
-				e.printStackTrace();
+			DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
+			wr.writeBytes(outputString.toString());
+			wr.flush();
+			wr.close();
+			
+			if(urlCon.getResponseCode()==200){
+				System.out.println("Message received!");
+			} else {
+				System.out.println( "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
+						+ "\nPlease try testing your code again");
 			}
 			
-			
+			out.close();
+			System.out.println(wr);
 		}catch (IOException equery){
 			equery.printStackTrace();
 		}
 	}
 	
 	public JSONArray PerformQuery(String queryT) throws IOException{
-		System.out.println(queryT);
 		final JSONArray arr=new JSONArray();
 		String QueryTask = null;
 		QueryTask = queryT;
@@ -1982,7 +2235,7 @@ public class PWServlet extends HttpServlet {
 //****************************************************************************************************************************	
 **/	
 		
-		String simDir = APPWSim;		
+		String simDir = APPWSim;	
 		String modelName = "Polynomial_Alg_1";
 		FileWriter fileWriter = null;
 		try {
@@ -2026,7 +2279,7 @@ public class PWServlet extends HttpServlet {
 					e.printStackTrace();
 				}
 			}
-		}		
+		}	
 // end of evaluating the surrogate model
 				    
 		    readPrAPPWCSV();	
@@ -2039,17 +2292,33 @@ public class PWServlet extends HttpServlet {
 		UserCredentials user = new UserCredentials();
 		user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");	
 		
-		String layer = null, OBJECTID = null, appCallFlag = null;
+		/*String layer = null, OBJECTID = null, appCallFlag = null;
 		layer = editStack.get(0)[0];
 		OBJECTID = editStack.get(0)[1];
 		appCallFlag = editStack.get(0)[2];
 		System.out.println("layer="+layer);
 		System.out.println("OBJECTID="+OBJECTID);
+		*/
 		
-		ArrayList<Double> xRow = new ArrayList<Double>();
-											
+		for (Integer key : OBJECTIDtoHXB3.keySet()) {
+			try {
+				QueryParameters qParameter_HX = new QueryParameters();                       // create an instance  of QueryParameters to be used  for querying  ArcGIS database for predefined data
+				qParameter_HX.setWhere("OBJECTID='" + key + "'");                            // define FID address of an ArcGIS element
+				qParameter_HX.setOutFields(new String[] { "*" });                            // fetch all  attributes of an ArcGIS element using *
+				QueryTask qTask_HX = null;                                                   // create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
+				Feature graphic_HX = null;                                                   // create an instance of Feature to store an ArcGIS element
+
+				qTask_HX = new QueryTask( "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/heater_cooler/FeatureServer/0", user); // store URL address of appropriate databaseand user credentials
+				FeatureResult fResult_HX = qTask_HX.execute(qParameter_HX);                   // FeatureResult is used to store information from ArcGIS database requested using qParameter_LP  and qTask_LP
+				graphic_HX = (Feature) fResult_HX.iterator().next();                          // queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
+				attributeslist_HX.add(graphic_HX.getAttributes());                            // append information about the  element in graphic_LP to ArrayList attributeslist_LP
+
+			} catch (Exception e) {
+				e.printStackTrace();                                                            // It prints the stack trace of the Exception to System.err. It's a very simple, but very useful tool for diagnosing an Exception. It tells you what happened and where in the code this happened.
+			}
+		}									
 	
-		for (int key : OBJECTIDtoMXB3.keySet()) {
+		for (Integer key : OBJECTIDtoMXB3.keySet()) {
 //			System.out.println(key);
 			try {
 				QueryParameters qParameter_MX = new QueryParameters(); // create an instance of QueryParameters to be used for querying ArcGIS database for predefined data
@@ -2069,28 +2338,19 @@ public class PWServlet extends HttpServlet {
 			}
 		}
 		
-		for (Integer key : OBJECTIDtoHXB3.keySet()) {
-			try {
-				QueryParameters qParameter_HX = new QueryParameters();                       // create an instance  of QueryParameters to be used  for querying  ArcGIS database for predefined data
-				qParameter_HX.setWhere("OBJECTID='" + key + "'");                            // define FID address of an ArcGIS element
-				qParameter_HX.setOutFields(new String[] { "*" });                            // fetch all  attributes of an ArcGIS element using *
-				QueryTask qTask_HX = null;                                                   // create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
-				Feature graphic_HX = null;                                                   // create an instance of Feature to store an ArcGIS element
-
-				qTask_HX = new QueryTask( "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/heater_cooler/FeatureServer/0", user); // store URL address of appropriate databaseand user credentials
-				FeatureResult fResult_HX = qTask_HX.execute(qParameter_HX);                   // FeatureResult is used to store information from ArcGIS database requested using qParameter_LP  and qTask_LP
-				graphic_HX = (Feature) fResult_HX.iterator().next();                          // queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
-				attributeslist_HX.add(graphic_HX.getAttributes());                            // append information about the  element in graphic_LP to ArrayList attributeslist_LP
-
-			} catch (Exception e) {
-				e.printStackTrace();                                                            // It prints the stack trace of the Exception to System.err. It's a very simple, but very useful tool for diagnosing an Exception. It tells you what happened and where in the code this happened.
-			}
-		}
 		
-		                                      // extra arraylist to collect the x-value required as input to the pr aspen plus model
+		
+		ArrayList<Double> xRow = new ArrayList<Double>();                                     // extra arraylist to collect the x-value required as input to the pr aspen plus model
 //		ArrayList<ArrayList<Double>> xData = new ArrayList<>(1);                               // arraylist to
 //		ArrayList<ArrayList<Double>> yData;                                                    // output of the pr aspenplus model
-			 		 
+		
+/**																	
+		Thread thread_MX = new Thread(new Set_MX());
+		 thread_MX.start();
+	
+		Thread thread_HX = new Thread(new Set_HX());
+		 thread_HX.start();	
+**/		 		 
 		 FileWriter filewriterAPIN = null;
 
 		try {
@@ -2099,12 +2359,13 @@ public class PWServlet extends HttpServlet {
 
 			filewriterAPIN.append("FOIL, TOIL, FMEOH, TMEOH, FREWATER, PBOILER");
 			filewriterAPIN.append("\n");
-
+						
 			for (int i = 0; i < attributeslist_HX.size(); i++) {
 				for (String key : attributeslist_HX.get(i).keySet()) { // go through  all the  heat exchangers in biodiesel plant
-					if (key == "OBJECTID") {
+					if (key == "OBJECTID") {				
 //50-56
-						if (OBJECTIDtoHXB3.get(i + 50).equals("10E01")) { // "10E01" is the heat exchanger for oil to be heated before feeding to the reactor
+						if (OBJECTIDtoHXB3.get(i + 48).equals("E-301")) { 
+							// "10E01" is the heat exchanger for oil to be heated before feeding to the reactor
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")));
 							filewriterAPIN.append(",");
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T")));
@@ -2114,6 +2375,7 @@ public class PWServlet extends HttpServlet {
 							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")))); // add the feeding mole flowrate of oil to xRow
 							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T")))); // add the temperature of oil to xRow
 //							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn1_P")))); // add the pressure of oil to xRow
+						break;
 						}
 					}
 				}
@@ -2123,7 +2385,8 @@ public class PWServlet extends HttpServlet {
 				for (String key : attributeslist_MX.get(i).keySet()) { // go through all  the mixers in biodiesel plant
 					if (key == "OBJECTID") {
 //19-21
-						if (OBJECTIDtoMXB3.get(i + 18).equals("MX01")) { // "mx01" is the mixer for methanol and the catalyst to be mixed before feeding to the reactor
+						if (OBJECTIDtoMXB3.get(i + 18).equals("M-301")) { // "mx01" is the mixer for methanol and the catalyst to be mixed before feeding to the reactor
+							System.out.println("formixer="+OBJECTIDtoHXB3.get(i+53));
 							filewriterAPIN.append(String.valueOf(attributeslist_MX.get(i).get("MatIn2Qnt")));
 							filewriterAPIN.append(",");
 							filewriterAPIN.append(String.valueOf(attributeslist_MX.get(i).get("MatIn2_T")));
@@ -2133,6 +2396,7 @@ public class PWServlet extends HttpServlet {
 							xRow.add(Double.parseDouble(String.valueOf(attributeslist_MX.get(i).get("MatIn2Qnt")))); // add the feeding mole flowrate of methanol  to xRow
 							xRow.add(Double.parseDouble(String.valueOf(attributeslist_MX.get(i).get("MatIn2_T")))); // add the temperature of the feeding methanol flow to xRow							
 //							xRow.add(Double.parseDouble(String.valueOf(attributeslist_MX.get(i).get("MatIn2_P")))); // add the pressure of the feeding methanol flow to xRow
+						break;
 						}
 					}
 				}
@@ -2142,13 +2406,15 @@ public class PWServlet extends HttpServlet {
 				for (String key : attributeslist_HX.get(i).keySet()) { // go through all the heat exchanger in biodiesel plant
 					if (key == "OBJECTID") {
 
-						if (OBJECTIDtoHXB3.get(i + 50).equals("boiler1")) {
-							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatOut6Qnt")));
+						if (OBJECTIDtoHXB3.get(i + 48).equals("E-307")) {
+							System.out.println(OBJECTIDtoHXB3.get(i+54));
+							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")));
 							filewriterAPIN.append(",");
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("Operate_P")));
 							filewriterAPIN.append(",");
-							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatOut6Qnt")))); // add the temperature of the outlet cold stream  to xRow
+							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")))); // add the temperature of the outlet cold stream  to xRow
 							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("Operate_P")))); // add the temperature of the outlet cold stream  to xRow
+						break;
 						}
 					}
 				}
@@ -2186,7 +2452,7 @@ public class PWServlet extends HttpServlet {
 	    double[] C = new double [j];
 	    double x0A=30, x0B=3, x1A=30, x1B=3, x2A=180, x2B=18, x3A=30, x3B=3, x4A=233.135, x4B=23.3135, x5A=4, x5B=0.4;
 	    	    					
-		String uri = "File:/C:/apache-tomcat-8.0.24/webapps/ROOT/BiodieselPlant-1.owl";
+		String uri = "File:/C:/apache-tomcat-8.0.24/webapps/ROOT/BiodieselPlant.owl";
 													
 			try{			
                 OWLModel owlModel = ProtegeOWL.createJenaOWLModelFromURI(uri);
@@ -2499,13 +2765,13 @@ public class PWServlet extends HttpServlet {
 			latch.await(); // wait until all feature service tables are ready then continue
 
 				String[] ArcGISOBJECTID = null;
-				ArcGISOBJECTID = new String[50];
+				ArcGISOBJECTID = new String[7];
 
-				for (int j = 10; j < 12; j++) {
+				for (int j = 0; j < 2; j++) {
 					ArcGISOBJECTID[j] = String.valueOf(j + 1);
 					System.out.println(ArcGISOBJECTID);
 
-					if (OBJECTIDtoRadF.get(j + 1).equals("10D08B3")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
+					if (OBJECTIDtoRadF.get(j + 1).equals("10D08")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
 						Map<String, Object> RadFracAttributes = RadFracTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 							RadFracAttributes.put("MatOut3Qnt",result[0]);                                                               // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
 							System.out.println("F="+result[0]);
@@ -2529,7 +2795,7 @@ public class PWServlet extends HttpServlet {
 	public void runAspenPlus(ArrayList<String[]> editStack) {
 		getAPPWInput(editStack);          //collects the input data
 		runPyScript(editStack);           // call python script to run aspen plus model
-		readAPCSV();                      //update the output data
+		readAPCSV();                      //update the output 
 /*		
 		ArrayList<Map<String, Object>> attributeslist_MX = new ArrayList<Map<String, Object>>(); // additional ArrayList for mixer
 		ArrayList<Map<String, Object>> attributeslist_HX = new ArrayList<Map<String, Object>>(); // additional ArrayList for heat exchanger
@@ -3207,11 +3473,11 @@ public class PWServlet extends HttpServlet {
 				String[] ArcGISOBJECTID = null;
 				ArcGISOBJECTID = new String[7];
 
-				for (int j = 0; j < 6; j++) {
+				for (int j = 0; j < 2; j++) {
 					ArcGISOBJECTID[j] = String.valueOf(j + 1);
 					System.out.println(ArcGISOBJECTID);
 
-					if (OBJECTIDtoRadF.get(j + 1).equals("10D08B1")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
+					if (OBJECTIDtoRadF.get(j + 1).equals("10D08")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
 						Map<String, Object> MaterialLineAttributes = MaterialLineTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[0].trim().isEmpty()) {
 							MaterialLineAttributes.put("MatOut3Qnt",Float.parseFloat(data[0].trim()));   // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
@@ -3364,15 +3630,15 @@ public class PWServlet extends HttpServlet {
 
 			while ((line = fileReader.readLine()) != null) {
 				String[] data = line.split(",");
-				System.out.println("data= " + data);
+				//System.out.println("data= " + data);
 				String[] ArcGISOBJECTID = null;
 				ArcGISOBJECTID = new String[7];
 
-				for (int j = 0; j < 6; j++) {
+				for (int j = 0; j < 2; j++) {
 					ArcGISOBJECTID[j] = String.valueOf(j + 1);
 					System.out.println(ArcGISOBJECTID);
 
-					if (OBJECTIDtoRadF.get(j + 1).equals("10D08B1")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
+					if (OBJECTIDtoRadF.get(j + 1).equals("10D08")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
 						Map<String, Object> RadFracAttributes = RadFracTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[1].trim().isEmpty()) {
 							RadFracAttributes.put("MatOut3Qnt",Float.parseFloat(data[1].trim()));   // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
@@ -3437,15 +3703,15 @@ public class PWServlet extends HttpServlet {
 
 			while ((line = fileReader.readLine()) != null) {
 				String[] data = line.split(",");
-				System.out.println("data= " + data);
+				//System.out.println("data= " + data);
 				String[] ArcGISOBJECTID = null;
 				ArcGISOBJECTID = new String[7];
 
-				for (int j = 0; j < 20; j++) {
+				for (int j = 0; j < 2; j++) {
 					ArcGISOBJECTID[j] = String.valueOf(j + 1);
 					System.out.println(ArcGISOBJECTID);
 
-					if (OBJECTIDtoReactor.get(j + 1).equals("10D01B3")) {                                                                     
+					if (OBJECTIDtoReactor.get(j + 1).equals("10D01")) {                                                                     
 						Map<String, Object> ReactorAttributes = ReactorTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[26].trim().isEmpty()) {
 							ReactorAttributes.put("Heat_Duty",Float.parseFloat(data[26].trim())*1000);                                     // upgrade the heat duty of reactor 10D01 to ArcGIS  databse
@@ -3466,7 +3732,7 @@ public class PWServlet extends HttpServlet {
 						System.out.println("V_act_kv="+ Float.parseFloat(data[114].trim()));
 						ReactorTable.updateFeature(Long.parseLong(ArcGISOBJECTID[j]),ReactorAttributes);                                // update feature table locally
 					}
-					if (OBJECTIDtoReactor.get(j + 1).equals("10D03B3")) {                                                                     
+					if (OBJECTIDtoReactor.get(j + 1).equals("10D03")) {                                                                     
 						Map<String, Object> ReactorAttributes = ReactorTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[23].trim().isEmpty()) {
 							ReactorAttributes.put("Heat_Duty",Float.parseFloat(data[23].trim())*1000);                                // upgrade the heat duty of reactor 10D03 to ArcGIS  databse
@@ -3539,15 +3805,15 @@ public class PWServlet extends HttpServlet {
 
 			while ((line = fileReader.readLine()) != null) {
 				String[] data = line.split(",");
-				System.out.println("data= " + data);
+				//System.out.println("data= " + data);
 				String[] ArcGISOBJECTID = null;
 				ArcGISOBJECTID = new String[50];
 
-				for (int j = 0; j < 2; j++) {
+				for (int j = 0; j < 20; j++) {
 					ArcGISOBJECTID[j] = String.valueOf(j + 1);
 					System.out.println(ArcGISOBJECTID);
 					
-					if (OBJECTIDtoReactorB3.get(j + 18).equals("10D01")) {                                                                     
+					if (OBJECTIDtoReactor.get(j + 1).equals("R-301")) {                                                                     
 						Map<String, Object> ReactorAttributes = ReactorTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[25].trim().isEmpty()) {
 							ReactorAttributes.put("Heat_Duty",Float.parseFloat(data[25].trim())*1000);                                     // upgrade the heat duty of reactor 10D01 to ArcGIS  databse
@@ -3568,7 +3834,7 @@ public class PWServlet extends HttpServlet {
 						System.out.println("V_act_kv="+ Float.parseFloat(data[113].trim()));
 						ReactorTable.updateFeature(Long.parseLong(ArcGISOBJECTID[j]),ReactorAttributes);                                // update feature table locally
 					}
-					if (OBJECTIDtoReactorB3.get(j + 18).equals("10D03")) {                                                                     
+					if (OBJECTIDtoReactor.get(j + 1).equals("R-302")) {                                                                     
 						Map<String, Object> ReactorAttributes = ReactorTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[22].trim().isEmpty()) {
 							ReactorAttributes.put("Heat_Duty",Float.parseFloat(data[22].trim())*1000);                                // upgrade the heat duty of reactor 10D03 to ArcGIS  databse
@@ -3758,7 +4024,6 @@ public class PWServlet extends HttpServlet {
 				}
 				fW_PWIN.append("\n");
 				fW_PWIN.append(skeleton.get(i)[2]); // PW object type (e.g. BUS, GEN, LOAD)
-				
 				fW_PWIN.append("\n"); // each item is given three rows: headers (name of attributes), corresponding  values and type of object (e.g. BUS, GEN, etc)
 
 			}
@@ -4003,7 +4268,7 @@ public class PWServlet extends HttpServlet {
 	
 	
 
-/*	
+	
 //multi-thread 	
 	class Set_MX extends Thread{
 		@Override 
@@ -4153,6 +4418,6 @@ public class PWServlet extends HttpServlet {
 					}
 		}
 	}	
-*/		
+		
 }
 

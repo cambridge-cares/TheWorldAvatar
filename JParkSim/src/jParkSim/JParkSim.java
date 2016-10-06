@@ -41,6 +41,7 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -58,18 +59,22 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 
-import MouseDrag.MouseDrag;
-import queryWindow.QueryWindow;
+//import MouseDrag.MouseDrag;
+//import queryWindow.QueryWindow;
 
 import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.MultiPoint;
 import com.esri.core.geometry.Point;
+import com.esri.core.geometry.Polygon;
 import com.esri.core.io.UserCredentials;
 import com.esri.core.map.Feature;
 import com.esri.core.map.Graphic;
+import com.esri.map.TimeAwareLayer;
+import com.esri.core.map.TimeOptions.Units;
 import com.esri.core.portal.Portal;
 import com.esri.core.portal.WebMap;
 import com.esri.core.renderer.SimpleRenderer;
@@ -86,6 +91,8 @@ import com.esri.map.GroupLayer;
 import com.esri.map.JMap;
 import com.esri.map.Layer;
 import com.esri.map.LayerEvent;
+import com.esri.map.LayerInitializeCompleteEvent;
+import com.esri.map.LayerInitializeCompleteListener;
 import com.esri.map.LayerList;
 import com.esri.map.LayerListEventListenerAdapter;
 import com.esri.map.MapEvent;
@@ -100,11 +107,14 @@ import com.esri.toolkit.overlays.HitTestEvent;
 import com.esri.toolkit.overlays.HitTestListener;
 import com.esri.toolkit.overlays.HitTestOverlay;
 import com.esri.toolkit.overlays.InfoPopupOverlay;
+import com.esri.toolkit.sliders.JTimeSlider;
+import com.esri.toolkit.sliders.JTimeSlider.TimeMode;
 import com.esri.core.symbol.PictureMarkerSymbol;
 
 
 public class JParkSim {
 	
+	//declare the variable which contains the modification of each layer, such as the color, thickness, icon
 	
 	// style of different layers
 		final static SimpleFillSymbol Landlotscolor = new SimpleFillSymbol(Color.cyan, new SimpleLineSymbol(Color.cyan, 1), SimpleFillSymbol.Style.NULL);
@@ -154,6 +164,7 @@ public class JParkSim {
 		final static SimpleFillSymbol expandercolor = new SimpleFillSymbol(new Color(219,112,147));
 		final static SimpleFillSymbol compressorcolor = new SimpleFillSymbol(Color.white);
 		final static SimpleLineSymbol steamcolor = new SimpleLineSymbol(new Color(128,0,128), 3);
+		final static PictureMarkerSymbol intersectioncolor = new PictureMarkerSymbol("http://static.arcgis.com/images/Symbols/Animated/EnlargeRotatingWhiteMarkerSymbol.png");
 		final static PictureMarkerSymbol waterpointcolor = new PictureMarkerSymbol("http://static.arcgis.com/images/Symbols/Animated/EnlargeGradientSymbol.png");
 		final static SimpleLineSymbol waternetworkcolor = new SimpleLineSymbol(new Color(0,0,128), 3);
 		
@@ -166,6 +177,7 @@ public class JParkSim {
 	//try to put new variable
 	
 	private static GraphicsLayer graphicsLayer;
+	private JTimeSlider timeSlider;
 	
 	private MultiPoint planes;
 	
@@ -178,7 +190,8 @@ public class JParkSim {
 //	private JLayerTree jLayerTree;  //ZL-151207 add layertree
 	public static JLayeredPane contentPane;
 		
-	// initialize layers
+	
+	// initialize layers for all the arcgis feature layers
 	public static ArcGISFeatureLayer Landlotslayer;
 	public static ArcGISFeatureLayer Buildingslayer;
 	public static ArcGISFeatureLayer Storagelayer;
@@ -226,6 +239,8 @@ public class JParkSim {
 	public static ArcGISFeatureLayer steamlayer;
 	public static ArcGISFeatureLayer waterpointlayer;	
 	public static ArcGISFeatureLayer waternetworklayer;
+	public static ArcGISFeatureLayer intersectionlayer;
+	
 	
 	
  	public static String httpStringCSV = new String("D:/httpReq.CSV"); // (mjk, 151115) investigating structure of DataOutputStream object
@@ -241,14 +256,26 @@ public class JParkSim {
 		}
 	}
 	
-	//add link for webmap graph
-	Portal portal = new Portal("http://www.arcgis.com",null);
-	  // item ID of a public map on arcgis.com with charts
-	  final String MAP_ID = "f809dccb780a4af0a506e56aaa84d084";
-	  
+	private JTimeSlider createTimeSlider(TimeAwareLayer layer) {
+	    JTimeSlider jTimeSlider = new JTimeSlider();
+	    jTimeSlider.setTitle("time animation for dispersion");
+	    jTimeSlider.addLayer(layer);
+	    jTimeSlider.setTimeMode(TimeMode.TimeExtent);
+	    jTimeSlider.setPlaybackRate(1000); // 1 second per tick
+	    jTimeSlider.setVisible(false);
+	    return jTimeSlider;
+	  }
+	
+	 private String wrap(String str) {
+		    // create a HTML string that wraps text when longer
+		    return "<html><p style='width:200px;'>" + str + "</html>";
+		  }
+	
 	  
 	
   public JParkSim() {
+	  
+	  
 	  
 	  
 	  
@@ -259,10 +286,15 @@ public class JParkSim {
     layers.add(tiledLayer); // add basemap layer
 
 
-// layer for the emission
+// dynamic map layer for the emission
 ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
             "http://localhost:6080/arcgis/rest/services/emission/MapServer");
                 layers.add(emissionLayer);
+                
+              //add dynamic map layer for the sensitivity bar chart
+                ArcGISDynamicMapServiceLayer dispersionLayer = new ArcGISDynamicMapServiceLayer(
+                        "http://localhost:6080/arcgis/rest/services/gasdispersion/MapServer");
+                            layers.add(dispersionLayer);
     
                 
     // map centered on Jurong Island
@@ -275,7 +307,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     	}
     });
   
-    // adds layers uploaded onto ArcGIS for Developers
+    // adds layers source uploaded onto ArcGIS for Developers 
     UserCredentials user = new UserCredentials();
     user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp"); // Access secure feature layer service using login username and password
     Landlotslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Landlots/FeatureServer/0", user);
@@ -325,22 +357,24 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     steamlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/steam_interplants/FeatureServer/0", user);
     waterpointlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/waterpoint/FeatureServer/0", user);
     waternetworklayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/WaterNetwork/FeatureServer/0", user);
+    intersectionlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/RoadIntersection/FeatureServer/0", user);
         
     
-    // UPDATE THIS LIST whenever new layers are added: first layer is the bottom most layer *see currently known issues #3
+    // UPDATE THIS LIST whenever new layers are added: first layer is the bottom most layer *see currently known issues #3 (array containing all the feature layers)
     
 	ArcGISFeatureLayer[] completeLayerList = {Landlotslayer, Buildingslayer, Storagelayer, TLPmainlayer, Roadlayer, PowerGenlayer, UHTLineslayer, UHTSubstationlayer,
 			EHTLineslayer, EHTSubstationlayer, HTLineslayer,HTSubstation1layer,HTSubstation2layer,LTSubstation1layer,LTSubstation2layer, LoadPointslayer, BusCouplerlayer, heatercoolerlayer,
 			GasLinelayer,AirLinelayer,EnergyStreamlayer,MaterialLinelayer,TLP2layer,TLP3layer,TLP2alayer,TLP4layer,WaterLinelayer,PlantReactorlayer,Decanterlayer,Extractorlayer,
-			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer,vessellayer,filterlayer,Fluidlayer,expanderlayer,compressorlayer,steamlayer,waterpointlayer,waternetworklayer};
+			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer,vessellayer,filterlayer,Fluidlayer,expanderlayer,compressorlayer,steamlayer,waterpointlayer,waternetworklayer,intersectionlayer};
 
 	
-    // render layers
+    // render layers ( to show the feature layers in the map combined with the modification format declared) 
 	
     createRenderer(layers, new ArcGISFeatureLayer [] {Landlotslayer}, Landlotscolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Buildingslayer}, Buildingscolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Storagelayer}, Storagecolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Roadlayer}, Roadcolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {intersectionlayer}, intersectioncolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {PowerGenlayer}, PowerGencolor);   
     createRenderer(layers, new ArcGISFeatureLayer [] {UHTLineslayer}, UHTLinescolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {UHTSubstationlayer}, UHTSubstationcolor);
@@ -387,15 +421,78 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     //map.getLayers().add(graphlayer);
   //try to add some graphs
     
-    
+    //add dynamic map layer for the opex bar chart
     ArcGISDynamicMapServiceLayer highwayLayer = new ArcGISDynamicMapServiceLayer(
             "http://localhost:6080/arcgis/rest/services/opex/MapServer");
                 layers.add(highwayLayer);
-          
+                
+              //add dynamic map layer for the dispersion bar chart
+                ArcGISDynamicMapServiceLayer dispersionanimationLayer = new ArcGISDynamicMapServiceLayer(
+                        " 	http://localhost:6080/arcgis/rest/services/dispersion/MapServer");
+                            layers.add(dispersionanimationLayer);
+                            
+                            dispersionanimationLayer.addLayerInitializeCompleteListener(new LayerInitializeCompleteListener() {
 
+                              @Override
+                              public void layerInitializeComplete(LayerInitializeCompleteEvent e) {
+                                if (e.getID() == LayerInitializeCompleteEvent.LOCALLAYERCREATE_ERROR) {
+                                  String errMsg = "Failed to initialize due to "
+                                      + dispersionanimationLayer.getInitializationError();
+                                  JOptionPane.showMessageDialog(map, wrap(errMsg), "",
+                                      JOptionPane.ERROR_MESSAGE);
+                                }
+                              }
+                            });
+                            // create the time slider with the dynamic layer
+                        timeSlider = createTimeSlider(dispersionanimationLayer);
+
+                        // set time extent of time slider once the dynamic layer is initialized
+                        dispersionanimationLayer.addLayerInitializeCompleteListener(new LayerInitializeCompleteListener() {
+
+                          @Override
+                          public void layerInitializeComplete(LayerInitializeCompleteEvent e) {
+                            SwingUtilities.invokeLater(new Runnable() {
+                              @Override
+                              public void run() {
+                                timeSlider.setTimeExtent(dispersionanimationLayer.getTimeInfo().getTimeExtent(), 1, Units.Seconds);
+                                Calendar calendar = dispersionanimationLayer.getTimeInfo().getTimeExtent().getStartDate();
+                                timeSlider.setTimeIntervalStart(calendar);
+                                calendar.add(Calendar.SECOND,0);
+                                timeSlider.setTimeIntervalEnd(calendar);
+                                timeSlider.setVisible(true);
+                                
+                                //description.setVisible(true);
+                                //legend.setVisible(true);
+                              }
+                            });
+                          }
+                        });
+          
+              //add dynamic map layer for the sensitivity bar chart
                 ArcGISDynamicMapServiceLayer sensitivityLayer = new ArcGISDynamicMapServiceLayer(
                         "http://localhost:6080/arcgis/rest/services/sensitivity/MapServer");
                             layers.add(sensitivityLayer);
+                            
+                            final GraphicsLayer graphicsLayer2 = new GraphicsLayer();
+                            graphicsLayer2.setName("simple query graphics");
+                            map.addMapEventListener(new MapEventListenerAdapter() {
+                              @Override
+                              public void mapReady(final MapEvent arg0) {
+                                SwingUtilities.invokeLater(new Runnable() {
+                                  @Override
+                                  public void run() {
+                                    addSimpleFillGraphics(graphicsLayer2);
+                                    
+                                  }
+                                });
+                              }
+                            });
+
+                            layers.add(graphicsLayer2);
+                            
+                            
+                            
+                          
                 
                 
     // initialize window
@@ -428,11 +525,9 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     mapIds.setSelectedIndex(0);
     mapIds.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-    //JButton button = createButton();
-
-       
+          
     
-    // create text
+    // create text 
     JTextArea description = new JTextArea("Click on a feature to start editing");
     description.setFont(new Font("Verdana", Font.PLAIN, 11));
     description.setForeground(Color.WHITE);
@@ -448,11 +543,12 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     lblLayer.setAlignmentX(Component.LEFT_ALIGNMENT);
     // create dropdown selector for layer via key-value pairs
     final Map<String, ArcGISFeatureLayer> editlayer = new LinkedHashMap<>();
-    // dropdown options with key = String layer name and value = layer object
     
+    // dropdown options with key = String layer name and value = layer object (list of the feature layers that can be edited and appear in the drop down box)
     editlayer.put("Landlot", Landlotslayer);
     editlayer.put("Building", Buildingslayer);
     editlayer.put("Public Road", Roadlayer);
+    editlayer.put("Road Intersection", intersectionlayer);
     editlayer.put("Storage", Storagelayer);
     editlayer.put("Bus Coupler", BusCouplerlayer);
     editlayer.put("EHT Line", EHTLineslayer);
@@ -924,6 +1020,7 @@ change.setLocation(890, 45);
     			    			
 //    			url = new URL("http://172.25.182.41/PWServlet/");
     			url = new URL("http://172.25.182.41/APWOWHRServlet/");
+//    			url = new URL("http://caresremote1.dyndns.org/OPALRTServlet/"); 
 //	        	url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
@@ -982,10 +1079,16 @@ change.setLocation(890, 45);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-    		for (ArcGISFeatureLayer layer : completeLayerList) {
+    		/*for (ArcGISFeatureLayer layer : completeLayerList) {
     			layer.requery();
     			layer.refresh();
-    		}
+    		}*/
+    	heatercoolerlayer.requery();
+    	heatercoolerlayer.refresh();
+    	GasLinelayer.requery();
+    	GasLinelayer.refresh();
+    	RadFraclayer.requery();
+    	RadFraclayer.refresh();
     	}
     });
     APPrButton.setEnabled(true);
@@ -1143,6 +1246,11 @@ change.setLocation(890, 45);
     			layer.requery();
     			layer.refresh();
     		}
+    		/*heatercoolerlayer.requery();
+    		heatercoolerlayer.refresh();
+    		GasLinelayer.requery();
+    		GasLinelayer.refresh();*/
+    		
     	}
     });
     PrAPHrButton.setEnabled(true);
@@ -1295,17 +1403,101 @@ change.setLocation(890, 45);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-    		for (ArcGISFeatureLayer layer : completeLayerList) {
+    		/*for (ArcGISFeatureLayer layer : completeLayerList) {
     			layer.requery();
     			layer.refresh();
-    		}
+    		}*/
+    		heatercoolerlayer.requery();
+    		heatercoolerlayer.refresh();
+    		PlantReactorlayer.requery();
+    		PlantReactorlayer.refresh();
     	}
-    });
+    	    });
     PrAPPWButton.setEnabled(true);
     PrAPPWButton.setVisible(true);
     PrAPPWButton.setSize(190,30);
     PrAPPWButton.setLocation(690, 115);
 
+ // Run combined parameterized AspenPlus and power world model 
+    JButton PrhydroButton = new JButton("Run Pr Hydrocracking");
+    PrhydroButton.addActionListener(new ActionListener() {
+    	@Override
+    	public void actionPerformed(ActionEvent arg0) {
+    		HttpURLConnection urlCon;
+    		OutputStreamWriter out;
+    		URL url;
+    		try {
+				url = new URL("http://172.25.182.41/PWServlet/"); // URL of servlet
+				urlCon = (HttpURLConnection) url.openConnection();
+				urlCon.setRequestMethod("POST");
+				urlCon.setDoOutput(true);
+				
+				if (editStack.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "You did not edit any features for AspenPlus!");
+				} else {
+					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
+					StringBuilder layers = new StringBuilder();
+					StringBuilder OBJECTIDs = new StringBuilder();
+					StringBuilder appCallFlag = new StringBuilder();
+					
+					for (String[] item : editStack) { // create comma separated values
+						layers.append(item[0]);
+						layers.append(",");
+			 			OBJECTIDs.append(item[1]); // ZHOU CHANGED ITEM[2] TO ITEM[1]
+					    OBJECTIDs.append(",");
+						appCallFlag.append("PrAPHC");
+						appCallFlag.append(",");
+					}
+					StringBuilder outputString = new StringBuilder();
+					// Only URL encoded string values can be sent over a HTTP connection
+					outputString.append(URLEncoder.encode("layers", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(layers.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(OBJECTIDs.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("QueryT", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
+					System.out.println("outputString="+outputString);
+					
+					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
+					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
+					wr.writeBytes(outputString.toString()); // write query string into servlet doPost() method
+					wr.flush();
+					wr.close();
+					
+					if (urlCon.getResponseCode()==200) {
+						heatercoolerlayer.requery();
+			    		heatercoolerlayer.refresh();
+			    		RadFraclayer.requery();
+			    		RadFraclayer.refresh();
+						JOptionPane.showMessageDialog(null, "I have finished evaluating new operational status for Hydrocracking!");
+						editStack.clear(); // delete all items in editStack
+					} else {
+						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
+								+ "\nPlease try running Pr Hydrocracking again");
+					}
+					out.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+    	
+    		
+    	}
+    	    });
+    PrhydroButton.setEnabled(true);
+    PrhydroButton.setVisible(true);
+    PrhydroButton.setSize(190,30);
+    PrhydroButton.setLocation(690, 150);
+    
 // Run AspenPlus model with heat recovery button ZL-20160322
     JButton PrAPOButton = new JButton("Run PrAP from OntoCAPE");
     PrAPOButton.addActionListener(new ActionListener() {
@@ -1477,8 +1669,8 @@ change.setLocation(890, 45);
 				e.printStackTrace();
 			}
     		
-    		String[] av = {"D:/opalrt/CurrentA.png"};
-    		MouseDrag.Printing(av);
+    		//String[] av = {"D:/opalrt/CurrentA.png"};
+    		//MouseDrag.Printing(av);
     		
     		
     		
@@ -1761,11 +1953,12 @@ change.setLocation(890, 45);
     contentPane.add(PrAPOButton);
     contentPane.add(PrAPHrButton);
     contentPane.add(OPALRT);
-//    contentPane.add(queryButton);
+    contentPane.add(PrhydroButton);
     contentPane.add(QueryButton);
     contentPane.add(PlantOptButton);
     contentPane.add(map, BorderLayout.CENTER);
     contentPane.add(legend, BorderLayout.WEST);
+    contentPane.add(timeSlider, BorderLayout.SOUTH);
     
   
   //adding the graph here
@@ -1836,7 +2029,7 @@ change.setLocation(890, 45);
 	    });
 
 	    // create and load the web map
-	    WebMap webMap = null;
+	    /*WebMap webMap = null;
 	    try {
 	      webMap = WebMap.newInstance(MAP_ID, portal);
 	      jMap.loadWebMap(webMap);
@@ -1844,10 +2037,26 @@ change.setLocation(890, 45);
 	    } catch (Exception e) {
 	      e.printStackTrace();
 	    }
-
+*/
 	    return jMap;
 	  }
   
+//make graphic for query
+  private void addSimpleFillGraphics(GraphicsLayer graphicsLayer2) {
+      Polygon polygon = new Polygon();
+      polygon.startPath(11541441.437, 140113.992);
+      polygon.lineTo(11541462.075, 140137.064);
+      polygon.lineTo(11541472.552, 140126.798);
+      polygon.lineTo(11541453.185, 140104.255);
+      polygon.closePathWithLine();
+
+      SimpleLineSymbol outline = new SimpleLineSymbol(new Color(0, 200, 0),
+          7, SimpleLineSymbol.Style.SOLID);
+      SimpleFillSymbol symbol = new SimpleFillSymbol(
+          new Color(255, 255, 255,130), outline);
+      Graphic graphic2 = new Graphic(polygon,symbol);
+      graphicsLayer2.addGraphic(graphic2);
+  }
 
   
   
