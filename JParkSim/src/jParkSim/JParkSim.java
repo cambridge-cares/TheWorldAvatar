@@ -1566,7 +1566,6 @@ change.setLocation(890, 45);
 	        /** add action listener to the "Show Location" button, so that when user press the button, Location of the queried entity can be shown in the map*/
 			QueryGUI.btnShowLocation.addActionListener(new ActionListener(){
 
-				@SuppressWarnings("resource")
 				@Override
 				public void actionPerformed(ActionEvent e) {
 										
@@ -1630,7 +1629,6 @@ change.setLocation(890, 45);
     		/** add action listener to the "Show Location" button, so that when user press the button, Location of the queried entity can be shown in the map*/
     		OptimizationGUI.btnShowPlantLocation.addActionListener(new ActionListener(){
 
-				@SuppressWarnings("resource")
 				@Override
 				public void actionPerformed(ActionEvent e) {
 										

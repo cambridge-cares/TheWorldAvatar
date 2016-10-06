@@ -211,7 +211,7 @@ public class OptServlet extends HttpServlet {
     	
     	try {
 			//load owl file
-			String uri = "File:/C:/apache-tomcat-8.0.24/webapps/ROOT/BiodieselPlant_.owl";
+			String uri = "File:/C:/apache-tomcat-8.0.24/webapps/OntologyFiles/BiodieselPlant3.owl";
 			OWLModel owlModel = ProtegeOWL.createJenaOWLModelFromURI(uri);
 			
 			/**associating Model1 to a JAVA OWLIndividual variable*/
