@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns:j.1="file:/C:/OntoCAPE/OntoCAPE/upper_level/technical_system.owl#"
+    xmlns:j.2="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#"
+    xmlns:p2="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/machine.owl#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:j.3="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:j.4="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+    xmlns:j.5="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns="http://www.jparksimulator.com/test.owl#"
+    xmlns:p3="file:/C:/OntoCAPE/OntoCAPE/OntoCAPE.owl#"
+    xmlns:p1="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="file:/C:/OntoCAPE/OntoCAPE/OntoCAPE.owl"/>
+  </owl:Ontology>
+  <j.2:Splitting rdf:about="http://www.jparksimulator.com/generated.owl#S-502_Coordinates">
+    <j.0:hasSubsystem>
+      <j.5:GeneralizedAmount rdf:about="http://www.jparksimulator.com/generated.owl#y_S-502">
+        <j.0:isSubsystemOf rdf:resource="http://www.jparksimulator.com/generated.owl#S-502_Coordinates"/>
+      </j.5:GeneralizedAmount>
+    </j.0:hasSubsystem>
+    <j.0:hasSubsystem>
+      <j.5:GeneralizedAmount rdf:about="http://www.jparksimulator.com/generated.owl#x_S-502">
+        <j.0:isSubsystemOf rdf:resource="http://www.jparksimulator.com/generated.owl#S-502_Coordinates"/>
+      </j.5:GeneralizedAmount>
+    </j.0:hasSubsystem>
+    <j.4:hasMacroscopicAppearance>
+      <j.3:Apparatus rdf:about="http://www.jparksimulator.com/generated.owl#S-502">
+        <j.4:hasMolecularStructure rdf:resource="http://www.jparksimulator.com/generated.owl#S-502_Coordinates"/>
+        <j.1:realizes>
+          <j.2:Splitting rdf:about="http://www.jparksimulator.com/generated.owl#Splitting">
+            <j.1:isRealizedBy rdf:resource="http://www.jparksimulator.com/generated.owl#S-502"/>
+          </j.2:Splitting>
+        </j.1:realizes>
+        <j.0:hasDimension>
+          <j.5:GeneralizedAmount rdf:about="http://www.jparksimulator.com/generated.owl#S-502_Visual"/>
+        </j.0:hasDimension>
+      </j.3:Apparatus>
+    </j.4:hasMacroscopicAppearance>
+  </j.2:Splitting>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.4.8, Build 629)  http://protege.stanford.edu -->
