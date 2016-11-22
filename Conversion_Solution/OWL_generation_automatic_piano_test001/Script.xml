@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <Individual_L1 name ="S-502" class="9"  >
+    <individual_L2 name ="S-502_Coordinates" class="3"  relationship="23" >
+    	<individual_L3 name = "x_S-502" class="5" relationship = "11"></individual_L3>
+    	<individual_L3 name = "y_S-502" class="5" relationship = "11"></individual_L3>
+    </individual_L2>
+    <individual_L2 name ="Splitting" class="3" relationship="6"></individual_L2>
+    <individual_L2 name ="S-502_Visual" class="5" relationship="4"></individual_L2>
+  </Individual_L1>
+</root>
