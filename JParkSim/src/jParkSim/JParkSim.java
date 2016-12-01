@@ -104,11 +104,13 @@ public class JParkSim {
 	
 	
 	// style of different layers
+	
 		final static SimpleFillSymbol Landlotscolor = new SimpleFillSymbol(Color.cyan, new SimpleLineSymbol(Color.cyan, 1), SimpleFillSymbol.Style.NULL);
 		final static SimpleFillSymbol Buildingscolor = new SimpleFillSymbol(Color.orange);
 		final static SimpleFillSymbol Storagecolor = new SimpleFillSymbol(new Color(139,69,19));
 		final static SimpleFillSymbol Roadcolor = new SimpleFillSymbol(Color.gray);
 		// power grid
+		final static SimpleFillSymbol testColor =new SimpleFillSymbol(Color.green, new SimpleLineSymbol(Color.blue, 1), SimpleFillSymbol.Style.SOLID);
 		final static SimpleFillSymbol PowerGencolor = new SimpleFillSymbol(Color.red);
 		final static SimpleLineSymbol UHTLinescolor = new SimpleLineSymbol(Color.green, 3);
 		final static SimpleMarkerSymbol UHTSubstationcolor = new SimpleMarkerSymbol(Color.red, 20, Style.CROSS);
@@ -156,7 +158,7 @@ public class JParkSim {
 		
 
 		
-		
+		static int layerID;
 	
 	private JFrame window;
 	private JMap map;
@@ -194,6 +196,9 @@ public class JParkSim {
 	public static ArcGISFeatureLayer LoadPointslayer;
 	public static ArcGISFeatureLayer BusCouplerlayer;
 	
+	
+	
+	public static ArcGISFeatureLayer testLayer;
 	public static ArcGISFeatureLayer PlantReactorlayer;
 	public static ArcGISFeatureLayer Decanterlayer;
 	public static ArcGISFeatureLayer Extractorlayer;
@@ -274,6 +279,8 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     // adds layers uploaded onto ArcGIS for Developers
     UserCredentials user = new UserCredentials();
     user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp"); // Access secure feature layer service using login username and password
+   
+    /*
     Landlotslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Landlots/FeatureServer/0", user);
     Buildingslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Building/FeatureServer/0", user);
     Storagelayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Storage/FeatureServer/0", user);
@@ -289,7 +296,11 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     HTSubstation2layer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/HTSubstation_22to3_4/FeatureServer/0", user);
     LTSubstation1layer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/LTSubstation_3_4to3/FeatureServer/0", user);
     LTSubstation2layer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/LTSubstation_3to0_4/FeatureServer/0", user);
+    */
+    testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/test003/FeatureServer/" + layerID, user);
+   
     
+    /*
     LoadPointslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Load_points/FeatureServer/0", user);
     BusCouplerlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/bus_couplers/FeatureServer/0", user);
     Fluidlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Working_Fluid/FeatureServer/0", user);
@@ -321,18 +332,21 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     steamlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/steam_interplants/FeatureServer/0", user);
     waterpointlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/waterpoint/FeatureServer/0", user);
     waternetworklayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/WaterNetwork/FeatureServer/0", user);
-        
+        */
     
     // UPDATE THIS LIST whenever new layers are added: first layer is the bottom most layer *see currently known issues #3
     
-	ArcGISFeatureLayer[] completeLayerList = {Landlotslayer, Buildingslayer, Storagelayer, TLPmainlayer, Roadlayer, PowerGenlayer, UHTLineslayer, UHTSubstationlayer,
-			EHTLineslayer, EHTSubstationlayer, HTLineslayer,HTSubstation1layer,HTSubstation2layer,LTSubstation1layer,LTSubstation2layer, LoadPointslayer, BusCouplerlayer, heatercoolerlayer,
+	/* 
+    ArcGISFeatureLayer[] completeLayerList = {Landlotslayer, Buildingslayer, Storagelayer, TLPmainlayer, Roadlayer, PowerGenlayer, UHTLineslayer, UHTSubstationlayer,
+			EHTLineslayer, EHTSubstationlayer, HTLineslayer,HTSubstation1layer,HTSubstation2layer,LTSubstation1layer,LTSubstation2layer,testLayer, LoadPointslayer, BusCouplerlayer, heatercoolerlayer,
 			GasLinelayer,AirLinelayer,EnergyStreamlayer,MaterialLinelayer,TLP2layer,TLP3layer,TLP2alayer,TLP4layer,WaterLinelayer,PlantReactorlayer,Decanterlayer,Extractorlayer,
 			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer,vessellayer,filterlayer,Fluidlayer,expanderlayer,compressorlayer,steamlayer,waterpointlayer,waternetworklayer};
-
+	*/
+    
+    ArcGISFeatureLayer[] completeLayerList = {testLayer};
 	
     // render layers
-	
+	/*
     createRenderer(layers, new ArcGISFeatureLayer [] {Landlotslayer}, Landlotscolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Buildingslayer}, Buildingscolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Storagelayer}, Storagecolor);
@@ -352,6 +366,12 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     createRenderer(layers, new ArcGISFeatureLayer [] {TLP4layer}, TLP4color);
     createRenderer(layers, new ArcGISFeatureLayer [] {LTSubstation1layer}, LTSubstation1color);
     createRenderer(layers, new ArcGISFeatureLayer [] {LTSubstation2layer}, LTSubstation2color);
+    */
+    
+    createRenderer(layers, new ArcGISFeatureLayer [] {testLayer}, testColor);
+    
+    
+    /*
     createRenderer(layers, new ArcGISFeatureLayer [] {LoadPointslayer}, LoadPointscolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {BusCouplerlayer}, BusCouplercolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {heatercoolerlayer}, heatercoolercolor);
@@ -379,7 +399,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     createRenderer(layers, new ArcGISFeatureLayer [] {steamlayer}, steamcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {waterpointlayer}, waterpointcolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {waternetworklayer}, waternetworkcolor);
-       
+       */
     //map.getLayers().add(graphlayer);
   //try to add some graphs
     
@@ -446,6 +466,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     final Map<String, ArcGISFeatureLayer> editlayer = new LinkedHashMap<>();
     // dropdown options with key = String layer name and value = layer object
     
+    /*
     editlayer.put("Landlot", Landlotslayer);
     editlayer.put("Building", Buildingslayer);
     editlayer.put("Public Road", Roadlayer);
@@ -456,6 +477,14 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     editlayer.put("HT Line", HTLineslayer);
     editlayer.put("HT Substation(22kV-11kV)", HTSubstation1layer);
     editlayer.put("HT Substation(22kV-3.4kV)", HTSubstation2layer);
+    */
+    
+    editlayer.put("TestLayer",testLayer);
+    
+    
+    
+    
+    /*
     editlayer.put("Load Point", LoadPointslayer);
     editlayer.put("LT Substation(3.4kV-3kV)", LTSubstation1layer);
     editlayer.put("LT Substation(3kV-0.4kV)", LTSubstation2layer);
@@ -492,7 +521,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     editlayer.put("Working fluid", Fluidlayer);
     editlayer.put("Water Point", waterpointlayer);
     editlayer.put("Water network", waternetworklayer);
-    
+    */
     
       
     final JComboBox cbxLayer = new JComboBox(editlayer.keySet().toArray(new String[0]));	// initialize dropdown box
@@ -1729,9 +1758,13 @@ change.setLocation(890, 45);
   /**
    * Starting point of this application.
    * @param args
+ * @throws IOException 
    */
-  public static void main(String[] args) { // main function invoked
-    EventQueue.invokeLater(new Runnable() {
+  public static void main(String[] args) throws IOException { // main function invoked
+	  System.out.println("Input layerID");
+	  layerID = 51;
+	  
+	  EventQueue.invokeLater(new Runnable() {
 
       @Override
       public void run() {
