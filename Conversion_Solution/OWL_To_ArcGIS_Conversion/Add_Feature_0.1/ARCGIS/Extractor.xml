@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<ArrayOfMFeature xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <mFeature>
+    <Type>Polygon</Type>
+    <Name>T-101</Name>
+    <Scale>1</Scale>
+    <Orientation>0</Orientation>
+    <Center>11541445.4358298,140146.171199371</Center>
+  </mFeature>
+  <mFeature>
+    <Type>Polygon</Type>
+    <Name>T-201</Name>
+    <Scale>1.0003592149782528</Scale>
+    <Orientation>-2.6970577194818475</Orientation>
+    <Center>11541465.6053135,140127.272338422</Center>
+  </mFeature>
+  <mFeature>
+    <Type>Polygon</Type>
+    <Name>T-301</Name>
+    <Scale>0.99999998292981884</Scale>
+    <Orientation>-0.00052629079971211468</Orientation>
+    <Center>11541486.5211565,140105.231819097</Center>
+  </mFeature>
+</ArrayOfMFeature>

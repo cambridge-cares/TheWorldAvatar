@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<ArrayOfMFeature xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <mFeature>
+    <Type>Polygon</Type>
+    <Name />
+    <Scale>1</Scale>
+    <Orientation>0</Orientation>
+    <Center>11541050.4686622,140986.253478721</Center>
+  </mFeature>
+  <mFeature>
+    <Type>Polygon</Type>
+    <Name />
+    <Scale>1</Scale>
+    <Orientation>-0.0021272746767522221</Orientation>
+    <Center>11541041.1818338,140993.873446863</Center>
+  </mFeature>
+  <mFeature>
+    <Type>Polygon</Type>
+    <Name />
+    <Scale>1.0000396563544909</Scale>
+    <Orientation>-0.0016392794730961668</Orientation>
+    <Center>11541036.4393266,140990.333180836</Center>
+  </mFeature>
+  <mFeature>
+    <Type>Polygon</Type>
+    <Name />
+    <Scale>1.0000396563544909</Scale>
+    <Orientation>-0.0026987584793118913</Orientation>
+    <Center>11541033.0643234,140984.533631074</Center>
+  </mFeature>
+  <mFeature>
+    <Type>Polygon</Type>
+    <Name />
+    <Scale>1.0000101144578275</Scale>
+    <Orientation>-0.0026514632190242082</Orientation>
+    <Center>11541041.0230469,140987.602837895</Center>
+  </mFeature>
+  <mFeature>
+    <Type>Polygon</Type>
+    <Name />
+    <Scale>0.99999999962328878</Scale>
+    <Orientation>-0.0003069891433540306</Orientation>
+    <Center>11541034.8104125,140987.206283876</Center>
+  </mFeature>
+</ArrayOfMFeature>
