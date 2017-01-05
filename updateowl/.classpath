@@ -60,5 +60,20 @@
 	<classpathentry kind="lib" path="D:/protege 3.4.8/plugins/edu.stanford.smi.protegex.owl.inference.pellet/xsdlib.jar"/>
 	<classpathentry kind="lib" path="D:/protege 3.4.8/lax.jar"/>
 	<classpathentry kind="lib" path="D:/protege 3.4.8/protege.jar"/>
+	<classpathentry kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/apache-mime4j.jar"/>
+	<classpathentry kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/ArcGIS_Runtime_Java.jar"/>
+	<classpathentry kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/ArcGIS_Runtime_Java_Toolkit.jar"/>
+	<classpathentry kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/ArcGIS_Runtime_Java_Toolkit-sources.jar"/>
+	<classpathentry kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/commons-codec.jar"/>
+	<classpathentry kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/commons-logging.jar"/>
+	<classpathentry kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/httpclient.jar"/>
+	<classpathentry kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/httpcore.jar"/>
+	<classpathentry kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/httpmime.jar"/>
+	<classpathentry kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/jackson-core-lgpl.jar"/>
+	<classpathentry kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/jackson-mapper-lgpl.jar"/>
+	<classpathentry kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/jcifs.jar"/>
+	<classpathentry kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/jcommon.jar"/>
+	<classpathentry kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/jfreechart.jar"/>
+	<classpathentry kind="lib" path="C:/ArcGIS_SDK/java10.2.4/sdk/jars/json.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
