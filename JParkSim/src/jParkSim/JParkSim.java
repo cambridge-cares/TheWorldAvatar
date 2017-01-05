@@ -167,7 +167,7 @@ public class JParkSim {
 		final static PictureMarkerSymbol intersectioncolor = new PictureMarkerSymbol("http://static.arcgis.com/images/Symbols/Animated/EnlargeRotatingWhiteMarkerSymbol.png");
 		final static PictureMarkerSymbol waterpointcolor = new PictureMarkerSymbol("http://static.arcgis.com/images/Symbols/Animated/EnlargeGradientSymbol.png");
 		final static SimpleLineSymbol waternetworkcolor = new SimpleLineSymbol(new Color(0,0,128), 3);
-		
+		private JTimeSlider timeSlider;
 
 		
 		
@@ -177,7 +177,7 @@ public class JParkSim {
 	//try to put new variable
 	
 	private static GraphicsLayer graphicsLayer;
-	private JTimeSlider timeSlider;
+	final GraphicsLayer graphicsLayer_polygon = new GraphicsLayer();
 	
 	private MultiPoint planes;
 	
@@ -242,11 +242,11 @@ public class JParkSim {
 	public static ArcGISFeatureLayer intersectionlayer;
 	
 	
-	
- 	public static String httpStringCSV = new String("D:/httpReq.CSV"); // (mjk, 151115) investigating structure of DataOutputStream object
- 	public static String httpStringCSV1 = new String("D:/httpReq1.CSV"); // (ZL-151203) investigating structure of DataOutputStream object
- 	public static String httpStringCSV2 = new String("D:/httpReq2.CSV"); // (ZL-151203) investigating structure of DataOutputStream object
- 	public static String GIS = new String("D:/JPS_Code_Test/GIS.CSV");
+ 	//public static String httpStringCSV = new String("D:/httpReq.CSV");              // investigating structure of DataOutputStream object
+ 	//public static String httpStringCSV1 = new String("D:/httpReq1.CSV");            // investigating structure of DataOutputStream object
+ 	//public static String httpStringCSV2 = new String("D:/httpReq2.CSV");            // investigating structure of DataOutputStream object
+ 	public static String GIS = new String("D:/JPS_Code_Test/GIS.CSV");              // csv file to store the GIS coordinate for the unit operations
+ 	public static String PlantGIS = new String("D:/JPS_Code_Test/PlantGIS.CSV");    // csv file to store the endpoints of the polygons for chemical plant
  	
 	// method to render all layers in an array using a certain style (multiple layer renderer)
 	private void createRenderer(LayerList layers, ArcGISFeatureLayer[] arrayoflayers, Symbol col) {
@@ -796,13 +796,13 @@ change.setLocation(890, 45);
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
 					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
 					wr.writeBytes(outputString.toString()); // write query string into servlet doPost() method
-
+/**
 					FileWriter httpString = null; // (mjk, 151115) testing structure of DataOutputStream object and of wr object
-					httpString = new FileWriter(httpStringCSV);
+//					httpString = new FileWriter(httpStringCSV);
 					httpString.append("wr=");
 					httpString.append(outputString.toString());
 					httpString.flush();				
-					httpString.close();
+					httpString.close();*/
 
 					wr.flush();
 					wr.close();
@@ -827,7 +827,7 @@ change.setLocation(890, 45);
     });
     PWbutton.setEnabled(true);
     PWbutton.setVisible(true);
-    PWbutton.setSize(190,30);
+    PWbutton.setSize(160,30);
     PWbutton.setLocation(490, 10);
 
     
@@ -840,8 +840,8 @@ change.setLocation(890, 45);
     		OutputStreamWriter out;
     		URL url;
     		try {
-			//	url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
-    			url = new URL("http://172.25.182.41/PWServlet/"); // URL of servlet
+			//	url = new URL("http://172.25.182.41/PWServlet/"); // URL of servlet
+    			url = new URL("http://172.25.182.41/PWServlet_New/"); // URL of servlet
     			
     			urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
@@ -852,7 +852,6 @@ change.setLocation(890, 45);
 				} else {
 					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
 					StringBuilder layers = new StringBuilder();
-//					StringBuilder FIDs = new StringBuilder();
 					StringBuilder OBJECTIDs = new StringBuilder();
 					StringBuilder appCallFlag = new StringBuilder();
 					for (String[] item : editStack) { // create comma separated values
@@ -885,13 +884,13 @@ change.setLocation(890, 45);
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
 					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
 					wr.writeBytes(outputString.toString()); // write query string into servlet doPost() method
-					
+/*					
 					FileWriter httpString = null; // (mjk, 151115) testing structure of DataOutputStream object and of wr object
 					httpString = new FileWriter(httpStringCSV2);
 					httpString.append("wr=");
 					httpString.append(outputString.toString());
 					httpString.flush();				
-					httpString.close();
+					httpString.close();*/
 					
 					wr.flush();
 					wr.close();
@@ -916,8 +915,8 @@ change.setLocation(890, 45);
     });
     PWPrButton.setEnabled(true);
     PWPrButton.setVisible(true);
-    PWPrButton.setSize(190,30);
-    PWPrButton.setLocation(690, 10);
+    PWPrButton.setSize(170,30);
+    PWPrButton.setLocation(660, 10);
 
     
     // Run AspenPlus button
@@ -973,13 +972,13 @@ change.setLocation(890, 45);
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
 					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
 					wr.writeBytes(outputString.toString()); // write query string into servlet doPost() method
-					
+					/**
 					FileWriter httpString = null; // (mjk, 151115) testing structure of DataOutputStream object and of wr object
-					httpString = new FileWriter(httpStringCSV1);
+//					httpString = new FileWriter(httpStringCSV1);
 					httpString.append("wr=");
 					httpString.append(outputString.toString());
 					httpString.flush();				
-					httpString.close();
+					httpString.close();*/
 
 					wr.flush();
 					wr.close();
@@ -1004,7 +1003,7 @@ change.setLocation(890, 45);
     });
     APbutton.setEnabled(true);
     APbutton.setVisible(true);
-    APbutton.setSize(190,30);
+    APbutton.setSize(160,30);
     APbutton.setLocation(490, 45);    
 
 
@@ -1093,8 +1092,8 @@ change.setLocation(890, 45);
     });
     APPrButton.setEnabled(true);
     APPrButton.setVisible(true);
-    APPrButton.setSize(190,30);
-    APPrButton.setLocation(690, 45);
+    APPrButton.setSize(170,30);
+    APPrButton.setLocation(660, 45);
     
  // Run AspenPlus model with heat recovery button
     JButton APHrButton = new JButton("Run BiodieselPlant-2");
@@ -1172,7 +1171,7 @@ change.setLocation(890, 45);
     });
     APHrButton.setEnabled(true);
     APHrButton.setVisible(true);
-    APHrButton.setSize(190,30);
+    APHrButton.setSize(160,30);
     APHrButton.setLocation(490, 80);
 
     // Run AspenPlus model with heat recovery button
@@ -1255,8 +1254,8 @@ change.setLocation(890, 45);
     });
     PrAPHrButton.setEnabled(true);
     PrAPHrButton.setVisible(true);
-    PrAPHrButton.setSize(190,30);
-    PrAPHrButton.setLocation(690, 80);
+    PrAPHrButton.setSize(170,30);
+    PrAPHrButton.setLocation(660, 80);
     
  // Run combined AspenPlus and power world model 
     JButton APPWButton = new JButton("Run BiodieselPlant-3");
@@ -1333,7 +1332,7 @@ change.setLocation(890, 45);
     });
     APPWButton.setEnabled(true);
     APPWButton.setVisible(true);
-    APPWButton.setSize(190,30);
+    APPWButton.setSize(160,30);
     APPWButton.setLocation(490, 115);
     
     // Run combined parameterized AspenPlus and power world model 
@@ -1415,9 +1414,9 @@ change.setLocation(890, 45);
     	    });
     PrAPPWButton.setEnabled(true);
     PrAPPWButton.setVisible(true);
-    PrAPPWButton.setSize(190,30);
-    PrAPPWButton.setLocation(690, 115);
-
+    PrAPPWButton.setSize(170,30);
+    PrAPPWButton.setLocation(660, 115);
+/**
  // Run combined parameterized AspenPlus and power world model 
     JButton PrhydroButton = new JButton("Run Pr Hydrocracking");
     PrhydroButton.addActionListener(new ActionListener() {
@@ -1575,7 +1574,7 @@ change.setLocation(890, 45);
     PrAPOButton.setVisible(true);
     PrAPOButton.setSize(190,30);
     PrAPOButton.setLocation(890, 10);
-//zl-20160322   
+*/
  
  // Run combined parameterized AspenPlus and power world model 
     JButton OPALRT = new JButton("Run OPAL-RT"); 
@@ -1682,8 +1681,8 @@ change.setLocation(890, 45);
     });
     OPALRT.setEnabled(true);
     OPALRT.setVisible(true);
-    OPALRT.setSize(190,30);
-    OPALRT.setLocation(890, 45);    
+    OPALRT.setSize(140,30);
+    OPALRT.setLocation(840, 10);    
     
     
     JButton refreshButton = new JButton("Refresh Map");
@@ -1701,137 +1700,13 @@ change.setLocation(890, 45);
     });
     refreshButton.setEnabled(true);
     refreshButton.setVisible(true);
-    refreshButton.setSize(130,30);
-    refreshButton.setLocation(1090, 10);
+    refreshButton.setSize(110,30);
+    refreshButton.setLocation(990, 10);
     
     
     graphicsLayer = new GraphicsLayer();
     graphicsLayer.setName("simple graphics");
     
-/*    
-  //button for query (15-04-2016))
-    final JTextField querylayer = new JTextField();
-    querylayer.setAlignmentX(Component.LEFT_ALIGNMENT);
-    querylayer.setMaximumSize(new Dimension(220, 25));
-    querylayer.setEditable(true);
-    
-    final JButton queryButton = new JButton("Query Features");
-    queryButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-    queryButton.setEnabled(true);
-    queryButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {    	      	  
-    	    ArrayList<String[]> editStack2 = new ArrayList<String[]>();	
-			HttpURLConnection urlCon;
-			OutputStreamWriter out;
-			InputStreamReader in;
-			URL url;
-			
-			String QueryString = null;
-			if(e.getActionCommand().equals ("Query Features"));{
-				String graphicFID = " ";
-			    String graphicOBJECTID =  " ";
-			    String appCallFlag = " ";
-				QueryString = querylayer.getText();
-				String[] newFeature = new String[] {graphicFID, graphicOBJECTID, appCallFlag, QueryString}; 
-				boolean addtoStack = true;			  		            		  
-			  	  if (addtoStack) {		
-			  		editStack2.add(newFeature);
-			  	  }
-			}
-									
-			try{
-//				url = new URL("http://172.25.182.41/PWServlet/");
-				url = new URL("http://172.25.182.41/QUERYServlet/"); // URL of servlet
-				urlCon = (HttpURLConnection) url.openConnection();
-				urlCon.setRequestMethod("POST");
-				urlCon.setDoOutput(true);				
-				out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
-				
-				StringBuilder layers = new StringBuilder();
-				StringBuilder OBJECTIDs = new StringBuilder();
-				StringBuilder appCallFlag = new StringBuilder();
-				StringBuilder QueryT = new StringBuilder();
-				for (String[] item : editStack2) { 
-					layers.append(item[0]);
-					layers.append(",");
-		 			OBJECTIDs.append(item[1]); 
-				    OBJECTIDs.append(",");
-					appCallFlag.append(item[2]);
-					appCallFlag.append(",");
-					QueryT.append(querylayer.getText());
-				}
-				
-				StringBuilder outputString = new StringBuilder();
-				outputString.append(URLEncoder.encode("layers", "UTF-8"));
-				outputString.append("=");
-				outputString.append(URLEncoder.encode(" ", "UTF-8"));
-				outputString.append("&");
-				outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
-				outputString.append("=");
-				outputString.append(URLEncoder.encode(" ", "UTF-8"));
-				outputString.append("&");
-				outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
-				outputString.append("=");
-				outputString.append(URLEncoder.encode("Query", "UTF-8"));
-				outputString.append("&");
-				outputString.append (URLEncoder.encode("QueryT", "UTF-8"));
-				outputString.append ("=");				
-				outputString.append (URLEncoder.encode(QueryT.toString(), "UTF-8"));
-				
-				DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
-				wr.writeBytes(outputString.toString());
-				wr.flush();
-				wr.close();							
-		        
-				if(urlCon.getResponseCode()==200){
-					in = new InputStreamReader(urlCon.getInputStream());
-					final BufferedReader br = new BufferedReader(in);
-					String[] strTemp = null;
-					String strTemp1 = null;
-//					strTemp = br.readLine().split("\"");
-//****************************************test
-					
-					strTemp1 = br.readLine();
-					System.out.println("Query result is:" + strTemp);
-					QueryWindow.showQueryWindow(strTemp1);
-					
-//****************************************					
-					br.close();
-				
-					planes = new MultiPoint();
-			        PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol("http://static.arcgis.com/images/Symbols/Basic/GreenShinyPin.png");
-			        planeSymbol.setSize(50, 50);			         			         
-			         
-			        double[] x= new double[(strTemp.length-1)/2];
-			        for(int i=0; i<(strTemp.length-1)/2; i++){
-			        	 x[i] = Double.parseDouble(strTemp[2*i+1]);
-			         }
-			         
-			         for (int k=0 ; k<x.length/2 ; k++){ 
-//			        	 planes.add(x[2*k],x[2*k+1]); 
-			         }
-			         
-			         Graphic gPlanes = new Graphic(planes, planeSymbol);
-			         graphicsLayer.addGraphic(gPlanes);
-			          			            			            
-					 JOptionPane.showMessageDialog(null, "Query has been successfully performed!" );
-					//editStack.clear(); 
-					
-				}
-				out.close();
-			}catch (IOException equery){
-				equery.printStackTrace();
-			}
-			layers.add(graphicsLayer);
-			
-		}
-      
-    });
-    queryButton.setSize(130, 30);
-    queryButton.setLocation(1090, 45);
-    
-*/
     
     // combine text, label and dropdown list into one panel for selecting layer to edit
     panel.setBackground(new Color(0, 0, 0, 140));
@@ -1864,7 +1739,7 @@ change.setLocation(890, 45);
     
     final javax.swing.JButton QueryButton;
     QueryButton = new javax.swing.JButton();
-    QueryButton.setFont(new java.awt.Font("Times new roman", 0, 12)); // NOI18N
+    QueryButton.setFont(new java.awt.Font(" ", 1, 12)); // NOI18N
     QueryButton.setText("Information Query");
     QueryButton.setAlignmentX(Component.CENTER_ALIGNMENT);
     QueryButton.setEnabled(true);
@@ -1880,7 +1755,6 @@ change.setLocation(890, 45);
 	        /** add action listener to the "Show Location" button, so that when user press the button, Location of the queried entity can be shown in the map*/
 			QueryGUI.btnShowLocation.addActionListener(new ActionListener(){
 
-				@SuppressWarnings("resource")
 				@Override
 				public void actionPerformed(ActionEvent e) {
 										
@@ -1913,13 +1787,14 @@ change.setLocation(890, 45);
 	          
 		}     	
     });
-    QueryButton.setSize(130, 30);
-    QueryButton.setLocation(1090, 45);
+    QueryButton.setSize(140, 30);
+    QueryButton.setLocation(840, 45);
     
 /**add new button for the plant optimization function Li ZHOU 27.08.2016*/
+    graphicsLayer_polygon.setName("simple query graphics");  //new layer for the polygon
     final javax.swing.JButton PlantOptButton;
     PlantOptButton = new javax.swing.JButton();
-    PlantOptButton.setFont(new java.awt.Font("Times new roman", 0, 12)); // NOI18N
+    PlantOptButton.setFont(new java.awt.Font(" ", 1, 12)); // NOI18N
     PlantOptButton.setText("Plant Optimization");
     PlantOptButton.setAlignmentX(Component.CENTER_ALIGNMENT);
     PlantOptButton.setEnabled(true);
@@ -1930,10 +1805,67 @@ change.setLocation(890, 45);
     		OptimizationGUI PlantOptGUI = new OptimizationGUI();
     		PlantOptGUI.setVisible(true);
     		PlantOptGUI.setLocationRelativeTo(null);
+    		
+    		/** add action listener to the "clear button" on the optimization GUI --when "clear button" pressed, clear the new layer with polygon indicating the plant location*/
+    		OptimizationGUI.btnClear.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					graphicsLayer_polygon.removeAll();
+	        		layers.remove(graphicsLayer_polygon);					
+				}    			
+    		});
+    		
+    		/** add action listener to the "Show Location" button, so that when user press the button, Location of the queried entity can be shown in the map*/
+    		OptimizationGUI.btnShowPlantLocation.addActionListener(new ActionListener(){
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+										
+					  BufferedReader fileReader = null;                                             //define a file reader
+				      String line = null;
+				      Polygon polygon = new Polygon(); 
+				      ArrayList<Double> polygon_x = new ArrayList<Double>();                        //create new array list for the x coordinate
+					  ArrayList<Double> polygon_y = new ArrayList<Double>();                        //create new array list for the y coordinate
+						
+				  	  try {
+						fileReader = new BufferedReader(new FileReader(PlantGIS));                  //define source file
+						line = fileReader.readLine();                                               //skip the header
+						boolean flag = true;						
+						while ((line = fileReader.readLine()) != null) {
+					  		  String[] data = line.split(",");                                      //split the lines by comma and extract the x and y coordinates
+					  		  
+					  		  if(flag){
+					  			polygon_x.add(Double.parseDouble(data[0]));
+					  			polygon_y.add(Double.parseDouble(data[1]));	
+					  		  } 
+					  		  else if (!flag){
+					  			polygon_x.add(Double.parseDouble(data[0]));
+					  			polygon_y.add(Double.parseDouble(data[1]));	
+					  		  }
+					  		flag = false;
+					  	  }	
+					} catch (NumberFormatException | IOException e1) {
+						e1.printStackTrace();
+					}	
+				  	  
+				    polygon.startPath(polygon_x.get(0), polygon_y.get(0));
+				    polygon.lineTo(polygon_x.get(1), polygon_y.get(1));
+				    polygon.lineTo(polygon_x.get(2), polygon_y.get(2));
+				    polygon.lineTo(polygon_x.get(3), polygon_y.get(3));
+				    polygon.closePathWithLine();
+				  	SimpleLineSymbol outline = new SimpleLineSymbol(new Color(0, 200, 0),7, SimpleLineSymbol.Style.SOLID);
+				  	SimpleFillSymbol symbol = new SimpleFillSymbol(new Color(255, 255, 255,130), outline);
+			        Graphic graphic_polygon = new Graphic(polygon,symbol);
+			        graphicsLayer_polygon.addGraphic(graphic_polygon);
+
+			        layers.add(graphicsLayer_polygon);                                              //visualize the polygon layer
+				}
+				
+	        });
     	}
     });
-    PlantOptButton.setSize(130, 30);
-    PlantOptButton.setLocation(1090, 80);
+    PlantOptButton.setSize(140, 30);
+    PlantOptButton.setLocation(840, 80);
     
     // ZHOU add new buttons
     contentPane = new JLayeredPane();
@@ -1950,10 +1882,10 @@ change.setLocation(890, 45);
     //contentPane.add(change);
     contentPane.add(panel);
     contentPane.add(PrAPPWButton);
-    contentPane.add(PrAPOButton);
+//    contentPane.add(PrAPOButton);
     contentPane.add(PrAPHrButton);
     contentPane.add(OPALRT);
-    contentPane.add(PrhydroButton);
+//    contentPane.add(PrhydroButton);
     contentPane.add(QueryButton);
     contentPane.add(PlantOptButton);
     contentPane.add(map, BorderLayout.CENTER);
@@ -1996,7 +1928,7 @@ change.setLocation(890, 45);
 	    final JMap jMap = new JMap();
 	        final InfoPopupOverlay popupOverlay = new InfoPopupOverlay();
 	    jMap.addMapOverlay(popupOverlay);
-	        // grab the ArcGISFeatureLayer when added to the map and associate it with the infopopup overlay
+	    // grab the ArcGISFeatureLayer when added to the map and associate it with the infopopup overlay
 	    jMap.getLayers().addLayerListEventListener(new LayerListEventListenerAdapter() {
 	            @Override
 	      public void multipleLayersAdded(LayerEvent event) {

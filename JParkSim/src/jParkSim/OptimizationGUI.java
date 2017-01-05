@@ -6,6 +6,7 @@ package jParkSim;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -18,6 +19,8 @@ public class OptimizationGUI extends javax.swing.JFrame {
 	/**
 	 * 
 	 */
+	public static String PlantGIS = new String("D:/JPS_Code_Test/PlantGIS.CSV");    // csv file to store the x and y coordinate of the endpoints for the polygons that representing the chemical plant
+	
 	private static final long serialVersionUID = 1L;
 	private javax.swing.JPanel jPanel;
 	private javax.swing.JTextField PlantName;
@@ -61,7 +64,8 @@ public class OptimizationGUI extends javax.swing.JFrame {
 	private javax.swing.JLabel jLabel_x6;
 	javax.swing.JButton btnLoadModel;
 	javax.swing.JButton btnOptimize;
-	javax.swing.JButton btnClear;
+	static javax.swing.JButton btnClear;
+	static javax.swing.JButton btnShowPlantLocation;
 	
 	public OptimizationGUI() {
         initComponentsNew();
@@ -112,6 +116,7 @@ public class OptimizationGUI extends javax.swing.JFrame {
 		btnLoadModel = new javax.swing.JButton();
 		btnOptimize = new javax.swing.JButton();
 		btnClear = new javax.swing.JButton();
+		btnShowPlantLocation = new javax.swing.JButton();
 		
 		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		jPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plant Optimizer  --Powered by J-Park Simulator", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14)));
@@ -224,7 +229,7 @@ public class OptimizationGUI extends javax.swing.JFrame {
 						wr.flush();
 						wr.close();
 						
-						if(urlCon.getResponseCode()==200){					
+						if(urlCon.getResponseCode()==200){		
 							in = new InputStreamReader(urlCon.getInputStream());
 							final BufferedReader br = new BufferedReader(in);
 							String strTemp = null;	
@@ -232,7 +237,7 @@ public class OptimizationGUI extends javax.swing.JFrame {
 							String[] Str = null;								
 							
 							strTemp = br.readLine();
-							Str = strTemp.split(",");
+							Str = strTemp.split("coordinate")[0].split(",");
 							
 							P1_Name.setText(Str[1]);
 							P1_Unit.setText(Str[2]);
@@ -250,6 +255,24 @@ public class OptimizationGUI extends javax.swing.JFrame {
 							x5_Unit.setText(Str[16]);
 							x6_Name.setText(Str[17]);
 							x6_Unit.setText(Str[18]);
+							
+							/**create a file writer to generate the csv file to store the GIS coordinate for the polygon*/
+							FileWriter fileWriter = null; 
+							fileWriter = new FileWriter(PlantGIS);
+							/**extract the x and y coordinate*/
+							String[] GISx = null, GISy = null;
+							GISx = strTemp.split("coordinate")[1].split(",");
+							GISy = strTemp.split("coordinate")[2].split(",");
+							fileWriter.append("x_coordinate" + ", "+ "y_coordinate");
+							for(int i=0; i<GISx.length; i++){
+								fileWriter.append(GISx[i]);
+								fileWriter.append(",");
+								fileWriter.append(GISy[i]);
+								fileWriter.append("\n");     // start a new line
+							}
+							
+							fileWriter.flush();
+							fileWriter.close();
 							
 						}
 						out.close();
@@ -292,13 +315,13 @@ public class OptimizationGUI extends javax.swing.JFrame {
 						
 					}else{
 						StringBuilder outputString = new StringBuilder();
-						outputString.append (URLEncoder.encode("OptT", "UTF-8"));
-						outputString.append ("=");				
-						outputString.append (URLEncoder.encode("", "UTF-8"));
+						outputString.append(URLEncoder.encode("OptT", "UTF-8"));
+						outputString.append("=");				
+						outputString.append(URLEncoder.encode("", "UTF-8"));
 						outputString.append("&");
-						outputString.append (URLEncoder.encode("Flag", "UTF-8"));
-						outputString.append ("=");				
-						outputString.append (URLEncoder.encode(Flag.toString(), "UTF-8"));
+						outputString.append(URLEncoder.encode("Flag", "UTF-8"));
+						outputString.append("=");				
+						outputString.append(URLEncoder.encode(Flag.toString(), "UTF-8"));
 						outputString.append("&");
 						outputString.append(URLEncoder.encode("Parameter1", "UTF-8"));
 						outputString.append("=");
@@ -361,6 +384,10 @@ public class OptimizationGUI extends javax.swing.JFrame {
 			 }
 		 });
 	    
+	    /** add new button "Show Location" to the new query window*/		 
+	    btnShowPlantLocation.setFont(new java.awt.Font("Tahoma", 1, 12)); // set font "Tahoma", bold, size 12
+		btnShowPlantLocation.setText("Show plant location on the map");
+	    
 	    javax.swing.GroupLayout jPanelLayout = new javax.swing.GroupLayout(jPanel);
 		jPanel.setLayout(jPanelLayout);
 	    
@@ -379,7 +406,9 @@ public class OptimizationGUI extends javax.swing.JFrame {
 	    						.addGap(0, 2, 15)
 	    						.addComponent(btnClear))
 	    				.addGroup(jPanelLayout.createSequentialGroup()
-	    						.addComponent(jLabel_UserSpecify, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
+	    						.addComponent(jLabel_UserSpecify, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+	    						.addGap(0, 60, 100)
+	    						.addComponent(btnShowPlantLocation, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
 	    				.addGroup(jPanelLayout.createSequentialGroup()
 	    						.addGap(0, 50, 151)
 	    						.addComponent(jLabel_P_Name, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -472,7 +501,8 @@ public class OptimizationGUI extends javax.swing.JFrame {
 		                         .addComponent(btnClear))
 	    				.addGap(1, 10, 10)
 	    				.addGroup(jPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-	    						.addComponent(jLabel_UserSpecify, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+	    						.addComponent(jLabel_UserSpecify, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+	    						.addComponent(btnShowPlantLocation, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
 	    				.addGap(1, 10, 10)
 	    				.addGroup(jPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 	    						.addComponent(jLabel_P_Name, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)

@@ -49,8 +49,8 @@ public class APWWHRServlet extends HttpServlet {
 	
 	public APWWHRServlet() {
 		super();
-		OBJECTIDtoHXB2.put(41, "10E01B2");   //Biodiesel2
-		OBJECTIDtoHXB2in.put(48, "PREHEATB2"); //Biodiesel2
+		OBJECTIDtoHXB2.put(39, "10E01B2");   //Biodiesel2
+		OBJECTIDtoHXB2in.put(46, "PREHEATB2"); //Biodiesel2
 		
 		OBJECTIDtoHXNum.put(1, "BoilerB1"); //Biodiesel1
 		OBJECTIDtoHXNum.put(2, "10E02B1");   //Biodiesel1
@@ -294,17 +294,14 @@ public class APWWHRServlet extends HttpServlet {
 			for (int i = 0; i < attributeslist_HX.size(); i++) {
 				for (String key : attributeslist_HX.get(i).keySet()) { // go through  all the  heat exchangers in biodiesel plant
 					if (key == "OBJECTID") {
-//41, 48						
-						if (OBJECTIDtoHXB2in.get(i + 48).equals("PREHEATB2")) { // "10E01" is the heat exchanger for oil to be heated before feeding to the reactor
+//46						
+						if (OBJECTIDtoHXB2in.get(i + 46).equals("PREHEATB2")) { // "10E01" is the heat exchanger for oil to be heated before feeding to the reactor
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")));
 							filewriterAPIN.append(",");
 							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T")));
 							filewriterAPIN.append(",");
-//							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatOut1_T")));
-//							filewriterAPIN.append(",");
 							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")))); // add the feeding mole flowrate of oil to xRow
 							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T")))); // add the temperature of oil to xRow
-//							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatOut1_T")))); // add the temperature of oil to xRow
 							xRow.add((double) 70);
 						break;
 						}
@@ -475,7 +472,7 @@ public class APWWHRServlet extends HttpServlet {
 						if (!data[6].trim().isEmpty()) {
 							HeaterCoolerAttributes.put("Heat_Loads",Float.parseFloat(data[6].trim())*4.1868e-3);                               // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
 						}
-						System.out.println("10E02Duty="+data[6]);
+						System.out.println("10E03Duty="+data[6]);
 						
 						HeaterCoolerTable.updateFeature(Long.parseLong(ArcGISOBJECTID[j]),HeaterCoolerAttributes);                          // update feature table locally
 						
@@ -485,7 +482,7 @@ public class APWWHRServlet extends HttpServlet {
 						if (!data[7].trim().isEmpty()) {
 							HeaterCoolerAttributes.put("Heat_Loads",Float.parseFloat(data[7].trim())*4.1868e-3);                               // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
 						}
-						System.out.println("10E02Duty="+data[7]);
+						System.out.println("10E04Duty="+data[7]);
 						
 						HeaterCoolerTable.updateFeature(Long.parseLong(ArcGISOBJECTID[j]),HeaterCoolerAttributes);                          // update feature table locally
 						
