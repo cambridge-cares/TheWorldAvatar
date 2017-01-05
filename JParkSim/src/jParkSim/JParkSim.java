@@ -488,7 +488,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
                               }
                             });
 
-                            layers.add(graphicsLayer2);
+                            //layers.add(graphicsLayer2);
                             
                             
                             
@@ -1958,7 +1958,7 @@ change.setLocation(890, 45);
     contentPane.add(PlantOptButton);
     contentPane.add(map, BorderLayout.CENTER);
     contentPane.add(legend, BorderLayout.WEST);
-    contentPane.add(timeSlider, BorderLayout.SOUTH);
+    //contentPane.add(timeSlider, BorderLayout.SOUTH);
     
   
   //adding the graph here
@@ -2044,10 +2044,10 @@ change.setLocation(890, 45);
 //make graphic for query
   private void addSimpleFillGraphics(GraphicsLayer graphicsLayer2) {
       Polygon polygon = new Polygon();
-      polygon.startPath(11541441.437, 140113.992);
-      polygon.lineTo(11541462.075, 140137.064);
-      polygon.lineTo(11541472.552, 140126.798);
-      polygon.lineTo(11541453.185, 140104.255);
+      polygon.startPath(11541462.271, 140093.15);
+      polygon.lineTo(11541482.67, 140116.169);
+      polygon.lineTo(11541493.862, 140105.612);
+      polygon.lineTo(11541474.098, 140083.07);
       polygon.closePathWithLine();
 
       SimpleLineSymbol outline = new SimpleLineSymbol(new Color(0, 200, 0),
