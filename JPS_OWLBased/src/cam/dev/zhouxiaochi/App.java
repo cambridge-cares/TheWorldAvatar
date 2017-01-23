@@ -160,7 +160,7 @@ public class App {
 
 			double angleRad = Math.toRadians(-45);
 			Transformation2D rotateTx = new Transformation2D();
-			rotateTx.rotate(Math.cos(angleRad), Math.sin(angleRad), FeatureWriter.p_left_button);
+			rotateTx.rotate(Math.cos(angleRad), Math.sin(angleRad),  FeatureWriter.p_left_button);
 
 			line.applyTransformation(rotateTx);
 
