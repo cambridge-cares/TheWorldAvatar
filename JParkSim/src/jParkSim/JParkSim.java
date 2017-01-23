@@ -1402,14 +1402,17 @@ change.setLocation(890, 45);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-    		/*for (ArcGISFeatureLayer layer : completeLayerList) {
+    		for (ArcGISFeatureLayer layer : completeLayerList) {
     			layer.requery();
     			layer.refresh();
-    		}*/
-    		heatercoolerlayer.requery();
+    		}
+    		/*heatercoolerlayer.requery();
     		heatercoolerlayer.refresh();
     		PlantReactorlayer.requery();
     		PlantReactorlayer.refresh();
+    		MaterialLinelayer.requery();*/
+    		
+    		
     	}
     	    });
     PrAPPWButton.setEnabled(true);
