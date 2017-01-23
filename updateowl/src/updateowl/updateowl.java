@@ -193,9 +193,9 @@ public static void main(String[] args) throws Exception {
    OWLNamedClass scalarvalueClass = jenaOwlModel.getOWLNamedClass("file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue");
    OWLNamedClass fixedvaluesetClass = jenaOwlModel.getOWLNamedClass("file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#FixedValueSet");
    
-   OWLNamedClass siderivedunitClass = jenaOwlModel.getOWLNamedClass("file:/C/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"); //needed if there is new units which are not exist in ontocape
-   OWLNamedClass straightcoordinateClass = jenaOwlModel.getOWLNamedClass("file:/C/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate");
-   OWLNamedClass giscoordinatesysClass = jenaOwlModel.getOWLNamedClass("file:/C/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem");
+   OWLNamedClass siderivedunitClass = jenaOwlModel.getOWLNamedClass("file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"); //needed if there is new units which are not exist in ontocape
+   OWLNamedClass straightcoordinateClass = jenaOwlModel.getOWLNamedClass("file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate");
+   OWLNamedClass giscoordinatesysClass = jenaOwlModel.getOWLNamedClass("file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem");
    
    
    
@@ -235,8 +235,8 @@ public static void main(String[] args) throws Exception {
    OWLObjectProperty hastemperature = jenaOwlModel.getOWLObjectProperty("file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#has_temperature");
    OWLObjectProperty haspressure = jenaOwlModel.getOWLObjectProperty("file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#has_pressure");
       
-   OWLObjectProperty hasprojectedcoordinatex = jenaOwlModel.getOWLObjectProperty("file:/C/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#hasProjectedCoordinate_x");
-   OWLObjectProperty hasprojectedcoordinatey = jenaOwlModel.getOWLObjectProperty("file:/C/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#hasProjectedCoordinate_y");
+   OWLObjectProperty hasprojectedcoordinatex = jenaOwlModel.getOWLObjectProperty("file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#hasProjectedCoordinate_x");
+   OWLObjectProperty hasprojectedcoordinatey = jenaOwlModel.getOWLObjectProperty("file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#hasProjectedCoordinate_y");
    
    OWLObjectProperty hasinput = jenaOwlModel.getOWLObjectProperty("file:/C:/OntoCAPE/meta_model/topology/topology.owl#hasInput");
    OWLObjectProperty hasoutput = jenaOwlModel.getOWLObjectProperty("file:/C:/OntoCAPE/meta_model/topology/topology.owl#hasOutput");
@@ -303,9 +303,9 @@ public static void main(String[] args) throws Exception {
    RDFIndividual mixture3 = mixtureClass.createRDFIndividual("http://www.jparksimulator.com/BiodieselPlant1WOWHR.owl#mixture_3");
    
       
-   RDFIndividual unitskmolhr = jenaOwlModel.getOWLIndividual("file:/C/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol_per_hr");
-   RDFIndividual unitsC = jenaOwlModel.getOWLIndividual("file:/C/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius");
-   RDFIndividual unitsbar = jenaOwlModel.getOWLIndividual("file:/C/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar");
+   RDFIndividual unitskmolhr = jenaOwlModel.getOWLIndividual("file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol_per_hr");
+   RDFIndividual unitsC = jenaOwlModel.getOWLIndividual("file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius");
+   RDFIndividual unitsbar = jenaOwlModel.getOWLIndividual("file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar");
   
    RDFIndividual bd = chemicalspeciesClass.createRDFIndividual("http://www.jparksimulator.com/BiodieselPlant1WOWHR.owl#butadiene");
    RDFIndividual sty = chemicalspeciesClass.createRDFIndividual("http://www.jparksimulator.com/BiodieselPlant1WOWHR.owl#styrene");
