@@ -519,34 +519,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
       }
     });
     */
-    
-    
-   //try to make new button 
-   
-JButton change = new JButton("change to fin.data");
-change.addActionListener(new ActionListener() {
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		
-		try {
-			String newId = idMap.get(mapIds.getSelectedItem());
-        WebMap webMap = WebMap.newInstance(newId, arcgisPortal);
-        map.loadWebMap(webMap);
-        
-        
-		} catch (Exception e)  {
-			e.printStackTrace();
-		}
-		
-		
-	}
-});
 
-change.setEnabled(true);
-change.setVisible(true);
-change.setSize(190,30);
-change.setLocation(890, 45);
-    
     
     
     graphicsLayer = new GraphicsLayer();
