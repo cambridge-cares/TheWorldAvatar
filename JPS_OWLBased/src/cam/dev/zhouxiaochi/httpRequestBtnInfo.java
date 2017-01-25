@@ -20,7 +20,7 @@ import com.esri.map.ArcGISFeatureLayer;
  * */
 public abstract class httpRequestBtnInfo implements BtnInfo{
 	//	url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
-	public static final String urlStr =  "http://172.25.182.41/PWServlet/"; //URL OF SERVLET
+	public static final String urlStr =  "http://JParkSimulator.com/PWServlet/"; //URL OF SERVLET
     ArcGISFeatureLayer[] completeLayerList;
 	public String emptyEditMsg;
 	public String doneMsg;
