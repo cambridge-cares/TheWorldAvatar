@@ -2322,6 +2322,8 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 			String value = userInput[1].split("plusValue")[1];
 			name_value_map.put(name, value);
 			
+			OWLUpdater updater = new OWLUpdater();
+			updater.updateData(name, value);
  
 							filewriterAPIN.append(name_value_map.get(ValueOfF_3_1) );
 							filewriterAPIN.append(",");
