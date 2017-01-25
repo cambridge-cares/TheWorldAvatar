@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.jparksimulator.com/StorageTanks.owl#"
+     xml:base="http://www.jparksimulator.com/StorageTanks.owl"
+     xmlns:SI_unit="&amp;root;OntoCAPE/supporting_concepts/SI_unit/"
+     xmlns:space_and_time_extended="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:SI_unit1="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/&amp;root;OntoCAPE/supporting_concepts/SI_unit/"
+     xmlns:system="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:coordinate_system="file:/C:/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:plant="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#">
+    <owl:Ontology rdf:about="http://www.jparksimulator.com/StorageTanks.owl">
+        <owl:imports rdf:resource="file:/C:/OntoCAPE/OntoCAPE/OntoCAPE.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+  <!-- file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl# -->
+
+    <owl:NamedIndividual rdf:about="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Owner"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/StorageTanks.owl#AirLiquide -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/StorageTanks.owl#AirLiquide">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Owner"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/StorageTanks.owl#BaseArea_TankID_0 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/StorageTanks.owl#BaseArea_TankID_0">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#m.m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">789.455496</system:numericalValue>
+    </owl:NamedIndividual>
+    
+    
+    <!-- http://www.jparksimulator.com/StorageTanks.owl#CapacityOf_TankID_0 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/StorageTanks.owl#CapacityOf_TankID_0">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#metric_ton"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">105086</system:numericalValue>
+    </owl:NamedIndividual>
+    
+    <!-- http://www.jparksimulator.com/StorageTanks.owl#Height_TankID_0 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/StorageTanks.owl#Height_TankID_0">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+     
+    <!-- http://www.jparksimulator.com/StorageTanks.owl#InD_TankID_0 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/StorageTanks.owl#InD_TankID_0">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">31.712392</system:numericalValue>
+    </owl:NamedIndividual>
+    
+        <!-- http://www.jparksimulator.com/StorageTanks.owl#TankID_0 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/StorageTanks.owl#TankID_0">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#StorageTank"/>
+        <plant:hasBaseArea rdf:resource="http://www.jparksimulator.com/StorageTanks.owl#BaseArea_TankID_0"/>
+        <plant:hasCapacity rdf:resource="http://www.jparksimulator.com/StorageTanks.owl#CapacityOf_TankID_0"/>
+        <plant:hasHeight rdf:resource="http://www.jparksimulator.com/StorageTanks.owl#Height_TankID_0"/>
+        <plant:hasInsideDiameter rdf:resource="http://www.jparksimulator.com/StorageTanks.owl#InD_TankID_0"/>
+        <system:hasContent rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#ethylene"/>
+        <system:hasOwner rdf:resource="http://www.jparksimulator.com/StorageTanks.owl#VopakTerminalSingapore"/>
+        <system:isRelatedTo rdf:resource="http://www.jparksimulator.com/StorageTanks.owl#TankID_0_Coordinates"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/StorageTanks.owl#TankID_0_Coordinates -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/StorageTanks.owl#TankID_0_Coordinates">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.jparksimulator.com/StorageTanks.owl#x_TankID_0"/>
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.jparksimulator.com/StorageTanks.owl#y_TankID_0"/>
+    </owl:NamedIndividual>
+    
+    
+    <!-- http://www.jparksimulator.com/StorageTanks.owl#ValueOf_x_TankID_0 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/StorageTanks.owl#ValueOf_x_TankID_0">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.15418557967066E7</system:numericalValue>
+    </owl:NamedIndividual>
+        <!-- http://www.jparksimulator.com/StorageTanks.owl#ValueOf_y_TankID_0 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/StorageTanks.owl#ValueOf_y_TankID_0">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">140091.682301637</system:numericalValue>
+    </owl:NamedIndividual>
+    
+    <!-- http://www.jparksimulator.com/StorageTanks.owl#x_TankID_0 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/StorageTanks.owl#x_TankID_0">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <coordinate_system:refersToAxis rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+        <system:hasDimension rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/StorageTanks.owl#ValueOf_x_TankID_0"/>
+    </owl:NamedIndividual>
+    
+    <!-- http://www.jparksimulator.com/StorageTanks.owl#y_TankID_0 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/StorageTanks.owl#y_TankID_0">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <coordinate_system:refersToAxis rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+        <system:hasDimension rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/StorageTanks.owl#ValueOf_y_TankID_0"/>
+    </owl:NamedIndividual>
+    
+    
+    <!-- http://www.jparksimulator.com/StorageTanks.owl#EssarProjects&amp;JurongAromaticsCorporation -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/StorageTanks.owl#EssarProjects&amp;JurongAromaticsCorporation">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Owner"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+    
