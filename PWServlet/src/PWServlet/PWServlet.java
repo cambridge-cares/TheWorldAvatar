@@ -53,6 +53,8 @@ import informationQuery.InformationQuery;*/
 
 public class PWServlet extends HttpServlet {
 		
+	public static String[] userInput;
+	
 	private static final long serialVersionUID = 1L;
 	public static long start_time;
 	public static long end_time;
@@ -704,6 +706,8 @@ public class PWServlet extends HttpServlet {
 		String[] OBJECTIDs = request.getParameter("OBJECTIDs").split(",");     // OBJECTID indicating parameter of which unit in chemical process has been changed
 		String[] appCallFlag = request.getParameter("appCallFlag").split(","); // (mjk, 151115) adding flag indicating which  function has been called: PowerWorld,  parameterised  PW, AspenPlus, parameterised AP
 		String[] editInfo = request.getParameter("editInfo").split(",");
+		userInput = request.getParameter("editInfo").split(",");
+		
 		String[] QueryT = request.getParameter("QueryT").split(",");
 
 		for (int i = 0; i < layers.length; i++) {
@@ -2294,7 +2298,9 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 			filewriterAPIN.append("FOIL, TOIL, FMEOH, TMEOH, FREWATER, PBOILER");
 			filewriterAPIN.append("\n");
 						
+			Map<String,String> name_value_map = new HashMap<>();
 			
+		
 			String ValueOfF_3_1 = OWLFileReader.read_owl_file(null, "ValueOfF_3-1");
 			String ValueOfTemperatureOf3_1 = OWLFileReader.read_owl_file(null, "ValueOfTemperatureOf3-1");
 			String ValueOfF_3_2 = OWLFileReader.read_owl_file(null, "ValueOfF_3-2");
@@ -2302,36 +2308,48 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 			String ValueOfF_FW_301 = OWLFileReader.read_owl_file(null, "ValueOfF_FW-301");
 			String ValueOfOutletPressureOfP_302 = OWLFileReader.read_owl_file(null, "ValueOfOutletPressureOfP-302");
 			
-			 
+			name_value_map.put("ValueOfF_3_1", ValueOfF_3_1);
+			name_value_map.put("ValueOfTemperatureOf3_1", ValueOfTemperatureOf3_1);
+			name_value_map.put("ValueOfF_3_2", ValueOfF_3_2);
+			name_value_map.put("ValueOfTemperatureOf3_2", ValueOfTemperatureOf3_2);
+			name_value_map.put("ValueOfF_FW_301", ValueOfF_FW_301);
+			name_value_map.put("ValueOfOutletPressureOfP_302", ValueOfOutletPressureOfP_302);
+			
+			
+		  
+		 
+			String name = userInput[0].split("plusValue")[0];
+			String value = userInput[1].split("plusValue")[1];
+			name_value_map.put(name, value);
 			
  
-							filewriterAPIN.append(ValueOfF_3_1 );
+							filewriterAPIN.append(name_value_map.get(ValueOfF_3_1) );
 							filewriterAPIN.append(",");
-							filewriterAPIN.append(ValueOfTemperatureOf3_1 );
+							filewriterAPIN.append(name_value_map.get(ValueOfTemperatureOf3_1) );
 							filewriterAPIN.append(",");
  
-							xRow.add(Double.parseDouble(ValueOfF_3_1 )); // add the feeding mole flowrate of oil to xRow
-							xRow.add(Double.parseDouble(ValueOfTemperatureOf3_1)); // add the temperature of oil to xRow
+							xRow.add(Double.parseDouble(name_value_map.get(ValueOfF_3_1))); // add the feeding mole flowrate of oil to xRow
+							xRow.add(Double.parseDouble(name_value_map.get(ValueOfTemperatureOf3_1))); // add the temperature of oil to xRow
 //	 
 
 			 
-							filewriterAPIN.append(ValueOfF_3_2);
+							filewriterAPIN.append(name_value_map.get(ValueOfF_3_2));
 							filewriterAPIN.append(",");
-							filewriterAPIN.append(ValueOfTemperatureOf3_2);
+							filewriterAPIN.append(name_value_map.get(ValueOfTemperatureOf3_2));
 							filewriterAPIN.append(",");
  
-							xRow.add(Double.parseDouble(ValueOfF_3_2)); // add the feeding mole flowrate of methanol  to xRow
-							xRow.add(Double.parseDouble(ValueOfTemperatureOf3_2)); // add the temperature of the feeding methanol flow to xRow							
+							xRow.add(Double.parseDouble(name_value_map.get(ValueOfF_3_2))); // add the feeding mole flowrate of methanol  to xRow
+							xRow.add(Double.parseDouble(name_value_map.get(ValueOfTemperatureOf3_2))); // add the temperature of the feeding methanol flow to xRow							
  
  
-							filewriterAPIN.append(ValueOfF_FW_301);
+							filewriterAPIN.append(name_value_map.get(ValueOfF_FW_301));
 							filewriterAPIN.append(",");
-							filewriterAPIN.append(ValueOfOutletPressureOfP_302);
+							filewriterAPIN.append(name_value_map.get(ValueOfOutletPressureOfP_302));
 							filewriterAPIN.append(",");
 							
 							
-							xRow.add(Double.parseDouble(ValueOfF_FW_301)); // add the temperature of the outlet cold stream  to xRow
-							xRow.add(Double.parseDouble(ValueOfOutletPressureOfP_302)); // add the temperature of the outlet cold stream  to xRow
+							xRow.add(Double.parseDouble(name_value_map.get(ValueOfF_FW_301))); // add the temperature of the outlet cold stream  to xRow
+							xRow.add(Double.parseDouble(name_value_map.get(ValueOfOutletPressureOfP_302))); // add the temperature of the outlet cold stream  to xRow
 	 
 			System.out.println("xRow=" + xRow);                                                                    // print out all the x-data that has been collected to console
 			
