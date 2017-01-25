@@ -120,6 +120,7 @@ public class JParkSim {
 	
 	 
 		final static SimpleFillSymbol testColor =new SimpleFillSymbol(Color.green, new SimpleLineSymbol(Color.blue, 1), SimpleFillSymbol.Style.SOLID);
+		final static SimpleFillSymbol testColor2 =new SimpleFillSymbol(Color.orange, new SimpleLineSymbol(Color.red, 1), SimpleFillSymbol.Style.SOLID);
 		final static SimpleLineSymbol lineColor = new SimpleLineSymbol(Color.blue, 1);
 		 
 		public static String editedValue;
@@ -227,7 +228,10 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
  //  ArcGISFeatureLayer[] completeLayerList =  {testLayer};
    ArcGISFeatureLayer[] completeLayerList =  new ArcGISFeatureLayer[targets.length + 2];
    
-    for(int i = 0; i < targets.length; i++)
+   completeLayerList[completeLayerList.length - 1] = buildinglayer;
+   createRenderer(layers, new ArcGISFeatureLayer [] {buildinglayer}, testColor2);
+   
+   for(int i = 0; i < targets.length; i++)
     {
     
     ArcGISFeatureLayer  newLayer = new ArcGISFeatureLayer(
@@ -247,8 +251,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     completeLayerList[completeLayerList.length - 2] = linelayer;
     createRenderer(layers, new ArcGISFeatureLayer [] {linelayer}, testColor);
  
-    completeLayerList[completeLayerList.length - 1] = buildinglayer;
-    createRenderer(layers, new ArcGISFeatureLayer [] {buildinglayer}, testColor);
+  
     
     
     ArcGISDynamicMapServiceLayer highwayLayer = new ArcGISDynamicMapServiceLayer(
