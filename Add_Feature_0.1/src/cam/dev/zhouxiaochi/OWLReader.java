@@ -82,6 +82,7 @@ public static double y = 0;
 		if(filename == null)
 		{
 		 //	filename = "buildingmodif2.owl";	 
+			String filename2 = "updated electrical network.owl";
 			filename = "BiodieselPlant3.owl";
 		//	filename = "storageTest.owl";
 		} 

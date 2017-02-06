@@ -86,7 +86,7 @@ import com.esri.toolkit.overlays.InfoPopupOverlay;
 
 public class App {
 	
-	public final static String BASE_URL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer";//Base url for service!!!!
+	public final static String BASE_URL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST020/FeatureServer";//Base url for service!!!!
     public final static String DEVICE_NAME_MAP_LOCATION = "map.txt";//location of device name map[type dictionary]
     public final static String PLANT_OWL_FILE_NAME = "BiodieselPlant3.owl";//main owl file 
 	public static int layerID;
@@ -105,6 +105,7 @@ public class App {
 	public static Map<String, ArcGISFeatureLayer> LayerMap;
 
 	public static ArcGISFeatureLayer linelayer;
+	
 
 	public static ArrayList<Rectangle> rect_list = new ArrayList<Rectangle>();
 	public static ArrayList<Connection> connections = new ArrayList<Connection>();
@@ -302,7 +303,7 @@ public class App {
 		// ================================================================
 
 		LayerMap = new HashMap<String, ArcGISFeatureLayer>();
-	     ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/Buildings", user);
+	     ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST020/FeatureServer/Buildings", user);
 		readlist();
 
 		relationship_array = new ArrayList<ArrayList<String>>();
@@ -327,12 +328,15 @@ public class App {
 			System.out.println(OWLReader.relationships);
 
 			relationship_array.add(OWLReader.relationships);
-
+			
+			
+			
+		
 			ArcGISFeatureLayer newLayer = new ArcGISFeatureLayer(
 					BASE_URL+"/"
 							+ target,
 					user);
-
+		
 			// ArcGISFeatureLayer newLayer = new
 			// ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/"
 			// + idx, user);

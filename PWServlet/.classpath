@@ -46,11 +46,10 @@
 	<classpathentry kind="lib" path="C:/Program Files/Protege_3.4.8/plugins/edu.stanford.smi.protegex.owl/wstx-asl-3.2.9.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Protege_3.4.8/plugins/edu.stanford.smi.protegex.owl/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Protege_3.4.8/plugins/edu.stanford.smi.protegex.owl/xml-apis.jar"/>
-	<classpathentry kind="lib" path="C:/MoDS_API-j-Git-0.1.jar"/>
+	<classpathentry kind="lib" path="D:/MoDS_API/MoDS_Java_API_v0.1/MoDS_API-j-Git-0.1.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/sparqldl-api1.0.0/sparqldl-api.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/sparqldl-api1.0.0/sparqldl-api-javadoc.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/sparqldl-api1.0.0/sparqldl-api-src.jar"/>
-	<classpathentry kind="lib" path="C:/Program Files/sparqldl-api1.0.0/lib/jdom.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/sparqldl-api1.0.0/lib/jpaul-2.5.1.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/sparqldl-api1.0.0/lib/junit-4.8.2.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/sparqldl-api1.0.0/lib/owlapiv3/owlapi-bin.jar"/>

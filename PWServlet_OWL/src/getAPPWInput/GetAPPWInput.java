@@ -33,7 +33,7 @@ public class GetAPPWInput {
 		
 		ArrayList<Double> xRow = new ArrayList<Double>();
 		
-		String uri = "File:/C:/apache-tomcat-8.0.24/webapps/ROOT/BiodieselPlant-1.owl";
+		String uri = "File:/C:/apache-tomcat-8.0.24/webapps/ROOT/BiodieselPlant3.owl";
 		
 		try{			
             OWLModel owlModel = ProtegeOWL.createJenaOWLModelFromURI(uri);                  

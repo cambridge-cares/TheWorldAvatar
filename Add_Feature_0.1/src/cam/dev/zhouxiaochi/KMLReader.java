@@ -210,7 +210,7 @@ public class KMLReader {
 		attrLists.put("type", typeList);
 		attrLists.put("alias", nameList);
 		int lengthOfEachList = nameList.length;
-		FeatureServiceUpdater updater = new FeatureServiceUpdater("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer");
+		FeatureServiceUpdater updater = new FeatureServiceUpdater("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST020/FeatureServer");
 		updater.generateLayer(lengthOfEachList,null, attrLists, "Buildings");
 	}
 	

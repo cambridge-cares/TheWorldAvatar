@@ -3947,10 +3947,10 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 				ArcGISOBJECTID = new String[50];
 
 				for (int j = 0; j < 2; j++) {
-					ArcGISOBJECTID[j] = String.valueOf(j + 196); //still use indication of object id to write value into the feature object
+					ArcGISOBJECTID[j] = String.valueOf(j + 197); //still use indication of object id to write value into the feature object
 					System.out.println(ArcGISOBJECTID[j]);
 					
-					if (CPIDtoMatLine.get(j + 60).equals("3-23")) {                                                                     
+					if (CPIDtoMatLine.get(j + 61).equals("3-23")) {                                                                     
 						Map<String, Object> MatLineAttributes = MatLineTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[0].trim().isEmpty()) {
 							MatLineAttributes.put("Mat_4_qnt",Float.parseFloat(data[0].trim()));                                     // upgrade the heat duty of reactor 10D01 to ArcGIS  databse

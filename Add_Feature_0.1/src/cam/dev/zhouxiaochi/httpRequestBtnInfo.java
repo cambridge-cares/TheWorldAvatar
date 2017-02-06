@@ -21,7 +21,7 @@ import com.esri.map.ArcGISFeatureLayer;
 public abstract class httpRequestBtnInfo implements BtnInfo{
 	//	url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
 	public static final String BaseStr =  "http://172.25.182.41/"; //URL OF SERVLET
-	public static final String PwUrlStr =  "PWServlet/"; //URL OF SERVLET
+	public static final String PwUrlStr =  "PWServlet_OWL/"; //URL OF SERVLET
 	public static final String APWOWHRStr =  "APWOWHRServlet/"; //URL OF SERVLET
 	public static final String APWWHRStr =  "APWWHRServlet/"; //URL OF SERVLET
 

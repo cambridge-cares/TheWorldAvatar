@@ -1,7 +1,10 @@
-package PWServlet;
+package PWServlet_OWL;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -20,12 +23,30 @@ import org.xml.sax.SAXException;
 
 public class OWLUpdater {
 	 
+	public static String PrAPPWOUTCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPPWOUT.CSV"); // output CSV file from the pr aspen plus model
 	
 	public void updateData(String target, String newValue) throws SAXException, IOException, ParserConfigurationException, TransformerException
 	{
 		
-	String filename = "BiodieselPlant3.owl";
+	String filename = "C://apache-tomcat-8.0.24/webapps/ROOT/BiodieselPlant3.owl";
+	String filename2 = "C://apache-tomcat-8.0.24/webapps/ROOT/updated electrical network.owl";
    
+   
+   
+   String []parameter =target.split("_");
+   
+      
+   System.out.println("parameter length= "+parameter.length);
+   
+   if (parameter.length>1)
+   {
+   if (target.split("_")[1].equals("Angle")||target.split("_")[1].equals("actualVoltage"))
+	   
+   {
+	    filename = filename2;
+   
+   }
+   }
    File inputFile = new File(filename);
    DocumentBuilderFactory dbFactory  = DocumentBuilderFactory.newInstance();
    DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -42,13 +63,29 @@ public class OWLUpdater {
 	   
 	   if(name.contentEquals(target))
 	   {
+		 System.out.println("ok1");
 		 
-		 
-		  individuals.item(i).setTextContent(newValue);
+		 NodeList propertylist = individuals.item(i).getChildNodes();
+		  
+		
+		 for(int t = 0 ; t < propertylist.getLength() ; t ++)
+		 {
+			 
+		 if("system:numericalValue".equals(propertylist.item(t).getNodeName()))
+			 
+			 {propertylist.item(t).setTextContent(newValue);
+			 System.out.println("ok3");
+			 
+				 
+			 }
+		  
 		  
 	   }
  
    }
+	   
+   }
+   
 	TransformerFactory transformerFactory = TransformerFactory.newInstance();
 
 	Transformer transformer = transformerFactory.newTransformer();
@@ -63,4 +100,5 @@ public class OWLUpdater {
 	
 	
 
-}
+	}
+

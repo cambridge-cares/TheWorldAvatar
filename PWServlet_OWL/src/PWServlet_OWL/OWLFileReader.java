@@ -1,4 +1,4 @@
-package PWServlet;
+package PWServlet_OWL;
 
 
 import java.io.File;
@@ -21,7 +21,7 @@ public class OWLFileReader {
 		
 	if(filename == null)
 	{
-		filename = "BiodieselPlant3.owl";
+		filename = "C://apache-tomcat-8.0.24/webapps/ROOT/BiodieselPlant3.owl";
 	} 
 	
    File inputFile = new File(filename);
@@ -36,20 +36,28 @@ public class OWLFileReader {
    {
 	   String name = individuals.item(i).getAttributes().item(0).getNodeValue();
 	   name = name.substring(name.indexOf("#") + 1);
-	   System.out.println(name);
+	   //System.out.println(name);
+	   
 	   if(name.contentEquals(target))
 	   {
 		   targetNode = individuals.item(i);
 	   }
    }
    
+   
+   
    NodeList children = targetNode.getChildNodes();
+      
+   
+   
+   
    for(int j = 0 ; j < children.getLength(); j++)
    {
+	   
 	   if(children.item(j).getNodeName().contentEquals("system:numericalValue"))
 	   {
 		   result = children.item(j).getTextContent();
-		   System.out.println(result);
+		   System.out.println("RESULT= "+result);
 	   }
  
 	    
