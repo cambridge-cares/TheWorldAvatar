@@ -490,9 +490,9 @@ public class FeatureServiceUpdater {
 			request.addHeader("content-type", contentType);
 			if (parameters != null)
 				request.setEntity(new UrlEncodedFormEntity(parameters, "UTF-8"));
-			System.out.println(parameters.toString());
+			//System.out.println(parameters.toString());
 
-			System.out.println(request.getEntity().toString());
+			//System.out.println(request.getEntity().toString());
 
 			// debug:request header
 			System.out.println("Request URL: " + request.getURI());
@@ -572,7 +572,7 @@ public class FeatureServiceUpdater {
 		String[] parts = baseURL.split("(?<=rest/)");
 
 		String mURL = parts[0] + "admin/" + parts[1];
-		System.out.println("format admin url: " + mURL);
+		//System.out.println("format admin url: " + mURL);
 
 		String addDefURL = "/addToDefinition";
 		String updateDefURL = "/updateDefinition";
@@ -631,7 +631,7 @@ public class FeatureServiceUpdater {
 		String[] parts = baseURL.split("(?<=rest/)");
 
 		String mURL = parts[0] + "admin/" + parts[1];
-		System.out.println("format admin url: " + mURL);
+		//System.out.println("format admin url: " + mURL);
 		// String baseURL =
 		// "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/admin/services/test003/FeatureServer";
 		String addDefURL = "/addToDefinition";
@@ -798,9 +798,21 @@ public class FeatureServiceUpdater {
 	 *            String[]> a name map of all the input attribute values.
 	 * @throws JSONException
 	 */
-	public void generateLayer(int numOfAttrs, String templateServiceURL, Map<String, String[]> attrValueListsMap,
+	
+	public enum LayerType{
+		POLYLINE,
+		POLYGON
+	}
+	
+	private  JSONObject PolygonTemplateMother = null;
+	private  JSONObject PolylineTemplateMother = null;
+	String PolygonTemplateServiceURL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/admin/services/test004/FeatureServer";
+	String PolylineTemplateServiceURL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/airline/FeatureServer";
+	public void generateLayer(int numOfAttrs, LayerType layertype, Map<String, String[]> attrValueListsMap,
 			String newLayerName) throws JSONException {
 
+		System.out.println("Generating Layer with name: "+newLayerName);
+		JSONObject mTemplateJSON;
 		if (token == null) {
 			token = generateToken();
 			System.out.println("token acquired: " + token);
@@ -817,10 +829,8 @@ public class FeatureServiceUpdater {
 
 		}
 
-		// if templateIsNull
-		if (templateServiceURL == null || templateServiceURL.equals("")) {
-			templateServiceURL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/admin/services/test004/FeatureServer";
-		}
+		
+
 
 		//// TODO:now get layer template from test004, in the future the
 		//// template url will be a parameter instead
@@ -830,32 +840,52 @@ public class FeatureServiceUpdater {
 		parameters.add(new BasicNameValuePair("f", "json"));
 		parameters.add(new BasicNameValuePair("token", token));
 
-		System.out.println("start request for template");
-		JSONObject templateLayer = httpRequest(templateServiceURL, "application/x-www-form-urlencoded; charset=utf-8",
+		if(PolygonTemplateMother == null) {
+			System.out.println("start request for Polygon template");
+
+			PolygonTemplateMother = httpRequest(PolygonTemplateServiceURL, "application/x-www-form-urlencoded; charset=utf-8",
 				parameters).getJSONArray("layers").getJSONObject(0);
 
-		System.out.println("start request for current service info");
+		}
+		
+		if(PolylineTemplateMother == null) {
+			System.out.println("start request for Polyline template");
 
+			PolylineTemplateMother = httpRequest(PolylineTemplateServiceURL, "application/x-www-form-urlencoded; charset=utf-8",
+				parameters).getJSONArray("layers").getJSONObject(0);
+
+		}
+		
+		if(layertype == LayerType.POLYGON){
+			mTemplateJSON = new JSONObject(PolygonTemplateMother.toString());
+		}else if(layertype == LayerType.POLYLINE){
+			mTemplateJSON = new JSONObject(PolylineTemplateMother.toString());;
+
+		}else{
+			System.out.println("ERR: REQUEST TO GENERATE LAYER WITH NON-EXISTING TYPE");
+			return;
+		}
+		
 		JSONArray thisLayers = doSth2Service("info", parameters).getJSONArray("layers");
 
 		int curLayersNum = thisLayers.length();
 
-		templateLayer.put("id", curLayersNum);
+		mTemplateJSON.put("id", curLayersNum);
 		layerID = String.valueOf(curLayersNum);
 
 		curLayersNum++;
 
 		// templateLayer.put("name", newLayerName + curLayersNum);
-		templateLayer.put("name", newLayerName);
+		mTemplateJSON.put("name", newLayerName);
 
-		templateLayer.remove("adminLayerInfo");
+		mTemplateJSON.remove("adminLayerInfo");
 
 		// String newTableName =
 		// templateLayer.getJSONObject("adminLayerInfo").getString("tableName")+curLayersNum;
 
 		// templateLayer.getJSONObject("adminLayerInfo").put("tableName",
 		// newTableName);
-		templateLayer.remove("fields");
+		mTemplateJSON.remove("fields");
 		JSONArray FieldArray = new JSONArray();
 
 		// construct globalID and objectID definition to JSON
@@ -927,13 +957,13 @@ public class FeatureServiceUpdater {
 
 		}
 
-		templateLayer.put("fields", FieldArray);
+		mTemplateJSON.put("fields", FieldArray);
 
 		JSONObject container = new JSONObject();
 		JSONArray containerLayerArr = new JSONArray();// container for correct
 														// JSON data format
 
-		containerLayerArr.put(templateLayer);
+		containerLayerArr.put(mTemplateJSON);
 		container.put("layers", containerLayerArr);
 		/// put our new one via update
 

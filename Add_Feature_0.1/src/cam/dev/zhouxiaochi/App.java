@@ -118,6 +118,8 @@ public class App {
 	public static int[] count;
 	public static final Map<String, ArcGISFeatureLayer> editlayer = new LinkedHashMap<>();
 	private static FeatureServiceUpdater layerFactory;
+	static SimpleLineSymbol lineSymbol = new SimpleLineSymbol(new Color(255, 255, 0), 300);
+
 
 	public static void create_object(double x, double y, ArcGISFeatureLayer thisLayer, String type, String name)
 			throws Exception {
@@ -149,26 +151,24 @@ public class App {
 		}
 	}
 	
-	public static void create_line(double x, double y, double x2, double y2) {
-		linelayer.setOperationMode(QueryMode.SELECTION_ONLY);
+	//TODO: testing attributes of pipe
+	public static void create_line(PipeReader.PipeInfo  pipeInfo) {
+		//linelayer.setOperationMode(QueryMode.SELECTION_ONLY);
 
+		List points  = pipeInfo.path;
 		if (linelayer.getDefaultSpatialReference() == null) {
 			JOptionPane.showMessageDialog(null, "Sorry, the layer is not yet fully loaded");
 		} else {
 
 			Polyline line = new Polyline();
-			line.startPath(new Point(x, y));
-			line.lineTo(new Point(x2, y2));
+			line.startPath((Point) (points.get(0)));
+			for(int idxP =1; idxP <points.size(); idxP++){
+				Point mPt = (Point)(points.get(idxP));
+			line.lineTo((Point)(points.get(idxP)));
+			System.out.println("draw point"+mPt.getX()+","+mPt.getY());
+			}
 
-			SimpleLineSymbol outline = new SimpleLineSymbol(new Color(0, 150, 0), 300);
-
-			double angleRad = Math.toRadians(-45);
-			Transformation2D rotateTx = new Transformation2D();
-			rotateTx.rotate(Math.cos(angleRad), Math.sin(angleRad), FeatureWriter.p_left_button);
-
-			line.applyTransformation(rotateTx);
-
-			Graphic polygonGraphic = new Graphic(line, outline);
+			Graphic polygonGraphic = new Graphic(line, lineSymbol, pipeInfo.attriList);
 			Graphic[] adds = { polygonGraphic };
 
 			linelayer.applyEdits(adds, null, null, null);
@@ -180,7 +180,6 @@ public class App {
 			SimpleFillSymbol.Style.SOLID);
 	final static SimpleLineSymbol linecolor = new SimpleLineSymbol(Color.pink, 3);
 
-	final static SimpleLineSymbol linecolor2 = new SimpleLineSymbol(Color.GREEN, 3);
 
 	private JFrame window;
 	private static JMap map;
@@ -226,6 +225,8 @@ public class App {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 
+					drawLines();
+					/**
 					for (int i = 0; i < targets.length; i++) {
 						
 						if(!targets[i].equals("storageTank"))
@@ -233,8 +234,7 @@ public class App {
 					}
 					
 					createStorageTank(LayerMap.get("storageTank"));
-					drawLines();
-
+***/
 				} catch (SAXException | IOException | ParserConfigurationException e) {
 					// TODO Auto-generated catch block
 
@@ -329,9 +329,6 @@ public class App {
 			System.out.println(OWLReader.relationships);
 
 			relationship_array.add(OWLReader.relationships);
-			
-			
-			
 		
 			ArcGISFeatureLayer newLayer = new ArcGISFeatureLayer(
 					BASE_URL+"/"
@@ -432,7 +429,7 @@ public class App {
 			attrLists.put("type", typeList);
 			attrLists.put("alias", nameList);
 			int lengthOfEachList = nameList.length;
-			layerFactory.generateLayer(lengthOfEachList, null, attrLists, targetName);
+			layerFactory.generateLayer(lengthOfEachList, FeatureServiceUpdater.LayerType.POLYGON, attrLists, targetName);
 
 		}
 
@@ -474,7 +471,7 @@ public class App {
 			attrLists.put("type", typeList);
 			attrLists.put("alias", nameList);
 			int lengthOfEachList = nameList.length;
-			layerFactory.generateLayer(lengthOfEachList, null,attrLists,
+			layerFactory.generateLayer(lengthOfEachList, FeatureServiceUpdater.LayerType.POLYGON,attrLists,
 			 target);
 		}
 		
@@ -524,104 +521,11 @@ public class App {
 
 	}
 
-	public static void drawLines() {
-		boolean dup_flag = false;
-		count = new int[rect_list.size()];
-		int counter_offset = 0;
-		for (int i = 0; i < relationship_array.size(); i++) {
-			ArrayList<String> relationship = relationship_array.get(i);
-			for (int j = 0; j < relationship.size(); j++) {
-
-				for (int m = 0; m < relationship_array.size(); m++) {
-					ArrayList<String> relationship2 = relationship_array.get(m);
-					for (int n = 0; n < relationship2.size(); n++) {
-						String one = relationship.get(j);
-						String two = relationship2.get(n);
-
-						if ((i != m) && (one.equals(two))) {
-
-							dup_flag = false;
-
-							for (String comb : combination) {
-								if (comb.contains(targets[i]) && comb.contains(targets[m])) {
-									dup_flag = true;
-								}
-
-							}
-
-							if (!dup_flag) {
-								combination.add(targets[i] + targets[m]);
-								Point point_from = new Point(x_array[i], y_array[i]);
-								Point point_to = new Point(x_array[m], y_array[m]);
-
-								double angleRad = Math.toRadians(45);
-								Transformation2D rotateTx = new Transformation2D();
-								rotateTx.rotate(Math.cos(angleRad), Math.sin(angleRad), FeatureWriter.p_left_button);
-
-								point_from.applyTransformation(rotateTx);
-								point_to.applyTransformation(rotateTx);
-
-								// create_line(
-								// point_from.getX(),point_from.getY(),point_to.getX(),point_to.getY());
-
-								double start_x = rect_list.get(i).getLowerLeft().getX();
-								double start_y = rect_list.get(i).getLowerLeft().getY();
-
-								double end_x = rect_list.get(m).getLowerLeft().getX();
-								double end_y = rect_list.get(m).getLowerLeft().getY();
-
-								if (start_y > end_y) {
-
-									start_y = rect_list.get(i).getLowerLeft().getY();
-									start_x = rect_list.get(i).getLowerLeft().getX() + count[i] * 0.5;
-
-									end_y = rect_list.get(m).getUpperLeft().getY();
-									end_x = rect_list.get(m).getUpperLeft().getX() + count[m] * 0.5;
-
-									count[i] = count[i] + 1;
-									count[m] = count[m] + 1;
-
-									System.out.print("Here we are -- >  ");
-
-								} else {
-
-									start_y = rect_list.get(i).getUpperLeft().getY();
-									start_x = rect_list.get(i).getUpperLeft().getX() + count[i] * 0.5;
-
-									end_y = rect_list.get(m).getLowerLeft().getY();
-									end_x = rect_list.get(m).getLowerLeft().getX() + count[m] * 0.5;
-
-									count[i] = count[i] + 1;
-									count[m] = count[m] + 1;
-
-									System.out.print("Here we are -- >  ");
-
-								}
-
-								point_from = new Point(start_x, start_y);
-								point_to = new Point(end_x, end_y);
-
-								Connection this_connection = new Connection(point_from, point_to);
-
-								connections.add(this_connection);
-
-							}
-
-						}
-
-					}
-
-				}
-
-				// System.out.println(combination);
-
-			}
-
-		}
-		for (Connection c : connections) {
-			System.out.println("startpoint x y " + c.start.getX() + "--" + c.start.getY());
-			System.out.println("endpoint  x y " + c.end.getX() + "--" + c.end.getY());
-
+	public static void drawLines() throws IOException, Exception {
+	
+		List linelist = PipeReader.getInstance().getPipelist();
+		for(Object lineInfo:linelist){
+			create_line(lineInfo);
 		}
 
 	}
@@ -649,6 +553,7 @@ public class App {
 	}
 
 	public static void delete() {
+	
 		all_layers.add(linelayer);
 		for (int i = 0; i < all_layers.size(); i++) {
 			// all_layers.get(i).applyEdits(null, all_features.get(i), null,

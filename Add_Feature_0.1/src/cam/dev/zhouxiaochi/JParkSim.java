@@ -249,7 +249,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     }
     
     completeLayerList[completeLayerList.length - 2] = linelayer;
-    createRenderer(layers, new ArcGISFeatureLayer [] {linelayer}, testColor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {linelayer}, lineColor);
  
   
     
