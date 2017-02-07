@@ -69,7 +69,7 @@ public class FeatureServiceUpdater {
 	  
 	  //TODO: test each function 
 		  String baseUrl =
-	  "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer";
+	  "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST020/FeatureServer";
 	  FeatureServiceUpdater mUpdater = new FeatureServiceUpdater(baseUrl);
 	  
 		  String templateServiceURL =
@@ -91,7 +91,7 @@ public class FeatureServiceUpdater {
 	  //Map layerlist = new HashMap<Integer, Map<String, String>>();
 	  //layerlist.put(0, attris);
 	  try {
-		mUpdater.deleteLayers(idList);
+		mUpdater.deleteAllLayers();
 	} catch (JSONException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();

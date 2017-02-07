@@ -89,12 +89,13 @@ public class App {
 	public final static String BASE_URL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer";//Base url for service!!!!
     public final static String DEVICE_NAME_MAP_LOCATION = "map.txt";//location of device name map[type dictionary]
     public final static String PLANT_OWL_FILE_NAME = "BiodieselPlant3.owl";//main owl file 
+    public final static String ElECTRICAL_OWL_FILE_NAME = "updated electrical network.owl";//owl file for electrical
+
 	public static int layerID;
 	public static ArcGISFeatureLayer Layer;
 	public static JCheckBox checkbox;
 
 	public static String target;
-	public static String[] nameList;
 	public static String[] targets;
 	public static String[] types;
 
@@ -409,7 +410,7 @@ public class App {
 			int length = reader.attributes.size();
 
 			String[] typeList = new String[length];
-			nameList = new String[length];
+			String[] nameList = new String[length];
 
 			System.out.println("--------------------------------------");
 
@@ -435,25 +436,37 @@ public class App {
 
 		}
 
-		 else if (!targetName.contains("linelayer")) {
+		 else if (!targetName.contains("linelayer")) {//generate device layers
 			OWLReader.read_owl_file(PLANT_OWL_FILE_NAME, targetName);
 
-			int length = OWLReader.name_list.size();
+			int lengthChemAttris = OWLReader.name_list.size();
 
-			String[] typeList = new String[length];
-			nameList = new String[length];
+			String[] nameListChemicalAttris = new String[lengthChemAttris];
 
 			System.out.println("--------------------------------------");
 
-			for (int i = 0; i < length; i++) {
+
+			for (int i = 0; i < lengthChemAttris; i++) {
+				nameListChemicalAttris[i] = OWLReader.name_list.get(i); // get the attributes name list (header) from the owl file
+
+			}
+			//Now read electrical owl file
+			OWLReader.read_owl_file(ElECTRICAL_OWL_FILE_NAME, targetName);
+			int lengthElectricalAttris = OWLReader.name_list.size();
+
+			String[] nameListElectricalAttris = new String[lengthElectricalAttris];
+			for (int i = 0; i < lengthElectricalAttris; i++) {
+				nameListElectricalAttris[i] = OWLReader.name_list.get(i); // get the attributes name list (header) from the owl file
+
+			}
+			
+			String[] typeList = new String[lengthElectricalAttris+lengthChemAttris];
+
+			for (int i = 0; i < typeList.length; i++) {
 				typeList[i] = "esriFieldTypeString";
 			}
 
-			for (int i = 0; i < length; i++) {
-				nameList[i] = OWLReader.name_list.get(i); // get the attributes name list (header) from the owl file
-
-			}
-
+			String[] nameList = concatArr(nameListChemicalAttris,nameListElectricalAttris);
 			// construct name map of lists
 			Map<String, String[]> attrLists = new HashMap<String, String[]>();
 
@@ -471,6 +484,16 @@ public class App {
 
 	}
 
+	
+	public static String[] concatArr(String[] a, String[] b) {
+		   int aLen = a.length;
+		   int bLen = b.length;
+		   String[] c= new String[aLen+bLen];
+		   System.arraycopy(a, 0, c, 0, aLen);
+		   System.arraycopy(b, 0, c, aLen, bLen);
+		   return c;
+		}
+	
 	public static void readlist() {
 		ArrayList<String> temp = new ArrayList<String>();
 		try (BufferedReader br = new BufferedReader(new FileReader(DEVICE_NAME_MAP_LOCATION))) {

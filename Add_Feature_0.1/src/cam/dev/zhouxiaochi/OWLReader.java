@@ -16,6 +16,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+
 public class OWLReader {
 	
 	
@@ -82,8 +83,8 @@ public static double y = 0;
 		if(filename == null)
 		{
 		 //	filename = "buildingmodif2.owl";	 
-			String filename2 = "updated electrical network.owl";
-			filename = "BiodieselPlant3.owl";
+			//String filename2 = "updated electrical network.owl";
+			filename = App.PLANT_OWL_FILE_NAME;
 		//	filename = "storageTest.owl";
 		} 
 		
@@ -107,7 +108,7 @@ public static double y = 0;
        }
        
        
-		
+		//if no specific device return full nodelist
 		if(device == null)
 		{
 			return nodelist;
@@ -180,13 +181,6 @@ public static double y = 0;
        
        
        
-       
-       
-      
-       
-       
-       
-       
 		for(int i = 0; i < name_list.size(); i ++)
 		{
 			String item = name_list.get(i);
@@ -211,11 +205,11 @@ public static double y = 0;
     }
 	
  
-	
+	//TODO: Modified so that if has attribute sameAs, search the sameAs node instead
 	  public static void expand(OWLfileNode node)
 	{
 		
-		if(nodemap.get(node.NodeName)!=null)
+		if(nodemap.get(node.NodeName)!=null)///only run if node do exist
 		{
 		Node targetnode = nodemap.get(node.NodeName);
 		NodeList childnodes = targetnode.getChildNodes();
@@ -227,7 +221,15 @@ public static double y = 0;
 			String nodetype = childnodes.item(i).getNodeName();
 			String nodevalue = null;
 			if(!(nodename.lastIndexOf("#") == nodename.length() - 1) &&!(nodetype.contains("rdf:type")))// check whether it is empty after #
-				{ 
+				{
+				
+				if(nodetype.contains("owl:sameAs")) {//contains allias?
+					nodename = nodename.split("#")[1];
+					System.out.println("a same as allias:"+nodename);
+					OWLfileNode newNode = new OWLfileNode(nodename,nodetype,"","",node.NodeName);
+					expand(newNode);//expand allias node 
+				}
+				else{
 					System.out.println(nodename);
 					nodename = nodename.split("#")[1];
 					
@@ -264,7 +266,7 @@ public static double y = 0;
 					{
 						expand(newNode);
 					}
-					 
+					}
 					}
 				}
 			

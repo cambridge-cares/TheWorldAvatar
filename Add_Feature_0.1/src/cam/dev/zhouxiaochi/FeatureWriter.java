@@ -118,7 +118,7 @@ public class FeatureWriter {
 		
 		
       OWLReader.read_owl_file(App.PLANT_OWL_FILE_NAME, device_name);
-    
+
 		  Polygon polygon = new Polygon();
 		 
  	  SimpleLineSymbol outline = new SimpleLineSymbol(new Color(33, 150, 0), 300);
@@ -142,8 +142,19 @@ public class FeatureWriter {
 			 System.out.println("------------------------------");
 		 }
 		 
-		 
- 
+		    //read electronical data from seperate owl, note the place of this sentence because owlreadder data will be overwritten each time
+	      OWLReader.read_owl_file(App.ElECTRICAL_OWL_FILE_NAME, device_name);
+			 //TODO:Put electrical attributes if exist
+
+			System.out.println("Print out electrical attributes:");
+			 for(int i = 0 ; i < OWLReader.name_list.size(); i++)
+			 {
+				 attributes.put(OWLReader.name_list.get(i), OWLReader.value_list.get(i));
+				 System.out.println("------------------------------");
+				 System.out.println(OWLReader.name_list.get(i)); 
+				 System.out.println(OWLReader.value_list.get(i));
+				 System.out.println("------------------------------");
+			 }
 	 	InfoReader.readXML(type, device_name);
 	 	System.out.println("===============================================");
 	 	System.out.println(device_name);
