@@ -4828,6 +4828,10 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant3.owl#Pipe_3-5">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Pipe"/>
+        <mereology:hasDirectPart rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#Pipe_3-5_Segment1"/>
+        <mereology:hasDirectPart rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#Pipe_3-5_Segment2"/>
+        <mereology:hasDirectPart rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#Pipe_3-5_Segment3"/>
+        <mereology:hasDirectPart rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#Pipe_3-5_Segment4"/>
         <topology:hasInput rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#ProcessStream_3-5"/>
         <topology:isConnectedTo rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#E-302_in_1"/>
         <topology:isConnectedTo rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#R-301_out_1"/>

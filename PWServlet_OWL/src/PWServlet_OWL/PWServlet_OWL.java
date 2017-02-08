@@ -3784,7 +3784,7 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 			
 			
 			
-			GeodatabaseFeatureServiceTable ReactorTable1 = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer", user,10); //12 the correct one
+			GeodatabaseFeatureServiceTable ReactorTable1 = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer", user,11); //12 the correct one
 			ReactorTable1.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
 			ReactorTable1.initialize();
 			System.out.println(ReactorTable1.initialize());
@@ -3792,14 +3792,14 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 			ReactorTable1.getInitializationError();
 			
 						
-			GeodatabaseFeatureServiceTable ReactorTable2 = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer",user, 11); //13 the correct one
+			GeodatabaseFeatureServiceTable ReactorTable2 = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer",user, 12); //13 the correct one
 			ReactorTable2.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
 			ReactorTable2.initialize();
 			System.out.println(ReactorTable2.initialize());
 			System.out.println(ReactorTable2.getStatus());
 			ReactorTable2.getInitializationError();
 			
-			GeodatabaseFeatureServiceTable RadFracTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer",user, 16); //17 the correct one
+			GeodatabaseFeatureServiceTable RadFracTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer",user, 17); //17 the correct one
 			RadFracTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
 			RadFracTable.initialize();
 			System.out.println(RadFracTable.initialize());
@@ -3877,14 +3877,15 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 						
 						if (!data[112].trim().isEmpty()) {
 							updater.updateData("V_Angle_LoadPoint_R-602001",data[112].trim());
-							//ReactorAttributes.put("V_Angle_LoadPoint_R_602001",Float.parseFloat(data[112].trim()));                                          //field name following what exist in pop-up window 
+							ReactorAttributes.put("V_Angle_LoadPoint_R_602001",Float.parseFloat(data[112].trim()));                                          //field name following what exist in pop-up window 
 							
 						}
 						System.out.println("theta_act="+ Float.parseFloat(data[112].trim()));						
 						
 						if (!data[113].trim().isEmpty()) {
-							updater.updateData("V_actualVoltage_LoadPoint_R-602001",data[113].trim());
-							//ReactorAttributes.put("V_actualVoltage_LoadPoint_R_602001",Float.parseFloat(data[113].trim()));//field name following what exist in pop-up window 
+							updater.updateData("V_ActualVoltage_LoadPoint_R-602001",data[113].trim());
+							//System.out.println("reactor attribute= "+ReactorAttributes.size());
+							ReactorAttributes.put("V_ActualVoltage_LoadPoint_R_602",Float.parseFloat(data[113].trim()));//field name following what exist in pop-up window 
 													
 						}
 						System.out.println("V_act_kv="+ Float.parseFloat(data[113].trim()));
@@ -3906,14 +3907,14 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 						
 						if (!data[102].trim().isEmpty()) {
 							updater.updateData("V_Angle_LoadPoint_R-602002",data[102].trim());
-							//ReactorAttributes.put("V_Angle_LoadPoint_R_602002",Float.parseFloat(data[102].trim())); //field name following what exist in pop-up window 
+							ReactorAttributes.put("V_Angle_LoadPoint_R_602002",Float.parseFloat(data[102].trim())); //field name following what exist in pop-up window 
 							
 						}
 						System.out.println("theta_act="+ Float.parseFloat(data[102].trim()));						
 						
 						if (!data[103].trim().isEmpty()) {
-							updater.updateData("V_actualVoltage_LoadPoint_R-602002",data[103].trim());
-							//ReactorAttributes.put("V_actualVoltage_LoadPoint_R_602002",Float.parseFloat(data[103].trim())); //field name following what exist in pop-up window                                        // upgrade the new actual voltage of load point reactor 10D01 to ArcGIS  databse
+							updater.updateData("V_ActualVoltage_LoadPoint_R-602002",data[103].trim());
+							ReactorAttributes.put("V_ActualVoltage_LoadPoint_R_602",Float.parseFloat(data[103].trim())); //field name following what exist in pop-up window                                        // upgrade the new actual voltage of load point reactor 10D01 to ArcGIS  databse
 							
 						}
 						System.out.println("V_act_kv="+ Float.parseFloat(data[103].trim()));
