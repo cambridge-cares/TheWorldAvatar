@@ -118,7 +118,7 @@ public class App {
 	public static int[] count;
 	public static final Map<String, ArcGISFeatureLayer> editlayer = new LinkedHashMap<>();
 	private static FeatureServiceUpdater layerFactory;
-	static SimpleLineSymbol lineSymbol = new SimpleLineSymbol(new Color(255, 255, 0), 300);
+	static SimpleLineSymbol lineSymbol = new SimpleLineSymbol(new Color(255, 0, 0), 800);
 
 
 	public static void create_object(double x, double y, ArcGISFeatureLayer thisLayer, String type, String name)
@@ -155,7 +155,7 @@ public class App {
 	public static void create_line(PipeReader.PipeInfo  pipeInfo) {
 		//linelayer.setOperationMode(QueryMode.SELECTION_ONLY);
 
-		List points  = pipeInfo.path;
+		List<Point> points  = pipeInfo.path;
 		if (linelayer.getDefaultSpatialReference() == null) {
 			JOptionPane.showMessageDialog(null, "Sorry, the layer is not yet fully loaded");
 		} else {
@@ -164,12 +164,16 @@ public class App {
 			line.startPath((Point) (points.get(0)));
 			for(int idxP =1; idxP <points.size(); idxP++){
 				Point mPt = (Point)(points.get(idxP));
-			line.lineTo((Point)(points.get(idxP)));
-			System.out.println("draw point"+mPt.getX()+","+mPt.getY());
+			line.lineTo(mPt);
+			System.out.println("+++++draw point"+mPt.getX()+","+mPt.getY());
 			}
+			System.out.println("___________________________");
+		       for (Map.Entry<String, Object> entry : pipeInfo.attriList.entrySet()){
+		    	   System.out.println("attri:"+entry.getKey()+": "+entry.getValue());
+		       }
+			Graphic polylineGraphic = new Graphic(line, lineSymbol, pipeInfo.attriList);
 
-			Graphic polygonGraphic = new Graphic(line, lineSymbol, pipeInfo.attriList);
-			Graphic[] adds = { polygonGraphic };
+			Graphic[] adds = { polylineGraphic };
 
 			linelayer.applyEdits(adds, null, null, null);
 
@@ -226,7 +230,7 @@ public class App {
 				try {
 
 					drawLines();
-					/**
+				
 					for (int i = 0; i < targets.length; i++) {
 						
 						if(!targets[i].equals("storageTank"))
@@ -234,7 +238,7 @@ public class App {
 					}
 					
 					createStorageTank(LayerMap.get("storageTank"));
-***/
+
 				} catch (SAXException | IOException | ParserConfigurationException e) {
 					// TODO Auto-generated catch block
 
@@ -254,9 +258,9 @@ public class App {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				drawconnection();
-				rect_list.clear();
-				connections.clear();
+				//drawconnection();
+				//rect_list.clear();
+				//connections.clear();
 			}
 		});
 
@@ -311,12 +315,17 @@ public class App {
 		x_array = new double[targets.length];
 		y_array = new double[targets.length];
 
-		linelayer = new ArcGISFeatureLayer(
-				"http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/linelayer003/FeatureServer/0", user);
+		//linelayer = new ArcGISFeatureLayer(		"http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/linelayer003/FeatureServer/0", user);
 
 		layerFactory = new FeatureServiceUpdater(BASE_URL);
 
 		boolean[] alreadyExist  = layerFactory.areLayersExist(targets);
+		createLayer("linelayer");
+		linelayer = new ArcGISFeatureLayer(
+				BASE_URL+"/"
+						+ "0",
+				user);
+
 		for (int i = 0; i < targets.length; i++) {
 
 			target = targets[i];
@@ -399,7 +408,6 @@ public class App {
 		/// case: storage tank
 		 if (targetName.toLowerCase().contains("storagetank")) {
 			System.out.println("Creating storage tank layer");
-			OWLReader.read_owl_file("storagetankcomplete.owl", targetName);
 
 			StorageTankReader reader = StorageTankReader.getInstance();
 			 
@@ -475,8 +483,38 @@ public class App {
 			 target);
 		}
 		
-		else {
+		else if(targetName.contains("linelayer")){//generate layer list
+          PipeReader reader = PipeReader.getInstance();
+			 
+			
+			int length = reader.getAttriNameSet().size();
 
+			String[] typeList = new String[length];
+			String[] nameList =  (String[]) reader.getAttriNameSet().toArray(new String[length]);
+
+			System.out.println("--------------------------------------");
+
+			for (int i = 0; i < length; i++) {
+				typeList[i] = "esriFieldTypeString";
+			}
+
+			/**
+			int idxNameList = 0;
+			 for (Iterator iter = reader.getAttriNameSet().iterator(); iter.hasNext();) {
+               nameList[idxNameList] = (String)iter.next();
+				 System.out.println("atrri:++++++++   "+ nameList[idxNameList]);
+				 idxNameList++;
+				 }
+****/
+			// construct name map of lists
+			Map<String, String[]> attrLists = new HashMap<String, String[]>();
+
+			attrLists.put("name", nameList);
+			attrLists.put("type", typeList);
+			attrLists.put("alias", nameList);
+			layerFactory.generateLayer(length, FeatureServiceUpdater.LayerType.POLYLINE, attrLists, targetName);
+			
+			
 		}
 
 	}
@@ -525,7 +563,7 @@ public class App {
 	
 		List linelist = PipeReader.getInstance().getPipelist();
 		for(Object lineInfo:linelist){
-			create_line(lineInfo);
+			create_line((PipeReader.PipeInfo)lineInfo);
 		}
 
 	}
@@ -551,6 +589,7 @@ public class App {
 		}
 
 	}
+
 
 	public static void delete() {
 	

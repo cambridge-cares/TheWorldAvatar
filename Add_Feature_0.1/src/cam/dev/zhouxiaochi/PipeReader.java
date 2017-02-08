@@ -3,15 +3,24 @@ package cam.dev.zhouxiaochi;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.esri.core.geometry.Point;
+
+import cam.dev.zhouxiaochi.PipeReader.PipeInfo;
 //TODO: test pipeReader class
 public class PipeReader {
 
 	private static PipeReader singelton;
-	private List  pipeNames = new ArrayList<String>();
+	private List<String>  pipeNames = new ArrayList<String>();
+	
+	private Set<String> attriNameSet= new LinkedHashSet<String>();
 	
 	public class Coordi{
 		
@@ -35,7 +44,7 @@ public class PipeReader {
 		
 	}
 	
-	private List pipeList = new ArrayList<ArrayList<PipeInfo>>();
+	private List<PipeInfo> pipeList = new ArrayList<PipeInfo>();
 	//private List pathLists = new ArrayList<ArrayList<Point>>();
 	
 	//private List attriLists = new ArrayList<HashMap<String,Object>>();
@@ -66,13 +75,13 @@ public class PipeReader {
 			OWLReader.read_owl_file(App.PLANT_OWL_FILE_NAME, (String)pipeName);
 			                                                                    System.out.println("read pipe:"+(String)pipeName);
 			//extract and pack inrto pathLists
-			List path = new ArrayList<Point>();
-			List valueList = OWLReader.value_list;
+			List<Point> path = new ArrayList<Point>();
+			List<String> valueList = OWLReader.value_list;
 			
-			List nameList = OWLReader.name_list;
+			List<String> nameList = OWLReader.name_list;
 		
-			List coordList = new ArrayList<String>();
-			 Map<String,Object> attributes = new HashMap<String,Object>();
+			List<String> coordList = new ArrayList<String>();
+			 Map<String,Object> attributes = new LinkedHashMap<String,Object>();
 
 			
 			//filter to get coordis value
@@ -84,7 +93,24 @@ public class PipeReader {
 					}
 				} else{//values not coordis?
 					//=>Add them to attribute list!
-					attributes.put((String) nameList.get(idxValue), valueList.get(idxValue));
+					String attriName = (String) (nameList.get(idxValue));
+					
+					//delete id and add attribute into attribute name list
+					Pattern p = Pattern.compile("(\\w+)(_?\\d+_\\d+)(_?\\w*)");//define regex pattern
+					Matcher m = p.matcher(attriName);
+					StringBuffer result = new StringBuffer();
+					boolean found = false;//flag: if indeed find a match of regex
+					while (m.find()) {// find a match?				
+						m.appendReplacement(result, m.group(1)+m.group(3));//delete the id part of attri name 
+					found = true;//set flag found to be true
+					}
+					m.appendTail(result);
+					if(found){//indeed has match?
+						attriNameSet.add(result.toString());
+						attributes.put(result.toString(), valueList.get(idxValue));
+
+					}	
+					
 				}
 			}
 
@@ -110,6 +136,10 @@ public class PipeReader {
 	public List getPipelist(){
 		return pipeList;
 		
+	}
+	
+	public Set getAttriNameSet(){
+		return attriNameSet;
 	}
 
 }

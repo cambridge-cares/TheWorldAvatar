@@ -807,7 +807,7 @@ public class FeatureServiceUpdater {
 	private  JSONObject PolygonTemplateMother = null;
 	private  JSONObject PolylineTemplateMother = null;
 	String PolygonTemplateServiceURL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/admin/services/test004/FeatureServer";
-	String PolylineTemplateServiceURL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/airline/FeatureServer";
+	String PolylineTemplateServiceURL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/admin/services/airline/FeatureServer";
 	public void generateLayer(int numOfAttrs, LayerType layertype, Map<String, String[]> attrValueListsMap,
 			String newLayerName) throws JSONException {
 
