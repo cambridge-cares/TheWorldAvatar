@@ -106,6 +106,9 @@ import com.esri.toolkit.overlays.HitTestEvent;
 import com.esri.toolkit.overlays.HitTestListener;
 import com.esri.toolkit.overlays.HitTestOverlay;
 import com.esri.toolkit.overlays.InfoPopupOverlay;
+
+
+
 import com.esri.core.symbol.PictureMarkerSymbol;
 
 
@@ -113,7 +116,7 @@ import com.esri.core.symbol.PictureMarkerSymbol;
 
 public class JParkSim {
 	
- 
+ int filenumber = 0;
 		 
 		public static int[] count;
 	// style of different layers
@@ -404,7 +407,16 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 //    		            	  String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("OBJECTID"))}; // newFeature is a new String[] element to be added to editStack (e.g. {Load_Points, 103})
 //		               	      String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("FID")), String.valueOf(hitGraphic.getAttributes().get("OBJECTID"))};  //ZL-151209 try to get FID and OBJECTID 
 //    		            	  String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("OBJECTID")), String.valueOf(hitGraphic.getAttributes().get("boilingpt"))}; 
-    		            	
+    		            	  OWLUpdater updater = new OWLUpdater();
+    		            	  
+    		            	  if(layer.getName().equals("storageTank"))
+  		     				{
+  		     					filenumber=1;
+  		     				}
+  		     				else if (layer.getName().equals("Buildings"))
+  		     				{
+  		     					filenumber=2;
+  		     				}
     		            	  
      		            	  for(String name : hitGraphic.getAttributeNames())
     		            	  {
@@ -421,7 +433,25 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     		            		 System.out.println(name);
     		            		 editedValue = current_value;
     		            		 editedName = name;
-
+    		            		 
+    		            		 
+    		            		 String[]modif= name.split("_");
+    		     				String lastone = modif[modif.length-1];
+    		     				
+    		     				String modifname = name.replace(("_"+lastone),("-"+lastone));	
+    		     				System.out.println(modifname);
+    		            		 
+    		     				
+    		     				
+    		            		 try {
+									updater.updateData(modifname,current_value,filenumber);
+									
+								} catch (SAXException | IOException | ParserConfigurationException
+										| TransformerException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+    		            		 
     		            		 
     		            		}
     		            		 
@@ -429,10 +459,13 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     		            	
     		            	  }
     		            	  
-     		            	 String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("OBJECTID")), editedName + "plusValue" + editedValue}; 
+     		            	 String[] newFeature = new String[] {layer.getName(), String.valueOf(hitGraphic.getAttributes().get("OBJECTID")), editedName + "plusValue" + editedValue};
+	   		            	  System.out.println("newFeature[0]=" + newFeature[0] + ", newFeature[1]=" + newFeature[1]); //ZL-151209
+     		            	
+
     		            	  
-    		            	  System.out.println("newFeature[0]=" + newFeature[0] + ", newFeature[1]=" + newFeature[1]); //ZL-151209
-//double y= Double.parseDouble(newFeature[2]);
+    		            	  
+    		            	  //double y= Double.parseDouble(newFeature[2]);
 //double z=2*y;
 //System.out.println("vbnew function=" +z);    		            	  
     		            	  //try to expand new button
@@ -453,7 +486,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     		            		  editStack.add(newFeature);
     		            	  }
     		            	  
-    		            	  for(String name : hitGraphic.getAttributeNames())
+    		            	 /* for(String name : hitGraphic.getAttributeNames())
     		            	  {
     		            		  if(feature.getAttributes().get(name)!=null)
     		            		  {
@@ -470,7 +503,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     		            		 
     		            	  }
     		            	
-    		            	  }
+    		            	  }*/
     		            	  popup.close();
  
     		              }

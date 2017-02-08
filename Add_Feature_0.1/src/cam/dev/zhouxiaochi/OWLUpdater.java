@@ -19,13 +19,27 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class OWLUpdater {
+	
+	String filename;
 	 
 	
-	public void updateData(String target, String newValue) throws SAXException, IOException, ParserConfigurationException, TransformerException
+	public void updateData(String target, String newValue, int filecode) throws SAXException, IOException, ParserConfigurationException, TransformerException
 	{
+		if (filecode==1)
+		{
+          filename = "storagetankcomplete.owl";
+		}
 		
-	String filename = "BiodieselPlant3.owl";
-   
+		else if (filecode==2)
+		{
+			filename = "buildingmodif2.owl";
+		}
+		
+		else
+		{
+			filename = "BiodieselPlant3.owl";
+			}
+		
    File inputFile = new File(filename);
    DocumentBuilderFactory dbFactory  = DocumentBuilderFactory.newInstance();
    DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -42,10 +56,20 @@ public class OWLUpdater {
 	   
 	   if(name.contentEquals(target))
 	   {
-		 
-		 
-		  individuals.item(i).setTextContent(newValue);
-		  
+		   NodeList propertylist = individuals.item(i).getChildNodes();
+			  
+			
+			 for(int t = 0 ; t < propertylist.getLength() ; t ++)
+			 {
+				 
+			 if("system:numericalValue".equals(propertylist.item(t).getNodeName()))
+				 
+				 {propertylist.item(t).setTextContent(newValue);
+				 System.out.println("ok3");
+				  
+				 } 
+		   }
+		 		  
 	   }
  
    }

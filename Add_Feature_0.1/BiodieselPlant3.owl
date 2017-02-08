@@ -1,28 +1,4 @@
-<?xml version="1.0"?>
-<rdf:RDF xmlns="http://www.jparksimulator.com/BiodieselPlant3.owl#"
-     xml:base="http://www.jparksimulator.com/BiodieselPlant3.owl"
-     xmlns:process="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#"
-     xmlns:space_and_time_extended="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
-     xmlns:owl="http://www.w3.org/2002/07/owl#"
-     xmlns:SI_unit="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#"
-     xmlns:phase_system="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#"
-     xmlns:topology="file:/C:/OntoCAPE/meta_model/topology/topology.owl#"
-     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-     xmlns:reaction_mechanism="file:/C:/OntoCAPE/OntoCAPE/material/substance/reaction_mechanism.owl#"
-     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:chemical_process_system="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#"
-     xmlns:mereology="file:/C:/OntoCAPE/meta_model/mereology/mereology.owl#"
-     xmlns:system="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#"
-     xmlns:material="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#"
-     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:terms="http://purl.org/dc/terms/"
-     xmlns:machine="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/machine.owl#"
-     xmlns:coordinate_system="file:/C:/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#"
-     xmlns:xml="http://www.w3.org/XML/1998/namespace"
-     xmlns:plant="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#"
-     xmlns:technical_system="file:/C:/OntoCAPE/OntoCAPE/upper_level/technical_system.owl#"
-     xmlns:behavior="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#"
-     xmlns:economic_performance="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.jparksimulator.com/BiodieselPlant3.owl#" xmlns:SI_unit="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#" xmlns:behavior="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#" xmlns:chemical_process_system="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#" xmlns:coordinate_system="file:/C:/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#" xmlns:economic_performance="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#" xmlns:machine="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/machine.owl#" xmlns:material="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#" xmlns:mereology="file:/C:/OntoCAPE/meta_model/mereology/mereology.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:phase_system="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#" xmlns:plant="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#" xmlns:process="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:reaction_mechanism="file:/C:/OntoCAPE/OntoCAPE/material/substance/reaction_mechanism.owl#" xmlns:space_and_time_extended="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#" xmlns:system="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#" xmlns:technical_system="file:/C:/OntoCAPE/OntoCAPE/upper_level/technical_system.owl#" xmlns:terms="http://purl.org/dc/terms/" xmlns:topology="file:/C:/OntoCAPE/meta_model/topology/topology.owl#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xml:base="http://www.jparksimulator.com/BiodieselPlant3.owl">
     <owl:Ontology rdf:about="http://www.jparksimulator.com/BiodieselPlant3.owl">
         <owl:imports rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl"/>
         <owl:imports rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
@@ -10847,7 +10823,7 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant3.owl#ValueOfmolarF_3-1">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">30.0</system:numericalValue>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">32</system:numericalValue>
     </owl:NamedIndividual>
     
 
@@ -12768,9 +12744,4 @@
     <!-- http://www.jparksimulator.com/BiodieselPlant3.owl#mol/molMat1 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant3.owl#mol/molMat1"/>
-</rdf:RDF>
-
-
-
-<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
-
+</rdf:RDF><!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
