@@ -124,7 +124,7 @@ public class JParkSim {
 	 
 		final static SimpleFillSymbol testColor =new SimpleFillSymbol(Color.green, new SimpleLineSymbol(Color.blue, 1), SimpleFillSymbol.Style.SOLID);
 		final static SimpleFillSymbol testColor2 =new SimpleFillSymbol(Color.orange, new SimpleLineSymbol(Color.red, 1), SimpleFillSymbol.Style.SOLID);
-		final static SimpleLineSymbol lineColor = new SimpleLineSymbol(Color.blue, 1);
+		final static SimpleLineSymbol lineColor = new SimpleLineSymbol(Color.blue, 5);
 		 
 		public static String editedValue;
 		public static String editedName;
@@ -217,7 +217,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     
     
    // testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/9", user);
-    ArcGISFeatureLayer linelayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/linelayer003/FeatureServer/0", user);
+    ArcGISFeatureLayer linelayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/TEST020/FeatureServer/0", user);
     ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/Buildings", user);
 
  
@@ -252,7 +252,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     }
     
     completeLayerList[completeLayerList.length - 2] = linelayer;
-    createRenderer(layers, new ArcGISFeatureLayer [] {linelayer}, testColor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {linelayer}, lineColor);
  
   
     
@@ -264,7 +264,8 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 
                 ArcGISDynamicMapServiceLayer sensitivityLayer = new ArcGISDynamicMapServiceLayer(
                         "http://localhost:6080/arcgis/rest/services/sensitivity/MapServer");
-                            layers.add(sensitivityLayer);
+              
+                layers.add(sensitivityLayer);
                 
                 
                             

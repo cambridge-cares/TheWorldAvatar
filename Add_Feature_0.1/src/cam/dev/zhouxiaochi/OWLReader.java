@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -50,11 +51,11 @@ public class OWLReader {
 public static NodeList individuals;	
 public static ArrayList<String> nodelist = new ArrayList<String>();
 
-public static Map<String,OWLfileNode> owlnodemap = new HashMap<>();
-public static Map<String,Node> nodemap = new HashMap<>();
-public static Set<OWLfileNode> theNodeList = new HashSet<>(); // the raw nodelist that stores every node connected the the target
-public static Set<OWLfileNode> theFinalNodeList = new HashSet<>(); // the filterd nodelist that returns the nodes that carries data
-public static Set<String> theNameList = new HashSet<>();
+public static Map<String,OWLfileNode> owlnodemap = new HashMap<>();//map links name to node info
+public static Map<String,Node> nodemap = new HashMap<>();//map links name to actual node object
+public static Set<OWLfileNode> theNodeList = new LinkedHashSet<>(); // the raw nodelist that stores every node connected the the target
+public static Set<OWLfileNode> theFinalNodeList = new LinkedHashSet<>(); // the filterd nodelist that returns the nodes that carries data
+public static Set<String> theNameList = new LinkedHashSet<>();
 
 
 public static ArrayList<String> name_list = new ArrayList<String>();
