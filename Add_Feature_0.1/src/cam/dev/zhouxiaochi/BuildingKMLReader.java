@@ -28,7 +28,7 @@ import com.esri.core.symbol.SimpleFillSymbol;
 import com.esri.core.symbol.SimpleLineSymbol;
 import com.esri.map.ArcGISFeatureLayer;
 
-public class KMLReader {
+public class BuildingKMLReader {
 	
 	public static ArrayList<Point> coordinates = new ArrayList<Point>();
 	public static ArrayList<String> buildingList = new ArrayList<String>();
