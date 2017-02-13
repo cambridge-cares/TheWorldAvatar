@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -62,12 +63,17 @@ public static ArrayList<String> name_list = new ArrayList<String>();
 public static ArrayList<String> value_list = new ArrayList<String>();
 public static ArrayList<String> relationships = new ArrayList<String>();
 
+private static ArrayList<String> deviceNameList = new ArrayList<String>();
 public static double x = 0;
 public static double y = 0; 
 
+public static ArrayList<String> read_owl_file(String filename, String deviceName) throws IOException, Exception{
+	return read_owl_file(filename, deviceName, false);
+}
+
 
  
-	public static ArrayList<String> read_owl_file (String filename, String device) throws Exception, IOException {
+	public static ArrayList<String> read_owl_file (String filename, String deviceName, boolean expandOneLevelOnly) throws Exception, IOException {
 
 		nodelist.clear();
 		name_list.clear();
@@ -85,7 +91,7 @@ public static double y = 0;
 		{
 		 //	filename = "buildingmodif2.owl";	 
 			//String filename2 = "updated electrical network.owl";
-			filename = App.PLANT_OWL_FILE_NAME;
+			filename = App.PLANT_OWL_FILE_NAME[0];
 		//	filename = "storageTest.owl";
 		} 
 		
@@ -110,7 +116,7 @@ public static double y = 0;
        
        
 		//if no specific device return full nodelist
-		if(device == null)
+		if(deviceName == null)
 		{
 			return nodelist;
 		}
@@ -119,10 +125,10 @@ public static double y = 0;
        
        
        
-       OWLfileNode startnode = new OWLfileNode(device,null,null,null,"JesusChrist");
+       OWLfileNode startnode = new OWLfileNode(deviceName,null,null,null,"JesusChrist");
       
        
-       expand(startnode);
+       expand(startnode, expandOneLevelOnly);
        
 
        
@@ -205,9 +211,12 @@ public static double y = 0;
        
     }
 	
- 
+	  public static void expand(OWLfileNode node){
+		  expand(node, false);
+	  }
+
 	//TODO: Modified so that if has attribute sameAs, search the sameAs node instead
-	  public static void expand(OWLfileNode node)
+	  public static void expand(OWLfileNode node, Boolean expandOneLevel)
 	{
 		
 		if(nodemap.get(node.NodeName)!=null)///only run if node do exist
@@ -228,7 +237,7 @@ public static double y = 0;
 					nodename = nodename.split("#")[1];
 					System.out.println("a same as allias:"+nodename);
 					OWLfileNode newNode = new OWLfileNode(nodename,nodetype,"","",node.NodeName);
-					expand(newNode);//expand allias node 
+					expand(newNode, false);//expand allias node 
 				}
 				else{
 					System.out.println(nodename);
@@ -263,9 +272,9 @@ public static double y = 0;
 				//	System.out.println("Name:  " + newNode.NodeName + " Type: " + newNode.NodeType +
 				//			" Value: " + newNode.NodeValue + " Unit: " + newNode.ValueUnit + " Parent: " +  newNode.ParentNodeName ); 
 					theNodeList.add(newNode);
-					if(nodemap.get(nodename)!=null   && !(newNode.NodeName.contentEquals(node.ParentNodeName))) // check whether such node exists
+					if(nodemap.get(nodename)!=null   && !(newNode.NodeName.contentEquals(node.ParentNodeName)) &&!expandOneLevel) // check whether such node exists
 					{
-						expand(newNode);
+						expand(newNode,false);
 					}
 					}
 					}
@@ -320,7 +329,24 @@ public static double y = 0;
 	  }
  	
  	
- 	
+ 	 public static List<String> getDeviceList(String fileName) throws IOException, Exception{
+ 		 
+ 		 if(deviceNameList == null){//lazy initiation 
+ 		 String plantName = fileName.split("\\.")[0];//extract plant name
+ 		 
+ 		read_owl_file(fileName, plantName, true);//read owl to first level of plant node
+ 		
+ 		for(OWLfileNode node :theNodeList){
+ 			System.out.println(node.NodeName+"  "+node.NodeType+"  "+node.NodeValue);
+ 			if(node.NodeType.contains("hasSubsystem")){//is this attri shows a subsystem?
+ 				//>YES! Then it is a device
+ 				deviceNameList.add(node.NodeName);
+ 			}
+ 			
+ 		}
+ 		 }
+ 	 return deviceNameList;
+ 	 }
  	
  	
  	

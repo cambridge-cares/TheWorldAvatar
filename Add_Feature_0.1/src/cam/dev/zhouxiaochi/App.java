@@ -86,17 +86,55 @@ import com.esri.toolkit.overlays.InfoPopupOverlay;
 
 public class App {
 	
-	public final static String BASE_URL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer";//Base url for service!!!!
-    public final static String DEVICE_NAME_MAP_LOCATION = "map.txt";//location of device name map[type dictionary]
-    public final static String PLANT_OWL_FILE_NAME = "BiodieselPlant3.owl";//main owl file 
-    public final static String ElECTRICAL_OWL_FILE_NAME = "updated electrical network.owl";//owl file for electrical
+	 enum LineType{
+		WATER(0),
+		GAS(1),
+		MATERIAL(2),
+		AIR(3);
+	    private LineType(int id) {
+	        this.id = id;
+	    }
+		private final int id;
+	    public int getId() {
+	        return id;
+	    }
+	    
+	}
+
+	public final static String BASE_URL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST020/FeatureServer";// Base
+																																	// url
+																																	// for
+																																	// Arcgis
+																																	// service!!!!
+	public static String[] DEVICE_TYPE_MAP_LOCATIONS = { "map.txt", "map2.txt", "map3.txt" };// list
+																					// of
+																					// device-type
+																					// map
+																					// location
+
+	public static String[] PLANT_OWL_FILE_NAME = { "BiodieselPlant3.owl", "BiodieselPlant2WWHR.owl", "BiodieselPlant1WOWHR.owl" };// list
+																										// of
+																										// owl
+																										// files,
+																										// note
+																										// sequence
+																										// corrspond
+																										// to
+																										// device
+																										// type
+																										// maps
+
+	public final static String ElECTRICAL_OWL_FILE_NAME = "updated electrical network.owl";// owl
+																							// file
+																							// for
+																							// electrical
 
 	public static int layerID;
 	public static ArcGISFeatureLayer Layer;
 	public static JCheckBox checkbox;
 
-	public static String target;
-	public static String[] targets;
+	// public static String target;
+	public static ArrayList<DeviceInfo> deviceInfoList = new ArrayList<DeviceInfo>();
 	public static String[] types;
 
 	public static double[] x_array;
@@ -104,12 +142,10 @@ public class App {
 	public static ArrayList<ArrayList<String>> relationship_array;
 
 	public static Map<String, ArcGISFeatureLayer> LayerMap;
+	//public static ArcGISFeatureLayer linelayer;//TODO: ONLY PUT FOR FUTURE USE: EXTRACTING LINE FROM OWL
 
-	public static ArcGISFeatureLayer linelayer;
-	
+	public static ArcGISFeatureLayer[] linelayers;
 
-	public static ArrayList<Rectangle> rect_list = new ArrayList<Rectangle>();
-	public static ArrayList<Connection> connections = new ArrayList<Connection>();
 	public static ArrayList<String> combination = new ArrayList<String>();
 
 	public static ArrayList<Graphic[]> all_features = new ArrayList<Graphic[]>();
@@ -118,10 +154,50 @@ public class App {
 	public static int[] count;
 	public static final Map<String, ArcGISFeatureLayer> editlayer = new LinkedHashMap<>();
 	private static FeatureServiceUpdater layerFactory;
-	static SimpleLineSymbol lineSymbol = new SimpleLineSymbol(new Color(255, 0, 0), 800);
+	static SimpleLineSymbol lineSymbolMaterial = new SimpleLineSymbol(Color.RED, 500);
+	static SimpleLineSymbol lineSymbolWater = new SimpleLineSymbol(Color.BLUE, 500);
+	static SimpleLineSymbol lineSymbolGas = new SimpleLineSymbol(Color.ORANGE, 500);
+	static SimpleLineSymbol lineSymbolAir = new SimpleLineSymbol(Color.BLACK, 500);
 
+	static SimpleLineSymbol[] lineSymbols = {lineSymbolWater,lineSymbolGas,lineSymbolMaterial,lineSymbolAir};
 
-	public static void create_object(double x, double y, ArcGISFeatureLayer thisLayer, String type, String name)
+	/**
+	 * DeviceInfo, stores name, type and plantID of one device.
+	 * @author Shaocong
+	 *
+	 */
+	public static class DeviceInfo {
+		public String name;
+		public String type;
+		public int plantID;
+
+		public DeviceInfo(String name, String type, int plantID) {
+			super();
+			this.name = name;
+			this.type = type;
+			this.plantID = plantID;
+		}
+
+	}
+
+	/**
+	 * ////Add A device feature to Arcgis Server: A wrapper to call
+	 * featureWriter function
+	 * 
+	 * @param x
+	 *            coordi x
+	 * @param y
+	 *            coordi y
+	 * @param thisLayer
+	 *            arcgis feature layer to add to
+	 * @param type
+	 *            type of this device(ex: Reactor)
+	 * @param name
+	 *            name of this feature
+	 * @param plantID 
+	 * @throws Exception
+	 */
+	public static void create_object(double x, double y, ArcGISFeatureLayer thisLayer, String type, String name, int plantID)
 			throws Exception {
 
 		thisLayer.setOperationMode(QueryMode.SELECTION_ONLY);
@@ -130,52 +206,87 @@ public class App {
 		if (thisLayer.getDefaultSpatialReference() == null) {
 			JOptionPane.showMessageDialog(null, "Sorry, the layer is not yet fully loaded");
 		} else {
-			Graphic[] g = featurewriter.createFeature(type, x, y, thisLayer.getDefaultSpatialReference(), name);
-			rect_list.add(featurewriter.obstacle);
-			thisLayer.applyEdits(g, null, null, null);
+			/**
+			 * call feature writer to get the packed up graphic array(info of
+			 * features to be added)
+			 **/
+			Graphic[] g = featurewriter.createFeature(type, x, y, thisLayer.getDefaultSpatialReference(), name, plantID);
+			// rect_list.add(featurewriter.obstacle);
+			thisLayer.applyEdits(g, null, null, null);// add the new features to
+														// layer
 			all_layers.add(thisLayer);
 			all_features.add(g);
 		}
 	}
 
-	public static void createStorageTank( ArcGISFeatureLayer thisLayer) throws Exception{
-		
+	/***
+	 * Add ALL storage tank features to Arcgis Server: A wrapper to call
+	 * featureWriter function
+	 * 
+	 * @param thisLayer
+	 *            layer to add to, should be storage tank layer
+	 * @throws Exception
+	 */
+	public static void createStorageTank(ArcGISFeatureLayer thisLayer) throws Exception {
+
 		FeatureWriter featurewriter = new FeatureWriter();
 		if (thisLayer.getDefaultSpatialReference() == null) {
 			JOptionPane.showMessageDialog(null, "Sorry, the layer is not yet fully loaded");
 		} else {
+			/**
+			 * call feature writer to get the packed up graphic array(info of
+			 * features to be added)
+			 **/
 			Graphic[] g = featurewriter.createFeatureStorage();
-			thisLayer.applyEdits(g, null, null, null);
+			thisLayer.applyEdits(g, null, null, null);// add the new features to
+														// layer
 			all_layers.add(thisLayer);
 			all_features.add(g);
 		}
 	}
-	
-	//TODO: testing attributes of pipe
-	public static void create_line(PipeReader.PipeInfo  pipeInfo) {
-		//linelayer.setOperationMode(QueryMode.SELECTION_ONLY);
 
-		List<Point> points  = pipeInfo.path;
-		if (linelayer.getDefaultSpatialReference() == null) {
+	/***
+	 * Add A line feature to Arcgis Server
+	 * function
+	 * 
+	 * @param pipeInfo
+	 *            info required to draw a pipe feature, struct with 2 members:
+	 *            point list & attribute list.
+	 */
+	public static void create_line(PipeReader.PipeInfo pipeInfo) {
+		// linelayer.setOperationMode(QueryMode.SELECTION_ONLY);
+
+		List<Point> points = pipeInfo.path;
+		//TODO
+		if (linelayers[0].getDefaultSpatialReference() == null) {
 			JOptionPane.showMessageDialog(null, "Sorry, the layer is not yet fully loaded");
 		} else {
-
+			///////// Construct polyline from point list////////////
 			Polyline line = new Polyline();
 			line.startPath((Point) (points.get(0)));
-			for(int idxP =1; idxP <points.size(); idxP++){
-				Point mPt = (Point)(points.get(idxP));
-			line.lineTo(mPt);
-			System.out.println("+++++draw point"+mPt.getX()+","+mPt.getY());
+			for (int idxP = 1; idxP < points.size(); idxP++) {
+				Point mPt = (Point) (points.get(idxP));
+				line.lineTo(mPt);
+				System.out.println("+++++draw point" + mPt.getX() + "," + mPt.getY());
 			}
-			System.out.println("___________________________");
-		       for (Map.Entry<String, Object> entry : pipeInfo.attriList.entrySet()){
-		    	   System.out.println("attri:"+entry.getKey()+": "+entry.getValue());
-		       }
-			Graphic polylineGraphic = new Graphic(line, lineSymbol, pipeInfo.attriList);
 
-			Graphic[] adds = { polylineGraphic };
+			///////////////////////////////////////////////////////////////////
 
-			linelayer.applyEdits(adds, null, null, null);
+			Graphic polylineGraphic = new Graphic(line, lineSymbolMaterial, pipeInfo.attriList);// construct
+																						// graphic
+																						// object
+																						// with
+																						// polyline
+																						// ob
+																						// &
+																						// attribute
+																						// list
+
+			Graphic[] adds = { polylineGraphic };// construct graphic array
+
+			//TODO
+			linelayers[0].applyEdits(adds, null, null, null);// add graphics to line
+															// layer
 
 		}
 	}
@@ -183,7 +294,6 @@ public class App {
 	final static SimpleFillSymbol testcolor = new SimpleFillSymbol(Color.black, new SimpleLineSymbol(Color.cyan, 1),
 			SimpleFillSymbol.Style.SOLID);
 	final static SimpleLineSymbol linecolor = new SimpleLineSymbol(Color.pink, 3);
-
 
 	private JFrame window;
 	private static JMap map;
@@ -224,21 +334,30 @@ public class App {
 
 		// -------------------------------------------------------------------------------------------------------------------------
 
+		/****
+		 * Event Handler when load_button feature clicked. +++++Lines, devices,
+		 * storage Tank features are generated into already generated layers on
+		 * Arcgis Server.
+		 */
 		Load_feature.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				try {
+					// drawLines(); // load line feature into Arcgis Server
+					drawLinesFromKML();
+					System.out.println("draw line from KML finished");
+					for (int i = 0; i < deviceInfoList.size(); i++) {// loop through each device in deviceInfoList
+																	
+						if (!deviceInfoList.get(i).name.equals("storageTank")) {//Is device storage tank?
+							DeviceInfo info = deviceInfoList.get(i);//=>NO! Then call create_object to load features into arcgis service
+							create_object(x_array[i], y_array[i], LayerMap.get(info.name), info.type, info.name, info.plantID);
+						}
 
-					drawLines();
-				
-					for (int i = 0; i < targets.length; i++) {
-						
-						if(!targets[i].equals("storageTank"))
-						create_object(x_array[i], y_array[i], LayerMap.get(targets[i]), types[i], targets[i]);
 					}
-					
-					createStorageTank(LayerMap.get("storageTank"));
-
+					createStorageTank(LayerMap.get("storageTank"));// load
+																	// //storage
+																	// // tank
+																	// features individually
 				} catch (SAXException | IOException | ParserConfigurationException e) {
 					// TODO Auto-generated catch block
 
@@ -250,29 +369,28 @@ public class App {
 
 			}
 
-
-
 		});
 
+		// TODO: delete this button?
 		Draw_connections.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				//drawconnection();
-				//rect_list.clear();
-				//connections.clear();
+				// drawconnection();
+				// rect_list.clear();
+				// connections.clear();
 			}
 		});
 
+		// TODO: does this still work?
 		Delete.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				
-				for(double point : x_array)
-				{
-					System.out.println("x --->" + point );
+
+				for (double point : x_array) {
+					System.out.println("x --->" + point);
 				}
-				
+
 				System.out.println("Delete Clicked 1 ");
 				delete();
 
@@ -280,7 +398,7 @@ public class App {
 		});
 
 		// -------------------------------------------------------------------------------------------------------------------------
- 
+
 		// -------------------------------------------------------------------------------------------------------------------------
 		MapOptions mapOptions = new MapOptions(MapType.TOPO);
 		map = new JMap(mapOptions);
@@ -288,9 +406,6 @@ public class App {
 		ArcGISTiledMapServiceLayer tiledLayer = new ArcGISTiledMapServiceLayer(
 				"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer");
 
-		
-		
-		
 		LayerList layerList = new LayerList();
 		layerList.add(tiledLayer);
 		UserCredentials user = new UserCredentials();
@@ -308,52 +423,50 @@ public class App {
 		// ================================================================
 
 		LayerMap = new HashMap<String, ArcGISFeatureLayer>();
-	     ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/Buildings", user);
+		ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer(
+				"http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST020/FeatureServer/Buildings",
+				user);
 		readlist();
 
 		relationship_array = new ArrayList<ArrayList<String>>();
-		x_array = new double[targets.length];
-		y_array = new double[targets.length];
-
-		//linelayer = new ArcGISFeatureLayer(		"http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/linelayer003/FeatureServer/0", user);
+		x_array = new double[deviceInfoList.size()];
+		y_array = new double[deviceInfoList.size()];
 
 		layerFactory = new FeatureServiceUpdater(BASE_URL);
 
-		boolean[] alreadyExist  = layerFactory.areLayersExist(targets);
-		createLayer("linelayer");
-		linelayer = new ArcGISFeatureLayer(
-				BASE_URL+"/"
-						+ "0",
-				user);
+		// boolean[] alreadyExist = layerFactory.areLayersExist(targets);
+		createLayer("waterline", -1, LineType.WATER);
+		createLayer("gasline", -1,LineType.GAS);
+		createLayer("materialline", -1,LineType.MATERIAL);
+		createLayer("airline", -1,LineType.AIR);
 
-		for (int i = 0; i < targets.length; i++) {
+		
+		linelayers = new ArcGISFeatureLayer[4];
+		for(int idxLineLayer = 0;  idxLineLayer < linelayers.length; idxLineLayer++){	
+		linelayers[idxLineLayer]=new ArcGISFeatureLayer(BASE_URL + "/" + idxLineLayer, user);
+		}
+		for (int i = 0; i < deviceInfoList.size(); i++) {
 
-			target = targets[i];
-			//if(!alreadyExist[i]){
-			createLayer(target);
-			//}
+			DeviceInfo mDeviceInfo = deviceInfoList.get(i);
+			String target = mDeviceInfo.name;
+			createLayer(target, mDeviceInfo.plantID);
 			String idx = FeatureServiceUpdater.layerID;
 
 			System.out.println("#######################################################");
 			System.out.println(OWLReader.relationships);
 
 			relationship_array.add(OWLReader.relationships);
-		
-			ArcGISFeatureLayer newLayer = new ArcGISFeatureLayer(
-					BASE_URL+"/"
-							+ target,
-					user);
-		
-			// ArcGISFeatureLayer newLayer = new
-			// ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/"
-			// + idx, user);
+
+			ArcGISFeatureLayer newLayer = new ArcGISFeatureLayer(BASE_URL + "/" + target, user);
 
 			all_layers.add(newLayer);
 			LayerMap.put(target, newLayer);
-			OWLReader.read_owl_file(PLANT_OWL_FILE_NAME, target);
-			x_array[i] = OWLReader.x;
+			if(mDeviceInfo.plantID > 0){
+			OWLReader.read_owl_file(PLANT_OWL_FILE_NAME[mDeviceInfo.plantID], target);
+			}
+			x_array[i] = OWLReader.x;//TODO: WHAT IS THIS? IF IS STILL USEFUL NEED TO THINK OF CASE OF STORAGE TANK
 			y_array[i] = OWLReader.y;
-			
+
 			SimpleRenderer renderer = new SimpleRenderer(testcolor);
 			newLayer.setRenderer(renderer);
 			layerList.add(newLayer);
@@ -363,22 +476,25 @@ public class App {
 			editlayer.put(target, newLayer);
 
 		}
+
 		// ================================================================
 
-		LayerMap.put("linelayer", linelayer);
-		SimpleRenderer renderer2 = new SimpleRenderer(linecolor);
-		linelayer.setRenderer(renderer2);
+		//TODO: what does this do, need to put it back?
+		//LayerMap.put("linelayer", linelayer);
+		//SimpleRenderer renderer2 = new SimpleRenderer(linecolor);
+		//linelayer.setRenderer(renderer2);
+		for(ArcGISFeatureLayer linelayer : linelayers){
 		layerList.add(linelayer);
-
-		layerList.add(tiledLayer);
 		map.getLayers().add(linelayer);
+		}
+		layerList.add(tiledLayer);
 
 		Point mapCenter = new Point(11543665, 141400);
 		map.setExtent(new Envelope(mapCenter, 7200, 5400));
 
 		window.getContentPane().add(map);
-	    KMLReader reader = new KMLReader();
-	    reader.readkml(buildinglayer);
+		BuildingKMLReader reader = new BuildingKMLReader();
+		reader.readkml(buildinglayer);
 	}
 
 	/**
@@ -404,14 +520,23 @@ public class App {
 		});
 	}
 
-	public static void createLayer(String targetName) throws IOException, Exception {
-		/// case: storage tank
-		 if (targetName.toLowerCase().contains("storagetank")) {
+	public static void createLayer(String targetName, int plantId) throws IOException, Exception {
+		createLayer(targetName, plantId, LineType.WATER);
+	}
+	/****
+	 * Create layer into Arcgis Service.
+	 * 
+	 * @param targetName
+	 *            name of the device,required for reading Owl file. "linelayer"
+	 *            for all line features. "storagetank" for all storage tanks.
+	 * @throws IOException
+	 * @throws Exception
+	 */
+	public static void createLayer(String targetName, int plantId,LineType lineType) throws IOException, Exception {
+		/////// case: storage tank//////////////////////////////////////
+		if (targetName.toLowerCase().contains("storagetank")) {
 			System.out.println("Creating storage tank layer");
-
 			StorageTankReader reader = StorageTankReader.getInstance();
-			 
-			
 			int length = reader.attributes.size();
 
 			String[] typeList = new String[length];
@@ -424,11 +549,11 @@ public class App {
 			}
 
 			int idxNameList = 0;
-			 for (Iterator iter = reader.attributes.iterator(); iter.hasNext();) {
-               nameList[idxNameList] = (String)iter.next();
-				 System.out.println("atrri:++++++++   "+ nameList[idxNameList]);
-				 idxNameList++;
-				 }
+			for (Iterator iter = reader.attributes.iterator(); iter.hasNext();) {
+				nameList[idxNameList] = (String) iter.next();
+				System.out.println("atrri:++++++++   " + nameList[idxNameList]);
+				idxNameList++;
+			}
 
 			// construct name map of lists
 			Map<String, String[]> attrLists = new HashMap<String, String[]>();
@@ -436,13 +561,13 @@ public class App {
 			attrLists.put("name", nameList);
 			attrLists.put("type", typeList);
 			attrLists.put("alias", nameList);
-			int lengthOfEachList = nameList.length;
-			layerFactory.generateLayer(lengthOfEachList, FeatureServiceUpdater.LayerType.POLYGON, attrLists, targetName);
+			layerFactory.generateLayer(length, FeatureServiceUpdater.LayerType.POLYGON, attrLists, targetName);
 
 		}
-
-		 else if (!targetName.contains("linelayer")) {//generate device layers
-			OWLReader.read_owl_file(PLANT_OWL_FILE_NAME, targetName);
+		/////// case: devices//////////////////////////////////////
+		else if (!targetName.contains("line")) {
+			// TODO
+			OWLReader.read_owl_file(PLANT_OWL_FILE_NAME[plantId], targetName);
 
 			int lengthChemAttris = OWLReader.name_list.size();
 
@@ -450,28 +575,45 @@ public class App {
 
 			System.out.println("--------------------------------------");
 
-
 			for (int i = 0; i < lengthChemAttris; i++) {
-				nameListChemicalAttris[i] = OWLReader.name_list.get(i); // get the attributes name list (header) from the owl file
+				nameListChemicalAttris[i] = OWLReader.name_list.get(i); // get
+																		// the
+																		// attributes
+																		// name
+																		// list
+																		// (header)
+																		// from
+																		// the
+																		// owl
+																		// file
 
 			}
-			//Now read electrical owl file
+			// Now read electrical owl file
 			OWLReader.read_owl_file(ElECTRICAL_OWL_FILE_NAME, targetName);
 			int lengthElectricalAttris = OWLReader.name_list.size();
 
 			String[] nameListElectricalAttris = new String[lengthElectricalAttris];
 			for (int i = 0; i < lengthElectricalAttris; i++) {
-				nameListElectricalAttris[i] = OWLReader.name_list.get(i); // get the attributes name list (header) from the owl file
+				nameListElectricalAttris[i] = OWLReader.name_list.get(i); // get
+																			// the
+																			// attributes
+																			// name
+																			// list
+																			// (header)
+																			// from
+																			// the
+																			// owl
+																			// file
 
 			}
-			
-			String[] typeList = new String[lengthElectricalAttris+lengthChemAttris];
+
+			String[] typeList = new String[lengthElectricalAttris + lengthChemAttris];
 
 			for (int i = 0; i < typeList.length; i++) {
 				typeList[i] = "esriFieldTypeString";
 			}
 
-			String[] nameList = concatArr(nameListChemicalAttris,nameListElectricalAttris);
+			String[] nameList = concatArr(nameListChemicalAttris, nameListElectricalAttris);
 			// construct name map of lists
 			Map<String, String[]> attrLists = new HashMap<String, String[]>();
 
@@ -479,18 +621,22 @@ public class App {
 			attrLists.put("type", typeList);
 			attrLists.put("alias", nameList);
 			int lengthOfEachList = nameList.length;
-			layerFactory.generateLayer(lengthOfEachList, FeatureServiceUpdater.LayerType.POLYGON,attrLists,
-			 target);
+			layerFactory.generateLayer(lengthOfEachList, FeatureServiceUpdater.LayerType.POLYGON, attrLists,
+					targetName);
 		}
-		
-		else if(targetName.contains("linelayer")){//generate layer list
-          PipeReader reader = PipeReader.getInstance();
-			 
-			
-			int length = reader.getAttriNameSet().size();
+		/////// case: lines//////////////////////////////////////
+		else if (targetName.contains("line")) {// generate layer list
+			// TODO: UNCOMMENT WHEN USING OWL, TEMPERARYLY USING KML
+			// PipeReader reader = PipeReader.getInstance();
+			// int length = reader.getAttriNameSet().size();
 
+			LineKMLReader reader = LineKMLReader.getInstance(lineType);
+			int length = reader.attriNameList.size();
 			String[] typeList = new String[length];
-			String[] nameList =  (String[]) reader.getAttriNameSet().toArray(new String[length]);
+			// TODO: COMMENT WHEN USING OWL, TEMPERARYLY USING KML
+			// String[] nameList = (String[])
+			// reader.getAttriNameSet().toArray(new String[length]);
+			String[] nameList = (String[]) reader.attriNameList.toArray(new String[length]);
 
 			System.out.println("--------------------------------------");
 
@@ -498,74 +644,119 @@ public class App {
 				typeList[i] = "esriFieldTypeString";
 			}
 
-			/**
-			int idxNameList = 0;
-			 for (Iterator iter = reader.getAttriNameSet().iterator(); iter.hasNext();) {
-               nameList[idxNameList] = (String)iter.next();
-				 System.out.println("atrri:++++++++   "+ nameList[idxNameList]);
-				 idxNameList++;
-				 }
-****/
-			// construct name map of lists
 			Map<String, String[]> attrLists = new HashMap<String, String[]>();
 
 			attrLists.put("name", nameList);
 			attrLists.put("type", typeList);
 			attrLists.put("alias", nameList);
-			layerFactory.generateLayer(length, FeatureServiceUpdater.LayerType.POLYLINE, attrLists, targetName);
-			
-			
+			layerFactory.generateLayer(length, FeatureServiceUpdater.LayerType.POLYLINE, attrLists, targetName);// generate
+																												// line
+																												// layer
+
 		}
 
 	}
 
-	
+	/****
+	 * Utility function to concat two array
+	 * 
+	 * @param a, array a
+	 * @param b  array b
+	 * @return concated array a+b
+	 */
 	public static String[] concatArr(String[] a, String[] b) {
-		   int aLen = a.length;
-		   int bLen = b.length;
-		   String[] c= new String[aLen+bLen];
-		   System.arraycopy(a, 0, c, 0, aLen);
-		   System.arraycopy(b, 0, c, aLen, bLen);
-		   return c;
-		}
-	
+		int aLen = a.length;
+		int bLen = b.length;
+		String[] c = new String[aLen + bLen];
+		System.arraycopy(a, 0, c, 0, aLen);
+		System.arraycopy(b, 0, c, aLen, bLen);
+		return c;
+	}
+
+	/***
+	 * Read device name and type from txt files
+	 */
 	public static void readlist() {
-		ArrayList<String> temp = new ArrayList<String>();
-		try (BufferedReader br = new BufferedReader(new FileReader(DEVICE_NAME_MAP_LOCATION))) {
+		int idxPlant = 0;
+		for (String deviceMapLocation : DEVICE_TYPE_MAP_LOCATIONS) {//for each device name/type list(one for each plant)
+			try (BufferedReader br = new BufferedReader(new FileReader(deviceMapLocation))) {
 
-			String sCurrentLine;
+				String sCurrentLine;
 
-			while ((sCurrentLine = br.readLine()) != null) {
-				temp.add(sCurrentLine);
+				while ((sCurrentLine = br.readLine()) != null) {//for each line
+					// temp.add(sCurrentLine);
+					String name = sCurrentLine.split("#")[0];
+					String type = sCurrentLine.split("#")[1];
+					deviceInfoList.add(new DeviceInfo(name, type, idxPlant));//pack info into DeviceInfo object,then store into list
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
+			idxPlant++;
 		}
 
-		targets = new String[temp.size() + 1];
-		types = new String[temp.size() + 1];
-		int counter = 0;
-		for (String item : temp) {
-			// System.out.println(temp);
-			// System.out.println("=======================================");
-			// TODO: ADD THE LAST OF TARGET TO BE STORAGE TANK
-			targets[counter] = item.split("#")[0];
-			types[counter] = item.split("#")[1];
-			counter++;
-		}
-		targets[counter] = "storageTank";
-		types[counter] = "storagetank";
+		// deviceInfoList[counter] = "storageTank";
+		// types[counter] = "storagetank";
+
+		deviceInfoList.add(new DeviceInfo("storageTank", "storagetank", -1));//add storagetank separately
+	}
+
+	// currently not able to be used because no indication of type in owl file
+	// TODO: future with changed owl file (subsystem should has type indication)
+	public static void readDeviceListFromOwl() throws IOException, Exception {
 
 	}
 
+	/***
+	 * Currently not used.
+	 * Funtion to Draw lines on layer Read line info from PipeReader and feed to
+	 * info to create_line to create each line as feature on linelayer
+	 * 
+	 * @throws IOException
+	 * @throws Exception
+	 */
 	public static void drawLines() throws IOException, Exception {
-	
+
 		List linelist = PipeReader.getInstance().getPipelist();
-		for(Object lineInfo:linelist){
-			create_line((PipeReader.PipeInfo)lineInfo);
+		for (Object lineInfo : linelist) {
+			create_line((PipeReader.PipeInfo) lineInfo);
 		}
 
+	}
+
+	// todo: delete this when segment pipe owl is completed
+	/***
+	 * Tmp function to draw line from kml(instead of owl) Read coordinates from
+	 * LineKMLReader and add to linelayer
+	 * 
+	 * @throws Exception
+	 * @throws IOException
+	 */
+	public static void drawLinesFromKML() throws IOException, Exception {
+		
+		for(LineType linetype: LineType.values()){
+		int idxPipe = 0;
+		LineKMLReader reader = LineKMLReader.getInstance(linetype);
+		Graphic[] adds = new Graphic[reader.coordinates.size()];
+		List<Map<String, Object>> AttriMap = reader.dataTables;
+
+		for (List<Point> pipe : reader.coordinates) {
+			Polyline pipeLine = new Polyline();
+			Map<String, Object> attributes = AttriMap.get(idxPipe);
+
+			pipeLine.startPath(pipe.get(0)); // set
+
+			for (int idxPoint = 1; idxPoint < pipe.size(); idxPoint++) {
+				pipeLine.lineTo(pipe.get(idxPoint).getX(), pipe.get(idxPoint).getY());
+			}
+			Graphic polyglineGraphic = new Graphic(pipeLine, lineSymbols[linetype.getId()], attributes);
+			adds[idxPipe] = polyglineGraphic;
+			idxPipe++;
+		}
+
+		linelayers[linetype.getId()].applyEdits(adds, null, null, null);
+		}
 	}
 
 	public static int getIndex(String[] array, String item) {
@@ -574,26 +765,11 @@ public class App {
 		return index;
 	}
 
-	public static void drawconnection() {
-		Draw_connections.obstacles = rect_list;
-		Draw_connections.connections = connections;
-
-		linelayer.setOperationMode(QueryMode.SELECTION_ONLY);
-
-		if (linelayer.getDefaultSpatialReference() == null) {
-			JOptionPane.showMessageDialog(null, "Sorry, the layer is not yet fully loaded");
-		} else {
-
-			Graphic[] adds = Draw_connections.createConnections();
-			linelayer.applyEdits(adds, null, null, null);
-		}
-
-	}
-
-
 	public static void delete() {
-	
+
+		for(ArcGISFeatureLayer linelayer : linelayers){
 		all_layers.add(linelayer);
+		}
 		for (int i = 0; i < all_layers.size(); i++) {
 			// all_layers.get(i).applyEdits(null, all_features.get(i), null,
 			// null);
@@ -614,4 +790,4 @@ public class App {
 
 }
 
-// 
+//

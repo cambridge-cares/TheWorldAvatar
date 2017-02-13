@@ -92,7 +92,6 @@ public class FeatureWriter {
 	public static double bioplant_length = 0;
 	public static double bioplant_width  = 0;
 	
-	public Rectangle obstacle;
 	public class StorageTankData{
 		public double xCenter;
 		public double yCenter;
@@ -106,10 +105,11 @@ public class FeatureWriter {
 	 * @param x		the longitude of the feature (decimal coordinate)
 	 * @param y		the latitude    of the feature (decimal coordinate)
 	 * @param ref    the spatial reference of the layer
+	 * @param plantID    id of plant this feature belongs to, required now because each plant have seperate owl to read from
 	 *  @return Graphic[] the array of features to be added
 	 * @throws Exception 
 	 */
-	public Graphic[] createFeature(String type , double x , double y,SpatialReference ref, String device_name ) throws Exception
+	public Graphic[] createFeature(String type , double x , double y,SpatialReference ref, String device_name, int plantID ) throws Exception
 	{
 		
 		
@@ -117,7 +117,7 @@ public class FeatureWriter {
 		bioplant_width  =  30;
 		
 		
-      OWLReader.read_owl_file(App.PLANT_OWL_FILE_NAME, device_name);
+      OWLReader.read_owl_file(App.PLANT_OWL_FILE_NAME[plantID], device_name);
 
 		  Polygon polygon = new Polygon();
 		 
@@ -343,7 +343,7 @@ public class FeatureWriter {
            
            
            
-           obstacle = new Rectangle(Enclosure2.getPoint(3).getX() - p_left_button.getX(),Enclosure2.getPoint(3).getY() - p_left_button.getY(),enclosure_width,enclosure_height);
+        //   obstacle = new Rectangle(Enclosure2.getPoint(3).getX() - p_left_button.getX(),Enclosure2.getPoint(3).getY() - p_left_button.getY(),enclosure_width,enclosure_height);
            
            
            
