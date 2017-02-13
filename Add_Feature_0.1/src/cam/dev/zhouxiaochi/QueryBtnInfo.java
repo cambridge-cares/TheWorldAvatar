@@ -1,10 +1,13 @@
 package cam.dev.zhouxiaochi;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
@@ -15,6 +18,7 @@ import com.esri.core.map.Graphic;
 import com.esri.core.symbol.PictureMarkerSymbol;
 import com.esri.map.ArcGISFeatureLayer;
 import com.esri.map.GraphicsLayer;
+
 /****
  * 
  * @author Shaocong
@@ -26,7 +30,8 @@ public class QueryBtnInfo extends httpRequestBtnInfo{
 
     private GraphicsLayer graphicsLayer;
 	private JTextField querylayer;
-
+    
+	
 	/***
 	 * 
 	 * @param completeLayerList  See mother class.
@@ -74,6 +79,7 @@ public class QueryBtnInfo extends httpRequestBtnInfo{
 	 * Draw symbols for queried features.
 	 */
 	void callback(HttpURLConnection urlCon) throws IOException {
+		
 		InputStreamReader in = new InputStreamReader(urlCon.getInputStream());
 		final BufferedReader br = new BufferedReader(in);
 		String[] strTemp = null;

@@ -3947,7 +3947,7 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 				ArcGISOBJECTID = new String[50];
 
 				for (int j = 0; j < 2; j++) {
-					ArcGISOBJECTID[j] = String.valueOf(j + 197); //still use indication of object id to write value into the feature object
+					ArcGISOBJECTID[j] = String.valueOf(j + 197); //still use indication of object id to write value into the feature object; 197 number still follow the old "material line" feature.
 					System.out.println(ArcGISOBJECTID[j]);
 					
 					if (CPIDtoMatLine.get(j + 61).equals("3-23")) {                                                                     

@@ -136,7 +136,7 @@ public class JParkSim {
 	//try to put new variable
 	
 	private GraphicsLayer graphicsLayer;
-	
+	public static String GIS = new String("D:/JPS_Code_Test/GIS.CSV");    
 	private MultiPoint planes;
 	
 				
@@ -644,6 +644,64 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 	btns = btnFac.createButtons();
     /***************CREATE BUTTON END*****************************************************************************************/
 
+    planes = new MultiPoint();  //define new planes in order to add pin points
+    PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol("http://static.arcgis.com/images/Symbols/Basic/GreenShinyPin.png");
+    planeSymbol.setSize(40, 40);  //set the size of the pin points
+    
+    final javax.swing.JButton QueryButton;
+    QueryButton = new javax.swing.JButton();
+    QueryButton.setFont(new java.awt.Font(" ", 1, 12)); // NOI18N
+    QueryButton.setText("Information Query");
+    QueryButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+    QueryButton.setEnabled(true);
+    QueryButton.addActionListener(new ActionListener() {
+    	
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			
+			QueryGuiNew QueryGUI = new QueryGuiNew();
+			QueryGUI.setVisible(true);
+			QueryGUI.setLocationRelativeTo(null);	 
+	        
+	        /** add action listener to the "Show Location" button, so that when user press the button, Location of the queried entity can be shown in the map*/
+			QueryGUI.btnShowLocation.addActionListener(new ActionListener(){
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+										
+					  BufferedReader fileReader = null;                                                   //define a file reader
+				      String line = null;
+				  	  try {
+						fileReader = new BufferedReader(new FileReader(GIS));                             //define source file
+						while ((line = fileReader.readLine()) != null) {
+					  		  String[] data = line.split(",");                                            //split the lines by comma and extract the x and y coordinates
+					  		  planes.add(Double.parseDouble(data[0]),Double.parseDouble(data[1]));	  	  //convert the coordinate from string to double format and add them to planes
+					  	  }
+					} catch (NumberFormatException | IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}	  	 	    				  	    				  	  
+			        Graphic gPlanes = new Graphic(planes, planeSymbol);
+			        graphicsLayer.addGraphic(gPlanes);                                                     //add the pin point layer
+			        layers.add(graphicsLayer);                                                             //visualize the pin pint layer
+				}
+				
+	        });
+	        
+	        /** add action listener to the "btnClear" button, so that when user press the button, Location of the queried entity can be shown in the map*/
+			QueryGUI.btnClear.addActionListener(new ActionListener(){
+	        	public void actionPerformed(ActionEvent e) {
+	        		graphicsLayer.removeAll();
+	        		layers.remove(graphicsLayer);
+	        	}
+			});
+	          
+		}     	
+    });
+    QueryButton.setSize(190, 30);
+    QueryButton.setLocation(1000, 160);
+    
+	
     // combine text, label and dropdown list into one panel for selecting layer to edit
     panel.setBackground(new Color(0, 0, 0, 180));
     panel.add(description);
@@ -677,8 +735,10 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 		for(JButton mBtn : btns){
 			contentPane.add(mBtn);
 		};
-    contentPane.add(map, BorderLayout.CENTER);
+		contentPane.add(QueryButton);
+		contentPane.add(map, BorderLayout.CENTER);
     contentPane.add(legend, BorderLayout.WEST);
+    
     
 
     

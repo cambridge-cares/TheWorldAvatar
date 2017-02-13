@@ -24,6 +24,7 @@ public abstract class httpRequestBtnInfo implements BtnInfo{
 	public static final String PwUrlStr =  "PWServlet_OWL/"; //URL OF SERVLET
 	public static final String APWOWHRStr =  "APWOWHRServlet/"; //URL OF SERVLET
 	public static final String APWWHRStr =  "APWWHRServlet/"; //URL OF SERVLET
+	public static final String query =  "QUERYServlet/"; //URL OF SERVLET
 
     ArcGISFeatureLayer[] completeLayerList;
 	public String emptyEditMsg;
@@ -57,7 +58,11 @@ public abstract class httpRequestBtnInfo implements BtnInfo{
 			urlStr+=APWOWHRStr;//route to APWOWHR servlet
 		} else if (appCallFlagStr.contentEquals("PrAPHR")){//if run pr biodieselplant2
 			urlStr+= APWWHRStr;
-		} else{//all other function requires
+		}
+		else if (appCallFlagStr.contentEquals("Query")){//if run pr biodieselplant2
+			urlStr+= query;
+		}
+		else{//all other function requires
 			urlStr+=PwUrlStr;//route to PW servelet
 		}
 	}
