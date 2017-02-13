@@ -15,7 +15,7 @@ import com.esri.core.geometry.Point;
 
 import cam.dev.zhouxiaochi.PipeReader.PipeInfo;
 /**
- * Read Pipe info
+ * Read Pipe info from OWL. Currently not used because line segment info is not fully constructed in OWL.
  * @author Shaocong
  *
  */

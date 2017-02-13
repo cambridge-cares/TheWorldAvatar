@@ -85,6 +85,21 @@ import com.esri.toolkit.overlays.HitTestOverlay;
 import com.esri.toolkit.overlays.InfoPopupOverlay;
 
 public class App {
+	
+	 enum LineType{
+		WATER(0),
+		GAS(1),
+		MATERIAL(2),
+		AIR(3);
+	    private LineType(int id) {
+	        this.id = id;
+	    }
+		private final int id;
+	    public int getId() {
+	        return id;
+	    }
+	    
+	}
 
 	public final static String BASE_URL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST020/FeatureServer";// Base
 																																	// url
@@ -127,8 +142,9 @@ public class App {
 	public static ArrayList<ArrayList<String>> relationship_array;
 
 	public static Map<String, ArcGISFeatureLayer> LayerMap;
+	//public static ArcGISFeatureLayer linelayer;//TODO: ONLY PUT FOR FUTURE USE: EXTRACTING LINE FROM OWL
 
-	public static ArcGISFeatureLayer linelayer;
+	public static ArcGISFeatureLayer[] linelayers;
 
 	public static ArrayList<String> combination = new ArrayList<String>();
 
@@ -138,7 +154,12 @@ public class App {
 	public static int[] count;
 	public static final Map<String, ArcGISFeatureLayer> editlayer = new LinkedHashMap<>();
 	private static FeatureServiceUpdater layerFactory;
-	static SimpleLineSymbol lineSymbol = new SimpleLineSymbol(new Color(255, 0, 0), 800);
+	static SimpleLineSymbol lineSymbolMaterial = new SimpleLineSymbol(Color.RED, 500);
+	static SimpleLineSymbol lineSymbolWater = new SimpleLineSymbol(Color.BLUE, 500);
+	static SimpleLineSymbol lineSymbolGas = new SimpleLineSymbol(Color.ORANGE, 500);
+	static SimpleLineSymbol lineSymbolAir = new SimpleLineSymbol(Color.BLACK, 500);
+
+	static SimpleLineSymbol[] lineSymbols = {lineSymbolWater,lineSymbolGas,lineSymbolMaterial,lineSymbolAir};
 
 	/**
 	 * DeviceInfo, stores name, type and plantID of one device.
@@ -225,7 +246,7 @@ public class App {
 	}
 
 	/***
-	 * Add A line feature to Arcgis Server: A wrapper to call featureWriter
+	 * Add A line feature to Arcgis Server
 	 * function
 	 * 
 	 * @param pipeInfo
@@ -236,7 +257,8 @@ public class App {
 		// linelayer.setOperationMode(QueryMode.SELECTION_ONLY);
 
 		List<Point> points = pipeInfo.path;
-		if (linelayer.getDefaultSpatialReference() == null) {
+		//TODO
+		if (linelayers[0].getDefaultSpatialReference() == null) {
 			JOptionPane.showMessageDialog(null, "Sorry, the layer is not yet fully loaded");
 		} else {
 			///////// Construct polyline from point list////////////
@@ -250,7 +272,7 @@ public class App {
 
 			///////////////////////////////////////////////////////////////////
 
-			Graphic polylineGraphic = new Graphic(line, lineSymbol, pipeInfo.attriList);// construct
+			Graphic polylineGraphic = new Graphic(line, lineSymbolMaterial, pipeInfo.attriList);// construct
 																						// graphic
 																						// object
 																						// with
@@ -262,7 +284,8 @@ public class App {
 
 			Graphic[] adds = { polylineGraphic };// construct graphic array
 
-			linelayer.applyEdits(adds, null, null, null);// add graphics to line
+			//TODO
+			linelayers[0].applyEdits(adds, null, null, null);// add graphics to line
 															// layer
 
 		}
@@ -323,7 +346,6 @@ public class App {
 					// drawLines(); // load line feature into Arcgis Server
 					drawLinesFromKML();
 					System.out.println("draw line from KML finished");
-
 					for (int i = 0; i < deviceInfoList.size(); i++) {// loop through each device in deviceInfoList
 																	
 						if (!deviceInfoList.get(i).name.equals("storageTank")) {//Is device storage tank?
@@ -413,10 +435,16 @@ public class App {
 		layerFactory = new FeatureServiceUpdater(BASE_URL);
 
 		// boolean[] alreadyExist = layerFactory.areLayersExist(targets);
-		createLayer("linelayer", -1);
-		linelayer = new ArcGISFeatureLayer(BASE_URL + "/" + "0", user);
+		createLayer("waterline", -1, LineType.WATER);
+		createLayer("gasline", -1,LineType.GAS);
+		createLayer("materialline", -1,LineType.MATERIAL);
+		createLayer("airline", -1,LineType.AIR);
 
-
+		
+		linelayers = new ArcGISFeatureLayer[4];
+		for(int idxLineLayer = 0;  idxLineLayer < linelayers.length; idxLineLayer++){	
+		linelayers[idxLineLayer]=new ArcGISFeatureLayer(BASE_URL + "/" + idxLineLayer, user);
+		}
 		for (int i = 0; i < deviceInfoList.size(); i++) {
 
 			DeviceInfo mDeviceInfo = deviceInfoList.get(i);
@@ -451,13 +479,15 @@ public class App {
 
 		// ================================================================
 
-		LayerMap.put("linelayer", linelayer);
-		SimpleRenderer renderer2 = new SimpleRenderer(linecolor);
-		linelayer.setRenderer(renderer2);
+		//TODO: what does this do, need to put it back?
+		//LayerMap.put("linelayer", linelayer);
+		//SimpleRenderer renderer2 = new SimpleRenderer(linecolor);
+		//linelayer.setRenderer(renderer2);
+		for(ArcGISFeatureLayer linelayer : linelayers){
 		layerList.add(linelayer);
-
-		layerList.add(tiledLayer);
 		map.getLayers().add(linelayer);
+		}
+		layerList.add(tiledLayer);
 
 		Point mapCenter = new Point(11543665, 141400);
 		map.setExtent(new Envelope(mapCenter, 7200, 5400));
@@ -490,6 +520,9 @@ public class App {
 		});
 	}
 
+	public static void createLayer(String targetName, int plantId) throws IOException, Exception {
+		createLayer(targetName, plantId, LineType.WATER);
+	}
 	/****
 	 * Create layer into Arcgis Service.
 	 * 
@@ -499,7 +532,7 @@ public class App {
 	 * @throws IOException
 	 * @throws Exception
 	 */
-	public static void createLayer(String targetName, int plantId) throws IOException, Exception {
+	public static void createLayer(String targetName, int plantId,LineType lineType) throws IOException, Exception {
 		/////// case: storage tank//////////////////////////////////////
 		if (targetName.toLowerCase().contains("storagetank")) {
 			System.out.println("Creating storage tank layer");
@@ -532,7 +565,7 @@ public class App {
 
 		}
 		/////// case: devices//////////////////////////////////////
-		else if (!targetName.contains("linelayer")) {
+		else if (!targetName.contains("line")) {
 			// TODO
 			OWLReader.read_owl_file(PLANT_OWL_FILE_NAME[plantId], targetName);
 
@@ -592,12 +625,12 @@ public class App {
 					targetName);
 		}
 		/////// case: lines//////////////////////////////////////
-		else if (targetName.contains("linelayer")) {// generate layer list
+		else if (targetName.contains("line")) {// generate layer list
 			// TODO: UNCOMMENT WHEN USING OWL, TEMPERARYLY USING KML
 			// PipeReader reader = PipeReader.getInstance();
 			// int length = reader.getAttriNameSet().size();
 
-			LineKMLReader reader = LineKMLReader.getInstance();
+			LineKMLReader reader = LineKMLReader.getInstance(lineType);
 			int length = reader.attriNameList.size();
 			String[] typeList = new String[length];
 			// TODO: COMMENT WHEN USING OWL, TEMPERARYLY USING KML
@@ -676,6 +709,7 @@ public class App {
 	}
 
 	/***
+	 * Currently not used.
 	 * Funtion to Draw lines on layer Read line info from PipeReader and feed to
 	 * info to create_line to create each line as feature on linelayer
 	 * 
@@ -700,8 +734,10 @@ public class App {
 	 * @throws IOException
 	 */
 	public static void drawLinesFromKML() throws IOException, Exception {
+		
+		for(LineType linetype: LineType.values()){
 		int idxPipe = 0;
-		LineKMLReader reader = LineKMLReader.getInstance();
+		LineKMLReader reader = LineKMLReader.getInstance(linetype);
 		Graphic[] adds = new Graphic[reader.coordinates.size()];
 		List<Map<String, Object>> AttriMap = reader.dataTables;
 
@@ -714,12 +750,13 @@ public class App {
 			for (int idxPoint = 1; idxPoint < pipe.size(); idxPoint++) {
 				pipeLine.lineTo(pipe.get(idxPoint).getX(), pipe.get(idxPoint).getY());
 			}
-			Graphic polyglineGraphic = new Graphic(pipeLine, lineSymbol, attributes);
+			Graphic polyglineGraphic = new Graphic(pipeLine, lineSymbols[linetype.getId()], attributes);
 			adds[idxPipe] = polyglineGraphic;
 			idxPipe++;
 		}
 
-		linelayer.applyEdits(adds, null, null, null);
+		linelayers[linetype.getId()].applyEdits(adds, null, null, null);
+		}
 	}
 
 	public static int getIndex(String[] array, String item) {
@@ -730,7 +767,9 @@ public class App {
 
 	public static void delete() {
 
+		for(ArcGISFeatureLayer linelayer : linelayers){
 		all_layers.add(linelayer);
+		}
 		for (int i = 0; i < all_layers.size(); i++) {
 			// all_layers.get(i).applyEdits(null, all_features.get(i), null,
 			// null);

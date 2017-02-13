@@ -29,34 +29,48 @@ import com.esri.core.map.Graphic;
 import com.esri.core.symbol.SimpleFillSymbol;
 import com.esri.core.symbol.SimpleLineSymbol;
 import com.esri.map.ArcGISFeatureLayer;
-
+/***
+ * Read line attributes and coordinates from xml generated from shp.
+ * @author Shaocong
+ *
+ */
 public class LineKMLReader {
+	
+
 	
 	public  ArrayList<ArrayList<Point>> coordinates = new ArrayList<ArrayList<Point>>();
 	public  ArrayList<Point[]> pipeLineCoordinates = new ArrayList<Point[]>();
     public ArrayList<Map<String, Object>> dataTables = new ArrayList<Map<String, Object>>();
 	public ArrayList<String> attriNameList = new ArrayList<String>();
+
+	
+    private static String[] fileLocations = {"WaterLine.xml",
+    		                                 "GasLine.xml",
+    		                                 "Material_Line.xml",
+    		                                 "AirLine.xml"
+                                            };
+	private static LineKMLReader[] instanceList = new LineKMLReader[App.LineType.values().length];
     
-	private static LineKMLReader instance;
-	
-	public static LineKMLReader getInstance() throws Exception{
-		if(instance == null){
-			instance = new LineKMLReader( );
+	public static LineKMLReader getInstance(App.LineType lineType) throws Exception{
+		System.out.println("length of line type:"+ App.LineType.values().length);
+		int typeId = lineType.getId();
+		if( instanceList[lineType.getId()] == null){//if this instance is not created yet
+			instanceList[lineType.getId()] = new LineKMLReader(fileLocations[typeId]);
 		}
-		return instance;
+		return instanceList[lineType.getId()];
 	}
 	
-	private LineKMLReader( ) throws Exception{
-		readkml();
+	private LineKMLReader( String fileLocation) throws Exception{
+		readkml(fileLocation);
 	}
 	
 	
-	public  void readkml() throws Exception
+	public  void readkml(String fileLocation) throws Exception
 	{
 		
 		   pipeLineCoordinates.clear();
 		  
-		 	File inputFile = new File("Material_Line.xml");
+		 	File inputFile = new File(fileLocation);
 			
 	        DocumentBuilderFactory dbFactory  = DocumentBuilderFactory.newInstance();
 	        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
