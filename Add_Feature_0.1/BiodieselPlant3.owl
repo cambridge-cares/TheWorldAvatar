@@ -50,6 +50,30 @@
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#CompositeSystem"/>
         <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#IRR_BiodieselPlant-3"/>
         <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#PBT_BiodieselPlant-3"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#C-301"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#E-301"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#E-302"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#E-303"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#E-304"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#E-305"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#E-306"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#E-307"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#M-302"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#M-303"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#P-301"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#P-302"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#R-301"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#R-302"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#R-303"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#S-301"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#T-301"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#T-302"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#T-303"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#V-301"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#V-302"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#V-303"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#V-304"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#VA-301"/>
     </owl:NamedIndividual>
     
 

@@ -14,13 +14,17 @@ import java.util.regex.Pattern;
 import com.esri.core.geometry.Point;
 
 import cam.dev.zhouxiaochi.PipeReader.PipeInfo;
-//TODO: test pipeReader class
+/**
+ * Read Pipe info from OWL. Currently not used because line segment info is not fully constructed in OWL.
+ * @author Shaocong
+ *
+ */
 public class PipeReader {
 
 	private static PipeReader singelton;
 	private List<String>  pipeNames = new ArrayList<String>();
 	
-	private Set<String> attriNameSet= new LinkedHashSet<String>();
+	private Set<String> attriNameSet= new LinkedHashSet<String>();//A string set contains all attri names
 	
 	public class Coordi{
 		
@@ -61,7 +65,7 @@ public class PipeReader {
 		
 		/********filter to get all pipeline nodes******/
 		//////get all owlReader first level nodes
-		ArrayList<String> allNodeNames = OWLReader.read_owl_file(App.PLANT_OWL_FILE_NAME, null);
+		ArrayList<String> allNodeNames = OWLReader.read_owl_file(App.PLANT_OWL_FILE_NAME[0], null);
 		///////filter through to get a list of top level pipe nodes
 		for(String nodeName : allNodeNames){////DOES THE NAME MATCH THIS PATTERN?
 			if(nodeName.matches("^Pipe_\\d+-\\d+$")){//=>YES
@@ -72,7 +76,7 @@ public class PipeReader {
 	
 		/****extract data from pipeline nodes****/
 		for(Object pipeName : pipeNames){		/////loop through all pipes
-			OWLReader.read_owl_file(App.PLANT_OWL_FILE_NAME, (String)pipeName);
+			OWLReader.read_owl_file(App.PLANT_OWL_FILE_NAME[0], (String)pipeName);
 			                                                                    System.out.println("read pipe:"+(String)pipeName);
 			//extract and pack inrto pathLists
 			List<Point> path = new ArrayList<Point>();
