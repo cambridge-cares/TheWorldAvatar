@@ -59,7 +59,7 @@ public abstract class httpRequestBtnInfo implements BtnInfo{
 		} else if (appCallFlagStr.contentEquals("PrAPHR")){//if run pr biodieselplant2
 			urlStr+= APWWHRStr;
 		}
-		else if (appCallFlagStr.contentEquals("Query")){//if run pr biodieselplant2
+		else if (appCallFlagStr.contentEquals("Query")){//if run Query
 			urlStr+= query;
 		}
 		else{//all other function requires
