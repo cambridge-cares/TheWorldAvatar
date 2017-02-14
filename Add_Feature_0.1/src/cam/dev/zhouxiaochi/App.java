@@ -57,6 +57,7 @@ import com.esri.core.geometry.Transformation2D;
 import com.esri.core.io.UserCredentials;
 import com.esri.core.map.CallbackListener;
 import com.esri.core.map.Feature;
+import com.esri.core.map.FeatureEditResult;
 import com.esri.core.map.FeatureSet;
 import com.esri.core.map.Graphic;
 import com.esri.core.portal.Portal;
@@ -153,7 +154,8 @@ public class App {
 
 	public static int[] count;
 	public static final Map<String, ArcGISFeatureLayer> editlayer = new LinkedHashMap<>();
-	private static FeatureServiceUpdater layerFactory;
+	private static FeatureServiceUpdater featureUpdater;
+	//TODO: this might be deleted, this symbol does not affect the final map
 	static SimpleLineSymbol lineSymbolMaterial = new SimpleLineSymbol(Color.RED, 500);
 	static SimpleLineSymbol lineSymbolWater = new SimpleLineSymbol(Color.BLUE, 500);
 	static SimpleLineSymbol lineSymbolGas = new SimpleLineSymbol(Color.ORANGE, 500);
@@ -212,7 +214,7 @@ public class App {
 			 **/
 			Graphic[] g = featurewriter.createFeature(type, x, y, thisLayer.getDefaultSpatialReference(), name, plantID);
 			// rect_list.add(featurewriter.obstacle);
-			thisLayer.applyEdits(g, null, null, null);// add the new features to
+			thisLayer.applyEdits(g, null, null, new ApplyEditCallback());// add the new features to
 														// layer
 			all_layers.add(thisLayer);
 			all_features.add(g);
@@ -238,7 +240,7 @@ public class App {
 			 * features to be added)
 			 **/
 			Graphic[] g = featurewriter.createFeatureStorage();
-			thisLayer.applyEdits(g, null, null, null);// add the new features to
+			thisLayer.applyEdits(g, null, null, new ApplyEditCallback());// add the new features to
 														// layer
 			all_layers.add(thisLayer);
 			all_features.add(g);
@@ -285,11 +287,12 @@ public class App {
 			Graphic[] adds = { polylineGraphic };// construct graphic array
 
 			//TODO
-			linelayers[0].applyEdits(adds, null, null, null);// add graphics to line
+			linelayers[0].applyEdits(adds, null, null, new ApplyEditCallback());// add graphics to line
 															// layer
 
 		}
 	}
+
 
 	final static SimpleFillSymbol testcolor = new SimpleFillSymbol(Color.black, new SimpleLineSymbol(Color.cyan, 1),
 			SimpleFillSymbol.Style.SOLID);
@@ -354,7 +357,8 @@ public class App {
 						}
 
 					}
-					createStorageTank(LayerMap.get("storageTank"));// load
+					//TODO: COMMENT FOR TESTING ,UNCOMMENT AFTERWARDS
+					//createStorageTank(LayerMap.get("storageTank"));// load
 																	// //storage
 																	// // tank
 																	// features individually
@@ -423,6 +427,14 @@ public class App {
 		// ================================================================
 
 		LayerMap = new HashMap<String, ArcGISFeatureLayer>();
+		
+		/////todo: delete after testing
+		 SimpleLineSymbol outline = new SimpleLineSymbol(new Color(255, 244, 0), 500);
+		 SimpleFillSymbol symbol = new SimpleFillSymbol(new Color(0, 0, 0, 255), outline);
+//		LayerFactory factory = new LayerFactory("Landlots", "owl/JParkLandLots.owl", "kml/Landlots.kml", FeatureServiceUpdater.LayerType.POLYGON, "^LandLotID_\\d+$", user,symbol);
+		LayerFactory factory = new LayerFactory("EHTLines", "updated electrical network.owl", "kml/EHT Lines.kml", FeatureServiceUpdater.LayerType.POLYLINE, "^EHT-\\d+$", user,symbol);
+
+		factory.createLoadLayer();
 		ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer(
 				"http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST020/FeatureServer/Buildings",
 				user);
@@ -432,50 +444,54 @@ public class App {
 		x_array = new double[deviceInfoList.size()];
 		y_array = new double[deviceInfoList.size()];
 
-		layerFactory = new FeatureServiceUpdater(BASE_URL);
-
-		// boolean[] alreadyExist = layerFactory.areLayersExist(targets);
-		createLayer("waterline", -1, LineType.WATER);
-		createLayer("gasline", -1,LineType.GAS);
-		createLayer("materialline", -1,LineType.MATERIAL);
-		createLayer("airline", -1,LineType.AIR);
-
 		
-		linelayers = new ArcGISFeatureLayer[4];
-		for(int idxLineLayer = 0;  idxLineLayer < linelayers.length; idxLineLayer++){	
-		linelayers[idxLineLayer]=new ArcGISFeatureLayer(BASE_URL + "/" + idxLineLayer, user);
-		}
-		for (int i = 0; i < deviceInfoList.size(); i++) {
+		
+		
+		featureUpdater = new FeatureServiceUpdater(BASE_URL);
 
-			DeviceInfo mDeviceInfo = deviceInfoList.get(i);
-			String target = mDeviceInfo.name;
-			createLayer(target, mDeviceInfo.plantID);
-			String idx = FeatureServiceUpdater.layerID;
 
-			System.out.println("#######################################################");
-			System.out.println(OWLReader.relationships);
-
-			relationship_array.add(OWLReader.relationships);
-
-			ArcGISFeatureLayer newLayer = new ArcGISFeatureLayer(BASE_URL + "/" + target, user);
-
-			all_layers.add(newLayer);
-			LayerMap.put(target, newLayer);
-			if(mDeviceInfo.plantID > 0){
-			OWLReader.read_owl_file(PLANT_OWL_FILE_NAME[mDeviceInfo.plantID], target);
-			}
-			x_array[i] = OWLReader.x;//TODO: WHAT IS THIS? IF IS STILL USEFUL NEED TO THINK OF CASE OF STORAGE TANK
-			y_array[i] = OWLReader.y;
-
-			SimpleRenderer renderer = new SimpleRenderer(testcolor);
-			newLayer.setRenderer(renderer);
-			layerList.add(newLayer);
-
-			map.getLayers().add(newLayer);
-
-			editlayer.put(target, newLayer);
-
-		}
+//		createLayer("waterline", -1, LineType.WATER);
+//		createLayer("gasline", -1,LineType.GAS);
+//		createLayer("materialline", -1,LineType.MATERIAL);
+//		createLayer("airline", -1,LineType.AIR);
+//
+//		
+//		linelayers = new ArcGISFeatureLayer[4];
+//		for(int idxLineLayer = 0;  idxLineLayer < linelayers.length; idxLineLayer++){	
+//		linelayers[idxLineLayer]=new ArcGISFeatureLayer(BASE_URL + "/" + idxLineLayer, user);
+//		}
+//		//TODO: exclude storage layer for testing ,delete -1 after testing
+//		for (int i = 0; i < deviceInfoList.size() - 1; i++) {
+//
+//			DeviceInfo mDeviceInfo = deviceInfoList.get(i);
+//			String target = mDeviceInfo.name;
+//			createLayer(target, mDeviceInfo.plantID);
+//			String idx = FeatureServiceUpdater.layerID;
+//
+//			System.out.println("#######################################################");
+//			System.out.println(OWLReader.relationships);
+//
+//			relationship_array.add(OWLReader.relationships);
+//
+//			ArcGISFeatureLayer newLayer = new ArcGISFeatureLayer(BASE_URL + "/" + target, user);
+//
+//			all_layers.add(newLayer);
+//			LayerMap.put(target, newLayer);
+//			if(mDeviceInfo.plantID > 0){
+//			OWLReader.read_owl_file(PLANT_OWL_FILE_NAME[mDeviceInfo.plantID], target);
+//			}
+//			x_array[i] = OWLReader.x;//TODO: WHAT IS THIS? IF IS STILL USEFUL NEED TO THINK OF CASE OF STORAGE TANK
+//			y_array[i] = OWLReader.y;
+//
+//			SimpleRenderer renderer = new SimpleRenderer(testcolor);
+//			newLayer.setRenderer(renderer);
+//			layerList.add(newLayer);
+//
+//			map.getLayers().add(newLayer);
+//
+//			editlayer.put(target, newLayer);
+//
+//		}
 
 		// ================================================================
 
@@ -483,18 +499,24 @@ public class App {
 		//LayerMap.put("linelayer", linelayer);
 		//SimpleRenderer renderer2 = new SimpleRenderer(linecolor);
 		//linelayer.setRenderer(renderer2);
-		for(ArcGISFeatureLayer linelayer : linelayers){
-		layerList.add(linelayer);
-		map.getLayers().add(linelayer);
-		}
+		
+		
+		//TODO: REMOVE after testing
+//		for(ArcGISFeatureLayer linelayer : linelayers){
+//		layerList.add(linelayer);
+//		map.getLayers().add(linelayer);
+//		}
 		layerList.add(tiledLayer);
 
 		Point mapCenter = new Point(11543665, 141400);
 		map.setExtent(new Envelope(mapCenter, 7200, 5400));
 
 		window.getContentPane().add(map);
-		BuildingKMLReader reader = new BuildingKMLReader();
-		reader.readkml(buildinglayer);
+		//TODO: REMOVE after testing
+//		BuildingKMLReader reader = new BuildingKMLReader();
+//		reader.readkml(buildinglayer);
+		
+
 	}
 
 	/**
@@ -561,7 +583,7 @@ public class App {
 			attrLists.put("name", nameList);
 			attrLists.put("type", typeList);
 			attrLists.put("alias", nameList);
-			layerFactory.generateLayer(length, FeatureServiceUpdater.LayerType.POLYGON, attrLists, targetName);
+			featureUpdater.generateLayer(length, FeatureServiceUpdater.LayerType.POLYGON, attrLists, targetName);
 
 		}
 		/////// case: devices//////////////////////////////////////
@@ -621,7 +643,7 @@ public class App {
 			attrLists.put("type", typeList);
 			attrLists.put("alias", nameList);
 			int lengthOfEachList = nameList.length;
-			layerFactory.generateLayer(lengthOfEachList, FeatureServiceUpdater.LayerType.POLYGON, attrLists,
+			featureUpdater.generateLayer(lengthOfEachList, FeatureServiceUpdater.LayerType.POLYGON, attrLists,
 					targetName);
 		}
 		/////// case: lines//////////////////////////////////////
@@ -649,7 +671,7 @@ public class App {
 			attrLists.put("name", nameList);
 			attrLists.put("type", typeList);
 			attrLists.put("alias", nameList);
-			layerFactory.generateLayer(length, FeatureServiceUpdater.LayerType.POLYLINE, attrLists, targetName);// generate
+			featureUpdater.generateLayer(length, FeatureServiceUpdater.LayerType.POLYLINE, attrLists, targetName);// generate
 																												// line
 																												// layer
 
@@ -755,7 +777,7 @@ public class App {
 			idxPipe++;
 		}
 
-		linelayers[linetype.getId()].applyEdits(adds, null, null, null);
+		linelayers[linetype.getId()].applyEdits(adds, null, null, new ApplyEditCallback());
 		}
 	}
 
@@ -780,7 +802,7 @@ public class App {
 
 			all_layers.get(i).setSelectionIDs(ids, true);
 
-			all_layers.get(i).applyEdits(null, all_layers.get(i).getSelectedFeatures(), null, null);
+			all_layers.get(i).applyEdits(null, all_layers.get(i).getSelectedFeatures(), null, new ApplyEditCallback());
 		}
 	}
 
