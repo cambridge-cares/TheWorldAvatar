@@ -133,7 +133,7 @@ public class App {
 	public static int layerID;
 	public static ArcGISFeatureLayer Layer;
 	public static JCheckBox checkbox;
-
+    public static ArrayList<String>  nonDeviceLayerNameList = new ArrayList<String>();
 	// public static String target;
 	public static ArrayList<DeviceInfo> deviceInfoList = new ArrayList<DeviceInfo>();
 	public static String[] types;
@@ -357,8 +357,7 @@ public class App {
 						}
 
 					}
-					//TODO: COMMENT FOR TESTING ,UNCOMMENT AFTERWARDS
-					//createStorageTank(LayerMap.get("storageTank"));// load
+					createStorageTank(LayerMap.get("storageTank"));// load
 																	// //storage
 																	// // tank
 																	// features individually
@@ -428,70 +427,87 @@ public class App {
 
 		LayerMap = new HashMap<String, ArcGISFeatureLayer>();
 		
-		/////todo: delete after testing
-		 SimpleLineSymbol outline = new SimpleLineSymbol(new Color(255, 244, 0), 500);
-		 SimpleFillSymbol symbol = new SimpleFillSymbol(new Color(0, 0, 0, 255), outline);
-//		LayerFactory factory = new LayerFactory("Landlots", "owl/JParkLandLots.owl", "kml/Landlots.kml", FeatureServiceUpdater.LayerType.POLYGON, "^LandLotID_\\d+$", user,symbol);
-		LayerFactory factory = new LayerFactory("EHTLines", "updated electrical network.owl", "kml/EHT Lines.kml", FeatureServiceUpdater.LayerType.POLYLINE, "^EHT-\\d+$", user,symbol);
+		/////TODO: symbol does not matter anyway here, define one and use one for all?
 
-		factory.createLoadLayer();
+    	
 		ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer(
 				"http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST020/FeatureServer/Buildings",
 				user);
 		readlist();
 
+		 SimpleLineSymbol outline = new SimpleLineSymbol(new Color(255, 244, 0), 500);
+		 SimpleFillSymbol symbol = new SimpleFillSymbol(new Color(0, 0, 0, 255), outline);
+		 /////////////// construct layerFactories for each layer///////////////////////////////////
+		 List<LayerFactory> layerFactories = new ArrayList<LayerFactory>();
+   	     layerFactories.add(new LayerFactory("Landlots", "owl/JParkLandLots.owl", "kml/Landlots.kml", FeatureServiceUpdater.LayerType.POLYGON, "^LandLotID_\\d+$", user,symbol));
+		layerFactories.add(new LayerFactory("EHTLines", "updated electrical network.owl", "kml/EHT Lines.kml", FeatureServiceUpdater.LayerType.POLYLINE, "^EHT-\\d+$", user,symbol));
+	     layerFactories.add(new LayerFactory("HTLines", "updated electrical network.owl", "kml/HT Lines.kml", FeatureServiceUpdater.LayerType.POLYLINE, "^HT-\\d+$", user,symbol));
+		 layerFactories.add(new LayerFactory("UHTLines", "updated electrical network.owl", "kml/UHT Lines (230kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^UHT-\\d+$", user,symbol));
+		//TODO:WARNING:OWL NUM < KML NUM
+		 layerFactories.add(new LayerFactory("Powergen", "updated electrical network.owl", "kml/PowerGen.kml", FeatureServiceUpdater.LayerType.POLYGON, "^PowerGen_\\d+$", user,symbol));
+		//TODO:WARNING:OWL NUM < KML NUM
+		 layerFactories.add(new LayerFactory("PublicRoads", "owl/JParkLandLots.owl", "kml/Public Roads.kml", FeatureServiceUpdater.LayerType.POLYGON, "^\\w+Road$", user,symbol));
+
+		
+   	/************create and load layer for each type of entities(kml+owl generation)*****************/
+		 ArrayList<ArcGISFeatureLayer>   kmlOwlLayers = new ArrayList<ArcGISFeatureLayer>();
+   	for(LayerFactory aLayerF:layerFactories){
+   		deviceInfoList.add(new DeviceInfo(aLayerF.getLayerName(), aLayerF.getLayerName(), -1));//add storagetank separately
+   		kmlOwlLayers.add(aLayerF.createLoadLayer());
+   		
+   	}
+   	
 		relationship_array = new ArrayList<ArrayList<String>>();
 		x_array = new double[deviceInfoList.size()];
 		y_array = new double[deviceInfoList.size()];
 
 		
 		
-		
+		////construct feature updater//////////////////////////////
 		featureUpdater = new FeatureServiceUpdater(BASE_URL);
 
+		createLayer("waterline", -1, LineType.WATER);
+		createLayer("gasline", -1,LineType.GAS);
+		createLayer("materialline", -1,LineType.MATERIAL);
+		createLayer("airline", -1,LineType.AIR);
 
-//		createLayer("waterline", -1, LineType.WATER);
-//		createLayer("gasline", -1,LineType.GAS);
-//		createLayer("materialline", -1,LineType.MATERIAL);
-//		createLayer("airline", -1,LineType.AIR);
-//
-//		
-//		linelayers = new ArcGISFeatureLayer[4];
-//		for(int idxLineLayer = 0;  idxLineLayer < linelayers.length; idxLineLayer++){	
-//		linelayers[idxLineLayer]=new ArcGISFeatureLayer(BASE_URL + "/" + idxLineLayer, user);
-//		}
-//		//TODO: exclude storage layer for testing ,delete -1 after testing
-//		for (int i = 0; i < deviceInfoList.size() - 1; i++) {
-//
-//			DeviceInfo mDeviceInfo = deviceInfoList.get(i);
-//			String target = mDeviceInfo.name;
-//			createLayer(target, mDeviceInfo.plantID);
-//			String idx = FeatureServiceUpdater.layerID;
-//
-//			System.out.println("#######################################################");
-//			System.out.println(OWLReader.relationships);
-//
-//			relationship_array.add(OWLReader.relationships);
-//
-//			ArcGISFeatureLayer newLayer = new ArcGISFeatureLayer(BASE_URL + "/" + target, user);
-//
-//			all_layers.add(newLayer);
-//			LayerMap.put(target, newLayer);
-//			if(mDeviceInfo.plantID > 0){
-//			OWLReader.read_owl_file(PLANT_OWL_FILE_NAME[mDeviceInfo.plantID], target);
-//			}
-//			x_array[i] = OWLReader.x;//TODO: WHAT IS THIS? IF IS STILL USEFUL NEED TO THINK OF CASE OF STORAGE TANK
-//			y_array[i] = OWLReader.y;
-//
-//			SimpleRenderer renderer = new SimpleRenderer(testcolor);
-//			newLayer.setRenderer(renderer);
-//			layerList.add(newLayer);
-//
-//			map.getLayers().add(newLayer);
-//
-//			editlayer.put(target, newLayer);
-//
-//		}
+		
+		linelayers = new ArcGISFeatureLayer[4];
+		for(int idxLineLayer = 0;  idxLineLayer < linelayers.length; idxLineLayer++){	
+		linelayers[idxLineLayer]=new ArcGISFeatureLayer(BASE_URL + "/" + idxLineLayer, user);
+		}
+		//TODO: exclude storage layer for testing ,delete -1 after testing
+		for (int i = 0; i < deviceInfoList.size() - 1; i++) {
+
+			DeviceInfo mDeviceInfo = deviceInfoList.get(i);
+			String target = mDeviceInfo.name;
+			createLayer(target, mDeviceInfo.plantID);
+			String idx = FeatureServiceUpdater.layerID;
+
+			System.out.println("#######################################################");
+			System.out.println(OWLReader.relationships);
+
+			relationship_array.add(OWLReader.relationships);
+
+			ArcGISFeatureLayer newLayer = new ArcGISFeatureLayer(BASE_URL + "/" + target, user);
+
+			all_layers.add(newLayer);
+			LayerMap.put(target, newLayer);
+			if(mDeviceInfo.plantID > 0){
+			OWLReader.read_owl_file(PLANT_OWL_FILE_NAME[mDeviceInfo.plantID], target);
+			}
+			x_array[i] = OWLReader.x;//TODO: WHAT IS THIS? IF IS STILL USEFUL NEED TO THINK OF CASE OF STORAGE TANK
+			y_array[i] = OWLReader.y;
+
+			SimpleRenderer renderer = new SimpleRenderer(testcolor);
+			newLayer.setRenderer(renderer);
+			layerList.add(newLayer);
+
+			map.getLayers().add(newLayer);
+
+			editlayer.put(target, newLayer);
+
+		}
 
 		// ================================================================
 
@@ -501,20 +517,18 @@ public class App {
 		//linelayer.setRenderer(renderer2);
 		
 		
-		//TODO: REMOVE after testing
-//		for(ArcGISFeatureLayer linelayer : linelayers){
-//		layerList.add(linelayer);
-//		map.getLayers().add(linelayer);
-//		}
+		for(ArcGISFeatureLayer linelayer : linelayers){
+		layerList.add(linelayer);
+		map.getLayers().add(linelayer);
+		}
 		layerList.add(tiledLayer);
 
 		Point mapCenter = new Point(11543665, 141400);
 		map.setExtent(new Envelope(mapCenter, 7200, 5400));
 
 		window.getContentPane().add(map);
-		//TODO: REMOVE after testing
-//		BuildingKMLReader reader = new BuildingKMLReader();
-//		reader.readkml(buildinglayer);
+		BuildingKMLReader reader = new BuildingKMLReader();
+		reader.readkml(buildinglayer);
 		
 
 	}
@@ -722,6 +736,7 @@ public class App {
 		// types[counter] = "storagetank";
 
 		deviceInfoList.add(new DeviceInfo("storageTank", "storagetank", -1));//add storagetank separately
+		//add all other layers seperately
 	}
 
 	// currently not able to be used because no indication of type in owl file

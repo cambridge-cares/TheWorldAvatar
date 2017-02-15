@@ -44,8 +44,17 @@ import cam.dev.zhouxiaochi.FeatureServiceUpdater.LayerType;
  */
 public class LayerFactory {
 	// TODO geometry enum should be put here
+	
+////////////////static memeber/////////////////////////////////////////	
+	private static FeatureServiceUpdater updater = new FeatureServiceUpdater(App.BASE_URL);
+
 	//////////// constructor parameters///////////////////
+
 	private String layerName;
+	public String getLayerName() {
+		return layerName;
+	}
+
 	private String owlLocation;
 	private String kmlLocation;
 	private LayerType geometryType;
@@ -104,12 +113,12 @@ public class LayerFactory {
 		}
 	}
 
-	public void createLoadLayer() throws IOException, Exception {
+	public ArcGISFeatureLayer createLoadLayer() throws IOException, Exception {
 		if (!readAttriNameList()) {// read attribute name list fails?
-			return;// =>terminate
+			return null;// =>terminate
 		}
 		if (!generateLayer()) {// generate layer fails?
-			return;// =>terminate
+			return null;// =>terminate
 		}
 		///////// wait for generating layer request to be completed////////////
 		targetLayer = new ArcGISFeatureLayer(
@@ -128,9 +137,7 @@ public class LayerFactory {
 		////////////////////////////////////////////////////////////////////
 
 		loadFeatureIntoArcgis();
-		while(true){
-			
-		}
+        return targetLayer;
 	}
 
 	private Map<String, String> readKML() throws ParserConfigurationException, SAXException, IOException {
@@ -200,10 +207,11 @@ public class LayerFactory {
 			if (nodeName.matches(topNodesRegex)) {// =>YES
 				////// =>add name to the entity name list
 				entityNames.add(nodeName);
+				System.out.println("entity+++++_________++++++++++++++"+nodeName);
 			}
 		}
 
-		if(entityNames.size() < 0){
+		if(entityNames.size() < 1){
 			System.out.println("ERR: first level entity list has size 0");
 
 			return false;
@@ -226,8 +234,9 @@ public class LayerFactory {
 																	// populated
 			return true;
 		} else {
-			System.out.println("ERR: attribute name list has size 0");
-			return false;
+			System.out.println("Warning: attribute name list has size 0");
+			//return false;
+		return true;
 		}
 
 	}
@@ -254,7 +263,7 @@ public class LayerFactory {
 		if (found) {// indeed has match?
 			return result.toString();
 		} else {
-			System.out.println("This attribute does not contain ID:" + attriName);
+			//System.out.println("This attribute does not contain ID:" + attriName);
 			return attriName;
 		}
 	}
@@ -263,8 +272,8 @@ public class LayerFactory {
 		// check if attribute name set is empty
 		int length = attributeNames.size();
 		if (length <= 0) {
-			System.out.println("Err: attribute name set empty");
-			return false;
+			System.out.println("Warning: attribute name set empty");
+			//return false;
 		}
 
 		String[] typeList = new String[length];
@@ -277,7 +286,6 @@ public class LayerFactory {
 		attrLists.put("name", nameList);
 		attrLists.put("type", typeList);
 		attrLists.put("alias", nameList);
-		FeatureServiceUpdater updater = new FeatureServiceUpdater(App.BASE_URL);
 		updater.generateLayer(length, geometryType, attrLists, layerName);
 		// TODO :modify generateLayer function to return boolean as success
 		// indicate
@@ -286,11 +294,20 @@ public class LayerFactory {
 
 	private void loadFeatureIntoArcgis() throws IOException, Exception {
 		Map<String, String> coordinatesStrList = readKML();
+		//////////check read kml result not null///////////////////////////
 		if (coordinatesStrList == null) {
-			System.out.println("ERR: can not get coordinate strings from kml");
-			return;
+			System.out.println("ERR: can not read coordinate strings from kml");
+			return;//terminate
 		}
-		// check geometry type using switch
+		
+		///////check kml entity number vs owl entity number //////////////////
+		if(coordinatesStrList.size() > entityNames.size()){//more coordinates set than owl entity? ignore over ones in kml
+			System.out.println("WARNING: kml coordinates list length larger than owl entity list, will cut from kml side, Coor num:"+coordinatesStrList.size()+", entity num"+ entityNames.size());
+		} else if(coordinatesStrList.size() < entityNames.size()){//more owl entity than coordinates? Terminate feature population
+			System.out.println("ERR: kml coordinates list length smaller than owl entity list, terminate feature population, Coor num:"+coordinatesStrList.size()+", entity num"+ entityNames.size());
+		    return;//terminate
+		}
+		// check geometry type using switch, saved as a template object to be copied each time one is required
 		MultiPath geometryTmp;
 		switch (geometryType) {
 		case POLYGON:
