@@ -801,13 +801,16 @@ public class FeatureServiceUpdater {
 	
 	public enum LayerType{
 		POLYLINE,
-		POLYGON
+		POLYGON,
+		POINT
 	}
 	
 	private  JSONObject PolygonTemplateMother = null;
 	private  JSONObject PolylineTemplateMother = null;
+	private  JSONObject PointTemplateMother = null;
 	String PolygonTemplateServiceURL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/admin/services/test004/FeatureServer";
 	String PolylineTemplateServiceURL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/admin/services/airline/FeatureServer";
+	String PointTemplateServiceURL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/admin/services/Point/FeatureServer";
 	public void generateLayer(int numOfAttrs, LayerType layertype, Map<String, String[]> attrValueListsMap,
 			String newLayerName) throws JSONException {
 
@@ -856,12 +859,26 @@ public class FeatureServiceUpdater {
 
 		}
 		
+		if(PointTemplateMother == null) {
+			System.out.println("start request for Point template");
+
+			PointTemplateMother = httpRequest(PointTemplateServiceURL, "application/x-www-form-urlencoded; charset=utf-8",
+				parameters).getJSONArray("layers").getJSONObject(0);
+
+		}
+		
+		
+		
 		if(layertype == LayerType.POLYGON){
 			mTemplateJSON = new JSONObject(PolygonTemplateMother.toString());
 		}else if(layertype == LayerType.POLYLINE){
 			mTemplateJSON = new JSONObject(PolylineTemplateMother.toString());;
 
-		}else{
+		}else if(layertype == LayerType.POINT)
+		{
+			mTemplateJSON = new JSONObject(PointTemplateMother.toString());
+		}
+		else{
 			System.out.println("ERR: REQUEST TO GENERATE LAYER WITH NON-EXISTING TYPE");
 			return;
 		}
