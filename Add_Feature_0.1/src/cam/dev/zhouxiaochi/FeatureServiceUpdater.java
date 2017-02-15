@@ -70,7 +70,7 @@ public class FeatureServiceUpdater {
 	  //TODO: test each function 
 		  String baseUrl =
 	  "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST020/FeatureServer";
-	  FeatureServiceUpdater mUpdater = new FeatureServiceUpdater(baseUrl);
+	  FeatureServiceUpdater mUpdater = new FeatureServiceUpdater(App.BASE_URL);
 	  
 		  String templateServiceURL =
 	  "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/admin/services/Load_points/FeatureServer";

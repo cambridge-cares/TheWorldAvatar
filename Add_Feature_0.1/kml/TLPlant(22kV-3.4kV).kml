@@ -1,0 +1,236 @@
+﻿<?xml version="1.0" encoding="utf-8"?><kml xmlns="http://www.opengis.net/kml/2.2">
+<Placemark>
+<MultiGeometry>
+<Name>Biodiesel Plant</Name>
+<description>&lt;?xml version="1.0" standalone="yes"?&gt;
+&lt;DocumentElement&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.168622434&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.220584&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;0.389273&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P1&lt;/Group_part&gt;
+    &lt;Source&gt;HT-Substn2&lt;/Source&gt;
+    &lt;Target&gt;R-602001&lt;/Target&gt;
+    &lt;Name&gt;PHT-9&lt;/Name&gt;
+    &lt;Ln_loss_P&gt;0.003&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0.006&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.09130191&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.220588&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;0.389273&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P1&lt;/Group_part&gt;
+    &lt;Source&gt;HT-Substn2&lt;/Source&gt;
+    &lt;Target&gt;E-600005&lt;/Target&gt;
+    &lt;Name&gt;PHT-10&lt;/Name&gt;
+    &lt;Ln_loss_P&gt;0.004&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0.007&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.0229122154&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.441168&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;0.778547&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P1&lt;/Group_part&gt;
+    &lt;Source&gt;HT-Substn2&lt;/Source&gt;
+    &lt;Target&gt;LT-Substn1&lt;/Target&gt;
+    &lt;Name&gt;PHT-11&lt;/Name&gt;
+    &lt;Ln_loss_P&gt;0.003&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0.005&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.0228925943&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.441168&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;0.778547&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P2&lt;/Group_part&gt;
+    &lt;Source&gt;HT-Substn2&lt;/Source&gt;
+    &lt;Target&gt;LT-Substn1&lt;/Target&gt;
+    &lt;Name&gt;PHT-12&lt;/Name&gt;
+    &lt;Ln_loss_P&gt;0.005&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0.009&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.0834857747&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.220584&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;0.389273&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P2&lt;/Group_part&gt;
+    &lt;Source&gt;HT-Substn2&lt;/Source&gt;
+    &lt;Target&gt;V-600002&lt;/Target&gt;
+    &lt;Name&gt;PHT-13&lt;/Name&gt;
+    &lt;Ln_loss_P&gt;0.004&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0.007&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.108781971&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.220584&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;0.389273&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P1&lt;/Group_part&gt;
+    &lt;Source&gt;HT-Substn2&lt;/Source&gt;
+    &lt;Target&gt;R-600001&lt;/Target&gt;
+    &lt;Name&gt;PHT-14&lt;/Name&gt;
+    &lt;Ln_loss_P&gt;0.003&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0.006&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.164090127&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.220588&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;0.389273&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P1&lt;/Group_part&gt;
+    &lt;Source&gt;HT-Substn2&lt;/Source&gt;
+    &lt;Target&gt;E-602005&lt;/Target&gt;
+    &lt;Name&gt;PHT-15&lt;/Name&gt;
+    &lt;Ln_loss_P&gt;0.004&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0.007&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.195391268&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.220584&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;0.389273&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P2&lt;/Group_part&gt;
+    &lt;Source&gt;HT-Substn2&lt;/Source&gt;
+    &lt;Target&gt;V-602002&lt;/Target&gt;
+    &lt;Name&gt;PHT-16&lt;/Name&gt;
+    &lt;Ln_loss_P&gt;0.004&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0.007&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+&lt;/DocumentElement&gt;</description>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.678831294651,1.25833177432357,100
+103.678842693387,1.25832007987202,100
+103.678792794795,1.25827153115322,100
+103.677929540367,1.25912773283882,100
+103.678085062077,1.259281305635,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.678494761872,1.25888723179517,100
+103.678407256755,1.25897470707779,100
+103.678492880876,1.2590600135005,100
+103.678179143636,1.25937367497501,100
+103.678085062077,1.25928130563506,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.678085157149,1.25928178087971,100
+103.67813377852,1.25932951737585,100
+103.678230706273,1.25923176494452,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.678085062077,1.25928130563506,100
+103.678098461271,1.25926909541195,100
+103.678119667057,1.25924755257186,100
+103.678167287317,1.25929515235402,100
+103.6782306112,1.25923128969985,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.678509057115,1.25875208596561,100
+103.678417954233,1.25884316484149,100
+103.678044840725,1.25921548781498,100
+103.678098461271,1.25926909541195,100
+103.678085062077,1.25928130563506,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.678453392522,1.25869893046003,100
+103.678460443139,1.25869192695972,100
+103.678413287481,1.2586447826796,100
+103.6779307089,1.25912773586746,100
+103.678085062077,1.25928130563506,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.678870957074,1.25850789373384,100
+103.678819671228,1.25855945698726,100
+103.678944215405,1.25869537699023,100
+103.678513539738,1.25912594870121,100
+103.678472373863,1.25908051556299,100
+103.678179143636,1.25937367497504,100
+103.678085062077,1.259281305635,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.678085062077,1.259281305635,100
+103.6779307089,1.25912773586746,100
+103.678833011002,1.25823201331456,100
+103.678964923251,1.25836389375368,100
+103.678919615553,1.258408982605,100
+103.678908576828,1.25839820100976,100
+</coordinates>
+</LineString>
+
+</MultiGeometry>
+</Placemark>
+</kml>
