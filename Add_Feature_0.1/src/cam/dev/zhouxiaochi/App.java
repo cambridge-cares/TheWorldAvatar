@@ -448,7 +448,13 @@ public class App {
 		//TODO:WARNING:OWL NUM < KML NUM
 		 layerFactories.add(new LayerFactory("PublicRoads", "owl/JParkLandLots.owl", "kml/Public Roads.kml", FeatureServiceUpdater.LayerType.POLYGON, "^\\w+Road$", user,symbol));
 
-		
+		 //layerFactories.add(new LayerFactory("TLPlant(22kV-11kV)", "updated electrical network.owl", "kml/TLPlant(22kV-11kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PHT-\\d+$", user,symbol));
+		// layerFactories.add(new LayerFactory("TLPlant(22kV-3.4kV)", "updated electrical network.owl", "kml/TLPlant(22kV-3.4kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PHT-\\d+$", user,symbol));
+		// layerFactories.add(new LayerFactory("TLPlant(3.4kV-3kV)", "updated electrical network.owl", "kml/TLPlant(3.4kV-3kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PHT-\\d+$", user,symbol));
+		// layerFactories.add(new LayerFactory("TLPlant(3kV-0.4kV)", "updated electrical network.owl", "kml/TLPlant(3kV-0.4kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PLT-\\d+$", user,symbol));
+
+		// layerFactories.add(new LayerFactory("TLPlant(main-22kV)", "updated electrical network.owl", "kml/TLPlant(main-22kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PHT-\\d+$", user,symbol));
+
    	/************create and load layer for each type of entities(kml+owl generation)*****************/
 		 ArrayList<ArcGISFeatureLayer>   kmlOwlLayers = new ArrayList<ArcGISFeatureLayer>();
    	for(LayerFactory aLayerF:layerFactories){
