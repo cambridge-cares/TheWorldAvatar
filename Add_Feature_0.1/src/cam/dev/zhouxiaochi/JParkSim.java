@@ -230,7 +230,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
  
    //================================================================
     App.readlist();
-   String[] targets = new String[App.deviceInfoList.size()];//Pack device name into a string
+   String[] targets = new String[App.deviceInfoList.size()];//Pack device name into a string array
    for(int idx = 0; idx < targets.length; idx++){
 	   targets[idx] = App.deviceInfoList.get(idx).name;
    }
@@ -247,7 +247,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     {
     
     ArcGISFeatureLayer  newLayer = new ArcGISFeatureLayer(
-   "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST020/FeatureServer/" + targets[i], user);
+   App.BASE_URL+"/" + targets[i], user);
     
     layer_name_map.put(targets[i],newLayer);
     

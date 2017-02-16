@@ -57,6 +57,7 @@ import com.esri.core.geometry.Transformation2D;
 import com.esri.core.io.UserCredentials;
 import com.esri.core.map.CallbackListener;
 import com.esri.core.map.Feature;
+import com.esri.core.map.FeatureEditResult;
 import com.esri.core.map.FeatureSet;
 import com.esri.core.map.Graphic;
 import com.esri.core.portal.Portal;
@@ -132,7 +133,7 @@ public class App {
 	public static int layerID;
 	public static ArcGISFeatureLayer Layer;
 	public static JCheckBox checkbox;
-
+    public static ArrayList<String>  nonDeviceLayerNameList = new ArrayList<String>();
 	// public static String target;
 	public static ArrayList<DeviceInfo> deviceInfoList = new ArrayList<DeviceInfo>();
 	public static String[] types;
@@ -153,7 +154,8 @@ public class App {
 
 	public static int[] count;
 	public static final Map<String, ArcGISFeatureLayer> editlayer = new LinkedHashMap<>();
-	private static FeatureServiceUpdater layerFactory;
+	private static FeatureServiceUpdater featureUpdater;
+	//TODO: this might be deleted, this symbol does not affect the final map
 	static SimpleLineSymbol lineSymbolMaterial = new SimpleLineSymbol(Color.RED, 500);
 	static SimpleLineSymbol lineSymbolWater = new SimpleLineSymbol(Color.BLUE, 500);
 	static SimpleLineSymbol lineSymbolGas = new SimpleLineSymbol(Color.ORANGE, 500);
@@ -212,7 +214,7 @@ public class App {
 			 **/
 			Graphic[] g = featurewriter.createFeature(type, x, y, thisLayer.getDefaultSpatialReference(), name, plantID);
 			// rect_list.add(featurewriter.obstacle);
-			thisLayer.applyEdits(g, null, null, null);// add the new features to
+			thisLayer.applyEdits(g, null, null, new ApplyEditCallback());// add the new features to
 														// layer
 			all_layers.add(thisLayer);
 			all_features.add(g);
@@ -238,7 +240,7 @@ public class App {
 			 * features to be added)
 			 **/
 			Graphic[] g = featurewriter.createFeatureStorage();
-			thisLayer.applyEdits(g, null, null, null);// add the new features to
+			thisLayer.applyEdits(g, null, null, new ApplyEditCallback());// add the new features to
 														// layer
 			all_layers.add(thisLayer);
 			all_features.add(g);
@@ -285,11 +287,12 @@ public class App {
 			Graphic[] adds = { polylineGraphic };// construct graphic array
 
 			//TODO
-			linelayers[0].applyEdits(adds, null, null, null);// add graphics to line
+			linelayers[0].applyEdits(adds, null, null, new ApplyEditCallback());// add graphics to line
 															// layer
 
 		}
 	}
+
 
 	final static SimpleFillSymbol testcolor = new SimpleFillSymbol(Color.black, new SimpleLineSymbol(Color.cyan, 1),
 			SimpleFillSymbol.Style.SOLID);
@@ -423,18 +426,46 @@ public class App {
 		// ================================================================
 
 		LayerMap = new HashMap<String, ArcGISFeatureLayer>();
+		
+		/////TODO: symbol does not matter anyway here, define one and use one for all?
+
+    	
 		ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer(
 				"http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST020/FeatureServer/Buildings",
 				user);
 		readlist();
 
+		 SimpleLineSymbol outline = new SimpleLineSymbol(new Color(255, 244, 0), 500);
+		 SimpleFillSymbol symbol = new SimpleFillSymbol(new Color(0, 0, 0, 255), outline);
+		 /////////////// construct layerFactories for each layer///////////////////////////////////
+		 List<LayerFactory> layerFactories = new ArrayList<LayerFactory>();
+   	     layerFactories.add(new LayerFactory("Landlots", "owl/JParkLandLots.owl", "kml/Landlots.kml", FeatureServiceUpdater.LayerType.POLYGON, "^LandLotID_\\d+$", user,symbol));
+		layerFactories.add(new LayerFactory("EHTLines", "updated electrical network.owl", "kml/EHT Lines.kml", FeatureServiceUpdater.LayerType.POLYLINE, "^EHT-\\d+$", user,symbol));
+	     layerFactories.add(new LayerFactory("HTLines", "updated electrical network.owl", "kml/HT Lines.kml", FeatureServiceUpdater.LayerType.POLYLINE, "^HT-\\d+$", user,symbol));
+		 layerFactories.add(new LayerFactory("UHTLines", "updated electrical network.owl", "kml/UHT Lines (230kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^UHT-\\d+$", user,symbol));
+		//TODO:WARNING:OWL NUM < KML NUM
+		 layerFactories.add(new LayerFactory("Powergen", "updated electrical network.owl", "kml/PowerGen.kml", FeatureServiceUpdater.LayerType.POLYGON, "^PowerGen_\\d+$", user,symbol));
+		//TODO:WARNING:OWL NUM < KML NUM
+		 layerFactories.add(new LayerFactory("PublicRoads", "owl/JParkLandLots.owl", "kml/Public Roads.kml", FeatureServiceUpdater.LayerType.POLYGON, "^\\w+Road$", user,symbol));
+
+		
+   	/************create and load layer for each type of entities(kml+owl generation)*****************/
+		 ArrayList<ArcGISFeatureLayer>   kmlOwlLayers = new ArrayList<ArcGISFeatureLayer>();
+   	for(LayerFactory aLayerF:layerFactories){
+   		deviceInfoList.add(new DeviceInfo(aLayerF.getLayerName(), aLayerF.getLayerName(), -1));//add storagetank separately
+   		kmlOwlLayers.add(aLayerF.createLoadLayer());
+   		
+   	}
+   	
 		relationship_array = new ArrayList<ArrayList<String>>();
 		x_array = new double[deviceInfoList.size()];
 		y_array = new double[deviceInfoList.size()];
 
-		layerFactory = new FeatureServiceUpdater(BASE_URL);
+		
+		
+		////construct feature updater//////////////////////////////
+		featureUpdater = new FeatureServiceUpdater(BASE_URL);
 
-		// boolean[] alreadyExist = layerFactory.areLayersExist(targets);
 		createLayer("waterline", -1, LineType.WATER);
 		createLayer("gasline", -1,LineType.GAS);
 		createLayer("materialline", -1,LineType.MATERIAL);
@@ -445,7 +476,8 @@ public class App {
 		for(int idxLineLayer = 0;  idxLineLayer < linelayers.length; idxLineLayer++){	
 		linelayers[idxLineLayer]=new ArcGISFeatureLayer(BASE_URL + "/" + idxLineLayer, user);
 		}
-		for (int i = 0; i < deviceInfoList.size(); i++) {
+		//TODO: exclude storage layer for testing ,delete -1 after testing
+		for (int i = 0; i < deviceInfoList.size() - 1; i++) {
 
 			DeviceInfo mDeviceInfo = deviceInfoList.get(i);
 			String target = mDeviceInfo.name;
@@ -483,6 +515,8 @@ public class App {
 		//LayerMap.put("linelayer", linelayer);
 		//SimpleRenderer renderer2 = new SimpleRenderer(linecolor);
 		//linelayer.setRenderer(renderer2);
+		
+		
 		for(ArcGISFeatureLayer linelayer : linelayers){
 		layerList.add(linelayer);
 		map.getLayers().add(linelayer);
@@ -495,6 +529,8 @@ public class App {
 		window.getContentPane().add(map);
 		BuildingKMLReader reader = new BuildingKMLReader();
 		reader.readkml(buildinglayer);
+		
+
 	}
 
 	/**
@@ -561,7 +597,7 @@ public class App {
 			attrLists.put("name", nameList);
 			attrLists.put("type", typeList);
 			attrLists.put("alias", nameList);
-			layerFactory.generateLayer(length, FeatureServiceUpdater.LayerType.POLYGON, attrLists, targetName);
+			featureUpdater.generateLayer(length, FeatureServiceUpdater.LayerType.POLYGON, attrLists, targetName);
 
 		}
 		/////// case: devices//////////////////////////////////////
@@ -621,7 +657,7 @@ public class App {
 			attrLists.put("type", typeList);
 			attrLists.put("alias", nameList);
 			int lengthOfEachList = nameList.length;
-			layerFactory.generateLayer(lengthOfEachList, FeatureServiceUpdater.LayerType.POLYGON, attrLists,
+			featureUpdater.generateLayer(lengthOfEachList, FeatureServiceUpdater.LayerType.POLYGON, attrLists,
 					targetName);
 		}
 		/////// case: lines//////////////////////////////////////
@@ -649,7 +685,7 @@ public class App {
 			attrLists.put("name", nameList);
 			attrLists.put("type", typeList);
 			attrLists.put("alias", nameList);
-			layerFactory.generateLayer(length, FeatureServiceUpdater.LayerType.POLYLINE, attrLists, targetName);// generate
+			featureUpdater.generateLayer(length, FeatureServiceUpdater.LayerType.POLYLINE, attrLists, targetName);// generate
 																												// line
 																												// layer
 
@@ -700,6 +736,7 @@ public class App {
 		// types[counter] = "storagetank";
 
 		deviceInfoList.add(new DeviceInfo("storageTank", "storagetank", -1));//add storagetank separately
+		//add all other layers seperately
 	}
 
 	// currently not able to be used because no indication of type in owl file
@@ -755,7 +792,7 @@ public class App {
 			idxPipe++;
 		}
 
-		linelayers[linetype.getId()].applyEdits(adds, null, null, null);
+		linelayers[linetype.getId()].applyEdits(adds, null, null, new ApplyEditCallback());
 		}
 	}
 
@@ -780,7 +817,7 @@ public class App {
 
 			all_layers.get(i).setSelectionIDs(ids, true);
 
-			all_layers.get(i).applyEdits(null, all_layers.get(i).getSelectedFeatures(), null, null);
+			all_layers.get(i).applyEdits(null, all_layers.get(i).getSelectedFeatures(), null, new ApplyEditCallback());
 		}
 	}
 

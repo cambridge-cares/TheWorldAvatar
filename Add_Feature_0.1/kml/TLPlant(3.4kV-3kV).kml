@@ -1,0 +1,254 @@
+﻿<?xml version="1.0" encoding="utf-8"?><kml xmlns="http://www.opengis.net/kml/2.2">
+<Placemark>
+<MultiGeometry>
+<Name>Biodiesel Plant</Name>
+<description>&lt;?xml version="1.0" standalone="yes"?&gt;
+&lt;DocumentElement&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.0775&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.283328&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;0.5&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P2&lt;/Group_part&gt;
+    &lt;Source&gt;LT-Substn1&lt;/Source&gt;
+    &lt;Target&gt;E-600003&lt;/Target&gt;
+    &lt;Name&gt;PLT-1&lt;/Name&gt;
+    &lt;Ln_loss_P&gt;0.001&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0.002&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.0838&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.283328&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;0.5&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P2&lt;/Group_part&gt;
+    &lt;Source&gt;LT-Substn1&lt;/Source&gt;
+    &lt;Target&gt;R-600002&lt;/Target&gt;
+    &lt;Name&gt;PLT-2&lt;/Name&gt;
+    &lt;Ln_loss_P&gt;0&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0.001&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.0072&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.566656&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;1&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P2&lt;/Group_part&gt;
+    &lt;Source&gt;LT-Substn1&lt;/Source&gt;
+    &lt;Target&gt;LT-Substn2&lt;/Target&gt;
+    &lt;Name&gt;PLT-3&lt;/Name&gt;
+    &lt;Ln_loss_P&gt;0&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.007&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.566656&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;1&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P1&lt;/Group_part&gt;
+    &lt;Source&gt;LT-Substn1&lt;/Source&gt;
+    &lt;Target&gt;LT-Substn2&lt;/Target&gt;
+    &lt;Name&gt;PLT-4&lt;/Name&gt;
+    &lt;Ln_loss_P&gt;0&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.0798&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.283328&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;0.5&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P1&lt;/Group_part&gt;
+    &lt;Source&gt;LT-Substn1&lt;/Source&gt;
+    &lt;Target&gt;V-600004&lt;/Target&gt;
+    &lt;Name&gt;PLT-5&lt;/Name&gt;
+    &lt;Ln_loss_P&gt;0.002&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0.003&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.1545&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.283328&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;0.5&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P1&lt;/Group_part&gt;
+    &lt;Source&gt;LT-Substn1&lt;/Source&gt;
+    &lt;Target&gt;V-602004&lt;/Target&gt;
+    &lt;Name&gt;PLT-6&lt;/Name&gt;
+    &lt;Ln_loss_P&gt;0.002&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0.003&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.1509&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.283328&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;0.5&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P2&lt;/Group_part&gt;
+    &lt;Source&gt;LT-Substn1&lt;/Source&gt;
+    &lt;Target&gt;E-602003&lt;/Target&gt;
+    &lt;Name&gt;PLT-7&lt;/Name&gt;
+    &lt;Ln_loss_P&gt;0.001&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0.002&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.1447&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.283328&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;0.5&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P2&lt;/Group_part&gt;
+    &lt;Source&gt;LT-Substn1&lt;/Source&gt;
+    &lt;Target&gt;R-602002&lt;/Target&gt;
+    &lt;Name&gt;PLT-8&lt;/Name&gt;
+    &lt;Ln_loss_P&gt;0&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0.001&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+&lt;/DocumentElement&gt;</description>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.6782306112,1.25923128969985,100
+103.678240001926,1.25922205530027,100
+103.678255974004,1.25923802352074,100
+103.678324295041,1.25916943383513,100
+103.678331068914,1.259176443694,100
+103.678497468491,1.25901065458723,100
+103.678381302524,1.25889451666219,100
+103.678490793497,1.25878563786209,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.678510139381,1.25879535993433,100
+103.678520642265,1.25878491334706,100
+103.678513808972,1.25877808170391,100
+103.678465821435,1.25882596261084,100
+103.678458006105,1.25881824193794,100
+103.678381302524,1.25889451666219,100
+103.678497468491,1.25901065458723,100
+103.678331068914,1.259176443694,100
+103.678324295041,1.25916943383513,100
+103.678255974004,1.25923802352074,100
+103.678240001926,1.25922205530027,100
+103.6782306112,1.25923128969985,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.678218489534,1.25918637907948,100
+103.678215848501,1.25918888969496,100
+103.678219775381,1.25919228122242,100
+103.678214831643,1.25919722376697,100
+103.678240001926,1.25922205530027,100
+103.6782306112,1.25923128969983,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.6782306112,1.25923128969985,100
+103.678202282153,1.25920178611569,100
+103.678218489534,1.25918637907951,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.678572879824,1.25882205234018,100
+103.678595197642,1.25880021662324,100
+103.678654617573,1.25885991924236,100
+103.678321687695,1.25919329349349,100
+103.67825656345,1.25925873468272,100
+103.6782306112,1.25923128969985,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.678949364513,1.25844447037469,100
+103.678975517033,1.2584189310629,100
+103.679079739593,1.25852384135117,100
+103.6786024787,1.25900193756062,100
+103.67855807127,1.25895659441415,100
+103.67825656345,1.25925873468272,100
+103.678233535049,1.25923438172348,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.678877165722,1.25841692099536,100
+103.67889469206,1.25843477255629,100
+103.67887829216,1.25845152493548,100
+103.678894478149,1.25846756444734,100
+103.678835709922,1.25852651340867,100
+103.678957006315,1.25864678944919,100
+103.6786024787,1.25900193756062,100
+103.67855807127,1.25895659441415,100
+103.67825656345,1.25925873468272,100
+103.678233535049,1.25923438172348,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.678856211768,1.25845624954236,100
+103.678811078314,1.25850208900127,100
+103.678957006315,1.25864678944919,100
+103.6786024787,1.25900193756062,100
+103.67855807127,1.25895659441415,100
+103.67825656345,1.25925873468272,100
+103.678233535049,1.25923438172348,100
+</coordinates>
+</LineString>
+
+</MultiGeometry>
+</Placemark>
+</kml>

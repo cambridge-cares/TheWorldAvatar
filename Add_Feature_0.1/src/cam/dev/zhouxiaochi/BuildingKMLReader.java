@@ -187,7 +187,7 @@ public class BuildingKMLReader {
 		}
 		else
 		{
-			nameList[i] = name.split("_")[0] + name.split("_")[1                                            ];
+			nameList[i] = name.split("_")[0] + name.split("_")[1];
 		}
 		
 		
