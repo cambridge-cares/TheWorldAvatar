@@ -25,10 +25,13 @@ public class PointObjectsGenerator {
 		files = new String[2];
 		files[0] = "updated electrical network.owl";
 		files[1] = "buildingmodif2.owl";
-		layer_factory(0,"Load",null,"Load_Point",true); // Load Points
+//		layer_factory(0,"Load",null,"Load_Point",true); // Load Points
 //		layer_factory(1,"Building",null,"Buildings",false); 
-//		layer_factory(0,"Transformer",null,"Transformer",false);
+// 		layer_factory(0,"Transformer","^.*EHT.*$","Transformer",true);
 //		layer_factory(0,"PowerGenerator",null,"PowerGenerator",false);
+		layer_factory(0,"TransmissionLine",null,"UHT_LINE",false);
+	 
+		
 	}
 
 	public static void layer_factory(int file_index, String device_class, String filter_regex, String LayerName, Boolean filter_on) throws Exception

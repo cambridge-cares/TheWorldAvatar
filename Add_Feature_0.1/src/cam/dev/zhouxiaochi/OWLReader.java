@@ -301,10 +301,13 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 					OWLfileNode newNode = new OWLfileNode(nodename,nodetype,"","",node.NodeName);
 				//	System.out.println("Name:  " + newNode.NodeName + " Type: " + newNode.NodeType +
 				//			" Value: " + newNode.NodeValue + " Unit: " + newNode.ValueUnit + " Parent: " +  newNode.ParentNodeName ); 
-					theNodeList.add(newNode);
+					theNodeList.add(newNode); //  && 
 					if(nodemap.get(nodename)!=null   && !(newNode.NodeName.contentEquals(node.ParentNodeName)) &&!expandOneLevel) // check whether such node exists
 					{
+						if(!(nodetype.contains("topology:enters")||nodetype.contains("topology:leaves")))
+						{
 						expand(newNode,false);
+						}
 					}
 					}
 					}

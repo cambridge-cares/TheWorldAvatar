@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import cam.dev.zhouxiaochi.*;
 
 import javax.swing.JOptionPane;
 
@@ -36,7 +37,7 @@ public abstract class httpRequestBtnInfo implements BtnInfo{
 
 	/***
 	 * 
-	 * Costructor
+	 * Constructor
 	 * @param completeLayerList     completeLayerList as in JParkSim class
 	 * @param emptyEditMsg          message to show when no edits done    
 	 * @param doneMsg               message to show when action done
