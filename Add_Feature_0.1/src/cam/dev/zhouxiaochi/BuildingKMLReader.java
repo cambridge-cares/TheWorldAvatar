@@ -181,14 +181,9 @@ public class BuildingKMLReader {
 	{
 		nameList[i] =  OWLReader.name_list.get(i);
 		String name = nameList[i];
-		if(name.contains("Unit"))
-		{
-			nameList[i] = name.split("_")[1] + name.split("_")[4];
-		}
-		else
-		{
-			nameList[i] = name.split("_")[0] + name.split("_")[1];
-		}
+	
+			name = LayerFactory.deleteID(name);
+		
 		
 		
 		System.out.println(nameList[i]);

@@ -201,6 +201,11 @@ public class LayerFactory {
 		// read attribute lists from owl
 		// read attribute name set
 		/******** filter to top level nodes ******/
+		if(owlLocation == null){//owl location not defined?
+			System.out.println("Warning: owl location not specified. Entities will be printed out based on kml with no attributes");
+		return true;
+		}
+		
 		ArrayList<String> allNodeNames = OWLReader.read_owl_file(owlLocation, null);
 		for (String nodeName : allNodeNames) {//// DOES THE NAME MATCH THIS
 												//// PATTERN?
@@ -241,7 +246,7 @@ public class LayerFactory {
 
 	}
 
-	private String deleteID(String attriName) {
+	public static String deleteID(String attriName) {
 		// delete id and add attribute into attribute name list
 		Pattern p = Pattern.compile("^(.+[ID|id]*)(_\\d+)(.*)$");// define
 																// regex
@@ -287,8 +292,6 @@ public class LayerFactory {
 		attrLists.put("type", typeList);
 		attrLists.put("alias", nameList);
 		updater.generateLayer(length, geometryType, attrLists, layerName);
-		// TODO :modify generateLayer function to return boolean as success
-		// indicate
 		return true;
 	}
 
@@ -300,13 +303,7 @@ public class LayerFactory {
 			return;//terminate
 		}
 		
-		///////check kml entity number vs owl entity number //////////////////
-		if(coordinatesStrList.size() > entityNames.size()){//more coordinates set than owl entity? ignore over ones in kml
-			System.out.println("WARNING: kml coordinates list length larger than owl entity list, will cut from kml side, Coor num:"+coordinatesStrList.size()+", entity num"+ entityNames.size());
-		} else if(coordinatesStrList.size() < entityNames.size()){//more owl entity than coordinates? Terminate feature population
-			System.out.println("ERR: kml coordinates list length smaller than owl entity list, terminate feature population, Coor num:"+coordinatesStrList.size()+", entity num"+ entityNames.size());
-		    return;//terminate
-		}
+
 		// check geometry type using switch, saved as a template object to be copied each time one is required
 		MultiPath geometryTmp;
 		switch (geometryType) {
@@ -320,12 +317,31 @@ public class LayerFactory {
 			System.out.println("ERR: geometry type not defined in LayerFactory.");
 			return;
 		}
-
+        int entityNamesLength = entityNames.size();
+		int coordinateListLength = coordinatesStrList.size();
+	
+		if(entityNamesLength < 1){// owl file/first level node not defined?
+			///to generate using only kml, populate arraylist entityNames with empty strings to run the loop
+	     for(int idxEntity = 0 ; idxEntity < coordinateListLength ; idxEntity++){
+	    	 entityNames.add("");
+	     }
+			
+		}
+		///////check kml entity number vs owl entity number //////////////////
+		else if(coordinateListLength> entityNamesLength){//more coordinates set than owl entity? ignore over ones in kml
+			System.out.println("WARNING: kml coordinates list length larger than owl entity list, will cut from kml side, Coor num:"+coordinatesStrList.size()+", entity num"+ entityNames.size());
+		} else if(coordinateListLength < entityNamesLength){//more owl entity than coordinates? Terminate feature population
+			System.out.println("ERR: kml coordinates list length smaller than owl entity list, terminate feature population, Coor num:"+coordinatesStrList.size()+", entity num"+ entityNames.size());
+		    return;//terminate
+		}
+		
 		// read owl on each entity, find corresponding kml coordinates, draw
 		// geometry///////////
-		Graphic[] adds = new Graphic[entityNames.size()];
 
+		
 		int idxEntity = 0;
+		
+		Graphic[] adds = new Graphic[entityNames.size()];
 		for (String entityName : entityNames) {
 			OWLReader.read_owl_file(owlLocation, entityName);
 			//////// pack attributes from OWLReader////////////////////////////
@@ -384,14 +400,12 @@ public class LayerFactory {
 			}
 
 			///// construct graphics array to update
+			
 			Graphic building_graphic = new Graphic(aGeometry, symbol, attributes);
 			adds[idxEntity] = building_graphic;
-			Graphic[] add = {building_graphic};
-			//targetLayer.applyEdits(add , null, null, new ApplyEditCallback(""+idxEntity));
 			idxEntity++;
 
 		}
-		Graphic[] add1 = {adds[0],adds[1],adds[2],adds[3],adds[4]};
 
 		targetLayer.applyEdits(adds, null, null, new ApplyEditCallback());
 		return;

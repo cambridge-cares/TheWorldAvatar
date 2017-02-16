@@ -111,10 +111,8 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 
 		if(filename == null)
 		{
-		 //	filename = "buildingmodif2.owl";	 
-			//String filename2 = "updated electrical network.owl";
-			filename = App.PLANT_OWL_FILE_NAME[0];
-		//	filename = "storageTest.owl";
+		 System.out.println("WARNING: owl file location not defined. Function read owl file terminated");
+		return null;
 		} 
 		
 		
