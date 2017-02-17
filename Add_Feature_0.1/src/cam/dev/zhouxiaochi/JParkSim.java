@@ -221,19 +221,15 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     ArcGISFeatureLayer[] linelayers = new    ArcGISFeatureLayer[4];
     
     for(int idxLayer = 0; idxLayer < linelayers.length; idxLayer++){
-    linelayers[idxLayer] = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/TEST020/FeatureServer/"+idxLayer, user);
+    linelayers[idxLayer] = new ArcGISFeatureLayer(App.BASE_URL+"/"+idxLayer, user);
     }
-    ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/Buildings", user);
+    ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer(App.BASE_URL+"/Buildings", user);
     // testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/9", user);
 
  
  
    //================================================================
-    App.readlist();
-   String[] targets = new String[App.deviceInfoList.size()];//Pack device name into a string array
-   for(int idx = 0; idx < targets.length; idx++){
-	   targets[idx] = App.deviceInfoList.get(idx).name;
-   }
+   String[] targets = App.readAllEntityList();//Pack device name into a string array
 
    layer_name_map = new LinkedHashMap<>();
    

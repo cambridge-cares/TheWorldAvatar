@@ -31,6 +31,7 @@ import com.esri.core.io.UserCredentials;
 import com.esri.core.map.Graphic;
 import com.esri.core.symbol.Symbol;
 import com.esri.map.ArcGISFeatureLayer;
+import com.esri.map.Layer.LayerStatus;
 
 import cam.dev.zhouxiaochi.FeatureServiceUpdater.LayerType;
 
@@ -113,31 +114,59 @@ public class LayerFactory {
 		}
 	}
 
-	public ArcGISFeatureLayer createLoadLayer() throws IOException, Exception {
+
+	
+	public void createLoadLayer() throws IOException, Exception {
+		targetLayer = new ArcGISFeatureLayer(
+				App.BASE_URL+"/" + layerName,
+				user);
+		
 		if (!readAttriNameList()) {// read attribute name list fails?
-			return null;// =>terminate
+			return ;// =>terminate
 		}
 		if (!generateLayer()) {// generate layer fails?
-			return null;// =>terminate
+			return;// =>terminate
 		}
 		///////// wait for generating layer request to be completed////////////
-		targetLayer = new ArcGISFeatureLayer(
-				"http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST020/FeatureServer/" + layerName,
-				user);
+
 		targetLayer.initializeAsync();
+		
 		try {
-			while (!targetLayer.isAllowGeometryUpdates()) {
-				Thread.sleep(500);
-				System.out.println("Loading");
+
+			
+		while (!targetLayer.isAllowGeometryUpdates()) {
+			if(targetLayer.getStatus() == LayerStatus.ERRORED){
+      System.out.println("LAYER ERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
+      if(!updater.isLayerExist(layerName)){
+      System.out.println("Regerating Layer");
+  
+		targetLayer = new ArcGISFeatureLayer(
+				App.BASE_URL+"/" + layerName,
+				user);
+      generateLayer();
+		targetLayer.initializeAsync();
+
+		Thread.sleep(1000);
 			}
+			}
+			
+				Thread.sleep(500);
+				System.out.println(targetLayer);
+
+				System.out.println("Loading");
+			
+		}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+	}
+		loadFeatureIntoArcgis();
+		Thread.sleep(500);
+
+
 		////////////////////////////////////////////////////////////////////
 
-		loadFeatureIntoArcgis();
-        return targetLayer;
+
 	}
 
 	private Map<String, String> readKML() throws ParserConfigurationException, SAXException, IOException {

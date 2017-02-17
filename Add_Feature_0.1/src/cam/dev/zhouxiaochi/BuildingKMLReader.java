@@ -46,7 +46,7 @@ public class BuildingKMLReader {
 		
 		buildingList.clear();
 		coordinates.clear();
-		buildingList = Filter_Building_Names(OWLReader.read_owl_file("buildingmodif2.owl", null));
+		buildingList = Filter_Building_Names(OWLReader.read_owl_file("owl/buildingmodif2.owl", null));
   
   
 	     CreateBuildingLayer();
@@ -73,7 +73,7 @@ public class BuildingKMLReader {
 		 
 		 
 		  
-		 	File inputFile = new File("Buildings.kml");
+		 	File inputFile = new File("kml/Buildings.kml");
 			
 	        DocumentBuilderFactory dbFactory  = DocumentBuilderFactory.newInstance();
 	        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -99,7 +99,7 @@ public class BuildingKMLReader {
 	        	
 	        	
 	        	
-	        	OWLReader.read_owl_file("buildingmodif2.owl", buildingID);
+	        	OWLReader.read_owl_file("owl/buildingmodif2.owl", buildingID);
 	        	
 	   		 Map<String,Object> attributes = new HashMap<String,Object>();
 	 		
@@ -170,7 +170,7 @@ public class BuildingKMLReader {
 	
 	public void CreateBuildingLayer() throws IOException, Exception
 	{ 		
-	OWLReader.read_owl_file("buildingmodif2.owl", buildingList.get(1));
+	OWLReader.read_owl_file("owl/buildingmodif2.owl", buildingList.get(1));
 	int length = OWLReader.name_list.size();
 	System.out.println( "ID of the Building " + buildingList.get(1));
 	String[] typeList = new String[length];

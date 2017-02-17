@@ -1,5 +1,6 @@
 package cam.dev.zhouxiaochi;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,7 +25,8 @@ import com.esri.core.geometry.Point;
 
 
 public class OWLReader {
-	
+	  final static Logger logger = LoggerFactory.getLogger(OWLReader.class);
+
 	
 	
 	/****
@@ -111,7 +113,8 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 
 		if(filename == null)
 		{
-		 System.out.println("WARNING: owl file location not defined. Function read owl file terminated");
+			logger.warn("owl file location not defined. Function read owl file terminated");
+		// System.out.println("WARNING: owl file location not defined. Function read owl file terminated");
 		return null;
 		} 
 		
@@ -195,7 +198,8 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
     	   
     	   OWLfileNode node = owlnodemap.get(name);
     	   node.NodeName = node.NodeName.replaceAll("-", "_").trim();
-    	   System.out.println("-----------> " +  node.NodeName);
+    	   //logger.info("-----------> " +  node.NodeName);
+    	   //System.out.println("-----------> " +  node.NodeName);
            name_list.add(node.NodeName.trim());
            value_list.add(node.NodeValue.trim());
            if(node.ValueUnit!=null)
@@ -213,14 +217,14 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 			if(item.contains("_x_") && !(item.contains("Unit")))
 			{
 				 x = Double.parseDouble(value_list.get(i));
-				 System.out.println("x---> " + x);
+			//	 logger.info("x---> " + x);
 				 
 			}
 			
 			if(item.contains("_y_") && !(item.contains("Unit")))
 			{
 				 y = Double.parseDouble(value_list.get(i));
-				 System.out.println("y---> " + y);
+				// logger.info("y---> " + y);
 
 			}
 			
@@ -258,15 +262,15 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 				
 				if(nodetype.contains("owl:sameAs")) {//contains allias?
 					nodename = nodename.split("#")[1];
-					System.out.println("a same as allias:"+nodename);
+					 logger.info("a same as allias:"+nodename);
 					OWLfileNode newNode = new OWLfileNode(nodename,nodetype,"","",node.NodeName);
 					expand(newNode, false);//expand allias node 
 				}
 				else{
-					System.out.println(nodename);
-					System.out.println("Node Type --> : " + nodetype);
+					logger.info(nodename);
+					logger.info("Node Type --> : " + nodetype);
 					
-					System.out.println("---------------------------------------");
+					logger.info("---------------------------------------");
 					
 					nodename = nodename.split("#")[1];
 					
@@ -368,7 +372,7 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
  		read_owl_file(fileName, plantName, true);//read owl to first level of plant node
  		
  		for(OWLfileNode node :theNodeList){
- 			System.out.println(node.NodeName+"  "+node.NodeType+"  "+node.NodeValue);
+ 			logger.info(node.NodeName+"  "+node.NodeType+"  "+node.NodeValue);
  			if(node.NodeType.contains("hasSubsystem")){//is this attri shows a subsystem?
  				//>YES! Then it is a device
  				deviceNameList.add(node.NodeName);
@@ -400,7 +404,6 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
        doc.getDocumentElement().normalize();
        Element root = doc.getDocumentElement();
        individuals = root.getElementsByTagName("owl:NamedIndividual");
-       System.out.println("here");
        for(int i = 0 ; i < individuals.getLength() ; i++)
        {
      	   
@@ -420,7 +423,7 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 							 
 							 if( node_name.matches(filter))
 							 {
-								 System.out.println("Node name -->" + node_name);
+								 logger.info("Node name -->" + node_name);
 								 name_list.clear();
 								 value_list.clear();
 								 read_owl_file(filename,node_name,false);	 
@@ -438,7 +441,7 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 						 }
 						 else
 						 {
-							 System.out.println("Node name -->" + node_name);
+							logger.info("Node name -->" + node_name);
 							 name_list.clear();
 							 value_list.clear();
 							 read_owl_file(filename,node_name,false);	 

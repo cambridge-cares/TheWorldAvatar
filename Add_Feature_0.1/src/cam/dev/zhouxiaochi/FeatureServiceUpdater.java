@@ -458,6 +458,10 @@ public class FeatureServiceUpdater {
 		return deleteFieldsFromTable(layerId, fieldList);
 	}
 
+	private JSONObject httpRequest(String url, String contentType, List<NameValuePair> parameters) {
+	       return httpRequest( url,  contentType,  parameters, null);
+	}
+	
 	/*****
 	 * sent an httpRequest via POST method
 	 * 
@@ -469,7 +473,7 @@ public class FeatureServiceUpdater {
 	 *            parameters to be carried in the request
 	 * @return
 	 */
-	private JSONObject httpRequest(String url, String contentType, List<NameValuePair> parameters) {
+	private JSONObject httpRequest(String url, String contentType, List<NameValuePair> parameters, HttpCallBack callback) {
 		// "application/x-www-form-urlencoded; charset=utf-8"
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpResponse response = null;
@@ -496,20 +500,21 @@ public class FeatureServiceUpdater {
 
 			// debug:request header
 			System.out.println("Request URL: " + request.getURI());
-			System.out.println("Request Header:");
+			//System.out.println("Request Header:");
 
-			for (Header h : request.getAllHeaders())
-				System.out.println(h.toString());
-
+			for (Header h : request.getAllHeaders()){
+				//System.out.println(h.toString());
+			}
 			/////// debug:print out response
 
 			response = httpClient.execute(request);
 			if (response != null) { // handle response
 
 				/////// debug: response header/////////////
-				System.out.println("Response header:");
-				for (Header h : response.getAllHeaders())
-					System.out.println(h.toString());
+			//	System.out.println("Response header:");
+				for (Header h : response.getAllHeaders()){
+				//	System.out.println(h.toString());
+				}
 				////////// process response//////////////
 				InputStream in = response.getEntity().getContent(); // Get the
 																	// data in
@@ -526,9 +531,12 @@ public class FeatureServiceUpdater {
 					result.append('\r');
 				}
 				rd.close();
-				System.out.println("response JSON:");
+				//System.out.println("response JSON:");
 
-				System.out.println(result.toString());
+				//System.out.println(result.toString());
+				if(callback !=null){
+				callback.executeCallback();
+				}
 				JSONObject obj = new JSONObject(result.toString());
 				return obj;
 
@@ -887,7 +895,9 @@ public class FeatureServiceUpdater {
 
 		int curLayersNum = thisLayers.length();
 
-		mTemplateJSON.put("id", curLayersNum);
+		//TODO:testing ,afterwards put bakc
+		//mTemplateJSON.put("id", curLayersNum);
+		mTemplateJSON.put("id", newLayerName);
 		layerID = String.valueOf(curLayersNum);
 
 		curLayersNum++;
@@ -951,7 +961,7 @@ public class FeatureServiceUpdater {
 			newFields[i].put(fieldAttrs[6], (Object) null);
 
 			newFields[i].put(fieldAttrs[7], (Object) null);
-			newFields[i].put(fieldAttrs[8], 50);
+			newFields[i].put(fieldAttrs[8], 200);
 
 		}
 
