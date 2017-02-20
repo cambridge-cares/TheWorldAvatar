@@ -30,6 +30,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 
 import com.cmclinnovations.modsapi.MoDSAPI;
@@ -715,12 +718,23 @@ public class PWServlet_OWL extends HttpServlet {
 		String[] appCallFlag = request.getParameter("appCallFlag").split(","); // (mjk, 151115) adding flag indicating which  function has been called: PowerWorld,  parameterised  PW, AspenPlus, parameterised AP
 		String[] editInfo = request.getParameter("editInfo").split(",");
 		userInput = request.getParameter("editInfo").split(",");
+		String marshalledXml = org.apache.commons.io.IOUtils.toString(request.getInputStream());
+		System.out.println("============================xxxxx=================="  );
+ 
+        System.out.println("----" + marshalledXml);
+		System.out.println("Request -- >" + IOUtils.toString(request.getInputStream()) );
+		System.out.println(request.getParameter("layers") + "xxx" + request.getParameter("editInfo"));
+		System.in.read();
 		
 		String[] QueryT = request.getParameter("QueryT").split(",");
 
 		for (int i = 0; i < layers.length; i++) {
 			editStack.add(new String[] { layers[i], OBJECTIDs[i], appCallFlag[i],editInfo[i], QueryT[i]});
 		}
+		
+		System.out.println("============================xxxxx2=================="  );
+		System.out.println( editStack.get(0)[0] +"---" + editStack.get(0)[1] +"---" + editStack.get(0)[2] +"---" + editStack.get(0)[3]);
+		System.in.read();
  
  		switch (appCallFlag[0]) {		
 		case "AP":                 //when Aspen plus model was called, the following command will be executed
@@ -2176,8 +2190,8 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
  * 3) update the output to ArcGIS database*/
 	public void runAspenPlusandPowerWorld(ArrayList<String[]> editStack) {
 		List<Double> xRow = new ArrayList<>(); 	    		
-		xRow=getAPPWInput(editStack);
-		
+		xRow=getAPPWInput();
+		System.out.println("-----");
 		String[] array = new String[xRow.size()];
 		for (int i = 0; i < xRow.size(); i++) {
 		    array[i] = Double.toString(xRow.get(i));
@@ -2216,7 +2230,7 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 		List<List<Double>> xData = new ArrayList<>(1);                                    // arraylist to
 		List<List<Double>> yData;                                                         // output of the pr aspenplus model
 		
-		xRow=getAPPWInput(editStack);
+		xRow=getAPPWInput();
 		
 // start evaluating the surrogate model		
 		xData.add(xRow);                                                                       // pass all the collected input x-value to xData
@@ -2293,8 +2307,8 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 		    
 	}
 	/**this method collects the input data for the AP+PW model */
-	public ArrayList<Double> getAPPWInput(ArrayList<String[]> editStack){ 
-		 
+	//public ArrayList<Double> getAPPWInput(ArrayList<String[]> editStack){ 
+		public ArrayList<Double> getAPPWInput(){ 
 		 
 		ArrayList<Double> xRow = new ArrayList<Double>();                                     // extra arraylist to collect the x-value required as input to the pr aspen plus model
  
@@ -2312,24 +2326,35 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 			  
 			 if(userInput[0].contains("plusValue"))
 			 {
+			    System.out.println("---------------------> Crush 1");
 				System.out.println(userInput[0]);
 				String name = userInput[0].split("plusValue")[0];
 				String value = userInput[0].split("plusValue")[1];
+				 System.out.println("---------------------> Crush 2");
 				name_value_map.put(name, value);
 				OWLUpdater updater = new OWLUpdater();
 				System.out.println("name= "+name);
 				System.out.println("value= "+value);
-				
+				 System.out.println("---------------------> Crush 3");
 				String[]modif= name.split("_");
 				String lastone = modif[modif.length-1];
 				
 				String modifname = name.replace(("_"+lastone),("-"+lastone));						
-				
-				updater.updateData(modifname, value);
+				 System.out.println("---------------------> Crush 4" + modifname);
+			//  	updater.updateData(modifname, value,"E-301");
+				 System.out.println("---------------------> Crush 5");
+			 	System.out.println("--------->" + modifname);
+			 	System.in.read();
 			 }
 			 
 		
+			 
+			 
+			 System.out.println("---------------------> Crush 6");
+			 System.in.read();
 			String ValueOfF_3_1 = OWLFileReader.read_owl_file(null, "ValueOfmolarF_3-1");
+			 System.out.println("---------------------> Crush 7");
+			 System.in.read();
 			String ValueOfTemperatureOf3_1 = OWLFileReader.read_owl_file(null, "ValueOfTemperatureOf3-1");
 			String ValueOfF_3_2 = OWLFileReader.read_owl_file(null, "ValueOfmolarF_3-4");
 			String ValueOfTemperatureOf3_2 = OWLFileReader.read_owl_file(null, "ValueOfTemperatureOf3-4");
@@ -2343,6 +2368,7 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 			System.out.println("list of the output function= "+ValueOfOutletPressureOfP_302);
 			System.out.println("list of the output function= "+ValueOfF_FW_301);
 			
+			System.in.read();
 			
 			name_value_map.put("ValueOfmolarF_3-1", ValueOfF_3_1);
 			name_value_map.put("ValueOfTemperatureOf3-1", ValueOfTemperatureOf3_1);
@@ -2350,8 +2376,7 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 			name_value_map.put("ValueOfTemperatureOf3-4", ValueOfTemperatureOf3_2);
 			name_value_map.put("ValueOfmolarF_FW-301", ValueOfF_FW_301);
 			name_value_map.put("ValueOfOutletPressureOfP-302", ValueOfOutletPressureOfP_302);
-			
-			
+			 
 	
 			
 			
@@ -2781,7 +2806,7 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 		
     /**This function runs only the aspen plus model for biodieslplant-3 (without running the PowerWorld model)*/
 	public void runAspenPlus(ArrayList<String[]> editStack) {
-		getAPPWInput(editStack);          //collects the input data
+		getAPPWInput();          //collects the input data
 		runPyScript(editStack);           // call python script to run aspen plus model
 		readAPCSV();                      //update the output 
 /*		
@@ -3701,10 +3726,10 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 
 					if (OBJECTIDtoReactor.get(j + 1).equals("10D01")) {                                                                     
 						Map<String, Object> ReactorAttributes = ReactorTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
-						if (!data[26].trim().isEmpty()) {
-							ReactorAttributes.put("Heat_Duty",Float.parseFloat(data[26].trim())*1000);                                     // upgrade the heat duty of reactor 10D01 to ArcGIS  databse
+						if (!data[25].trim().isEmpty()) {
+							ReactorAttributes.put("Heat_Duty",Float.parseFloat(data[25].trim())*1000);                                     // upgrade the heat duty of reactor 10D01 to ArcGIS  databse
 						}
-						System.out.println("HeatDuty="+Float.parseFloat(data[26].trim())*1000);
+						System.out.println("HeatDuty="+Float.parseFloat(data[25].trim())*1000);
 //updating the PW aspect of the APPW model						
 						if (!data[112].trim().isEmpty()) {
 							ReactorAttributes.put("V_pu",Float.parseFloat(data[112].trim()));                                             // upgrade the new per unit voltage of load point reactor 10D01 to ArcGIS  databse
@@ -3784,7 +3809,7 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 			
 			
 			
-			GeodatabaseFeatureServiceTable ReactorTable1 = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer", user,11); //12 the correct one
+			GeodatabaseFeatureServiceTable ReactorTable1 = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer", user,11); //11 the correct one
 			ReactorTable1.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
 			ReactorTable1.initialize();
 			System.out.println(ReactorTable1.initialize());
@@ -3792,7 +3817,7 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 			ReactorTable1.getInitializationError();
 			
 						
-			GeodatabaseFeatureServiceTable ReactorTable2 = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer",user, 12); //13 the correct one
+			GeodatabaseFeatureServiceTable ReactorTable2 = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer",user, 12); //12 the correct one
 			ReactorTable2.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
 			ReactorTable2.initialize();
 			System.out.println(ReactorTable2.initialize());
@@ -3868,24 +3893,24 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 					if (OIDtoR301.get(j + 1).equals("R-301")) {                                                                     
 						Map<String, Object> ReactorAttributes = ReactorTable1.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[25].trim().isEmpty()) {
-							updater.updateData("ValueOfHeatDutyOfR-301", String.valueOf(Float.parseFloat(data[25].trim())*1000));
-							ReactorAttributes.put("ValueOfHeatDutyOfR_301",Float.parseFloat(data[25].trim())*1000);                                    //field name following what exist in pop-up window 
+							updater.updateData("ValueOfHeatDutyOfR-301", String.valueOf(Float.parseFloat(data[25].trim())*1000),"R-301");
+							//ReactorAttributes.put("ValueOfHeatDutyOfR_301",Float.parseFloat(data[25].trim())*1000);                                    //field name following what exist in pop-up window 
 							
 						}
 						System.out.println("HeatDuty="+Float.parseFloat(data[25].trim())*1000);
 //updating the PW aspect of the APPW model						
 						
 						if (!data[112].trim().isEmpty()) {
-							updater.updateData("V_Angle_LoadPoint_R-602001",data[112].trim());
-							ReactorAttributes.put("V_Angle_LoadPoint_R_602001",Float.parseFloat(data[112].trim()));                                          //field name following what exist in pop-up window 
+							//updater.updateData("V_Angle_LoadPoint_R-602001",data[112].trim());
+							//ReactorAttributes.put("V_Angle_LoadPoint_R_602001",Float.parseFloat(data[112].trim()));                                          //field name following what exist in pop-up window 
 							
 						}
 						System.out.println("theta_act="+ Float.parseFloat(data[112].trim()));						
 						
 						if (!data[113].trim().isEmpty()) {
-							updater.updateData("V_ActualVoltage_LoadPoint_R-602001",data[113].trim());
+							//updater.updateData("V_ActualVoltage_LoadPoint_R-602001",data[113].trim());
 							//System.out.println("reactor attribute= "+ReactorAttributes.size());
-							ReactorAttributes.put("V_ActualVoltage_LoadPoint_R_602",Float.parseFloat(data[113].trim()));//field name following what exist in pop-up window 
+							//ReactorAttributes.put("V_ActualVoltage_LoadPoint_R_602",Float.parseFloat(data[113].trim()));//field name following what exist in pop-up window 
 													
 						}
 						System.out.println("V_act_kv="+ Float.parseFloat(data[113].trim()));
@@ -3897,24 +3922,24 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 					
 					if (OIDtoR302.get(j + 1).equals("R-302")) {                                                                     
 						Map<String, Object> ReactorAttributes = ReactorTable2.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
-						if (!data[22].trim().isEmpty()) {
-							updater.updateData("ValueOfHeatDutyOfR-302", String.valueOf(Float.parseFloat(data[22].trim())*1000));
-							ReactorAttributes.put("ValueOfHeatDutyOfR_302",Float.parseFloat(data[22].trim())*1000);           //field name following what exist in pop-up window 
+						if (!data[23].trim().isEmpty()) {
+							//updater.updateData("ValueOfHeatDutyOfR-302", String.valueOf(Float.parseFloat(data[23].trim())*1000),"R-302");
+							//ReactorAttributes.put("ValueOfHeatDutyOfR_302",Float.parseFloat(data[23].trim())*1000);           //field name following what exist in pop-up window 
 							
 						}
-						System.out.println("HeatDuty="+Float.parseFloat(data[22].trim())*1000);
+						System.out.println("HeatDuty="+Float.parseFloat(data[23].trim())*1000);
 //updating the PW aspect of the APPW model						
 						
 						if (!data[102].trim().isEmpty()) {
-							updater.updateData("V_Angle_LoadPoint_R-602002",data[102].trim());
-							ReactorAttributes.put("V_Angle_LoadPoint_R_602002",Float.parseFloat(data[102].trim())); //field name following what exist in pop-up window 
+							//updater.updateData("V_Angle_LoadPoint_R-602002",data[102].trim());
+							//ReactorAttributes.put("V_Angle_LoadPoint_R_602002",Float.parseFloat(data[102].trim())); //field name following what exist in pop-up window 
 							
 						}
 						System.out.println("theta_act="+ Float.parseFloat(data[102].trim()));						
 						
 						if (!data[103].trim().isEmpty()) {
-							updater.updateData("V_ActualVoltage_LoadPoint_R-602002",data[103].trim());
-							ReactorAttributes.put("V_ActualVoltage_LoadPoint_R_602",Float.parseFloat(data[103].trim())); //field name following what exist in pop-up window                                        // upgrade the new actual voltage of load point reactor 10D01 to ArcGIS  databse
+							//updater.updateData("V_ActualVoltage_LoadPoint_R-602002",data[103].trim());
+							//ReactorAttributes.put("V_ActualVoltage_LoadPoint_R_602",Float.parseFloat(data[103].trim())); //field name following what exist in pop-up window                                        // upgrade the new actual voltage of load point reactor 10D01 to ArcGIS  databse
 							
 						}
 						System.out.println("V_act_kv="+ Float.parseFloat(data[103].trim()));
@@ -3937,14 +3962,14 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 						
 						Map<String, Object> RadFracAttributes = RadFracTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[0].trim().isEmpty()) {
-							updater.updateData("ValueOfmolarF_3-23", data[0].trim());
+							updater.updateData("ValueOfmolarF_3-23", data[0].trim(),"T-302");
 							RadFracAttributes.put("ValueOfmolarF_3_23",Float.parseFloat(data[0].trim()));   // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
 							System.out.println("it's updated");
 						}
 						System.out.println("F="+data[0]);
 						
 						if (!data[2].trim().isEmpty()) {
-							updater.updateData("ValueOfTemperatureOf3-23", data[2].trim());
+							updater.updateData("ValueOfTemperatureOf3-23", data[2].trim(),"T-302");
 							RadFracAttributes.put("ValueOfTemperatureOf3_23",Float.parseFloat(data[2].trim()));                                       // upgrade the new temperature of ester3 that calculated by the pr aspen plus model to ArcGIS databse
 							
 						}

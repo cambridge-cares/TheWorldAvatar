@@ -247,7 +247,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     {
     
     ArcGISFeatureLayer  newLayer = new ArcGISFeatureLayer(
-   "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST020/FeatureServer/" + targets[i], user);
+   "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST015/FeatureServer/" + targets[i], user);
     
     layer_name_map.put(targets[i],newLayer);
     

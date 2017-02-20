@@ -53,5 +53,6 @@
 	<classpathentry kind="lib" path="C:/Program Files/sparqldl-api1.0.0/lib/jpaul-2.5.1.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/sparqldl-api1.0.0/lib/junit-4.8.2.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/sparqldl-api1.0.0/lib/owlapiv3/owlapi-bin.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Kevin/Desktop/commons-io-2.5.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

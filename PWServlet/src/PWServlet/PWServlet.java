@@ -4000,10 +4000,10 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 					
 					if (OBJECTIDtoReactor.get(j + 1).equals("R-302")) {                                                                     
 						Map<String, Object> ReactorAttributes = ReactorTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
-						if (!data[22].trim().isEmpty()) {
-							ReactorAttributes.put("Heat_Duty",Float.parseFloat(data[22].trim())*1000);                                // upgrade the heat duty of reactor 10D03 to ArcGIS  databse
+						if (!data[23].trim().isEmpty()) {
+							ReactorAttributes.put("Heat_Duty",Float.parseFloat(data[23].trim())*1000);                                // upgrade the heat duty of reactor 10D03 to ArcGIS  databse
 						}
-						System.out.println("HeatDuty="+Float.parseFloat(data[22].trim())*1000);
+						System.out.println("HeatDuty="+Float.parseFloat(data[23].trim())*1000);
 						if (!data[101].trim().isEmpty()) {
 							ReactorAttributes.put("V_pu",Float.parseFloat(data[101].trim()));                                        // upgrade the new per unit voltage of load point reactor 10D03 to ArcGIS  databse
 						}
