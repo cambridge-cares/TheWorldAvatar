@@ -18,6 +18,9 @@ import cam.dev.zhouxiaochi.OWLReader.Device;
 
 public class PointObjectsGenerator {
 
+	public static String[] layers = {"Load_Point","Bus_Coupler","EHT_Station","UHT_Station","HT_Station","LT_Station"};
+	public static String Url_Base = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Point/FeatureServer/";
+	
 	public static String[] files;
 	
 	public static void main(String[] args) throws Exception {
@@ -25,12 +28,15 @@ public class PointObjectsGenerator {
 		files = new String[2];
 		files[0] = "updated electrical network.owl";
 		files[1] = "buildingmodif2.owl";
-//		layer_factory(0,"Load",null,"Load_Point",true); // Load Points
-//		layer_factory(1,"Building",null,"Buildings",false); 
-// 		layer_factory(0,"Transformer","^.*EHT.*$","Transformer",true);
-//		layer_factory(0,"PowerGenerator",null,"PowerGenerator",false);
-		layer_factory(0,"TransmissionLine",null,"UHT_LINE",false);
-	 
+ 
+		layer_factory(0,"Load",null,"Load_Point",true); // Load Points
+	 	layer_factory(0,"Coupler",null,"Bus_Coupler",false); // Load Points
+ 	 	layer_factory(0,"Transformer","^.*EHT.*$","EHT_Station",true);
+ 		layer_factory(0,"Transformer","^.*UHT.*$","UHT_Station_2",true);
+ 	 	layer_factory(0,"Transformer","^.*HT.*$","HT_Station",true);
+ 	 	layer_factory(0,"Transformer","^.*LT.*$","LT_Station",true);
+ 	//	layer_factory(0,"Transformer",null,"Transformer",false);
+
 		
 	}
 
@@ -47,7 +53,7 @@ public class PointObjectsGenerator {
 		String[] fields = new String[device_list.get(0).Name_list.length];
 		for(int i = 0; i < fields.length ; i++)
 		{
-			fields[i] = device_list.get(0).Name_list[i].replaceAll(filter_regex, "");
+			fields[i] = device_list.get(0).Name_list[i].replaceAll("\\d+", "");
 			fields[i] = fields[i].replaceAll("-", "");
 		}
 	 
@@ -62,14 +68,22 @@ public class PointObjectsGenerator {
 		
 			for(int i = 0; i < device.Name_list.length;i++)
 			{
-				device.Name_list[i] = device.Name_list[i].replaceAll(filter_regex, "");
+				device.Name_list[i] = device.Name_list[i].replaceAll("\\d+", "");
 				device.Name_list[i] =device.Name_list[i].replaceAll("-", "");
 			}
 			draw_a_point(device.Point,device.Name_list,device.Value_list,device.Id,LayerName);
 		}	
 	}
 	 
-	public static void generate_a_layer(String[] name_list,String LayerName) throws JSONException
+	/****
+	 * The function generates a layer in ArcGIS server basing on the field names detected from the owl file
+	 * @param name_list --> the list of field names, which are derived from the owl file
+	 * @param LayerName   --> the name of the layer.
+	 */
+	
+	
+	
+	public static void generate_a_layer(String[] name_list,String LayerName) throws JSONException 
 	{
 		      
 	 	Map<String, String[]> attrLists = new HashMap<String, String[]>();
@@ -80,7 +94,7 @@ public class PointObjectsGenerator {
 	 	
 	 	for(int i = 0 ; i < name_list.length; i++)
 	 	{
-	 		typeList[i] = "esriFieldTypeString";
+	 		typeList[i] = "esriFieldTypeString";		// set the 
 	 	}
 	 	 
 	    attrLists.put("name", name_list);
@@ -93,7 +107,16 @@ public class PointObjectsGenerator {
 		
 	}
 	 
-
+	
+	/****
+	 * The function draws point objects and write data to ArcGISiu              online server
+	 * @param point --> the coordinate of the point object
+	 * @param name_list   --> the list of attributes names 
+	 * @param value_list  --> the list of attributes values
+	 * @param Id    --> the Id of the device
+	 * @param LayerName    --> the name of the layer that stores the point object
+	 */
+	
 
 	public static void draw_a_point(Point point, String[] name_list, String[] value_list, String Id, String LayerName  ) throws IOException, JSONException, InterruptedException
 	{
@@ -103,7 +126,8 @@ public class PointObjectsGenerator {
 		user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
 		ArcGISFeatureLayer Point_test_layer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Point/FeatureServer/" + LayerName,user);
 		Point_test_layer.initializeAsync();
-		while(!Point_test_layer.isAllowGeometryUpdates())
+		
+		while(!Point_test_layer.isAllowGeometryUpdates()) // wait till the target layer is initiated
 		{
 			Thread.sleep(500);
 		}
