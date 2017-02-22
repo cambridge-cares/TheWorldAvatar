@@ -27,17 +27,17 @@ public class OWLUpdater {
 	{
 		if (filecode==1)
 		{
-          filename = "storagetankcomplete.owl";
+          filename = "owl/storagetankcomplete.owl";
 		}
 		
 		else if (filecode==2)
 		{
-			filename = "buildingmodif2.owl";
+			filename = "owl/buildingmodif2.owl";
 		}
 		
 		else
 		{
-			filename = "BiodieselPlant3.owl";
+			filename = "owl/BiodieselPlant3.owl";
 			}
 		
    File inputFile = new File(filename);
