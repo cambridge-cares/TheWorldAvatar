@@ -1,0 +1,177 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#"
+     xml:base="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:phase_system="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#"
+     xmlns:network_system="file:/C:/OntoCAPE/OntoCAPE/upper_level/network_system.owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:chemical_process_system="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#"
+     xmlns:system="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+     xmlns:material="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:behavior="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939">
+        <owl:imports rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl"/>
+        <owl:imports rdf:resource="file:/C:/OntoEIP/ResourceNetwork.owl"/>
+        <owl:imports rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#GeneralizedAmount_SteamLine_1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#GeneralizedAmount_SteamLine_1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem rdf:resource="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#MaterialAmount_SteamLine_1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#MassFractionOfWaterInSteamLine_1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#MassFractionOfWaterInSteamLine_1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#MassFraction"/>
+        <system:hasValue rdf:resource="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#V_MassFractionOfWaterInSteamLine_1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#MaterialAmount_SteamLine_1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#MaterialAmount_SteamLine_1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+        <behavior:refersToMaterial rdf:resource="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#Material_SteamLine_1"/>
+        <system:hasProperty rdf:resource="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#molarFlow_SteamLine_1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#Material_SteamLine_1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#Material_SteamLine_1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+        <material:thermodynamicBehavior rdf:resource="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#SinglePhase_SteamLine_1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#PressureOfSteamLine_1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#PressureOfSteamLine_1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#V_PressureOfSteamLine_1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#SinglePhase_SteamLine_1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#SinglePhase_SteamLine_1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+        <phase_system:has_composition rdf:resource="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#WaterInSteamLine_1"/>
+        <phase_system:has_pressure rdf:resource="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#PressureOfSteamLine_1"/>
+        <phase_system:has_temperature rdf:resource="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#TemperatureOfSteamLine_1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#SteamLine_1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#SteamLine_1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
+        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#GeneralizedAmount_SteamLine_1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#SteamPipe_1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#SteamPipe_1">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/ResourceNetwork.owl#Piping"/>
+        <network_system:hasInput rdf:resource="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#SteamLine_1"/>
+        <system:isConnectedTo rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#BiodieselPlant_3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#TemperatureOfSteamLine_1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#TemperatureOfSteamLine_1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#V_TemperatureOfSteamLine_1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#V_MassFractionOfWaterInSteamLine_1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#V_MassFractionOfWaterInSteamLine_1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#V_PressureOfSteamLine_1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#V_PressureOfSteamLine_1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#V_TemperatureOfSteamLine_1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#V_TemperatureOfSteamLine_1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#V_molarFlow_SteamLine_1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#V_molarFlow_SteamLine_1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#WaterInSteamLine_1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#WaterInSteamLine_1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Composition"/>
+        <system:comprisesDirectly rdf:resource="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#MassFractionOfWaterInSteamLine_1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#molarFlow_SteamLine_1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#molarFlow_SteamLine_1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
+        <system:hasValue rdf:resource="http://www.semanticweb.org/kevin/ontologies/2017/0/untitled-ontology-939#V_molarFlow_SteamLine_1"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+

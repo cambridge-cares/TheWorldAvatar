@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?><kml xmlns="http://www.opengis.net/kml/2.2">
+<Placemark>
+<MultiGeometry>
+<Name>Biodiesel Plant</Name>
+<description>&lt;?xml version="1.0" standalone="yes"?&gt;
+&lt;DocumentElement&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+  &lt;/test&gt;
+&lt;/DocumentElement&gt;</description>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Polygon</type>
+<coordinates>
+103.66551547396,1.25506388551645,100
+103.665534807147,1.25507890016141,100
+103.665549679588,1.25505975926698,100
+103.665530346399,1.25504474462191,100
+103.66551547396,1.25506388551645,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Polygon</type>
+<coordinates>
+103.665550241864,1.25516265041968,100
+103.665569575052,1.25517766506406,100
+103.665584447492,1.25515852417036,100
+103.665565114303,1.25514350952586,100
+103.665550241864,1.25516265041968,100
+</coordinates>
+</LineString>
+
+</MultiGeometry>
+</Placemark>
+</kml>

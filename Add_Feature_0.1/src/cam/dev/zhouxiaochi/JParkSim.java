@@ -39,13 +39,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-
-
-
-
-
-
+import java.util.stream.Stream;import java.util.function.Function;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -58,13 +52,19 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneLayout;
 import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
+import javax.swing.tree.TreePath;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.jfree.util.ArrayUtilities;
 import org.xml.sax.SAXException;
 
 import com.esri.core.geometry.Envelope;
@@ -115,7 +115,8 @@ import com.esri.core.symbol.PictureMarkerSymbol;
 
 
 public class JParkSim {
-	
+	  final static Logger logger = LoggerFactory.getLogger(OWLReader.class);
+
  int filenumber = 0;
 		 
 		public static int[] count;
@@ -181,7 +182,7 @@ public class JParkSim {
 	Portal portal = new Portal("http://www.arcgis.com",null);
 	  // item ID of a public map on arcgis.com with charts
 	  final String MAP_ID = "f809dccb780a4af0a506e56aaa84d084";
-	  
+	  final LayerList layers;
 	  
 	
   public JParkSim() throws IOException, Exception {
@@ -191,7 +192,7 @@ public class JParkSim {
  
     // empty JMap constructor and add a tiled basemap layer
     map = new JMap();
-    final LayerList layers = map.getLayers(); // object storing all the map layers (NOT AN ARRAY - use completelayerlist instead)
+      layers = map.getLayers(); // object storing all the map layers (NOT AN ARRAY - use completelayerlist instead)
     ArcGISTiledMapServiceLayer tiledLayer = new ArcGISTiledMapServiceLayer("http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer");
     layers.add(tiledLayer); // add basemap layer
 
@@ -221,53 +222,59 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     ArcGISFeatureLayer[] linelayers = new    ArcGISFeatureLayer[4];
     
     for(int idxLayer = 0; idxLayer < linelayers.length; idxLayer++){
-    linelayers[idxLayer] = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/TEST015/FeatureServer/"+idxLayer, user);
+    linelayers[idxLayer] = new ArcGISFeatureLayer(App.BASE_URL+"/"+idxLayer, user);
     }
-    ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST015/FeatureServer/Buildings", user);
-    // testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/9", user);
-
  
+    ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer(App.BASE_URL+"/Buildings", user);    // testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/9", user);
+
+    ArcGISFeatureLayer[] pointlayers = new    ArcGISFeatureLayer[PointObjectsGenerator.layers.length];
+    
+    for(int idxPointLayer = 0; idxPointLayer < PointObjectsGenerator.layers.length; idxPointLayer++){
+    	pointlayers[idxPointLayer] = new ArcGISFeatureLayer(PointObjectsGenerator.Url_Base + PointObjectsGenerator.layers[idxPointLayer], user);
+    }
  
    //================================================================
-    App.readlist();
-   String[] targets = new String[App.deviceInfoList.size()];//Pack device name into a string
-   for(int idx = 0; idx < targets.length; idx++){
-	   targets[idx] = App.deviceInfoList.get(idx).name;
-   }
-
+   String[] targets = App.readAllEntityList();//Pack device name into a string array
    layer_name_map = new LinkedHashMap<>();
    
  //  ArcGISFeatureLayer[] completeLayerList =  {testLayer};
-   ArcGISFeatureLayer[] completeLayerList =  new ArcGISFeatureLayer[targets.length + 5];
+ //  ArcGISFeatureLayer[] completeLayerList =  new ArcGISFeatureLayer[targets.length + 5 + PointObjectsGenerator.layers.length];
    
-   completeLayerList[completeLayerList.length - 1] = buildinglayer;
-   createRenderer(layers, new ArcGISFeatureLayer [] {buildinglayer}, testColor2);
+   ArcGISFeatureLayer[] completeLayerList =  new ArcGISFeatureLayer[targets.length + linelayers.length + PointObjectsGenerator.layers.length + 1];
    
    for(int i = 0; i < targets.length; i++)
     {
-    
     ArcGISFeatureLayer  newLayer = new ArcGISFeatureLayer(
-   "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST021/FeatureServer/" + targets[i], user);
-    
+    App.BASE_URL+"/" + targets[i], user);
     layer_name_map.put(targets[i],newLayer);
-    
-    
-    
-    
-    
     completeLayerList[i] = newLayer;
     createRenderer(layers, new ArcGISFeatureLayer [] {newLayer}, testColor);
-    
     }
+   
+
     
    for (int idxLayer = 0 ; idxLayer < linelayers.length; idxLayer++){
    
-    completeLayerList[completeLayerList.length - 2 - idxLayer] = linelayers[idxLayer];
+    completeLayerList[idxLayer + targets.length] = linelayers[idxLayer];
     createRenderer(layers, new ArcGISFeatureLayer [] {linelayers[idxLayer]}, lineColors[idxLayer]);
    }
-  
+ 
+   
+   
+   for (int idx_Point = 0 ; idx_Point < pointlayers.length ; idx_Point++)
+   {
+     completeLayerList[idx_Point + targets.length + linelayers.length] = pointlayers[idx_Point];
+     createRenderer(layers, new ArcGISFeatureLayer [] {pointlayers[idx_Point]},testColor2);   
+   }
     
-    
+   completeLayerList[completeLayerList.length - 1] = buildinglayer;
+   createRenderer(layers, new ArcGISFeatureLayer [] {buildinglayer}, testColor2);
+   
+   
+   
+   
+   
+   
     ArcGISDynamicMapServiceLayer highwayLayer = new ArcGISDynamicMapServiceLayer(
             "http://localhost:6080/arcgis/rest/services/opex/MapServer");
                 layers.add(highwayLayer);
@@ -278,9 +285,9 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
               
                 layers.add(sensitivityLayer);
                 
+ 
                 
-                            
-                            
+
                             
                             
                             
@@ -351,22 +358,35 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     // create dropdown selector for layer via key-value pairs
     final Map<String, ArcGISFeatureLayer> editlayer = new LinkedHashMap<>();
     // dropdown options with key = String layer name and value = layer object
+	String[] lineLayerKeys = {"waterline","gasline","materialline","airline" };
+	
+	
+	  targets = Stream.concat(Arrays.stream(targets), Arrays.stream(lineLayerKeys))
+            .toArray(String[]::new);
     
- 
-   for(int i = 0 ; i < completeLayerList.length - 5  ; i++)
+	String[] all_layer_string = Stream.concat(Arrays.stream(targets), Arrays.stream(PointObjectsGenerator.layers))
+            .toArray(String[]::new);
+	String[] other_layers = {"buildinglayer"};
+	
+	 all_layer_string = Stream.concat(Arrays.stream(all_layer_string), Arrays.stream(other_layers))
+            .toArray(String[]::new);
+	
+    
+   for(int i = 0 ; i < completeLayerList.length; i++)
    {
-	   editlayer.put(targets[i],completeLayerList[i]);
+	   editlayer.put(all_layer_string[i],completeLayerList[i]);
    }
-   
-   	String[] lineLayerKeys = {"waterline","gasline","materialline","airline" };
-   for(int idx = 0; idx < linelayers.length; idx++){
+    
+   	
+   	/*
+   	for(int idx = 0; idx < linelayers.length; idx++){
    
     editlayer.put(lineLayerKeys[idx], completeLayerList[completeLayerList.length - 2]);
    }
    
     editlayer.put("buildinglayer", completeLayerList[completeLayerList.length - 1]);
     
-    
+    */
       
     final JComboBox cbxLayer = new JComboBox(editlayer.keySet().toArray(new String[0]));	// initialize dropdown box
     cbxLayer.setMaximumSize(new Dimension(220, 25));
@@ -542,6 +562,10 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
         map.addMapOverlay(hitTestOverlay);															// add all layer listeners to map
     }
    															// default layer listener enabled is the first one (landlots layer)
+   
+   
+
+    
     for(int i = 0 ; i < listenerList.length;i++)
     {
     	 listenerList[i].setActive(true);	
@@ -735,11 +759,11 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
     
     // create legend
-    JLegend legend = new JLegend(map);
-    legend.setPreferredSize(new Dimension(250, 700));
-    legend.setBorder(new LineBorder(new Color(205, 205, 255), 3));
-    
+
     // initialize contentPane and add contents
+    
+    
+    
     
     contentPane = new JLayeredPane();
   
@@ -747,27 +771,20 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     contentPane.setVisible(true);
   
     /*********Add btns to content panel******************/
+    
+   
+    
+    
      contentPane.add(panel);
 		for(JButton mBtn : btns){
 			contentPane.add(mBtn);
 		};
 		contentPane.add(QueryButton);
 		contentPane.add(map, BorderLayout.CENTER);
-    contentPane.add(legend, BorderLayout.WEST);
-    
-    
-
-    
-    
-  
-  //adding the graph here
-    //map = createMap();
-   //contentPane.add(map);
-    
-    //only until here
-	
-    
+		
+   
     window.add(contentPane);
+    
     
     // dispose map just before application window is closed.
     window.addWindowListener(new WindowAdapter() {
@@ -787,9 +804,62 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
       }
     });
     
-   
+    /*****add sideMenu*****/
+   JPanel sideMenu = new SideMenu();
+    sideMenu.setVisible(true);
+    JScrollPane scroll = new JScrollPane(sideMenu);
+    scroll.setLayout(new ScrollPaneLayout());
+    window.getContentPane().add(scroll, BorderLayout.WEST);
   }
   
+  
+  public static Boolean selectCallBack(String layerName){
+	 ArcGISFeatureLayer targetLayer = layer_name_map.get(layerName);
+	 
+	 if(targetLayer ==null){
+		 logger.warn("Layer "+layerName+" not exists");
+		  return false;
+
+	 } else if(targetLayer.getStatus()==Layer.LayerStatus.UNINITIALIZED){
+		 logger.warn("Layer "+layerName+" not initialized");
+		  return false;
+
+		 
+	 } else if(targetLayer.isVisible() == false){
+			logger.info("select layer "+ layerName);
+
+		 targetLayer.setVisible(true);
+			return true;
+
+	 }
+		logger.info("select layer "+ layerName+" Unknown ERROR");
+
+	  return false;
+  }
+  
+  public static Boolean unselectCallBack(String layerName){
+	 ArcGISFeatureLayer targetLayer = layer_name_map.get(layerName);
+	 
+	 if(targetLayer ==null){
+		 logger.warn("Layer "+layerName+" not exists");
+		  return false;
+
+	 } else if(targetLayer.getStatus()==Layer.LayerStatus.UNINITIALIZED){
+		 logger.warn("Layer "+layerName+" not initialized");
+		  return false;
+
+		 
+	 } else if(targetLayer.isVisible() == true){
+			logger.info("select layer "+ layerName);
+
+		 targetLayer.setVisible(false);
+			return true;
+
+	 }
+		logger.info("select layer "+ layerName+" Unknown ERROR");
+
+	  return false;
+  }
   private JMap createMap() {
 
 	    final JMap jMap = new JMap();

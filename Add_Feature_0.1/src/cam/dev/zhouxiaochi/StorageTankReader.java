@@ -85,7 +85,7 @@ import cam.dev.zhouxiaochi.OWLReader.OWLfileNode;
 	 protected StorageTankReader() throws IOException, Exception{
 		
 		//////get all owlReader first level nodes
-		ArrayList<String> allNodeNames = OWLReader.read_owl_file("storagetankcomplete.owl", null);
+		ArrayList<String> allNodeNames = OWLReader.read_owl_file(App.STORAGE_OWL_NAME, null);
 		///////filter through to get a list of actual devices
 		for(String nodeName : allNodeNames){////DOES THE NAME MATCH THIS PATTERN?
 			if(nodeName.matches("^TankID_\\d+$")){//=>YES
@@ -98,7 +98,7 @@ import cam.dev.zhouxiaochi.OWLReader.OWLfileNode;
 		
 		tankDrawInfo = new StorageTank[deviceNames.size()];//initiate tank info array
 		for(String deviceName : deviceNames){		/////loop through all devices
-			OWLReader.read_owl_file("storagetankcomplete.owl", deviceName);//call owl reader to extract all data node of this device
+			OWLReader.read_owl_file(App.STORAGE_OWL_NAME, deviceName);//call owl reader to extract all data node of this device
 			
 			if (first){//if first device, construct the attribute name list				
 				for(String dataName : OWLReader.name_list){/////for all data's name of this device 

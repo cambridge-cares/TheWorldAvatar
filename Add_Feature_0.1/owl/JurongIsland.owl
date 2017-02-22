@@ -1,0 +1,359 @@
+<?xml version="1.0" ?>
+<rdf:RDF xmlns="http://www.jparksimulator.com/JurongIsland.owl#"
+     xml:base="http://www.jparksimulator.com/JurongIsland.owl"
+     xmlns:system="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:Eco-industrialPark="file:/C:/OntoEIP/Eco-industrialPark.owl#">
+    <owl:Ontology rdf:about="http://www.jparksimulator.com/JurongIsland.owl">
+        <owl:imports rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#AirSeparationPlant -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#AirSeparationPlant">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ChemicalPlant"/>
+        <Eco-industrialPark:hasConceptualModel rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#CM_AirSeparationPlant"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#BiodieselPlant-1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#BiodieselPlant-1">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ChemicalPlant"/>
+        <Eco-industrialPark:hasConceptualModel rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#CM_BiodieselPlant-1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#BiodieselPlant-2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#BiodieselPlant-2">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ChemicalPlant"/>
+        <Eco-industrialPark:hasConceptualModel rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#CM_BiodieselPlant-2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#BiodieselPlant-3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#BiodieselPlant-3">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ChemicalPlant"/>
+        <Eco-industrialPark:hasConceptualModel rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#CM_BiodieselPlant-3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#CM_AirSeparationPlant -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#CM_AirSeparationPlant">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ConceptualModel"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.jparksimulator.com/AirSeparationPlant.owl</Eco-industrialPark:hasIRI>
+        <Eco-industrialPark:isLocatedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C:/JParkSimulator-git/Add_Feature_0.1/owl/airseparationupdated.owl</Eco-industrialPark:isLocatedAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#CM_BiodieselPlant-1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#CM_BiodieselPlant-1">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ConceptualModel"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.jparksimulator.com/BiodieselPlant1WOWHR.owl</Eco-industrialPark:hasIRI>
+        <Eco-industrialPark:isLocatedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C:/JParkSimulator-git/Add_Feature_0.1/owl/BiodieselPlant1WOWHR.owl</Eco-industrialPark:isLocatedAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#CM_BiodieselPlant-2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#CM_BiodieselPlant-2">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ConceptualModel"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.jparksimulator.com/BiodieselPlant2WWHR.owl</Eco-industrialPark:hasIRI>
+        <Eco-industrialPark:isLocatedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C:/JParkSimulator-git/Add_Feature_0.1/owl/BiodieselPlant2WWHR.owl</Eco-industrialPark:isLocatedAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#CM_BiodieselPlant-3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#CM_BiodieselPlant-3">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ConceptualModel"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.jparksimulator.com/BiodieselPlant3.owl</Eco-industrialPark:hasIRI>
+        <Eco-industrialPark:isLocatedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C:/JParkSimulator-git/Add_Feature_0.1/owl/BiodieselPlant3.owl</Eco-industrialPark:isLocatedAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#CM_EnergyNetwork -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#CM_EnergyNetwork">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ConceptualModel"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.jparksimulator.com/Jurong_EnergyNetwork.owl</Eco-industrialPark:hasIRI>
+        <Eco-industrialPark:isLocatedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C:/JParkSimulator-git/Add_Feature_0.1/owl/Jurong_EnergyNetwork.owl</Eco-industrialPark:isLocatedAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#CM_HydrocrackingPlant -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#CM_HydrocrackingPlant">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ConceptualModel"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.jparksimulator.com/HydrocrackingPlant.owl</Eco-industrialPark:hasIRI>
+        <Eco-industrialPark:isLocatedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C:/JParkSimulator-git/Add_Feature_0.1/owl/HydrocrackingPlant.owl</Eco-industrialPark:isLocatedAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#CM_JurongBuildingLayer -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#CM_JurongBuildingLayer">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ConceptualModel"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://jparksimulator.com/Buildings.owl</Eco-industrialPark:hasIRI>
+        <Eco-industrialPark:isLocatedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C:/JParkSimulator-git/Add_Feature_0.1/owl/buildingmodif2.owl</Eco-industrialPark:isLocatedAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#CM_JurongElectricalSystem -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#CM_JurongElectricalSystem">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ConceptualModel"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.jparksimulator.com/ElectricalNetwork.owl</Eco-industrialPark:hasIRI>
+        <Eco-industrialPark:isLocatedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C:/JParkSimulator-git/Add_Feature_0.1/owl/updated electrical network.owl</Eco-industrialPark:isLocatedAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#CM_JurongLandlotsLayer -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#CM_JurongLandlotsLayer">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ConceptualModel"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.jparksimulator.com/JParkLandLots</Eco-industrialPark:hasIRI>
+        <Eco-industrialPark:isLocatedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C:/JParkSimulator-git/Add_Feature_0.1/owl/JParkLandLots.owl</Eco-industrialPark:isLocatedAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#CM_JurongStorageTankSystem -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#CM_JurongStorageTankSystem">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ConceptualModel"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.jparksimulator.com/StorageTanks.owl</Eco-industrialPark:hasIRI>
+        <Eco-industrialPark:isLocatedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C:/JParkSimulator-git/Add_Feature_0.1/owl/storagetankcomplete.owl</Eco-industrialPark:isLocatedAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#CM_JurongTransportationSystem -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#CM_JurongTransportationSystem">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ConceptualModel"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new</Eco-industrialPark:hasIRI>
+        <Eco-industrialPark:isLocatedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C:/JParkSimulator-git/Add_Feature_0.1/owl/JurongIslandTransportationNetwork-new.owl</Eco-industrialPark:isLocatedAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#CM_Lanxess-PIBPlant -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#CM_Lanxess-PIBPlant">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ConceptualModel"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.jparksimulator.com/Lanxess-PIBPlant.owl</Eco-industrialPark:hasIRI>
+        <Eco-industrialPark:isLocatedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C:/JParkSimulator-git/Add_Feature_0.1/owl/Lanxess-PIBPlant.owl</Eco-industrialPark:isLocatedAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#CM_MaterialNetwork -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#CM_MaterialNetwork">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ConceptualModel"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.jparksimulator.com/Jurong_MaterialNetwork.owl</Eco-industrialPark:hasIRI>
+        <Eco-industrialPark:isLocatedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C:/JParkSimulator-git/Add_Feature_0.1/owl/Jurong_MaterialNetwork.owl</Eco-industrialPark:isLocatedAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#CM_TransportationNetwork -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#CM_TransportationNetwork">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ConceptualModel"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.jparksimulator.com/Jurong_TransportationNetwork.owl</Eco-industrialPark:hasIRI>
+        <Eco-industrialPark:isLocatedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C:/JParkSimulator-git/Add_Feature_0.1/owl/Jurong_TransportationNetwork.owl</Eco-industrialPark:isLocatedAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#CM_WaterNetwork -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#CM_WaterNetwork">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ConceptualModel"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.jparksimulator.com/Jurong_WaterNetwork.owl</Eco-industrialPark:hasIRI>
+        <Eco-industrialPark:isLocatedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C:/JParkSimulator-git/Add_Feature_0.1/owl/Jurong_WaterNetwork.owl</Eco-industrialPark:isLocatedAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#CM_Zeon-SBRPlant -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#CM_Zeon-SBRPlant">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ConceptualModel"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://jparksimulator.com/ZeonPlant.owl</Eco-industrialPark:hasIRI>
+        <Eco-industrialPark:isLocatedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C:/JParkSimulator-git/Add_Feature_0.1/owl/zeonplant.owl</Eco-industrialPark:isLocatedAt>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#HydrocrackingPlant -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#HydrocrackingPlant">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ChemicalPlant"/>
+        <Eco-industrialPark:hasConceptualModel rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#CM_HydrocrackingPlant"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#JurongBuildingLayer -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#JurongBuildingLayer">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#Building"/>
+        <Eco-industrialPark:hasConceptualModel rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#CM_JurongBuildingLayer"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#JurongElectricalSystem -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#JurongElectricalSystem">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ElectricPowerSystem"/>
+        <Eco-industrialPark:hasConceptualModel rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#CM_JurongElectricalSystem"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#JurongIsland -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#JurongIsland">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#Eco-industrialPark"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#AirSeparationPlant"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#BiodieselPlant-1"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#BiodieselPlant-2"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#BiodieselPlant-3"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#HydrocrackingPlant"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#JurongBuildingLayer"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#JurongElectricalSystem"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#JurongLandlotsLayer"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#JurongStorageTankSystem"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#JurongTransportationSystem"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#Jurong_EnergyNetwork"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#Jurong_MaterialNetwork"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#Jurong_TransportationNetwork"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#Jurong_WaterNetwork"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#Lanxess-PIBPlant"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#Zeon-SBRPlant"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#JurongLandlotsLayer -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#JurongLandlotsLayer">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#LandLot"/>
+        <Eco-industrialPark:hasConceptualModel rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#CM_JurongLandlotsLayer"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#JurongStorageTankSystem -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#JurongStorageTankSystem">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#StorageTank"/>
+        <Eco-industrialPark:hasConceptualModel rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#CM_JurongStorageTankSystem"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#JurongTransportationSystem -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#JurongTransportationSystem">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#TransportationNetwork"/>
+        <Eco-industrialPark:hasConceptualModel rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#CM_JurongTransportationSystem"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#Jurong_EnergyNetwork -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#Jurong_EnergyNetwork">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#EnergyNetwork"/>
+        <Eco-industrialPark:hasConceptualModel rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#CM_EnergyNetwork"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#Jurong_MaterialNetwork -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#Jurong_MaterialNetwork">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#MaterialNetwork"/>
+        <Eco-industrialPark:hasConceptualModel rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#CM_MaterialNetwork"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#Jurong_TransportationNetwork -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#Jurong_TransportationNetwork">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#TransportationNetwork"/>
+        <Eco-industrialPark:hasConceptualModel rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#CM_TransportationNetwork"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#Jurong_WaterNetwork -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#Jurong_WaterNetwork">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#WaterNetwork"/>
+        <Eco-industrialPark:hasConceptualModel rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#CM_WaterNetwork"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#Lanxess-PIBPlant -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#Lanxess-PIBPlant">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ChemicalPlant"/>
+        <Eco-industrialPark:hasConceptualModel rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#CM_Lanxess-PIBPlant"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#Zeon-SBRPlant -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#Zeon-SBRPlant">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ChemicalPlant"/>
+        <Eco-industrialPark:hasConceptualModel rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#CM_Zeon-SBRPlant"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+

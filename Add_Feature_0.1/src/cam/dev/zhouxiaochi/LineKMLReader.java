@@ -44,10 +44,10 @@ public class LineKMLReader {
 	public ArrayList<String> attriNameList = new ArrayList<String>();
 
 	
-    private static String[] fileLocations = {"WaterLine.xml",
-    		                                 "GasLine.xml",
-    		                                 "Material_Line.xml",
-    		                                 "AirLine.xml"
+    private static String[] fileLocations = {"kml/WaterLine.xml",
+    		                                 "kml/GasLine.xml",
+    		                                 "kml/Material_Line.xml",
+    		                                 "kml/AirLine.xml"
                                             };
 	private static LineKMLReader[] instanceList = new LineKMLReader[App.LineType.values().length];
     
