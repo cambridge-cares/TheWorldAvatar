@@ -197,8 +197,19 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
     	   
     	   OWLfileNode node = owlnodemap.get(name);
     	   node.NodeName = node.NodeName.replaceAll("-", "_").trim();
+    	   if(node.NodeValue!="")
+    	   {
     	   System.out.println("-----------> " +  node.NodeName);
-           name_list.add(node.NodeName.trim());
+    	   }
+    	   else if(node.NodeType!=null)
+    	   {
+    	   System.out.println("-----------> " +  node.NodeName + "-- has no value" + node.NodeType);
+    	   String temp = node.NodeName;
+    	   node.NodeName = node.NodeType;
+    	   node.NodeValue = temp;
+    	   }
+    	   
+    	   name_list.add(node.NodeName.trim());
            value_list.add(node.NodeValue.trim());
            if(node.ValueUnit!=null)
            {
