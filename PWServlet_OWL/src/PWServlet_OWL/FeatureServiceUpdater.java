@@ -1,4 +1,4 @@
-package cam.dev.zhouxiaochi;
+package PWServlet_OWL;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -70,7 +70,10 @@ public class FeatureServiceUpdater {
 	  //TODO: test each function 
 		  String baseUrl =
 	  "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST020/FeatureServer";
-	  FeatureServiceUpdater mUpdater = new FeatureServiceUpdater(App.BASE_URL);
+	  FeatureServiceUpdater mUpdater = new FeatureServiceUpdater("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST015/FeatureServer");
+	  
+	  
+	  
 	  
 		  String templateServiceURL =
 	  "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/admin/services/Load_points/FeatureServer";

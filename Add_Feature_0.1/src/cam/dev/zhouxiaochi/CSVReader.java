@@ -68,7 +68,7 @@ public class CSVReader {
 	    	       
 	    	       
 	    	       System.out.println("R-301 HeatDuty  " + names[25] + " Value is -->" + values[25]);
-	    	       System.out.println("R-302 HeatDuty   " + names[23] + " Value is -->"+ values[22]);
+	    	       System.out.println("R-302 HeatDuty   " + names[23] + " Value is -->"+ values[23]);
 	    	       System.out.println("product flowrate  " + names[0] + " Value is -->" + values[0]);
 	    	       System.out.println("product temperature   " + names[2] + " Value is -->"+ values[2]);
 	    	       

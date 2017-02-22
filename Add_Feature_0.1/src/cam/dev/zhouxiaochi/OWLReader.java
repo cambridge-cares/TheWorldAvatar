@@ -12,11 +12,15 @@ import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import com.esri.core.geometry.Point;
 
 
 public class OWLReader {
@@ -30,6 +34,16 @@ public class OWLReader {
 	 * @param value  --> the value of a numerical value
 	 * @param unit    --> the unit of the value 
 	 */
+	
+    public static class Device
+	{
+		public  String Id;
+		public  Point Point;
+		public  String[] Name_list;
+		public  String[] Value_list; 
+
+	}	
+	
 	public static class OWLfileNode
 	{
 		OWLfileNode(String name, String type, String value, String unit, String parent) {
@@ -67,7 +81,15 @@ private static ArrayList<String> deviceNameList = new ArrayList<String>();
 public static double x = 0;
 public static double y = 0; 
 
+
+  // for storing coordinates of a batch of devices  
+
+
+
+
+
 public static ArrayList<String> read_owl_file(String filename, String deviceName) throws IOException, Exception{
+	
 	return read_owl_file(filename, deviceName, false);
 }
 
@@ -186,8 +208,7 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
            
        }
        
-       
-       
+ 
 		for(int i = 0; i < name_list.size(); i ++)
 		{
 			String item = name_list.get(i);
@@ -210,6 +231,10 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
         return null;
        
     }
+	
+	
+	
+	
 	
 	  public static void expand(OWLfileNode node){
 		  expand(node, false);
@@ -241,6 +266,10 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 				}
 				else{
 					System.out.println(nodename);
+					System.out.println("Node Type --> : " + nodetype);
+					
+					System.out.println("---------------------------------------");
+					
 					nodename = nodename.split("#")[1];
 					
 					if(nodetype.toLowerCase().contains("unit"))
@@ -250,7 +279,8 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 					}
 					else
 					{
-					if(nodetype.contains("numerical"))
+				//	if(nodetype.contains("numerical"))
+						if(true)
 					{
 					nodevalue =  childnodes.item(i).getTextContent();
 					node.NodeValue = nodevalue;
@@ -271,10 +301,13 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 					OWLfileNode newNode = new OWLfileNode(nodename,nodetype,"","",node.NodeName);
 				//	System.out.println("Name:  " + newNode.NodeName + " Type: " + newNode.NodeType +
 				//			" Value: " + newNode.NodeValue + " Unit: " + newNode.ValueUnit + " Parent: " +  newNode.ParentNodeName ); 
-					theNodeList.add(newNode);
+					theNodeList.add(newNode); //  && 
 					if(nodemap.get(nodename)!=null   && !(newNode.NodeName.contentEquals(node.ParentNodeName)) &&!expandOneLevel) // check whether such node exists
 					{
+						if(!(nodetype.contains("topology:enters")||nodetype.contains("topology:leaves")))
+						{
 						expand(newNode,false);
+						}
 					}
 					}
 					}
@@ -349,8 +382,89 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
  	 }
  	
  	
- 	
- 	
+ 	 
+ 	 
+ 	 
+ 	/****
+ 	 * This function is used to expand certain type of equipment in batch. 
+ 	 * @param filename --> the name of the owl file
+ 	 * @param type     --> the type of device to be expanded
+ 	 * @throws Exception 
+ 	 */
+ 	 
+ 	public static ArrayList<Device> BatchOperationForPoint(String filename, String type, Boolean filterOn, String filter) throws Exception
+ 	{
+ 	   ArrayList<Device> device_list = new ArrayList<Device>();
+ 	   File inputFile = new File(filename);
+       DocumentBuilderFactory dbFactory  = DocumentBuilderFactory.newInstance();
+       DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+       Document doc = dBuilder.parse(inputFile);
+       doc.getDocumentElement().normalize();
+       Element root = doc.getDocumentElement();
+       individuals = root.getElementsByTagName("owl:NamedIndividual");
+       System.out.println("here");
+       for(int i = 0 ; i < individuals.getLength() ; i++)
+       {
+     	   
+    	   if(individuals.item(i).hasChildNodes())
+			{
+				Node childnode = individuals.item(i).getChildNodes().item(1);
+				if(childnode.hasAttributes())
+				{
+					 String type_name = childnode.getAttributes().item(0).getNodeValue().split("#")[1];
+					 if(type_name.contentEquals(type))
+					 {
+						 String node_name = individuals.item(i).getAttributes().item(0).getNodeValue().split("#")[1];
+						 
+						
+						 if(filterOn)
+						 {
+							 
+							 if( node_name.matches(filter))
+							 {
+								 System.out.println("Node name -->" + node_name);
+								 name_list.clear();
+								 value_list.clear();
+								 read_owl_file(filename,node_name,false);	 
+							
+								 Device new_device = new Device();
+								 new_device.Name_list = name_list.toArray(new String[name_list.size()]);
+								 new_device.Value_list = value_list.toArray(new String[value_list.size()]);
+								 
+								 new_device.Point = new Point(x,y);
+								 new_device.Id = node_name;
+
+								 device_list.add(new_device);
+	 
+							 }
+						 }
+						 else
+						 {
+							 System.out.println("Node name -->" + node_name);
+							 name_list.clear();
+							 value_list.clear();
+							 read_owl_file(filename,node_name,false);	 
+						
+							 Device new_device = new Device();
+							 new_device.Name_list = name_list.toArray(new String[name_list.size()]);
+							 new_device.Value_list = value_list.toArray(new String[value_list.size()]);
+							 
+							 new_device.Point = new Point(x,y);
+							 new_device.Id = node_name;
+
+							 device_list.add(new_device);
+ 
+						 }
+					   
+					 }
+ 				}
+			}
+       }
+ 
+       return device_list;
+       
+ 	}
+ 	  
  	
  	
  	

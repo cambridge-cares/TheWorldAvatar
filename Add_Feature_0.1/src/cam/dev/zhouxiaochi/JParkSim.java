@@ -221,9 +221,9 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     ArcGISFeatureLayer[] linelayers = new    ArcGISFeatureLayer[4];
     
     for(int idxLayer = 0; idxLayer < linelayers.length; idxLayer++){
-    linelayers[idxLayer] = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/TEST020/FeatureServer/"+idxLayer, user);
+    linelayers[idxLayer] = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/TEST015/FeatureServer/"+idxLayer, user);
     }
-    ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/Buildings", user);
+    ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST015/FeatureServer/Buildings", user);
     // testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/9", user);
 
  
@@ -247,7 +247,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     {
     
     ArcGISFeatureLayer  newLayer = new ArcGISFeatureLayer(
-   "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST015/FeatureServer/" + targets[i], user);
+   "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST021/FeatureServer/" + targets[i], user);
     
     layer_name_map.put(targets[i],newLayer);
     
