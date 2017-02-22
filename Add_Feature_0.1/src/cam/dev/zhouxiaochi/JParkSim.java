@@ -285,9 +285,9 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
               
                 layers.add(sensitivityLayer);
                 
+ 
                 
-                            
-                            
+
                             
                             
                             

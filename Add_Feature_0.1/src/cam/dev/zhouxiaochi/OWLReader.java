@@ -119,6 +119,7 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 
 		if(filename == null)
 		{
+			filename = "owl/BiodieselPlant3.owl";
 			logger.warn("owl file location not defined. Function read owl file terminated");
 		// System.out.println("WARNING: owl file location not defined. Function read owl file terminated");
 		return null;

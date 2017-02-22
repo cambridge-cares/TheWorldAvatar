@@ -25,16 +25,8 @@ public class PointObjectsGenerator {
 	
 	public static void main(String[] args) throws Exception {
 	 
-		files = new String[2];
-		files[0] = "updated electrical network.owl";
-		files[1] = "buildingmodif2.owl";
+
  
-		layer_factory(0,"Load",null,"Load_Point",true); // Load Points
-	 	layer_factory(0,"Coupler",null,"Bus_Coupler",false); // Load Points
- 	 	layer_factory(0,"Transformer","^.*EHT.*$","EHT_Station",true);
- 		layer_factory(0,"Transformer","^.*UHT.*$","UHT_Station_2",true);
- 	 	layer_factory(0,"Transformer","^.*HT.*$","HT_Station",true);
- 	 	layer_factory(0,"Transformer","^.*LT.*$","LT_Station",true);
  	//	layer_factory(0,"Transformer",null,"Transformer",false);
 
 		
@@ -42,11 +34,17 @@ public class PointObjectsGenerator {
 
 	public static void layer_factory(int file_index, String device_class, String filter_regex, String LayerName, Boolean filter_on) throws Exception
 	{
+		
+		files = new String[2];
+		files[0] = "owl/updated electrical network.owl";
+		files[1] = "owl/buildingmodif2.owl";
 		if(filter_regex==null)
 		{
 			filter_regex = "\\d+";
 		}
 		
+		System.out.println(files[file_index]);
+		System.in.read();
 		ArrayList<Device> device_list = OWLReader.BatchOperationForPoint(files[file_index],device_class,filter_on,filter_regex); // This is for Load Points 
 		 
 		System.out.println("We are here " + device_list.size());

@@ -479,7 +479,12 @@ public class App {
 
 
 
-
+         PointObjectsGenerator.layer_factory(0,"Load",null,"Load_Point",true); // Load Points
+         PointObjectsGenerator.layer_factory(0,"Coupler",null,"Bus_Coupler",false); // Load Points
+         PointObjectsGenerator.layer_factory(0,"Transformer","^.*EHT.*$","EHT_Station",true);
+         PointObjectsGenerator.layer_factory(0,"Transformer","^.*UHT.*$","UHT_Station_2",true);
+         PointObjectsGenerator.layer_factory(0,"Transformer","^.*HT.*$","HT_Station",true);
+         PointObjectsGenerator.layer_factory(0,"Transformer","^.*LT.*$","LT_Station",true);             
 		
 		
 		////construct feature updater//////////////////////////////
