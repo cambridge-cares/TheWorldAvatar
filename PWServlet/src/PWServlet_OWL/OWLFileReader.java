@@ -1,4 +1,4 @@
-package PWServlet;
+package PWServlet_OWL;
 
 
 import java.io.File;
@@ -36,20 +36,33 @@ public class OWLFileReader {
    {
 	   String name = individuals.item(i).getAttributes().item(0).getNodeValue();
 	   name = name.substring(name.indexOf("#") + 1);
-	   System.out.println(name);
+
 	   if(name.contentEquals(target))
 	   {
 		   targetNode = individuals.item(i);
+		   System.out.println("=====================");
+		   System.out.println("Name " + name);
+		   System.out.println("targetNode" +  targetNode.getNodeName() + "value" + targetNode.getAttributes().item(0).getNodeValue());
+		   
 	   }
-   }
+   } 
+   
+//   System.out.println("ChilderenNodes  " + targetNode.hasChildNodes());
    
    NodeList children = targetNode.getChildNodes();
+   
+   
+   
+   
+   
    for(int j = 0 ; j < children.getLength(); j++)
    {
 	   if(children.item(j).getNodeName().contentEquals("system:numericalValue"))
 	   {
 		   result = children.item(j).getTextContent();
+		   System.out.println("--------------Result-----------");
 		   System.out.println(result);
+		   
 	   }
  
 	    

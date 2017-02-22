@@ -1,4 +1,4 @@
-package PWServlet;
+package PWServlet_OWL;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,19 +57,11 @@ public class OWLUpdater {
  			   }
 
 		   }
-		  
-		  
+		   
 	   }
- 
-	   
-	   
+  
    }
-   
-   
-   
-   
-   
-   
+    
 	TransformerFactory transformerFactory = TransformerFactory.newInstance();
 
 	Transformer transformer = transformerFactory.newTransformer();
@@ -82,7 +74,6 @@ public class OWLUpdater {
 	
 
 	  ArrayList<String[]> result = new ArrayList<String[]>();
-	  InputStream input = new URL( "http://172.25.182.41/" + filename ).openStream();
 	  
 	  String processed_target = target.replace("-", "_");
 	       
@@ -97,7 +88,6 @@ public class OWLUpdater {
 	      String[] entityNameList= {layername};
 	      Map<Integer,Map<String, String>> nameValueListPerLayer = new HashMap<Integer, Map<String, String>>();
 	     
-	      HashMap<String, String>   parameters301 = new HashMap<String, String>();
 	      HashMap<String, String>   parameters302 = new HashMap<String, String>();
 
 	      
@@ -107,7 +97,12 @@ public class OWLUpdater {
 
 	      
 	       mUpdater.updateFeaturesInTable(entityNameList, nameValueListPerLayer);
-	
+	       for(String item : entityNameList)
+	       {
+	    	   System.out.println(item);
+	    	   
+	       }
+	       System.in.read();
 		
 	}
 	

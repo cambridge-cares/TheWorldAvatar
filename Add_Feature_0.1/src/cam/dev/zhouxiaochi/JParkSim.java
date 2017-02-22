@@ -220,7 +220,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     for(int idxLayer = 0; idxLayer < linelayers.length; idxLayer++){
     linelayers[idxLayer] = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/TEST020/FeatureServer/"+idxLayer, user);
     }
-    ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/Buildings", user);
+    ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/Buildingsx", user);
     // testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/9", user);
 
     ArcGISFeatureLayer[] pointlayers = new    ArcGISFeatureLayer[PointObjectsGenerator.layers.length];
@@ -797,13 +797,12 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
             TreePath[] paths = cbt.getCheckedPaths();
             for (TreePath tp : paths) {
                 for (Object pathPart : tp.getPath()) {
-                    System.out.print(pathPart + ",");
+                    System.out.print(pathPart + ","); 
                 }                   
                 System.out.println();
             }
         }           
-    });  
-//    contentPane.add(legend, BorderLayout.WEST);
+    });   
     
        
 
