@@ -35,8 +35,8 @@ public class CSVReader {
 	    	 }
 	    	
 	    	 Map<Integer, String> oldNewAttriNameDictionary = new HashMap<Integer, String>();
-	    	 oldNewAttriNameDictionary.put(25, "ValueOfHeatDutyOfR_301");
-	    	 oldNewAttriNameDictionary.put(22, "ValueOfHeatDutyOfR_302");
+	    //	 oldNewAttriNameDictionary.put(25, "ValueOfHeatDutyOfR_301");
+	    	 oldNewAttriNameDictionary.put(22, "ValueOf_x_R_303");
 
 	    	  ArrayList<String[]> result = new ArrayList<String[]>();
 	    	  InputStream input = new URL( "http://172.25.182.41/" + filename ).openStream();
@@ -52,28 +52,22 @@ public class CSVReader {
 	    	       values = value_string.split(",");
 	    	       
 	    	       
-	    	       System.out.println("R-301 HeatDuty  " + names[25] + " Value is -->" + values[25]);
-	    	       System.out.println("R-302 HeatDuty   " + names[22] + " Value is -->"+ values[22]);
-	    	       String[] pair = {"R-301",names[25],values[25]};
-	    	       result.add(pair);
-	    	       String[] pair2 = {"R-302",names[22],values[22]};
-	    	       result.add(pair2);
+	    	    
+	
+	    	      String[] pair2 = {"R-303","ValueOf_x_R_303",values[22]};
+	    	      result.add(pair2);
 	    	       
-	    	       FeatureServiceUpdater mUpdater = new FeatureServiceUpdater("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer");
-	    	       String[] entityNameList= {"R-301", "R-302"};
+	    	      FeatureServiceUpdater mUpdater = new FeatureServiceUpdater("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST015/FeatureServer");
+	    	      String[] entityNameList= {"R-303"};
 	    	      Map<Integer,Map<String, String>> nameValueListPerLayer = new HashMap<Integer, Map<String, String>>();
-	    	      
+	    	     
 	    	      HashMap<String, String>   parameters301 = new HashMap<String, String>();
 	    	      HashMap<String, String>   parameters302 = new HashMap<String, String>();
 
-	    	      //TODO: if name is still to old convention, query will return null, so what to do really?
-	    	      //ValueOfHeatDutyOfR_301 
-	    	      
-	    	      parameters301.put(oldNewAttriNameDictionary.get(25), values[25]);
-	    	      parameters302.put(oldNewAttriNameDictionary.get(22), values[22]);
-	    	      nameValueListPerLayer.put(0, parameters301);
-	    	      nameValueListPerLayer.put(1, parameters302);
+	    	      parameters302.put(oldNewAttriNameDictionary.get(22), "xxx");
+	    	      nameValueListPerLayer.put(0, parameters302);
 
+	    	      
 	    	       mUpdater.updateFeaturesInTable(entityNameList, nameValueListPerLayer);
 	    	       
 	    	    } finally {

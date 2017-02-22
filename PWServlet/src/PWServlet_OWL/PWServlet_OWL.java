@@ -4,7 +4,7 @@
  * and send back httpRespond as well.
  */
 
-package PWServlet;
+package PWServlet_OWL;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -30,6 +30,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 
 import com.cmclinnovations.modsapi.MoDSAPI;
@@ -51,8 +53,10 @@ import de.derivo.sparqldlapi.QueryEngine;
 import prAspenPlusModels.PrAspenPlusModels;
 import informationQuery.InformationQuery;*/
 
-public class PWServlet extends HttpServlet {
+public class PWServlet_OWL extends HttpServlet {
 		
+	public static String[] userInput;
+	
 	private static final long serialVersionUID = 1L;
 	public static long start_time;
 	public static long end_time;
@@ -84,11 +88,13 @@ public class PWServlet extends HttpServlet {
 	public static Map<Integer, String> OBJECTIDtoCRNumB1 = new HashMap<>(); // ZL-160114 Maps ArcGIS OBJECTID to the reactor in chemical plant
 	public static Map<Integer, String> OBJECTIDtoSPNum = new HashMap<>(); // ZL-160114 Maps ArcGIS OBJECTID to the separator in chemical plant
 	public static Map<Integer, String> OBJECTIDtoDCNum = new HashMap<>(); // ZL-160114 Maps ArcGIS OBJECTID to the decanter in chemical plant
-	public static Map<Integer, String> OBJECTIDtoRadF = new HashMap<>(); 	//Maps ArcGIS OBJECTID to the RadFrac
-	public static Map<Integer, String> OBJECTIDtoReactor = new HashMap<>(); 	//Maps ArcGIS OBJECTID to the Reactor
-	public static Map<Integer, String> CPIDtoMatLine = new HashMap<>(); 	//Maps ArcGIS OBJECTID to the Reactor
-	public static Map<Integer, String> OBJECTIDtoWLB3 = new HashMap<>(); 	//Maps ArcGIS OBJECTID to the Reactor
+	public static Map<Integer, String> OBJECTIDtoRadF = new HashMap<>(); 
 	
+	public static Map<Integer, String> OIDtoR302 = new HashMap<>(); //Maps ArcGIS OBJECTID to the RadFrac
+	public static Map<Integer, String> OIDtoT302 = new HashMap<>();
+	public static Map<Integer, String> OIDtoR301 = new HashMap<>();
+	
+	public static Map<Integer, String> OBJECTIDtoReactor = new HashMap<>(); 	//Maps ArcGIS OBJECTID to the Reactor
 	
 	public static Map<Integer, String> OBJECTIDtoHXB2 = new HashMap<>();
 	public static Map<Integer, String> OBJECTIDtoHXB2in = new HashMap<>();
@@ -177,7 +183,7 @@ public class PWServlet extends HttpServlet {
 	public static String PrAPHCOUTCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPHCoutCSV.CSV");
 	public static String APHCINCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPHCinCSV.CSV");
 	
-	public PWServlet() {
+	public PWServlet_OWL() {
 		super();
 		//OBJECTIDtoHXB2.put(41, "10E01B2");   //Hydrocracking
 		OBJECTIDtoHXB2in.put(29, "E-701"); //Hydrocracking
@@ -620,12 +626,6 @@ public class PWServlet extends HttpServlet {
 		OBJECTIDtoHXB3.put(52, "E-306");   //Biodiesel3
 		OBJECTIDtoHXB3.put(53, "E-301");   //Biodiesel3
 		OBJECTIDtoHXB3.put(54, "E-307");   //Biodiesel3
-		
-		CPIDtoMatLine.put(60, "3-1");
-		CPIDtoMatLine.put(61, "3-2");
-		CPIDtoMatLine.put(62, "3-23"); //use wrong one instead 83 as the true value
-		OBJECTIDtoWLB3.put(42, "FW-302");
-		
 
 		OBJECTIDtoCRNumB1.put(1, "10D01B1"); //Biodiesel1
 		OBJECTIDtoCRNumB1.put(2, "10D03B1"); //Biodiesel1
@@ -666,7 +666,10 @@ public class PWServlet extends HttpServlet {
 		OBJECTIDtoRadF.put(9, "T-504");
 		OBJECTIDtoRadF.put(10, "T-302"); //Biodiesel3
 		OBJECTIDtoRadF.put(11, "T-303"); //Biodiesel3
-
+		
+		OIDtoR302.put(1, "R-302");
+		OIDtoR301.put(1, "R-301");
+		OIDtoT302.put(1, "T-302");
 		
 		/*OBJECTIDtoReactor.put(1, "10D01");
 		OBJECTIDtoReactor.put(2, "10D03");*/
@@ -712,24 +715,23 @@ public class PWServlet extends HttpServlet {
 		String[] layers = request.getParameter("layers").split(",");
 		String[] OBJECTIDs = request.getParameter("OBJECTIDs").split(",");     // OBJECTID indicating parameter of which unit in chemical process has been changed
 		String[] appCallFlag = request.getParameter("appCallFlag").split(","); // (mjk, 151115) adding flag indicating which  function has been called: PowerWorld,  parameterised  PW, AspenPlus, parameterised AP
+		String[] editInfo = request.getParameter("editInfo").split(",");
+		userInput = request.getParameter("editInfo").split(",");
+		System.out.println("============================xxxxx=================="  );
+ 		System.out.println(request.getParameter("layers") + "xxx" + request.getParameter("editInfo"));
+		
+		
 		String[] QueryT = request.getParameter("QueryT").split(",");
 
 		for (int i = 0; i < layers.length; i++) {
-			editStack.add(new String[] { layers[i], OBJECTIDs[i], appCallFlag[i], QueryT[i]});
+			editStack.add(new String[] { layers[i], OBJECTIDs[i], appCallFlag[i],editInfo[i], QueryT[i]});
 		}
+		
+		System.out.println("============================xxxxx2=================="  );
+		System.out.println( editStack.get(0)[0] +"---" + editStack.get(0)[1] +"---" + editStack.get(0)[2] +"---" + editStack.get(0)[3]);
+		
  
-		/**check wheather the httpRequst has been correctly recieved */
-		FileWriter flag1 = null; // (mjk, 151115) testing structure of DataOutputStream object and of wr object
-		flag1 = new FileWriter(httpReqCSV);
-		flag1.append("layers=" + layers[0]);
-		flag1.append(", OBJECTIDs=" + OBJECTIDs[0]);
-		flag1.append(", appCallFlag=" + appCallFlag[0]);
-		flag1.append(", QueryT=" + QueryT[0]);
-		flag1.flush();
-		flag1.close(); // (mjk, 151115) writing this file works fine.
-				
-		/**the following part of code distinguishes which functionality of the JParkSimulator has been called, and then provides the corresponding service by evaluating the associated model */
-		switch (appCallFlag[0]) {		
+ 		switch (appCallFlag[0]) {		
 		case "AP":                 //when Aspen plus model was called, the following command will be executed
 			System.out.println(appCallFlag[0] + " button was pressed! (PWServlet)");
 			start_time = System.currentTimeMillis();  // start a timer in order to track the evaluating time
@@ -783,6 +785,7 @@ public class PWServlet extends HttpServlet {
 			runPrAspenPlusandPowerWorld(editStack);
 			end_time = System.currentTimeMillis();
 			System.out.println("runPrAPPW takes: "+(end_time-start_time));
+			response.getWriter().print("how is everything going(from doPost)");
 			break;				
 		case ("PrAPO"):                                                                  //run parameterised aspen plus with OntoCAPE
 			System.out.println(appCallFlag[0] + " Button was pressed! (doPOST)");
@@ -862,6 +865,9 @@ public class PWServlet extends HttpServlet {
 		case "PrAPPW":
 			System.out.println(appCallFlag[0] + " button was pressed!");
 			runPrAspenPlusandPowerWorld(editStack);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().print("how is everything going(from doGet)");
+ 
 			break;
 		} // ZL-151126
 	}
@@ -2115,7 +2121,7 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
             }
             
 		}catch (OntologyLoadException ex) {
-	           Logger.getLogger(PWServlet.class.getName()).log(Level.SEVERE, null, ex); 
+	           Logger.getLogger(PWServlet_OWL.class.getName()).log(Level.SEVERE, null, ex); 
 	           System.out.println(ex);
 	        } 
 		return arr;
@@ -2179,8 +2185,8 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
  * 3) update the output to ArcGIS database*/
 	public void runAspenPlusandPowerWorld(ArrayList<String[]> editStack) {
 		List<Double> xRow = new ArrayList<>(); 	    		
-		xRow=getAPPWInput(editStack);
-		
+		xRow=getAPPWInput();
+		System.out.println("-----");
 		String[] array = new String[xRow.size()];
 		for (int i = 0; i < xRow.size(); i++) {
 		    array[i] = Double.toString(xRow.get(i));
@@ -2219,7 +2225,7 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 		List<List<Double>> xData = new ArrayList<>(1);                                    // arraylist to
 		List<List<Double>> yData;                                                         // output of the pr aspenplus model
 		
-		xRow=getAPPWInput(editStack);
+		xRow=getAPPWInput();
 		
 // start evaluating the surrogate model		
 		xData.add(xRow);                                                                       // pass all the collected input x-value to xData
@@ -2256,6 +2262,8 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 			System.out.println("xNames= " + xNames);
 			ArrayList<String> yNames = MoDSAPI.getYVarNamesFromAPI(simDir, modelName);
 			System.out.println("yNames= " + yNames);
+			System.out.println("------------------------------------------------------------------");
+			
 			for (int j = 0; j < yNames.size(); j++) {
 				fileWriter.append(yNames.get(j));                                               // write the yNames to the output CSV file
 				fileWriter.append(",");
@@ -2268,6 +2276,9 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 		
 		yData = MoDSAPI.evaluateSurrogate(simDir, modelName, xData);                       // call MoDS API to evaluate the surrogate model basing on the MoDS simulation file "simDir -> modelNam"  and  the input xData that was collected before
 		System.out.println("xData=" + xData);
+		ArrayList<String> yNames = MoDSAPI.getYVarNamesFromAPI(simDir, modelName);
+		System.out.println("yNames= " + yNames);
+		System.out.println("------------------------------------------------------------------");
 		System.out.println("yData=" + yData);                                              // print out the output yData to console
 
 		for (int j = 0; j < yData.size(); j++) {
@@ -2293,112 +2304,14 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 				    
 		    readPrAPPWCSV();	
 		    
+		    
 	}
 	/**this method collects the input data for the AP+PW model */
-	public ArrayList<Double> getAPPWInput(ArrayList<String[]> editStack){ 
-		ArrayList<Map<String, Object>> attributeslist_MX = new ArrayList<Map<String, Object>>(); // additional ArrayList for mixer
-		ArrayList<Map<String, Object>> attributeslist_HX = new ArrayList<Map<String, Object>>(); // additional ArrayList for heat exchanger
-		ArrayList<Map<String, Object>> attributeslist_ML = new ArrayList<Map<String, Object>>(); // additional ArrayList for material line
-		ArrayList<Map<String, Object>> attributeslist_WL = new ArrayList<Map<String, Object>>(); // additional ArrayList for water line
-		
-		
-		UserCredentials user = new UserCredentials();
-		user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");	
-		
-		/*String layer = null, OBJECTID = null, appCallFlag = null;
-		layer = editStack.get(0)[0];
-		OBJECTID = editStack.get(0)[1];
-		appCallFlag = editStack.get(0)[2];
-		System.out.println("layer="+layer);
-		System.out.println("OBJECTID="+OBJECTID);
-		*/
-		
-		for (Integer key : CPIDtoMatLine.keySet()) {
-			try {
-				QueryParameters qParameter_ML = new QueryParameters();                       // create an instance  of QueryParameters to be used  for querying  ArcGIS database for predefined data
-				qParameter_ML.setWhere("CPID='" + key + "'");                            // define FID address of an ArcGIS element
-				qParameter_ML.setOutFields(new String[] { "*" });                            // fetch all  attributes of an ArcGIS element using *
-				QueryTask qTask_ML = null;                                                   // create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
-				Feature graphic_ML = null;                                                   // create an instance of Feature to store an ArcGIS element
-
-				qTask_ML = new QueryTask( "http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Material_line/FeatureServer/0", user); // store URL address of appropriate databaseand user credentials
-				FeatureResult fResult_ML = qTask_ML.execute(qParameter_ML);                   // FeatureResult is used to store information from ArcGIS database requested using qParameter_LP  and qTask_LP
-				graphic_ML = (Feature) fResult_ML.iterator().next();                          // queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
-				attributeslist_ML.add(graphic_ML.getAttributes());                            // append information about the  element in graphic_LP to ArrayList attributeslist_LP
-
-			} catch (Exception e) {
-				e.printStackTrace();                                                            // It prints the stack trace of the Exception to System.err. It's a very simple, but very useful tool for diagnosing an Exception. It tells you what happened and where in the code this happened.
-			}
-		}
-		for (Integer key : OBJECTIDtoWLB3.keySet()) {
-			try {
-				QueryParameters qParameter_WL = new QueryParameters();                       // create an instance  of QueryParameters to be used  for querying  ArcGIS database for predefined data
-				qParameter_WL.setWhere("OBJECTID='" + key + "'");                            // define FID address of an ArcGIS element
-				qParameter_WL.setOutFields(new String[] { "*" });                            // fetch all  attributes of an ArcGIS element using *
-				QueryTask qTask_WL = null;                                                   // create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
-				Feature graphic_WL = null;                                                   // create an instance of Feature to store an ArcGIS element
-
-				qTask_WL = new QueryTask( "http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/water_line/FeatureServer/0", user); // store URL address of appropriate databaseand user credentials
-				FeatureResult fResult_WL = qTask_WL.execute(qParameter_WL);                   // FeatureResult is used to store information from ArcGIS database requested using qParameter_LP  and qTask_LP
-				graphic_WL = (Feature) fResult_WL.iterator().next();                          // queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
-				attributeslist_WL.add(graphic_WL.getAttributes());                            // append information about the  element in graphic_LP to ArrayList attributeslist_LP
-
-			} catch (Exception e) {
-				e.printStackTrace();                                                            // It prints the stack trace of the Exception to System.err. It's a very simple, but very useful tool for diagnosing an Exception. It tells you what happened and where in the code this happened.
-			}
-		}
-		
-		for (Integer key : OBJECTIDtoHXB3.keySet()) {
-			try {
-				QueryParameters qParameter_HX = new QueryParameters();                       // create an instance  of QueryParameters to be used  for querying  ArcGIS database for predefined data
-				qParameter_HX.setWhere("OBJECTID='" + key + "'");                            // define FID address of an ArcGIS element
-				qParameter_HX.setOutFields(new String[] { "*" });                            // fetch all  attributes of an ArcGIS element using *
-				QueryTask qTask_HX = null;                                                   // create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
-				Feature graphic_HX = null;                                                   // create an instance of Feature to store an ArcGIS element
-
-				qTask_HX = new QueryTask( "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/heater_cooler/FeatureServer/0", user); // store URL address of appropriate databaseand user credentials
-				FeatureResult fResult_HX = qTask_HX.execute(qParameter_HX);                   // FeatureResult is used to store information from ArcGIS database requested using qParameter_LP  and qTask_LP
-				graphic_HX = (Feature) fResult_HX.iterator().next();                          // queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
-				attributeslist_HX.add(graphic_HX.getAttributes());                            // append information about the  element in graphic_LP to ArrayList attributeslist_LP
-
-			} catch (Exception e) {
-				e.printStackTrace();                                                            // It prints the stack trace of the Exception to System.err. It's a very simple, but very useful tool for diagnosing an Exception. It tells you what happened and where in the code this happened.
-			}
-		}									
-	
-		for (Integer key : OBJECTIDtoMXB3.keySet()) {
-//			System.out.println(key);
-			try {
-				QueryParameters qParameter_MX = new QueryParameters(); // create an instance of QueryParameters to be used for querying ArcGIS database for predefined data
-				qParameter_MX.setWhere("OBJECTID='" + key + "'"); // define FID address of an ArcGIS element
-				qParameter_MX.setOutFields(new String[] { "*" }); // fetch all attributes of an ArcGIS element using *
-				QueryTask qTask_MX = null; // create an instance of QueryTask to store URL address of appropriate database and user credentials necessary for accessing it
-				Feature graphic_MX = null; // create an instance of Feature to store an ArcGIS element
-
-				qTask_MX = new QueryTask("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Mixer/FeatureServer/0",user); // store URL address of appropriate databaseand user credentials
-
-				FeatureResult fResult_MX = qTask_MX.execute(qParameter_MX); // FeatureResult is  used to store information from ArcGIS database  requested using qParameter_LP and qTask_LP
-				graphic_MX = (Feature) fResult_MX.iterator().next(); // queryResult.iterator() iterates over the elements in fResult_LP and stores it in graphic_LP; qParameter_LP requests information about a single element only
-				attributeslist_MX.add(graphic_MX.getAttributes()); // append information about the element in graphic_LP to ArrayList attributeslist_LP
-
-			} catch (Exception e) {
-				e.printStackTrace(); // It prints the stack trace of the Exception to System.err. It's a very simple, but very useful tool for diagnosing an Exception. It tells you  what happened and where in the code this happened.
-			}
-		}
-		
-		
-		
+	//public ArrayList<Double> getAPPWInput(ArrayList<String[]> editStack){ 
+		public ArrayList<Double> getAPPWInput(){ 
+		 
 		ArrayList<Double> xRow = new ArrayList<Double>();                                     // extra arraylist to collect the x-value required as input to the pr aspen plus model
-//		ArrayList<ArrayList<Double>> xData = new ArrayList<>(1);                               // arraylist to
-//		ArrayList<ArrayList<Double>> yData;                                                    // output of the pr aspenplus model
-		
-/**																	
-		Thread thread_MX = new Thread(new Set_MX());
-		 thread_MX.start();
-	
-		Thread thread_HX = new Thread(new Set_HX());
-		 thread_HX.start();	
-**/		 		 
+ 
 		 FileWriter filewriterAPIN = null;
 
 		try {
@@ -2407,121 +2320,119 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 
 			filewriterAPIN.append("FOIL, TOIL, FMEOH, TMEOH, FREWATER, PBOILER");
 			filewriterAPIN.append("\n");
-			
-			for (int i = 0; i < attributeslist_ML.size(); i++) {
-				for (String key : attributeslist_ML.get(i).keySet()) { // go through  all the  heat exchangers in biodiesel plant
-					if (key == "CPID") {				
-//50-56
-						if (CPIDtoMatLine.get(i + 60).equals("3-1")) { 
-							// "10E01" is the heat exchanger for oil to be heated before feeding to the reactor
-							filewriterAPIN.append(String.valueOf(attributeslist_ML.get(i).get("Mat_1_qnt")));
-							filewriterAPIN.append(",");
-							filewriterAPIN.append(String.valueOf(attributeslist_ML.get(i).get("Mat_T")));
-							filewriterAPIN.append(",");
-//							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1_P")));
-//							filewriterAPIN.append(",");
-							xRow.add(Double.parseDouble(String.valueOf(attributeslist_ML.get(i).get("Mat_1_qnt")))); // add the feeding mole flowrate of oil to xRow
-							xRow.add(Double.parseDouble(String.valueOf(attributeslist_ML.get(i).get("Mat_T")))); // add the temperature of oil to xRow
-//							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn1_P")))); // add the pressure of oil to xRow
-						break;
-						}
-						if (CPIDtoMatLine.get(i + 60).equals("3-2")) { 
-							// "10E01" is the heat exchanger for oil to be heated before feeding to the reactor
-							filewriterAPIN.append(String.valueOf(attributeslist_ML.get(i).get("Mat_1_qnt")));
-							filewriterAPIN.append(",");
-							filewriterAPIN.append(String.valueOf(attributeslist_ML.get(i).get("Mat_T")));
-							filewriterAPIN.append(",");
-//							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1_P")));
-//							filewriterAPIN.append(",");
-							xRow.add(Double.parseDouble(String.valueOf(attributeslist_ML.get(i).get("Mat_1_qnt")))); // add the feeding mole flowrate of oil to xRow
-							xRow.add(Double.parseDouble(String.valueOf(attributeslist_ML.get(i).get("Mat_T")))); // add the temperature of oil to xRow
-//							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn1_P")))); // add the pressure of oil to xRow
-						break;
-						}
-					}
-				}
-			}
-			
-			for (int i = 0; i < attributeslist_WL.size(); i++) {
-				for (String key : attributeslist_WL.get(i).keySet()) { // go through  all the  heat exchangers in biodiesel plant
-					if (key == "OBJECTID") {				
-//50-56
-						if (OBJECTIDtoWLB3.get(i + 42).equals("FW-302")) { 
-							// "10E01" is the heat exchanger for oil to be heated before feeding to the reactor
-							filewriterAPIN.append(String.valueOf(attributeslist_WL.get(i).get("Mat_qnt")));
-							filewriterAPIN.append(",");
-							filewriterAPIN.append(String.valueOf(attributeslist_WL.get(i).get("Mat_P")));
-							filewriterAPIN.append(",");
-//							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1_P")));
-//							filewriterAPIN.append(",");
-							xRow.add(Double.parseDouble(String.valueOf(attributeslist_WL.get(i).get("Mat_qnt")))); // add the feeding mole flowrate of oil to xRow
-							xRow.add(Double.parseDouble(String.valueOf(attributeslist_WL.get(i).get("Mat_P")))); // add the temperature of oil to xRow
-//							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn1_P")))); // add the pressure of oil to xRow
-						break;
-						}
-					}
-				}
-			}
 						
-			for (int i = 0; i < attributeslist_HX.size(); i++) {
-				for (String key : attributeslist_HX.get(i).keySet()) { // go through  all the  heat exchangers in biodiesel plant
-					if (key == "OBJECTID") {				
-//50-56
-						if (OBJECTIDtoHXB3.get(i + 48).equals("E-301")) { 
-							// "10E01" is the heat exchanger for oil to be heated before feeding to the reactor
-							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")));
+			Map<String,String> name_value_map = new HashMap<>();
+			
+			  
+			 if(userInput[0].contains("plusValue"))
+			 {
+			    System.out.println("---------------------> Crush 1");
+				System.out.println(userInput[0]);
+				String name = userInput[0].split("plusValue")[0];
+				String value = userInput[0].split("plusValue")[1];
+				 System.out.println("---------------------> Crush 2");
+				name_value_map.put(name, value);
+				OWLUpdater updater = new OWLUpdater();
+				System.out.println("name= "+name);
+				System.out.println("value= "+value);
+				 System.out.println("---------------------> Crush 3");
+				String[]modif= name.split("_");
+				String lastone = modif[modif.length-1];
+				
+				String modifname = name.replace(("_"+lastone),("-"+lastone));						
+				 System.out.println("---------------------> Crush 4" + modifname);
+			  	updater.updateData(modifname, value,"E-301");
+				 System.out.println("---------------------> Crush 5");
+			 	System.out.println("--------->" + modifname);
+			 	
+			 }
+			 
+		
+			 
+			 
+			 System.out.println("---------------------> Crush 6");
+			 
+			String ValueOfF_3_1 = OWLFileReader.read_owl_file(null, "ValueOfmolarF_3-1");
+			System.out.println("---------------------> Crush 7");
+			 
+			String ValueOfTemperatureOf3_1 = OWLFileReader.read_owl_file(null, "ValueOfTemperatureOf3-1");
+			String ValueOfF_3_2 = OWLFileReader.read_owl_file(null, "ValueOfmolarF_3-4");
+			String ValueOfTemperatureOf3_2 = OWLFileReader.read_owl_file(null, "ValueOfTemperatureOf3-4");
+			String ValueOfOutletPressureOfP_302 = OWLFileReader.read_owl_file(null, "ValueOfOutletPressureOfP-302");
+			String ValueOfF_FW_301 = OWLFileReader.read_owl_file(null, "ValueOfmolarF_FW-301");
+			
+			System.out.println("list of the output function= "+ValueOfF_3_1);
+			System.out.println("list of the output function= "+ValueOfTemperatureOf3_1);
+			System.out.println("list of the output function= "+ValueOfF_3_2);
+			System.out.println("list of the output function= "+ValueOfTemperatureOf3_2);
+			System.out.println("list of the output function= "+ValueOfOutletPressureOfP_302);
+			System.out.println("list of the output function= "+ValueOfF_FW_301);
+			 System.out.println("---------------------> Crush 8");
+			
+			
+			name_value_map.put("ValueOfmolarF_3-1", ValueOfF_3_1);
+			name_value_map.put("ValueOfTemperatureOf3-1", ValueOfTemperatureOf3_1);
+			name_value_map.put("ValueOfmolarF_3-4", ValueOfF_3_2);
+			name_value_map.put("ValueOfTemperatureOf3-4", ValueOfTemperatureOf3_2);
+			name_value_map.put("ValueOfmolarF_FW-301", ValueOfF_FW_301);
+			name_value_map.put("ValueOfOutletPressureOfP-302", ValueOfOutletPressureOfP_302);
+			 
+	
+			
+			
+			
+			
+ 
+							/** This block will be replaced by the below ones
+							 
+							 filewriterAPIN.append(name_value_map.get(ValueOfF_3_1) );
 							filewriterAPIN.append(",");
-							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T")));
+							filewriterAPIN.append(name_value_map.get(ValueOfTemperatureOf3_1) );
 							filewriterAPIN.append(",");
-//							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1_P")));
-//							filewriterAPIN.append(",");
-							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")))); // add the feeding mole flowrate of oil to xRow
-							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn1_T")))); // add the temperature of oil to xRow
-//							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn1_P")))); // add the pressure of oil to xRow
-						break;
-						}
-					}
-				}
-			}
+ 
+							xRow.add(Double.parseDouble(name_value_map.get(ValueOfF_3_1))); // add the feeding mole flowrate of oil to xRow
+							xRow.add(Double.parseDouble(name_value_map.get(ValueOfTemperatureOf3_1))); // add the temperature of oil to xRow
+//	 
 
-			for (int i = 0; i < attributeslist_MX.size(); i++) {
-				for (String key : attributeslist_MX.get(i).keySet()) { // go through all  the mixers in biodiesel plant
-					if (key == "OBJECTID") {
-//19-21
-						if (OBJECTIDtoMXB3.get(i + 18).equals("M-301")) { // "mx01" is the mixer for methanol and the catalyst to be mixed before feeding to the reactor
-							System.out.println("formixer="+OBJECTIDtoHXB3.get(i+53));
-							filewriterAPIN.append(String.valueOf(attributeslist_MX.get(i).get("MatIn2Qnt")));
+			 
+							filewriterAPIN.append(name_value_map.get(ValueOfF_3_2));
 							filewriterAPIN.append(",");
-							filewriterAPIN.append(String.valueOf(attributeslist_MX.get(i).get("MatIn2_T")));
+							filewriterAPIN.append(name_value_map.get(ValueOfTemperatureOf3_2));
 							filewriterAPIN.append(",");
-//							filewriterAPIN.append(String.valueOf(attributeslist_MX.get(i).get("MatIn2_P")));
-//							filewriterAPIN.append(",");
-							xRow.add(Double.parseDouble(String.valueOf(attributeslist_MX.get(i).get("MatIn2Qnt")))); // add the feeding mole flowrate of methanol  to xRow
-							xRow.add(Double.parseDouble(String.valueOf(attributeslist_MX.get(i).get("MatIn2_T")))); // add the temperature of the feeding methanol flow to xRow							
-//							xRow.add(Double.parseDouble(String.valueOf(attributeslist_MX.get(i).get("MatIn2_P")))); // add the pressure of the feeding methanol flow to xRow
-						break;
-						}
-					}
-				}
-			}
-//getting the flowrate for re-water and operation pressure for the boiler			
-			for (int i = 0; i < attributeslist_HX.size(); i++) {
-				for (String key : attributeslist_HX.get(i).keySet()) { // go through all the heat exchanger in biodiesel plant
-					if (key == "OBJECTID") {
-
-						if (OBJECTIDtoHXB3.get(i + 48).equals("E-307")) {
-							System.out.println(OBJECTIDtoHXB3.get(i+54));
-							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")));
+ 
+							xRow.add(Double.parseDouble(name_value_map.get(ValueOfF_3_2))); // add the feeding mole flowrate of methanol  to xRow
+							xRow.add(Double.parseDouble(name_value_map.get(ValueOfTemperatureOf3_2))); // add the temperature of the feeding methanol flow to xRow							
+ 
+ 
+							filewriterAPIN.append(name_value_map.get(ValueOfF_FW_301));
 							filewriterAPIN.append(",");
-							filewriterAPIN.append(String.valueOf(attributeslist_HX.get(i).get("Operate_P")));
+							filewriterAPIN.append(name_value_map.get(ValueOfOutletPressureOfP_302));
 							filewriterAPIN.append(",");
-							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("MatIn1Qnt")))); // add the temperature of the outlet cold stream  to xRow
-							xRow.add(Double.parseDouble(String.valueOf(attributeslist_HX.get(i).get("Operate_P")))); // add the temperature of the outlet cold stream  to xRow
-						break;
-						}
-					}
-				}
-			}
+							
+							
+							xRow.add(Double.parseDouble(name_value_map.get(ValueOfF_FW_301))); // add the temperature of the outlet cold stream  to xRow
+							xRow.add(Double.parseDouble(name_value_map.get(ValueOfOutletPressureOfP_302))); // add the temperature of the outlet cold stream  to xRow
+	 */
+			
+			filewriterAPIN.append(ValueOfF_3_1);
+			filewriterAPIN.append(",");
+			filewriterAPIN.append(ValueOfTemperatureOf3_1);
+			filewriterAPIN.append(",");
+			filewriterAPIN.append(ValueOfF_3_2);
+			filewriterAPIN.append(",");
+			filewriterAPIN.append(ValueOfTemperatureOf3_2);
+			filewriterAPIN.append(",");
+			filewriterAPIN.append(ValueOfF_FW_301);
+			filewriterAPIN.append(",");
+			filewriterAPIN.append(ValueOfOutletPressureOfP_302);
+			
+			xRow.add(Double.parseDouble(ValueOfF_3_1)); // add the feeding mole flowrate of oil to xRow
+			xRow.add(Double.parseDouble(ValueOfTemperatureOf3_1)); // add the temperature of oil to xRow
+			xRow.add(Double.parseDouble(ValueOfF_3_2)); // add the feeding mole flowrate of oil to xRow
+			xRow.add(Double.parseDouble(ValueOfTemperatureOf3_2)); // add the temperature of oil to xRow
+			xRow.add(Double.parseDouble(ValueOfF_FW_301)); // add the feeding mole flowrate of oil to xRow
+			xRow.add(Double.parseDouble(ValueOfOutletPressureOfP_302)); // add the temperature of oil to xRow
+			
 			System.out.println("xRow=" + xRow);                                                                    // print out all the x-data that has been collected to console
 			
 			filewriterAPIN.flush();
@@ -2533,7 +2444,6 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 		
 		return xRow;
 	} 
-		
 	/**This part of code is related to the "run PrAP from OntoCAPE" function on the GUI, 
 	 * it collects the un-modified input data and all the parameters for the surrogate model from an owl file, 
 	 * evaluate the surrogate model, update the output to ArcGIS database */
@@ -2819,7 +2729,7 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 		    System.out.println("C0="+C[0]+", C1="+C[1]+", C2="+C[2]);
             
 		}catch (OntologyLoadException ex) {
-           Logger.getLogger(PWServlet.class.getName()).log(Level.SEVERE, null, ex); 
+           Logger.getLogger(PWServlet_OWL.class.getName()).log(Level.SEVERE, null, ex); 
            System.out.println(ex);
         }
         			
@@ -2896,7 +2806,7 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 		
     /**This function runs only the aspen plus model for biodieslplant-3 (without running the PowerWorld model)*/
 	public void runAspenPlus(ArrayList<String[]> editStack) {
-		getAPPWInput(editStack);          //collects the input data
+		getAPPWInput();          //collects the input data
 		runPyScript(editStack);           // call python script to run aspen plus model
 		readAPCSV();                      //update the output 
 /*		
@@ -3816,10 +3726,10 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 
 					if (OBJECTIDtoReactor.get(j + 1).equals("10D01")) {                                                                     
 						Map<String, Object> ReactorAttributes = ReactorTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
-						if (!data[26].trim().isEmpty()) {
-							ReactorAttributes.put("Heat_Duty",Float.parseFloat(data[26].trim())*1000);                                     // upgrade the heat duty of reactor 10D01 to ArcGIS  databse
+						if (!data[25].trim().isEmpty()) {
+							ReactorAttributes.put("Heat_Duty",Float.parseFloat(data[25].trim())*1000);                                     // upgrade the heat duty of reactor 10D01 to ArcGIS  databse
 						}
-						System.out.println("HeatDuty="+Float.parseFloat(data[26].trim())*1000);
+						System.out.println("HeatDuty="+Float.parseFloat(data[25].trim())*1000);
 //updating the PW aspect of the APPW model						
 						if (!data[112].trim().isEmpty()) {
 							ReactorAttributes.put("V_pu",Float.parseFloat(data[112].trim()));                                             // upgrade the new per unit voltage of load point reactor 10D01 to ArcGIS  databse
@@ -3877,6 +3787,7 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 		BufferedReader fileReader = null;
 		UserCredentials user = new UserCredentials();
 		user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
+		OWLUpdater updater = new OWLUpdater();
 
 		try {
 			long start = System.currentTimeMillis(); // start a timer
@@ -3886,30 +3797,43 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 			QueryParameters loadAllFeatures = new QueryParameters();
 			loadAllFeatures.setWhere("OBJECTID IS NOT NULL");
 			
-			GeodatabaseFeatureServiceTable MatLineTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Material_line/FeatureServer",user, 0);
-			MatLineTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
-			/*System.out.println(1);
-			System.out.println(MatLineTable.getFields());
-			System.out.println(2);
-			System.out.println(MatLineTable.getStatus());
-			System.out.println(3);*/
-			System.out.println(MatLineTable.initialize());
-			//System.out.println(4);
-			System.out.println(MatLineTable.getStatus());
-			//System.out.println(5);
-			MatLineTable.getInitializationError();
-			//System.out.println(6);
-			
-			
-			GeodatabaseFeatureServiceTable ReactorTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Reactor/FeatureServer",user, 0);
+			/*GeodatabaseFeatureServiceTable ReactorTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Reactor/FeatureServer",user, 0);
 			ReactorTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
-			System.out.println(ReactorTable.initialize());
-			System.out.println(ReactorTable.getStatus());
-			ReactorTable.getInitializationError();
+			ReactorTable.initialize();
 			
+			GeodatabaseFeatureServiceTable RadFracTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/RadFrac/FeatureServer", user, 0);
+			RadFracTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
+			RadFracTable.initialize();*/
+			
+			System.out.println("what's missing");
+			
+			
+			
+			GeodatabaseFeatureServiceTable ReactorTable1 = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer", user,11); //11 the correct one
+			ReactorTable1.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
+			ReactorTable1.initialize();
+			System.out.println(ReactorTable1.initialize());
+			System.out.println(ReactorTable1.getStatus());
+			ReactorTable1.getInitializationError();
+			
+						
+			GeodatabaseFeatureServiceTable ReactorTable2 = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer",user, 12); //12 the correct one
+			ReactorTable2.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
+			ReactorTable2.initialize();
+			System.out.println(ReactorTable2.initialize());
+			System.out.println(ReactorTable2.getStatus());
+			ReactorTable2.getInitializationError();
+			
+			GeodatabaseFeatureServiceTable RadFracTable = new GeodatabaseFeatureServiceTable("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer",user, 17); //17 the correct one
+			RadFracTable.setFeatureRequestMode(GeodatabaseFeatureServiceTable.FeatureRequestMode.MANUAL_CACHE);
+			RadFracTable.initialize();
+			System.out.println(RadFracTable.initialize());
+			System.out.println(RadFracTable.getStatus());
+			RadFracTable.getInitializationError();
 
-			final CountDownLatch latch = new CountDownLatch(2);                                                 // ZL-151207 handles one asynchronous processes, only continuesThread when it reaches 0
-			ReactorTable.populateFromService(loadAllFeatures, false,
+			final CountDownLatch latch = new CountDownLatch(3);                                                 // ZL-151207 handles one asynchronous processes, only continuesThread when it reaches 0
+		                                                                                    // wait until all feature service tables are ready then continue			
+			ReactorTable1.populateFromService(loadAllFeatures, false,
 					new CallbackListener<Boolean>() {
 						@Override
 						public void onCallback(Boolean status) {                                               // Asynchronous callback: code must wait for populate from service to finish loading features
@@ -3924,7 +3848,22 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 						}
 					});
 			
-			MatLineTable.populateFromService(loadAllFeatures, false,
+			ReactorTable2.populateFromService(loadAllFeatures, false,
+					new CallbackListener<Boolean>() {
+						@Override
+						public void onCallback(Boolean status) {                                               // Asynchronous callback: code must wait for populate from service to finish loading features
+							if (status == true) {
+								latch.countDown();                                                             // latch decrement if feature service table is ready
+							}
+						}
+
+						@Override
+						public void onError(Throwable e) {
+							e.printStackTrace();
+						}
+					});  
+		
+			RadFracTable.populateFromService(loadAllFeatures, false,
 					new CallbackListener<Boolean>() {
 						@Override
 						public void onCallback(Boolean status) {                                               // Asynchronous callback: code must wait for populate from service to finish loading features
@@ -3938,91 +3877,120 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 							e.printStackTrace();
 						}
 					});
-			latch.await();                                                                                       // wait until all feature service tables are ready then continue
-
+			latch.await();  
+			
+			
 			while ((line = fileReader.readLine()) != null) {
 				String[] data = line.split(",");
 				//System.out.println("data= " + data);
 				String[] ArcGISOBJECTID = null;
 				ArcGISOBJECTID = new String[50];
-
-				for (int j = 0; j < 2; j++) {
-					ArcGISOBJECTID[j] = String.valueOf(j + 197); //still use indication of object id to write value into the feature object; 197 number still follow the old "material line" feature.
-					System.out.println(ArcGISOBJECTID[j]);
-					
-					if (CPIDtoMatLine.get(j + 61).equals("3-23")) {                                                                     
-						Map<String, Object> MatLineAttributes = MatLineTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
-						if (!data[0].trim().isEmpty()) {
-							MatLineAttributes.put("Mat_4_qnt",Float.parseFloat(data[0].trim()));                                     // upgrade the heat duty of reactor 10D01 to ArcGIS  databse
-						
-						System.out.println("ok1");
-						}
-						System.out.println("FlowOut="+Float.parseFloat(data[0].trim()));
-						if (!data[2].trim().isEmpty()) {
-							MatLineAttributes.put("Mat_T",Float.parseFloat(data[2].trim()));                                     // upgrade the heat duty of reactor 10D01 to ArcGIS  databse
-							System.out.println("ok2");
-						}
-						System.out.println("Flow_Temperature="+Float.parseFloat(data[2].trim()));
-						MatLineTable.updateFeature(Long.parseLong(ArcGISOBJECTID[j]),MatLineAttributes);                                // update feature table locally
-						System.out.println(Long.parseLong(ArcGISOBJECTID[j]));
-					}
-				}
 				
-				for (int j = 0; j < 20; j++) {
+				for (int j = 0; j < 1; j++) {//20
 					ArcGISOBJECTID[j] = String.valueOf(j + 1);
+					System.out.println(ArcGISOBJECTID);
 					
-					if (OBJECTIDtoReactor.get(j + 1).equals("R-301")) {                                                                     
-						Map<String, Object> ReactorAttributes = ReactorTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
+					if (OIDtoR301.get(j + 1).equals("R-301")) {                                                                     
+						Map<String, Object> ReactorAttributes = ReactorTable1.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[25].trim().isEmpty()) {
-							ReactorAttributes.put("Heat_Duty",Float.parseFloat(data[25].trim())*1000);                                     // upgrade the heat duty of reactor 10D01 to ArcGIS  databse
+						//	updater.updateData("ValueOfHeatDutyOfR-301", String.valueOf(Float.parseFloat(data[25].trim())*1000) + "+++++","R-301");
+							updater.updateData("ValueOfHeatDutyOfR-301", String.valueOf(Float.parseFloat(data[25].trim())*1000),"R-301");
+							System.out.println("HeatDuty="+Float.parseFloat(data[25].trim())*1000);
+							System.out.println("========================Modified==================");
+							System.in.read();
 						}
 						System.out.println("HeatDuty="+Float.parseFloat(data[25].trim())*1000);
 //updating the PW aspect of the APPW model						
-						if (!data[111].trim().isEmpty()) {
-							ReactorAttributes.put("V_pu",Float.parseFloat(data[111].trim()));                                             // upgrade the new per unit voltage of load point reactor 10D01 to ArcGIS  databse
-						}
-						System.out.println("V_pu="+ Float.parseFloat(data[111].trim()));						
+						
 						if (!data[112].trim().isEmpty()) {
-							ReactorAttributes.put("theta_act",Float.parseFloat(data[112].trim()));                                       // upgrade the new bus angle of load point reactor 10D01 to ArcGIS  databse
+							//updater.updateData("V_Angle_LoadPoint_R-602001",data[112].trim());
+							//ReactorAttributes.put("V_Angle_LoadPoint_R_602001",Float.parseFloat(data[112].trim()));                                          //field name following what exist in pop-up window 
+							
 						}
-						System.out.println("theta_act="+ Float.parseFloat(data[112].trim()));
+						System.out.println("theta_act="+ Float.parseFloat(data[112].trim()));						
+						
 						if (!data[113].trim().isEmpty()) {
-							ReactorAttributes.put("V_act_kv",Float.parseFloat(data[113].trim()));                                       // upgrade the new actual voltage of load point reactor 10D01 to ArcGIS  databse
+							//updater.updateData("V_ActualVoltage_LoadPoint_R-602001",data[113].trim());
+							//System.out.println("reactor attribute= "+ReactorAttributes.size());
+							//ReactorAttributes.put("V_ActualVoltage_LoadPoint_R_602",Float.parseFloat(data[113].trim()));//field name following what exist in pop-up window 
+													
 						}
 						System.out.println("V_act_kv="+ Float.parseFloat(data[113].trim()));
-						ReactorTable.updateFeature(Long.parseLong(ArcGISOBJECTID[j]),ReactorAttributes);                                // update feature table locally
+						
+						ReactorTable1.updateFeature(Long.parseLong(ArcGISOBJECTID[j]),ReactorAttributes);                                // update feature table locally
 						
 					}
 					
 					
-					
-					
-					
-					if (OBJECTIDtoReactor.get(j + 1).equals("R-302")) {                                                                     
-						Map<String, Object> ReactorAttributes = ReactorTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
-						if (!data[22].trim().isEmpty()) {
-							ReactorAttributes.put("Heat_Duty",Float.parseFloat(data[22].trim())*1000);                                // upgrade the heat duty of reactor 10D03 to ArcGIS  databse
+					if (OIDtoR302.get(j + 1).equals("R-302")) {                                                                     
+						Map<String, Object> ReactorAttributes = ReactorTable2.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
+						if (!data[23].trim().isEmpty()) {
+							//updater.updateData("ValueOfHeatDutyOfR-302", String.valueOf(Float.parseFloat(data[23].trim())*1000),"R-302");
+							//ReactorAttributes.put("ValueOfHeatDutyOfR_302",Float.parseFloat(data[23].trim())*1000);           //field name following what exist in pop-up window 
+							
 						}
-						System.out.println("HeatDuty="+Float.parseFloat(data[22].trim())*1000);
-						if (!data[101].trim().isEmpty()) {
-							ReactorAttributes.put("V_pu",Float.parseFloat(data[101].trim()));                                        // upgrade the new per unit voltage of load point reactor 10D03 to ArcGIS  databse
-						}
-						System.out.println("V_pu="+ Float.parseFloat(data[101].trim()));						
+						System.out.println("HeatDuty="+Float.parseFloat(data[23].trim())*1000);
+//updating the PW aspect of the APPW model						
+						
 						if (!data[102].trim().isEmpty()) {
-							ReactorAttributes.put("theta_act",Float.parseFloat(data[102].trim()));                                   // upgrade the new bus angle of load point reactor 10D03 to ArcGIS  databse
+							//updater.updateData("V_Angle_LoadPoint_R-602002",data[102].trim());
+							//ReactorAttributes.put("V_Angle_LoadPoint_R_602002",Float.parseFloat(data[102].trim())); //field name following what exist in pop-up window 
+							
 						}
-						System.out.println("theta_act="+ Float.parseFloat(data[102].trim()));
+						System.out.println("theta_act="+ Float.parseFloat(data[102].trim()));						
+						
 						if (!data[103].trim().isEmpty()) {
-							ReactorAttributes.put("V_act_kv",Float.parseFloat(data[103].trim()));                                    // upgrade the new actual voltage of load point reactor 10D03 to ArcGIS  databse
+							//updater.updateData("V_ActualVoltage_LoadPoint_R-602002",data[103].trim());
+							//ReactorAttributes.put("V_ActualVoltage_LoadPoint_R_602",Float.parseFloat(data[103].trim())); //field name following what exist in pop-up window                                        // upgrade the new actual voltage of load point reactor 10D01 to ArcGIS  databse
+							
 						}
 						System.out.println("V_act_kv="+ Float.parseFloat(data[103].trim()));
-						ReactorTable.updateFeature(Long.parseLong(ArcGISOBJECTID[j]),ReactorAttributes);                             // update feature table locally
+						
+						ReactorTable2.updateFeature(Long.parseLong(ArcGISOBJECTID[j]),ReactorAttributes);                                // update feature table locally
+					
 					}
 				}
-			}
-			ReactorTable.applyEdits(null); // commit local updates onto server
-			MatLineTable.applyEdits(null);
 			
+				for (int j = 0; j < 1; j++) {//15
+					ArcGISOBJECTID[j] = String.valueOf(j + 1);
+					System.out.println(ArcGISOBJECTID);
+					
+					
+
+					if (OIDtoT302.get(j + 1).equals("T-302")) {                                                                     // heat  exchanger  10E03 is  for now where the output data should be upgraded to
+						
+						System.out.println("success or not??");
+						
+						
+						Map<String, Object> RadFracAttributes = RadFracTable.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
+						if (!data[0].trim().isEmpty()) {
+							updater.updateData("ValueOfmolarF_3-23", data[0].trim(),"T-302");
+							RadFracAttributes.put("ValueOfmolarF_3_23",Float.parseFloat(data[0].trim()));   // upgrade the new mole  flowrate of ester3 that calculated  by the pr aspen  plus model to ArcGIS  databse
+							System.out.println("it's updated");
+						}
+						System.out.println("F="+data[0]);
+						
+						if (!data[2].trim().isEmpty()) {
+							updater.updateData("ValueOfTemperatureOf3-23", data[2].trim(),"T-302");
+							RadFracAttributes.put("ValueOfTemperatureOf3_23",Float.parseFloat(data[2].trim()));                                       // upgrade the new temperature of ester3 that calculated by the pr aspen plus model to ArcGIS databse
+							
+						}
+						System.out.println("Temperature="+data[2]);
+						
+						RadFracTable.updateFeature(Long.parseLong(ArcGISOBJECTID[j]),RadFracAttributes);                          // update feature table locally
+						break;
+					}
+				}
+				
+
+				
+				
+			
+			}
+			ReactorTable1.applyEdits(null);// commit local updates onto server
+			ReactorTable2.applyEdits(null);// commit local updates onto server
+			RadFracTable.applyEdits(null); // commit local updates onto server
+
 			System.out.println("Updating process took " + String.valueOf(System.currentTimeMillis() - start) + "ms"); // tells how long it took to update
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4033,6 +4001,9 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 				e.printStackTrace();
 			}
 		}
+		
+		
+	    
 	}
 
 //end of updating the output of the Pr AP+PW model		
