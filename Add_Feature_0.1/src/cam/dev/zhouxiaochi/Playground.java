@@ -26,7 +26,9 @@ import javax.swing.tree.TreePath;
 import org.json.JSONException;
 
 public class Playground {
-  public static void main(String args[]) throws IOException, JSONException {
-	  CSVReader.readCSV("PrAPPW");
+  public static void main(String args[]) throws Exception {
+	  	OWLReader.read_owl_file(null, "SinglePhase_LPS-303");
+	  	System.out.println(OWLReader.name_list);
+	  	System.out.println(OWLReader.value_list);
   }
 }

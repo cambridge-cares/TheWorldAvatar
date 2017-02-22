@@ -782,36 +782,6 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 		contentPane.add(QueryButton);
 		contentPane.add(map, BorderLayout.CENTER);
 		
-    JLayeredPane menuPanel = new JLayeredPane();
-    menuPanel.setLayout(new BorderLayout(0,0));
-    menuPanel.setVisible(true);
-    final TreeMenu cbt = new TreeMenu();
-    menuPanel.add(cbt);
-    cbt.addCheckChangeEventListener(new TreeMenu.CheckChangeEventListener() {
-        public void checkStateChanged(TreeMenu.CheckChangeEvent event) {
-            System.out.println("event");
-            TreePath[] paths = cbt.getCheckedPaths();
-            for (TreePath tp : paths) {
-                for (Object pathPart : tp.getPath()) {
-                    System.out.print(pathPart + ","); 
-                }                   
-                System.out.println();
-            }
-        }           
-    });   
-    
-       
-
-    
-    
-  
-  //adding the graph here
-    //map = createMap();
-   //contentPane.add(map);
-    
-    //only until here
-    menuPanel.setSize(100, 5000);
-    window.add(menuPanel);
    
     window.add(contentPane);
     
