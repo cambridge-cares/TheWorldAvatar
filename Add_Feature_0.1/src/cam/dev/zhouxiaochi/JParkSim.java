@@ -39,12 +39,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-
-
-
-
-
+import java.util.function.Function;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -58,13 +53,17 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneLayout;
 import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import com.esri.core.geometry.Envelope;
@@ -115,7 +114,8 @@ import com.esri.core.symbol.PictureMarkerSymbol;
 
 
 public class JParkSim {
-	
+	  final static Logger logger = LoggerFactory.getLogger(OWLReader.class);
+
  int filenumber = 0;
 		 
 		public static int[] count;
@@ -181,7 +181,7 @@ public class JParkSim {
 	Portal portal = new Portal("http://www.arcgis.com",null);
 	  // item ID of a public map on arcgis.com with charts
 	  final String MAP_ID = "f809dccb780a4af0a506e56aaa84d084";
-	  
+	  final LayerList layers;
 	  
 	
   public JParkSim() throws IOException, Exception {
@@ -191,7 +191,7 @@ public class JParkSim {
  
     // empty JMap constructor and add a tiled basemap layer
     map = new JMap();
-    final LayerList layers = map.getLayers(); // object storing all the map layers (NOT AN ARRAY - use completelayerlist instead)
+      layers = map.getLayers(); // object storing all the map layers (NOT AN ARRAY - use completelayerlist instead)
     ArcGISTiledMapServiceLayer tiledLayer = new ArcGISTiledMapServiceLayer("http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer");
     layers.add(tiledLayer); // add basemap layer
 
@@ -749,7 +749,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 		};
 		contentPane.add(QueryButton);
 		contentPane.add(map, BorderLayout.CENTER);
-    contentPane.add(legend, BorderLayout.WEST);
+    //contentPane.add(legend, BorderLayout.WEST);
     
     
 
@@ -783,9 +783,62 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
       }
     });
     
-   
+    /*****add sideMenu*****/
+   JPanel sideMenu = new SideMenu();
+    sideMenu.setVisible(true);
+    JScrollPane scroll = new JScrollPane(sideMenu);
+    scroll.setLayout(new ScrollPaneLayout());
+    window.getContentPane().add(scroll, BorderLayout.WEST);
   }
   
+  
+  public static Boolean selectCallBack(String layerName){
+	 ArcGISFeatureLayer targetLayer = layer_name_map.get(layerName);
+	 
+	 if(targetLayer ==null){
+		 logger.warn("Layer "+layerName+" not exists");
+		  return false;
+
+	 } else if(targetLayer.getStatus()==Layer.LayerStatus.UNINITIALIZED){
+		 logger.warn("Layer "+layerName+" not initialized");
+		  return false;
+
+		 
+	 } else if(targetLayer.isVisible() == false){
+			logger.info("select layer "+ layerName);
+
+		 targetLayer.setVisible(true);
+			return true;
+
+	 }
+		logger.info("select layer "+ layerName+" Unknown ERROR");
+
+	  return false;
+  }
+  
+  public static Boolean unselectCallBack(String layerName){
+	 ArcGISFeatureLayer targetLayer = layer_name_map.get(layerName);
+	 
+	 if(targetLayer ==null){
+		 logger.warn("Layer "+layerName+" not exists");
+		  return false;
+
+	 } else if(targetLayer.getStatus()==Layer.LayerStatus.UNINITIALIZED){
+		 logger.warn("Layer "+layerName+" not initialized");
+		  return false;
+
+		 
+	 } else if(targetLayer.isVisible() == true){
+			logger.info("select layer "+ layerName);
+
+		 targetLayer.setVisible(false);
+			return true;
+
+	 }
+		logger.info("select layer "+ layerName+" Unknown ERROR");
+
+	  return false;
+  }
   private JMap createMap() {
 
 	    final JMap jMap = new JMap();

@@ -132,8 +132,8 @@ public class App {
 																							// for
 																							// electrical
    public final static String STORAGE_OWL_NAME = "owl/storagetankcomplete.owl";
-	private static        String[] nonDeviceLayersNames = {"Landlots", "EHTLines", "HTLines", "UHTLines","Powergen","PublicRoads","TLPlant(22kV-11kV)"
-   		 ,"TLPlant(22kV-3.4kV)","TLPlant(3.4kV-3kV)","TLPlant(3kV-0.4kV)", "TLPlant(main-22kV)","water network","steam network" };
+	private static        String[] nonDeviceLayersNames = {"JurongLandlotsLayer", "EHTLines", "HTLines", "UHTLines","Powergen","PublicRoads","TLPlant(22kV-11kV)"
+   		 ,"TLPlant(22kV-3.4kV)","TLPlant(3.4kV-3kV)","TLPlant(3kV-0.4kV)", "TLPlant(main-22kV)","Jurong_WaterNetwork","steam network", "JurongBuildingLayer" };
 	
 	enum Non_Device_Layer{
 		
