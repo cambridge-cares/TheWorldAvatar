@@ -97,6 +97,17 @@ public class LayerFactory {
 		this.user = user;
 		this.symbol = symbol;
 	}
+	
+	public LayerFactory(LayerFactoryInfo info, UserCredentials user, Symbol symbol) throws IOException, Exception {
+
+		this( info.getLayerName(),
+		 info.getOwlSource(),
+		info.getKmlSource(),
+		info.getGeoType(),
+		info.getDeviceNameRegex(),
+		user,
+		 symbol);
+	}
 
 	public LayerFactory(String layerName, String owlLocation, String kmlLocation, LayerType geometryType,
 			String topNodesRegex, UserCredentials user,  Symbol symbol, String identifierAttriXML2OWL) throws IOException, Exception {

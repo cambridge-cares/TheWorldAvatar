@@ -134,7 +134,7 @@
 
     <!-- http://www.jparksimulator.com/JurongIsland.owl#CM_JurongElectricalSystem -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#CM_JurongElectricalSystem">
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#CM_ElectricalGridOfJPark">
         <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ConceptualModel"/>
         <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.jparksimulator.com/ElectricalNetwork.owl</Eco-industrialPark:hasIRI>
         <Eco-industrialPark:isLocatedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C:/JParkSimulator-git/Add_Feature_0.1/owl/updated electrical network.owl</Eco-industrialPark:isLocatedAt>
@@ -242,9 +242,9 @@
 
     <!-- http://www.jparksimulator.com/JurongIsland.owl#JurongElectricalSystem -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#JurongElectricalSystem">
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#ElectricalGridOfJPark">
         <rdf:type rdf:resource="file:/C:/OntoEIP/Eco-industrialPark.owl#ElectricPowerSystem"/>
-        <Eco-industrialPark:hasConceptualModel rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#CM_JurongElectricalSystem"/>
+        <Eco-industrialPark:hasConceptualModel rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#CM_ElectricalGridOfJPark"/>
     </owl:NamedIndividual>
     
 
@@ -259,7 +259,7 @@
         <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#BiodieselPlant-3"/>
         <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#HydrocrackingPlant"/>
         <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#JurongBuildingLayer"/>
-        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#JurongElectricalSystem"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#ElectricalGridOfJPark"/>
         <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#JurongLandlotsLayer"/>
         <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#JurongStorageTankSystem"/>
         <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/JurongIsland.owl#JurongTransportationSystem"/>
