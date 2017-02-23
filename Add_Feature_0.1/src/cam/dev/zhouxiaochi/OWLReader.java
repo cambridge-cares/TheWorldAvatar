@@ -23,7 +23,7 @@ import org.xml.sax.SAXException;
 
 import com.esri.core.geometry.Point;
 
-import cam.dev.zhouxiaochi.Tree.TreeNode;
+import cam.dev.zhouxiaochi.EntityTree.TreeNode;
 
 
 public class OWLReader {
@@ -83,7 +83,8 @@ public static ArrayList<String> value_list = new ArrayList<String>();
 public static ArrayList<String> relationships = new ArrayList<String>();
 
 private static ArrayList<String> deviceNameList = new ArrayList<String>();
-private static Tree entityNameTree;
+private static EntityTree entityNameTree = null;
+private static List<EntityInfo> entityNameList = null;
 
 private static Map<String, String> resourceLocationMap = new HashMap<String, String>();
 public static double x = 0;
@@ -119,7 +120,6 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 
 		if(filename == null)
 		{
-			filename = "owl/BiodieselPlant3.owl";
 			logger.warn("owl file location not defined. Function read owl file terminated");
 		// System.out.println("WARNING: owl file location not defined. Function read owl file terminated");
 		return null;
@@ -395,11 +395,40 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 		  
 	  }
  	
- 	
 
+ 	public static List<EntityInfo>  getEntityFromOWL() throws IOException, Exception{
+ 		if(entityNameList == null){//lazy init
+ 			if(entityNameTree == null){
+ 				getEntityListFromOWLAsTree();
+ 			}
+ 			
+ 			entityNameList = entityNameTree.getAllLeafNodeData();
+ 			
+ 			
+ 		} 
+ 		return entityNameList;
+ 		
+ 	}
  	
- 	
- 	 public static Tree getEntityListFromOWL() throws IOException, Exception{
+ 	public static void main(String[] args){
+ 		
+ 		try {
+			List<EntityInfo>  entityList = getEntityFromOWL();
+			logger.warn("leaf num:"+entityList.size());
+			for(EntityInfo entity:entityList){
+				logger.info("leaf node layer++++"+entity.getName()+" from "+entity.getOwlSource());
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+ 		
+ 		
+ 	}
+ 	 public static EntityTree getEntityListFromOWLAsTree() throws IOException, Exception{
  		 if(entityNameTree == null){//lazy initiation 
  		 
  		ArrayList<String> secondLevelEntities = new ArrayList<String>();	 
@@ -411,20 +440,23 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
   	 			}  	 			
   	 		}
 	 		
+	 		//check if indeed has second level entities
 	 		if(secondLevelEntities.size() < 1){
 	 			logger.error("Reading Second level entity from top level owl:"+TOP_LEVEL_OWL_LOCATION+" Failed with length 0.");
 	 		
 	 		return null;
 	 		}
 	 		
-	  	   entityNameTree = new Tree(TOP_LEVEL_OWL_NODE_NAME);//construct name data tree with top node name as root data
+	 		//construct name data tree with top node name as root data	
+	  	   entityNameTree = new EntityTree(new EntityInfo(TOP_LEVEL_OWL_NODE_NAME,TOP_LEVEL_OWL_LOCATION) );
 
+	  	   ///////extract location of second level entities from top node owl
 	  	   TreeNode root =entityNameTree.getRoot();//get root node
 	 		for(String entityName : secondLevelEntities){//loop through all subsystem got 
 	 	 	 	read_owl_file(TOP_LEVEL_OWL_LOCATION, entityName, false);//read owl location of subsystem
 	               String secondLevelOwlLocation = null ;
 
-		 		for(OWLfileNode node :theNodeList){
+		 		for(OWLfileNode node :theNodeList){//TODO: should be isLocateAt, but currently owlreader is dismatched by one level
 	  	 			if(node.NodeType!= null && node.NodeType.contains("hasConceptualModel")){//is this attri a location?
 	  	 				secondLevelOwlLocation = node.NodeValue;
 	  	 				logger.info("location of "+entityName+" :" + secondLevelOwlLocation);
@@ -432,13 +464,14 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 	  	 			}  	 			
 	  	 		}
 	 	 	 	
-		 		if(secondLevelOwlLocation ==null){
+		 		if(secondLevelOwlLocation ==null){//check if location string is not null
 	 	 			 logger.info("Fail to read owl locations of second level entity: "+entityName+" in top level owl file:"+TOP_LEVEL_OWL_LOCATION); 		 
 	 	 	 		return null;
 		 		}
 
-               TreeNode secondLevelNode =   root.addChild(entityName);//construct second level node
-         		 expandEntityListOneLevel(secondLevelNode, secondLevelOwlLocation);//expand on second level to get its own subsystem to leaf		 
+		 		////expand subsystem list on subsystem/////
+               TreeNode secondLevelNode =   root.addChild(new EntityInfo(entityName, secondLevelOwlLocation));//construct second level node
+         		 expandEntityListOneLevel(secondLevelNode);//expand on second level to get its own subsystem to leaf		 
 
 	 		}
 	 		
@@ -450,26 +483,20 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
  	 }
  	 
  	
- 	 public static void main(String args[]) throws Exception{
- 	try{
- 		 getEntityListFromOWL();
- 		entityNameTree.printTree();
- 	} catch(IOException e){
- 		
- 	}
- 	 }
- 	 
- 	 private static void   expandEntityListOneLevel(TreeNode parentNode, String owlFileLocation) throws IOException, Exception{
 
- 			
-  	 		read_owl_file(owlFileLocation, parentNode.getNodeData(), true);//read owl of top node to get one level of node lists
+ 	 
+ 	 private static void   expandEntityListOneLevel(TreeNode parentNode) throws IOException, Exception{
+
+ 			EntityInfo parentNodeInfo = parentNode.getEntityInfo();
+ 			String entityName = parentNodeInfo.getName();
+ 			String owlLocation = parentNodeInfo.getOwlSource();
+  	 		read_owl_file(owlLocation, entityName, true);//read owl of top node to get one level of node lists
   	 		ArrayList<OWLfileNode> tempNodeList = new ArrayList<OWLfileNode>();
-  	 		//copy the nodelist
   	 		if(theNodeList.size() < 1){
-  	 			logger.warn("Read no data for entity:" + parentNode.getNodeData());
+  	 			logger.warn("Read no data for entity:" + entityName);
   	 			return;
   	 		}
-  	 		
+  	 		///////////copy the nodelist into templist//////////////////////////////////////////////
   	 		for(OWLfileNode node : theNodeList)
   	 		{
   	 			tempNodeList.add(node);
@@ -480,9 +507,9 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
   	 			if(node.NodeType!=null && node.NodeType.contains("hasSubsystem")){//is this attri shows a subsystem?
   	 				//>YES! Then it is a device
   	 				//add it to parent node  	 			
-  	 				TreeNode newNode = parentNode.addChild(node.NodeName);
+  	 				TreeNode newNode = parentNode.addChild(new EntityInfo(node.NodeName, owlLocation));
   	 				//search entity on child
-  	 				expandEntityListOneLevel(newNode, owlFileLocation);
+  	 				expandEntityListOneLevel(newNode);
   	 			}  	 			
   	 		}
  	return;	 

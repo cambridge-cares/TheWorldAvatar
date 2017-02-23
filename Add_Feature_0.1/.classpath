@@ -19,7 +19,7 @@
 	<classpathentry kind="lib" path="C:/Program Files (x86)/ArcGIS SDKs/java10.2.4/sdk/jars/jfreechart.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files (x86)/ArcGIS SDKs/java10.2.4/sdk/jars/json.jar"/>
 	<classpathentry kind="lib" path="commons-io-2.5.jar"/>
-	<classpathentry kind="lib" path="C:/JParkSimulator/JParkSimulator-git/Add_Feature_0.1/slf4j-simple-1.7.23.jar"/>
-	<classpathentry kind="lib" path="C:/JParkSimulator/JParkSimulator-git/Add_Feature_0.1/slf4j-api-1.7.23.jar"/>
+	<classpathentry kind="lib" path="slf4j-api-1.7.23.jar"/>
+	<classpathentry kind="lib" path="slf4j-simple-1.7.23.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

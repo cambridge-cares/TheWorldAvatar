@@ -84,7 +84,14 @@ import com.esri.toolkit.overlays.HitTestEvent;
 import com.esri.toolkit.overlays.HitTestListener;
 import com.esri.toolkit.overlays.HitTestOverlay;
 import com.esri.toolkit.overlays.InfoPopupOverlay;
-
+/****
+ * ENTITY : including device && non -device
+ * DEVICE : M-401.. + storageTank.   created in such a way:   [Visual: coords from OWL + kml Prefab] [Attributes : OWL], Note that each device is put in one layer
+ * NON - DEVICE : landlort, buildings...  created in such a way:   [Visual: KML] [Attributes : OWL], Note that entites of each type are put in one layer
+ * 
+ * 
+ *
+ */
 public class App {
 	
 	 enum LineType{
@@ -108,13 +115,14 @@ public class App {
 																																	// for
 																																	// Arcgis
 																																	// service!!!!
-	public static String[] DEVICE_TYPE_MAP_LOCATIONS = { "map/map.txt","map/map2.txt", "map/map3.txt","map/map_zeon.txt" };// list
+		private static final String DEVICE_MAP_LOCATION = "map/map.txt";
+
 																					// of
 																					// device-type
 																					// map
 																					// location
 
-	public static String[] PLANT_OWL_FILE_NAME = { "owl/BiodieselPlant3.owl","owl/BiodieselPlant2WWHR.owl", "owl/BiodieselPlant1WOWHR.owl","owl/zeonplant.owl" };// list
+	//public static String[] PLANT_OWL_FILE_NAME = { "owl/BiodieselPlant3.owl","owl/BiodieselPlant2WWHR.owl", "owl/BiodieselPlant1WOWHR.owl","owl/zeonplant.owl" };// list
 	
 	
 																										// of
@@ -128,44 +136,21 @@ public class App {
 																										// type
 																										// maps
 
-	public final static String ElECTRICAL_OWL_FILE_NAME = "owl/updated electrical network.owl";// owl
+	//public final static String ElECTRICAL_OWL_FILE_NAME = "owl/updated electrical network.owl";// owl
 																							// file
 																							// for
 																							// electrical
-   public final static String STORAGE_OWL_NAME = "owl/storagetankcomplete.owl";
-	private static        String[] nonDeviceLayersNames = {"JurongLandlotsLayer", "EHTLines", "HTLines", "UHTLines","Powergen","PublicRoads","TLPlant(22kV-11kV)"
-   		 ,"TLPlant(22kV-3.4kV)","TLPlant(3.4kV-3kV)","TLPlant(3kV-0.4kV)", "TLPlant(main-22kV)","Jurong_WaterNetwork","steam network", "JurongBuildingLayer" };
-	
-	enum Non_Device_Layer{
-		
-		LANDLOTS(0),
-		EHTLINES(1),
-		HTLINES(2),
-		UHTLINES(3),
-		POWERGEN(4),
-		PUBLICROADS(5),
-		TLPLANT2211(6),
-		TLPLANT2234(7),
-		TLPLANT343(8),
-		TLPLANT304(9),
-		TLPLANTmain22(10),
-		WATERNETWORK(11),
-		STEAMNETWORK(12);
-	    private Non_Device_Layer(int id) {
-	        this.id = id;
-	    }
-		private final int id;
-	    public int getId() {
-	        return id;
-	    }
-	}
+   //public final static String STORAGE_OWL_NAME = "owl/storagetankcomplete.owl";
+	private static        ArrayList<String> nonDeviceLayersNames = new ArrayList<String>();
+	private static        ArrayList<EntityInfo> nonDeviceLayersInfo = new ArrayList<EntityInfo>();
+
+
 	public static int layerID;
 	public static ArcGISFeatureLayer Layer;
-	public static JCheckBox checkbox;
+
     public static ArrayList<String>  AllDeviceLayerNameList = new ArrayList<String>();
 	// public static String target;
 	public static ArrayList<DeviceInfo> deviceInfoList;
-	public static String[] types;
 
 	public static double[] x_array;
 	public static double[] y_array;
@@ -175,14 +160,12 @@ public class App {
 
 	public static ArcGISFeatureLayer[] linelayers;
 
-	public static ArrayList<String> combination = new ArrayList<String>();
 
 	public static ArrayList<Graphic[]> all_features = new ArrayList<Graphic[]>();
 	public static ArrayList<ArcGISFeatureLayer> all_layers = new ArrayList<ArcGISFeatureLayer>();
 
-	public static int[] count;
 	public static final Map<String, ArcGISFeatureLayer> editlayer = new LinkedHashMap<>();
-	private static FeatureServiceUpdater featureUpdater;
+	private static FeatureServiceUpdater featureUpdater = new FeatureServiceUpdater(BASE_URL);
 	//TODO: this might be deleted, this symbol does not affect the final map
 	static SimpleLineSymbol lineSymbolMaterial = new SimpleLineSymbol(Color.RED, 500);
 	static SimpleLineSymbol lineSymbolWater = new SimpleLineSymbol(Color.BLUE, 500);
@@ -190,6 +173,7 @@ public class App {
 	static SimpleLineSymbol lineSymbolAir = new SimpleLineSymbol(Color.BLACK, 500);
 
 	static SimpleLineSymbol[] lineSymbols = {lineSymbolWater,lineSymbolGas,lineSymbolMaterial,lineSymbolAir};
+	 static DeviceInfo storageInfo = null;
 
 	/**
 	 * DeviceInfo, stores name, type and plantID of one device.
@@ -199,13 +183,18 @@ public class App {
 	public static class DeviceInfo {
 		public String name;
 		public String type;
-		public int plantID;
+		public String owlSource;
 
-		public DeviceInfo(String name, String type, int plantID) {
+		public DeviceInfo(String name, String type, String owlSource) {
 			super();
 			this.name = name;
 			this.type = type;
-			this.plantID = plantID;
+			this.owlSource = owlSource;
+		}
+		public DeviceInfo(String name,  String owlSource) {
+			super();
+			this.name = name;
+			this.owlSource = owlSource;
 		}
 
 	}
@@ -224,10 +213,10 @@ public class App {
 	 *            type of this device(ex: Reactor)
 	 * @param name
 	 *            name of this feature
-	 * @param plantID 
+	 * @param owlSource 
 	 * @throws Exception
 	 */
-	public static void create_object(double x, double y, ArcGISFeatureLayer thisLayer, String type, String name, int plantID)
+	public static void create_object(double x, double y, ArcGISFeatureLayer thisLayer, String type, String name, String owlSource)
 			throws Exception {
 
 		thisLayer.setOperationMode(QueryMode.SELECTION_ONLY);
@@ -240,7 +229,7 @@ public class App {
 			 * call feature writer to get the packed up graphic array(info of
 			 * features to be added)
 			 **/
-			Graphic[] g = featurewriter.createFeature(type, x, y, thisLayer.getDefaultSpatialReference(), name, plantID);
+			Graphic[] g = featurewriter.createFeature(type, x, y, thisLayer.getDefaultSpatialReference(), name, owlSource);
 			// rect_list.add(featurewriter.obstacle);
 			thisLayer.applyEdits(g, null, null, new ApplyEditCallback());// add the new features to
 														// layer
@@ -326,11 +315,17 @@ public class App {
 			SimpleFillSymbol.Style.SOLID);
 	final static SimpleLineSymbol linecolor = new SimpleLineSymbol(Color.pink, 3);
 
+	static final String ElECTRICAL_OWL_FILE_NAME = "owl/updated electrical network.owl";
+
+
 	private JFrame window;
 	private static JMap map;
 
+	private List<EntityInfo> entityListFromOWL;//THE ONE AND ONLY DEVICE LIST FROM OWL
 	public App() throws Exception {
-
+				
+		
+		// ----------------CONSTRUCT GUI---------------------------------------------------------------------------------------------------------
 		JButton Load_feature = new JButton("Load Feature From OWL");
 		Load_feature.setLocation(0, 0);
 		Load_feature.setSize(190, 30);
@@ -374,14 +369,15 @@ public class App {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					// drawLines(); // load line feature into Arcgis Server
-					drawLinesFromKML();
+					// drawLines(); // load line feature from owl, currently commented out
+					drawLinesFromKML();//generate line features from kml directly
 					System.out.println("draw line from KML finished");
+					
 					for (int i = 0; i < deviceInfoList.size(); i++) {// loop through each device in deviceInfoList
 																	
 						if (!deviceInfoList.get(i).name.equals("storageTank")) {//Is device storage tank?
 							DeviceInfo info = deviceInfoList.get(i);//=>NO! Then call create_object to load features into arcgis service
-							create_object(x_array[i], y_array[i], LayerMap.get(info.name), info.type, info.name, info.plantID);
+							create_object(x_array[i], y_array[i], LayerMap.get(info.name), info.type, info.name,  info.owlSource);
 						}
 
 					}
@@ -452,30 +448,72 @@ public class App {
 
 		 SimpleLineSymbol outline = new SimpleLineSymbol(new Color(255, 244, 0), 500);
 		 SimpleFillSymbol symbol = new SimpleFillSymbol(new Color(0, 0, 0, 255), outline);
-		 /////////////// construct layerFactories for each layer///////////////////////////////////
-		 List<LayerFactory> layerFactories = new ArrayList<LayerFactory>();
- 	     layerFactories.add(new LayerFactory("Landlots", "owl/JParkLandLots.owl", "kml/Landlots.kml", FeatureServiceUpdater.LayerType.POLYGON, "^LandLotID_\\d+$", user,symbol));
+		 
+			// ===============read owl list for each entity===========================================================================
+			entityListFromOWL = OWLReader.getEntityFromOWL();
+
+			////// divide it into plant - device generation && non-device layer, create&&load for each
+			for(EntityInfo entity : entityListFromOWL){
+				
+				if(entity.getName().toLowerCase().contains("storage")){//storage tank is a special case, do it seperately
+					storageInfo = new DeviceInfo(entity.getName(), entity.getName(), entity.getOwlSource());
+				} 
+				else{
+				if(entity.getName().matches("^\\W+-\\d+$")){//then it is a device
+
+					deviceInfoList.add(new DeviceInfo(entity.getName(), entity.getOwlSource()));
+					
+					
+				} else{//it is a non device layer
+					nonDeviceLayersNames.add(entity.getName());
+					nonDeviceLayersInfo.add(entity);
+				}
+				}
+			}
+				
+			
+			
+			
+			///For non device list 
+			//////loop through LayerFactoryInfoDictionary to find its info
+			Map<String, LayerFactoryInfo> dic = LayerFactoryInfoDictionary.getDictionary();
+			 /////////////// construct layerFactories for each layer///////////////////////////////////
+			 List<LayerFactory> layerFactories = new ArrayList<LayerFactory>();
+		     //construct a full layerInfo
+			 for(EntityInfo entity : nonDeviceLayersInfo){
+		    	 LayerFactoryInfo info = dic.get(entity.getName());
+		    	 info.setOwlSource(entity.getOwlSource() );
+		    	 layerFactories.add(new LayerFactory(info, user, symbol));
+		     }
+			//TODO: check if nonDevice layer contains 4 lines
+			
+			////TODO:For device list   -    pack into deviceInfoList, modify readList to match type
+
+			
+
+			 /////TODO:Deprecated, to be deleted
+ 	   //  layerFactories.add(new LayerFactory("Landlots", "owl/JParkLandLots.owl", "kml/Landlots.kml", FeatureServiceUpdater.LayerType.POLYGON, "^LandLotID_\\d+$", user,symbol));
 	
- 	     layerFactories.add(new LayerFactory("EHTLines", "owl/updated electrical network.owl", "kml/EHT Lines.kml", FeatureServiceUpdater.LayerType.POLYLINE, "^EHT-\\d+$", user,symbol));
-     layerFactories.add(new LayerFactory("HTLines", "owl/updated electrical network.owl", "kml/HT Lines.kml", FeatureServiceUpdater.LayerType.POLYLINE, "^HT-\\d+$", user,symbol));
-		 layerFactories.add(new LayerFactory("UHTLines", "owl/updated electrical network.owl", "kml/UHT Lines (230kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^UHT-\\d+$", user,symbol));
+ 	//     layerFactories.add(new LayerFactory("EHTLines", "owl/updated electrical network.owl", "kml/EHT Lines.kml", FeatureServiceUpdater.LayerType.POLYLINE, "^EHT-\\d+$", user,symbol));
+   //  layerFactories.add(new LayerFactory("HTLines", "owl/updated electrical network.owl", "kml/HT Lines.kml", FeatureServiceUpdater.LayerType.POLYLINE, "^HT-\\d+$", user,symbol));
+		 //layerFactories.add(new LayerFactory("UHTLines", "owl/updated electrical network.owl", "kml/UHT Lines (230kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^UHT-\\d+$", user,symbol));
 //		//TODO:WARNING:OWL NUM < KML NUM
-	 layerFactories.add(new LayerFactory("Powergen", "owl/updated electrical network.owl", "kml/PowerGen.kml", FeatureServiceUpdater.LayerType.POLYGON, "^PowerGen_\\d+$", user,symbol));
-//		//TODO:WARNING:OWL NUM < KML NUM
+	// layerFactories.add(new LayerFactory("Powergen", "owl/updated electrical network.owl", "kml/PowerGen.kml", FeatureServiceUpdater.LayerType.POLYGON, "^PowerGen_\\d+$", user,symbol));
+	 ///TODO: not sure about public roads
 		 layerFactories.add(new LayerFactory("PublicRoads", "owl/JParkLandLots.owl", "kml/Public Roads.kml", FeatureServiceUpdater.LayerType.POLYGON, "^\\w+Road$", user,symbol));
 //
-		 layerFactories.add(new LayerFactory("TLPlant(22kV-11kV)", "owl/updated electrical network.owl", "kml/TLPlant(22kV-11kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PHT-[5|6|7|8]$", user,symbol));
-		layerFactories.add(new LayerFactory("TLPlant(22kV-3.4kV)", "owl/updated electrical network.owl", "kml/TLPlant(22kV-3.4kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PHT-[9|10|11|12|13|14|15|16]$", user,symbol));
-		 layerFactories.add(new LayerFactory("TLPlant(3.4kV-3kV)", "owl/updated electrical network.owl", "kml/TLPlant(3.4kV-3kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PLT-[1|2|3|4|5|6|7|8]$", user,symbol));
-		 layerFactories.add(new LayerFactory("TLPlant(3kV-0.4kV)", "owl/updated electrical network.owl", "kml/TLPlant(3kV-0.4kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PLT-[9|10|11|12|13|14|15|16|17|18|19]", user,symbol));
-		 layerFactories.add(new LayerFactory("TLPlant(main-22kV)", "owl/updated electrical network.owl", "kml/TLPlant(main-22kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PHT-[1|2|3|4]$", user,symbol));
+	//	 layerFactories.add(new LayerFactory("TLPlant(22kV-11kV)", "owl/updated electrical network.owl", "kml/TLPlant(22kV-11kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PHT-[5|6|7|8]$", user,symbol));
+		//layerFactories.add(new LayerFactory("TLPlant(22kV-3.4kV)", "owl/updated electrical network.owl", "kml/TLPlant(22kV-3.4kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PHT-[9|10|11|12|13|14|15|16]$", user,symbol));
+		// layerFactories.add(new LayerFactory("TLPlant(3.4kV-3kV)", "owl/updated electrical network.owl", "kml/TLPlant(3.4kV-3kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PLT-[1|2|3|4|5|6|7|8]$", user,symbol));
+		// layerFactories.add(new LayerFactory("TLPlant(3kV-0.4kV)", "owl/updated electrical network.owl", "kml/TLPlant(3kV-0.4kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PLT-[9|10|11|12|13|14|15|16|17|18|19]", user,symbol));
+		// layerFactories.add(new LayerFactory("TLPlant(main-22kV)", "owl/updated electrical network.owl", "kml/TLPlant(main-22kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PHT-[1|2|3|4]$", user,symbol));
 	
-		 layerFactories.add(new LayerFactory("water network", "owl/waternetwork.owl", "kml/WaterNetwork.kml", FeatureServiceUpdater.LayerType.POLYLINE, "^WaterPipe_\\d+$", user,symbol));
+		 //layerFactories.add(new LayerFactory("water network", "owl/waternetwork.owl", "kml/WaterNetwork.kml", FeatureServiceUpdater.LayerType.POLYLINE, "^WaterPipe_\\d+$", user,symbol));
 		 
-		 layerFactories.add(new LayerFactory("steam network", "owl/steamnetwork.owl", "kml/Steam Pipelines.kml", FeatureServiceUpdater.LayerType.POLYLINE, "^SteamLine_\\d+$", user,symbol));
-	 	 layerFactories.add(new LayerFactory("working fluid", PLANT_OWL_FILE_NAME[3], "kml/Working_Fluid.kml", FeatureServiceUpdater.LayerType.POLYLINE, "^S\\d+$", user,symbol));
+		 //layerFactories.add(new LayerFactory("steam network", "owl/steamnetwork.owl", "kml/Steam Pipelines.kml", FeatureServiceUpdater.LayerType.POLYLINE, "^SteamLine_\\d+$", user,symbol));
+	 	 //layerFactories.add(new LayerFactory("working fluid", PLANT_OWL_FILE_NAME[3], "kml/Working_Fluid.kml", FeatureServiceUpdater.LayerType.POLYLINE, "^S\\d+$", user,symbol));
 		
-		 layerFactories.add(new LayerFactory("buildings", "owl/buildingmodif2.owl", "kml/Buildings.kml", FeatureServiceUpdater.LayerType.POLYGON, "^BuildingID_\\d+$", user,symbol));
+		// layerFactories.add(new LayerFactory("buildings", "owl/buildingmodif2.owl", "kml/Buildings.kml", FeatureServiceUpdater.LayerType.POLYGON, "^BuildingID_\\d+$", user,symbol));
 
 
 
@@ -487,13 +525,11 @@ public class App {
          PointObjectsGenerator.layer_factory(0,"Transformer","^.*LT.*$","LT_Station",true);             
 		
 		
-		////construct feature updater//////////////////////////////
-		featureUpdater = new FeatureServiceUpdater(BASE_URL);
 
-		createLayer("waterline", -1, LineType.WATER);
-		createLayer("gasline", -1,LineType.GAS);
-		createLayer("materialline", -1,LineType.MATERIAL);
-		createLayer("airline", -1,LineType.AIR);
+		createLayer("waterline", "", LineType.WATER);
+		createLayer("gasline", "",LineType.GAS);
+		createLayer("materialline", "",LineType.MATERIAL);
+		createLayer("airline", "",LineType.AIR);
 
 		
 		linelayers = new ArcGISFeatureLayer[4];
@@ -502,7 +538,7 @@ public class App {
 		}
 		
 		
-		 deviceInfoList = readDevicelist();//read device info list
+		 readDevicelist();//read device info list into deviceInffoList
 		x_array = new double[deviceInfoList.size()];
 		y_array = new double[deviceInfoList.size()];
 		//TODO: exclude storage layer for testing ,delete -1 after testing
@@ -510,7 +546,7 @@ public class App {
 
 			DeviceInfo mDeviceInfo = deviceInfoList.get(i);
 			String target = mDeviceInfo.name;
-			createLayer(target, mDeviceInfo.plantID);
+			createLayer(target, mDeviceInfo.owlSource);
 			String idx = FeatureServiceUpdater.layerID;
 
 			System.out.println("#######################################################");
@@ -520,9 +556,9 @@ public class App {
 
 			all_layers.add(newLayer);
 			LayerMap.put(target, newLayer);
-			if(mDeviceInfo.plantID > 0){
-			OWLReader.read_owl_file(PLANT_OWL_FILE_NAME[mDeviceInfo.plantID], target);
-			}
+			
+			OWLReader.read_owl_file(mDeviceInfo.owlSource, target);
+			
 			x_array[i] = OWLReader.x;//TODO: WHAT IS THIS? IF IS STILL USEFUL NEED TO THINK OF CASE OF STORAGE TANK
 			y_array[i] = OWLReader.y;
 
@@ -589,8 +625,8 @@ public class App {
 		});
 	}
 
-	public static void createLayer(String targetName, int plantId) throws IOException, Exception {
-		createLayer(targetName, plantId, LineType.WATER);
+	public static void createLayer(String targetName, String owlSource) throws IOException, Exception {
+		createLayer(targetName, owlSource, LineType.WATER);
 	}
 	/****
 	 * Create layer into Arcgis Service.
@@ -601,7 +637,7 @@ public class App {
 	 * @throws IOException
 	 * @throws Exception
 	 */
-	public static void createLayer(String targetName, int plantId,LineType lineType) throws IOException, Exception {
+	public static void createLayer(String targetName, String owlSource,LineType lineType) throws IOException, Exception {
 		/////// case: storage tank//////////////////////////////////////
 		if (targetName.toLowerCase().contains("storagetank")) {
 			System.out.println("Creating storage tank layer");
@@ -636,7 +672,7 @@ public class App {
 		/////// case: devices//////////////////////////////////////
 		else if (!targetName.contains("line")) {
 			// TODO
-			OWLReader.read_owl_file(PLANT_OWL_FILE_NAME[plantId], targetName);
+			OWLReader.read_owl_file(owlSource, targetName);
 
 			int lengthChemAttris = OWLReader.name_list.size();
 
@@ -746,11 +782,9 @@ public class App {
 	 * Read device name and type from txt files
 	 * @return 
 	 */
-	private static ArrayList<DeviceInfo> readDevicelist() {
-		ArrayList<DeviceInfo> mDeviceInfoList = new ArrayList<DeviceInfo>();
-		int idxPlant = 0;
-		for (String deviceMapLocation : DEVICE_TYPE_MAP_LOCATIONS) {//for each device name/type list(one for each plant)
-			try (BufferedReader br = new BufferedReader(new FileReader(deviceMapLocation))) {
+	private static void readDevicelist() {
+		Map<String, String> typeDictionary = new HashMap<String, String>();	
+		try (BufferedReader br = new BufferedReader(new FileReader(DEVICE_MAP_LOCATION))) {
 
 				String sCurrentLine;
 
@@ -758,32 +792,38 @@ public class App {
 					// temp.add(sCurrentLine);
 					String name = sCurrentLine.split("#")[0];
 					String type = sCurrentLine.split("#")[1];
-					mDeviceInfoList.add(new DeviceInfo(name, type, idxPlant));//pack info into DeviceInfo object,then store into list
+				typeDictionary.put(name, type);
 				}
 
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			idxPlant++;
-		}
-
-
-		mDeviceInfoList.add(new DeviceInfo("storageTank", "storagetank", -1));//add storagetank separately
 		
-		return mDeviceInfoList;
+              for(DeviceInfo device: deviceInfoList){
+            	  
+            	  String dType = typeDictionary.get(device.name);
+            	  if(dType==null){
+            		  System.out.println("ERR: CAN NOT FIND TYPE FOR DEVICE "+device.name+" in "+DEVICE_MAP_LOCATION);
+                   return;
+            	  } else{
+            		  device.type = dType;
+            	  }
+              }
+//TODO: do storage tank
+		deviceInfoList.add(storageInfo);//add storagetank separately
+		
 		//add all other layers seperately
 	}
 	
 	public static String[]  readAllEntityList(){
-		ArrayList<DeviceInfo> readDeviceInfoList = readDevicelist();
-		String[] returnStr = new String[readDeviceInfoList.size()];	
+		String[] returnStr = new String[deviceInfoList.size()];	
 		
 		int idxStr = 0;
-		for(DeviceInfo dInfo :readDeviceInfoList ){
+		for(DeviceInfo dInfo :deviceInfoList ){
 			returnStr[idxStr] = dInfo.name;
 		idxStr++;
 		}
-		return concatArr(returnStr, nonDeviceLayersNames);
+		return concatArr(returnStr, nonDeviceLayersNames.toArray(new String[nonDeviceLayersNames.size()]));
 	}
 
 	// currently not able to be used because no indication of type in owl file
