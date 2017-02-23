@@ -108,17 +108,17 @@ public class App {
 																																	// for
 																																	// Arcgis
 																																	// service!!!!
-//	public static String[] DEVICE_TYPE_MAP_LOCATIONS = { "map/map.txt","map/map2.txt", "map/map3.txt","map/map_zeon.txt" };// list
+	public static String[] DEVICE_TYPE_MAP_LOCATIONS = { "map/map.txt","map/map2.txt", "map/map3.txt","map/map_zeon.txt" };// list
 
-	public static String[] DEVICE_TYPE_MAP_LOCATIONS = { "map/map.txt" };// list
+//	public static String[] DEVICE_TYPE_MAP_LOCATIONS = { "map/map.txt" };// list
 // of
 																					// device-type
 																					// map
 																					// location
 
-//	public static String[] PLANT_OWL_FILE_NAME = { "owl/BiodieselPlant3.owl","owl/BiodieselPlant2WWHR.owl", "owl/BiodieselPlant1WOWHR.owl","owl/zeonplant.owl" };// list
+	public static String[] PLANT_OWL_FILE_NAME = { "owl/BiodieselPlant3.owl","owl/BiodieselPlant2WWHR.owl", "owl/BiodieselPlant1WOWHR.owl","owl/zeonplant.owl" };// list
 	
-	public static String[] PLANT_OWL_FILE_NAME = { "owl/BiodieselPlant3.owl" };// list
+//	public static String[] PLANT_OWL_FILE_NAME = { "owl/BiodieselPlant3.owl" };// list
 																										// of
 																										// owl
 																										// files,
@@ -456,7 +456,7 @@ public class App {
 		 SimpleFillSymbol symbol = new SimpleFillSymbol(new Color(0, 0, 0, 255), outline);
 		 /////////////// construct layerFactories for each layer///////////////////////////////////
 		 List<LayerFactory> layerFactories = new ArrayList<LayerFactory>();
-/*
+ 
 		 layerFactories.add(new LayerFactory("Landlots", "owl/JParkLandLots.owl", "kml/Landlots.kml", FeatureServiceUpdater.LayerType.POLYGON, "^LandLotID_\\d+$", user,symbol));
 	
  	     layerFactories.add(new LayerFactory("EHTLines", "owl/updated electrical network.owl", "kml/EHT Lines.kml", FeatureServiceUpdater.LayerType.POLYLINE, "^EHT-\\d+$", user,symbol));
@@ -481,14 +481,14 @@ public class App {
 		 layerFactories.add(new LayerFactory("buildings", "owl/buildingmodif2.owl", "kml/Buildings.kml", FeatureServiceUpdater.LayerType.POLYGON, "^BuildingID_\\d+$", user,symbol));
 
 
-/**
+ 
          PointObjectsGenerator.layer_factory(0,"Load",null,"Load_Point",true); // Load Points
          PointObjectsGenerator.layer_factory(0,"Coupler",null,"Bus_Coupler",false); // Load Points
          PointObjectsGenerator.layer_factory(0,"Transformer","^.*EHT.*$","EHT_Station",true);
          PointObjectsGenerator.layer_factory(0,"Transformer","^.*UHT.*$","UHT_Station_2",true);
          PointObjectsGenerator.layer_factory(0,"Transformer","^.*HT.*$","HT_Station",true);
          PointObjectsGenerator.layer_factory(0,"Transformer","^.*LT.*$","LT_Station",true);             
-	**/	
+ 
 		
 		////construct feature updater//////////////////////////////
 		featureUpdater = new FeatureServiceUpdater(BASE_URL);

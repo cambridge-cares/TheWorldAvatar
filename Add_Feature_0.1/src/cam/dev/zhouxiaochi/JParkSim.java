@@ -247,7 +247,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     linelayers[idxLayer] = new ArcGISFeatureLayer(App.BASE_URL+"/"+idxLayer, user);
     }
 
-    ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer(App.BASE_URL+"/Buildings", user);    // testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/9", user);
+    ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer(App.BASE_URL+"/Buildingsc", user);    // testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/9", user);
 
     ArcGISFeatureLayer[] pointlayers = new    ArcGISFeatureLayer[PointObjectsGenerator.layers.length];
     
