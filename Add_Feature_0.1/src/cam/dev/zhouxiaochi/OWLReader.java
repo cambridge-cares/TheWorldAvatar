@@ -132,7 +132,8 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 		
 	   File inputFile = new File(filename);
 	   if(!inputFile.exists()){
-			logger.info("owl file location not exists. Function read owl file terminated");
+		  
+			logger.info("owl file location "+filename+"not exists. Function read owl file terminated");
 
 		   return null;
 	   }
@@ -504,8 +505,26 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 
 	 		}
 	 		
+	        //TODO: Manually construct tree to accomodate some layers not in the structure yet, to be deleted later
+	        TreeNode root1 = entityNameTree.getRoot();
+	        root1.addChild(new EntityInfo("waterline",""));
+	        root1.addChild(new EntityInfo("gasline",""));
+	        root1.addChild(new EntityInfo("materialline",""));
+	        root1.addChild(new EntityInfo("airline",""));
+	        
+	        TreeNode subTranNode = entityNameTree.getNodeVName("SubTransmissionLines");//TODO: TESTING!
+	        System.out.println(subTranNode.getEntityInfo().getName());
+	        subTranNode.addChild(new EntityInfo("EHTLines","owl/updated electrical network.owl" ));
+	        subTranNode.addChild(new EntityInfo("HTLines","owl/updated electrical network.owl" ));
+	        TreeNode disNode = entityNameTree.getNodeVName("DistributionLines");
+	        disNode.addChild(new EntityInfo("TLPlant(22kV-11kV)","owl/updated electrical network.owl" ));
+	        disNode.addChild(new EntityInfo("TLPlant(22kV-3.4kV)","owl/updated electrical network.owl" ));
+	        disNode.addChild(new EntityInfo("TLPlant(3.4kV-3kV)","owl/updated electrical network.owl" ));
+	        disNode.addChild(new EntityInfo("TLPlant(3kV-0.4kV)","owl/updated electrical network.owl" ));
+	        disNode.addChild(new EntityInfo("TLPlant(main-22kV)","owl/updated electrical network.owl" ));
 
-
+	        TreeNode transpNode =  entityNameTree.getNodeVName("JurongTransportationSystem");
+	        transpNode.deleteAllChildren();
  		 } 
  		 logger.info("Now return tree");
  		 return entityNameTree;

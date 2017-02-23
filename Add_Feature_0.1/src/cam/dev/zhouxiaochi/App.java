@@ -109,7 +109,7 @@ public class App {
 	    
 	}
 
-	 public static final String BASE_URL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST022/FeatureServer";
+	 public static final String BASE_URL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST023/FeatureServer";
 
 																																	// url
 																																	// for
@@ -151,7 +151,7 @@ public class App {
 
     public static ArrayList<String>  AllDeviceLayerNameList = new ArrayList<String>();
 	// public static String target;
-	public static ArrayList<DeviceInfo> deviceInfoList;
+	public static ArrayList<DeviceInfo> deviceInfoList =new ArrayList<DeviceInfo>();
 
 	public static double[] x_array;
 	public static double[] y_array;
@@ -321,8 +321,9 @@ public class App {
 
 	private JFrame window;
 	private static JMap map;
+	 static List<LayerFactory> layerFactories = new ArrayList<LayerFactory>();
 
-	private List<EntityInfo> entityListFromOWL;//THE ONE AND ONLY DEVICE LIST FROM OWL
+	private static List<EntityInfo> entityListFromOWL;//THE ONE AND ONLY DEVICE LIST FROM OWL
 	public App() throws Exception {
 				
 		
@@ -415,8 +416,9 @@ public class App {
 			}
 		});
 
-		// -------------------------------------------------------------------------------------------------------------------------
-
+		// ---------------------------------------------------Initiate EntityList----------------------------------------------------------------------
+		readAllEntityList();
+		
 		// -------------------------------------------------------------------------------------------------------------------------
 		MapOptions mapOptions = new MapOptions(MapType.TOPO);
 		map = new JMap(mapOptions);
@@ -450,42 +452,7 @@ public class App {
 		 SimpleLineSymbol outline = new SimpleLineSymbol(new Color(255, 244, 0), 500);
 		 SimpleFillSymbol symbol = new SimpleFillSymbol(new Color(0, 0, 0, 255), outline);
 		 
-			// ===============read owl list for each entity===========================================================================
-			entityListFromOWL = OWLReader.getEntityFromOWL();
 
-			////// divide it into plant - device generation && non-device layer, create&&load for each
-			for(EntityInfo entity : entityListFromOWL){
-				
-				if(entity.getName().toLowerCase().contains("storage")){//storage tank is a special case, do it seperately
-					storageInfo = new DeviceInfo(entity.getName(), entity.getName(), entity.getOwlSource());
-				} 
-				else{
-				if(entity.getName().matches("^\\W+-\\d+$")){//then it is a device
-
-					deviceInfoList.add(new DeviceInfo(entity.getName(), entity.getOwlSource()));
-					
-					
-				} else{//it is a non device layer
-					nonDeviceLayersNames.add(entity.getName());
-					nonDeviceLayersInfo.add(entity);
-				}
-				}
-			}
-				
-			
-			
-			
-			///For non device list 
-			//////loop through LayerFactoryInfoDictionary to find its info
-			Map<String, LayerFactoryInfo> dic = LayerFactoryInfoDictionary.getDictionary();
-			 /////////////// construct layerFactories for each layer///////////////////////////////////
-			 List<LayerFactory> layerFactories = new ArrayList<LayerFactory>();
-		     //construct a full layerInfo
-			 for(EntityInfo entity : nonDeviceLayersInfo){
-		    	 LayerFactoryInfo info = dic.get(entity.getName());
-		    	 info.setOwlSource(entity.getOwlSource() );
-		    	 layerFactories.add(new LayerFactory(info, user, symbol));
-		     }
 			//TODO: check if nonDevice layer contains 4 lines
 			
 			////TODO:For device list   -    pack into deviceInfoList, modify readList to match type
@@ -501,7 +468,7 @@ public class App {
 //		//TODO:WARNING:OWL NUM < KML NUM
 	// layerFactories.add(new LayerFactory("Powergen", "owl/updated electrical network.owl", "kml/PowerGen.kml", FeatureServiceUpdater.LayerType.POLYGON, "^PowerGen_\\d+$", user,symbol));
 	 ///TODO: not sure about public roads
-		 layerFactories.add(new LayerFactory("PublicRoads", "owl/JParkLandLots.owl", "kml/Public Roads.kml", FeatureServiceUpdater.LayerType.POLYGON, "^\\w+Road$", user,symbol));
+		// layerFactories.add(new LayerFactory("PublicRoads", "owl/JParkLandLots.owl", "kml/Public Roads.kml", FeatureServiceUpdater.LayerType.POLYGON, "^\\w+Road$", user,symbol));
 //
 	//	 layerFactories.add(new LayerFactory("TLPlant(22kV-11kV)", "owl/updated electrical network.owl", "kml/TLPlant(22kV-11kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PHT-[5|6|7|8]$", user,symbol));
 		//layerFactories.add(new LayerFactory("TLPlant(22kV-3.4kV)", "owl/updated electrical network.owl", "kml/TLPlant(22kV-3.4kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PHT-[9|10|11|12|13|14|15|16]$", user,symbol));
@@ -539,7 +506,7 @@ public class App {
 		}
 		
 		
-		 readDevicelist();//read device info list into deviceInffoList
+		 readDeviceType();//read device info list into deviceInffoList
 		x_array = new double[deviceInfoList.size()];
 		y_array = new double[deviceInfoList.size()];
 		//TODO: exclude storage layer for testing ,delete -1 after testing
@@ -783,7 +750,7 @@ public class App {
 	 * Read device name and type from txt files
 	 * @return 
 	 */
-	private static void readDevicelist() {
+	private static void readDeviceType() {
 		Map<String, String> typeDictionary = new HashMap<String, String>();	
 		try (BufferedReader br = new BufferedReader(new FileReader(DEVICE_MAP_LOCATION))) {
 
@@ -805,7 +772,7 @@ public class App {
             	  String dType = typeDictionary.get(device.name);
             	  if(dType==null){
             		  System.out.println("ERR: CAN NOT FIND TYPE FOR DEVICE "+device.name+" in "+DEVICE_MAP_LOCATION);
-                   return;
+                   
             	  } else{
             		  device.type = dType;
             	  }
@@ -815,8 +782,64 @@ public class App {
 		
 		//add all other layers seperately
 	}
-	
-	public static String[]  readAllEntityList(){
+	public static String[] allEntityList = null;
+	public static String[]  readAllEntityList() throws IOException, Exception{
+		if(allEntityList == null){//lazy initiation, make sure this happens only once
+		
+		UserCredentials user = new UserCredentials();
+		user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp"); 
+		 SimpleLineSymbol outline = new SimpleLineSymbol(new Color(255, 244, 0), 500);
+		 SimpleFillSymbol symbol = new SimpleFillSymbol(new Color(0, 0, 0, 255), outline);
+		 
+		// ===============read owl list for each entity===========================================================================
+		entityListFromOWL = OWLReader.getEntityFromOWL();
+
+		////// divide it into plant - device generation && non-device layer, create&&load for each
+		for(EntityInfo entity : entityListFromOWL){
+			if(entity.getOwlSource()!=null){
+			if(entity.getName().toLowerCase().contains("storage")){//storage tank is a special case, do it seperately
+				storageInfo = new DeviceInfo(entity.getName(), entity.getName(), entity.getOwlSource());
+			} 
+			else{
+			if(entity.getName().matches("^\\w+-\\d+$")){//then it is a device
+
+				deviceInfoList.add(new DeviceInfo(entity.getName(), entity.getOwlSource()));
+				
+				
+			} else{//it is a non device layer
+				nonDeviceLayersInfo.add(entity);
+			}
+			}
+		}
+		}
+			
+		
+		///For non device list 
+		//////loop through LayerFactoryInfoDictionary to find its info
+		Map<String, LayerFactoryInfo> dic = LayerFactoryInfoDictionary.getDictionary();
+		 /////////////// construct layerFactories for each layer///////////////////////////////////
+	     //construct a full layerInfo
+		 for(int idxE = 0; idxE < nonDeviceLayersInfo.size(); idxE++){
+			 
+			 EntityInfo entity =nonDeviceLayersInfo.get(idxE);
+	    	 LayerFactoryInfo info = dic.get(entity.getName());
+	    	 
+	    	 if(info ==null){
+	    		System.out.println("entity: "+entity.getName()+" not exists in LayerFactory dictionary, will be deleted from layer list");
+	    		nonDeviceLayersInfo.remove(entity);
+	    	 }else{
+	    	 info.setOwlSource(entity.getOwlSource() );
+	    	 layerFactories.add(new LayerFactory(info, user, symbol));
+	    	 }
+	    	 }
+		 
+		 
+		 //extract from filtered nonDeviceLayersInfo the  name list of layers
+		 for(EntityInfo entity : nonDeviceLayersInfo){
+			 nonDeviceLayersNames.add(entity.getName());
+		 }
+		 
+		
 		String[] returnStr = new String[deviceInfoList.size()];	
 		
 		int idxStr = 0;
@@ -824,7 +847,9 @@ public class App {
 			returnStr[idxStr] = dInfo.name;
 		idxStr++;
 		}
-		return concatArr(returnStr, nonDeviceLayersNames.toArray(new String[nonDeviceLayersNames.size()]));
+		allEntityList = concatArr(returnStr, nonDeviceLayersNames.toArray(new String[nonDeviceLayersNames.size()]));
+	}
+		return allEntityList;
 	}
 
 	// currently not able to be used because no indication of type in owl file

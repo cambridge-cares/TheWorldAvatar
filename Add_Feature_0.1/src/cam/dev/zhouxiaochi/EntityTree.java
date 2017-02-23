@@ -154,6 +154,10 @@ public class EntityTree{
 			return childNode;
 			
 	}
+		
+		public void deleteAllChildren(){
+			this.children.clear();
+		}
 	
 	}
 }

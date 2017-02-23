@@ -23,23 +23,7 @@ public class SideMenu extends JPanel{
            
         EntityTree entityNameTree = OWLReader.getEntityListFromOWLAsTree();
         
-        //TODO: Manually construct tree to accomodate some layers not in the structure yet
-        TreeNode root = entityNameTree.getRoot();
-        root.addChild(new EntityInfo("waterline",""));
-        root.addChild(new EntityInfo("gasline",""));
-        root.addChild(new EntityInfo("materialline",""));
-        root.addChild(new EntityInfo("airline",""));
-        
-        TreeNode subTranNode = entityNameTree.getNodeVName("SubTransmissionLines");//TODO: TESTING!
-        System.out.println(subTranNode.getEntityInfo().getName());
-        subTranNode.addChild(new EntityInfo("EHTLines","owl/updated electrical network.owl" ));
-        subTranNode.addChild(new EntityInfo("HTLines","owl/updated electrical network.owl" ));
-        TreeNode disNode = entityNameTree.getNodeVName("DistributionLines");
-        disNode.addChild(new EntityInfo("TLPlant(22kV-11kV)","owl/updated electrical network.owl" ));
-        disNode.addChild(new EntityInfo("TLPlant(22kV-3.4kV)","owl/updated electrical network.owl" ));
-        disNode.addChild(new EntityInfo("TLPlant(3.4kV-3kV)","owl/updated electrical network.owl" ));
-        disNode.addChild(new EntityInfo("TLPlant(3kV-0.4kV)","owl/updated electrical network.owl" ));
-        disNode.addChild(new EntityInfo("TLPlant(main-22kV)","owl/updated electrical network.owl" ));
+
 
 ///////////////////////////////////////////////////////////////////////////////////////
         
