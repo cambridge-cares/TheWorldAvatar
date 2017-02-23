@@ -81,6 +81,8 @@ public static Set<String> theNameList = new LinkedHashSet<>();
 public static ArrayList<String> name_list = new ArrayList<String>();
 public static ArrayList<String> value_list = new ArrayList<String>();
 public static ArrayList<String> relationships = new ArrayList<String>();
+public static ArrayList<String> usednames = new ArrayList<String>();
+
 
 private static ArrayList<String> deviceNameList = new ArrayList<String>();
 private static Tree entityNameTree;
@@ -203,16 +205,21 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
        }
        
        **/
-       
+       usednames.clear();
        
        for(String name : theNameList)
        { 
-    	   
+    	   int counter = 0;
     	   OWLfileNode node = owlnodemap.get(name);
     	   node.NodeName = node.NodeName.replaceAll("-", "_").trim();
     	   if(node.NodeValue!="")
     	   {
     	   System.out.println("-----------> " +  node.NodeName);
+    	   if(node.ValueUnit!=null)
+           {
+          	 name_list.add(node.NodeName + "_Unit" );
+          	 value_list.add(node.ValueUnit);
+           }
     	   }
     	   else if(node.NodeType!=null)
     	   {
@@ -220,15 +227,37 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
     	   String temp = node.NodeName;
     	   node.NodeName = node.NodeType;
     	   node.NodeValue = temp;
+    	   
+    	   node.NodeName = node.NodeName.replace(":", "_");
+    	   node.NodeValue = temp.replace(":", "_");    	
+    	   
+    	   String temp2 = node.NodeName;
+    	   
+
+    		   for(String usedname : usednames)
+    		   {
+    			    if(usedname.contentEquals(temp2))
+    			    {
+    			    	counter++;
+    			    }
+    		   }
+    		   
+    	   usednames.add(temp2);
+    	   
+    	   }
+    
+    	   if(counter!=0)
+    	   {
+    		   name_list.add(node.NodeName.trim()  + counter);
+    	   }
+    	   else
+    	   {
+    		   name_list.add(node.NodeName.trim());
     	   }
     	   
-    	   name_list.add(node.NodeName.trim());
+    	   
            value_list.add(node.NodeValue.trim());
-           if(node.ValueUnit!=null)
-           {
-          	 name_list.add(node.NodeName + "_Unit" );
-          	 value_list.add(node.ValueUnit);
-           }
+           
            
        }
        

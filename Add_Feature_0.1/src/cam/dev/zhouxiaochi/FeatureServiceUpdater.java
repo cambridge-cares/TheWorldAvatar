@@ -531,9 +531,9 @@ public class FeatureServiceUpdater {
 					result.append('\r');
 				}
 				rd.close();
-				//System.out.println("response JSON:");
+				System.out.println("response JSON:");
 
-				//System.out.println(result.toString());
+				System.out.println(result.toString());
 				if(callback !=null){
 				callback.executeCallback();
 				}
@@ -891,16 +891,16 @@ public class FeatureServiceUpdater {
 			return;
 		}
 		
-		JSONArray thisLayers = doSth2Service("info", parameters).getJSONArray("layers");
+		//JSONArray thisLayers = doSth2Service("info", parameters).getJSONArray("layers");
 
-		int curLayersNum = thisLayers.length();
+		//int curLayersNum = thisLayers.length();
 
 		//TODO:testing ,afterwards put bakc
 		//mTemplateJSON.put("id", curLayersNum);
 		mTemplateJSON.put("id", newLayerName);
-		layerID = String.valueOf(curLayersNum);
+		//layerID = String.valueOf(curLayersNum);
 
-		curLayersNum++;
+		//curLayersNum++;
 
 		// templateLayer.put("name", newLayerName + curLayersNum);
 		mTemplateJSON.put("name", newLayerName);
