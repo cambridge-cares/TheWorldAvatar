@@ -30,7 +30,7 @@ public class OWLUpdater {
 	public void updateData(String target, String newValue, String layername) throws Exception
 	{
 		
-	String filename = "BiodieselPlant3.owl";
+	String filename = "C:\\BiodieselPlant3.owl";
    
    File inputFile = new File(filename);
    DocumentBuilderFactory dbFactory  = DocumentBuilderFactory.newInstance();
@@ -84,7 +84,7 @@ public class OWLUpdater {
 	      String[] pair2 = {layername,processed_target,result_string};
 	      result.add(pair2);
 	       
-	      FeatureServiceUpdater mUpdater = new FeatureServiceUpdater("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST021/FeatureServer");
+	      FeatureServiceUpdater mUpdater = new FeatureServiceUpdater("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST022/FeatureServer");
 	      String[] entityNameList= {layername};
 	      Map<Integer,Map<String, String>> nameValueListPerLayer = new HashMap<Integer, Map<String, String>>();
 	     
@@ -109,7 +109,7 @@ public class OWLUpdater {
 	
 	public String readData(String target) throws IOException, Exception
 	{
-		return OWLFileReader.read_owl_file("BiodieselPlant3.owl", target);
+		return OWLFileReader.read_owl_file("C:\\BiodieselPlant3.owl", target);
 	}
 	
 

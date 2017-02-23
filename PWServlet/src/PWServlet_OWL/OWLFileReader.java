@@ -21,7 +21,7 @@ public class OWLFileReader {
 		
 	if(filename == null)
 	{
-		filename = "BiodieselPlant3.owl";
+		filename = "C:\\BiodieselPlant3.owl";
 	} 
 	
    File inputFile = new File(filename);

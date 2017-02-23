@@ -3925,7 +3925,7 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 					if (OIDtoR302.get(j + 1).equals("R-302")) {                                                                     
 						Map<String, Object> ReactorAttributes = ReactorTable2.getFeature(Long.parseLong(ArcGISOBJECTID[j])).getAttributes();
 						if (!data[23].trim().isEmpty()) {
-							//updater.updateData("ValueOfHeatDutyOfR-302", String.valueOf(Float.parseFloat(data[23].trim())*1000),"R-302");
+							updater.updateData("ValueOfHeatDutyOfR-302", String.valueOf(Float.parseFloat(data[23].trim())*1000),"R-302");
 							//ReactorAttributes.put("ValueOfHeatDutyOfR_302",Float.parseFloat(data[23].trim())*1000);           //field name following what exist in pop-up window 
 							
 						}
