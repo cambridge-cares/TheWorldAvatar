@@ -122,26 +122,9 @@ public class App {
 																					// map
 																					// location
 
-	//public static String[] PLANT_OWL_FILE_NAME = { "owl/BiodieselPlant3.owl","owl/BiodieselPlant2WWHR.owl", "owl/BiodieselPlant1WOWHR.owl","owl/zeonplant.owl" };// list
 	
-	
-	public static String[] PLANT_OWL_FILE_NAME = { "owl/BiodieselPlant3.owl" };// list
-																										// of
-																										// owl
-																										// files,
-																										// note
-																										// sequence
-																										// corrspond
-																										// to
-																										// device
-																										// type
-																										// maps
 
-	//public final static String ElECTRICAL_OWL_FILE_NAME = "owl/updated electrical network.owl";// owl
-																							// file
-																							// for
-																							// electrical
-   //public final static String STORAGE_OWL_NAME = "owl/storagetankcomplete.owl";
+
 	private static        ArrayList<String> nonDeviceLayersNames = new ArrayList<String>();
 	private static        ArrayList<EntityInfo> nonDeviceLayersInfo = new ArrayList<EntityInfo>();
 
@@ -453,45 +436,15 @@ public class App {
 		 SimpleFillSymbol symbol = new SimpleFillSymbol(new Color(0, 0, 0, 255), outline);
 		 
 
-			//TODO: check if nonDevice layer contains 4 lines
-			
-			////TODO:For device list   -    pack into deviceInfoList, modify readList to match type
-
-			
-
-			 /////TODO:Deprecated, to be deleted
- 	   //  layerFactories.add(new LayerFactory("Landlots", "owl/JParkLandLots.owl", "kml/Landlots.kml", FeatureServiceUpdater.LayerType.POLYGON, "^LandLotID_\\d+$", user,symbol));
-	
- 	//     layerFactories.add(new LayerFactory("EHTLines", "owl/updated electrical network.owl", "kml/EHT Lines.kml", FeatureServiceUpdater.LayerType.POLYLINE, "^EHT-\\d+$", user,symbol));
-   //  layerFactories.add(new LayerFactory("HTLines", "owl/updated electrical network.owl", "kml/HT Lines.kml", FeatureServiceUpdater.LayerType.POLYLINE, "^HT-\\d+$", user,symbol));
-		 //layerFactories.add(new LayerFactory("UHTLines", "owl/updated electrical network.owl", "kml/UHT Lines (230kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^UHT-\\d+$", user,symbol));
-//		//TODO:WARNING:OWL NUM < KML NUM
-	// layerFactories.add(new LayerFactory("Powergen", "owl/updated electrical network.owl", "kml/PowerGen.kml", FeatureServiceUpdater.LayerType.POLYGON, "^PowerGen_\\d+$", user,symbol));
-	 ///TODO: not sure about public roads
-		// layerFactories.add(new LayerFactory("PublicRoads", "owl/JParkLandLots.owl", "kml/Public Roads.kml", FeatureServiceUpdater.LayerType.POLYGON, "^\\w+Road$", user,symbol));
-//
-	//	 layerFactories.add(new LayerFactory("TLPlant(22kV-11kV)", "owl/updated electrical network.owl", "kml/TLPlant(22kV-11kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PHT-[5|6|7|8]$", user,symbol));
-		//layerFactories.add(new LayerFactory("TLPlant(22kV-3.4kV)", "owl/updated electrical network.owl", "kml/TLPlant(22kV-3.4kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PHT-[9|10|11|12|13|14|15|16]$", user,symbol));
-		// layerFactories.add(new LayerFactory("TLPlant(3.4kV-3kV)", "owl/updated electrical network.owl", "kml/TLPlant(3.4kV-3kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PLT-[1|2|3|4|5|6|7|8]$", user,symbol));
-		// layerFactories.add(new LayerFactory("TLPlant(3kV-0.4kV)", "owl/updated electrical network.owl", "kml/TLPlant(3kV-0.4kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PLT-[9|10|11|12|13|14|15|16|17|18|19]", user,symbol));
-		// layerFactories.add(new LayerFactory("TLPlant(main-22kV)", "owl/updated electrical network.owl", "kml/TLPlant(main-22kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PHT-[1|2|3|4]$", user,symbol));
-	
-		 //layerFactories.add(new LayerFactory("water network", "owl/waternetwork.owl", "kml/WaterNetwork.kml", FeatureServiceUpdater.LayerType.POLYLINE, "^WaterPipe_\\d+$", user,symbol));
-		 
-		 //layerFactories.add(new LayerFactory("steam network", "owl/steamnetwork.owl", "kml/Steam Pipelines.kml", FeatureServiceUpdater.LayerType.POLYLINE, "^SteamLine_\\d+$", user,symbol));
-	 	 //layerFactories.add(new LayerFactory("working fluid", PLANT_OWL_FILE_NAME[3], "kml/Working_Fluid.kml", FeatureServiceUpdater.LayerType.POLYLINE, "^S\\d+$", user,symbol));
-		
-		// layerFactories.add(new LayerFactory("buildings", "owl/buildingmodif2.owl", "kml/Buildings.kml", FeatureServiceUpdater.LayerType.POLYGON, "^BuildingID_\\d+$", user,symbol));
 
 
-/**
          PointObjectsGenerator.layer_factory(0,"Load",null,"Load_Point",true); // Load Points
          PointObjectsGenerator.layer_factory(0,"Coupler",null,"Bus_Coupler",false); // Load Points
          PointObjectsGenerator.layer_factory(0,"Transformer","^.*EHT.*$","EHT_Station",true);
          PointObjectsGenerator.layer_factory(0,"Transformer","^.*UHT.*$","UHT_Station_2",true);
          PointObjectsGenerator.layer_factory(0,"Transformer","^.*HT.*$","HT_Station",true);
          PointObjectsGenerator.layer_factory(0,"Transformer","^.*LT.*$","LT_Station",true);             
-	**/	
+
 		
 
 		createLayer("waterline", "", LineType.WATER);
