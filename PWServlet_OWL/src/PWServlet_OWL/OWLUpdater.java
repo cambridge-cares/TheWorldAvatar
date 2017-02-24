@@ -104,7 +104,7 @@ public class OWLUpdater {
 	      String[] pair2 = {layername,processed_target,result_string};
 	      result.add(pair2);
 	       
-	      FeatureServiceUpdater mUpdater = new FeatureServiceUpdater("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST021/FeatureServer");
+	      FeatureServiceUpdater mUpdater = new FeatureServiceUpdater("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST022/FeatureServer");
 	      String[] entityNameList= {layername};
 	      Map<Integer,Map<String, String>> nameValueListPerLayer = new HashMap<Integer, Map<String, String>>();
 	     

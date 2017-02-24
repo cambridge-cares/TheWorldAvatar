@@ -57,12 +57,7 @@ public abstract class httpRequestBtnInfo implements BtnInfo{
 		this.appCallFlagStr = appCallFlagStr;
 		this.editStack = editStack;
 		///determine servlet address by callflag
-		if(appCallFlagStr.contentEquals("PrAP")){//if run pr biodieselplant1
-			urlStr+=APWOWHRStr;//route to APWOWHR servlet
-		} else if (appCallFlagStr.contentEquals("PrAPHR")){//if run pr biodieselplant2
-			urlStr+= APWWHRStr;
-		}
-		else if (appCallFlagStr.contentEquals("Query")){//if run Query
+	if (appCallFlagStr.contentEquals("Query")){//if run Query
 			urlStr+= query;
 		}
 		else{//all other function requires
