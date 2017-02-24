@@ -401,7 +401,9 @@ public class App {
 
 		// ---------------------------------------------------Initiate EntityList----------------------------------------------------------------------
 		readAllEntityList();
-		
+		for (EntityInfo d :nonDeviceLayersInfo){
+			System.out.println("final entity++++++++++++++++"+d.getName());
+		}
 		// -------------------------------------------------------------------------------------------------------------------------
 		MapOptions mapOptions = new MapOptions(MapType.TOPO);
 		map = new JMap(mapOptions);
@@ -720,16 +722,26 @@ public class App {
 				e.printStackTrace();
 			}
 		
-              for(DeviceInfo device: deviceInfoList){
-            	  
+		//loop through deviceInfoList to find type of each in dictionary, if type not found ,noted down the id for later removal
+		ArrayList<Integer> ids2Remove = new ArrayList<Integer>();
+              for(int idxD = 0; idxD < deviceInfoList.size(); idxD++){
+            	  DeviceInfo device = deviceInfoList.get(idxD);
             	  String dType = typeDictionary.get(device.name);
             	  if(dType==null){
-            		  System.out.println("ERR: CAN NOT FIND TYPE FOR DEVICE "+device.name+" in "+DEVICE_MAP_LOCATION);
+            		  System.out.println("ERR: CAN NOT FIND TYPE FOR DEVICE "+device.name+" in "+DEVICE_MAP_LOCATION+" , this device will be removed from list");
+            		  ids2Remove.add(idxD);
                    
             	  } else{
             		  device.type = dType;
             	  }
               }
+              
+              //remove all devices without type defined in map
+     		 for(int idxID = ids2Remove.size() - 1; idxID >= 0; idxID--){//You need to remove in sequence from one with highest id to lowest
+    			 int idxD = ids2Remove.get(idxID);
+    			 deviceInfoList.remove(idxD);
+    		 }
+              
 //TODO: do storage tank
 		deviceInfoList.add(storageInfo);//add storagetank separately
 		
@@ -772,6 +784,8 @@ public class App {
 		Map<String, LayerFactoryInfo> dic = LayerFactoryInfoDictionary.getDictionary();
 		 /////////////// construct layerFactories for each layer///////////////////////////////////
 	     //construct a full layerInfo
+		
+		ArrayList<Integer> ids2Remove = new ArrayList<Integer>();
 		 for(int idxE = 0; idxE < nonDeviceLayersInfo.size(); idxE++){
 			 
 			 EntityInfo entity =nonDeviceLayersInfo.get(idxE);
@@ -779,13 +793,18 @@ public class App {
 	    	 
 	    	 if(info ==null){
 	    		System.out.println("entity: "+entity.getName()+" not exists in LayerFactory dictionary, will be deleted from layer list");
-	    		nonDeviceLayersInfo.remove(entity);
+	    		ids2Remove.add(idxE); 
 	    	 }else{
 	    	 info.setOwlSource(entity.getOwlSource() );
 	    	 layerFactories.add(new LayerFactory(info, user, symbol));
 	    	 }
 	    	 }
 		 
+		 //remove all entities not defined in dictionary
+		 for(int idxID = ids2Remove.size() - 1; idxID >= 0; idxID--){//You need to remove in sequence from one with highest id to lowest
+			 int idxE = ids2Remove.get(idxID);
+			 nonDeviceLayersInfo.remove(idxE);
+		 }
 		 
 		 //extract from filtered nonDeviceLayersInfo the  name list of layers
 		 for(EntityInfo entity : nonDeviceLayersInfo){

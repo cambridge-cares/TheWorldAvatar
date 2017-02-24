@@ -65,7 +65,7 @@ public class PipeReader {
 		
 		/********filter to get all pipeline nodes******/
 		//////get all owlReader first level nodes
-		ArrayList<String> allNodeNames = OWLReader.read_owl_file(App.PLANT_OWL_FILE_NAME[0], null);
+		ArrayList<String> allNodeNames = OWLReader.read_owl_file("owl/Bio3.owl", null);
 		///////filter through to get a list of top level pipe nodes
 		for(String nodeName : allNodeNames){////DOES THE NAME MATCH THIS PATTERN?
 			if(nodeName.matches("^Pipe_\\d+-\\d+$")){//=>YES
@@ -76,7 +76,7 @@ public class PipeReader {
 	
 		/****extract data from pipeline nodes****/
 		for(Object pipeName : pipeNames){		/////loop through all pipes
-			OWLReader.read_owl_file(App.PLANT_OWL_FILE_NAME[0], (String)pipeName);
+			OWLReader.read_owl_file("owl/Bio3.owl", (String)pipeName);
 			                                                                    System.out.println("read pipe:"+(String)pipeName);
 			//extract and pack inrto pathLists
 			List<Point> path = new ArrayList<Point>();
