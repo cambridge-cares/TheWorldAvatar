@@ -27,8 +27,12 @@ import org.json.JSONException;
 
 public class Playground {
   public static void main(String args[]) throws Exception {
-	  	OWLReader.read_owl_file(null, "SinglePhase_LPS-303");
-	  	System.out.println(OWLReader.name_list);
-	  	System.out.println(OWLReader.value_list);
+	  PointObjectsGenerator.layer_factory(0,"Load",null,"Load_Point",true); // Load Points
+      PointObjectsGenerator.layer_factory(0,"Coupler",null,"Bus_Coupler",false); // Load Points
+      PointObjectsGenerator.layer_factory(0,"Transformer","^.*EHT.*$","EHT_Station",true);
+      PointObjectsGenerator.layer_factory(0,"Transformer","^.*UHT.*$","UHT_Station",true);
+      PointObjectsGenerator.layer_factory(0,"Transformer","^.*HT.*$","HT_Station",true);
+      PointObjectsGenerator.layer_factory(0,"Transformer","^.*LT.*$","LT_Station",true);  
+      System.out.println("Finished");
   }
 }

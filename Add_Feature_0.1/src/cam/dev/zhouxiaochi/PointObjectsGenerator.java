@@ -19,7 +19,7 @@ import cam.dev.zhouxiaochi.OWLReader.Device;
 public class PointObjectsGenerator {
 
 	public static String[] layers = {"Load_Point","Bus_Coupler","EHT_Station","UHT_Station","HT_Station","LT_Station"};
-	public static String Url_Base = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Point/FeatureServer/";
+	public static String Url_Base = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Test_Point/FeatureServer/";
 	
 	public static String[] files;
 	
@@ -44,7 +44,6 @@ public class PointObjectsGenerator {
 		}
 		
 		System.out.println(files[file_index]);
-		System.in.read();
 		ArrayList<Device> device_list = OWLReader.BatchOperationForPoint(files[file_index],device_class,filter_on,filter_regex); // This is for Load Points 
 		 
 		System.out.println("We are here " + device_list.size());
@@ -99,7 +98,7 @@ public class PointObjectsGenerator {
 		attrLists.put("type", typeList);
 		attrLists.put("alias", name_list);
 		int lengthOfEachList = name_list.length;
-		FeatureServiceUpdater updater = new FeatureServiceUpdater("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Point/FeatureServer");
+		FeatureServiceUpdater updater = new FeatureServiceUpdater(Url_Base);
 	    updater.generateLayer(lengthOfEachList,FeatureServiceUpdater.LayerType.POINT, attrLists, LayerName);
 
 		
@@ -122,7 +121,7 @@ public class PointObjectsGenerator {
 
 		UserCredentials user = new UserCredentials();
 		user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
-		ArcGISFeatureLayer Point_test_layer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Point/FeatureServer/" + LayerName,user);
+		ArcGISFeatureLayer Point_test_layer = new ArcGISFeatureLayer(Url_Base + LayerName,user);
 		Point_test_layer.initializeAsync();
 		
 		while(!Point_test_layer.isAllowGeometryUpdates()) // wait till the target layer is initiated

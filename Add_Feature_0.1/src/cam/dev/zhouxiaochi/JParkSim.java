@@ -130,7 +130,29 @@ public class JParkSim {
 				                                      new SimpleLineSymbol(Color.red, 5),
 				                                      new SimpleLineSymbol(Color.green, 5)
 				                                      };
-		 
+		
+	 //   final static SimpleMarkerSymbol  = new SimpleMarkerSymbol(Color.red, 15, SimpleMarkerSymbol.Style.CROSS);
+		/*
+		 * 
+         PointObjectsGenerator.layer_factory(0,"Load",null,"Load_Point",true); // Load Points
+         PointObjectsGenerator.layer_factory(0,"Coupler",null,"Bus_Coupler",false); // Load Points
+         PointObjectsGenerator.layer_factory(0,"Transformer","^.*EHT.*$","EHT_Station",true);
+         PointObjectsGenerator.layer_factory(0,"Transformer","^.*UHT.*$","UHT_Station_2",true);
+         PointObjectsGenerator.layer_factory(0,"Transformer","^.*HT.*$","HT_Station",true);
+         PointObjectsGenerator.layer_factory(0,"Transformer","^.*LT.*$","LT_Station",true);             
+		
+		 */
+		
+		
+		final static SimpleMarkerSymbol Load_Point_color = new SimpleMarkerSymbol(Color.red, 15, SimpleMarkerSymbol.Style.CROSS);
+		final static SimpleMarkerSymbol Coupler_color = new SimpleMarkerSymbol(Color.blue, 15, SimpleMarkerSymbol.Style.CIRCLE);
+		final static SimpleMarkerSymbol EHT_color = new SimpleMarkerSymbol(Color.gray, 15, SimpleMarkerSymbol.Style.DIAMOND);	
+		final static SimpleMarkerSymbol UHT_color = new SimpleMarkerSymbol(Color.red, 15, SimpleMarkerSymbol.Style.SQUARE);		
+		final static SimpleMarkerSymbol HT_color = new SimpleMarkerSymbol(Color.green, 15, SimpleMarkerSymbol.Style.TRIANGLE);	
+		final static SimpleMarkerSymbol LT_color = new SimpleMarkerSymbol(Color.cyan, 15, SimpleMarkerSymbol.Style.X);	
+
+		public static SimpleMarkerSymbol[] pointColors = {Load_Point_color,Coupler_color,EHT_color,UHT_color,HT_color,LT_color};
+		
 		public static String editedValue;
 		public static String editedName;
 		
@@ -225,7 +247,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     linelayers[idxLayer] = new ArcGISFeatureLayer(App.BASE_URL+"/"+idxLayer, user);
     }
  
-    ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer(App.BASE_URL+"/Buildings", user);    // testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/9", user);
+    ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer(App.BASE_URL+"/Buildingsc", user);    // testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/9", user);
 
     ArcGISFeatureLayer[] pointlayers = new    ArcGISFeatureLayer[PointObjectsGenerator.layers.length];
     
@@ -264,7 +286,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
    for (int idx_Point = 0 ; idx_Point < pointlayers.length ; idx_Point++)
    {
      completeLayerList[idx_Point + targets.length + linelayers.length] = pointlayers[idx_Point];
-     createRenderer(layers, new ArcGISFeatureLayer [] {pointlayers[idx_Point]},testColor2);   
+     createRenderer(layers, new ArcGISFeatureLayer [] {pointlayers[idx_Point]},pointColors[idx_Point]);   
    }
     
    completeLayerList[completeLayerList.length - 1] = buildinglayer;

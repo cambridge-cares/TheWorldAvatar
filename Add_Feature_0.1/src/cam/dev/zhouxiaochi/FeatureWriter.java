@@ -105,11 +105,11 @@ public class FeatureWriter {
 	 * @param x		the longitude of the feature (decimal coordinate)
 	 * @param y		the latitude    of the feature (decimal coordinate)
 	 * @param ref    the spatial reference of the layer
-	 * @param plantID    id of plant this feature belongs to, required now because each plant have seperate owl to read from
+	 * @param owlSource    id of plant this feature belongs to, required now because each plant have seperate owl to read from
 	 *  @return Graphic[] the array of features to be added
 	 * @throws Exception 
 	 */
-	public Graphic[] createFeature(String type , double x , double y,SpatialReference ref, String device_name, int plantID ) throws Exception
+	public Graphic[] createFeature(String type , double x , double y,SpatialReference ref, String device_name, String owlSource ) throws Exception
 	{
 		
 		
@@ -117,7 +117,7 @@ public class FeatureWriter {
 		bioplant_width  =  30;
 		
 		
-      OWLReader.read_owl_file(App.PLANT_OWL_FILE_NAME[plantID], device_name);
+      OWLReader.read_owl_file(owlSource, device_name);
 
 		  Polygon polygon = new Polygon();
 		 

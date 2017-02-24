@@ -11,7 +11,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 
-import cam.dev.zhouxiaochi.Tree.TreeNode;
+import cam.dev.zhouxiaochi.EntityTree.TreeNode;
 
 public class SideMenu extends JPanel{
 
@@ -21,9 +21,15 @@ public class SideMenu extends JPanel{
 		
         JTree tree = new JTree();  
            
-        Tree entityNameTree = OWLReader.getEntityListFromOWL();
+        EntityTree entityNameTree = OWLReader.getEntityListFromOWLAsTree();
+        
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+        
+        //////construct Display JTree
         TreeNode rootData  = entityNameTree.getRoot();
-        CheckBoxTreeNode rootNode = new CheckBoxTreeNode(rootData.getNodeData());  
+        CheckBoxTreeNode rootNode = new CheckBoxTreeNode(rootData.getEntityInfo().getName());  
         constructNodeModel(rootNode, rootData);
         DefaultTreeModel model = new DefaultTreeModel(rootNode);  
         tree.addMouseListener(new CheckBoxTreeNodeSelectionListener());  
@@ -31,6 +37,10 @@ public class SideMenu extends JPanel{
         tree.setCellRenderer(new CheckBoxTreeCellRenderer());  
 
         rootNode.setSelected(true);
+        
+       
+        
+        
         
        //tranverse through tree and add children to nodeModel       
 		this.add(tree);
@@ -43,7 +53,7 @@ public class SideMenu extends JPanel{
     	List<TreeNode> childrenData =  pDataNode.getChildren();
     	
     	for(TreeNode childData: childrenData){
-            CheckBoxTreeNode cNode = new CheckBoxTreeNode(childData.getNodeData());  
+            CheckBoxTreeNode cNode = new CheckBoxTreeNode(childData.getEntityInfo().getName());  
 
             pNode.add(cNode);
             constructNodeModel(cNode, childData);

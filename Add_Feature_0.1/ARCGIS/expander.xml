@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<ArrayOfMFeature xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <mFeature>
+    <Type>Polygon</Type>
+    <Name>EXP-501</Name>
+    <Scale>1</Scale>
+    <Orientation>0</Orientation>
+    <Center>11541037.1815965,140977.415507216</Center>
+  </mFeature>
+  <mFeature>
+    <Type>Polygon</Type>
+    <Name>EXP-401</Name>
+    <Scale>1.0000000001418647</Scale>
+    <Orientation>1</Orientation>
+    <Center>11541000.600985,140193.259016511</Center>
+  </mFeature>
+  <mFeature>
+    <Type>Polygon</Type>
+    <Name>EXP-701</Name>
+    <Scale>1.677333823826306</Scale>
+    <Orientation>2</Orientation>
+    <Center>11544155.5459425,141380.771232021</Center>
+  </mFeature>
+  <mFeature>
+    <Type>Polygon</Type>
+    <Name>TURB</Name>
+    <Scale>1.0000000001418647</Scale>
+    <Orientation>1</Orientation>
+    <Center>11541016.3040372,140823.431631026</Center>
+  </mFeature>
+</ArrayOfMFeature>
