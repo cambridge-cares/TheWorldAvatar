@@ -158,7 +158,7 @@ public class PWServlet_OWL extends HttpServlet {
 
 	public static String runPythonCommand = new String("python C:/apache-tomcat-8.0.24/webapps/ROOT/PWrun.pyw"); // ensure that python environment variable is set to python34
 //	public static String runPythonCommandAP = new String("python C:/apache-tomcat-8.0.24/webapps/ROOT/APrun.pyw"); // ZL-151124  python script calling Aspen Plus model
-	public static String runPythonCommandAPPW = new String("python C:/apache-tomcat-8.0.24/webapps/ROOT/APPWrun.pyw"); // python script for the AP+PW button, run AspenPlus and PowerWorld model sequentially
+	public static String runPythonCommandAPPW = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/APPWrun.pyw"); // python script for the AP+PW button, run AspenPlus and PowerWorld model sequentially
 
 	public static String runPythonCommandAP = new String("python C:/apache-tomcat-8.0.24/webapps/ROOT/APrun_modified.pyw"); // ZL-151124  python script calling Aspen Plus model
 	public static String runPythonCommandAPWHR = new String("python C:/apache-tomcat-8.0.24/webapps/ROOT/APrunWHR.pyw"); // ZL-151124  python script calling Aspen Plus With Heat Recovery model
@@ -3722,7 +3722,7 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 				
 				String modifname = name.replace(("_"+lastone),("-"+lastone));						
 				 System.out.println("---------------------> Crush 4" + modifname);
-			  	updater.updateData(modifname, value,"E-201");
+			  	updater.updateData(modifname, value,"E-208");
 				 System.out.println("---------------------> Crush 5");
 			 	System.out.println("--------->" + modifname);
 			 	

@@ -527,7 +527,7 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 	        disNode.addChild(new EntityInfo("TLPlant(3kV-0.4kV)","owl/updated electrical network.owl" ));
 	        disNode.addChild(new EntityInfo("TLPlant(main-22kV)","owl/updated electrical network.owl" ));
 
-	        TreeNode transpNode =  entityNameTree.getNodeVName("JurongTransportationSystem");
+	        TreeNode transpNode =  entityNameTree.getNodeVName("TransportationSystem");
 	        transpNode.deleteAllChildren();
  		 } 
  		 logger.info("Now return tree");
