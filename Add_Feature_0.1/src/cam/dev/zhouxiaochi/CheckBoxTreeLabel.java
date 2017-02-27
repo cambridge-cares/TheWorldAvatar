@@ -11,6 +11,11 @@ import javax.swing.JLabel;
 import javax.swing.UIManager;  
 import javax.swing.plaf.ColorUIResource;  
   
+/***
+ * Define label for checkbox Tree
+ * @author Shaocong
+ *
+ */
 public class CheckBoxTreeLabel extends JLabel  
 {  
     private boolean isSelected;  

@@ -159,6 +159,7 @@ public class App {
 	static SimpleLineSymbol[] lineSymbols = {lineSymbolWater,lineSymbolGas,lineSymbolMaterial,lineSymbolAir};
 	 static DeviceInfo storageInfo = null;
 
+	 private static UserCredentials user;
 	/**
 	 * DeviceInfo, stores name, type and plantID of one device.
 	 * @author Shaocong
@@ -215,7 +216,7 @@ public class App {
 			 **/
 			Graphic[] g = featurewriter.createFeature(type, x, y, thisLayer.getDefaultSpatialReference(), name, owlSource);
 			// rect_list.add(featurewriter.obstacle);
-			thisLayer.applyEdits(g, null, null, new ApplyEditCallback());// add the new features to
+			thisLayer.applyEdits(g, null, null, new ApplyEditCallback(name));// add the new features to
 														// layer
 			all_layers.add(thisLayer);
 			all_features.add(g);
@@ -231,7 +232,7 @@ public class App {
 	 * @throws Exception
 	 */
 	public static void createStorageTank(ArcGISFeatureLayer thisLayer) throws Exception {
-
+		
 		FeatureWriter featurewriter = new FeatureWriter();
 		if (thisLayer.getDefaultSpatialReference() == null) {
 			JOptionPane.showMessageDialog(null, "Sorry, the layer is not yet fully loaded");
@@ -241,7 +242,7 @@ public class App {
 			 * features to be added)
 			 **/
 			Graphic[] g = featurewriter.createFeatureStorage();
-			thisLayer.applyEdits(g, null, null, new ApplyEditCallback());// add the new features to
+			thisLayer.applyEdits(g, null, null, new ApplyEditCallback("storageTank"));// add the new features to
 														// layer
 			all_layers.add(thisLayer);
 			all_features.add(g);
@@ -358,15 +359,23 @@ public class App {
 					drawLinesFromKML();//generate line features from kml directly
 					System.out.println("draw line from KML finished");
 					
-					for (int i = 0; i < deviceInfoList.size(); i++) {// loop through each device in deviceInfoList
+					/////////-1 because the last one is storage tank, which is taken care of separately
+					for (int i = 0; i < deviceInfoList.size()-1; i++) {// loop through each device in deviceInfoList
 																	
-						if (!deviceInfoList.get(i).name.equals("storageTank")) {//Is device storage tank?
+						if (!deviceInfoList.get(i).name.equals(storageInfo.name)) {//Is device storage tank?
 							DeviceInfo info = deviceInfoList.get(i);//=>NO! Then call create_object to load features into arcgis service
 							create_object(x_array[i], y_array[i], LayerMap.get(info.name), info.type, info.name,  info.owlSource);
 						}
 
 					}
-					createStorageTank(LayerMap.get("storageTank"));// load
+					
+					
+					createStorageTank(LayerMap.get(storageInfo.name)); // Modified by ZHOU XIAOCHI 2017-2-24
+					//ArcGISFeatureLayer storage = new ArcGISFeatureLayer(BASE_URL + "/" + storageInfo.name, user);
+					//createStorageTank(storage); // Modified by ZHOU XIAOCHI 2017-2-24
+					
+					
+																	// load
 																	// //storage
 																	// // tank
 																	// features individually
@@ -413,7 +422,7 @@ public class App {
 
 		LayerList layerList = new LayerList();
 		layerList.add(tiledLayer);
-		UserCredentials user = new UserCredentials();
+	    user = new UserCredentials();
 		user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp"); // Access
 																			// secure
 																			// feature
@@ -877,7 +886,7 @@ public class App {
 			idxPipe++;
 		}
 
-		linelayers[linetype.getId()].applyEdits(adds, null, null, new ApplyEditCallback());
+		linelayers[linetype.getId()].applyEdits(adds, null, null, new ApplyEditCallback(linetype.name()));
 		}
 	}
 
@@ -902,7 +911,7 @@ public class App {
 
 			all_layers.get(i).setSelectionIDs(ids, true);
 
-			all_layers.get(i).applyEdits(null, all_layers.get(i).getSelectedFeatures(), null, new ApplyEditCallback());
+			all_layers.get(i).applyEdits(null, all_layers.get(i).getSelectedFeatures(), null, new ApplyEditCallback("delete"));
 		}
 	}
 

@@ -5,13 +5,18 @@ import java.util.Map;
 
 import cam.dev.zhouxiaochi.FeatureServiceUpdater.LayerType;
 
+/***
+ * Data class which is used to Store data necessary for generating a layer.
+ * @author Shaocong
+ *
+ */
 public class LayerFactoryInfo {
 
-	private String   layerName;
+	private String   layerName; 
 	private String   owlSource;
 	private String   kmlSource;
 	private FeatureServiceUpdater.LayerType   geoType;
-	private String   deviceNameRegex;
+	private String   deviceNameRegex;//regular expression to filter top nodes
 	public String getKmlSource() {
 		return kmlSource;
 	}

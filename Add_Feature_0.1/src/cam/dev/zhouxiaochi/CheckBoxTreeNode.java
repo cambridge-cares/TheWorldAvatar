@@ -1,17 +1,17 @@
 package cam.dev.zhouxiaochi;
 import java.util.function.Function;
 
+
+/****
+ * A self defined tree node. Each tree node has a boolean attribute isSelected. Select hierarchy behavior is defined. Go to setSelected function for more detail.
+ */
+
 import javax.swing.tree.DefaultMutableTreeNode;  
 public class CheckBoxTreeNode extends DefaultMutableTreeNode  
 {  
-    protected boolean isSelected;  
+    protected boolean isSelected;  //is this note selected
 
-   // private Function<String, Boolean> selectCallBack = JParkSim::selectCallBack;
-   // private Function<String, Boolean> unselectCallBack = JParkSim::unselectCallBack;
 
-     private Function<String, Boolean> selectCallBack = TestSideMenu::selectCallBack;
-     private Function<String, Boolean> unselectCallBack = TestSideMenu::unselectCallBack;
-     private String name; 
     public CheckBoxTreeNode()  
     {  
         this(null);  
@@ -26,7 +26,6 @@ public class CheckBoxTreeNode extends DefaultMutableTreeNode
     {  
         super(userObject, allowsChildren);  
         this.isSelected = isSelected;  
-        this.name = (String)userObject;
     }  
   
     public boolean isSelected()  
@@ -44,7 +43,6 @@ public class CheckBoxTreeNode extends DefaultMutableTreeNode
         {  //Following behaviors should be implemented:
         	//1: If this node is selected, then all chidren of this node should be automatically selected
         	//2: If all children is selected of a parent, then this parent should be automatically selected
-        	selectCallBack.apply(name);
         	
         	
             if(children != null)// this node has children?  
@@ -81,7 +79,6 @@ public class CheckBoxTreeNode extends DefaultMutableTreeNode
             //1: unselect this node will NOT automatically unselect all chidren UNLESS ALL CHILDREN ARE CURRENTLY SELECTED
         	//2: unselect one of the children will automatially unselect the parent node
         	
-        	unselectCallBack.apply(name);
             if(children != null)  //the node has children?
             {  //=> Yes
                 int index = 0;  

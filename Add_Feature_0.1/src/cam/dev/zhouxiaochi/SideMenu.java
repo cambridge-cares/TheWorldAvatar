@@ -12,31 +12,35 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 
 import cam.dev.zhouxiaochi.EntityTree.TreeNode;
-
+/***
+ * Side menu widget for displaying layers in a tree structure.
+ * 
+ * @author Shaocong
+ *
+ */
 public class SideMenu extends JPanel{
 
 	public SideMenu() throws IOException, Exception{		
 		super();
-		//set length height
 		
-        JTree tree = new JTree();  
+        JTree tree = new JTree();  //display tree
            
-        EntityTree entityNameTree = OWLReader.getEntityListFromOWLAsTree();
+        EntityTree entityNameTree = OWLReader.getEntityListFromOWLAsTree();//data tree
         
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
         
-        //////construct Display JTree
+       /////construct JTree
         TreeNode rootData  = entityNameTree.getRoot();
         CheckBoxTreeNode rootNode = new CheckBoxTreeNode(rootData.getEntityInfo().getName());  
-        constructNodeModel(rootNode, rootData);
+        constructNodeModel(rootNode, rootData);//call recursive to construct checkBoxTree for each entity in entityTree
         DefaultTreeModel model = new DefaultTreeModel(rootNode);  
         tree.addMouseListener(new CheckBoxTreeNodeSelectionListener());  
         tree.setModel(model);  
         tree.setCellRenderer(new CheckBoxTreeCellRenderer());  
 
-        rootNode.setSelected(true);
+        rootNode.setSelected(true);// initiate all layer checked
         
        
         

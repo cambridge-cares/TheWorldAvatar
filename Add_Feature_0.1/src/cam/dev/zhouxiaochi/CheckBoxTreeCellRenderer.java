@@ -15,10 +15,17 @@ import javax.swing.plaf.ColorUIResource;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;  
+
+/**
+ * Render for checkboxTreeCell. Note that JTree does not define individual cell, but use a render to define a general looking
+ * @author Shaocong
+ *
+ */
+
 public class CheckBoxTreeCellRenderer extends JPanel implements TreeCellRenderer  
 {  
-    protected JCheckBox check;  
-    protected CheckBoxTreeLabel label;  
+    protected JCheckBox check;  //a check box 
+    protected CheckBoxTreeLabel label;  // a self defined label based on JLabel
 
     public CheckBoxTreeCellRenderer()  
     {  
@@ -31,6 +38,9 @@ public class CheckBoxTreeCellRenderer extends JPanel implements TreeCellRenderer
     }  
       
 
+    /***
+     * Set component looking, Note how checkbox is checked by the treenode value
+     */
     @Override  
     public Component getTreeCellRendererComponent(JTree tree, Object value,  
             boolean selected, boolean expanded, boolean leaf, int row,  
@@ -53,6 +63,9 @@ public class CheckBoxTreeCellRenderer extends JPanel implements TreeCellRenderer
         return this;  
     }  
   
+    /***
+     * Funtion of TreeCellRenderer interface
+     */
     @Override  
     public Dimension getPreferredSize()  
     {  
@@ -61,6 +74,9 @@ public class CheckBoxTreeCellRenderer extends JPanel implements TreeCellRenderer
         return new Dimension(dCheck.width + dLabel.width, dCheck.height < dLabel.height ? dLabel.height: dCheck.height);  
     }  
       
+    /***
+     * Funtion of TreeCellRenderer interface
+     */
     @Override  
     public void doLayout()  
     {  

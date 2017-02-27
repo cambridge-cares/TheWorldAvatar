@@ -172,7 +172,6 @@ public class LayerFactory {
 			e.printStackTrace();
 	}
 		loadFeatureIntoArcgis();
-		Thread.sleep(500);
 
 
 		////////////////////////////////////////////////////////////////////
@@ -447,7 +446,7 @@ public class LayerFactory {
 
 		}
 
-		targetLayer.applyEdits(adds, null, null, new ApplyEditCallback());
+		targetLayer.applyEdits(adds, null, null, new ApplyEditCallback(layerName));
 		return;
 	}
 

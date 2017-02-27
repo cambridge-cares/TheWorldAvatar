@@ -316,6 +316,7 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 				if(!nodetype.contains("rdf:type")){
 				if(nodetype.contains("owl:sameAs")) {//contains allias?
 					nodename = nodename.split("#")[1];
+					nodename= nodename.replace(".", "_");//replacing illegal char//TODO: do a full check
 					 logger.info("a same as allias:"+nodename);
 					OWLfileNode newNode = new OWLfileNode(nodename,nodetype,"","",node.NodeName);
 					expand(newNode, false);//expand allias node 
@@ -421,6 +422,13 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 	  }
  	
 
+	  /***
+	   * Return entites read from owl as a list of entityInfo.
+	   * using getEntityListFromOWLAsTree funciton.
+	   * @return
+	   * @throws IOException
+	   * @throws Exception
+	   */
  	public static List<EntityInfo>  getEntityFromOWL() throws IOException, Exception{
  		if(entityNameList == null){//lazy init
  			if(entityNameTree == null){
@@ -435,6 +443,7 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
  		
  	}
  	
+ 	///main for testing getEntityFromOWL();
  	public static void main(String[] args){
  		
  		try {
@@ -453,6 +462,14 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
  		
  		
  	}
+ 	
+ 	/***
+ 	 * Read entity hierarchy starting from tope-node owl , returned in tree structure
+ 	 * Note that currently some layers are not structured in owl, so they are manually added
+ 	 * @return EntityTree, entity info(name, owlSource) stored in Tree structure 
+ 	 * @throws IOException
+ 	 * @throws Exception
+ 	 */
  	 public static EntityTree getEntityListFromOWLAsTree() throws IOException, Exception{
  		 if(entityNameTree == null){//lazy initiation 
  		 
@@ -527,7 +544,12 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
  	 
  	
 
- 	 
+ 	 /***
+ 	  * 
+ 	  * @param parentNode
+ 	  * @throws IOException
+ 	  * @throws Exception
+ 	  */
  	 private static void   expandEntityListOneLevel(TreeNode parentNode) throws IOException, Exception{
 
  			EntityInfo parentNodeInfo = parentNode.getEntityInfo();
