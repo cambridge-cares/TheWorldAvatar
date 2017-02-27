@@ -40,16 +40,16 @@ public class OWLReader {
 	 * @param unit    --> the unit of the value 
 	 */
 	
-    public static class Device
+    public static class Device // Such class describes a device 
 	{
-		public  String Id;
-		public  Point Point;
-		public  String[] Name_list;
-		public  String[] Value_list; 
+		public  String Id;     			// store the id of the device
+		public  Point Point;			// store the coordinates of the device
+		public  String[] Name_list;		// store the attributes names of the device
+		public  String[] Value_list; 	// store the attributes values of teh device
 
 	}	
 	
-	public static class OWLfileNode
+	public static class OWLfileNode 
 	{
 		OWLfileNode(String name, String type, String value, String unit, String parent) {
 			NodeName = name;
@@ -522,7 +522,18 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 	        disNode.addChild(new EntityInfo("TLPlant(3kV-0.4kV)","owl/updated electrical network.owl" ));
 	        disNode.addChild(new EntityInfo("TLPlant(main-22kV)","owl/updated electrical network.owl" ));
 
-	        TreeNode transpNode =  entityNameTree.getNodeVName("TransportationSystem");
+	        TreeNode ElectricalGrid = entityNameTree.getNodeVName("ElectricalGridOfJPark"); 
+	        ElectricalGrid.addChild(new EntityInfo("Bus Coupler","owl/updated electrical network.owl" ));
+
+	        
+	        
+	        TreeNode Substations = entityNameTree.getNodeVName("Substations"); 
+	        Substations.addChild(new EntityInfo("EHT_Stations","owl/updated electrical network.owl" ));
+	        Substations.addChild(new EntityInfo("UHT_Stations","owl/updated electrical network.owl" ));
+	        Substations.addChild(new EntityInfo("HT_Stations","owl/updated electrical network.owl" ));
+	        Substations.addChild(new EntityInfo("LT_Stations","owl/updated electrical network.owl" ));
+	        
+	        TreeNode transpNode =  entityNameTree.getNodeVName("JurongTransportationSystem");
 	        transpNode.deleteAllChildren();
  		 } 
  		 logger.info("Now return tree");
@@ -530,7 +541,15 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
  	 }
  	 
  	
-
+/*  PointObjectsGenerator.layer_factory(0,"Load",null,"Load_Point",true); // Load Points
+         PointObjectsGenerator.layer_factory(0,"Coupler",null,"Bus_Coupler",false); // Load Points
+         PointObjectsGenerator.layer_factory(0,"Transformer","^.*EHT.*$","EHT_Station",true);
+         PointObjectsGenerator.layer_factory(0,"Transformer","^.*UHT.*$","UHT_Station_2",true);
+         PointObjectsGenerator.layer_factory(0,"Transformer","^.*HT.*$","HT_Station",true);
+         PointObjectsGenerator.layer_factory(0,"Transformer","^.*LT.*$","LT_Station",true);             
+*/
+ 	 
+ 	 
  	 
  	 private static void   expandEntityListOneLevel(TreeNode parentNode) throws IOException, Exception{
 

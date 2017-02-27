@@ -24,6 +24,7 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -31,6 +32,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -159,7 +161,10 @@ public class JParkSim {
 		static int layerID;
 	
 	private JFrame window;
-	private JMap map;
+	public static JMap map;
+	public static JParkSim application;
+ 	
+	
 	//try to put new variable
 	
 	private GraphicsLayer graphicsLayer;
@@ -214,7 +219,12 @@ public class JParkSim {
  
     // empty JMap constructor and add a tiled basemap layer
     map = new JMap();
+    
+    
       layers = map.getLayers(); // object storing all the map layers (NOT AN ARRAY - use completelayerlist instead)
+      
+      
+      
     ArcGISTiledMapServiceLayer tiledLayer = new ArcGISTiledMapServiceLayer("http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer");
     layers.add(tiledLayer); // add basemap layer
 
@@ -234,6 +244,9 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     		System.out.println("Map has finished loading");
     	}
     });
+    
+    
+     
   
     // adds layers uploaded onto ArcGIS for Developers
     UserCredentials user = new UserCredentials();
@@ -247,7 +260,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     linelayers[idxLayer] = new ArcGISFeatureLayer(App.BASE_URL+"/"+idxLayer, user);
     }
  
-    ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer(App.BASE_URL+"/Buildingsc", user);    // testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/9", user);
+    ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer(App.BASE_URL+"/Buildings", user);    // testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/9", user);
 
     ArcGISFeatureLayer[] pointlayers = new    ArcGISFeatureLayer[PointObjectsGenerator.layers.length];
     
@@ -269,7 +282,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     ArcGISFeatureLayer  newLayer = new ArcGISFeatureLayer(
     App.BASE_URL+"/" + targets[i], user);
     layer_name_map.put(targets[i],newLayer);
-    completeLayerList[i] = newLayer;
+    completeLayerList[i + 1] = newLayer;
     createRenderer(layers, new ArcGISFeatureLayer [] {newLayer}, testColor);
     }
    
@@ -277,7 +290,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     
    for (int idxLayer = 0 ; idxLayer < linelayers.length; idxLayer++){
    
-    completeLayerList[idxLayer + targets.length] = linelayers[idxLayer];
+    completeLayerList[idxLayer + targets.length + 1] = linelayers[idxLayer];
     createRenderer(layers, new ArcGISFeatureLayer [] {linelayers[idxLayer]}, lineColors[idxLayer]);
    }
  
@@ -285,11 +298,14 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
    
    for (int idx_Point = 0 ; idx_Point < pointlayers.length ; idx_Point++)
    {
-     completeLayerList[idx_Point + targets.length + linelayers.length] = pointlayers[idx_Point];
+     completeLayerList[idx_Point + targets.length + linelayers.length + 1] = pointlayers[idx_Point];
      createRenderer(layers, new ArcGISFeatureLayer [] {pointlayers[idx_Point]},pointColors[idx_Point]);   
    }
     
-   completeLayerList[completeLayerList.length - 1] = buildinglayer;
+   
+   
+   
+   completeLayerList[0] = buildinglayer;
    createRenderer(layers, new ArcGISFeatureLayer [] {buildinglayer}, testColor2);
    
    
@@ -859,6 +875,15 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 	  return false;
   }
   
+  
+  public static void restartApplication() throws Throwable
+  { 
+	  JParkSim new_app = new JParkSim();
+	  new_app.window.setVisible(true);
+	  application.window.dispose();;
+  }
+ 
+  
   public static Boolean unselectCallBack(String layerName){
 	 ArcGISFeatureLayer targetLayer = layer_name_map.get(layerName);
 	 
@@ -882,6 +907,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 
 	  return false;
   }
+  
   private JMap createMap() {
 
 	    final JMap jMap = new JMap();
@@ -945,20 +971,26 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
       @Override
       public void run() {
         try {
-          JParkSim application = new JParkSim(); // instance of this application
+          application = new JParkSim(); // instance of this application
           application.window.setVisible(true);
           ArcGISRuntime.setClientID("aSg9q12qgnN4OQq2"); // license app
+          
         } catch (Exception e) {
           e.printStackTrace();
         }
        
       }
+      
+      
+      
+      
+      
+      
+      
     });
  
   }
-  
-  
- 
+
 
  
   
