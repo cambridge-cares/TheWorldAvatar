@@ -26,6 +26,15 @@ public class LayerFactoryInfoDictionary {
 		dictionary.put("TLPlant(main-22kV)", new LayerFactoryInfo("TLPlant(main-22kV)",  "kml/TLPlant(main-22kV).kml", FeatureServiceUpdater.LayerType.POLYLINE, "^PHT-[1|2|3|4]$"));
 		dictionary.put("JurongTransportationSystem", new LayerFactoryInfo("JurongTransportationSystem",  "kml/Public Roads.kml", FeatureServiceUpdater.LayerType.POLYGON, "^\\w+[Road|Avenue|Drive|Highway|Place|view]\\w*$"));
 
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	}
 	
 	public static Map<String, LayerFactoryInfo> getDictionary(){
@@ -37,7 +46,25 @@ public class LayerFactoryInfoDictionary {
 	}
 	
 	
-	
+	/*  
+	PointObjectsGenerator.layer_factory(0,"Load",null,"Load_Point",true); // Load Points
+    PointObjectsGenerator.layer_factory(0,"Coupler",null,"Bus_Coupler",false); // Load Points
+    PointObjectsGenerator.layer_factory(0,"Transformer","^.*EHT.*$","EHT_Station",true);
+    PointObjectsGenerator.layer_factory(0,"Transformer","^.*UHT.*$","UHT_Station_2",true);
+    PointObjectsGenerator.layer_factory(0,"Transformer","^.*HT.*$","HT_Station",true);
+    PointObjectsGenerator.layer_factory(0,"Transformer","^.*LT.*$","LT_Station",true);        
+    
+entity: LoadPoints not exists in LayerFactory dictionary, will be deleted from layer list
+entity: EHT_Stations not exists in LayerFactory dictionary, will be deleted from layer list
+entity: HT_Stations not exists in LayerFactory dictionary, will be deleted from layer list
+entity: Bus Coupler not exists in LayerFactory dictionary, will be deleted from layer list
+entity: Jurong_EnergyNetwork not exists in LayerFactory dictionary, will be deleted from layer list
+entity: Jurong_TransportationNetwork not exists in LayerFactory dictionary, will be deleted from layer list
+entity: Lanxess-PIBPlant not exists in LayerFactory dictionary, will be deleted from layer list
+entity: gasline not exists in LayerFactory dictionary, will be deleted from layer list
+entity: airline not exists in LayerFactory dictionary, will be deleted from layer list     
+         
+*/
 	
 	
 }

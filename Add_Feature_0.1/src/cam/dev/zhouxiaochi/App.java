@@ -32,6 +32,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -109,7 +110,7 @@ public class App {
 	    
 	}
 
-	 public static final String BASE_URL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST023/FeatureServer";
+	 public static final String BASE_URL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST024/FeatureServer";
 
 																																	// url
 																																	// for
@@ -256,6 +257,8 @@ public class App {
 	 *            info required to draw a pipe feature, struct with 2 members:
 	 *            point list & attribute list.
 	 */
+	
+	/*
 	public static void create_line(PipeReader.PipeInfo pipeInfo) {
 		// linelayer.setOperationMode(QueryMode.SELECTION_ONLY);
 
@@ -293,6 +296,7 @@ public class App {
 
 		}
 	}
+	*/
 
 
 	final static SimpleFillSymbol testcolor = new SimpleFillSymbol(Color.black, new SimpleLineSymbol(Color.cyan, 1),
@@ -351,8 +355,14 @@ public class App {
 		 * Arcgis Server.
 		 */
 		Load_feature.addActionListener(new ActionListener() {
+			
+			
+			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
+				
+		
 				try {
 					// drawLines(); // load line feature from owl, currently commented out
 					drawLinesFromKML();//generate line features from kml directly
@@ -378,6 +388,24 @@ public class App {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				
+				
+				
+				try {
+					JParkSim.restartApplication();
+				} catch (URISyntaxException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (Throwable e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				
+				
 
 			}
 
@@ -437,7 +465,6 @@ public class App {
 		 
 
 
-
          PointObjectsGenerator.layer_factory(0,"Load",null,"Load_Point",true); // Load Points
          PointObjectsGenerator.layer_factory(0,"Coupler",null,"Bus_Coupler",false); // Load Points
          PointObjectsGenerator.layer_factory(0,"Transformer","^.*EHT.*$","EHT_Station",true);
@@ -459,7 +486,7 @@ public class App {
 		}
 		
 		
-		 readDeviceType();//read device info list into deviceInffoList
+		readDeviceType();//read device info list into deviceInffoList
 		x_array = new double[deviceInfoList.size()];
 		y_array = new double[deviceInfoList.size()];
 		//TODO: exclude storage layer for testing ,delete -1 after testing
@@ -520,6 +547,8 @@ public class App {
 	   		aLayerF.createLoadLayer();
 	   		
 	   	}
+	   	
+	 
 
 	}
 
@@ -787,7 +816,7 @@ public class App {
 	    	 }
 		 
 		 
-		 //extract from filtered nonDeviceLayersInfo the  name list of layers
+		 //extract from filtered nonDeviceLayersInfo the  name list of layers 
 		 for(EntityInfo entity : nonDeviceLayersInfo){
 			 nonDeviceLayersNames.add(entity.getName());
 		 }
@@ -820,12 +849,12 @@ public class App {
 	 * @throws Exception
 	 */
 	public static void drawLines() throws IOException, Exception {
-
+/*
 		List linelist = PipeReader.getInstance().getPipelist();
 		for (Object lineInfo : linelist) {
 			create_line((PipeReader.PipeInfo) lineInfo);
 		}
-
+*/
 	}
 
 	// todo: delete this when segment pipe owl is completed
@@ -886,6 +915,27 @@ public class App {
 			all_layers.get(i).applyEdits(null, all_layers.get(i).getSelectedFeatures(), null, new ApplyEditCallback());
 		}
 	}
+	
+	public static void writeToLayer(String target,ArcGISFeatureLayer layer ,double x, double y,String type) throws Exception
+	{
+		
+		
+ 
+			for (int i = 0; i < deviceInfoList.size(); i++) {// loop through each device in deviceInfoList
+															
+				if (!deviceInfoList.get(i).name.equals("storageTank")) {//Is device storage tank?
+					
+					DeviceInfo info = deviceInfoList.get(i);//=>NO! Then call create_object to load features into arcgis service
+					if(info.name.contentEquals(target)){
+					create_object( x, y,layer ,type, info.name ,info.owlSource);
+					}
+				}
+
+			}
+		 System.out.println("finished");
+		
+	}
+	
 
 	public static void removeElement(Object[] a, int del) {
 		System.arraycopy(a, del + 1, a, del, a.length - 1 - del);
