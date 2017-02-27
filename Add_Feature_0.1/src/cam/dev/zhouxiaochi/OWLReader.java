@@ -320,7 +320,7 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 					OWLfileNode newNode = new OWLfileNode(nodename,nodetype,"","",node.NodeName);
 					expand(newNode, false);//expand allias node 
 				}
-				else{
+				else if(nodename.split("#").length > 1){
 					//logger.info(nodename);
 					//logger.info("Node Type --> : " + nodetype);
 					
@@ -366,18 +366,13 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 					theNodeList.add(newNode); //  && 
 					if(nodemap.get(nodename)!=null   && !(newNode.NodeName.contentEquals(node.ParentNodeName)) &&!expandOneLevel) // check whether such node exists
 					{
-						if(!(nodetype.contains("topology:enters")||nodetype.contains("topology:leaves")))
+						if(!(nodetype.contains("topology:enters")||nodetype.contains("topology:leaves")||nodetype.contains("isConnectedTo")))
 						{
 						expand(newNode,false);
 						}
 					}
 					}
 					}
-				} else{
-					String resName = nodename.split("#")[1];
-                    String resValue = nodename.split("#")[0];
-					resourceLocationMap.put(resName, resValue);
-					//logger.info("RES LOCA STORED:  "+resName+"  "+resValue);
 				}
 				}
 			
