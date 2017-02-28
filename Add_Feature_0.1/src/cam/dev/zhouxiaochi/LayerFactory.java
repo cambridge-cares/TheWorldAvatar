@@ -172,7 +172,6 @@ public class LayerFactory {
 			e.printStackTrace();
 	}
 		loadFeatureIntoArcgis();
-		Thread.sleep(500);
 
 
 		////////////////////////////////////////////////////////////////////
@@ -266,6 +265,7 @@ public class LayerFactory {
 		List<String> nameList = OWLReader.name_list;
 
 		for (String attriName : nameList) {
+			//j.2_hasGISCoordinateSystem
 
 			attributeNames.add(deleteID(attriName));
 
@@ -447,7 +447,7 @@ public class LayerFactory {
 
 		}
 
-		targetLayer.applyEdits(adds, null, null, new ApplyEditCallback());
+		targetLayer.applyEdits(adds, null, null, new ApplyEditCallback(layerName));
 		return;
 	}
 

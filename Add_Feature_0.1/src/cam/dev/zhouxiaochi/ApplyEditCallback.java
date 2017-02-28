@@ -57,10 +57,9 @@ private String head = "";
 					 System.out.print("success");//then print out success
 					 } else{//not success
 						 System.out.print(resultRow[iOp].getError().getCode());//print out err
-						 System.out.println("");
-						 System.out.println("");
 
 					 }
+					 System.out.println("");
 					 System.out.println(resultRow[iOp].getError().getDescription());
 
 				 }

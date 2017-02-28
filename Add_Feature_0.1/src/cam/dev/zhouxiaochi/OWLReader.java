@@ -313,24 +313,21 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 
 			if(!(nodename.lastIndexOf("#") == nodename.length() - 1) )// check whether it is empty after #
 				{
-				if(!nodetype.contains("rdf:type")){
-				if(nodetype.contains("owl:sameAs")) {//contains allias?
+				if(!nodetype.contains("rdf:type") &&nodename.split("#").length > 1){
 					nodename = nodename.split("#")[1];
+					nodename= nodename.replace('.', '_');//replacing illegal char//TODO: do a full check
+					logger.info("++++after replace.  "+nodename);
+				if(nodetype.contains("owl:sameAs")) {//contains allias?
 					 logger.info("a same as allias:"+nodename);
 					OWLfileNode newNode = new OWLfileNode(nodename,nodetype,"","",node.NodeName);
 					expand(newNode, false);//expand allias node 
 				}
-				else if(nodename.split("#").length > 1){
+				else {
 					//logger.info(nodename);
 					//logger.info("Node Type --> : " + nodetype);
 					
 					//logger.info("---------------------------------------");
 					
-					System.out.println("Node Type --> : " + nodetype);
-					
-					System.out.println("---------------------------------------");
-					
-					nodename = nodename.split("#")[1];
 					
 					if(nodetype.toLowerCase().contains("unit"))
 					{
@@ -340,14 +337,13 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 					else
 					{
 				//	if(nodetype.contains("numerical"))
-						if(true)
-					{
+	
 					nodevalue =  childnodes.item(i).getTextContent();
 					node.NodeValue = nodevalue;
 					//logger.info("Node Value --> : " + nodevalue);
 
 					node.CarryData = true;
-					}
+					
 				
 					/**
 					if(nodetype.contains("realize"))
@@ -425,6 +421,13 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 	  }
  	
 
+	  /***
+	   * Return entites read from owl as a list of entityInfo.
+	   * using getEntityListFromOWLAsTree funciton.
+	   * @return
+	   * @throws IOException
+	   * @throws Exception
+	   */
  	public static List<EntityInfo>  getEntityFromOWL() throws IOException, Exception{
  		if(entityNameList == null){//lazy init
  			if(entityNameTree == null){
@@ -439,6 +442,7 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
  		
  	}
  	
+ 	///main for testing getEntityFromOWL();
  	public static void main(String[] args){
  		
  		try {
@@ -457,6 +461,14 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
  		
  		
  	}
+ 	
+ 	/***
+ 	 * Read entity hierarchy starting from tope-node owl , returned in tree structure
+ 	 * Note that currently some layers are not structured in owl, so they are manually added
+ 	 * @return EntityTree, entity info(name, owlSource) stored in Tree structure 
+ 	 * @throws IOException
+ 	 * @throws Exception
+ 	 */
  	 public static EntityTree getEntityListFromOWLAsTree() throws IOException, Exception{
  		 if(entityNameTree == null){//lazy initiation 
  		 
@@ -548,7 +560,12 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
          PointObjectsGenerator.layer_factory(0,"Transformer","^.*HT.*$","HT_Station",true);
          PointObjectsGenerator.layer_factory(0,"Transformer","^.*LT.*$","LT_Station",true);             
 */
- 	 
+ 	 /***
+ 	  * 
+ 	  * @param parentNode
+ 	  * @throws IOException
+ 	  * @throws Exception
+ 	  */
  	 
  	 
  	 private static void   expandEntityListOneLevel(TreeNode parentNode) throws IOException, Exception{

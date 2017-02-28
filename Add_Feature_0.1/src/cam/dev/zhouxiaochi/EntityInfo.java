@@ -1,5 +1,10 @@
 package cam.dev.zhouxiaochi;
 
+/***
+ * Data form for information of entities extracting from OWL. Have two member STRING variables: name and owlSource.
+ * @author Shaocong
+ *
+ */
 public class EntityInfo {
 
 		private String name;

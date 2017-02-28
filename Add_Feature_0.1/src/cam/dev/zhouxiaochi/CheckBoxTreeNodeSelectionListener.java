@@ -7,6 +7,11 @@ import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.DefaultTreeModel;
 
+/**
+ * Listener for tree selection event, extending mouseAdapter
+ * @author Shaocong
+ *
+ */
 public class CheckBoxTreeNodeSelectionListener extends MouseAdapter {
 
 	public static final int XBOUND = 20;// bound for checking box so only
