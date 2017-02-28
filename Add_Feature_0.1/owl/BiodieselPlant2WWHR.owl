@@ -5,6 +5,7 @@
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:phase_system="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#"
      xmlns:topology="file:/C:/OntoCAPE/meta_model/topology/topology.owl#"
+     xmlns:network_system="file:/C:/OntoCAPE/OntoCAPE/upper_level/network_system.owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:reaction_mechanism="file:/C:/OntoCAPE/OntoCAPE/material/substance/reaction_mechanism.owl#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
@@ -22,7 +23,6 @@
     <owl:Ontology rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl">
         <owl:imports rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl"/>
         <owl:imports rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/BiodieselPlantSubstance.owl"/>
-        <owl:imports rdf:resource="file:/C/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units_extended.owl"/>
     </owl:Ontology>
     
 
@@ -209,6 +209,15 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#CarbonDioxideInFG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#CarbonDioxideInFG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Composition"/>
+        <system:comprisesDirectly rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfCarbonDioxideInFG-200"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#CarbonDioxideInFG-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#CarbonDioxideInFG-201">
@@ -350,6 +359,15 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#CarbonMonoxideIn2-30">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Composition"/>
         <system:comprisesDirectly rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfCarbonMonoxideIn2-30"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#CarbonMonoxideInFG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#CarbonMonoxideInFG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Composition"/>
+        <system:comprisesDirectly rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfCarbonMonoxideInFG-200"/>
     </owl:NamedIndividual>
     
 
@@ -716,6 +734,15 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#EthaneIn2-30">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Composition"/>
         <system:comprisesDirectly rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfEthaneIn2-30"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#EthaneInFG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#EthaneInFG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Composition"/>
+        <system:comprisesDirectly rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfEthaneInFG-200"/>
     </owl:NamedIndividual>
     
 
@@ -1125,6 +1152,15 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#F_FG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#F_FG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfF_FG-200"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#F_FG-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#F_FG-201">
@@ -1238,6 +1274,15 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#F_FLG-209">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
         <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfF_FLG-209"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#F_FW-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#F_FW-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfF_FW-200"/>
     </owl:NamedIndividual>
     
 
@@ -1761,6 +1806,15 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#GeneralizedAmount_FG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#GeneralizedAmount_FG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MaterialAmount_FG-200"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#GeneralizedAmount_FG-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#GeneralizedAmount_FG-201">
@@ -1874,6 +1928,15 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#GeneralizedAmount_FLG-209">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
         <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MaterialAmount_FLG-209"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#GeneralizedAmount_FW-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#GeneralizedAmount_FW-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MaterialAmount_FW-200"/>
     </owl:NamedIndividual>
     
 
@@ -2534,6 +2597,15 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfCarbonDioxideInFG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfCarbonDioxideInFG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#MassFraction"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfCarbonDioxideInFG-200"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfCarbonDioxideInFG-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfCarbonDioxideInFG-201">
@@ -2678,6 +2750,15 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfCarbonMonoxideInFG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfCarbonMonoxideInFG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#MassFraction"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfCarbonMonoxideInFG-200"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfCarbonMonoxideInFG-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfCarbonMonoxideInFG-201">
@@ -2818,6 +2899,15 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfEthaneIn2-30">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#MassFraction"/>
         <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfEthaneIn2-30"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfEthaneInFG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfEthaneInFG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#MassFraction"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfEthaneInFG-200"/>
     </owl:NamedIndividual>
     
 
@@ -3043,6 +3133,15 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfMethaneIn2-30">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#MassFraction"/>
         <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfMethaneIn2-30"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfMethaneInFG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfMethaneInFG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#MassFraction"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfMethaneInFG-200"/>
     </owl:NamedIndividual>
     
 
@@ -3515,6 +3614,15 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfNitrogenInFG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfNitrogenInFG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#MassFraction"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfNitrogenInFG-200"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfNitrogenInFG-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfNitrogenInFG-201">
@@ -3772,6 +3880,15 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfPropaneIn2-30">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#MassFraction"/>
         <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfPropaneIn2-30"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfPropaneInFG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfPropaneInFG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#MassFraction"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfPropaneInFG-200"/>
     </owl:NamedIndividual>
     
 
@@ -4168,6 +4285,15 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfWaterInFLG-209">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#MassFraction"/>
         <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfWaterInFLG-209"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfWaterInFW-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfWaterInFW-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#MassFraction"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfWaterInFW-200"/>
     </owl:NamedIndividual>
     
 
@@ -4718,6 +4844,17 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MaterialAmount_FG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MaterialAmount_FG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+        <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Material_FG-200"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#F_FG-200"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#molarF_FG-200"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MaterialAmount_FG-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MaterialAmount_FG-201">
@@ -4857,6 +4994,17 @@
         <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Material_FLG-209"/>
         <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#F_FLG-209"/>
         <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#molarF_FLG-209"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MaterialAmount_FW-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MaterialAmount_FW-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+        <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Material_FW-200"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#F_FW-200"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#molarF_FW-200"/>
     </owl:NamedIndividual>
     
 
@@ -5366,6 +5514,15 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Material_FG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Material_FG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+        <material:thermodynamicBehavior rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#SinglePhase_FG-200"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Material_FG-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Material_FG-201">
@@ -5479,6 +5636,15 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Material_FLG-209">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
         <material:thermodynamicBehavior rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#SinglePhase_FLG-209"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Material_FW-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Material_FW-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+        <material:thermodynamicBehavior rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#SinglePhase_FW-200"/>
     </owl:NamedIndividual>
     
 
@@ -5632,6 +5798,15 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MethaneIn2-30">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Composition"/>
         <system:comprisesDirectly rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfMethaneIn2-30"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MethaneInFG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MethaneInFG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Composition"/>
+        <system:comprisesDirectly rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfMethaneInFG-200"/>
     </owl:NamedIndividual>
     
 
@@ -6229,6 +6404,15 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#NitrogenInA-203">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Composition"/>
         <system:comprisesDirectly rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfNitrogenInA-203"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#NitrogenInFG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#NitrogenInFG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Composition"/>
+        <system:comprisesDirectly rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfNitrogenInFG-200"/>
     </owl:NamedIndividual>
     
 
@@ -6996,6 +7180,15 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PressureOfFG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PressureOfFG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFG-200"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PressureOfFG-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PressureOfFG-201">
@@ -7109,6 +7302,15 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PressureOfFLG-209">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
         <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFLG-209"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PressureOfFW-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PressureOfFW-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFW-200"/>
     </owl:NamedIndividual>
     
 
@@ -7590,6 +7792,15 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PropaneInFG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PropaneInFG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Composition"/>
+        <system:comprisesDirectly rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfPropaneInFG-200"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PropaneInFG-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PropaneInFG-201">
@@ -7712,7 +7923,7 @@
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#StirredTank"/>
         <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#x_R-201"/>
         <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#y_R-201"/>
-        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Reaction_Bio"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Reaction_Bio1"/>
     </owl:NamedIndividual>
     
 
@@ -7723,7 +7934,7 @@
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#StirredTank"/>
         <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#x_R-202"/>
         <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#y_R-202"/>
-        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Reaction_Bio"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Reaction_Bio2"/>
     </owl:NamedIndividual>
     
 
@@ -7788,17 +7999,26 @@
     
 
 
-    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Reaction_Bio -->
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Reaction_Bio1 -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Reaction_Bio">
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Reaction_Bio1">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Reaction"/>
         <process:hasChemicalReactionNetwork rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ReactionNetwork_Bio"/>
-        <topology:hasInput rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ProcessStream_2-12"/>
-        <topology:hasInput rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ProcessStream_2-23"/>
+        <network_system:hasOutput rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ProcessStream_2-5"/>
         <topology:hasInput rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ProcessStream_2-3"/>
         <topology:hasInput rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#RawMaterial_2-2"/>
-        <topology:hasOutput rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ProcessStream_2-13"/>
-        <topology:hasOutput rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ProcessStream_2-5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Reaction_Bio2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Reaction_Bio2">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Reaction"/>
+        <process:hasChemicalReactionNetwork rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ReactionNetwork_Bio"/>
+        <network_system:hasOutput rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ProcessStream_2-13"/>
+        <topology:hasInput rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ProcessStream_2-12"/>
+        <topology:hasInput rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ProcessStream_2-23"/>
     </owl:NamedIndividual>
     
 
@@ -7808,6 +8028,28 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ReusableWasteProduct_CS-202">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#ReusableWasteProduct"/>
         <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#GeneralizedAmount_CS-202"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#S-201 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#S-201">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Apparatus"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#x_S-201"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#y_S-201"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Splitting_Utility_FG-200"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#S-202 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#S-202">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Apparatus"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#x_S-202"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#y_S-202"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Splitting_Utility_FW-200"/>
     </owl:NamedIndividual>
     
 
@@ -8414,6 +8656,28 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#SinglePhase_FG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#SinglePhase_FG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+        <phase_system:has_composition rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#CarbonDioxideInFG-200"/>
+        <phase_system:has_composition rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#CarbonMonoxideInFG-200"/>
+        <phase_system:has_composition rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#EthaneInFG-200"/>
+        <phase_system:has_composition rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MethaneInFG-200"/>
+        <phase_system:has_composition rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#NitrogenInFG-200"/>
+        <phase_system:has_composition rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PropaneInFG-200"/>
+        <phase_system:has_pressure rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PressureOfFG-200"/>
+        <phase_system:has_temperature rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#TemperatureOfFG-200"/>
+        <system:isComposedOfSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PhaseComponent_CarbonDioxide"/>
+        <system:isComposedOfSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PhaseComponent_CarbonMonoxide"/>
+        <system:isComposedOfSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PhaseComponent_Ethane"/>
+        <system:isComposedOfSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PhaseComponent_Methane"/>
+        <system:isComposedOfSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PhaseComponent_Nitrogen"/>
+        <system:isComposedOfSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PhaseComponent_Propane"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#SinglePhase_FG-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#SinglePhase_FG-201">
@@ -8686,6 +8950,18 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#SinglePhase_FW-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#SinglePhase_FW-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+        <phase_system:has_composition rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#WaterInFW-200"/>
+        <phase_system:has_pressure rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PressureOfFW-200"/>
+        <phase_system:has_temperature rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#TemperatureOfFW-200"/>
+        <system:isComposedOfSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PhaseComponent_Water"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#SinglePhase_FW-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#SinglePhase_FW-201">
@@ -8850,6 +9126,31 @@
         <phase_system:has_pressure rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PressureOfLPS-204"/>
         <phase_system:has_temperature rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#TemperatureOfLPS-204"/>
         <system:isComposedOfSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#PhaseComponent_Water"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Splitting_Utility_FG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Splitting_Utility_FG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Splitting"/>
+        <network_system:hasInput rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Utility_FG-200"/>
+        <network_system:hasOutput rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Utility_FG-201"/>
+        <network_system:hasOutput rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Utility_FG-202"/>
+        <network_system:hasOutput rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Utility_FG-203"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Splitting_Utility_FW-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Splitting_Utility_FW-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Splitting"/>
+        <network_system:hasInput rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Utility_FW-200"/>
+        <network_system:hasOutput rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Utility_FW-201"/>
+        <network_system:hasOutput rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Utility_FW-202"/>
+        <network_system:hasOutput rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Utility_FW-203"/>
+        <network_system:hasOutput rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Utility_FW-204"/>
     </owl:NamedIndividual>
     
 
@@ -9238,6 +9539,15 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#TemperatureOfFG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#TemperatureOfFG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfTemperatureOfFG-200"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#TemperatureOfFG-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#TemperatureOfFG-201">
@@ -9351,6 +9661,15 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#TemperatureOfFLG-209">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
         <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfTemperatureOfFLG-209"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#TemperatureOfFW-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#TemperatureOfFW-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfTemperatureOfFW-200"/>
     </owl:NamedIndividual>
     
 
@@ -9661,6 +9980,15 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Utility_FG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Utility_FG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
+        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#GeneralizedAmount_FG-200"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Utility_FG-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Utility_FG-201">
@@ -9684,6 +10012,15 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Utility_FG-203">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
         <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#GeneralizedAmount_FG-203"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Utility_FW-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#Utility_FW-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
+        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#GeneralizedAmount_FW-200"/>
     </owl:NamedIndividual>
     
 
@@ -10291,6 +10628,16 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#V_molarF_FG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#V_molarF_FG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">302.20514</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#V_molarF_FG-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#V_molarF_FG-201">
@@ -10417,6 +10764,16 @@
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">284.8797</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#V_molarF_FW-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#V_molarF_FW-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">258.9784</system:numericalValue>
     </owl:NamedIndividual>
     
 
@@ -10951,6 +11308,16 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfF_FG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfF_FG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">404.2909</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfF_FG-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfF_FG-201">
@@ -11077,6 +11444,16 @@
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_hr"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">7934.507</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfF_FW-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfF_FW-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">4665.569</system:numericalValue>
     </owl:NamedIndividual>
     
 
@@ -11414,6 +11791,15 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfCarbonDioxideInFG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfCarbonDioxideInFG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0130831</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfCarbonDioxideInFG-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfCarbonDioxideInFG-201">
@@ -11558,6 +11944,15 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfCarbonMonoxideInFG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfCarbonMonoxideInFG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.00166538</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfCarbonMonoxideInFG-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfCarbonMonoxideInFG-201">
@@ -11698,6 +12093,15 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfEthaneIn2-30">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.00274793</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfEthaneInFG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfEthaneInFG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0572099</system:numericalValue>
     </owl:NamedIndividual>
     
 
@@ -11923,6 +12327,15 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfMethaneIn2-30">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0435241</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfMethaneInFG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfMethaneInFG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.9061423</system:numericalValue>
     </owl:NamedIndividual>
     
 
@@ -12395,6 +12808,15 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfNitrogenInFG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfNitrogenInFG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0166556</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfNitrogenInFG-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfNitrogenInFG-201">
@@ -12652,6 +13074,15 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfPropaneIn2-30">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">2.51861E-4</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfPropaneInFG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfPropaneInFG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.00524358</system:numericalValue>
     </owl:NamedIndividual>
     
 
@@ -13052,6 +13483,15 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfWaterInFW-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfWaterInFW-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfWaterInFW-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfMassFractionOfWaterInFW-201">
@@ -13183,7 +13623,6 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfOutletPressureOfP-201">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">6.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13193,7 +13632,6 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfOutletPressureOfP-202">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">4.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13203,7 +13641,6 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfOutletPressureOfP-203">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">4.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13213,7 +13650,6 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfOutletPressureOfP-204">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">4.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13223,7 +13659,6 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfOutletPressureOfP-205">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">4.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13233,7 +13668,6 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfOutletPressureOfVA-201">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.01325</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13243,7 +13677,6 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfOutletPressureOfVA-202">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.01325</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13253,7 +13686,6 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfOutletPressureOfVA-203">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.01325</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13263,7 +13695,6 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureDropOfVA-201">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">19.98675</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13273,7 +13704,6 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureDropOfVA-202">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">19.98675</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13283,7 +13713,6 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureDropOfVA-203">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">19.98675</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13293,7 +13722,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-1">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13303,7 +13732,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-10">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13313,7 +13742,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-11">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13323,7 +13752,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-12">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13333,7 +13762,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-13">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13343,7 +13772,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-15">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13353,7 +13782,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-16">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13363,7 +13792,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-17">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13373,7 +13802,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-18">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13383,7 +13812,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-19">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13393,7 +13822,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-2">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13403,7 +13832,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-20">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13413,7 +13842,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-21">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13423,7 +13852,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-22">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13433,7 +13862,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-23">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">5.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13443,7 +13872,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-24">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13453,7 +13882,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-25">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13463,7 +13892,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-26">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13473,7 +13902,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-27">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">6.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13483,7 +13912,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-28">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.01325</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13493,7 +13922,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-29">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.01325</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13503,7 +13932,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-3">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13513,7 +13942,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-30">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13523,7 +13952,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-31">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13533,7 +13962,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-5">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13543,7 +13972,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-7">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13553,7 +13982,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-8">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13563,7 +13992,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOf2-9">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13573,7 +14002,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfA-201">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.01325</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13583,7 +14012,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfA-202">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.01325</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13593,7 +14022,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfA-203">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13603,7 +14032,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfCS-201">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13613,7 +14042,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfCS-202">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">5.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13623,7 +14052,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfCS-203">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13633,7 +14062,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfCS-204">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13643,7 +14072,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfEXH-201">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13653,7 +14082,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfEXH-202">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13663,7 +14092,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfEXH-203">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">4.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13673,8 +14102,18 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfEXH-204">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">21.0</system:numericalValue>
     </owl:NamedIndividual>
     
 
@@ -13683,7 +14122,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFG-201">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">21.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13693,7 +14132,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFG-202">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">21.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13703,7 +14142,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFG-203">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">21.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13713,7 +14152,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFG-204">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.01325</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13723,7 +14162,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFG-205">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.01325</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13733,7 +14172,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFG-206">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.01325</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13743,7 +14182,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFLG-201">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.01325</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13753,7 +14192,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFLG-202">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.01325</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13763,7 +14202,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFLG-203">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.01325</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13773,7 +14212,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFLG-204">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.01325</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13783,7 +14222,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFLG-205">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.01325</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13793,7 +14232,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFLG-206">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13803,7 +14242,17 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFLG-209">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFW-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFW-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13813,7 +14262,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFW-201">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13823,7 +14272,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFW-202">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13833,7 +14282,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFW-203">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13843,7 +14292,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFW-204">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13853,7 +14302,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFW-205">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">4.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13863,7 +14312,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFW-206">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">4.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13873,7 +14322,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFW-207">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">4.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13883,7 +14332,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfFW-208">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">4.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13893,7 +14342,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfHA-201">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13903,7 +14352,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfHW-201">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13913,7 +14362,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfLPS-201">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">4.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13923,7 +14372,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfLPS-202">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">4.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13933,7 +14382,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfLPS-203">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">4.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -13943,7 +14392,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfPressureOfLPS-204">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">4.0</system:numericalValue>
     </owl:NamedIndividual>
     
@@ -14389,6 +14838,16 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfTemperatureOfFG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfTemperatureOfFG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">30.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfTemperatureOfFG-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfTemperatureOfFG-201">
@@ -14515,6 +14974,16 @@
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">149.9976</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfTemperatureOfFW-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOfTemperatureOfFW-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">30.0</system:numericalValue>
     </owl:NamedIndividual>
     
 
@@ -14929,6 +15398,26 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOf_x_S-201 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOf_x_S-201">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.15414384932251E7</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOf_x_S-202 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOf_x_S-202">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.15414444198804E7</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOf_x_T-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOf_x_T-201">
@@ -15299,6 +15788,26 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOf_y_S-201 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOf_y_S-201">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">140105.099699276</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOf_y_S-202 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOf_y_S-202">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">140103.938225578</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOf_y_T-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOf_y_T-201">
@@ -15647,6 +16156,15 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#WaterInFLG-209">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Composition"/>
         <system:comprisesDirectly rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfWaterInFLG-209"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#WaterInFW-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#WaterInFW-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Composition"/>
+        <system:comprisesDirectly rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#MassFractionOfWaterInFW-200"/>
     </owl:NamedIndividual>
     
 
@@ -16119,6 +16637,15 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#molarF_FG-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#molarF_FG-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#V_molarF_FG-200"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#molarF_FG-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#molarF_FG-201">
@@ -16232,6 +16759,15 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#molarF_FLG-209">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
         <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#V_molarF_FLG-209"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#molarF_FW-200 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#molarF_FW-200">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#V_molarF_FW-200"/>
     </owl:NamedIndividual>
     
 
@@ -16659,6 +17195,28 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#x_S-201 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#x_S-201">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <coordinate_system:refersToAxis rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+        <system:hasDimension rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOf_x_S-201"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#x_S-202 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#x_S-202">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <coordinate_system:refersToAxis rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+        <system:hasDimension rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOf_x_S-202"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#x_T-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#x_T-201">
@@ -17066,6 +17624,28 @@
     
 
 
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#y_S-201 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#y_S-201">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <coordinate_system:refersToAxis rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+        <system:hasDimension rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOf_y_S-201"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#y_S-202 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#y_S-202">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <coordinate_system:refersToAxis rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+        <system:hasDimension rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOf_y_S-202"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#y_T-201 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#y_T-201">
@@ -17173,12 +17753,6 @@
         <system:hasDimension rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
         <system:hasValue rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#ValueOf_y_VA-203"/>
     </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.jparksimulator.com/derived_SI_units_extended.owl#bar -->
-
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/derived_SI_units_extended.owl#bar"/>
 </rdf:RDF>
 
 

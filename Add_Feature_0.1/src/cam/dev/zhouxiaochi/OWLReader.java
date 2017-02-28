@@ -522,7 +522,7 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 	        disNode.addChild(new EntityInfo("TLPlant(3kV-0.4kV)","owl/updated electrical network.owl" ));
 	        disNode.addChild(new EntityInfo("TLPlant(main-22kV)","owl/updated electrical network.owl" ));
 
-	        TreeNode ElectricalGrid = entityNameTree.getNodeVName("ElectricalGridOfJPark"); 
+	        TreeNode ElectricalGrid = entityNameTree.getNodeVName("ElectricalSystem"); 
 	        ElectricalGrid.addChild(new EntityInfo("Bus Coupler","owl/updated electrical network.owl" ));
 
 	        
@@ -533,7 +533,7 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 	        Substations.addChild(new EntityInfo("HT_Stations","owl/updated electrical network.owl" ));
 	        Substations.addChild(new EntityInfo("LT_Stations","owl/updated electrical network.owl" ));
 	        
-	        TreeNode transpNode =  entityNameTree.getNodeVName("JurongTransportationSystem");
+	        TreeNode transpNode =  entityNameTree.getNodeVName("TransportationSystem");
 	        transpNode.deleteAllChildren();
  		 } 
  		 logger.info("Now return tree");
