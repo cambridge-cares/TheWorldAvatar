@@ -32,6 +32,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -257,6 +258,8 @@ public class App {
 	 *            info required to draw a pipe feature, struct with 2 members:
 	 *            point list & attribute list.
 	 */
+	
+	/*
 	public static void create_line(PipeReader.PipeInfo pipeInfo) {
 		// linelayer.setOperationMode(QueryMode.SELECTION_ONLY);
 
@@ -294,6 +297,7 @@ public class App {
 
 		}
 	}
+	*/
 
 
 	final static SimpleFillSymbol testcolor = new SimpleFillSymbol(Color.black, new SimpleLineSymbol(Color.cyan, 1),
@@ -352,8 +356,14 @@ public class App {
 		 * Arcgis Server.
 		 */
 		Load_feature.addActionListener(new ActionListener() {
+			
+			
+			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
+				
+		
 				try {
 					// drawLines(); // load line feature from owl, currently commented out
 					drawLinesFromKML();//generate line features from kml directly
@@ -387,6 +397,24 @@ public class App {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+
+				
+				
+				try {
+					JParkSim.restartApplication();
+				} catch (URISyntaxException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (Throwable e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+			}
+
+				
+				
 
 			}
 
@@ -446,7 +474,6 @@ public class App {
 		 SimpleLineSymbol outline = new SimpleLineSymbol(new Color(255, 244, 0), 500);
 		 SimpleFillSymbol symbol = new SimpleFillSymbol(new Color(0, 0, 0, 255), outline);
 		 
-
 
 
          PointObjectsGenerator.layer_factory(0,"Load",null,"Load_Point",true); // Load Points
@@ -531,6 +558,8 @@ public class App {
 	   		aLayerF.createLoadLayer();
 	   		
 	   	}
+
+	 
 
 	}
 
@@ -804,7 +833,7 @@ public class App {
 	    	 
 	    	 if(info ==null){
 	    		System.out.println("entity: "+entity.getName()+" not exists in LayerFactory dictionary, will be deleted from layer list");
-	    		ids2Remove.add(idxE); 
+	    		nonDeviceLayersInfo.remove(entity);
 	    	 }else{
 	    	 info.setOwlSource(entity.getOwlSource() );
 	    	 layerFactories.add(new LayerFactory(info, user, symbol));
@@ -850,12 +879,12 @@ public class App {
 	 * @throws Exception
 	 */
 	public static void drawLines() throws IOException, Exception {
-
+/*
 		List linelist = PipeReader.getInstance().getPipelist();
 		for (Object lineInfo : linelist) {
 			create_line((PipeReader.PipeInfo) lineInfo);
 		}
-
+*/
 	}
 
 	// todo: delete this when segment pipe owl is completed
@@ -916,6 +945,27 @@ public class App {
 			all_layers.get(i).applyEdits(null, all_layers.get(i).getSelectedFeatures(), null, new ApplyEditCallback("delete"));
 		}
 	}
+
+	public static void writeToLayer(String target,ArcGISFeatureLayer layer ,double x, double y,String type) throws Exception
+	{
+		
+		
+ 
+			for (int i = 0; i < deviceInfoList.size(); i++) {// loop through each device in deviceInfoList
+															
+				if (!deviceInfoList.get(i).name.equals("storageTank")) {//Is device storage tank?
+					
+					DeviceInfo info = deviceInfoList.get(i);//=>NO! Then call create_object to load features into arcgis service
+					if(info.name.contentEquals(target)){
+					create_object( x, y,layer ,type, info.name ,info.owlSource);
+					}
+				}
+
+			}
+		 System.out.println("finished");
+		
+	}
+	
 
 	public static void removeElement(Object[] a, int del) {
 		System.arraycopy(a, del + 1, a, del, a.length - 1 - del);
