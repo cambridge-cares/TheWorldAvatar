@@ -313,21 +313,21 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 
 			if(!(nodename.lastIndexOf("#") == nodename.length() - 1) )// check whether it is empty after #
 				{
-				if(!nodetype.contains("rdf:type")){
-				if(nodetype.contains("owl:sameAs")) {//contains allias?
+				if(!nodetype.contains("rdf:type") &&nodename.split("#").length > 1){
 					nodename = nodename.split("#")[1];
-					nodename= nodename.replace(".", "_");//replacing illegal char//TODO: do a full check
+					nodename= nodename.replace('.', '_');//replacing illegal char//TODO: do a full check
+					logger.info("++++after replace.  "+nodename);
+				if(nodetype.contains("owl:sameAs")) {//contains allias?
 					 logger.info("a same as allias:"+nodename);
 					OWLfileNode newNode = new OWLfileNode(nodename,nodetype,"","",node.NodeName);
 					expand(newNode, false);//expand allias node 
 				}
-				else if(nodename.split("#").length > 1){
+				else {
 					//logger.info(nodename);
 					//logger.info("Node Type --> : " + nodetype);
 					
 					//logger.info("---------------------------------------");
 					
-					nodename = nodename.split("#")[1];
 					
 					if(nodetype.toLowerCase().contains("unit"))
 					{
@@ -337,14 +337,13 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 					else
 					{
 				//	if(nodetype.contains("numerical"))
-						if(true)
-					{
+	
 					nodevalue =  childnodes.item(i).getTextContent();
 					node.NodeValue = nodevalue;
 					//logger.info("Node Value --> : " + nodevalue);
 
 					node.CarryData = true;
-					}
+					
 				
 					/**
 					if(nodetype.contains("realize"))

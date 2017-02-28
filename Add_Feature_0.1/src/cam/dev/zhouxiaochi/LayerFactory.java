@@ -265,6 +265,7 @@ public class LayerFactory {
 		List<String> nameList = OWLReader.name_list;
 
 		for (String attriName : nameList) {
+			//j.2_hasGISCoordinateSystem
 
 			attributeNames.add(deleteID(attriName));
 

@@ -109,7 +109,7 @@ public class App {
 	    
 	}
 
-	 public static final String BASE_URL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST023/FeatureServer";
+	 public static final String BASE_URL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TST024/FeatureServer";
 
 																																	// url
 																																	// for
@@ -613,7 +613,8 @@ public class App {
 			System.out.println("--------------------------------------");
 
 			for (int i = 0; i < lengthChemAttris; i++) {
-				nameListChemicalAttris[i] = OWLReader.name_list.get(i); // get
+				nameListChemicalAttris[i] = OWLReader.name_list.get(i).replace('.', '_');
+; // get
 																		// the
 																		// attributes
 																		// name
@@ -631,7 +632,8 @@ public class App {
 
 			String[] nameListElectricalAttris = new String[lengthElectricalAttris];
 			for (int i = 0; i < lengthElectricalAttris; i++) {
-				nameListElectricalAttris[i] = OWLReader.name_list.get(i); // get
+				nameListElectricalAttris[i] = OWLReader.name_list.get(i).replace('.', '_');
+; // get
 																			// the
 																			// attributes
 																			// name
