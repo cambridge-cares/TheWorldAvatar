@@ -28,7 +28,7 @@ public class OWLUpdater {
 	String filename= "C:\\BiodieselPlant3.owl";
 	 
 	
-	public void updateData(String target, String newValue, String layername) throws Exception
+	public void updateData(String target, String newValue, String layername, int ObjectID) throws Exception
 	{
 		 String[]modif= target.split("_");
 			//String lastone = modif[modif.length-1];
@@ -38,7 +38,14 @@ public class OWLUpdater {
 		{
 			filename="C:\\updated electrical network.owl";
 		}
-		 
+		 if(target.contains("1-")|| target.contains("-10"))
+			{
+				filename="C:\\BiodieselPlant1WOWHR.owl";
+			}
+		 if(target.contains("2-")|| target.contains("-20"))
+			{
+				filename="C:\\BiodieselPlant2WWHR.owl";
+			}
 		}	
 	
    
@@ -104,7 +111,7 @@ public class OWLUpdater {
 	      String[] pair2 = {layername,processed_target,result_string};
 	      result.add(pair2);
 	       
-	      FeatureServiceUpdater mUpdater = new FeatureServiceUpdater("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST022/FeatureServer");
+	      FeatureServiceUpdater mUpdater = new FeatureServiceUpdater("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/VERSION0_DEMO/FeatureServer");
 	      String[] entityNameList= {layername};
 	      Map<Integer,Map<String, String>> nameValueListPerLayer = new HashMap<Integer, Map<String, String>>();
 	     
@@ -117,7 +124,7 @@ public class OWLUpdater {
 	      nameValueListPerLayer.put(0, parameters302);
 
 	      
-	       mUpdater.updateFeaturesInTable(entityNameList, nameValueListPerLayer);
+	       mUpdater.updateFeaturesInTable(entityNameList, nameValueListPerLayer,ObjectID);
 	
 		
 	}
@@ -133,6 +140,14 @@ public class OWLUpdater {
 		{
 			filename="C:\\updated electrical network.owl";
 		}
+		 if(target.contains("1-")|| target.contains("-10"))
+			{
+				filename="C:\\BiodieselPlant1WOWHR.owl";
+			}
+		 if(target.contains("2-")|| target.contains("-20"))
+			{
+				filename="C:\\BiodieselPlant2WWHR.owl";
+			}
 		}	
 		return OWLFileReader.read_owl_file(filename, target);
 	}

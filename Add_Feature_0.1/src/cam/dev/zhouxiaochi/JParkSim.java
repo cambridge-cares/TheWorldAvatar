@@ -557,7 +557,8 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     		            			  addtoStack = false; 												// if identical feature is found, don't add to editStack
     		            		  }
     		            	  }  		            		  
-    		            	  if (addtoStack) {															// add only if not duplicate
+    		            	  if (addtoStack) {		
+    		            		  editStack.clear();// add only if not duplicate
     		            		  editStack.add(newFeature);
     		            	  }
     		            	  

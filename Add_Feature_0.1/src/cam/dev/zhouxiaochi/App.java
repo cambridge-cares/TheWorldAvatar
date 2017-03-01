@@ -110,7 +110,7 @@ public class App {
 	    
 	}
 
-	 public static final String BASE_URL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST026/FeatureServer";
+	 public static final String BASE_URL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/VERSION0_DEMO/FeatureServer";
 
 																																	// url
 																																	// for
@@ -476,12 +476,12 @@ public class App {
 		 
 
 
-         PointObjectsGenerator.layer_factory(0,"Load",null,"Load_Point",true); // Load Points
-         PointObjectsGenerator.layer_factory(0,"Coupler",null,"Bus_Coupler",false); // Load Points
-         PointObjectsGenerator.layer_factory(0,"Transformer","^.*EHT.*$","EHT_Station",true);
-         PointObjectsGenerator.layer_factory(0,"Transformer","^.*UHT.*$","UHT_Station_2",true);
-         PointObjectsGenerator.layer_factory(0,"Transformer","^.*HT.*$","HT_Station",true);
-         PointObjectsGenerator.layer_factory(0,"Transformer","^.*LT.*$","LT_Station",true);             
+//         PointObjectsGenerator.layer_factory(0,"Load",null,"Load_Point",true); // Load Points
+//         PointObjectsGenerator.layer_factory(0,"Coupler",null,"Bus_Coupler",false); // Load Points
+//         PointObjectsGenerator.layer_factory(0,"Transformer","^.*EHT.*$","EHT_Station",true);
+//         PointObjectsGenerator.layer_factory(0,"Transformer","^.*UHT.*$","UHT_Station_2",true);
+//         PointObjectsGenerator.layer_factory(0,"Transformer","^.*HT.*$","HT_Station",true);
+//         PointObjectsGenerator.layer_factory(0,"Transformer","^.*LT.*$","LT_Station",true);             
 
 		
 
@@ -500,8 +500,9 @@ public class App {
 		 readDeviceType();//read device info list into deviceInffoList
 		x_array = new double[deviceInfoList.size()];
 		y_array = new double[deviceInfoList.size()];
-		//TODO: exclude storage layer for testing ,delete -1 after testing
-		for (int i = 0; i < deviceInfoList.size(); i++) {
+		
+		//TODO: -1 for storagetank
+		for (int i = 0; i < deviceInfoList.size() -1; i++) {
 
 			DeviceInfo mDeviceInfo = deviceInfoList.get(i);
 			String target = mDeviceInfo.name;
@@ -801,7 +802,7 @@ public class App {
 
 		////// divide it into plant - device generation && non-device layer, create&&load for each
 		for(EntityInfo entity : entityListFromOWL){
-			if(entity.getOwlSource()!=null){
+			if(entity.getOwlSource()!=null && entity.getName()!=null){
 			if(entity.getName().toLowerCase().contains("storage")){//storage tank is a special case, do it seperately
 				storageInfo = new DeviceInfo(entity.getName(), entity.getName(), entity.getOwlSource());
 			} 
@@ -817,7 +818,6 @@ public class App {
 			}
 		}
 		}
-			
 		
 		///For non device list 
 		//////loop through LayerFactoryInfoDictionary to find its info

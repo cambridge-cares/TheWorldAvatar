@@ -2494,7 +2494,7 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 				
 				String modifname = name.replace(("_"+lastone),("-"+lastone));						
 				 System.out.println("---------------------> Crush 4" + modifname);
-			  	updater.updateData(modifname, value,"E-301");
+			  	updater.updateData(modifname, value,"E-301",1);
 				 System.out.println("---------------------> Crush 5");
 			 	System.out.println("--------->" + modifname);
 			 	
@@ -3626,12 +3626,24 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 				System.out.println("name= "+name);
 				System.out.println("value= "+value);
 				 System.out.println("---------------------> Crush 3");
+				 
+				 /*
 				String[]modif= name.split("_");
 				String lastone = modif[modif.length-1];
 				
-				String modifname = name.replace(("_"+lastone),("-"+lastone));						
+				String modifname = name.replace(("_"+lastone),("-"+lastone));		
+				
+				
+				
+				name.substring(beginIndex, endIndex)  
+				*/
+				 
+				 StringBuilder newName = new StringBuilder(name);
+				 newName.setCharAt(name.lastIndexOf("_"), '-');
+				 String modifname = String.valueOf(newName);
+				 
 				 System.out.println("---------------------> Crush 4" + modifname);
-			  	updater.updateData(modifname, value,"E-101");
+			  	updater.updateData(modifname, value,"E-101",1);
 				 System.out.println("---------------------> Crush 5");
 			 	System.out.println("--------->" + modifname);
 			 	
@@ -3642,11 +3654,11 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 			 
 			 System.out.println("---------------------> Crush 6");
 			 
-			String ValueOfF_1_1 = OWLFileReader.read_owl_file(null, "ValueOfmolarF_1-1");
+			String ValueOfF_1_1 = OWLFileReader.read_owl_file("C:\\BiodieselPlant1WOWHR.owl", "ValueOfmolarF_1-1");
 			System.out.println("---------------------> Crush 7");
 			 
-			String ValueOfTemperatureOf1_1 = OWLFileReader.read_owl_file(null, "ValueOfTemperatureOf1-1");
-			String ValueOfTemperatureOf1_3 = OWLFileReader.read_owl_file(null, "ValueOfTemperatureOf1-3");
+			String ValueOfTemperatureOf1_1 = OWLFileReader.read_owl_file("C:\\BiodieselPlant1WOWHR.owl", "ValueOfTemperatureOf1-1");
+			String ValueOfTemperatureOf1_3 = OWLFileReader.read_owl_file("C:\\BiodieselPlant1WOWHR.owl", "ValueOfTemperatureOf1-3");
 			
 			
 			System.out.println("list of the output function= "+ValueOfF_1_1);
@@ -3698,7 +3710,7 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 			
 			filewriterAPIN = new FileWriter(APINCSV); // to put the input values for the AspenPlus subset model
 
-			filewriterAPIN.append("FOIL, TOIL");
+			filewriterAPIN.append("FOIL, TOIL, TOILout");
 			filewriterAPIN.append("\n");
 						
 			Map<String,String> name_value_map = new HashMap<>();
@@ -3722,7 +3734,7 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 				
 				String modifname = name.replace(("_"+lastone),("-"+lastone));						
 				 System.out.println("---------------------> Crush 4" + modifname);
-			  	updater.updateData(modifname, value,"E-208");
+			  	updater.updateData(modifname, value,"E-208",1);
 				 System.out.println("---------------------> Crush 5");
 			 	System.out.println("--------->" + modifname);
 			 	
@@ -3733,11 +3745,11 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 			 
 			 System.out.println("---------------------> Crush 6");
 			 
-			String ValueOfF_2_1 = OWLFileReader.read_owl_file(null, "ValueOfmolarF_2-1");
+			String ValueOfF_2_1 = OWLFileReader.read_owl_file("C:\\BiodieselPlant2WWHR.owl", "ValueOfmolarF_2-1");
 			System.out.println("---------------------> Crush 7");
 			 
-			String ValueOfTemperatureOf2_1 = OWLFileReader.read_owl_file(null, "ValueOfTemperatureOf2-1");
-			
+			String ValueOfTemperatureOf2_1 = OWLFileReader.read_owl_file("C:\\BiodieselPlant2WWHR.owl", "ValueOfTemperatureOf2-1");
+			String ValueOfTemperatureOf2_3 = OWLFileReader.read_owl_file("C:\\BiodieselPlant2WWHR.owl", "ValueOfTemperatureOf2-3");
 			
 			
 			System.out.println("list of the output function= "+ValueOfF_2_1);
@@ -3749,7 +3761,7 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 			
 			name_value_map.put("ValueOfmolarF_2-1", ValueOfF_2_1);
 			name_value_map.put("ValueOfTemperatureOf2-1", ValueOfTemperatureOf2_1);
-			
+			name_value_map.put("ValueOfTemperatureOf2-3", ValueOfTemperatureOf2_3);
 					
 			
 			
@@ -3758,12 +3770,13 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 			filewriterAPIN.append(ValueOfF_2_1);
 			filewriterAPIN.append(",");
 			filewriterAPIN.append(ValueOfTemperatureOf2_1);
-			
+			filewriterAPIN.append(",");
+			filewriterAPIN.append(ValueOfTemperatureOf2_3);
 	
 			
 			xRow.add(Double.parseDouble(ValueOfF_2_1)); // add the feeding mole flowrate of oil to xRow
 			xRow.add(Double.parseDouble(ValueOfTemperatureOf2_1)); // add the temperature of oil to xRow
-			 
+			xRow.add(Double.parseDouble(ValueOfTemperatureOf2_3)); 
 			
 			
 			System.out.println("xRow=" + xRow);                                                                    // print out all the x-data that has been collected to console
@@ -3805,31 +3818,31 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 
 					if (!data[0].trim().isEmpty()) {
 						updater = new OWLUpdater();
-						updater.updateData("V_molarF_1-22",data[0].trim(),"T-102");
+						updater.updateData("V_molarF_1-22",data[0].trim(),"T-102",1);
 						//System.out.println("HeatDuty="+Float.parseFloat(data[25].trim())*1000);
 						System.out.println("========================Modified==================");
 						//System.in.read();
 					}
 					if (!data[4].trim().isEmpty()) {
 						updater = new OWLUpdater();
-						updater.updateData("ValueOfHeatDutyOfE-101", String.valueOf(Float.parseFloat(data[4].trim())*4.1868e-3),"E-101");							
+						updater.updateData("ValueOfHeatDutyOfE-101", String.valueOf(Float.parseFloat(data[4].trim())*4.1868e-3),"E-101",1);							
 					}
 					if (!data[5].trim().isEmpty()) {
 						updater = new OWLUpdater();
-						updater.updateData("ValueOfHeatDutyOfE-102", String.valueOf(Float.parseFloat(data[5].trim())*4.1868e-3),"E-102");							
+						updater.updateData("ValueOfHeatDutyOfE-102", String.valueOf(Float.parseFloat(data[5].trim())*4.1868e-3),"E-102",1);							
 					}
 					if (!data[6].trim().isEmpty()) {
 						updater = new OWLUpdater();
-						updater.updateData("ValueOfHeatDutyOfE-103", String.valueOf(Float.parseFloat(data[6].trim())*4.1868e-3),"E-103");							
+						updater.updateData("ValueOfHeatDutyOfE-103", String.valueOf(Float.parseFloat(data[6].trim())*4.1868e-3),"E-103",1);							
 					}
 					if (!data[7].trim().isEmpty()) {
 						updater = new OWLUpdater();
-						updater.updateData("ValueOfHeatDutyOfE-104", String.valueOf(Float.parseFloat(data[7].trim())*4.1868e-3),"E-104");							
+						updater.updateData("ValueOfHeatDutyOfE-104", String.valueOf(Float.parseFloat(data[7].trim())*4.1868e-3),"E-104",1);							
 					}
 
 					if (!data[18].trim().isEmpty()) {
-						updater = new OWLUpdater();
-						updater.updateData("ValueOfMolarFLowrateOfCarbonDioxideInFLG-109",data[18].trim(),"gasline");							
+					 // updater = new OWLUpdater();
+						//updater.updateData("ValueOfMolarFLowrateOfCarbonDioxideInFLG-109",data[18].trim(),"gasline",24);							
 					}
 					
 				}
@@ -3867,40 +3880,37 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 				String[] ArcGISOBJECTID = null;
 				ArcGISOBJECTID = new String[7];
 
-				for (int j = 0; j < 2; j++) {
-					ArcGISOBJECTID[j] = String.valueOf(j + 1);
-					System.out.println(ArcGISOBJECTID);
-
+		
 					if (!data[0].trim().isEmpty()) {
 						updater = new OWLUpdater();
-						updater.updateData("V_molarF_2-22",data[0].trim(),"T-202");
+						updater.updateData("V_molarF_2-22",data[0].trim(),"T-202",1);
 						//System.out.println("HeatDuty="+Float.parseFloat(data[25].trim())*1000);
 						System.out.println("========================Modified==================");
 						//System.in.read();
 					}
 					if (!data[4].trim().isEmpty()) {
 						updater = new OWLUpdater();
-						updater.updateData("ValueOfHeatDutyOfE-201", String.valueOf(Float.parseFloat(data[4].trim())*4.1868e-3),"E-201");							
+						updater.updateData("ValueOfHeatDutyOfE-201", String.valueOf(Float.parseFloat(data[4].trim())*4.1868e-3),"E-201",1);							
 					}
 					if (!data[5].trim().isEmpty()) {
 						updater = new OWLUpdater();
-						updater.updateData("ValueOfHeatDutyOfE-202", String.valueOf(Float.parseFloat(data[5].trim())*4.1868e-3),"E-202");							
+						updater.updateData("ValueOfHeatDutyOfE-202", String.valueOf(Float.parseFloat(data[5].trim())*4.1868e-3),"E-202",1);							
 					}
 					if (!data[6].trim().isEmpty()) {
 						updater = new OWLUpdater();
-						updater.updateData("ValueOfHeatDutyOfE-203", String.valueOf(Float.parseFloat(data[6].trim())*4.1868e-3),"E-203");							
+						updater.updateData("ValueOfHeatDutyOfE-203", String.valueOf(Float.parseFloat(data[6].trim())*4.1868e-3),"E-203",1);							
 					}
 					if (!data[7].trim().isEmpty()) {
 						updater = new OWLUpdater();
-						updater.updateData("ValueOfHeatDutyOfE-204", String.valueOf(Float.parseFloat(data[7].trim())*4.1868e-3),"E-204");							
+						updater.updateData("ValueOfHeatDutyOfE-204", String.valueOf(Float.parseFloat(data[7].trim())*4.1868e-3),"E-204",1);							
 					}
 
 					if (!data[18].trim().isEmpty()) {
 						updater = new OWLUpdater();
-						updater.updateData("ValueOfMolarFLowrateOfCarbonDioxideInFLG-209",data[18].trim(),"gasline");							
+						updater.updateData("ValueOfMolarFLowrateOfCarbonDioxideInFLG-209",data[18].trim(),"M-208",1);							
 					}
 					
-				}
+				
 			}
 			
 			System.out.println("Updating process took " + String.valueOf(System.currentTimeMillis() - start) + "ms");                     // tells how long it took to update
@@ -4209,21 +4219,21 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 					                                                              
 						if (!data[25].trim().isEmpty()) {
 							updater = new OWLUpdater();
-							updater.updateData("ValueOfHeatDutyOfR-301", String.valueOf(Float.parseFloat(data[25].trim())*1000),"R-301");
+							updater.updateData("ValueOfHeatDutyOfR-301", String.valueOf(Float.parseFloat(data[25].trim())*1000),"R-301",1);
 							System.out.println("HeatDuty="+Float.parseFloat(data[25].trim())*1000);
 							System.out.println("========================Modified==================");
 							//System.in.read();
 						}
 						if (!data[112].trim().isEmpty()) {
 							updater = new OWLUpdater();
-							updater.updateData("V_Angle_LoadPoint_R-602001",data[112].trim(),"R-301");
+							updater.updateData("V_Angle_LoadPoint_R-602001",data[112].trim(),"R-301",1);
 							//ReactorAttributes.put("V_Angle_LoadPoint_R_602001",Float.parseFloat(data[112].trim()));                                          //field name following what exist in pop-up window 
 							
 						}
 
 						if (!data[113].trim().isEmpty()) {
 							updater = new OWLUpdater();
-							updater.updateData("V_ActualVoltage_LoadPoint_R-602001",data[113].trim(),"R-301");
+							updater.updateData("V_ActualVoltage_LoadPoint_R-602001",data[113].trim(),"R-301",1);
 							//System.out.println("reactor attribute= "+ReactorAttributes.size());
 							//ReactorAttributes.put("V_ActualVoltage_LoadPoint_R_602",Float.parseFloat(data[113].trim()));//field name following what exist in pop-up window 
 													
@@ -4233,21 +4243,21 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 					
 						if (!data[23].trim().isEmpty()) {
 							updater = new OWLUpdater();
-							updater.updateData("ValueOfHeatDutyOfR-302", String.valueOf(Float.parseFloat(data[23].trim())*1000),"R-302");
+							updater.updateData("ValueOfHeatDutyOfR-302", String.valueOf(Float.parseFloat(data[23].trim())*1000),"R-302",1);
 							
 						}
 						System.out.println("ValueOfHeatDutyOfR-302="+Float.parseFloat(data[23].trim())*1000);
 						
 						if (!data[102].trim().isEmpty()) {
 							updater = new OWLUpdater();
-							updater.updateData("V_Angle_LoadPoint_R-602002",data[102].trim(),"R-302");
+							updater.updateData("V_Angle_LoadPoint_R-602002",data[102].trim(),"R-302",1);
 							
 						}
 						System.out.println("V_Angle_LoadPoint_R-602002"+ Float.parseFloat(data[102].trim()));						
 						
 						if (!data[103].trim().isEmpty()) {
 							updater = new OWLUpdater();
-							updater.updateData("V_ActualVoltage_LoadPoint_R-602002",data[103].trim(),"R-302");
+							updater.updateData("V_ActualVoltage_LoadPoint_R-602002",data[103].trim(),"R-302",1);
 							
 						}
 						System.out.println("V_act_kv="+ Float.parseFloat(data[103].trim()));
@@ -4262,14 +4272,14 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 						
 						if (!data[0].trim().isEmpty()) {
 							updater = new OWLUpdater();
-							updater.updateData("ValueOfmolarF_3-23", data[0].trim(),"T-302");
+							updater.updateData("ValueOfmolarF_3-23", data[0].trim(),"T-302",1);
 						}
 						System.out.println("ValueOfmolarF_3-23" + data[0].trim());
 						
 						
 						if (!data[2].trim().isEmpty()) {
 							updater = new OWLUpdater();
-							updater.updateData("ValueOfTemperatureOf3-23", data[2].trim(),"T-302");							
+							updater.updateData("ValueOfTemperatureOf3-23", data[2].trim(),"T-302",1);							
 						}
 						System.out.println("Temperature="+data[2]);
 									

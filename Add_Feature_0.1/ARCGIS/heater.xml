@@ -205,13 +205,6 @@
   </mFeature>
   <mFeature>
     <Type>Polygon</Type>
-    <Name>E-702</Name>
-    <Scale>1.3085935851009916</Scale>
-    <Orientation>1</Orientation>
-    <Center>11544148.1176342,141380.607159644</Center>
-  </mFeature>
-  <mFeature>
-    <Type>Polygon</Type>
     <Name>Eva2</Name>
     <Scale>0.99992953432631182</Scale>
     <Orientation>1</Orientation>

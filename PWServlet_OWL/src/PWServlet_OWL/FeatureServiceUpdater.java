@@ -219,7 +219,7 @@ public class FeatureServiceUpdater {
 	 * @return boolean, true if action succeed
 	 * @throws JSONException
 	 */
-	public boolean updateFeaturesInTable(String[] entityNameList, Map<Integer, Map<String, String>> nameValueListofAllLayers) throws JSONException{
+	public boolean updateFeaturesInTable(String[] entityNameList, Map<Integer, Map<String, String>> nameValueListofAllLayers, int objectID) throws JSONException{
 		List<NameValuePair> parameters = initParameters();
 		int[] idList = new int[entityNameList.length];
 		if(entityNameList.length != nameValueListofAllLayers.size()){///Do length of namelist match numbers of parameter list?
@@ -267,7 +267,7 @@ public class FeatureServiceUpdater {
            JSONArray  updateArr = new JSONArray();
            JSONObject updateFeature = new JSONObject();
            JSONObject attributes = new JSONObject();
-           attributes.put("OBJECTID", 1);
+           attributes.put("OBJECTID", objectID);
            for (Map.Entry<String, String> entry : parameters2Update.entrySet()) {
         	    attributes.put(entry.getKey(), entry.getValue()); //put each name value pair to attributes json object
          		 System.out.println(entry.getKey()+":  "+ entry.getValue());    
