@@ -203,7 +203,7 @@ public class FeatureWriter {
         	   
             if(counter == 0)
             {
-             delta_x = x - center_x;
+             delta_x = x - center_x; // center_x means the x of center of prefab, which is stored in the xml file of its type in ARCGIS folder
              delta_y = y - center_y; // y center
              polygon.startPath(_x + delta_x , _y + delta_y); 
              

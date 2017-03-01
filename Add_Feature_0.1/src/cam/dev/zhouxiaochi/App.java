@@ -110,13 +110,13 @@ public class App {
 	    
 	}
 
-	 public static final String BASE_URL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TST024/FeatureServer";
+	 public static final String BASE_URL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/VERSION0_DEMO/FeatureServer";
 
 																																	// url
 																																	// for
 																																	// Arcgis
 																																	// service!!!!
-		private static final String DEVICE_MAP_LOCATION = "map/map.txt";
+		private static final String DEVICE_MAP_LOCATION = "map/mapTest.txt";
 
 																					// of
 																					// device-type
@@ -479,17 +479,17 @@ public class App {
          PointObjectsGenerator.layer_factory(0,"Load",null,"Load_Point",true); // Load Points
          PointObjectsGenerator.layer_factory(0,"Coupler",null,"Bus_Coupler",false); // Load Points
          PointObjectsGenerator.layer_factory(0,"Transformer","^.*EHT.*$","EHT_Station",true);
-         PointObjectsGenerator.layer_factory(0,"Transformer","^.*UHT.*$","UHT_Station_2",true);
+         PointObjectsGenerator.layer_factory(0,"Transformer","^.*UHT.*$","UHT_Station",true);
          PointObjectsGenerator.layer_factory(0,"Transformer","^.*HT.*$","HT_Station",true);
          PointObjectsGenerator.layer_factory(0,"Transformer","^.*LT.*$","LT_Station",true);             
 
-		
+	
 
 		createLayer("waterline", "", LineType.WATER);
 		createLayer("gasline", "",LineType.GAS);
 		createLayer("materialline", "",LineType.MATERIAL);
 		createLayer("airline", "",LineType.AIR);
-
+	
 		
 		linelayers = new ArcGISFeatureLayer[4];
 		for(int idxLineLayer = 0;  idxLineLayer < linelayers.length; idxLineLayer++){	
