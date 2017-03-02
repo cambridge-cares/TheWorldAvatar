@@ -476,12 +476,12 @@ public class App {
 		 
 
 
-//         PointObjectsGenerator.layer_factory(0,"Load",null,"Load_Point",true); // Load Points
-//         PointObjectsGenerator.layer_factory(0,"Coupler",null,"Bus_Coupler",false); // Load Points
-//         PointObjectsGenerator.layer_factory(0,"Transformer","^.*EHT.*$","EHT_Station",true);
-//         PointObjectsGenerator.layer_factory(0,"Transformer","^.*UHT.*$","UHT_Station_2",true);
-//         PointObjectsGenerator.layer_factory(0,"Transformer","^.*HT.*$","HT_Station",true);
-//         PointObjectsGenerator.layer_factory(0,"Transformer","^.*LT.*$","LT_Station",true);             
+         PointObjectsGenerator.layer_factory(0,"Load",null,"Load_Point",true); // Load Points
+         PointObjectsGenerator.layer_factory(0,"Coupler",null,"Bus_Coupler",false); // Load Points
+         PointObjectsGenerator.layer_factory(0,"Transformer","^.*EHT.*$","EHT_Station",true);
+         PointObjectsGenerator.layer_factory(0,"Transformer","^.*UHT.*$","UHT_Station_2",true);
+         PointObjectsGenerator.layer_factory(0,"Transformer","^.*HT.*$","HT_Station",true);
+         PointObjectsGenerator.layer_factory(0,"Transformer","^.*LT.*$","LT_Station",true);             
 
 		
 
@@ -501,8 +501,8 @@ public class App {
 		x_array = new double[deviceInfoList.size()];
 		y_array = new double[deviceInfoList.size()];
 		
-		//TODO: -1 for storagetank
-		for (int i = 0; i < deviceInfoList.size() -1; i++) {
+		//TODO: 
+		for (int i = 0; i < deviceInfoList.size() ; i++) {
 
 			DeviceInfo mDeviceInfo = deviceInfoList.get(i);
 			String target = mDeviceInfo.name;
@@ -789,6 +789,8 @@ public class App {
 		//add all other layers seperately
 	}
 	public static String[] allEntityList = null;
+	
+	
 	public static String[]  readAllEntityList() throws IOException, Exception{
 		if(allEntityList == null){//lazy initiation, make sure this happens only once
 		

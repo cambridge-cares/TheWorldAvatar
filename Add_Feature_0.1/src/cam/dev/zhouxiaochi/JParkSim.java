@@ -124,7 +124,7 @@ public class JParkSim {
 		public static int[] count;
 	// style of different layers
 	
-	 
+		final static SimpleFillSymbol landlot = new SimpleFillSymbol(Color.gray, new SimpleLineSymbol(Color.black, 2), SimpleFillSymbol.Style.NULL);
 		final static SimpleFillSymbol testColor =new SimpleFillSymbol(Color.green, new SimpleLineSymbol(Color.blue, 1), SimpleFillSymbol.Style.SOLID);
 		final static SimpleFillSymbol testColor2 =new SimpleFillSymbol(Color.orange, new SimpleLineSymbol(Color.red, 1), SimpleFillSymbol.Style.SOLID);
 		final static SimpleLineSymbol[] lineColors = {new SimpleLineSymbol(Color.blue, 5),
@@ -260,7 +260,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     linelayers[idxLayer] = new ArcGISFeatureLayer(App.BASE_URL+"/"+idxLayer, user);
     }
  
-    ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer(App.BASE_URL+"/Buildings", user);    // testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/9", user);
+    ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST022/FeatureServer/buildings", user);    // testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/9", user);
 
     ArcGISFeatureLayer[] pointlayers = new    ArcGISFeatureLayer[PointObjectsGenerator.layers.length];
     
@@ -277,13 +277,42 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
    
    ArcGISFeatureLayer[] completeLayerList =  new ArcGISFeatureLayer[targets.length + linelayers.length + PointObjectsGenerator.layers.length + 1];
    
+
+   
+   
+   completeLayerList[0] = buildinglayer;
+   createRenderer(layers, new ArcGISFeatureLayer [] {buildinglayer}, testColor2);
+   
+   
    for(int i = 0; i < targets.length; i++)
     {
+	   
+	   
+	   
     ArcGISFeatureLayer  newLayer = new ArcGISFeatureLayer(
     App.BASE_URL+"/" + targets[i], user);
     layer_name_map.put(targets[i],newLayer);
     completeLayerList[i + 1] = newLayer;
+    
+    if(targets[i].toLowerCase().contains("storage"))
+    {
+        ArcGISFeatureLayer  tank = new ArcGISFeatureLayer(
+        		"http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST022/FeatureServer/117", user);
+        	    layer_name_map.put(targets[i],tank);
+        	    completeLayerList[i + 1] = tank;
+    }
+    
+    
+    if(targets[i].toLowerCase().contains("landlot"))
+    {
+    	 createRenderer(layers, new ArcGISFeatureLayer [] {newLayer}, landlot);
+    }
+    else
+    {	
     createRenderer(layers, new ArcGISFeatureLayer [] {newLayer}, testColor);
+    }
+    
+    
     }
    
 
@@ -302,11 +331,6 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
      createRenderer(layers, new ArcGISFeatureLayer [] {pointlayers[idx_Point]},pointColors[idx_Point]);   
    }
     
-   
-   
-   
-   completeLayerList[0] = buildinglayer;
-   createRenderer(layers, new ArcGISFeatureLayer [] {buildinglayer}, testColor2);
    
    
    
@@ -596,8 +620,13 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     		          }
         	}
         });
-        hitTestOverlay.setActive(false);															// disable all listeners initially to prevent conflict
+        hitTestOverlay.setActive(false);		
+        // disable all listeners initially to prevent conflict
+        
+        
         listenerList[Arrays.asList(completeLayerList).indexOf(layer)] = hitTestOverlay;				// add listener(overlay) to an array arranged in indexed order
+     
+        
         map.addMapOverlay(hitTestOverlay);															// add all layer listeners to map
     }
    															// default layer listener enabled is the first one (landlots layer)
@@ -607,7 +636,14 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     
     for(int i = 0 ; i < listenerList.length;i++)
     {
-    	 listenerList[i].setActive(true);	
+    	if(i!=0)
+    	{
+    	 listenerList[i].setActive(true);
+    	}
+    	else
+    	{
+    		listenerList[i].setActive(false);
+    	}
     }
     /*
     
@@ -648,10 +684,8 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     /***************CREATE BUTTONS STARTS*****************************************************************************************/
 	JButton[] btns;
 	//////////////////BTN NAME LIST////////////////////////////////////////////////////////
-	String[] btnNameList = {"Refresh Map","Run Pr PowerWorld","Run Pr AP + PW","Query Features","Load Features from OWL file",
-			"Run BiodieselPlant-1","Run BiodieselPlant-2","Run BiodieselPlant-3","Run Pr BiodieselPlant-1","Run Pr BiodieselPlant-2",
-			"Run Pr BiodieselPlant-3","Run Pr Hydrocracking", "Run PrAP from OntoCAPE", "Run OPAL-RT"
-		
+	String[] btnNameList = {"Run BiodieselPlant-1","Run BiodieselPlant-2","Run BiodieselPlant-3","Load Features from OWL file","Run Pr BiodieselPlant-1","Run Pr BiodieselPlant-2",
+			"Run Pr BiodieselPlant-3","Run Pr Hydrocracking", "Run Pr PowerWorld","Run Pr AP + PW","Run PrAP from OntoCAPE", "Run OPAL-RT","Refresh Map"		
 	};
 	/////////////////////MSG Strings////////////////////////////////////////////////////
 	final String MSG_PWORLD_EMPTY= "You did not edit any features for PowerWorld!";
@@ -664,59 +698,64 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 
 	//Construct btnInfo for each btn
 	BtnInfo[] btnInfos = new BtnInfo[btnNameList.length];
-	//refresh
-	btnInfos[0] = new RefreshBtnInfo(layers, graphicsLayer, completeLayerList);
-	//Run Pr PowerWorld
-	btnInfos[1] = new PrBtnInfo(completeLayerList, MSG_PWORLD_EMPTY,
-			MSG_PWORLD_DONE, MSG_HTTP_ERR, 
-           "PWPr", editStack);
-	//Run Pr AP + PW
-	btnInfos[2] = new PrBtnInfo(completeLayerList, MSG_ASPEN_EMPTY, 
-			MSG_ASPEN_DONE, MSG_HTTP_ERR ,
-			 "PrAPPW", editStack);
-	//Query
-	btnInfos[3] = new QueryBtnInfo(completeLayerList,MSG_QUERY_EMPTY, 
-			MSG_QUERY_DONE, MSG_HTTP_ERR ,
-			 "Query", editStack2, graphicsLayer, querylayer);
-	//Load from owl
-	btnInfos[4] = new LoadOwlBtnInfo();
-
 	//BiodieselPlant -1
-	btnInfos[5] = new PrBtnInfo(completeLayerList, MSG_ASPEN_EMPTY,
-			MSG_ASPEN_DONE, MSG_HTTP_ERR, 
-	           "AP", editStack);
-	//BiodieselPlant -2
-	btnInfos[6] = new PrBtnInfo(completeLayerList, MSG_ASPEN_EMPTY,
-			MSG_ASPEN_DONE, MSG_HTTP_ERR, 
-	           "APHR", editStack);
-	//BiodieselPlant -3
-	btnInfos[7] = new PrBtnInfo(completeLayerList, MSG_ASPEN_EMPTY,
-			MSG_ASPEN_DONE, MSG_HTTP_ERR, 
-	           "APPW", editStack);
-	//PR BiodieselPlant -1
-	btnInfos[8] = new PrBtnInfo(completeLayerList, MSG_ASPEN_EMPTY,
-			MSG_ASPEN_DONE, MSG_HTTP_ERR, 
-	           "PrAP", editStack);
-	//PR BiodieselPlant -2
-	btnInfos[9] = new PrBtnInfo(completeLayerList, MSG_ASPEN_EMPTY,
-			MSG_ASPEN_DONE, MSG_HTTP_ERR, 
-	           "PrAPHR", editStack);
-	//PR BiodieselPlant -3
-	btnInfos[10] = new PrBtnInfo(completeLayerList, MSG_ASPEN_EMPTY,
-			MSG_ASPEN_DONE, MSG_HTTP_ERR, 
-	           "PrAPPW", editStack);
-	//Run Pr Hydrocracking
-	btnInfos[11] = new PrBtnInfo(completeLayerList, MSG_ASPEN_EMPTY,
-			MSG_ASPEN_DONE, MSG_HTTP_ERR, 
-	           "PrAPHC", editStack);
-	//Run PrAP from OntoCAPE
-	btnInfos[12] = new PrBtnInfo(completeLayerList, MSG_ASPEN_EMPTY,
-			MSG_ASPEN_DONE, MSG_HTTP_ERR, 
-	           "PrAPO", editStack);
-	//Run OPAL-RT
-	btnInfos[13] = new PrBtnInfo(completeLayerList, MSG_PWORLD_EMPTY,
-			MSG_PWORLD_DONE, MSG_HTTP_ERR, 
-	           "OPALRT", editStack);
+			btnInfos[0] = new PrBtnInfo(completeLayerList, MSG_ASPEN_EMPTY,
+					MSG_ASPEN_DONE, MSG_HTTP_ERR, 
+			           "AP", editStack);
+			
+			//BiodieselPlant -2
+			btnInfos[1] = new PrBtnInfo(completeLayerList, MSG_ASPEN_EMPTY,
+					MSG_ASPEN_DONE, MSG_HTTP_ERR, 
+			           "APHR", editStack);
+
+			//BiodieselPlant -3
+			btnInfos[2] = new PrBtnInfo(completeLayerList, MSG_ASPEN_EMPTY,
+					MSG_ASPEN_DONE, MSG_HTTP_ERR, 
+			           "APPW", editStack);
+			
+			//Load from owl
+			btnInfos[3] = new LoadOwlBtnInfo();
+			
+			
+			//PR BiodieselPlant -1
+			btnInfos[4] = new PrBtnInfo(completeLayerList, MSG_ASPEN_EMPTY,
+					MSG_ASPEN_DONE, MSG_HTTP_ERR, 
+			           "PrAP", editStack);
+			//PR BiodieselPlant -2
+			btnInfos[5] = new PrBtnInfo(completeLayerList, MSG_ASPEN_EMPTY,
+					MSG_ASPEN_DONE, MSG_HTTP_ERR, 
+			           "PrAPHR", editStack);
+
+			//PR BiodieselPlant -3
+			btnInfos[6] = new PrBtnInfo(completeLayerList, MSG_ASPEN_EMPTY,
+					MSG_ASPEN_DONE, MSG_HTTP_ERR, 
+			           "PrAPPW", editStack);
+
+			//Run Pr Hydrocracking
+			btnInfos[7] = new PrBtnInfo(completeLayerList, MSG_ASPEN_EMPTY,
+					MSG_ASPEN_DONE, MSG_HTTP_ERR, 
+			           "PrAPHC", editStack);
+			//Run Pr PowerWorld
+			btnInfos[8] = new PrBtnInfo(completeLayerList, MSG_PWORLD_EMPTY,
+					MSG_PWORLD_DONE, MSG_HTTP_ERR, 
+		           "PWPr", editStack);
+			//Run Pr AP + PW
+			btnInfos[9] = new PrBtnInfo(completeLayerList, MSG_ASPEN_EMPTY, 
+					MSG_ASPEN_DONE, MSG_HTTP_ERR ,
+					 "PrAPPW", editStack);
+			
+
+			//Run PrAP from OntoCAPE
+			btnInfos[10] = new PrBtnInfo(completeLayerList, MSG_ASPEN_EMPTY,
+					MSG_ASPEN_DONE, MSG_HTTP_ERR, 
+			           "PrAPO", editStack);
+			//Run OPAL-RT
+			btnInfos[11] = new PrBtnInfo(completeLayerList, MSG_PWORLD_EMPTY,
+					MSG_PWORLD_DONE, MSG_HTTP_ERR, 
+			           "OPALRT", editStack);
+			
+			//refresh
+		btnInfos[12] = new RefreshBtnInfo(layers, graphicsLayer, completeLayerList);
 
 	//call button factory to create buttons
 	ButtonFactory btnFac = new ButtonFactory(btnNameList, btnInfos);
@@ -778,7 +817,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 		}     	
     });
     QueryButton.setSize(190, 30);
-    QueryButton.setLocation(1000, 160);
+    QueryButton.setLocation(1200, 160);
     
 	
     // combine text, label and dropdown list into one panel for selecting layer to edit

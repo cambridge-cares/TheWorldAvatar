@@ -9,8 +9,8 @@ public class CheckBoxTreeNode extends DefaultMutableTreeNode
     private Function<String, Boolean> selectCallBack = JParkSim::selectCallBack;
     private Function<String, Boolean> unselectCallBack = JParkSim::unselectCallBack;
 
-    // private Function<String, Boolean> selectCallBack = TestSideMenu::selectCallBack;
-     //private Function<String, Boolean> unselectCallBack = TestSideMenu::unselectCallBack;
+   //  private Function<String, Boolean> selectCallBack = TestSideMenu::selectCallBack;
+   //  private Function<String, Boolean> unselectCallBack = TestSideMenu::unselectCallBack;
      private String name; 
     public CheckBoxTreeNode()  
     {  

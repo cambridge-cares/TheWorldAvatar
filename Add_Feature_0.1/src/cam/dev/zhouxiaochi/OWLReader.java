@@ -547,6 +547,14 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 	        
 	        TreeNode transpNode =  entityNameTree.getNodeVName("TransportationSystem");
 	        transpNode.deleteAllChildren();
+ 		 
+ 		    TreeNode buildingNode =  entityNameTree.getNodeVName("BuildingLayer");
+ 		    buildingNode.deleteAllChildren();
+ 		    
+ 		    TreeNode sNode =  entityNameTree.getNodeVName("StorageTankSystem");
+ 		    sNode.deleteAllChildren();
+ 		    TreeNode lNode =  entityNameTree.getNodeVName("LandlotsLayer");
+ 		    lNode.deleteAllChildren();
  		 } 
  		 logger.info("Now return tree");
  		 return entityNameTree;
