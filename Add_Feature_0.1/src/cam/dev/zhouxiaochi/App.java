@@ -110,7 +110,7 @@ public class App {
 	    
 	}
 
-	 public static final String BASE_URL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/VERSION0_DEMO/FeatureServer";
+	 public static final String BASE_URL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST030/FeatureServer";
 
 																																	// url
 																																	// for
@@ -835,7 +835,7 @@ public class App {
 	    	 
 	    	 if(info ==null){
 	    		System.out.println("entity: "+entity.getName()+" not exists in LayerFactory dictionary, will be deleted from layer list");
-	    		nonDeviceLayersInfo.remove(entity);
+	    		ids2Remove.add(idxE);
 	    	 }else{
 	    	 info.setOwlSource(entity.getOwlSource() );
 	    	 layerFactories.add(new LayerFactory(info, user, symbol));

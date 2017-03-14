@@ -157,7 +157,6 @@ public class LayerFactory {
       generateLayer();
 		targetLayer.initializeAsync();
 
-		Thread.sleep(1000);
 			}
 			}
 			
