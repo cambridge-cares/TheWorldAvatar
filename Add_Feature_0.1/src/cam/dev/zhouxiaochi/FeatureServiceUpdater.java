@@ -738,7 +738,7 @@ public class FeatureServiceUpdater {
 		parameters.add(new BasicNameValuePair(deleteDefinitionInputName, wrapper.toString()));
 
 		JSONObject result = doSth2Service("delete", parameters);
-		return (result.has("success"));
+		return (result==null ||result.has("success"));
 	}
 
 	public boolean isLayerExist(String layerName) throws JSONException {
