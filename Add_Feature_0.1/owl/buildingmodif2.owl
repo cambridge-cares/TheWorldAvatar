@@ -9476,6 +9476,24 @@
     
 
 
+    <!-- https://jparksimulator.com/Buildings.owl#BuildingLayer -->
+
+    <owl:NamedIndividual rdf:about="https://jparksimulator.com/Buildings.owl#BuildingLayer">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#CompositeSystem"/>
+        <system:hasSubsystem rdf:resource="https://jparksimulator.com/Buildings.owl#BuildingID_001"/>
+        <system:hasSubsystem rdf:resource="https://jparksimulator.com/Buildings.owl#BuildingID_002"/>
+        <system:hasSubsystem rdf:resource="https://jparksimulator.com/Buildings.owl#BuildingID_003"/>
+        <system:hasSubsystem rdf:resource="https://jparksimulator.com/Buildings.owl#BuildingID_004"/>
+        <system:hasSubsystem rdf:resource="https://jparksimulator.com/Buildings.owl#BuildingID_005"/>
+        <system:hasSubsystem rdf:resource="https://jparksimulator.com/Buildings.owl#BuildingID_006"/>
+        <system:hasSubsystem rdf:resource="https://jparksimulator.com/Buildings.owl#BuildingID_007"/>
+        <system:hasSubsystem rdf:resource="https://jparksimulator.com/Buildings.owl#BuildingID_008"/>
+        <system:hasSubsystem rdf:resource="https://jparksimulator.com/Buildings.owl#BuildingID_009"/>
+        <system:hasSubsystem rdf:resource="https://jparksimulator.com/Buildings.owl#BuildingID_010"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- https://jparksimulator.com/Buildings.owl#ChemicalIndustriesFarEast -->
 
     <owl:NamedIndividual rdf:about="https://jparksimulator.com/Buildings.owl#ChemicalIndustriesFarEast"/>

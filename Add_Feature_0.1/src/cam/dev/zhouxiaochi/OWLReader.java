@@ -534,7 +534,7 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 	        disNode.addChild(new EntityInfo("TLPlant(3kV-0.4kV)","owl/updated electrical network.owl" ));
 	        disNode.addChild(new EntityInfo("TLPlant(main-22kV)","owl/updated electrical network.owl" ));
 
-	        TreeNode ElectricalGrid = entityNameTree.getNodeVName("ElectricalGridOfJPark"); 
+	        TreeNode ElectricalGrid = entityNameTree.getNodeVName("ElectricalSystem"); 
 	        ElectricalGrid.addChild(new EntityInfo("Bus Coupler","owl/updated electrical network.owl" ));
 
 	        
@@ -545,8 +545,16 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
 	        Substations.addChild(new EntityInfo("HT_Stations","owl/updated electrical network.owl" ));
 	        Substations.addChild(new EntityInfo("LT_Stations","owl/updated electrical network.owl" ));
 	        
-	        TreeNode transpNode =  entityNameTree.getNodeVName("JurongTransportationSystem");
+	        TreeNode transpNode =  entityNameTree.getNodeVName("TransportationSystem");
 	        transpNode.deleteAllChildren();
+ 		 
+ 		    TreeNode buildingNode =  entityNameTree.getNodeVName("BuildingLayer");
+ 		    buildingNode.deleteAllChildren();
+ 		    
+ 		    TreeNode sNode =  entityNameTree.getNodeVName("StorageTankSystem");
+ 		    sNode.deleteAllChildren();
+ 		    TreeNode lNode =  entityNameTree.getNodeVName("LandlotsLayer");
+ 		    lNode.deleteAllChildren();
  		 } 
  		 logger.info("Now return tree");
  		 return entityNameTree;
@@ -683,6 +691,17 @@ public static ArrayList<String> read_owl_file(String filename, String deviceName
  	  
  	
  	
+ 	 
+ 	 
+ 	 
+ 	/****
+ 	 * This function is used to expand certain type of equipment in batch. 
+ 	 * @param filename --> the name of the owl file
+ 	 * @param type     --> the type of device to be expanded
+ 	 * @throws Exception 
+ 	 */
+ 
+ 	  
  	
  	
  	

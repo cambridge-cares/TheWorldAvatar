@@ -13,6 +13,8 @@ import cam.dev.zhouxiaochi.*;
 
 import javax.swing.JOptionPane;
 
+import org.json.JSONException;
+
 import com.esri.map.ArcGISFeatureLayer;
 
 /***********
@@ -55,12 +57,7 @@ public abstract class httpRequestBtnInfo implements BtnInfo{
 		this.appCallFlagStr = appCallFlagStr;
 		this.editStack = editStack;
 		///determine servlet address by callflag
-		if(appCallFlagStr.contentEquals("PrAP")){//if run pr biodieselplant1
-			urlStr+=APWOWHRStr;//route to APWOWHR servlet
-		} else if (appCallFlagStr.contentEquals("PrAPHR")){//if run pr biodieselplant2
-			urlStr+= APWWHRStr;
-		}
-		else if (appCallFlagStr.contentEquals("Query")){//if run Query
+	if (appCallFlagStr.contentEquals("Query")){//if run Query
 			urlStr+= query;
 		}
 		else{//all other function requires
@@ -152,13 +149,15 @@ public abstract class httpRequestBtnInfo implements BtnInfo{
 						outputString.append(URLEncoder.encode(editInfo.toString(), "UTF-8"));
 						outputString.append("&");
 						
+						System.out.println("-------->>>>>>" + editInfo.toString());
+						
 						outputString.append(URLEncoder.encode("QueryT", "UTF-8"));
 						outputString.append("=");
 						outputString.append(URLEncoder.encode(QueryT.toString(), "UTF-8"));
 
 						
 						
-						System.out.println("outputString=" + outputString);
+						System.out.println("Look here ---- outputString=" + outputString);
 						
 						//append query content formed above to url
 						DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
@@ -171,6 +170,16 @@ public abstract class httpRequestBtnInfo implements BtnInfo{
 						if (urlCon.getResponseCode()==200) {//Request success?
 							//=>YES!==>Call callback function
 							callback(urlCon);
+							
+							
+							try {
+								CSVReader.readCSV(appCallFlagStr);
+							} catch (JSONException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							
+							
 							
 						} else {//NO! => Show err message
 							JOptionPane.showMessageDialog(null, errMsg + urlCon.getResponseCode());

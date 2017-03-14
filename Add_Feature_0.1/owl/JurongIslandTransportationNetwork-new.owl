@@ -1784,24 +1784,6 @@ In case two different driving directions on a Road Element have different number
     
 
 
-    <!-- file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#JurongTransportationSystem -->
-
-    <owl:NamedIndividual rdf:about="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#JurongTransportationSystem">
-        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#CompositeSystem"/>
-        <system:hasSubsystem rdf:resource="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#AngasanaDrive"/>
-        <system:hasSubsystem rdf:resource="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#AyerMerbauRoad"/>
-        <system:hasSubsystem rdf:resource="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#BanyanAvenue"/>
-        <system:hasSubsystem rdf:resource="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#BanyanDrive"/>
-        <system:hasSubsystem rdf:resource="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#BanyanPlace"/>
-        <system:hasSubsystem rdf:resource="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#BanyanRoad"/>
-        <system:hasSubsystem rdf:resource="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#BanyanView1"/>
-        <system:hasSubsystem rdf:resource="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#BanyanView2"/>
-        <system:hasSubsystem rdf:resource="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#JurongIslandHighway"/>
-        <system:hasSubsystem rdf:resource="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#MerantiAvenue"/>
-    </owl:NamedIndividual>
-    
-
-
     <!-- file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#LengthOf_AD -->
 
     <owl:NamedIndividual rdf:about="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#LengthOf_AD">
@@ -5077,6 +5059,24 @@ In case two different driving directions on a Road Element have different number
         <coordinate_system:refersToAxis rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
         <system:hasDimension rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
         <system:hasValue rdf:resource="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#ValueOf_x_TC02"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#TransportationSystem -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#TransportationSystem">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#CompositeSystem"/>
+        <system:hasSubsystem rdf:resource="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#AngasanaDrive"/>
+        <system:hasSubsystem rdf:resource="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#AyerMerbauRoad"/>
+        <system:hasSubsystem rdf:resource="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#BanyanAvenue"/>
+        <system:hasSubsystem rdf:resource="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#BanyanDrive"/>
+        <system:hasSubsystem rdf:resource="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#BanyanPlace"/>
+        <system:hasSubsystem rdf:resource="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#BanyanRoad"/>
+        <system:hasSubsystem rdf:resource="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#BanyanView1"/>
+        <system:hasSubsystem rdf:resource="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#BanyanView2"/>
+        <system:hasSubsystem rdf:resource="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#JurongIslandHighway"/>
+        <system:hasSubsystem rdf:resource="file:/D:Mila/DatabaseBuilding/TransportationNetwork/JurongIsland_TransportationNetwork-new#MerantiAvenue"/>
     </owl:NamedIndividual>
 </rdf:RDF>
 

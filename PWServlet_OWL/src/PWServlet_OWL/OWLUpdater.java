@@ -1,9 +1,11 @@
 package PWServlet_OWL;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -21,32 +23,32 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+
 public class OWLUpdater {
+	String filename= "C:\\BiodieselPlant3.owl";
 	 
-	public static String PrAPPWOUTCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPPWOUT.CSV"); // output CSV file from the pr aspen plus model
 	
-	public void updateData(String target, String newValue) throws SAXException, IOException, ParserConfigurationException, TransformerException
+	public void updateData(String target, String newValue, String layername, int ObjectID) throws Exception
 	{
-		
-	String filename = "C://apache-tomcat-8.0.24/webapps/ROOT/BiodieselPlant3.owl";
-	String filename2 = "C://apache-tomcat-8.0.24/webapps/ROOT/updated electrical network.owl";
+		 String[]modif= target.split("_");
+			//String lastone = modif[modif.length-1];
+		for (int y=0; y<modif.length ;y++)
+		{
+		 if(modif[y].contentEquals("LoadPoint"))
+		{
+			filename="C:\\updated electrical network.owl";
+		}
+		 if(target.contains("1-")|| target.contains("-10"))
+			{
+				filename="C:\\BiodieselPlant1WOWHR.owl";
+			}
+		 if(target.contains("2-")|| target.contains("-20"))
+			{
+				filename="C:\\BiodieselPlant2WWHR.owl";
+			}
+		}	
+	
    
-   
-   
-   String []parameter =target.split("_");
-   
-      
-   System.out.println("parameter length= "+parameter.length);
-   
-   if (parameter.length>1)
-   {
-   if (target.split("_")[1].equals("Angle")||target.split("_")[1].equals("actualVoltage"))
-	   
-   {
-	    filename = filename2;
-   
-   }
-   }
    File inputFile = new File(filename);
    DocumentBuilderFactory dbFactory  = DocumentBuilderFactory.newInstance();
    DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -60,31 +62,30 @@ public class OWLUpdater {
 	   String name = individuals.item(i).getAttributes().item(0).getNodeValue();
 	   name = name.substring(name.indexOf("#") + 1);
 	    
-	   
 	   if(name.contentEquals(target))
 	   {
-		 System.out.println("ok1");
-		 
-		 NodeList propertylist = individuals.item(i).getChildNodes();
-		  
-		
-		 for(int t = 0 ; t < propertylist.getLength() ; t ++)
-		 {
-			 
-		 if("system:numericalValue".equals(propertylist.item(t).getNodeName()))
-			 
-			 {propertylist.item(t).setTextContent(newValue);
-			 System.out.println("ok3");
-			 
-				 
-			 }
+	
+		   NodeList children = individuals.item(i).getChildNodes();
+		   for(int j = 0 ; j < children.getLength(); j++)
+		   {
+			   if(children.item(j).getNodeName().contentEquals("system:numericalValue"))
+			   {
+				   children.item(j).setTextContent(newValue);
+ 			   }
+
+		   }
 		  
 		  
 	   }
  
-   }
+	   
 	   
    }
+   
+   
+   
+   
+   
    
 	TransformerFactory transformerFactory = TransformerFactory.newInstance();
 
@@ -94,11 +95,62 @@ public class OWLUpdater {
 	StreamResult streamResult = new StreamResult(new File(filename));
 	transformer.transform(domSource, streamResult);
 		
-		
+	String result_string = readData(target);
+	
+
+	  ArrayList<String[]> result = new ArrayList<String[]>();
+	  //InputStream input = new URL( "http://172.25.182.41/" + filename ).openStream();
+	  
+	  String processed_target = target.replace("-", "_");
+	       
+	   	 Map<Integer, String> oldNewAttriNameDictionary = new HashMap<Integer, String>();
+		    	 oldNewAttriNameDictionary.put(22, processed_target);
+		    	 
+	    
+
+	      String[] pair2 = {layername,processed_target,result_string};
+	      result.add(pair2);
+	       
+	      FeatureServiceUpdater mUpdater = new FeatureServiceUpdater("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/VERSION0_DEMO/FeatureServer");
+	      String[] entityNameList= {layername};
+	      Map<Integer,Map<String, String>> nameValueListPerLayer = new HashMap<Integer, Map<String, String>>();
+	     
+	      HashMap<String, String>   parameters301 = new HashMap<String, String>();
+	      HashMap<String, String>   parameters302 = new HashMap<String, String>();
+
+	      
+	      System.out.println(result_string);
+	      parameters302.put(oldNewAttriNameDictionary.get(22),result_string);
+	      nameValueListPerLayer.put(0, parameters302);
+
+	      
+	       mUpdater.updateFeaturesInTable(entityNameList, nameValueListPerLayer,ObjectID);
+	
 		
 	}
 	
 	
-
+	public String readData(String target) throws IOException, Exception
+	{
+		 String[]modif= target.split("_");
+			//String lastone = modif[modif.length-1];
+		for (int y=0; y<modif.length ;y++)
+		{
+		 if(modif[y].equals("LoadPoint"))
+		{
+			filename="C:\\updated electrical network.owl";
+		}
+		 if(target.contains("1-")|| target.contains("-10"))
+			{
+				filename="C:\\BiodieselPlant1WOWHR.owl";
+			}
+		 if(target.contains("2-")|| target.contains("-20"))
+			{
+				filename="C:\\BiodieselPlant2WWHR.owl";
+			}
+		}	
+		return OWLFileReader.read_owl_file(filename, target);
 	}
+	
 
+}

@@ -27,7 +27,7 @@ public class ButtonFactory {
 	   ArcGISFeatureLayer[] completeLayerList;
 	   public static final int WINDOW_WIDTH = 1200;
 	   public static final int WINDOW_HEIGHT = 900;
-
+ public static final int maxPerCol = 4;
 	   public static final int BTN_WIDTH = 190;
 	   public static final int BTN_WIDTH_PADDING = 10;
 	   public static final int BTN_HEIGHT = 30;
@@ -55,10 +55,10 @@ public class ButtonFactory {
 			btns[i].setSize(BTN_WIDTH,BTN_HEIGHT);
 			btns[i].setLocation(tempX, tempY);
 			System.out.println("btn position:"+tempX + "  " + tempY);
-	        tempX += BTN_WIDTH+BTN_WIDTH_PADDING;
-	        if(tempX > WINDOW_WIDTH) {
-	        	tempX = BTN_AREA_LEFT_PADDING;
-	        	tempY += BTN_HEIGHT+BTN_HEIGHT_PADDING;
+	        tempY += BTN_HEIGHT+BTN_HEIGHT_PADDING;
+	        if(i%maxPerCol == 3) {
+	        	tempX += BTN_WIDTH+BTN_WIDTH_PADDING;
+	        	tempY = BTN_AREA_UP_PADDING;//reset y to start a new col
 	  	        }
 			btns[i].setEnabled(true);
 			btns[i].setVisible(true);

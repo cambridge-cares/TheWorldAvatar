@@ -149,3 +149,7 @@ T-501#extractor
 T-502#extractor
 T-503#extractor
 T-504#extractor
+S-101#splitter
+S-102#Splitter
+S-201#splitter
+S-202#Splitter

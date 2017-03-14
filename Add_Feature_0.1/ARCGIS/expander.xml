@@ -9,17 +9,10 @@
   </mFeature>
   <mFeature>
     <Type>Polygon</Type>
-    <Name>EXP-401</Name>
+    <Name>X-401</Name>
     <Scale>1.0000000001418647</Scale>
     <Orientation>1</Orientation>
     <Center>11541000.600985,140193.259016511</Center>
-  </mFeature>
-  <mFeature>
-    <Type>Polygon</Type>
-    <Name>EXP-701</Name>
-    <Scale>1.677333823826306</Scale>
-    <Orientation>2</Orientation>
-    <Center>11544155.5459425,141380.771232021</Center>
   </mFeature>
   <mFeature>
     <Type>Polygon</Type>
