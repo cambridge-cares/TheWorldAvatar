@@ -27,7 +27,7 @@ public class PointObjectsGenerator {
 	 
 
  
- 	//	layer_factory(0,"Transformer",null,"Transformer",false);
+ 		layer_factory(0,"Transformer",null,"Transformer",false);
 
 		
 	}

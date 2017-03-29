@@ -10,8 +10,17 @@ import de.derivo.sparqldlapi.exceptions.QueryParserException;
 import de.derivo.sparqldlapi.impl.QueryBindingImpl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.jdom.output.XMLOutputter;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -24,7 +33,9 @@ import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 public class ReactorQuery {
 	
 private static QueryEngine engine;
-	
+public static String QueryResult;
+
+
 	public static ArrayList<String> executeReactorQuery () {
 		ArrayList<String> result = null;
 		try {
@@ -32,7 +43,7 @@ private static QueryEngine engine;
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 
 			// Load the biodiesel plant owl file.
-              OWLOntology BiodieselPlant1 = manager.loadOntologyFromOntologyDocument(IRI.create("File:/C:/apache-tomcat-8.0.24/webapps/ROOT/BiodieselPlant.owl"));  //try testing the ontology built by YiRen
+              OWLOntology BiodieselPlant1 = manager.loadOntologyFromOntologyDocument(IRI.create("File:/C:/apache-tomcat-8.0.24/webapps/ROOT/BiodieselPlant3.owl"));  //try testing the ontology built by YiRen
 
 			// Create an instance of an OWL API reasoner (we use the OWL API built-in StructuralReasoner for the purpose of demonstration here)
             StructuralReasonerFactory factory = new StructuralReasonerFactory();
@@ -42,10 +53,13 @@ private static QueryEngine engine;
 
 			// Create an instance of the SPARQL-DL query engine
 			engine = QueryEngine.create(manager, reasoner, true);
-                 	
+       
+			
+		 
+			
 			result = processQuery(
          			"PREFIX process: <file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#>\n" +
-					"PREFIX apparatus: <file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#>\n" +
+ 					"PREFIX apparatus: <file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#>\n" +
 					"PREFIX CPS: <file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#>\n" +
 					"PREFIX behavior: <file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#>\n" +
 			        "PREFIX technical_system: <file:/C:/OntoCAPE/OntoCAPE/upper_level/technical_system.owl#>\n" +
@@ -53,59 +67,90 @@ private static QueryEngine engine;
 					"PREFIX space_time: <file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#>\n" +
 				    "PREFIX material: <file:/C:/OntoCAPE/OntoCAPE/material/material.owl#>\n" +
 				    "PREFIX substance: <file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#>\n" +
+					"PREFIX plant: <file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#>\n" +
+					"PREFIX chemical_process_system: <file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#>\n" +
+ 					
 					"PREFIX system: <file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#>\n" + 
 					"PREFIX topology: <file:/C:/OntoCAPE/meta_model/topology/topology.owl#>\n" + 
-					"PREFIX p7: <file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>\n" + 
-			"SELECT ?x ?GCxnv ?GCynv ?V ?Volume ?unit ?F ?FnumericalValue ?FUnit ?P ?Pressure ?Punit ?T ?Temperature ?Tunit ?Input ?Fo ?FonumericalValue ?FoUnit ?Output WHERE {\n" +
-					   " Type(?x, apparatus:StirredTank)" + "," +
-					          
-                             /** Query for the geographic coordinate of the reactor*/
-                              "PropertyValue(?x, p7:hasProjectedCoordinate_x, ?GCx)" + "," +	
-                              "PropertyValue(?GCx, system:hasValue, ?GCxv)" + "," +	
-                              "PropertyValue(?GCxv, system:numericalValue, ?GCxnv)" + "," +
-                              "PropertyValue(?x, p7:hasProjectedCoordinate_y, ?GCy)" + "," +	
-                              "PropertyValue(?GCy, system:hasValue, ?GCyv)" + "," +	
-                              "PropertyValue(?GCyv, system:numericalValue, ?GCynv)" + "," +
+					"PREFIX space_and_time_extended: <file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>\n" + 
+		// 	"SELECT ?x ?GCxnv ?GCynv ?V ?Volume ?unit ?F ?FnumericalValue ?FUnit ?P ?Pressure ?Punit ?T ?Temperature ?Tunit ?Input ?Fo ?FonumericalValue ?FoUnit ?Output WHERE {\n" +
+				
+		//	"SELECT ?x   WHERE {\n" +
+			
+		 	"SELECT ?x ?GCxnv ?GCynv ?connector ?heatduty_value ?reaction_network ?Input ?Output ?flowrate_v ?flowrate_v_out ?input_flowrate_value ?output_flowrate_value WHERE  {\n" +
 
-                             /** Query for the volume of the reactor*/
-					          "PropertyValue(?x, geometry:has_volume, ?V)" + "," +						          
-					          "PropertyValue(?V, system:hasValue, ?Vv)" + "," +	
-					          "PropertyValue(?Vv, system:numericalValue, ?Volume)" + "," +
-					          "PropertyValue(?Vv, system:hasUnitOfMeasure, ?unit)" + "," +
+       // "Class(?x)" + 
+		//  " Type(?x, apparatus:StirredTank)" + "," +
+	      " Type(?x, apparatus:StirredTank)" + "," + 
 					          
-                           	/**Query for the operating pressure*/
-                              "PropertyValue(?x, process:hasOperatingPressure, ?P)" + "," +						          
-                              "PropertyValue(?P, system:hasValue, ?Pv)" + "," +	
-                              "PropertyValue(?Pv, system:numericalValue, ?Pressure)" + "," +
-                              "PropertyValue(?Pv, system:hasUnitOfMeasure, ?Punit)" + "," +
-                           /**Query for the operating temperature*/   
-                              "PropertyValue(?x, process:hasOperatingTemperature, ?T)" + "," +						          
-                              "PropertyValue(?T, system:hasValue, ?Tv)" + "," +	
-                              "PropertyValue(?Tv, system:numericalValue, ?Temperature)" + "," +
-                              "PropertyValue(?Tv, system:hasUnitOfMeasure, ?Tunit)" + "," +
-					          
-					          "PropertyValue(?x, topology:hasInput, ?Input)" + ","+ 
-					          "PropertyValue(?Input, CPS:refersToGeneralizedAmount,?b)" + ","+         						          
-                              "PropertyValue(?b, system:hasSubsystem,?c)" + ","+         						          
-                              "PropertyValue(?c, behavior:refersToMaterial,?material)" + ","+ 
+		
+/*                             *//** Query for the geographic coordinate of the reactor*//*
+                           
+                           
+                             */
+                             
+                              "PropertyValue(?x, space_and_time_extended:hasGISCoordinateSystem, ?GSystem)" + "," + 
+                              "PropertyValue(?x, plant:hasConnector, ?connector)" + "," + 
+							  "PropertyValue(?x, technical_system:realizes, ?reaction)" + "," + 
+
                               
-                              "PropertyValue(?c, system:hasProperty,?F)" + ","+ 
-                              "PropertyValue(?F, system:hasValue,?VF)" + ","+ 
-                              "PropertyValue(?VF, system:numericalValue,?FnumericalValue)" + ","+ 
-                              "PropertyValue(?VF, system:hasUnitOfMeasure,?FUnit)" + ","+ 
+                              
+                              
+                              "PropertyValue(?GSystem, space_and_time_extended:hasProjectedCoordinate_x, ?GCx)" + "," +	
+							  "PropertyValue(?GCx, system:hasValue, ?GCXV)" + "," +	
+							  "PropertyValue(?GCXV, system:numericalValue, ?GCxnv)" + "," +	
+							  
+                              "PropertyValue(?GSystem, space_and_time_extended:hasProjectedCoordinate_y, ?GCy)" + "," +	
+							  "PropertyValue(?GCy, system:hasValue, ?GCYV)" + "," +	
+							  "PropertyValue(?GCYV, system:numericalValue, ?GCynv)" +   "," +	
+							  
+							  
+							  
+							  
+							  "PropertyValue(?reaction, behavior:hasHeatDuty, ?heatduty)" + "," + 
+							  "PropertyValue(?reaction,topology:hasInput , ?Input)" + "," + 
+							  "PropertyValue(?reaction,topology:hasOutput , ?Output)" + "," + 
+							  
+							  
+							  
+							  "PropertyValue(?heatduty, system:hasValue, ?valueheatduty)" +  "," + 
+							  "PropertyValue(?valueheatduty, system:numericalValue, ?heatduty_value)" +  "," + 
+							  "PropertyValue(?reaction,process:hasChemicalReactionNetwork , ?reaction_network)" + "," + 
+							
+							 
+							 "PropertyValue(?Input,chemical_process_system:refersToGeneralizedAmount , ?amount)" + "," + 
+							 "PropertyValue(?amount,system:hasSubsystem , ?material)" + "," + 
+							"PropertyValue(?material,system:hasProperty , ?flowrate)" + "," + 
+							"PropertyValue(?flowrate,system:hasValue , ?flowrate_v)" +  "," + 
+							"PropertyValue(?flowrate_v,system:numericalValue , ?input_flowrate_value)" +  "," + 
+							
+							
+			  				
+			  				
+			  				"PropertyValue(?Output,chemical_process_system:refersToGeneralizedAmount , ?amount_out)" + "," + 
+			  				"PropertyValue(?amount_out,system:hasSubsystem , ?material_out)" + "," + 
+			  				"PropertyValue(?material_out,system:hasProperty , ?flowrate_out)" + "," + 
+							"PropertyValue(?flowrate_out,system:hasValue , ?flowrate_v_out)" +  "," + 
+							"PropertyValue(?flowrate_v_out,system:numericalValue , ?output_flowrate_value)" + // "," + 
+							
+							
+						
+				// system:hasValue		   <behavior:hasHeatDuty rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#HeatDutyOfR-301"/>
+      //  <process:hasChemicalReactionNetwork rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#ReactionNetwork_Bio"/>
+     //   <topology:hasInput rdf:resource="http://www.jparksimulator.com/BiodieselPlant3.owl#ProcessStream_3-3"/>
 
-                              "PropertyValue(?x, topology:hasOutput, ?Output)" + ","+ 
-                              "PropertyValue(?Output, CPS:refersToGeneralizedAmount,?bo)" + ","+         						          
-                              "PropertyValue(?bo, system:hasSubsystem,?co)" + ","+         						          
-                              "PropertyValue(?co, behavior:refersToMaterial,?materialo)" + ","+ 
-     
-                              "PropertyValue(?co, system:hasProperty,?Fo)" + ","+ 
-                              "PropertyValue(?Fo, system:hasValue,?VFo)" + ","+ 
-                              "PropertyValue(?VFo, system:numericalValue,?FonumericalValue)" + ","+ 
-                              "PropertyValue(?VFo, system:hasUnitOfMeasure,?FoUnit)" + 
+	 
+	 
+	 
+	 
+	 
+	 
+                 
   					          
-					"}"
-					);                      	
+					"}" 
+					);  
+					
+				
                       	                                                                    
         }
         catch(UnsupportedOperationException exception) {
@@ -138,8 +183,8 @@ private static QueryEngine engine;
 			
 			// Execute the query and generate the result set
 			QueryResult result = engine.execute(query);
-                        
-                        
+		//	QueryResult = result.toString();
+         //   System.out.println(result);
 
 			if(query.isAsk()) {
 				System.out.print("Result: ");
@@ -155,115 +200,45 @@ private static QueryEngine engine;
 					System.out.println("Query has no solution.\n");
 				}
 				else {
-					System.out.println("Results:");
+					System.out.println("Results: -- we are upto here");
 					                    String Rresult = null;
                 	                    String rresult = null, rresult1 = null;
                 	                    int count=0;
-                                        for (int i = 0; i < result.size(); i++) {
+                	                    
+                	                   
+                	                    
+                	                    
+                	                    
+                						System.out.println("Results: -- look at result " + result.toString());
+                						System.out.println("The size of the result array" + result.size());
+                            
+                                        for(int i  = 0; i < result.size() ; i ++)
+                                        {
                                         	
-                                                QueryBindingImpl binding = (QueryBindingImpl) result.get(i);
-                                                Set<QueryArgument> argument = binding.getBoundArgs();
-                                                for (QueryArgument a : argument) {
-                                                    QueryArgument qa = binding.get(a);
-                                                    if (a.getValue().compareToIgnoreCase("x") == 0) {                                                       
-                                                        valt[i] = qa.getValue().split("#");                                                       	                    
-                                                    }     
-                                                    
-                                                    if (a.getValue().compareToIgnoreCase("GCxnv") == 0) {                                                       
-                                                    	GISCx[i] = qa.getValue().split("#");                                                       	                    
-                                                    }
-                                                    
-                                                    if (a.getValue().compareToIgnoreCase("GCynv") == 0) {                                                       
-                                                    	GISCy[i] = qa.getValue().split("#");                                                       	                    
-                                                    }
-                                                    
-                                                    if (a.getValue().compareToIgnoreCase("V") == 0) {
-                                                        valt1[i] = qa.getValue().split("#");           
-                                                    }
-                                                     
-                                                    if (a.getValue().compareToIgnoreCase("Volume") == 0) {
-                                                        valt2[i] = qa.getValue().split("#");
-                                                    }
-                                                   
-                                                    if (a.getValue().compareToIgnoreCase("unit") == 0) {
-                                                        valt3[i] = qa.getValue().split("#");                                                       
-                                                    }
-                                                    /** Operating Pressure*/
-                                                    if (a.getValue().compareToIgnoreCase("P") == 0) {
-                                                        OP[i] = qa.getValue().split("#");           
-                                                    }
-                                                     
-                                                    if (a.getValue().compareToIgnoreCase("Pressure") == 0) {
-                                                        VOP[i] = qa.getValue().split("#");
-                                                    }
-                                                   
-                                                    if (a.getValue().compareToIgnoreCase("Punit") == 0) {
-                                                        UOP[i] = qa.getValue().split("#");                                                       
-                                                    }
-                                                    /** Operating Temperature*/
-                                                    if (a.getValue().compareToIgnoreCase("T") == 0) {
-                                                        OT[i] = qa.getValue().split("#");           
-                                                    }
-                                                     
-                                                    if (a.getValue().compareToIgnoreCase("Temperature") == 0) {
-                                                        VOT[i] = qa.getValue().split("#");
-                                                    }
-                                                   
-                                                    if (a.getValue().compareToIgnoreCase("Tunit") == 0) {
-                                                        UOT[i] = qa.getValue().split("#");                                                       
-                                                    }
-                                                    /** Flowrate*/
-                                                    if (a.getValue().compareToIgnoreCase("F") == 0) {
-                                                        valt4[i] = qa.getValue().split("#");                                                        
-                                                    }
-                                                    
-                                                    if (a.getValue().compareToIgnoreCase("FnumericalValue") == 0) {
-                                                        valt5[i] = qa.getValue().split("#");                                                        
-                                                    }                                                    
-                                                    if (a.getValue().compareToIgnoreCase("FUnit") == 0) {
-                                                        valt6[i] = qa.getValue().split("#");                                                        
-                                                    }  
-                                                    /** Input Stream*/                                                   
-                                                    if (a.getValue().compareToIgnoreCase("Input") == 0) {
-                                                        valt7[i] = qa.getValue().split("#");                                                        
-                                                    }                                                    
-                                                                                                     
-                                                    if (a.getValue().compareToIgnoreCase("MF") == 0) {
-                                                        valt9[i] = qa.getValue().split("#");                                                       
-                                                    }
-                                                   
-                                                    if (a.getValue().compareToIgnoreCase("output") == 0) {
-                                                        valt10[i] = qa.getValue().split("#");                                                        
-                                                    }   
-                                                    if (a.getValue().compareToIgnoreCase("Fo") == 0) {
-                                                        valt8[i] = qa.getValue().split("#");                                                        
-                                                    }
-                                                    if (a.getValue().compareToIgnoreCase("FonumericalValue") == 0) {
-                                                        valt11[i] = qa.getValue().split("#");                                                        
-                                                    }
-                                                    if (a.getValue().compareToIgnoreCase("FoUnit") == 0) {
-                                                        valt12[i] = qa.getValue().split("#");                                                        
-                                                    }                                                
-                                                }
-                                                
-                                                if(i==0){
-                                                	rresult = ("The information we want for " + valt[0][1] + " is: %" + "GISLocation( " + GISCx[i][0] +" ; " + GISCy[i][0] + " );%" + valt1[0][1] + " = "+ valt2[0][0] + " "+ valt3[0][1] + ";  " + OP[0][1] + " = " + VOP[0][0] + " " + UOP[0][1] + ";  " + OT[0][1] + " = " + VOT[0][0] + " " + UOT[0][1] +  "%InputStream:  " + valt7[i][1] + "  " + valt4[0][1] + " = " + valt5[0][0] + " " +  valt6[0][1] +"%OutputStream:  " + valt10[i][1] +"  " + valt8[i][1] + " = "+ valt11[i][0]+" "+ valt12[i][1]);
-                                                	Aresult.add(rresult);
-                                                	count ++;
-                                                }
-                                                else if(i>0 ){
-                                                	if(!valt[i][1].equals( valt[i-1][1])){
-                                                	rresult1 = ("The information we want for " + valt[i][1] + " is: %" + "GISLocation( " + GISCx[i][0] +" ; " + GISCy[i][0] + " );%" + valt1[i][1] + " = "+ valt2[i][0] + " "+ valt3[i][1] + ";  " + OP[i][1] + " = " + VOP[i][0] + " " + UOP[i][1] + ";  " + OT[i][1] + " = " + VOT[i][0] + " " + UOT[i][1] +  "%InputStream:  " + valt7[i][1] + "  " + valt4[i][1] + " = " + valt5[i][0] + " " +  valt6[i][1] +"%OutputStream:  " + valt10[i][1] +"  " + valt8[i][1] + " = "+ valt11[i][0]+" "+ valt12[i][1]);
-                                                	
-                                                	Aresult.add(rresult1);
-                                                	count ++;
-                                                	}
-                                                }
-
-                                                Aresult.add(Rresult);
-                                                        
+                                             
+                                            QueryBindingImpl binding = (QueryBindingImpl) result.get(i);
+                                            Set<QueryArgument> argument = binding.getBoundArgs();
+                    						
+                                        	for(QueryArgument a : argument)
+                                        	{
+                                        		QueryArgument qa = binding.get(a);
+                                        		System.out.println(a.getValue());
+                                        		Aresult.add(a.getValue() + "---" + qa.getValue());
+                                        		
+                                        		
+                                        	}
+                                        	
+                                        	
                                         }
-                                        Aresult.add("% There are " + count + " Reactors in this Plant. %"); 
+                                           
+                                      
+                                        
+
+                                  
+                                          
+                                                        
+                                      
+                                   //     Aresult.add("% There are " + count + " Reactors in this Plant. %"); 
                                         System.out.println(Aresult);
                                         
                                         
@@ -281,6 +256,9 @@ private static QueryEngine engine;
         catch(QueryEngineException e) {
         	System.out.println("Query engine error: " + e);
         }
+		
+		
+	
 		return Aresult;
 	}
 

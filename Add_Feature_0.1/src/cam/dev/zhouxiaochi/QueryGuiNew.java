@@ -11,11 +11,17 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.JScrollPane;
 
 public class QueryGuiNew extends javax.swing.JFrame{
 	   
+	
+ 
+	
+	
 		/**This part of code took sample code from Ming Pan
 		 * author Li Zhou
 		 */
@@ -51,23 +57,25 @@ public class QueryGuiNew extends javax.swing.JFrame{
 			 btnShowLocation = new javax.swing.JButton();
 			 QueryResult = new javax.swing.JTextArea();
 			 		 
-			 QueryResult.setRows(100);
+			 QueryResult.setSize(800, 200);
+			 QueryResult.setRows(800);
+			 QueryResult.setColumns(400);
 			 QueryResult.setAutoscrolls(true);
 			 QueryResult.setLineWrap(true);
 			 
 			 JScrollPane areaScrollPane = new JScrollPane(QueryResult);
 			 areaScrollPane.setVerticalScrollBarPolicy(
 			                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-			 areaScrollPane.setPreferredSize(new Dimension(250, 250));
+			 areaScrollPane.setPreferredSize(new Dimension(600, 600));
 			 
 			 setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-			 jPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Natural Language Query  --Powered by J-Park Simulator", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14)));
-			 
+		//	 jPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Natural Language Query  --Powered by J-Park Simulator", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14)));
+			 jPanel.setSize(1200, 400);
 			 jLabel.setFont(new java.awt.Font("Tahoma", 1, 14));
 		     jLabel.setText("Please enter your query here:");
 			 
 		     QueryContent.setFont(new java.awt.Font("Tahoma", 0, 14));
-		     
+		     QueryContent.setSize(500, 2000);
 			 javax.swing.GroupLayout jPanelLayout = new javax.swing.GroupLayout(jPanel);
 			 jPanel.setLayout(jPanelLayout);
 			 
@@ -108,7 +116,14 @@ public class QueryGuiNew extends javax.swing.JFrame{
 								wr.flush();
 								wr.close();
 								
+ 								
+								
+								
+								
+								
 								if(urlCon.getResponseCode()==200){
+									
+									
 									
 									in = new InputStreamReader(urlCon.getInputStream());
 									final BufferedReader br = new BufferedReader(in);
@@ -118,6 +133,371 @@ public class QueryGuiNew extends javax.swing.JFrame{
 									String[] StrI = null;								
 									
 									strTemp = br.readLine();
+									
+									
+									 Set<String> Devices = new HashSet<String>();
+									 Set<String> Connectors = new HashSet<String>();
+									 Set<String> X = new HashSet<String>();
+									 Set<String> Y = new HashSet<String>();
+									 Set<String> Inputs = new HashSet<String>();
+									 Set<String> Outputs = new HashSet<String>();
+									 Set<String> HeatDuties = new HashSet<String>();
+									 Set<String> Reaction_NetWork = new HashSet<String>();
+									 Set<String> Input_Flow = new HashSet<String>();
+									 Set<String> Output_Flow = new HashSet<String>();
+									 
+									 Set<String> Output_ma = new HashSet<String>();
+									 Set<String>  Input_ma = new HashSet<String>();
+									 
+									 
+									 
+									 ArrayList<Set<String>> sets = new ArrayList<Set<String>>();
+						
+									 
+									 
+									
+									for(String line : strTemp.split(","))
+									{
+									//	QueryResult.append(line);
+									//	QueryResult.append("\n");
+										
+										System.out.println("---->" + line);
+										
+										
+										String name = line.split("---")[0].trim();
+										String value = line.split("---")[1].trim();
+										
+										if(value.contains("#"))
+										
+										{
+											value = value.split("#")[1];
+											
+										}
+										
+										System.out.println("name---" + name);
+										
+										
+										if(name.contentEquals("x"))
+										{
+											Devices.add(value);
+											System.out.print("found");
+ 										}
+										
+										if(name.contentEquals("connector"))
+										{
+											Connectors.add(value);
+										}
+										
+										if(name.contentEquals("GCxnv"))
+										{
+											X.add(value);
+										}
+										
+										if(name.contentEquals("GCynv"))
+										{
+											Y.add(value);
+										}
+										
+										if(name.contentEquals("Input"))
+										{
+											Inputs.add(value);
+										}
+
+										if(name.contentEquals("Output"))
+										{
+											Outputs.add(value);
+										}
+										
+										if(name.contentEquals("heatduty_value"))
+										{
+											HeatDuties.add(value);
+										}
+										
+										if(name.contentEquals("reaction_network"))
+										{
+											Reaction_NetWork.add(value);
+										}
+										
+										if(name.contentEquals("output_flowrate_value"))
+										{
+											Output_Flow.add(value);
+										}
+										
+										if(name.contentEquals("input_flowrate_value"))
+										{
+											Input_Flow.add(value);
+										}
+										
+										if(name.contentEquals("flowrate_v"))
+										{
+											Input_ma.add(value);
+										}
+										
+										
+										if(name.contentEquals("flowrate_v_out"))
+										{
+											Output_ma.add(value);
+										}
+										
+										
+										
+										
+									}
+									
+									 sets.add(Devices);
+									 sets.add(Connectors);
+									 sets.add(X);
+									 sets.add(Y);
+									 sets.add(Inputs);
+									 sets.add(Outputs);
+									 sets.add(Reaction_NetWork);
+									 sets.add(HeatDuties);
+									 sets.add(Input_Flow);
+									 sets.add(Output_Flow);
+									 sets.add(Input_ma);
+									 sets.add(Output_ma);
+									
+									for(Set<String> set : sets)
+									{
+										for(String item : set)
+										{
+											System.out.println("|---------|" + item);
+										}
+										
+										System.out.println("==============================================");
+									}
+				
+									
+									
+									String placeholder = " 			|-------:  ";
+									
+									QueryResult.append("Device: " + "\n");
+									
+									QueryResult.append(placeholder + getItem(Devices,0) + "\n");
+									
+									QueryResult.append("Connectors:  "+ "\n");
+									QueryResult.append(placeholder + getItem(Connectors,0) + "\n");
+									
+									
+									QueryResult.append(placeholder + getItem(Connectors,2) + "\n");
+									QueryResult.append(placeholder + getItem(Connectors,4) + "\n");
+									
+									QueryResult.append("Coordinate_X: " + getItem(X,0) + "\n");
+									QueryResult.append("Coordinate_Y: " + getItem(Y,0) + "\n");
+
+									QueryResult.append("Inputs: "+ "\n");
+									QueryResult.append(placeholder +   getItem(Inputs,2) + "\n");
+									QueryResult.append(placeholder + getItem(Inputs,3) + "\n");
+									 
+									QueryResult.append("Outputs: "  + "\n");
+									QueryResult.append(placeholder + getItem(Outputs,0) + "\n");
+									
+									QueryResult.append("Reaction_NetWork: " + "\n");
+									QueryResult.append(placeholder + getItem(Reaction_NetWork,0) + "\n");
+									
+									QueryResult.append("HeatDuty: " + "\n");
+									QueryResult.append(placeholder + getItem(HeatDuties,0) + "\n");
+										
+						
+									QueryResult.append("Input_Flows: "  + "\n");
+									QueryResult.append(placeholder + getItem(Input_ma,1) + "\n");
+									QueryResult.append(placeholder + getItem(Input_ma,2) + "\n");	
+									QueryResult.append(placeholder + getItem(Input_ma,5) + "\n");
+									QueryResult.append(placeholder  + getItem(Input_ma,7) + "\n");
+									
+									QueryResult.append("Input_Flows_Rate: " + "\n");
+									QueryResult.append(placeholder + getItem(Input_Flow,1) + "\n");
+									QueryResult.append(placeholder + getItem(Input_Flow,2) + "\n");	
+									QueryResult.append(placeholder + getItem(Input_Flow,5) + "\n");
+									QueryResult.append(placeholder  + getItem(Input_Flow,7) + "\n");
+									
+									QueryResult.append("Output_Flows: " + "\n");
+									QueryResult.append(placeholder + getItem(Output_ma,2) + "\n");
+
+									QueryResult.append(placeholder + getItem(Output_ma,3) + "\n");	
+								
+									
+									QueryResult.append("Output_Flows_Rate: " + "\n");
+									QueryResult.append(placeholder+ getItem(Output_Flow,2) + "\n");
+
+									QueryResult.append(placeholder + getItem(Output_Flow,3) + "\n");								
+									
+									QueryResult.append("=======================================\n");
+									
+									
+									
+									/*
+									QueryResult.append("Device: " + getItem(Devices,1) + "\n");
+									QueryResult.append("Connectors:  " + getItem(Connectors,1) + "\n");
+									QueryResult.append(placeholder + getItem(Connectors,2) + "\n");
+									QueryResult.append(placeholder + getItem(Connectors,5) + "\n");
+									
+									QueryResult.append("Coordinate_X: " + getItem(X,1) + "\n");
+									QueryResult.append("Coordinate_Y: " + getItem(Y,1) + "\n");
+
+									QueryResult.append("Inputs: " + getItem(Inputs,0) + "\n");
+									QueryResult.append(placeholder + getItem(Inputs,1) + "\n");
+									 
+									QueryResult.append("Outputs: " + getItem(Outputs,1) + "\n");
+									
+									QueryResult.append("Reaction_NetWork: " + getItem(Reaction_NetWork,1) + "\n");
+									
+									
+									QueryResult.append("HeatDuty: " + getItem(HeatDuties,1) + "\n");
+										
+						
+									QueryResult.append("Input_Flows: " + getItem(Input_ma,0) + "\n");
+									QueryResult.append(placeholder + getItem(Input_ma,3) + "\n");	
+									QueryResult.append(placeholder + getItem(Input_ma,4) + "\n");
+									QueryResult.append(placeholder  + getItem(Input_ma,6) + "\n");
+									
+									QueryResult.append("Input_Flows_Rate: " + getItem(Input_Flow,0) + "\n");
+									QueryResult.append(placeholder + getItem(Input_Flow,3) + "\n");	
+									QueryResult.append(placeholder + getItem(Input_Flow,4) + "\n");
+									QueryResult.append(placeholder  + getItem(Input_Flow,6) + "\n");
+									
+									QueryResult.append("Output_Flows: " + getItem(Output_ma,0) + "\n");
+									QueryResult.append(placeholder + getItem(Input_ma,1) + "\n");	
+								
+									
+									QueryResult.append("Output_Flows_Rate: " + getItem(Output_Flow,0) + "\n");
+									QueryResult.append(placeholder + getItem(Output_Flow,1) + "\n");
+									
+									*/
+									
+									
+									
+									QueryResult.append("Device: " + "\n");
+									
+									QueryResult.append(placeholder + getItem(Devices,1) + "\n");
+									
+									QueryResult.append("Connectors:  "+ "\n");
+									QueryResult.append(placeholder + getItem(Connectors,1) + "\n");
+									
+									
+									QueryResult.append(placeholder + getItem(Connectors,3) + "\n");
+									QueryResult.append(placeholder + getItem(Connectors,5) + "\n");
+									
+									QueryResult.append("Coordinate_X: " + getItem(X,1) + "\n");
+									QueryResult.append("Coordinate_Y: " + getItem(Y,1) + "\n");
+
+									QueryResult.append("Inputs: "+ "\n");
+									QueryResult.append(placeholder +   getItem(Inputs,0) + "\n");
+									QueryResult.append(placeholder + getItem(Inputs,1) + "\n");
+									 
+									QueryResult.append("Outputs: "  + "\n");
+									QueryResult.append(placeholder + getItem(Outputs,1) + "\n");
+									
+									QueryResult.append("Reaction_NetWork: " + "\n");
+									QueryResult.append(placeholder + getItem(Reaction_NetWork,1) + "\n");
+									
+									QueryResult.append("HeatDuty: " + "\n");
+									QueryResult.append(placeholder + getItem(HeatDuties,1) + "\n");
+										
+						
+									QueryResult.append("Input_Flows: "  + "\n");
+									QueryResult.append(placeholder + getItem(Input_ma,0) + "\n");
+									QueryResult.append(placeholder + getItem(Input_ma,3) + "\n");	
+									QueryResult.append(placeholder + getItem(Input_ma,4) + "\n");
+									QueryResult.append(placeholder  + getItem(Input_ma,6) + "\n");
+									
+									QueryResult.append("Input_Flows_Rate: " + "\n");
+									QueryResult.append(placeholder + getItem(Input_Flow,0) + "\n");
+									QueryResult.append(placeholder + getItem(Input_Flow,3) + "\n");	
+									QueryResult.append(placeholder + getItem(Input_Flow,4) + "\n");
+									QueryResult.append(placeholder  + getItem(Input_Flow,6) + "\n");
+									
+									QueryResult.append("Output_Flows: " + "\n");
+									QueryResult.append(placeholder + getItem(Output_ma,0) + "\n");
+
+									QueryResult.append(placeholder + getItem(Output_ma,1) + "\n");	
+								
+									
+									QueryResult.append("Output_Flows_Rate: " + "\n");
+									QueryResult.append(placeholder+ getItem(Output_Flow,0) + "\n");
+
+									QueryResult.append(placeholder + getItem(Output_Flow,1) + "\n");	
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									/*
+									
+	QueryResult.append("Device"+ "|---------|" + "HasConnector"+ "|---------|" +"X_coordinate"+ "|---------|" +"Y_coordinate"+ "|---------|" + "Input" + "|---------|" + "Output"+ "|---------|"
+											+ "HasReactionNetwork"+ "|---------|" + "HasHeatDuty"+ "|---------|" +"InputFlowrate"+ "|---------|" + "OutputFlowrate"+ "|---------|" + "Input_Material"+ "|---------|" + "Output_Material" );								
+	QueryResult.append("\n");								
+	QueryResult.append(getItem(Devices,0)+ "|---------|" + getItem(Connectors,0)+ "|---------|" + getItem(X,0)+ "|---------|" + getItem(Y,0)+ "|---------|" + getItem(Inputs,0)+ "|---------|" + getItem(Outputs,0)+ "|---------|"
+	+ getItem(Reaction_NetWork,0)+ "|---------|" + getItem(HeatDuties,0)+ "|---------|" + getItem(Input_Flow,0)+ "|---------|" + getItem(Output_Flow,0)+ "|---------|" + getItem(Input_ma,0)+ "|---------|" +  getItem(Output_ma,0) );
+									
+	QueryResult.append("\n");
+	QueryResult.append(getItem(Devices,0)+ "|---------|" + getItem(Connectors,2)+ "|---------|" + getItem(X,0)+ "|---------|" + getItem(Y,0)+ "|---------|" + getItem(Inputs,1)+ "|---------|" + getItem(Outputs,1)+ "|---------|"
+	+ getItem(Reaction_NetWork,0)+ "|---------|" + getItem(HeatDuties,1)+ "|---------|" + getItem(Input_Flow,1)+ "|---------|" + getItem(Output_Flow,1)+ "|---------|" + getItem(Input_ma,1)+ "|---------|" +  getItem(Output_ma,0) );
+	
+	QueryResult.append("\n");
+	QueryResult.append(getItem(Devices,0)+ "|---------|" + getItem(Connectors,4)+ "|---------|" + getItem(X,0)+ "|---------|" + getItem(Y,0)+ "|---------|" + getItem(Inputs,3)+ "|---------|" + getItem(Outputs,3)+ "|---------|"
+	+ getItem(Reaction_NetWork,0)+ "|---------|" + getItem(HeatDuties,2)+ "|---------|" + getItem(Input_Flow,0)+ "|---------|" + getItem(Output_Flow,2)+ "|---------|" + getItem(Input_ma,2)+ "|---------|" +  getItem(Output_ma,0) );
+	
+	QueryResult.append("\n");
+	QueryResult.append(getItem(Devices,0)+ "|---------|" + getItem(Connectors,7)+ "|---------|" + getItem(X,0)+ "|---------|" + getItem(Y,0)+ "|---------|" + getItem(Inputs,4)+ "|---------|" + getItem(Outputs,4)+ "|---------|"
+	+ getItem(Reaction_NetWork,0)+ "|---------|" + getItem(HeatDuties,3)+ "|---------|" + getItem(Input_Flow,4)+ "|---------|" + getItem(Output_Flow,3)+ "|---------|" + getItem(Input_ma,3)+ "|---------|" +  getItem(Output_ma,4) );
+	
+	QueryResult.append("\n");
+	
+	QueryResult.append(getItem(Devices,1)+ "|---------|" + getItem(Connectors,1)+ "|---------|" + getItem(X,1)+ "|---------|" + getItem(Y,1)+ "|---------|" + getItem(Inputs,0)+ "|---------|" + getItem(Outputs,5)+ "|---------|"
+			+ getItem(Reaction_NetWork,1)+ "|---------|" + getItem(HeatDuties,4)+ "|---------|" + getItem(Input_Flow,4)+ "|---------|" + getItem(Output_Flow,4)+ "|---------|" + getItem(Input_ma,4)+ "|---------|" +  getItem(Output_ma,4) );
+			
+			QueryResult.append("\n");
+			
+	QueryResult.append(getItem(Devices,1)+ "|---------|" + getItem(Connectors,3)+ "|---------|" + getItem(X,1)+ "|---------|" + getItem(Y,1)+ "|---------|" + getItem(Inputs,1)+ "|---------|" + getItem(Outputs,4)+ "|---------|"
+					+ getItem(Reaction_NetWork,0)+ "|---------|" + getItem(HeatDuties,5)+ "|---------|" + getItem(Input_Flow,4)+ "|---------|" + getItem(Output_Flow,5)+ "|---------|" + getItem(Input_ma,5)+ "|---------|" +  getItem(Output_ma,4) );
+					
+					QueryResult.append("\n");
+					
+	QueryResult.append(getItem(Devices,1)+ "|---------|" + getItem(Connectors,5)+ "|---------|" + getItem(X,1)+ "|---------|" + getItem(Y,1)+ "|---------|" + getItem(Inputs,2)+ "|---------|" + getItem(Outputs,4)+ "|---------|"
+							+ getItem(Reaction_NetWork,0)+ "|---------|" + getItem(HeatDuties,6)+ "|---------|" + getItem(Input_Flow,4)+ "|---------|" + getItem(Output_Flow,6)+ "|---------|" + getItem(Input_ma,6)+ "|---------|" +  getItem(Output_ma,4) );
+							
+							QueryResult.append("\n");
+							
+	QueryResult.append(getItem(Devices,1)+ "|---------|" + getItem(Connectors,7)+ "|---------|" + getItem(X,1)+ "|---------|" + getItem(Y,1)+ "|---------|" + getItem(Inputs,3)+ "|---------|" + getItem(Outputs,4)+ "|---------|"
+													+ getItem(Reaction_NetWork,0)+ "|---------|" + getItem(HeatDuties,0)+ "|---------|" + getItem(Input_Flow,4)+ "|---------|" + getItem(Output_Flow,4)+ "|---------|" + getItem(Input_ma,4)+ "|---------|" +  getItem(Output_ma,4) );
+													
+													QueryResult.append("\n"); */
+	
+									/*
+									
+									
 									Str = strTemp.split(",");
 									
 									for(int i=0; i< Str.length; i++){
@@ -131,6 +511,11 @@ public class QueryGuiNew extends javax.swing.JFrame{
 							        	QueryResult.append(newline);
 							        } 
 									GISLocation(Str);
+									
+									*/
+									
+									
+									
 								}
 								out.close();
 							}
@@ -164,7 +549,7 @@ public class QueryGuiNew extends javax.swing.JFrame{
 							         .addComponent(jLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
 							         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
 							         .addGroup(jPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-							        		 .addComponent(QueryContent, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)))
+							        		 .addComponent(QueryContent, javax.swing.GroupLayout.PREFERRED_SIZE, 1200, javax.swing.GroupLayout.PREFERRED_SIZE)))
 							 .addGroup(jPanelLayout.createSequentialGroup()
 									 .addGap(0, 1, 15)
 									 .addComponent(btnQuery)
@@ -173,7 +558,7 @@ public class QueryGuiNew extends javax.swing.JFrame{
 				                     .addGap(0, 2, 15)
 				                     .addComponent(btnClear))
 							 .addGap(0, 2, 15)
-							 .addComponent(QueryResult, javax.swing.GroupLayout.PREFERRED_SIZE, 650, javax.swing.GroupLayout.PREFERRED_SIZE))				  				 
+							 .addComponent(QueryResult, javax.swing.GroupLayout.PREFERRED_SIZE, 1600, javax.swing.GroupLayout.PREFERRED_SIZE))				  				 
 					 );
 			 
 			 jPanelLayout.setVerticalGroup(
@@ -182,13 +567,13 @@ public class QueryGuiNew extends javax.swing.JFrame{
 							 .addGroup(jPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 									 .addComponent(jLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
 			                         .addComponent(QueryContent, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-				                .addGap(1, 10, 100)
+				                .addGap(1, 100, 100)
 				              .addGroup(jPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 				            		  .addComponent(btnQuery)
 		            				  .addComponent(btnShowLocation)
 				                      .addComponent(btnClear)) 
-				              .addGap(1, 10, 100)
-				              .addComponent(QueryResult, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+				              .addGap(1, 1000, 1000)
+				              .addComponent(QueryResult, javax.swing.GroupLayout.PREFERRED_SIZE, 900, javax.swing.GroupLayout.PREFERRED_SIZE)
 				              .addGroup(jPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 				                       ) 
 				                )				                                                   
@@ -208,8 +593,10 @@ public class QueryGuiNew extends javax.swing.JFrame{
 		            .addGroup(layout.createSequentialGroup()
 		                .addContainerGap()
 		                .addComponent(jPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-		                .addGap(0, 10, 1000))
+		                .addGap(0, 1000, 1500))
 		        );
+		        jPanel.setSize(1200, 400);
+		        QueryResult.setSize(1200, 400);
 		        pack();
 		 }	 
 		 /** end of vidual design of the new query JFrame
@@ -247,4 +634,22 @@ public class QueryGuiNew extends javax.swing.JFrame{
 				GPS.flush();
 				GPS.close();		 		
 	 	}
+		 
+		 public static String getItem(Set<String> set, int index)
+		 {
+			 String result = null;
+			 int counter = 0;
+			 for(String item : set)
+			 {
+				 if(counter == index)
+				 {
+					 result = item;
+				 }
+				 
+				 counter++;
+			 }
+			 
+			return result;
+		 }
+		 
 }

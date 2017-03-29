@@ -678,7 +678,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
   //button for query (15-04-2016))
     final JTextField querylayer = new JTextField();
     querylayer.setAlignmentX(Component.LEFT_ALIGNMENT);
-    querylayer.setMaximumSize(new Dimension(220, 25));
+    querylayer.setMaximumSize(new Dimension(800, 25));
     querylayer.setEditable(true);
     
     /***************CREATE BUTTONS STARTS*****************************************************************************************/
