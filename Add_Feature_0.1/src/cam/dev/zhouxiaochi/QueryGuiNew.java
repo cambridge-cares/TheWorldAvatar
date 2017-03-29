@@ -67,7 +67,7 @@ public class QueryGuiNew extends javax.swing.JFrame{
 			 areaScrollPane.setVerticalScrollBarPolicy(
 			                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 			 areaScrollPane.setPreferredSize(new Dimension(600, 600));
-			 
+			// this.getContentPane().add(areaScrollPane);
 			 setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		//	 jPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Natural Language Query  --Powered by J-Park Simulator", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14)));
 			 jPanel.setSize(1200, 400);
@@ -515,7 +515,6 @@ public class QueryGuiNew extends javax.swing.JFrame{
 									*/
 									
 									
-									
 								}
 								out.close();
 							}
@@ -558,7 +557,7 @@ public class QueryGuiNew extends javax.swing.JFrame{
 				                     .addGap(0, 2, 15)
 				                     .addComponent(btnClear))
 							 .addGap(0, 2, 15)
-							 .addComponent(QueryResult, javax.swing.GroupLayout.PREFERRED_SIZE, 1600, javax.swing.GroupLayout.PREFERRED_SIZE))				  				 
+							 .addComponent(areaScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 1600, javax.swing.GroupLayout.PREFERRED_SIZE))				  				 
 					 );
 			 
 			 jPanelLayout.setVerticalGroup(
@@ -573,7 +572,7 @@ public class QueryGuiNew extends javax.swing.JFrame{
 		            				  .addComponent(btnShowLocation)
 				                      .addComponent(btnClear)) 
 				              .addGap(1, 1000, 1000)
-				              .addComponent(QueryResult, javax.swing.GroupLayout.PREFERRED_SIZE, 900, javax.swing.GroupLayout.PREFERRED_SIZE)
+				              .addComponent(areaScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 900, javax.swing.GroupLayout.PREFERRED_SIZE)
 				              .addGroup(jPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 				                       ) 
 				                )				                                                   
@@ -596,7 +595,7 @@ public class QueryGuiNew extends javax.swing.JFrame{
 		                .addGap(0, 1000, 1500))
 		        );
 		        jPanel.setSize(1200, 400);
-		        QueryResult.setSize(1200, 400);
+		        areaScrollPane.setSize(1200, 400);
 		        pack();
 		 }	 
 		 /** end of vidual design of the new query JFrame
