@@ -37,3 +37,5 @@ V-104#decanter
 VA-101#valve
 VA-102#valve
 VA-103#valve
+S-101#splitter
+S-102#splitter

@@ -19,7 +19,7 @@ import cam.dev.zhouxiaochi.OWLReader.Device;
 public class PointObjectsGenerator {
 
 	public static String[] layers = {"Load_Point","Bus_Coupler","EHT_Station","UHT_Station","HT_Station","LT_Station"};
-	public static String Url_Base = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Test_Point/FeatureServer/";
+	public static String Url_Base = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST024/FeatureServer/";
 	
 	public static String[] files;
 	

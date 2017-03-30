@@ -288,12 +288,12 @@ public class JParkSim {
 
 // dynamic map layer for the emission
 ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
-            "http://localhost:6080/arcgis/rest/services/emission/MapServer");
+            "http://localhost:6443/arcgis/rest/services/emission/MapServer");
                 layers.add(emissionLayer);
                 
               //add dynamic map layer for the sensitivity bar chart
                 ArcGISDynamicMapServiceLayer dispersionLayer = new ArcGISDynamicMapServiceLayer(
-                        "http://localhost:6080/arcgis/rest/services/gasdispersion/MapServer");
+                        "http://localhost:6443/arcgis/rest/services/gasdispersion/MapServer");
                             layers.add(dispersionLayer);
     
                 
@@ -423,12 +423,12 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     
     //add dynamic map layer for the opex bar chart
     ArcGISDynamicMapServiceLayer highwayLayer = new ArcGISDynamicMapServiceLayer(
-            "http://localhost:6080/arcgis/rest/services/opex/MapServer");
+            "http://localhost:6443/arcgis/rest/services/opex/MapServer");
                 layers.add(highwayLayer);
                 
               //add dynamic map layer for the dispersion bar chart
                 ArcGISDynamicMapServiceLayer dispersionanimationLayer = new ArcGISDynamicMapServiceLayer(
-                        " 	http://localhost:6080/arcgis/rest/services/dispersion/MapServer");
+                        " 	http://localhost:6443/arcgis/rest/services/dispersion/MapServer");
                             layers.add(dispersionanimationLayer);
                             
                             dispersionanimationLayer.addLayerInitializeCompleteListener(new LayerInitializeCompleteListener() {
@@ -470,7 +470,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
           
               //add dynamic map layer for the sensitivity bar chart
                 ArcGISDynamicMapServiceLayer sensitivityLayer = new ArcGISDynamicMapServiceLayer(
-                        "http://localhost:6080/arcgis/rest/services/sensitivity/MapServer");
+                        "http://localhost:6443/arcgis/rest/services/sensitivity/MapServer");
                             layers.add(sensitivityLayer);
                             
                             final GraphicsLayer graphicsLayer2 = new GraphicsLayer();

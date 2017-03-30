@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 
 import org.json.JSONException;
 
+import com.esri.core.io.UserCredentials;
 import com.esri.map.ArcGISFeatureLayer;
 
 /***********
@@ -29,8 +30,14 @@ public abstract class httpRequestBtnInfo implements BtnInfo{
 	public static final String APWWHRStr =  "APWWHRServlet/"; //URL OF SERVLET
 	public static final String query =  "QUERYServlet/"; //URL OF SERVLET
 
+	 
+	    
     ArcGISFeatureLayer[] completeLayerList;
-	public String emptyEditMsg;
+    ArcGISFeatureLayer[] activeLayerList;
+    
+    
+    
+    public String emptyEditMsg;
 	public String doneMsg;
 	public String errMsg;
 	public String appCallFlagStr;
@@ -50,6 +57,26 @@ public abstract class httpRequestBtnInfo implements BtnInfo{
 	public httpRequestBtnInfo(ArcGISFeatureLayer[] completeLayerList, String emptyEditMsg, String doneMsg,
 			String errMsg, String appCallFlagStr, ArrayList<String[]> editStack) {
 		super();
+		UserCredentials user = new UserCredentials();
+		user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp"); // Access secure feature layer service using login username and password
+		
+		ArcGISFeatureLayer R301 = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/R-301", user);
+		ArcGISFeatureLayer R302 = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/R-302", user);
+		ArcGISFeatureLayer T302 = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/T-302", user);
+		ArcGISFeatureLayer T202 = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/T-202", user);
+		ArcGISFeatureLayer M108 = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/M-108", user);
+		ArcGISFeatureLayer M208 = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/M-208", user);
+		ArcGISFeatureLayer T102 = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/T-102", user);
+		
+		activeLayerList =  new ArcGISFeatureLayer[7];
+		activeLayerList[0]=R301;
+		activeLayerList[1]=R302;
+		activeLayerList[2]=T302;
+		activeLayerList[3]=T202;
+		activeLayerList[4]=M108;
+		activeLayerList[5]=M208;
+		activeLayerList[6]=T102;
+		
 		this.completeLayerList = completeLayerList;
 		this.emptyEditMsg = emptyEditMsg;
 		this.doneMsg = doneMsg;
@@ -189,7 +216,7 @@ public abstract class httpRequestBtnInfo implements BtnInfo{
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				for (ArcGISFeatureLayer layer : completeLayerList) {
+				for (ArcGISFeatureLayer layer : activeLayerList) {
 					layer.requery();
 					layer.refresh();
 				}

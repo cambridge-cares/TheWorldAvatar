@@ -9807,7 +9807,7 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant3.owl#ValueOfPressureOfFW-302">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">4.0</system:numericalValue>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">4.02</system:numericalValue>
     </owl:NamedIndividual>
     
 
@@ -9927,7 +9927,7 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant3.owl#ValueOfTemperatureOf3-1">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">30.0</system:numericalValue>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">31</system:numericalValue>
     </owl:NamedIndividual>
     
 
@@ -10847,7 +10847,7 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant3.owl#ValueOfmolarF_3-1">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">30</system:numericalValue>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">33</system:numericalValue>
     </owl:NamedIndividual>
     
 

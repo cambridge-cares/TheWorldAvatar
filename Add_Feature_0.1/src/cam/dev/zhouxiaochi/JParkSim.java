@@ -231,7 +231,7 @@ public class JParkSim {
 
 // layer for the emission
 ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
-            "http://localhost:6080/arcgis/rest/services/emission/MapServer");
+            "http://localhost:6443/arcgis/rest/services/emission/MapServer");
                 layers.add(emissionLayer);
     
                 
@@ -294,14 +294,15 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     layer_name_map.put(targets[i],newLayer);
     completeLayerList[i + 1] = newLayer;
     
-    if(targets[i].toLowerCase().contains("storage"))
-    {
-        ArcGISFeatureLayer  tank = new ArcGISFeatureLayer(
-        		"http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST022/FeatureServer/117", user);
+  //  if(targets[i].toLowerCase().contains("storage"))
+  //  {
+       /*ArcGISFeatureLayer  tank = new ArcGISFeatureLayer(
+        		"http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/156", user);
         	    layer_name_map.put(targets[i],tank);
-        	    completeLayerList[i + 1] = tank;
-    }
-    
+        	    completeLayerList[completeLayerList.length -1] = tank;
+   // }    
+        	    createRenderer(layers, new ArcGISFeatureLayer [] {tank}, testColor);*/
+
     
     if(targets[i].toLowerCase().contains("landlot"))
     {
@@ -338,23 +339,17 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
    
    
     ArcGISDynamicMapServiceLayer highwayLayer = new ArcGISDynamicMapServiceLayer(
-            "http://localhost:6080/arcgis/rest/services/opex/MapServer");
+            "http://localhost:6443/arcgis/rest/services/opex/MapServer");
                 layers.add(highwayLayer);
           
 
                 ArcGISDynamicMapServiceLayer sensitivityLayer = new ArcGISDynamicMapServiceLayer(
-                        "http://localhost:6080/arcgis/rest/services/sensitivity/MapServer");
+                        "http://localhost:6443/arcgis/rest/services/sensitivity/MapServer");
               
                 layers.add(sensitivityLayer);
                 
  
-                
-
-                            
-                            
-                            
-                            
-                            
+                        
                             
                             
                             
@@ -529,7 +524,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     		            		if(!current_value.contentEquals(previous_value))
     		            		{
     		            		 System.out.println(current_value  + "--" + previous_value);
-    		            		 System.out.println(name);
+    		            		 System.out.println("before= "+name);
     		            		 editedValue = current_value;
     		            		 editedName = name;
     		            		 
@@ -538,7 +533,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     		     				String lastone = modif[modif.length-1];
     		     				
     		     				String modifname = name.replace(("_"+lastone),("-"+lastone));	
-    		     				System.out.println(modifname);
+    		     				System.out.println("after= "+modifname);
     		            		 
     		     				
     		     				

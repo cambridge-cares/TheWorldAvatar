@@ -110,8 +110,8 @@ public class App {
 	    
 	}
 
-	 public static final String BASE_URL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/VERSION0_DEMO/FeatureServer";
-
+	 public static final String BASE_URL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer";
+	 
 																																	// url
 																																	// for
 																																	// Arcgis

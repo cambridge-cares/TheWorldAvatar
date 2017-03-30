@@ -51,7 +51,7 @@ public class OWLFileReader {
 	   if(children.item(j).getNodeName().contentEquals("system:numericalValue"))
 	   {
 		   result = children.item(j).getTextContent();
-		   System.out.println(result);
+		   //System.out.println(result);
 	   }
  
 	    

@@ -35,6 +35,7 @@ public class QueryGuiNew extends javax.swing.JFrame{
 		
 		public QueryGuiNew() {
 	        initComponentsNew();
+	        
 	    }		
 		
 		/**

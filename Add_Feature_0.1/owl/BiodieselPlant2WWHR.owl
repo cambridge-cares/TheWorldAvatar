@@ -120,6 +120,11 @@
         <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#R-203"/>
         <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#R-204"/>
         <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#R-205"/>
+        
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#S-201"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#S-202"/>
+        
+        
         <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#T-201"/>
         <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#T-202"/>
         <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/BiodieselPlant2WWHR.owl#T-203"/>

@@ -234,7 +234,7 @@ public class FeatureServiceUpdater {
          
           //get responce?
          if(returned!= null ){//=>YES!=>Process it!
-             System.out.println(returned.toString());
+             //System.out.println(returned.toString());
 
         	 JSONArray layers = returned.getJSONArray("layers");//extract JSONArray layers
         	 
@@ -245,7 +245,7 @@ public class FeatureServiceUpdater {
         			 //TODO: Might need to sifle through features in list in future
         		 if (layer.getString("name").equals(entityNameList[j])){//Does any layer name matches name in my update list?
         			 idList[j] = layer.getInt("id");//=>YES! => Record down the id, put in id array same place as before in name array 
-        		 System.out.println("Layer id"+ j +" value:"+idList[j]);    
+        		// System.out.println("Layer id"+ j +" value:"+idList[j]);    
         		 }
         		   }
         		 }
@@ -260,7 +260,7 @@ public class FeatureServiceUpdater {
            //System.out.println(pair.getKey() + " = " + pair.getValue());
            Map<String, String> parameters2Update = (Map<String, String>) pair.getValue();//get paramter list for each layer(entity)
            int idxEntity = (int) pair.getKey();//get idx in the name list for each layer(entity)
-  		 System.out.println("Entity id in namelist saved in map"+ idxEntity);    
+  		// System.out.println("Entity id in namelist saved in map"+ idxEntity);    
 
            JSONObject updateLayer = new JSONObject();
            updateLayer.put("id", idList[idxEntity]);
@@ -270,7 +270,7 @@ public class FeatureServiceUpdater {
            attributes.put("OBJECTID", objectID);
            for (Map.Entry<String, String> entry : parameters2Update.entrySet()) {
         	    attributes.put(entry.getKey(), entry.getValue()); //put each name value pair to attributes json object
-         		 System.out.println(entry.getKey()+":  "+ entry.getValue());    
+         		 //System.out.println(entry.getKey()+":  "+ entry.getValue());    
         	}
            
            updateFeature.put("attributes", attributes);
@@ -280,7 +280,7 @@ public class FeatureServiceUpdater {
            it.remove(); // avoids a ConcurrentModificationException
        }
 		parameters.add(new BasicNameValuePair("edits", updateLayers.toString()));//put query json into paramters
-		System.out.println("sent json"+updateLayers.toString());
+		//System.out.println("sent json"+updateLayers.toString());
 		
 		  JSONObject result = doSth2Feature("edits", 1, parameters);//get result
 
@@ -502,7 +502,7 @@ public class FeatureServiceUpdater {
 			System.out.println("Request Header:");
 
 			for (Header h : request.getAllHeaders())
-				System.out.println(h.toString());
+				//System.out.println(h.toString());
 
 			/////// debug:print out response
 
@@ -529,9 +529,9 @@ public class FeatureServiceUpdater {
 					result.append('\r');
 				}
 				rd.close();
-				System.out.println("response JSON:");
+				//System.out.println("response JSON:");
 
-				System.out.println(result.toString());
+				//System.out.println(result.toString());
 				JSONObject obj = new JSONObject(result.toString());
 				return obj;
 
@@ -565,7 +565,7 @@ public class FeatureServiceUpdater {
 	public JSONObject doSth2Fields(String option, int layerInd, List<NameValuePair> parameters) throws JSONException {
 		if (token == null) {
 			token = generateToken();
-			System.out.println("token acquired: " + token);
+			//System.out.println("token acquired: " + token);
 		}
 
 		if (!baseURL.contains("rest/")) {
@@ -622,7 +622,7 @@ public class FeatureServiceUpdater {
 
 		if (token == null) {
 			token = generateToken();
-			System.out.println("token acquired: " + token);
+			//System.out.println("token acquired: " + token);
 			parameters.add(new BasicNameValuePair("token", token));
 
 		}
@@ -817,7 +817,7 @@ public class FeatureServiceUpdater {
 	public void generateLayer(int numOfAttrs, LayerType layertype, Map<String, String[]> attrValueListsMap,
 			String newLayerName) throws JSONException {
 
-		System.out.println("Generating Layer with name: "+newLayerName);
+		//System.out.println("Generating Layer with name: "+newLayerName);
 		JSONObject mTemplateJSON;
 		if (token == null) {
 			token = generateToken();
@@ -829,7 +829,7 @@ public class FeatureServiceUpdater {
 			Map.Entry pair = (Map.Entry) it.next();
 
 			if (((String[]) pair.getValue()).length != numOfAttrs) {
-				System.out.println("Array for attributes are not of required length: " + numOfAttrs);
+				//System.out.println("Array for attributes are not of required length: " + numOfAttrs);
 				return;
 			}
 
@@ -987,8 +987,8 @@ public class FeatureServiceUpdater {
 		container.put("layers", containerLayerArr);
 		/// put our new one via update
 
-		System.out.println("data2Sent:");
-		System.out.println(container.toString());
+		//System.out.println("data2Sent:");
+		//System.out.println(container.toString());
 
 		parameters.add(new BasicNameValuePair(addDefinitionInputName, container.toString()));
 

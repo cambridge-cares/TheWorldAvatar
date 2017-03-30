@@ -48,7 +48,7 @@ public class APWOWHRServlet extends HttpServlet {
 	public static String httpReqCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/httpReqTestAP.CSV");   //address to write the .csv file where to checke the httpRequest message
 	public static String PrAPWOWHROUTCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPWOWHRoutCSV.CSV");
 	public static String APWOWHRINCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPWOWHRinCSV.CSV");
-	public static String runPythonCommand = new String("python C:/apache-tomcat-8.0.24/webapps/ROOTT/sample_static_running.py"); // ensure that python environment variable is set to python34
+	public static String runPythonCommand = new String("python C:/apache-tomcat-8.0.24/webapps/ROOT/sample_static_running.py"); // ensure that python environment variable is set to python34
 		
 	public static String BD_WOWHR_Sim = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/BD_WOWHR_Sim");
 	
