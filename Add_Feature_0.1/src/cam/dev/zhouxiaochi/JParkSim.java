@@ -130,7 +130,13 @@ public class JParkSim {
 		final static SimpleLineSymbol[] lineColors = {new SimpleLineSymbol(Color.blue, 5),
 				                                      new SimpleLineSymbol(Color.black, 5),
 				                                      new SimpleLineSymbol(Color.red, 5),
-				                                      new SimpleLineSymbol(Color.green, 5)
+				                                      new SimpleLineSymbol(Color.green, 5),
+				                                      new SimpleLineSymbol(Color.pink, 5),
+				                                      new SimpleLineSymbol(Color.darkGray, 5),
+				                                      new SimpleLineSymbol(Color.cyan, 5)
+				                                      
+				                                      
+				                                      
 				                                      };
 		
 	 //   final static SimpleMarkerSymbol  = new SimpleMarkerSymbol(Color.red, 15, SimpleMarkerSymbol.Style.CROSS);
@@ -256,10 +262,28 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     
     ArcGISFeatureLayer[] linelayers = new    ArcGISFeatureLayer[4];
     
-    for(int idxLayer = 0; idxLayer < linelayers.length; idxLayer++){
-    linelayers[idxLayer] = new ArcGISFeatureLayer(App.BASE_URL+"/"+idxLayer, user);
+    for(int idxLayer = 0; idxLayer < linelayers.length ;  idxLayer++){
+    	int idx = idxLayer + 1;
+    linelayers[idxLayer] = new ArcGISFeatureLayer(App.BASE_URL+"/"+ idx, user);
     }
  
+    
+    ArcGISFeatureLayer[] trasmissionlines = new ArcGISFeatureLayer[7];
+    
+    for(int num = 0; num < 7;num++ )
+    {
+    	int idex = 157 + num;
+    	trasmissionlines[num] = new ArcGISFeatureLayer(App.BASE_URL+"/"  + idex, user);
+    }
+    
+    ArcGISFeatureLayer[] backups = new ArcGISFeatureLayer[4];
+    for(int n = 0 ; n < 4 ; n++)
+    {
+    	int index = 5 + n;
+    	backups[n] = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/Backup/FeatureServer/" + index,user);
+    }
+    
+    
     ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST022/FeatureServer/buildings", user);    // testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/9", user);
 
     ArcGISFeatureLayer[] pointlayers = new    ArcGISFeatureLayer[PointObjectsGenerator.layers.length];
@@ -275,9 +299,9 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
  //  ArcGISFeatureLayer[] completeLayerList =  {testLayer};
  //  ArcGISFeatureLayer[] completeLayerList =  new ArcGISFeatureLayer[targets.length + 5 + PointObjectsGenerator.layers.length];
    
-   ArcGISFeatureLayer[] completeLayerList =  new ArcGISFeatureLayer[targets.length + linelayers.length + PointObjectsGenerator.layers.length + 1];
+   ArcGISFeatureLayer[] completeLayerList =  new ArcGISFeatureLayer[targets.length + linelayers.length + PointObjectsGenerator.layers.length + backups.length +trasmissionlines.length + 2];
    
-
+   
    
    
    completeLayerList[0] = buildinglayer;
@@ -332,10 +356,28 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
    }
     
    
+   for (int num = 0 ; num < trasmissionlines.length ; num++)
+   {
+     completeLayerList[num + targets.length + linelayers.length + pointlayers.length + 1] = trasmissionlines[num];
+     createRenderer(layers, new ArcGISFeatureLayer [] {trasmissionlines[num]},lineColors[num]);   
+   }
    
    
+   for(int i = 0; i < backups.length ; i++)
+   {
+
+	   completeLayerList[i + targets.length + linelayers.length + pointlayers.length + trasmissionlines.length + 1] = backups[i];
+	     createRenderer(layers, new ArcGISFeatureLayer [] {backups[i]},testColor);  
+	   
+   }
    
    
+   ArcGISFeatureLayer waterline = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/water_line/FeatureServer/0",user);
+   completeLayerList[completeLayerList.length - 1] = waterline;
+   createRenderer(layers, new ArcGISFeatureLayer[]  { waterline },lineColors[3]);
+   
+  // 	completeLayerList[completeLayerList.length - 1] = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/water_line/FeatureServer/0",user);
+  // 	createRenderer(layers, new ArcGISFeatureLayer [] { new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/water_line/FeatureServer/0",user) },lineColors[3]); 
    
     ArcGISDynamicMapServiceLayer highwayLayer = new ArcGISDynamicMapServiceLayer(
             "http://localhost:6080/arcgis/rest/services/opex/MapServer");
@@ -434,7 +476,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
             .toArray(String[]::new);
 	
     
-   for(int i = 0 ; i < completeLayerList.length; i++)
+   for(int i = 0 ; i < all_layer_string.length; i++)
    {
 	   editlayer.put(all_layer_string[i],completeLayerList[i]);
    }

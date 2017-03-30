@@ -8344,7 +8344,7 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant3.owl#ValueOfF_SW-301">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">839.9985</system:numericalValue>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">32323839.9985</system:numericalValue>
     </owl:NamedIndividual>
     
 
@@ -10847,7 +10847,7 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant3.owl#ValueOfmolarF_3-1">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">30</system:numericalValue>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">33</system:numericalValue>
     </owl:NamedIndividual>
     
 
