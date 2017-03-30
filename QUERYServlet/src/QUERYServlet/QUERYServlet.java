@@ -73,8 +73,22 @@ public class QUERYServlet extends HttpServlet {
 		case ("reactor"):					
             System.out.println("start extracting information.");
 		    System.out.println(QueryT[0]);
-		    final String Reactor=ReactorQuery.executeReactorQuery().toString();	
-		    response.setContentLength(Reactor.length());
+		    String Reactor =  ReactorQuery.executeReactorQuery().toString();	
+		    System.out.println("Result is ----> " + Reactor);
+		    /*
+		    String Reactor = ReactorQuery.QueryResult;
+		    while(Reactor==null)
+		    {
+		    	try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		    	Reactor = ReactorQuery.QueryResult;
+		    }
+		    */
+  		    response.setContentLength(Reactor.length());
 		    response.getOutputStream().write(Reactor.getBytes());		    
 		    response.getOutputStream().flush();
 		    response.getOutputStream().close();

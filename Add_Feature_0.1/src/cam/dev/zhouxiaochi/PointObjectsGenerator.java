@@ -27,7 +27,13 @@ public class PointObjectsGenerator {
 	 
 
  
- 	//	layer_factory(0,"Transformer",null,"Transformer",false);
+
+        layer_factory(0,"Load",null,"Load_Point",true); // Load Points
+        layer_factory(0,"Coupler",null,"Bus_Coupler",false); // Load Points
+        layer_factory(0,"Transformer","^.*EHT.*$","EHT_Station",true);
+        layer_factory(0,"Transformer","^.*UHT.*$","UHT_Station",true);
+        layer_factory(0,"Transformer","^.*HT.*$","HT_Station",true);
+        layer_factory(0,"Transformer","^.*LT.*$","LT_Station",true);        
 
 		
 	}

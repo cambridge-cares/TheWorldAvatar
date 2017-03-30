@@ -34,7 +34,7 @@ import org.json.JSONObject;
  * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  * Second tier : DoSth2Feature, DoSth2Fields, DoSth2Service.
  * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- * Third tier: deleteFeaturesFromTable, deleteAllFeaturesInTable, addFields2Table, deleteFieldsFromTable, deleteLayers, deleteAllLayers, generateLayer, isLayerExist, areLayerExist
+ * Third tier: deleteFeaturesFromTable, updateFeaturesInTable, deleteAllFeaturesInTable, addFields2Table, deleteFieldsFromTable, deleteLayers, deleteAllLayers, generateLayer, isLayerExist, areLayerExist
  * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  * utility functions: initParameters, generateToken
  * 
@@ -738,7 +738,7 @@ public class FeatureServiceUpdater {
 		parameters.add(new BasicNameValuePair(deleteDefinitionInputName, wrapper.toString()));
 
 		JSONObject result = doSth2Service("delete", parameters);
-		return (result.has("success"));
+		return (result==null ||result.has("success"));
 	}
 
 	public boolean isLayerExist(String layerName) throws JSONException {
@@ -854,25 +854,44 @@ public class FeatureServiceUpdater {
 		if(PolygonTemplateMother == null) {
 			System.out.println("start request for Polygon template");
 
-			PolygonTemplateMother = httpRequest(PolygonTemplateServiceURL, "application/x-www-form-urlencoded; charset=utf-8",
-				parameters).getJSONArray("layers").getJSONObject(0);
+			JSONObject result = httpRequest(PolygonTemplateServiceURL, "application/x-www-form-urlencoded; charset=utf-8",
+				parameters);
+			if(result.getJSONArray("layers") !=null && result.getJSONArray("layers").getJSONObject(0)!=null ){
 
+				PolygonTemplateMother = result.getJSONArray("layers").getJSONObject(0);
+				} else {
+				System.out.println("ERR: can not retrive point layer template from "+ PointTemplateServiceURL);
+				return;
+				}
 		}
 		
 		if(PolylineTemplateMother == null) {
 			System.out.println("start request for Polyline template");
 
-			PolylineTemplateMother = httpRequest(PolylineTemplateServiceURL, "application/x-www-form-urlencoded; charset=utf-8",
-				parameters).getJSONArray("layers").getJSONObject(0);
+			JSONObject result = httpRequest(PolylineTemplateServiceURL, "application/x-www-form-urlencoded; charset=utf-8",
+				parameters);
+			if(result.getJSONArray("layers") !=null && result.getJSONArray("layers").getJSONObject(0)!=null ){
 
+				PolylineTemplateMother = result.getJSONArray("layers").getJSONObject(0);
+				} else {
+				System.out.println("ERR: can not retrive polyline layer template from "+ PolylineTemplateServiceURL);
+				return;
+				}
 		}
 		
 		if(PointTemplateMother == null) {
 			System.out.println("start request for Point template");
 
-			PointTemplateMother = httpRequest(PointTemplateServiceURL, "application/x-www-form-urlencoded; charset=utf-8",
-				parameters).getJSONArray("layers").getJSONObject(0);
+			JSONObject result = httpRequest(PointTemplateServiceURL, "application/x-www-form-urlencoded; charset=utf-8",
+				parameters);
+			
+			if(result.getJSONArray("layers") !=null && result.getJSONArray("layers").getJSONObject(0)!=null ){
 
+			 PointTemplateMother = result.getJSONArray("layers").getJSONObject(0);
+			} else {
+			System.out.println("ERR: can not retrive point layer template from "+ PointTemplateServiceURL);
+			return;
+			}
 		}
 		
 		
