@@ -79,7 +79,8 @@ public class QueryBtnInfo extends httpRequestBtnInfo{
 	 * Draw symbols for queried features.
 	 */
 	void callback(HttpURLConnection urlCon) throws IOException {
-		
+          
+		JOptionPane.showMessageDialog(null, "Query has been successfully performed!" );
 		InputStreamReader in = new InputStreamReader(urlCon.getInputStream());
 		final BufferedReader br = new BufferedReader(in);
 		String[] strTemp = null;

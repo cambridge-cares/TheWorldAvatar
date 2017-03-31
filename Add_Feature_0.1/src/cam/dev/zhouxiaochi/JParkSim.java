@@ -174,7 +174,7 @@ public class JParkSim {
 	//try to put new variable
 	
 	private GraphicsLayer graphicsLayer;
-	public static String GIS = new String("D:/JPS_Code_Test/GIS.CSV");    
+	public static String GIS = new String("GIS.CSV");    
 	private MultiPoint planes;
 	
 				
