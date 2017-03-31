@@ -25,7 +25,7 @@ public class QueryGuiNew extends javax.swing.JFrame{
 		/**This part of code took sample code from Ming Pan
 		 * author Li Zhou
 		 */
-		public static String GIS = new String("D:/JPS_Code_Test/GIS.CSV"); 
+		public static String GIS = new String("GIS.CSV"); 
 		private static final long serialVersionUID = 1L;
 		private final static String newline = "\n";
 		private javax.swing.JPanel jPanel;
@@ -129,7 +129,7 @@ public class QueryGuiNew extends javax.swing.JFrame{
 									final BufferedReader br = new BufferedReader(in);
 									String strTemp = null;								
 									
-									String[] Str = null;
+								//	String[] Str = null;
 									String[] StrI = null;								
 									
 									strTemp = br.readLine();
@@ -495,8 +495,8 @@ public class QueryGuiNew extends javax.swing.JFrame{
 													
 													QueryResult.append("\n"); */
 	
-									/*
 									
+									/*
 									
 									Str = strTemp.split(",");
 									
@@ -510,9 +510,24 @@ public class QueryGuiNew extends javax.swing.JFrame{
 							        	}	
 							        	QueryResult.append(newline);
 							        } 
-									GISLocation(Str);
 									
 									*/
+									String[] Str = new String[X.size()];
+									for(int i = 0; i < X.size();i++)
+									{
+										String x = getItem(X,i);
+										String y = getItem(Y,i);
+										Str[i] = x + "," + y;
+									}
+									
+									
+									
+									
+									
+									
+									GISLocation(Str);
+									
+									
 									
 									
 								}
@@ -603,6 +618,10 @@ public class QueryGuiNew extends javax.swing.JFrame{
 		 
 		 //extract the GIS Coordinate and return it
 		 public static void GISLocation(String[] String) throws IOException{
+			
+			    FileWriter GPS = null;  
+						   GPS = new FileWriter(GIS);
+			/*
 			 String[] Str = String;
 			 String[] StrI = null;
 			 String[] StrGIS = null;  //new string to store the GIS information 
@@ -627,9 +646,24 @@ public class QueryGuiNew extends javax.swing.JFrame{
 		    	        		GPS.append(",");
 		    	        		GPS.append(StrGISy[i]);
 		    	        	}
+		    	        	
+		    	        	
+		    	        	
 		    	        	GPS.append(newline);
 		         	}
 				}
+				
+				*/
+				
+				
+				for(String line : String)
+				{
+					GPS.append(line);
+					GPS.append(newline);
+				}
+				
+
+				
 				GPS.flush();
 				GPS.close();		 		
 	 	}

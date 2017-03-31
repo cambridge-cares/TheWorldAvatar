@@ -8462,7 +8462,7 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant3.owl#ValueOfHeatDutyOfR-301">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kW"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1161.2686</system:numericalValue>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1075.5476</system:numericalValue>
     </owl:NamedIndividual>
     
 
@@ -8472,7 +8472,7 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant3.owl#ValueOfHeatDutyOfR-302">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kW"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">431.869</system:numericalValue>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">366.87024</system:numericalValue>
     </owl:NamedIndividual>
     
 
@@ -10067,7 +10067,7 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant3.owl#ValueOfTemperatureOf3-23">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">48.35568749683915</system:numericalValue>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">49.12234729231888</system:numericalValue>
     </owl:NamedIndividual>
     
 
@@ -10995,7 +10995,7 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/BiodieselPlant3.owl#ValueOfmolarF_3-23">
         <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">94.43048408549177</system:numericalValue>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">86.56751830971977</system:numericalValue>
     </owl:NamedIndividual>
     
 
