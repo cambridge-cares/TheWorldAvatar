@@ -60,9 +60,9 @@ public abstract class httpRequestBtnInfo implements BtnInfo{
 		UserCredentials user = new UserCredentials();
 		user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp"); // Access secure feature layer service using login username and password
 		
-		ArcGISFeatureLayer R301 = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/R-301", user);
-		ArcGISFeatureLayer R302 = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/R-302", user);
-		ArcGISFeatureLayer T302 = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/T-302", user);
+		ArcGISFeatureLayer R301 = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/114?token=2VUSGcKBo69OQ74UCC3DqA9ZhUI7IIKCeMXv8PAEacxBmu4LIg49J127MlNipq2iNe5WMJM_reVU9KRWPAwd5AOS2yUaqvwTiH0ek1yiDnh9XwLHwDuDwMr2f7QBLKcBi35Z75wkokMUR14TKhPf0SDlA04PXAXjMTQlCB70PtO3aohnCchmst51fAxM5LRNGX2OjUYh3lz21a5hh3wAYrEZRzGidXCjNVKgGsFNQ4M.", user);
+		ArcGISFeatureLayer R302 = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/115?token=2VUSGcKBo69OQ74UCC3DqA9ZhUI7IIKCeMXv8PAEacxBmu4LIg49J127MlNipq2iNe5WMJM_reVU9KRWPAwd5AOS2yUaqvwTiH0ek1yiDnh9XwLHwDuDwMr2f7QBLKcBi35Z75wkokMUR14TKhPf0SDlA04PXAXjMTQlCB70PtO3aohnCchmst51fAxM5LRNGX2OjUYh3lz21a5hh3wAYrEZRzGidXCjNVKgGsFNQ4M.", user);
+		ArcGISFeatureLayer T302 = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/119?token=2VUSGcKBo69OQ74UCC3DqA9ZhUI7IIKCeMXv8PAEacxBmu4LIg49J127MlNipq2iNe5WMJM_reVU9KRWPAwd5AOS2yUaqvwTiH0ek1yiDnh9XwLHwDuDwMr2f7QBLKcBi35Z75wkokMUR14TKhPf0SDlA04PXAXjMTQlCB70PtO3aohnCchmst51fAxM5LRNGX2OjUYh3lz21a5hh3wAYrEZRzGidXCjNVKgGsFNQ4M.", user);
 		ArcGISFeatureLayer T202 = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/T-202", user);
 		ArcGISFeatureLayer M108 = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/M-108", user);
 		ArcGISFeatureLayer M208 = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/M-208", user);
@@ -216,7 +216,7 @@ public abstract class httpRequestBtnInfo implements BtnInfo{
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				for (ArcGISFeatureLayer layer : activeLayerList) {
+				for (ArcGISFeatureLayer layer : completeLayerList) {
 					layer.requery();
 					layer.refresh();
 				}

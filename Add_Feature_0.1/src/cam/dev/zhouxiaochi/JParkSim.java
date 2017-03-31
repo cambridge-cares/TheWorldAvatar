@@ -237,7 +237,7 @@ public class JParkSim {
 
 // layer for the emission
 ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
-            "http://localhost:6443/arcgis/rest/services/emission/MapServer");
+            "http://localhost:6080/arcgis/rest/services/emission/MapServer");
                 layers.add(emissionLayer);
     
                 
@@ -285,7 +285,11 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     
     
     ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST022/FeatureServer/buildings", user);    // testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/9", user);
-
+    
+    ArcGISFeatureLayer R301layer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/114?token=2VUSGcKBo69OQ74UCC3DqA9ZhUI7IIKCeMXv8PAEacxBmu4LIg49J127MlNipq2iNe5WMJM_reVU9KRWPAwd5AOS2yUaqvwTiH0ek1yiDnh9XwLHwDuDwMr2f7QBLKcBi35Z75wkokMUR14TKhPf0SDlA04PXAXjMTQlCB70PtO3aohnCchmst51fAxM5LRNGX2OjUYh3lz21a5hh3wAYrEZRzGidXCjNVKgGsFNQ4M.", user);
+    ArcGISFeatureLayer R302layer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/115?token=2VUSGcKBo69OQ74UCC3DqA9ZhUI7IIKCeMXv8PAEacxBmu4LIg49J127MlNipq2iNe5WMJM_reVU9KRWPAwd5AOS2yUaqvwTiH0ek1yiDnh9XwLHwDuDwMr2f7QBLKcBi35Z75wkokMUR14TKhPf0SDlA04PXAXjMTQlCB70PtO3aohnCchmst51fAxM5LRNGX2OjUYh3lz21a5hh3wAYrEZRzGidXCjNVKgGsFNQ4M.", user);
+    ArcGISFeatureLayer T302layer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/119?token=2VUSGcKBo69OQ74UCC3DqA9ZhUI7IIKCeMXv8PAEacxBmu4LIg49J127MlNipq2iNe5WMJM_reVU9KRWPAwd5AOS2yUaqvwTiH0ek1yiDnh9XwLHwDuDwMr2f7QBLKcBi35Z75wkokMUR14TKhPf0SDlA04PXAXjMTQlCB70PtO3aohnCchmst51fAxM5LRNGX2OjUYh3lz21a5hh3wAYrEZRzGidXCjNVKgGsFNQ4M.", user);
+    
     ArcGISFeatureLayer[] pointlayers = new    ArcGISFeatureLayer[PointObjectsGenerator.layers.length];
     
     for(int idxPointLayer = 0; idxPointLayer < PointObjectsGenerator.layers.length; idxPointLayer++){
@@ -299,9 +303,12 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
  //  ArcGISFeatureLayer[] completeLayerList =  {testLayer};
  //  ArcGISFeatureLayer[] completeLayerList =  new ArcGISFeatureLayer[targets.length + 5 + PointObjectsGenerator.layers.length];
    
-   ArcGISFeatureLayer[] completeLayerList =  new ArcGISFeatureLayer[targets.length + linelayers.length + PointObjectsGenerator.layers.length + backups.length +trasmissionlines.length + 2];
+   ArcGISFeatureLayer[] simList =  new ArcGISFeatureLayer[3];
+   simList[0] = R301layer;
+   simList[1] = R302layer;
+   simList[2] = T302layer;
    
-   
+   ArcGISFeatureLayer[] completeLayerList =  new ArcGISFeatureLayer[targets.length + linelayers.length + PointObjectsGenerator.layers.length + backups.length +trasmissionlines.length + 2]; 
    
    
    completeLayerList[0] = buildinglayer;
@@ -381,12 +388,12 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
   // 	createRenderer(layers, new ArcGISFeatureLayer [] { new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/water_line/FeatureServer/0",user) },lineColors[3]); 
    
     ArcGISDynamicMapServiceLayer highwayLayer = new ArcGISDynamicMapServiceLayer(
-            "http://localhost:6443/arcgis/rest/services/opex/MapServer");
+            "http://localhost:6080/arcgis/rest/services/opex/MapServer");
                 layers.add(highwayLayer);
           
 
                 ArcGISDynamicMapServiceLayer sensitivityLayer = new ArcGISDynamicMapServiceLayer(
-                        "http://localhost:6443/arcgis/rest/services/sensitivity/MapServer");
+                        "http://localhost:6080/arcgis/rest/services/sensitivity/MapServer");
               
                 layers.add(sensitivityLayer);
                 
@@ -792,7 +799,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 			           "OPALRT", editStack);
 			
 			//refresh
-		btnInfos[12] = new RefreshBtnInfo(layers, graphicsLayer, completeLayerList);
+		btnInfos[12] = new RefreshBtnInfo(layers, graphicsLayer, completeLayerList); ///simList
 
 	//call button factory to create buttons
 	ButtonFactory btnFac = new ButtonFactory(btnNameList, btnInfos);

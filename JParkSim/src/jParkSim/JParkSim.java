@@ -288,13 +288,15 @@ public class JParkSim {
 
 // dynamic map layer for the emission
 ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
-            "http://localhost:6443/arcgis/rest/services/emission/MapServer");
+            "http://10.25.188.100:6080/arcgis/rest/services/emission/MapServer");
                 layers.add(emissionLayer);
                 
               //add dynamic map layer for the sensitivity bar chart
                 ArcGISDynamicMapServiceLayer dispersionLayer = new ArcGISDynamicMapServiceLayer(
-                        "http://localhost:6443/arcgis/rest/services/gasdispersion/MapServer");
+                        "http://10.25.188.100:6080/arcgis/rest/services/gasdispersion/MapServer");
                             layers.add(dispersionLayer);
+                            
+                            ArcGISDynamicMapServiceLayer f = new ArcGISDynamicMapServiceLayer("");
     
                 
     // map centered on Jurong Island
@@ -423,12 +425,12 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     
     //add dynamic map layer for the opex bar chart
     ArcGISDynamicMapServiceLayer highwayLayer = new ArcGISDynamicMapServiceLayer(
-            "http://localhost:6443/arcgis/rest/services/opex/MapServer");
+            "http://10.25.188.100:6080/arcgis/rest/services/opex/MapServer");
                 layers.add(highwayLayer);
                 
               //add dynamic map layer for the dispersion bar chart
                 ArcGISDynamicMapServiceLayer dispersionanimationLayer = new ArcGISDynamicMapServiceLayer(
-                        " 	http://localhost:6443/arcgis/rest/services/dispersion/MapServer");
+                        " 	http://10.25.188.100:6080/arcgis/rest/services/dispersion/MapServer");
                             layers.add(dispersionanimationLayer);
                             
                             dispersionanimationLayer.addLayerInitializeCompleteListener(new LayerInitializeCompleteListener() {
@@ -470,7 +472,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
           
               //add dynamic map layer for the sensitivity bar chart
                 ArcGISDynamicMapServiceLayer sensitivityLayer = new ArcGISDynamicMapServiceLayer(
-                        "http://localhost:6443/arcgis/rest/services/sensitivity/MapServer");
+                        "http://10.25.188.100:6080/arcgis/rest/services/sensitivity/MapServer");
                             layers.add(sensitivityLayer);
                             
                             final GraphicsLayer graphicsLayer2 = new GraphicsLayer();
