@@ -60,7 +60,7 @@ public abstract class httpRequestBtnInfo implements BtnInfo{
 		UserCredentials user = new UserCredentials();
 		user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp"); // Access secure feature layer service using login username and password
 		
-		ArcGISFeatureLayer R301 = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/114?token=2VUSGcKBo69OQ74UCC3DqA9ZhUI7IIKCeMXv8PAEacxBmu4LIg49J127MlNipq2iNe5WMJM_reVU9KRWPAwd5AOS2yUaqvwTiH0ek1yiDnh9XwLHwDuDwMr2f7QBLKcBi35Z75wkokMUR14TKhPf0SDlA04PXAXjMTQlCB70PtO3aohnCchmst51fAxM5LRNGX2OjUYh3lz21a5hh3wAYrEZRzGidXCjNVKgGsFNQ4M.", user);
+		/*ArcGISFeatureLayer R301 = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/114?token=2VUSGcKBo69OQ74UCC3DqA9ZhUI7IIKCeMXv8PAEacxBmu4LIg49J127MlNipq2iNe5WMJM_reVU9KRWPAwd5AOS2yUaqvwTiH0ek1yiDnh9XwLHwDuDwMr2f7QBLKcBi35Z75wkokMUR14TKhPf0SDlA04PXAXjMTQlCB70PtO3aohnCchmst51fAxM5LRNGX2OjUYh3lz21a5hh3wAYrEZRzGidXCjNVKgGsFNQ4M.", user);
 		ArcGISFeatureLayer R302 = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/115?token=2VUSGcKBo69OQ74UCC3DqA9ZhUI7IIKCeMXv8PAEacxBmu4LIg49J127MlNipq2iNe5WMJM_reVU9KRWPAwd5AOS2yUaqvwTiH0ek1yiDnh9XwLHwDuDwMr2f7QBLKcBi35Z75wkokMUR14TKhPf0SDlA04PXAXjMTQlCB70PtO3aohnCchmst51fAxM5LRNGX2OjUYh3lz21a5hh3wAYrEZRzGidXCjNVKgGsFNQ4M.", user);
 		ArcGISFeatureLayer T302 = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/119?token=2VUSGcKBo69OQ74UCC3DqA9ZhUI7IIKCeMXv8PAEacxBmu4LIg49J127MlNipq2iNe5WMJM_reVU9KRWPAwd5AOS2yUaqvwTiH0ek1yiDnh9XwLHwDuDwMr2f7QBLKcBi35Z75wkokMUR14TKhPf0SDlA04PXAXjMTQlCB70PtO3aohnCchmst51fAxM5LRNGX2OjUYh3lz21a5hh3wAYrEZRzGidXCjNVKgGsFNQ4M.", user);
 		ArcGISFeatureLayer T202 = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/T-202", user);
@@ -75,7 +75,7 @@ public abstract class httpRequestBtnInfo implements BtnInfo{
 		activeLayerList[3]=T202;
 		activeLayerList[4]=M108;
 		activeLayerList[5]=M208;
-		activeLayerList[6]=T102;
+		activeLayerList[6]=T102;*/
 		
 		this.completeLayerList = completeLayerList;
 		this.emptyEditMsg = emptyEditMsg;
@@ -216,10 +216,19 @@ public abstract class httpRequestBtnInfo implements BtnInfo{
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				for (ArcGISFeatureLayer layer : completeLayerList) {
+				
+				JParkSim.completeLayerList[17].requery();
+				JParkSim.completeLayerList[17].refresh();
+				JParkSim.completeLayerList[12].requery();
+				JParkSim.completeLayerList[12].refresh();
+				JParkSim.completeLayerList[13].requery();
+				JParkSim.completeLayerList[13].refresh();
+				
+				/*for (ArcGISFeatureLayer layer : completeLayerList) {
+					
 					layer.requery();
 					layer.refresh();
-				}
+				}*/
 			}
 		};
 		

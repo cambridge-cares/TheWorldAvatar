@@ -199,7 +199,7 @@ public class JParkSim {
  	public static String httpStringCSV1 = new String("D:/httpReq1.CSV"); // (ZL-151203) investigating structure of DataOutputStream object
  	public static String httpStringCSV2 = new String("D:/httpReq2.CSV"); // (ZL-151203) investigating structure of DataOutputStream object
  	
- 	
+ 	public static ArcGISFeatureLayer[] completeLayerList;
 
  	
 	
@@ -276,6 +276,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     	trasmissionlines[num] = new ArcGISFeatureLayer(App.BASE_URL+"/"  + idex, user);
     }
     
+    
     ArcGISFeatureLayer[] backups = new ArcGISFeatureLayer[4];
     for(int n = 0 ; n < 4 ; n++)
     {
@@ -284,7 +285,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     }
     
     
-    ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST022/FeatureServer/buildings", user);    // testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/9", user);
+    ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST022/FeatureServer/131/", user);    // testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/9", user);
     
     ArcGISFeatureLayer R301layer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/114?token=2VUSGcKBo69OQ74UCC3DqA9ZhUI7IIKCeMXv8PAEacxBmu4LIg49J127MlNipq2iNe5WMJM_reVU9KRWPAwd5AOS2yUaqvwTiH0ek1yiDnh9XwLHwDuDwMr2f7QBLKcBi35Z75wkokMUR14TKhPf0SDlA04PXAXjMTQlCB70PtO3aohnCchmst51fAxM5LRNGX2OjUYh3lz21a5hh3wAYrEZRzGidXCjNVKgGsFNQ4M.", user);
     ArcGISFeatureLayer R302layer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/115?token=2VUSGcKBo69OQ74UCC3DqA9ZhUI7IIKCeMXv8PAEacxBmu4LIg49J127MlNipq2iNe5WMJM_reVU9KRWPAwd5AOS2yUaqvwTiH0ek1yiDnh9XwLHwDuDwMr2f7QBLKcBi35Z75wkokMUR14TKhPf0SDlA04PXAXjMTQlCB70PtO3aohnCchmst51fAxM5LRNGX2OjUYh3lz21a5hh3wAYrEZRzGidXCjNVKgGsFNQ4M.", user);
@@ -308,7 +309,25 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
    simList[1] = R302layer;
    simList[2] = T302layer;
    
-   ArcGISFeatureLayer[] completeLayerList =  new ArcGISFeatureLayer[targets.length + linelayers.length + PointObjectsGenerator.layers.length + backups.length +trasmissionlines.length + 2]; 
+
+   
+   // build a for loop of 170 item, repeat the following to lines 
+  
+ /*   for(int i=0; i<172;i++)
+   {
+	ArcGISFeatureLayer newlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/jpsimulator/FeatureServer/170/" , user);    // testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/9", user);
+   completeLayerList = new ArcGISFeatureLayer[1];
+   completeLayerList[0] = newlayer;
+   createRenderer(layers, new ArcGISFeatureLayer [] {newlayer}, testColor2);
+   
+   }
+   */
+   
+   
+   
+   
+   
+completeLayerList =  new ArcGISFeatureLayer[targets.length + linelayers.length + PointObjectsGenerator.layers.length + backups.length +trasmissionlines.length + 2]; 
    
    
    completeLayerList[0] = buildinglayer;
@@ -339,9 +358,11 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     {
     	 createRenderer(layers, new ArcGISFeatureLayer [] {newLayer}, landlot);
     }
+    
     else
     {	
     createRenderer(layers, new ArcGISFeatureLayer [] {newLayer}, testColor);
+   
     }
     
     
@@ -367,7 +388,19 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
    for (int num = 0 ; num < trasmissionlines.length ; num++)
    {
      completeLayerList[num + targets.length + linelayers.length + pointlayers.length + 1] = trasmissionlines[num];
-     createRenderer(layers, new ArcGISFeatureLayer [] {trasmissionlines[num]},lineColors[num]);   
+ System.out.println ("transmissionlines layer name= "+trasmissionlines[num]);
+ 
+     if(num==3)
+     {
+    	    createRenderer(layers, new ArcGISFeatureLayer [] {trasmissionlines[num]},testColor);    
+     }
+ 
+    
+    
+     else
+     {
+ 	    createRenderer(layers, new ArcGISFeatureLayer [] {trasmissionlines[num]},lineColors[num]);    
+     }
    }
    
    
@@ -382,7 +415,8 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
    
    ArcGISFeatureLayer waterline = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/water_line/FeatureServer/0",user);
    completeLayerList[completeLayerList.length - 1] = waterline;
-   createRenderer(layers, new ArcGISFeatureLayer[]  { waterline },lineColors[3]);
+   createRenderer(layers, new ArcGISFeatureLayer[]  { waterline },lineColors[3]);  
+   // end (329-419)
    
   // 	completeLayerList[completeLayerList.length - 1] = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/water_line/FeatureServer/0",user);
   // 	createRenderer(layers, new ArcGISFeatureLayer [] { new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/water_line/FeatureServer/0",user) },lineColors[3]); 

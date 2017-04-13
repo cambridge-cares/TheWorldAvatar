@@ -42,10 +42,16 @@ public class RefreshBtnInfo implements BtnInfo {
 		return new ActionListener() {
 	    	@Override
 	    	public void actionPerformed(ActionEvent arg0) {
-	    		for (ArcGISFeatureLayer layer : completeLayerList) {
+	    		JParkSim.completeLayerList[17].requery();
+				JParkSim.completeLayerList[17].refresh();
+				JParkSim.completeLayerList[12].requery();
+				JParkSim.completeLayerList[12].refresh();
+				JParkSim.completeLayerList[13].requery();
+				JParkSim.completeLayerList[13].refresh();
+	    		/*for (ArcGISFeatureLayer layer : completeLayerList) {
 	    			layer.requery();
 	    			layer.refresh();
-	    		}
+	    		}*/
 	    		graphicsLayer.removeAll();
 	    		layers.remove(graphicsLayer);
 	    		

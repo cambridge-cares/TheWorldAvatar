@@ -110,13 +110,13 @@ public class App {
 	    
 	}
 
-	 public static final String BASE_URL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer";
+	 public static final String BASE_URL = "http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/jpsimulator/FeatureServer";
 	 
 																																	// url
 																																	// for
 																																	// Arcgis
 																																	// service!!!!
-		private static final String DEVICE_MAP_LOCATION = "map/mapTest.txt";
+		private static final String DEVICE_MAP_LOCATION = "map/map.txt";
 
 																					// of
 																					// device-type
