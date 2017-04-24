@@ -41,6 +41,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TimerTask;
 import java.util.stream.Stream;import java.util.function.Function;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -116,7 +117,7 @@ import com.esri.core.symbol.PictureMarkerSymbol;
 
 
 
-public class JParkSim {
+public class JParkSim{
 	  final static Logger logger = LoggerFactory.getLogger(OWLReader.class);
 
  int filenumber = 0;
@@ -126,18 +127,19 @@ public class JParkSim {
 	
 		final static SimpleFillSymbol landlot = new SimpleFillSymbol(Color.gray, new SimpleLineSymbol(Color.black, 2), SimpleFillSymbol.Style.NULL);
 		final static SimpleFillSymbol testColor =new SimpleFillSymbol(Color.green, new SimpleLineSymbol(Color.blue, 1), SimpleFillSymbol.Style.SOLID);
-		final static SimpleFillSymbol testColor2 =new SimpleFillSymbol(Color.orange, new SimpleLineSymbol(Color.red, 1), SimpleFillSymbol.Style.SOLID);
+		final static SimpleFillSymbol testColor2 =new SimpleFillSymbol(Color.YELLOW, new SimpleLineSymbol(Color.orange, 3), SimpleFillSymbol.Style.HORIZONTAL);
+		final static SimpleLineSymbol streamcolor = new SimpleLineSymbol(Color.magenta, 2, com.esri.core.symbol.SimpleLineSymbol.Style.DASH );
 		final static SimpleLineSymbol[] lineColors = {new SimpleLineSymbol(Color.blue, 5),
 				                                      new SimpleLineSymbol(Color.black, 5),
-				                                      new SimpleLineSymbol(Color.red, 5),
-				                                      new SimpleLineSymbol(Color.green, 5),
-				                                      new SimpleLineSymbol(Color.pink, 5),
-				                                      new SimpleLineSymbol(Color.darkGray, 5),
-				                                      new SimpleLineSymbol(Color.cyan, 5)
-				                                      
-				                                      
-				                                      
-				                                      };
+				                                      new SimpleLineSymbol(Color.red, 5,com.esri.core.symbol.SimpleLineSymbol.Style.DASH),
+				                                      new SimpleLineSymbol(Color.green, 5,com.esri.core.symbol.SimpleLineSymbol.Style.DASH),
+				                                      new SimpleLineSymbol(Color.pink, 5,com.esri.core.symbol.SimpleLineSymbol.Style.DASH),
+				                                      new SimpleLineSymbol(Color.darkGray, 5,com.esri.core.symbol.SimpleLineSymbol.Style.DASH),
+				                                      new SimpleLineSymbol(Color.cyan, 5,com.esri.core.symbol.SimpleLineSymbol.Style.DASH)
+		                                      
+		};
+		final static SimpleLineSymbol lineColor2 = new SimpleLineSymbol(new Color(219,112,147), 5);
+		final static SimpleLineSymbol lineColor3 = new SimpleLineSymbol(new Color(218,165,32), 5);
 		
 	 //   final static SimpleMarkerSymbol  = new SimpleMarkerSymbol(Color.red, 15, SimpleMarkerSymbol.Style.CROSS);
 		/*
@@ -200,9 +202,7 @@ public class JParkSim {
  	public static String httpStringCSV2 = new String("D:/httpReq2.CSV"); // (ZL-151203) investigating structure of DataOutputStream object
  	
  	public static ArcGISFeatureLayer[] completeLayerList;
-
  	
-	
 	// method to render all layers in an array using a certain style (multiple layer renderer)
 	private void createRenderer(LayerList layers, ArcGISFeatureLayer[] arrayoflayers, Symbol col) {
 		for (ArcGISFeatureLayer layer : arrayoflayers) {
@@ -285,8 +285,6 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     }
     
     
-    ArcGISFeatureLayer buildinglayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST022/FeatureServer/131/", user);    // testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/9", user);
-    
     ArcGISFeatureLayer R301layer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/114?token=2VUSGcKBo69OQ74UCC3DqA9ZhUI7IIKCeMXv8PAEacxBmu4LIg49J127MlNipq2iNe5WMJM_reVU9KRWPAwd5AOS2yUaqvwTiH0ek1yiDnh9XwLHwDuDwMr2f7QBLKcBi35Z75wkokMUR14TKhPf0SDlA04PXAXjMTQlCB70PtO3aohnCchmst51fAxM5LRNGX2OjUYh3lz21a5hh3wAYrEZRzGidXCjNVKgGsFNQ4M.", user);
     ArcGISFeatureLayer R302layer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/115?token=2VUSGcKBo69OQ74UCC3DqA9ZhUI7IIKCeMXv8PAEacxBmu4LIg49J127MlNipq2iNe5WMJM_reVU9KRWPAwd5AOS2yUaqvwTiH0ek1yiDnh9XwLHwDuDwMr2f7QBLKcBi35Z75wkokMUR14TKhPf0SDlA04PXAXjMTQlCB70PtO3aohnCchmst51fAxM5LRNGX2OjUYh3lz21a5hh3wAYrEZRzGidXCjNVKgGsFNQ4M.", user);
     ArcGISFeatureLayer T302layer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/119?token=2VUSGcKBo69OQ74UCC3DqA9ZhUI7IIKCeMXv8PAEacxBmu4LIg49J127MlNipq2iNe5WMJM_reVU9KRWPAwd5AOS2yUaqvwTiH0ek1yiDnh9XwLHwDuDwMr2f7QBLKcBi35Z75wkokMUR14TKhPf0SDlA04PXAXjMTQlCB70PtO3aohnCchmst51fAxM5LRNGX2OjUYh3lz21a5hh3wAYrEZRzGidXCjNVKgGsFNQ4M.", user);
@@ -312,124 +310,136 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 
    
    // build a for loop of 170 item, repeat the following to lines 
-  
- /*   for(int i=0; i<172;i++)
+   completeLayerList =  new ArcGISFeatureLayer[171+PointObjectsGenerator.layers.length];   
+   
+   
+   //completeLayerList[0] = landlotlayer;
+   //completeLayerList[1] = buildinglayer;
+   
+   
+   
+   
+   System.out.println ("size of target=" +targets.length);
+   System.out.println ("size of line=" +linelayers.length);
+   System.out.println ("size of point=" +PointObjectsGenerator.layers.length);
+   System.out.println ("size of backup=" +backups.length);
+   System.out.println ("size of transmission line=" +trasmissionlines.length);
+   
+   
+   for(int i = 171; i >0; i--)
    {
-	ArcGISFeatureLayer newlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/jpsimulator/FeatureServer/170/" , user);    // testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/9", user);
-   completeLayerList = new ArcGISFeatureLayer[1];
-   completeLayerList[0] = newlayer;
-   createRenderer(layers, new ArcGISFeatureLayer [] {newlayer}, testColor2);
-   
-   }
-   */
-   
-   
-   
-   
-   
-completeLayerList =  new ArcGISFeatureLayer[targets.length + linelayers.length + PointObjectsGenerator.layers.length + backups.length +trasmissionlines.length + 2]; 
-   
-   
-   completeLayerList[0] = buildinglayer;
-   createRenderer(layers, new ArcGISFeatureLayer [] {buildinglayer}, testColor2);
-   
-   
-   for(int i = 0; i < targets.length; i++)
-    {
+	  
 	   
 	   
-	   
-    ArcGISFeatureLayer  newLayer = new ArcGISFeatureLayer(
-    App.BASE_URL+"/" + targets[i], user);
-    layer_name_map.put(targets[i],newLayer);
-    completeLayerList[i + 1] = newLayer;
-    
-  //  if(targets[i].toLowerCase().contains("storage"))
-  //  {
-       /*ArcGISFeatureLayer  tank = new ArcGISFeatureLayer(
-        		"http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST019/FeatureServer/156", user);
-        	    layer_name_map.put(targets[i],tank);
-        	    completeLayerList[completeLayerList.length -1] = tank;
-   // }    
-        	    createRenderer(layers, new ArcGISFeatureLayer [] {tank}, testColor);*/
-
-    
-    if(targets[i].toLowerCase().contains("landlot"))
-    {
-    	 createRenderer(layers, new ArcGISFeatureLayer [] {newLayer}, landlot);
-    }
-    
-    else
-    {	
-    createRenderer(layers, new ArcGISFeatureLayer [] {newLayer}, testColor);
-   
-    }
-    
-    
-    }
-   
-
-    
-   for (int idxLayer = 0 ; idxLayer < linelayers.length; idxLayer++){
-   
-    completeLayerList[idxLayer + targets.length + 1] = linelayers[idxLayer];
-    createRenderer(layers, new ArcGISFeatureLayer [] {linelayers[idxLayer]}, lineColors[idxLayer]);
-   }
+   ArcGISFeatureLayer  newLayer = new ArcGISFeatureLayer(
+   App.BASE_URL+"/" + i, user);
+   //layer_name_map.put(targets[i],newLayer);
  
+  
    
+   if (i==161)
+   {
+	   completeLayerList[1] = newLayer; 
+	   createRenderer(layers, new ArcGISFeatureLayer [] {newLayer}, testColor2);  
+	   
+   }
+   
+   else if (i==171)
+   {
+	   completeLayerList[0] = newLayer; 
+	   createRenderer(layers, new ArcGISFeatureLayer [] {newLayer}, landlot);
+   }
+   
+
+
+	   else if (i<=170 && i>=162)
+	   {
+		   
+		   completeLayerList[i] = newLayer;
+		   if (i==167)
+		   {createRenderer(layers, new ArcGISFeatureLayer [] {newLayer}, testColor);
+	   }
+		   else if (i>167)
+			  
+		   {
+			   createRenderer(layers, new ArcGISFeatureLayer [] {newLayer},streamcolor);  
+		   }
+		   
+		   else
+			   {			
+			   createRenderer(layers, new ArcGISFeatureLayer [] {newLayer},lineColors[Math.abs(i-160)]);  
+			   }
+	   }
+   
+   
+   else
+	   {
+	   
+	   completeLayerList[i+1] = newLayer;
+	   
+	   
+	   if (i==1)
+	   {createRenderer(layers, new ArcGISFeatureLayer [] {newLayer}, lineColors[0]);
+	   
+   }
+	   else if (i==2)
+	   {
+		   createRenderer(layers, new ArcGISFeatureLayer [] {newLayer}, lineColors[1]);
+	   }
+	   else if (i==3)
+	   {
+		   createRenderer(layers, new ArcGISFeatureLayer [] {newLayer}, lineColor3);
+	   }
+	   else
+		   {
+		
+		   createRenderer(layers, new ArcGISFeatureLayer [] {newLayer}, testColor);  
+		   }
+	   }
+   
+
+   
+   }
    
    for (int idx_Point = 0 ; idx_Point < pointlayers.length ; idx_Point++)
    {
-     completeLayerList[idx_Point + targets.length + linelayers.length + 1] = pointlayers[idx_Point];
+     completeLayerList[idx_Point+171] = pointlayers[idx_Point];
      createRenderer(layers, new ArcGISFeatureLayer [] {pointlayers[idx_Point]},pointColors[idx_Point]);   
    }
-    
    
-   for (int num = 0 ; num < trasmissionlines.length ; num++)
+  System.out.println("total= "+targets.length) ;
+  
+   
+	   ArcGISFeatureLayer waterline = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/water_line/FeatureServer/0",user);
+	   completeLayerList[completeLayerList.length - 1] = waterline;
+	   createRenderer(layers, new ArcGISFeatureLayer[]  { waterline },lineColor2);  
+   /*for(int i=0; i<172;i++)
    {
-     completeLayerList[num + targets.length + linelayers.length + pointlayers.length + 1] = trasmissionlines[num];
- System.out.println ("transmissionlines layer name= "+trasmissionlines[num]);
- 
-     if(num==3)
-     {
-    	    createRenderer(layers, new ArcGISFeatureLayer [] {trasmissionlines[num]},testColor);    
-     }
- 
-    
-    
-     else
-     {
- 	    createRenderer(layers, new ArcGISFeatureLayer [] {trasmissionlines[num]},lineColors[num]);    
-     }
-   }
+	ArcGISFeatureLayer newlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/jpsimulator/FeatureServer/"+i+1 , user);    // testLayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/TEST017/FeatureServer/9", user);
    
+   completeLayerList[i] = newlayer;
+   createRenderer(layers, new ArcGISFeatureLayer [] {newlayer}, testColor2);
    
-   for(int i = 0; i < backups.length ; i++)
-   {
+   }*/
 
-	   completeLayerList[i + targets.length + linelayers.length + pointlayers.length + trasmissionlines.length + 1] = backups[i];
-	     createRenderer(layers, new ArcGISFeatureLayer [] {backups[i]},testColor);  
-	   
-   }
    
    
-   ArcGISFeatureLayer waterline = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/water_line/FeatureServer/0",user);
-   completeLayerList[completeLayerList.length - 1] = waterline;
-   createRenderer(layers, new ArcGISFeatureLayer[]  { waterline },lineColors[3]);  
+   
+   
+
    // end (329-419)
    
   // 	completeLayerList[completeLayerList.length - 1] = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/water_line/FeatureServer/0",user);
   // 	createRenderer(layers, new ArcGISFeatureLayer [] { new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/water_line/FeatureServer/0",user) },lineColors[3]); 
    
-    ArcGISDynamicMapServiceLayer highwayLayer = new ArcGISDynamicMapServiceLayer(
+    /*ArcGISDynamicMapServiceLayer highwayLayer = new ArcGISDynamicMapServiceLayer(
             "http://localhost:6080/arcgis/rest/services/opex/MapServer");
                 layers.add(highwayLayer);
           
 
                 ArcGISDynamicMapServiceLayer sensitivityLayer = new ArcGISDynamicMapServiceLayer(
                         "http://localhost:6080/arcgis/rest/services/sensitivity/MapServer");
-              
-                layers.add(sensitivityLayer);
+                              layers.add(sensitivityLayer);*/
                 
  
                         
@@ -511,8 +521,8 @@ completeLayerList =  new ArcGISFeatureLayer[targets.length + linelayers.length +
 	 all_layer_string = Stream.concat(Arrays.stream(all_layer_string), Arrays.stream(other_layers))
             .toArray(String[]::new);
 	
-    
-   for(int i = 0 ; i < all_layer_string.length; i++)
+   System.out.println("all layer string= "+ all_layer_string.length); 
+   for(int i = 0 ; i < all_layer_string.length-11; i++)
    {
 	   editlayer.put(all_layer_string[i],completeLayerList[i]);
    }
@@ -708,21 +718,64 @@ completeLayerList =  new ArcGISFeatureLayer[targets.length + linelayers.length +
         map.addMapOverlay(hitTestOverlay);															// add all layer listeners to map
     }
    															// default layer listener enabled is the first one (landlots layer)
-   
-   
-
     
     for(int i = 0 ; i < listenerList.length;i++)
     {
-    	if(i!=0)
-    	{
-    	 listenerList[i].setActive(true);
-    	}
-    	else
+    	
+    	if(i==0||i==1)
     	{
     		listenerList[i].setActive(false);
     	}
+    	else
+    	{
+    	
+    	 listenerList[i].setActive(true);
+    	
     }
+    	}
+   
+    cbxLayer.addItemListener(new ItemListener() {													// dropdown list event listener
+        @Override
+        public void itemStateChanged(ItemEvent arg0) {
+          if (arg0.getStateChange() == ItemEvent.SELECTED) {											// whenever dropdown list changes
+            for (ArcGISFeatureLayer somelayer : completeLayerList) {									// unselect all graphics
+          	  if (somelayer.getSelectedFeatures() != null) {										// ignore layers outside map extent
+  		          for (Graphic graphic : somelayer.getSelectedFeatures()) {							// search for selected features
+  		        	  somelayer.unselect((int) graphic.getId());									// unselect them by graphic Id
+  		          }
+          	  }
+            }
+   
+            ArcGISFeatureLayer chosenlayer = editlayer.get(cbxLayer.getSelectedItem());
+            int index=1;
+             index = Arrays.asList(completeLayerList).indexOf(chosenlayer); // get index of selected layer from completeLayerList
+            //listenerList[index].setActive(true); // enable the listener currently selected
+            //System.out.println ("index= "+ index);
+          
+            if (index==155)
+			{
+		listenerList[0].setActive(false);
+		listenerList[1].setActive(true);
+			}
+	
+	else if (index==165)
+	{
+listenerList[0].setActive(true);
+	}
+	else
+	{
+		listenerList[0].setActive(false);
+		listenerList[1].setActive(false);
+	}
+
+            }
+          }
+        }
+    
+      );
+    
+   
+
     /*
     
     cbxLayer.addItemListener(new ItemListener() {													// dropdown list event listener
@@ -835,6 +888,7 @@ completeLayerList =  new ArcGISFeatureLayer[targets.length + linelayers.length +
 			//refresh
 		btnInfos[12] = new RefreshBtnInfo(layers, graphicsLayer, completeLayerList); ///simList
 
+			
 	//call button factory to create buttons
 	ButtonFactory btnFac = new ButtonFactory(btnNameList, btnInfos);
 	btns = btnFac.createButtons();
