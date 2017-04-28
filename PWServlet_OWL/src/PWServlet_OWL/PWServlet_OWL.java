@@ -3700,6 +3700,7 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
 		return xRow;
 	} 
 	
+	//TODO:currently used
 	public ArrayList<Double> getPRAPBD2Input(){ 
 		 
 		ArrayList<Double> xRow = new ArrayList<Double>();                                     // extra arraylist to collect the x-value required as input to the pr aspen plus model
