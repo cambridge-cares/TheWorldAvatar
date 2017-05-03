@@ -1117,7 +1117,9 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
  * 3)read from the csv file and update to ArcGIS database */
 	public void PCrunAspenPlus(ArrayList<String[]> editStack) {
 		PCgetAPInput(editStack);
-		PCrunPyScript(editStack);                                                                  // call python script to run aspen plus model
+		PCrunPyScript(editStack);                                                                  // call python script to run aspen plus 
+
+		
 		PCreadAPCSV();
 	}
 	/**when run AspenPlus for the second biodiesel plant (with waste heat recovery) was called, excute the following code: 
@@ -2813,7 +2815,10 @@ public void runParameterisedAPhydrocracking(ArrayList<String[]> editStack) {
             A[5][2] = Double.valueOf(At51value);
             
             OWLIndividual Ct = owlModel.getOWLIndividual("http://www.jparksimulator.com/BiodieselPlant.owl#C_MathM_FinalProduct_T_V");           
-            String Ctvalue = Ct.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();            
+            String Ctvalue = Ct.getPropertyValueLiteral(owlModel.getOWLProperty("system:numericalValue")).getString();    
+             
+            
+            
             C[2] = Double.valueOf(Ctvalue);
             System.out.println("A02="+A[0][2]+", A12="+A[1][2]+", A22="+A[2][2]+", A32="+A[3][2]+", A42="+A[4][2]+", A52="+A[5][2]);	    		
 		    System.out.println("C0="+C[0]+", C1="+C[1]+", C2="+C[2]);

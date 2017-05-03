@@ -55,7 +55,7 @@ public static String QueryResult;
 			engine = QueryEngine.create(manager, reasoner, true);
        
 			
-		 
+		   // SPARQL DL code that does the query
 			
 			result = processQuery(
          			"PREFIX process: <file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#>\n" +
@@ -73,21 +73,16 @@ public static String QueryResult;
 					"PREFIX system: <file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#>\n" + 
 					"PREFIX topology: <file:/C:/OntoCAPE/meta_model/topology/topology.owl#>\n" + 
 					"PREFIX space_and_time_extended: <file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>\n" + 
-		// 	"SELECT ?x ?GCxnv ?GCynv ?V ?Volume ?unit ?F ?FnumericalValue ?FUnit ?P ?Pressure ?Punit ?T ?Temperature ?Tunit ?Input ?Fo ?FonumericalValue ?FoUnit ?Output WHERE {\n" +
-				
-		//	"SELECT ?x   WHERE {\n" +
+ 
 			
 		 	"SELECT ?x ?GCxnv ?GCynv ?connector ?heatduty_value ?reaction_network ?Input ?Output ?flowrate_v ?flowrate_v_out ?input_flowrate_value ?output_flowrate_value WHERE  {\n" +
-
-       // "Class(?x)" + 
-		//  " Type(?x, apparatus:StirredTank)" + "," +
 	      " Type(?x, apparatus:StirredTank)" + "," + 
 					          
 		
 /*                             *//** Query for the geographic coordinate of the reactor*//*
                            
                            
-                             */
+                             */ 
                              
                               "PropertyValue(?x, space_and_time_extended:hasGISCoordinateSystem, ?GSystem)" + "," + 
                               "PropertyValue(?x, plant:hasConnector, ?connector)" + "," + 
@@ -95,7 +90,7 @@ public static String QueryResult;
 
                               
                               
-                              
+                              // Query for the coordinates 
                               "PropertyValue(?GSystem, space_and_time_extended:hasProjectedCoordinate_x, ?GCx)" + "," +	
 							  "PropertyValue(?GCx, system:hasValue, ?GCXV)" + "," +	
 							  "PropertyValue(?GCXV, system:numericalValue, ?GCxnv)" + "," +	
@@ -104,29 +99,21 @@ public static String QueryResult;
 							  "PropertyValue(?GCy, system:hasValue, ?GCYV)" + "," +	
 							  "PropertyValue(?GCYV, system:numericalValue, ?GCynv)" +   "," +	
 							  
-							  
-							  
-							  
+							  // Query for the heatduty and inputs/outputs 
 							  "PropertyValue(?reaction, behavior:hasHeatDuty, ?heatduty)" + "," + 
 							  "PropertyValue(?reaction,topology:hasInput , ?Input)" + "," + 
 							  "PropertyValue(?reaction,topology:hasOutput , ?Output)" + "," + 
-							  
-							  
-							  
+							  // Query for the reactions 
 							  "PropertyValue(?heatduty, system:hasValue, ?valueheatduty)" +  "," + 
 							  "PropertyValue(?valueheatduty, system:numericalValue, ?heatduty_value)" +  "," + 
 							  "PropertyValue(?reaction,process:hasChemicalReactionNetwork , ?reaction_network)" + "," + 
-							
-							 
+							  // Query for the flow rate
 							 "PropertyValue(?Input,chemical_process_system:refersToGeneralizedAmount , ?amount)" + "," + 
 							 "PropertyValue(?amount,system:hasSubsystem , ?material)" + "," + 
 							"PropertyValue(?material,system:hasProperty , ?flowrate)" + "," + 
 							"PropertyValue(?flowrate,system:hasValue , ?flowrate_v)" +  "," + 
 							"PropertyValue(?flowrate_v,system:numericalValue , ?input_flowrate_value)" +  "," + 
 							
-							
-			  				
-			  				
 			  				"PropertyValue(?Output,chemical_process_system:refersToGeneralizedAmount , ?amount_out)" + "," + 
 			  				"PropertyValue(?amount_out,system:hasSubsystem , ?material_out)" + "," + 
 			  				"PropertyValue(?material_out,system:hasProperty , ?flowrate_out)" + "," + 

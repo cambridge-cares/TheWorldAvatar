@@ -5,7 +5,7 @@
  */
 let path = require('path');
 let fs = require('fs');
-
+$rdf = require('rdflib');
 /***mock db json format
  * {"data" : [{"uri" : a, "value" : b}]}
  *
@@ -25,7 +25,6 @@ function searchDB (uris2Search, callback){
 
     fs.readFile(dbRoot, function (err, body) {//read json file as mock db
         if(err){
-
             callback(err);
             return;
         }
@@ -45,10 +44,14 @@ function searchDB (uris2Search, callback){
                   } else if(idxItem ===db.data.length -1 &&!found){
                       notFound.push(uri);
                   }
-
             }
-
     }
+
+
+
+
+
+
 
 
     if(notFound.length < 1){
@@ -60,10 +63,6 @@ function searchDB (uris2Search, callback){
 
         callback(null, results, notFound);
     }
-
-
-
-
     })
 
 
