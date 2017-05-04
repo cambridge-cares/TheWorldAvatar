@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<button id="btn">Click me</button>
+<script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+
+<script>
+    /***
+     * Only for testing.
+     * post data to see if change reflected
+     */
+    $( document ).ready(function() {
+
+        var data ={hello:"hello"};
+        $("#btn").click(()=>{
+            $.ajax({
+                url: '/data',
+                type: 'POST',
+                data: JSON.stringify(data),
+                processData: false,
+                contentType: 'application/json',
+                success: function(data){
+                    console.log('send successful!\n' + data);
+
+
+                },
+                error : function(err){
+                    console.log(err);
+
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

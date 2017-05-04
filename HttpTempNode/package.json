@@ -1,0 +1,24 @@
+{
+  "name": "bin",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "async": "^2.3.0",
+    "body-parser": "~1.17.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.3",
+    "event-stream": "^3.3.4",
+    "express": "~4.15.2",
+    "jade": "~1.11.0",
+    "libxmljs": "^0.18.4",
+    "morgan": "~1.8.1",
+    "rdflib": "^0.15.0",
+    "readdirp": "^2.1.0",
+    "request": "^2.81.0",
+    "serve-favicon": "~2.4.2",
+    "socket.io": "^1.7.3"
+  }
+}
