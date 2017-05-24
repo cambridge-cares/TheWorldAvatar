@@ -1,0 +1,229 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/BiodieselPlant3.owl#"
+     xml:base="http://www.theworldavatar.com/BiodieselPlant3.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:Eco-industrialPark="http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/OntoCAPE.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/BiodieselPlant3.owl#C-301 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl#C-301">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <Eco-industrialPark:hasIRI>http://www.theworldavatar.com/C-301.owl</Eco-industrialPark:hasIRI>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/BiodieselPlant3.owl#E-301 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl#E-301">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <Eco-industrialPark:hasIRI>http://www.theworldavatar.com/E-301.owl</Eco-industrialPark:hasIRI>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/BiodieselPlant3.owl#E-302 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl#E-302">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <Eco-industrialPark:hasIRI>http://www.theworldavatar.com/E-302.owl</Eco-industrialPark:hasIRI>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/BiodieselPlant3.owl#E-303 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl#E-303">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <Eco-industrialPark:hasIRI>http://www.theworldavatar.com/E-303.owl</Eco-industrialPark:hasIRI>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/BiodieselPlant3.owl#E-304 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl#E-304">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <Eco-industrialPark:hasIRI>http://www.theworldavatar.com/E-304.owl</Eco-industrialPark:hasIRI>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/BiodieselPlant3.owl#E-305 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl#E-305">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <Eco-industrialPark:hasIRI>http://www.theworldavatar.com/E-305.owl</Eco-industrialPark:hasIRI>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/BiodieselPlant3.owl#E-306 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl#E-306">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <Eco-industrialPark:hasIRI>http://www.theworldavatar.com/E-306.owl</Eco-industrialPark:hasIRI>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/BiodieselPlant3.owl#E-307 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl#E-307">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <Eco-industrialPark:hasIRI>http://www.theworldavatar.com/E-307.owl</Eco-industrialPark:hasIRI>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/BiodieselPlant3.owl#M-301 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl#M-301">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <Eco-industrialPark:hasIRI>http://www.theworldavatar.com/M-301.owl</Eco-industrialPark:hasIRI>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/BiodieselPlant3.owl#M-302 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl#M-302">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <Eco-industrialPark:hasIRI>http://www.theworldavatar.com/M-302.owl</Eco-industrialPark:hasIRI>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/BiodieselPlant3.owl#M-303 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl#M-303">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <Eco-industrialPark:hasIRI>http://www.theworldavatar.com/M-303.owl</Eco-industrialPark:hasIRI>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/BiodieselPlant3.owl#P-301 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl#P-301">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <Eco-industrialPark:hasIRI>http://www.theworldavatar.com/P-301.owl</Eco-industrialPark:hasIRI>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/BiodieselPlant3.owl#P-302 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl#P-302">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <Eco-industrialPark:hasIRI>http://www.theworldavatar.com/P-302.owl</Eco-industrialPark:hasIRI>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/BiodieselPlant3.owl#R-301 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl#R-301">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <Eco-industrialPark:hasIRI>http://www.theworldavatar.com/R-301.owl</Eco-industrialPark:hasIRI>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/BiodieselPlant3.owl#R-302 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl#R-302">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <Eco-industrialPark:hasIRI>http://www.theworldavatar.com/R-302.owl</Eco-industrialPark:hasIRI>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/BiodieselPlant3.owl#S-301 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl#S-301">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <Eco-industrialPark:hasIRI>http://www.theworldavatar.com/S-301.owl</Eco-industrialPark:hasIRI>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/BiodieselPlant3.owl#T-301 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl#T-301">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <Eco-industrialPark:hasIRI>http://www.theworldavatar.com/T-301.owl</Eco-industrialPark:hasIRI>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/BiodieselPlant3.owl#V-301 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl#V-301">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <Eco-industrialPark:hasIRI>http://www.theworldavatar.com/V-301.owl</Eco-industrialPark:hasIRI>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/BiodieselPlant3.owl#V-302 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl#V-302">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <Eco-industrialPark:hasIRI>http://www.theworldavatar.com/V-302.owl</Eco-industrialPark:hasIRI>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/BiodieselPlant3.owl#V-303 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl#V-303">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <Eco-industrialPark:hasIRI>http://www.theworldavatar.com/V-303.owl</Eco-industrialPark:hasIRI>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/BiodieselPlant3.owl#V-304 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl#V-304">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <Eco-industrialPark:hasIRI>http://www.theworldavatar.com/V-304.owl</Eco-industrialPark:hasIRI>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/BiodieselPlant3.owl#VA-301 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BiodieselPlant3.owl#VA-301">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <Eco-industrialPark:hasIRI>http://www.theworldavatar.com/VA-301.owl</Eco-industrialPark:hasIRI>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.6.20160910-2108) https://github.com/owlcs/owlapi -->
+

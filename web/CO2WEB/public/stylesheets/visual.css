@@ -1,0 +1,40 @@
+.link {
+    fill: none;
+    stroke: #666;
+    stroke-width: 2px;
+}
+
+#licensing {
+    fill: green;
+
+}
+
+.link.licensing {
+    stroke: green;
+
+}
+
+.link.resolved {
+    stroke-dasharray: 0,2 1;
+}
+
+circle {
+    stroke: #333;
+    stroke-width: 2px;
+}
+
+text {
+    font: 15px sans-serif;
+    pointer-events: none;
+    text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+}
+#choice-panel{
+    height: 150px;
+}
+
+
+#checkShowImport{
+    margin-left: 0px;
+}
+
+

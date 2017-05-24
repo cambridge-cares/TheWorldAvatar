@@ -1,0 +1,28 @@
+html
+head
+
+    title OWL STRUCTURE
+    link(rel="stylesheet" href='/stylesheets/visual.css')
+    link(rel='stylesheet' href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css")
+
+
+
+body
+    script(src="https://code.jquery.com/jquery-2.2.0.min.js")
+    script(src="https://d3js.org/d3.v4.min.js")
+    script(src="/javascripts/d3Bubble.js")
+    input(
+    type = "hidden"
+    id = 'data'
+    value = result
+    )
+
+div(class='col-sm-1' id="choice-div")
+    div(class="panel panel-default" id="choice-panel")
+        div(class="panel-body")
+            div(class="checkbox")
+                input(type="checkbox" id="checkShowImport" value="")
+                label Show Import
+
+
+div(class='col-sm-11' id="draw-panel")
