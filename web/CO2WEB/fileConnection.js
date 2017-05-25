@@ -181,7 +181,7 @@ function readConnections(options, callback) {
 
 
            function requestChild(iri, callback) {
-               request.get(iri, {timeout: 100},function (err, response, body) {
+               request.get(iri, {timeout: 1000},function (err, response, body) {
 
                    if (err && err.code === 'ETIMEDOUT') {
                        console.log(err.code);
