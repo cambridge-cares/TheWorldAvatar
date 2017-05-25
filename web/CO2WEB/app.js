@@ -3,11 +3,11 @@ var path = require('path');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var rdfParser = require(__dirname+"/rdfParser.js");
 var visualize =require("./routes/visualize.js");
-
+var showCO2 = require("./routes/showCO2.js");
+var config = require("./config.js");
 var app = express();
-
+var port = config.port;
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -27,31 +27,13 @@ function setHeader(res, mpath){
 app.use(express.static(path.join(__dirname, 'public')));
 //app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
 app.use('/visualize', visualize);
+app.use('/JurongIsland.owl/showCO2', showCO2);
 
 app.get('/', function (req, res) {
 	        res.sendFile(path.join(__dirname, 'views/index.html'));
 
 });
-app.get('/JurongIsland.owl/showCO2', function (req, res) {
 
-  let opts = {//format opts to feed in rdfParser
-    fileUrl : __dirname+"/ROOT/JurongIsland/JurongIsland.owl",
-    uri :'http://www.jparksimulator.com/JurongIsland.owl'
-
-
-  };
-
-  let node ="http://www.theworldavatar.com/JurongIsland.owl#V_CO2_Jurong"; // individual
-  let property = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue";//property
-
-  let parser = rdfParser(opts);
-  let result = parser.findValue(node, property);//search in parsed graph for this property of this note
-
-  result = parseFloat(result).toFixed(4);//format result into float like 1.0000
-  res.render('co2', { co2Value: result }); //render the view with this value
-
-
-});
 
 
 /**
@@ -75,6 +57,7 @@ app.use(function(err, req, res, next) {
 });
 **/
 module.exports = app;
-var server = app.listen(82, function () {
-  console.log('Server listening on port 82');
+
+var server = app.listen(port, function () {
+  console.log('Server listening on port 3000');
 });

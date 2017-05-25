@@ -23,7 +23,12 @@ var FileLinkMap = function (options) {
         "#34362D", "#B4A8BD", "#00A6AA", "#452C2C", "#636375", "#A3C8C9", "#FF913F", "#938A81",
         "#575329", "#00FECF", "#B05B6F", "#8CD0FF", "#3B9700", "#04F757", "#C8A1A1", "#1E6E00",
         "#7900D7", "#A77500", "#6367A9", "#A05837", "#6B002C", "#772600", "#D790FF", "#9B9700",
-        "#549E79", "#FFF69F", "#201625", "#72418F", "#BC23FF", "#99ADC0", "#3A2465", "#922329",
+        "#549E79", "#FFF69F", "#201625", "#72418F", "#BC23FF", "#99ADC0", "#3A2465", "#922329"];
+
+
+    var colorList2 = [
+
+
         "#5B4534", "#FDE8DC", "#404E55", "#0089A3", "#CB7E98", "#A4E804", "#324E72", "#6A3A4C", "#000000"];
 
     var colorMap = {};
@@ -66,12 +71,20 @@ var FileLinkMap = function (options) {
                     domain: getDomain(link.source),
                     count: 0
                 });
-            link.target = nodes[link.target] || (nodes[link.target] = {
+
+            if(nodes[link.target]){
+                nodes[link.target].level = link.level;
+            }
+            link.target = nodes[link.target]  || (nodes[link.target] = {
                     url : link.target,
                     name: getSimpleName(link.target),
                     domain: getDomain(link.target),
                     count: 0
+                    ,level : link.level
+
                 });
+
+
 
             //get count of links on each node
             /**
@@ -102,9 +115,8 @@ var FileLinkMap = function (options) {
 
 
     function setBodyS(node) {
-        // return -1000*(node.count||1);
+         return -1000*(node.count||1);
 
-		return -700;
         //return charge;
     }
 
@@ -120,6 +132,11 @@ var FileLinkMap = function (options) {
      */
     function allocateColor(d) {
         // is this exist in color map?
+
+        if(d.level !== undefined && d.level !== null) {
+
+            return colorList2[d.level];
+        }
 
         colorMap[d.domain] = colorMap[d.domain] || (colorList[mapSize++]);
 

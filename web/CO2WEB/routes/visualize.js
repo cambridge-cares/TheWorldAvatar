@@ -13,15 +13,16 @@ router.get('/', function(req, res, next) {
 
     if(err){
       res.status(500).send(err);
+      return;
     }
 
     console.log("read connections");
-    for(var con of results){
+    for(let con of results){
       console.log("\nS:"+con.source+"\nT:"+con.target);
 
     }
     //res.setHeader('Content-Type', 'application/json');
-   // res.json(results);
+    //res.json(results);//for testing
     res.render('visual', { result: JSON.stringify(results) }); //render the view with this value
 
 
