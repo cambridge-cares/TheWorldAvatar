@@ -115,7 +115,7 @@ var FileLinkMap = function (options) {
 
 
     function setBodyS(node) {
-         return -1000*(node.count||1);
+         return -400*(node.count||1);
 
         //return charge;
     }
