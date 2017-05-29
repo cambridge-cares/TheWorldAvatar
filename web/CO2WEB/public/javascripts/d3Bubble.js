@@ -73,18 +73,16 @@ var FileLinkMap = function (options) {
                 });
 
             if(nodes[link.target]){
-                nodes[link.target].level = link.level;
+                nodes[link.target].level = parseInt(link.level)+1;
             }
             link.target = nodes[link.target]  || (nodes[link.target] = {
                     url : link.target,
                     name: getSimpleName(link.target),
                     domain: getDomain(link.target),
                     count: 0
-                    ,level : link.level
+                    ,level : parseInt(link.level)+1
 
                 });
-
-
 
             //get count of links on each node
             /**
@@ -104,10 +102,17 @@ var FileLinkMap = function (options) {
         // console.log(JSON.stringify(nodes));
         //packs object :nodes into array
         for (var attr in nodes) {
+
+
+
             if (nodes.hasOwnProperty(attr)) {
+
+                if(nodes[attr].name.toLowerCase().indexOf("world")!==-1)//manually add level to world
+                {
+                    nodes[attr].level = 0;
+                }
                 nodesArr.push(nodes[attr]);
                 //console.log("count" + nodes[attr].count);
-
             }
         }
         return nodesArr;
@@ -149,12 +154,23 @@ var FileLinkMap = function (options) {
     }
 
 
+    function defineLegend(d){
+        if(d.level !== undefined && d.level !== null) {
+
+            return d.level ;
+        }
+
+        return d.domain;
+    }
+
+
 
 
     var svg = d3.select("#draw-panel").append("svg")
         .attr("width", width)
         .attr("height", height);
     var g = svg.append("g");
+
 
 
     function clear() {
@@ -168,7 +184,7 @@ var FileLinkMap = function (options) {
 
         //set force simulation
         var simulation = d3.forceSimulation()
-            .force("link", d3.forceLink(links))
+            .force("link", d3.forceLink(links).distance(200))
             .force("charge", d3.forceManyBody().strength(setBodyS))
             .force("center", d3.forceCenter(width / 2, height / 2));
 
@@ -207,7 +223,9 @@ var FileLinkMap = function (options) {
 
             .append("circle")
             .attr("r", nodeR)
+            .attr("class", "nodes")
             .attr("fill", allocateColor)
+            .attr("data-legend", defineLegend)
             .on("mouseover", handleMouseOver)         //highlight all links when mouse over
             .on("mouseout", handleMouseOut)
             .call(d3.drag()                         //enable user to drag
@@ -218,9 +236,9 @@ var FileLinkMap = function (options) {
 
 
         circle = g.selectAll("a.cir");
-       var circleDraw = g.selectAll("a.cir").select("circle");
+       var circleDraw = g.selectAll("a.cir").select("circle.nodes");
 
-        var text = g.selectAll("text")  //node tags
+        var text = g.selectAll("text.nodeTag")  //node tags
             .data(nodesArr, function (d) {
                 return d.domain + d.name;
             });
@@ -228,12 +246,13 @@ var FileLinkMap = function (options) {
 
 
     text.enter().append("text")
+        .attr("class", "nodeTag")
             .attr("x", textSize)
             .attr("y", "0.31em")
             .text(function (d) {
                 return d.name;
             });
-        text = g.selectAll("text");
+        text = g.selectAll("text.nodeTag");
 
         simulation
             .nodes(nodesArr)
@@ -241,6 +260,12 @@ var FileLinkMap = function (options) {
 
         simulation.force("link")
             .links(links);
+
+       var  legend = svg.append("g")
+            .attr("class","legend")
+            .attr("transform","translate(50,30)")
+            .style("font-size","12px")
+            .call(d3.legend);
         function ticked() {
 
             path
@@ -347,7 +372,7 @@ if($('#checkShowImport').prop('checked')) {
 
             success: function (data) {
                 console.log('ajax successful!\n');
-                //console.log(JSON.stringify(data));
+                console.log(JSON.stringify(data));
                 map.update(data);
 
             },

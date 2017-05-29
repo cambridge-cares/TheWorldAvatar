@@ -18,6 +18,8 @@ var baseURL = "http://localhost:" + port;
 
 
 var app = require("./app.js");
+
+
 describe('RDFParser: ', function () {
 
     it('could find the value of property of an indivdiual in a specific file', function () {

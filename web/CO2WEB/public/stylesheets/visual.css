@@ -18,12 +18,12 @@
     stroke-dasharray: 0,2 1;
 }
 
-circle {
+circle.nodes {
     stroke: #333;
     stroke-width: 2px;
 }
 
-text {
+text.nodeTag {
     font: 15px sans-serif;
     pointer-events: none;
     text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
@@ -37,4 +37,13 @@ text {
     margin-left: 0px;
 }
 
+.legend rect {
+    fill:white;
+    stroke:black;
+    opacity:0.8;}
 
+
+.title{
+
+    font-size: 20px;
+}
