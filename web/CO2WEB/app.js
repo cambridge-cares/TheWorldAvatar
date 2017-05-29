@@ -8,6 +8,7 @@ var showCO2 = require("./routes/showCO2.js");
 var config = require("./config.js");
 var app = express();
 var port = config.port;
+process.env.UV_THREADPOOL_SIZE = 128;
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
