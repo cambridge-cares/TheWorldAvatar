@@ -36,7 +36,7 @@ if(!conns){
 router.get('/includeImport', function(req, res, next) {
 
 
-  connectionsReader({depth :0, showImport : true}, function (err, results) {
+  connectionsReader({ showImport : true}, function (err, results) {
 
     if(err){
 		console.log(err);
@@ -54,6 +54,30 @@ router.get('/includeImport', function(req, res, next) {
 
 
   });
+});
+
+
+router.get('/showServiceOnly', function(req, res, next) {
+
+    connectionsReader({ showServiceOnly : true}, function (err, results) {
+
+        if(err){
+            res.status(500).send(err);
+        }
+
+        console.log("read connections");
+        for(var con of results){
+            console.log("\nS:"+con.source+"\nT:"+con.target);
+
+        }
+        //res.setHeader('Content-Type', 'application/json');
+        // res.json(results);
+        res.json(results); //render the view with this value
+
+
+    });
+
+
 });
 
 module.exports = router;

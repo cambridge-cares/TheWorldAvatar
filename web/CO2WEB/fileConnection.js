@@ -22,10 +22,17 @@ let rootNode  = config.rootNode;
 
 //var connections = [];
 
+/**
+ *
+ * @param options  [showServiceOnly(bool) } showImport(bool)]
+ * @param callback  fn(err, results)
+ */
 function readConnections(options, callback) {
 
-    let depth = options.depth || 0;
-    let showImport = options.showImport || false;
+    let showServiceOnly = options.showServiceOnly || false;
+    let showImport = options.showImport&&!showServiceOnly || false; // if showServiceOnly is chosen, will not show Import
+
+
     // if (connections && connections.length > 0) {
     //      callback(null, connections);
     // } else {
@@ -48,8 +55,7 @@ function readConnections(options, callback) {
 
     function startFromRoot2GetConns(callback) {
 
-        //read root file
-
+        //read root file on disk
         fs.readFile(path.join(folderLocation, rootNode), function (err, file) {
             if (err) {
                 console.log("errReadingFile");
@@ -99,14 +105,14 @@ function readConnections(options, callback) {
 
         //find all node with hasIRI property
         var uris = root.find("//owl:NamedIndividual/Eco-industrialPark:hasIRI", namespaceOb);
-        console.log("found node :" + uris.length);
+        console.log("found node Eco-industrialPark:hasIRI:" + uris.length);
         for (let curi of uris) {
-            console.log(curi.name());
+           // console.log(curi.name());
             children.push(curi.text().trim());//push to targets list
         }
-        //find all node with hasIRI property
+        //find all node with SYSTEM:hasIRI property
         let urisS = root.find("//owl:NamedIndividual/system:hasIRI", namespaceOb);
-        console.log("found node :"+urisS.length);
+        console.log("found node system:hasIRI:"+urisS.length);
         for(let curi of urisS){
             //    console.log(curi.name());
             children.push(curi.text().trim());//push to targets list
@@ -114,14 +120,35 @@ function readConnections(options, callback) {
         return children;
     }
 
+    /**
+     * return all services defined in the owl, service definition : contains "http://www.theworldavatar.com/Service.owl" in rdf:type
+     * @param root   root node of parsed xml
+     * @returns {*}  an array of services urls
+     */
+    function getServices(root){
+        var services = [];
+        var namespaceOb = {};//construct namespaceOb for find in root with nested namespace
+        namespaceOb['owl'] = "http://www.w3.org/2002/07/owl#";
+
+        namespaceOb["rdf"] = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+        namespaceOb['Eco-industrialPark'] = "http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#";
+
+        var uris = root.find("//owl:NamedIndividual[rdf:type[contains(@rdf:resource,'http://www.theworldavatar.com/Service.owl')]]", namespaceOb);
+        console.log("found Service node :"+uris.length);
+
+        for(let curi of uris){
+            //    console.log(curi.name());
+            services.push(curi.text().trim());//push to targets list
+        }
+        return services;
+
+    }
+
+
 
        function loopChildrenRecur(file, level, callback) {
 
            console.log("------------loopChildRecur--------------------");
-
-           try {
-
-
                var xmlDoc = libxmljs.parseXml(file);
                var root = xmlDoc.root();
                var myUri = (root.attrs() && root.attrs().length > 0) ? root.attrs()[0].value() : null;
@@ -132,7 +159,7 @@ function readConnections(options, callback) {
 
                let children = getChildren(root);
 
-               if (children.length < 1) {
+               if (children.length < 1) { // no children is found, including devices and services
 
                    let results = [];
                    console.log(myUri + " is a leaf node return");
@@ -155,11 +182,23 @@ function readConnections(options, callback) {
 
                //get my links
                let myLinks = [];
-               for (let target of children) {
-                   console.log("child iri: " + target);
-                   myLinks.push({source: myUri, target: target, level:level});
+
+
+               //push all children into link array
+
+               if(showServiceOnly) { //pack only services into results
+                   var services = getServices(root);
+                   for (let service of services) {
+                       console.log("service iri: " + service);
+                       myLinks.push({source: myUri, target: service});
+                   }
+
+               }  else {
+                   for (let target of children) {
+                       console.log("child iri: " + target);
+                       myLinks.push({source: myUri, target: target, level: level});
+                   }
                }
-               ;
 
                //request on each child, execute loopChild on it, then concate the result
                async.concat(children, requestChild, function (err, results) {
@@ -175,28 +214,20 @@ function readConnections(options, callback) {
                    callback(null, results.concat(myLinks));
 
                });
-           } catch (err) {
-               callback(err);
-           }
 
 
-           function requestChild(iri, callback) {
-               request.get(iri, {timeout: 1000, agent:false},function (err, response, body) {
 
-                   if (err && err.code === 'ETIMEDOUT') {
-                       console.log(err.code);
-                       callback(null, null);
-                       return;
+           function requestChild(iri, callback) {//http request  to get child file
+               request.get(iri, {timeout: 2000, agent:false},function (err, response, body) {
 
-                   }
-
-                   if(err || response.statusCode !== 200){
+                   if (err || response.statusCode !== 200) { //request failed
                        console.log(err);
-                       console.log("can not connect to "+ iri);
-                       callback(null, null);
+                       callback(null, null); // return null
                        return;
+
                    }
-                   if (response.statusCode === 200) {
+
+                   if (response.statusCode === 200) {//request success
                        console.log("req: " + iri);
 
                        loopChildrenRecur(body, level+1, callback);
@@ -213,7 +244,7 @@ function readConnections(options, callback) {
 
     Array.prototype.clean = function(deleteValue) {
         for (var i = 0; i < this.length; i++) {
-            if (this[i] == deleteValue) {
+            if (this[i] === deleteValue) {
                 this.splice(i, 1);
                 i--;
             }
