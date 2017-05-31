@@ -14,7 +14,7 @@ var opts = {
 };
 
 var config = require("./config");
-var baseURL = "http://localhost:" + port;
+var baseURL = "http://localhost:" + config.port;
 
 
 var app = require("./app.js");
