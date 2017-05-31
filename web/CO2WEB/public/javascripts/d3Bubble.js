@@ -5,7 +5,7 @@
 
 
 var FileLinkMap = function (options) {
-    var width = options.width || 1500,
+    var width = options.width || 2500,
         height = options.height || 1200,
         charge = options.charge || -3000,
         distance = options.distance || 100,
@@ -120,7 +120,7 @@ var FileLinkMap = function (options) {
 
 
     function setBodyS(node) {
-         return -400*(node.count||1);
+         return -500*(node.count||1);
 
         //return charge;
     }
@@ -184,7 +184,7 @@ var FileLinkMap = function (options) {
 
         //set force simulation
         var simulation = d3.forceSimulation()
-            .force("link", d3.forceLink(links).distance(200))
+            .force("link", d3.forceLink(links).distance(150))
             .force("charge", d3.forceManyBody().strength(setBodyS))
             .force("center", d3.forceCenter(width / 2, height / 2));
 
@@ -261,11 +261,16 @@ var FileLinkMap = function (options) {
         simulation.force("link")
             .links(links);
 
+
+        var preLengend = svg.selectAll("g.legend").remove();
+
        var  legend = svg.append("g")
             .attr("class","legend")
             .attr("transform","translate(50,30)")
             .style("font-size","12px")
             .call(d3.legend);
+
+
         function ticked() {
 
             path
@@ -364,18 +369,27 @@ $(document).ready(function () {// when web dom ready
     var map = FileLinkMap({});
     $("#checkShowImport").change(function () {
 if($('#checkShowImport').prop('checked')) {
+    disableThenEnableAfterTimeout();
 
         //TODO:ajax, only change data, but with d3...how? should use angular instead?
         $.ajax({
             url: '/visualize/includeImport',
             type: 'GET',
 
-            success: function (data) {
+            statusCode:{
+            200: function (links) {
                 console.log('ajax successful!\n');
-                console.log(JSON.stringify(data));
-                map.update(data);
 
-            },
+
+                console.log(JSON.stringify(links));
+                if(LinkRightFormat(links))
+                {
+                    map.update(links);
+
+
+                }
+
+            }},
             error: function (err) {
                 console.log(err);
 
@@ -385,10 +399,82 @@ if($('#checkShowImport').prop('checked')) {
 
 } else {
 	       window.location.href = '/visualize';
-}
+        }
+
+
+    });
+
+    $("#checkShowServiceOnly").change(function () {
+        if($('#checkShowServiceOnly').prop('checked')) {
+            disableThenEnableAfterTimeout();
+            //TODO:ajax, only change data, but with d3...how? should use angular instead?
+            $.ajax({
+                url: '/visualize/showServiceOnly',
+                type: 'GET',
+
+                statusCode:{
+                    200: function (links) {
+                        console.log('ajax successful!\n');
+
+
+                   //     console.log(JSON.stringify(links));
+                        if(LinkRightFormat(links))
+                        {
+                            map.update(links);
+
+
+                        }
+
+                    }},
+                error: function (err) {
+                    console.log(err);
+
+
+                }
+            });
+
+        } else {
+            window.location.href = '/visualize';
+        }
     })
 
 
+    function LinkRightFormat(links){
+        if(!links || links.length < 1){
+            return false;
+        }
+        for(let link of links){
+            if(!link.hasOwnProperty("target") || !link.hasOwnProperty("source")){
+                return false;
+            }
+
+        }
+        return true;
+    }
+    function DisableOptionButton(disable){
+      //  console.log(disable);
+
+        if($( "#checkShowImport" ).prop( "disabled") === !disable &&$( "#checkShowServiceOnly" ).prop( "disabled") === !disable) {
+            $("#checkShowImport").prop("disabled", disable);
+            $("#checkShowServiceOnly").prop("disabled", disable);
+            console.log("now :" + (disable === true?"disable":"enable"));
+         return true;
+        }
+        return false;
+    }
+
+      function disableThenEnableAfterTimeout(){
+         if( DisableOptionButton(true)){
+
+             setTimeout(function () {
+                 DisableOptionButton(false);
+             }, 5000);
+         }
+
+      }
+
 });
+
+
 
 //module.exports = FileLinkMap;

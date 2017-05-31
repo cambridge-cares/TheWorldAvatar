@@ -1,0 +1,103 @@
+<rdf:RDF xmlns="http://www.theworldavatar.com/TheWorld.owl" xmlns:system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:terms="http://purl.org/dc/terms/" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xml:base="http://www.theworldavatar.com/TheWorld.owl">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/TheWorld.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl"/>
+    </owl:Ontology>
+    <!--
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        //
+        // Object Properties
+        //
+        ///////////////////////////////////////////////////////////////////////////////////////
+
+    -->
+    <!--
+     http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasConceptualRepresentation
+    -->
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasConceptualRepresentation"/>
+    <!--
+     http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasSubsystem
+    -->
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasSubsystem"/>
+    <!--
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        //
+        // Data properties
+        //
+        ///////////////////////////////////////////////////////////////////////////////////////
+
+    -->
+    <!--
+     http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasIRI
+    -->
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasIRI"/>
+    <!--
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        //
+        // Classes
+        //
+        ///////////////////////////////////////////////////////////////////////////////////////
+
+    -->
+    <!--
+     http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#Building
+    -->
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#Building"/>
+    <!--
+     http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ConceptualModel
+    -->
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ConceptualModel"/>
+    <!--
+     http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#Eco-industrialPark
+    -->
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#Eco-industrialPark"/>
+    <!--
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        //
+        // Individuals
+        //
+        ///////////////////////////////////////////////////////////////////////////////////////
+
+    -->
+    <!--
+     http://www.theworldavatar.com/TheWorld.owl#CREATE_ResearchWing
+    -->
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/TheWorld.owl#CREATE_ResearchWing">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#Building"/>
+    </owl:NamedIndividual>
+    <!--
+     http://www.theworldavatar.com/TheWorld.owl#JurongIsland
+    -->
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/TheWorld.owl#JurongIsland">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#Eco-industrialPark"/>
+        <system:hasConceptualRepresentation rdf:resource="http://www.theworldavatar.com/TheWorld.owl#KR_JurongIsland"/>
+    </owl:NamedIndividual>
+    <!--
+     http://www.theworldavatar.com/TheWorld.owl#KR_CREATE_ResearchWing
+    -->
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/TheWorld.owl#KR_CREATE_ResearchWing">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ConceptualModel"/>
+        <system:hasIRI>http://www.theworldavatar.com/bmslab.owl</system:hasIRI>
+    </owl:NamedIndividual>
+    <!--
+     http://www.theworldavatar.com/TheWorld.owl#KR_JurongIsland
+    -->
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/TheWorld.owl#KR_JurongIsland">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ConceptualModel"/>
+        <system:hasIRI>http://www.theworldavatar.com/JurongIsland.owl</system:hasIRI>
+    </owl:NamedIndividual>
+    <!--
+     http://www.theworldavatar.com/TheWorld.owl#TheWorld
+    -->
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/TheWorld.owl#TheWorld">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#TopLevelSystem"/>
+        <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/TheWorld.owl#CREATE_ResearchWing"/>
+        <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/TheWorld.owl#JurongIsland"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+        <!--
+         Generated by the OWL API (version 4.2.6.20160910-2108) https://github.com/owlcs/owlapi
+        -->
