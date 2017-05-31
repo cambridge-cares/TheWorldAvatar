@@ -4,20 +4,21 @@
 /*******IMPORT**********/
 var expect = require("chai").expect;
 var util = require("util");
-var rdfParser = require(__dirname + "/rdfParser.js");
+
 var request = require("request");
 var path = require("path");
-var connections = require("./fileConnection.js");
+var rdfParser = require("../rdfParser.js");
+var connections = require("../fileConnection.js");
 var opts = {
-    fileUrl: __dirname + "/testFile/JurongIsland.owl",
+    fileUrl: __dirname + "/JurongIsland.owl",
     uri: 'http://www.theworldavatar.com/JurongIsland.owl'
 };
 
-var config = require("./config");
-var baseURL = "http://localhost:" + port;
+var config = require("../config");
+var baseURL = "http://localhost:" + config.port;
 
 
-var app = require("./app.js");
+
 
 
 describe('RDFParser: ', function () {
@@ -63,7 +64,7 @@ describe("extract connections", function () {
             done();
 
         })
-    }).timeout(1000);
+    });
 });
 
 

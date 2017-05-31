@@ -4,29 +4,32 @@ var connectionsReader = require("../fileConnection.js");
 
 /* GET users listing. */
 
-
+var conns;
 
 router.get('/', function(req, res, next) {
 
 
+if(!conns){
   connectionsReader({depth : 0}, function (err, results) {
 
     if(err){
       res.status(500).send(err);
+	  console.log(err);
       return;
     }
 
     console.log("read connections");
-    for(let con of results){
-      console.log("\nS:"+con.source+"\nT:"+con.target);
 
-    }
     //res.setHeader('Content-Type', 'application/json');
     //res.json(results);//for testing
+	conns = results;
     res.render('visual', { result: JSON.stringify(results) }); //render the view with this value
 
 
   });
+} else {
+	    res.render('visual', { result: JSON.stringify(conns) }); //render the view with this value
+}
 });
 
 
@@ -36,6 +39,7 @@ router.get('/includeImport', function(req, res, next) {
   connectionsReader({depth :0, showImport : true}, function (err, results) {
 
     if(err){
+		console.log(err);
       res.status(500).send(err);
     }
 
