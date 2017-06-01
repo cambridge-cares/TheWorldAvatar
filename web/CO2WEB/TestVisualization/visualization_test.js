@@ -8,12 +8,14 @@ var rdfParser = require( "../rdfParser.js");
 var request = require("request");
 var path = require("path");
 var connections = require("../fileConnection.js");
-var opts = {
-    fileUrl: __dirname + "/JurongIsland.owl",
-    uri: 'http://www.theworldavatar.com/JurongIsland.owl'
-};
+
 
 var config = require("../config");
+
+var opts = {
+    fileUrl: config.root + "/JurongIsland.owl",
+    uri: 'http://www.theworldavatar.com/JurongIsland.owl'
+};
 var baseURL = "http://localhost:" + config.port;
 
 

@@ -9,8 +9,8 @@ let fileFolder = require("../config.js").root;
 
 let fileUrl = fileFolder + "/JurongIsland.owl";
 
-console.log(fileUrl);
 router.get('/', function (req, res) {
+console.log(fileUrl);
 
     let opts = {//format opts to feed in rdfParser
         fileUrl : fileUrl,
