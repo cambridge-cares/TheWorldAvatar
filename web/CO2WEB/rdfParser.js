@@ -104,6 +104,8 @@ let rdfParser = function (opts, callback) {
                         throw err(new Error("base IRI of owl file not defined in owl file:" + fileUrl));
                     }
                 }
+
+                console.log(myUri);
                /*-------retrieve base URI END----------------*/
 
                 $rdf.parse(body, store, myUri, mimeType);// parse rdf
@@ -133,9 +135,9 @@ let rdfParser = function (opts, callback) {
               }
           } else{   /*-------Fetch from web----------------*/
 
-              let timeout = 5000 // 5000 ms timeout
+              let timeout = 1000; // 5000 ms timeout
               let fetcher = new $rdf.Fetcher(store, timeout);
-
+         console.log("now fetch")
               fetcher.nowOrWhenFetched(fileUrl, function(ok, body, xhr) {
 
                   if (!ok) {

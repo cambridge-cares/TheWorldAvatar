@@ -9,7 +9,7 @@ var request = require("request");
 var path = require("path");
 var connections = require("../fileConnection.js");
 var opts = {
-    fileUrl: __dirname + "/testFile/JurongIsland.owl",
+    fileUrl: __dirname + "/JurongIsland.owl",
     uri: 'http://www.theworldavatar.com/JurongIsland.owl'
 };
 
@@ -17,7 +17,6 @@ var config = require("../config");
 var baseURL = "http://localhost:" + config.port;
 
 
-var app = require("../app.js");
 
 
 describe('RDFParser: ', function () {
@@ -43,6 +42,7 @@ describe('RDFParser: ', function () {
 
 describe("extract connections", function () {
     it('find all connections of each file with no extra options', function (done) {
+  this.timeout(3000);
 
         connections({}, function(err, results){
 
@@ -67,6 +67,7 @@ describe("extract connections", function () {
     });
 
     it('find all connections of each file including imports with option:showImport', function (done) {
+  this.timeout(3000);
 
         connections({showImport:true}, function(err, results){
 
@@ -92,6 +93,7 @@ describe("extract connections", function () {
     });
 
     it('find only service type connection of each file with option:showServiceOnly', function (done) {
+  this.timeout(3000);
 
         connections({showServiceOnly:true}, function(err, results){
 

@@ -44,11 +44,17 @@ var FileLinkMap = function (options) {
         var nodesArr = [];
 
         function getDomain(str) {
+
+            str = str.replace("theworldavatar", "jparksimulator");
+            str = str.replace("file:/C:/", "http://www.jparksimulator.com/");
             var arr = str.split("/");
+
+
+            console.log(arr);
             if(arr.length >3) {
-                return arr[0] + "/" + arr[1] + "/" + arr[2] + "/" + arr[3];
+                return   arr[2] + "/" + arr[3]+ "/" + arr[4]+ "/" + arr[5];//arr[0] + "/" + arr[1] + "/" <- http://
             } else{
-                return arr[0] + "/" + arr[1] + "/" + arr[2];
+                return  arr[2];
             }
         }
 
@@ -138,7 +144,7 @@ var FileLinkMap = function (options) {
     function allocateColor(d) {
         // is this exist in color map?
 
-        if(d.level !== undefined && d.level !== null) {
+        if(d.level !== undefined && d.level !== null && !isNaN(d.level)) {
 
             return colorList2[d.level];
         }
@@ -154,8 +160,18 @@ var FileLinkMap = function (options) {
     }
 
 
+    function sortOrder(d,i) {
+
+        if(d.level !== undefined && d.level !== null && !isNaN(d.level)) {
+
+            return d.level*1000+i;
+        }
+
+        return 100000+i;
+    }
+
     function defineLegend(d){
-        if(d.level !== undefined && d.level !== null) {
+        if(d.level !== undefined && d.level !== null && !isNaN(d.level)) {
 
             return d.level ;
         }
@@ -225,6 +241,7 @@ var FileLinkMap = function (options) {
             .attr("r", nodeR)
             .attr("class", "nodes")
             .attr("fill", allocateColor)
+            .attr("data-legend-pos", sortOrder)
             .attr("data-legend", defineLegend)
             .on("mouseover", handleMouseOver)         //highlight all links when mouse over
             .on("mouseout", handleMouseOut)
@@ -438,7 +455,12 @@ if($('#checkShowImport').prop('checked')) {
         }
     })
 
+    $("#checkdefault").change(function () {
+        if($('#checkdefault').prop('checked')) {
 
+            window.location.href = '/visualize'; //return to default
+
+    }});
     function LinkRightFormat(links){
         if(!links || links.length < 1){
             return false;
@@ -473,8 +495,20 @@ if($('#checkShowImport').prop('checked')) {
 
       }
 
+
+
 });
 
 
+$( window ).unload(function() {
+    console.log("unload");
+
+    if(  $("#checkShowImport").prop('checked')) {
+        $("#checkShowImport").prop('checked', false);
+    }
+    if(  $("#checkShowServiceOnly").prop('checked')) {
+        $("#checkShowServiceOnly").prop('checked', false);
+    }
+});
 
 //module.exports = FileLinkMap;
