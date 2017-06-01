@@ -51,11 +51,14 @@ var FileLinkMap = function (options) {
 
 
             console.log(arr);
-            if(arr.length >3) {
-                return   arr[2] + "/" + arr[3]+ "/" + arr[4]+ "/" + arr[5];//arr[0] + "/" + arr[1] + "/" <- http://
-            } else{
-                return  arr[2];
+             let domain = "";
+             if(arr.length < 3){
+                 domain += arr[2];
+             }
+            for(let i = 2 ; i < arr.length -1; i++){
+               domain += "/"+arr[i];
             }
+            return domain;
         }
 
         function getSimpleName(url) {
