@@ -26,10 +26,10 @@ describe('RDFParser: ', function () {
     it('could find the value of property of an indivdiual in a specific file', function () {
 
 
-        let node = 'http://www.theworldavatar.com/JurongIsland.owl#V_CO2_Jurong';
+        let node = 'http://www.jparksimulator.com/JurongIsland.owl#V_CO2_Jurong';
         let property = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue";
         let result = rdfParser(opts).search(node, property);
-
+      console.log(util.inspect(result));
 
         expect(result.value).to.equal('1500.0');
 

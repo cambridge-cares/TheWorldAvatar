@@ -30,10 +30,10 @@ app.get('/', function (req, res) {
 });
 
 //serve sub-routes
-app.use('/data', data);
 app.use('/query', query);
 app.use('/sim', sim);
 app.use('/visual', visual);
+app.use('/data', data);
 
 
 //test post data, to be deleted
@@ -68,6 +68,7 @@ app.use(function(req, res, next) {
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
+    console.log(req.originalUrl);
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 

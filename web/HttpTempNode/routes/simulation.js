@@ -5,11 +5,17 @@
 var express = require('express');
 var router = express.Router();
 
-
+let db = require("../util/mockDB");
 router.get('/', function(req, res, next) {
-//TODO:check service exist, retrieve input info
+
+    //TODO:check service exist, retrieve input info
+
+
 
     //TODO: get input from db
+
+
+
     //TODO: connect java serlet, to retrieve result
     //TODO: update result with db
 });
