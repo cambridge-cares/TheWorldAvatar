@@ -1,14 +1,18 @@
-//
-   Created by Shaocong on 4/5/2017.
-html
-    head
+extends header.pug
+block title
         title  Jurong CO2
+
+block sheets
         link(rel='stylesheet' href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css")
         link(rel="stylesheet" href='/stylesheets/style.css')
 
+block content
         body
             div#container
-                p Jurong Island CO2 Emission:
+                p
+                    |Jurong Island CO
+                    sub 2
+                    |&nbsp;Emission:
                 p
                 span#co2Value  #{co2Value}
                 span  ton
