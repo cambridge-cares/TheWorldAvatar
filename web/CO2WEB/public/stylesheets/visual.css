@@ -38,6 +38,7 @@ text.nodeTag {
     top:0px;
     padding-top: 0px;
     padding-left: 0px;
+
 }
 #checkShowImport{
     margin-left: 0px;
@@ -55,8 +56,10 @@ text.nodeTag {
 }
 
 #choice-div{
+    z-index:111;
+
     position: absolute;
     left: 0px;
-    top: 500px;
+    bottom: 0px;
     float:left;
 }
