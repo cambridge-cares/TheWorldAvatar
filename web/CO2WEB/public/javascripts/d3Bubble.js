@@ -5,7 +5,7 @@
 
 
 var FileLinkMap = function (options) {
-    var width = options.width || 2500,
+    var width = $(document).width(),
         height = options.height || 1200,
         charge = options.charge || -3000,
         distance = options.distance || 100,

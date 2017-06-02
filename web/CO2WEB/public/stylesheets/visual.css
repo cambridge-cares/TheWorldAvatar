@@ -33,7 +33,12 @@ text.nodeTag {
     width:200px;
 }
 
-
+#draw-panel{
+    left:0px;
+    top:0px;
+    padding-top: 0px;
+    padding-left: 0px;
+}
 #checkShowImport{
     margin-left: 0px;
 }
@@ -47,4 +52,11 @@ text.nodeTag {
 .title{
 
     font-size: 20px;
+}
+
+#choice-div{
+    position: absolute;
+    left: 0px;
+    top: 500px;
+    float:left;
 }
