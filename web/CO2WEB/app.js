@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var visualize =require("./routes/visualize.js");
 var showCO2 = require("./routes/showCO2.js");
+var bmsTemp = require("./routes/bmsNodeTemp");
 var config = require("./config.js");
 var app = express();
 var port = config.port;
@@ -29,6 +30,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 //app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
 app.use('/visualize', visualize);
 app.use('/JurongIsland.owl/showCO2', showCO2);
+app.use('/JPS_KB_CARES_Lab_Node/FH-01.owl', bmsTemp);
 
 app.get('/', function (req, res) {
 	        res.sendFile(path.join(__dirname, 'views/index.html'));
