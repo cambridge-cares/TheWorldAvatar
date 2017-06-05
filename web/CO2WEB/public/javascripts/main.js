@@ -26,7 +26,7 @@ function setFluctuate(){
 function fluctuate(oldValue){
 
 
-    oldValue +=Math.random()*20 - 10;//add a random [-10,10)
+    oldValue +=Math.random()*0.02 - 0.01;//add a random [-0.01,0.01)
 
     return oldValue.toFixed(4);
 

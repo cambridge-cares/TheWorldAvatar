@@ -17,7 +17,7 @@ router.get('/', function(req, res, next) {
         }
 
         console.log(body);
-        res.header('Content-Type','text/xml').send(body)
+        res.header('Content-Type','text/xml').send(body);
 
     })
 
