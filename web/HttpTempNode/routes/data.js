@@ -12,73 +12,37 @@ let changeListener = (require("../util/changeListener"))();
 let loopChild = require("../util/loopChild");
 let db = require("../util/mockDB");
 //TODO: get data
+//TODO: check request
+
 router.get('/', function (req, res, next) {
-
-    //parse json for request
+    //query : name, property
+    console.log("request data");
+    //console.log(req.path);
+   // console.log(req.originalUrl);
     try {
-        console.log("receive json: "+req.query.uris);
-        let data = JSON.parse(req.query.uris);
-
-        if(!data.hasOwnProperty("uris")){
-            console.log("uris not defined in json object uris parsed by query string");
-            throw new Error("uris not defined in json object uris parsed by query string");
+        //TODO: pack everything into nodeIRI and property IRI
+        console.log("search name: "+req.query.name);
+        let propertyIRI = req.query.property || undefined;
+        if(!req.query.name){
+            res.status(500).send({error : "Search node IRI not supplied"});
         }
-        let uris = data.uris;
-        console.log("names2 search: "+ uris.toString());
+        let nodeIRI = req.query.name;
+
+
+        console.log("search property: "+req.query.property);
+
 
         //results array format [ {uriA : DataA}, {uriB : DataB}...  ]
         //search it among own owl/db first
-        db.searchDB(uris, function (err, dBresults, noFoundUris) {//return error if any, results of found, arr of not found uris(the rest)
+        db.searchDB(nodeIRI, propertyIRI, function (err, result) {//return error if any, results of found, arr of not found uris(the rest)
                 if(err){
                     console.log(err);
                     res.status(500).send({error: err.message});
 
                 }
 
-            if(!noFoundUris || noFoundUris.length < 1){//all requested data is found in own db, return immediately
-                console.log(util.inspect(dBresults));
 
-                let temp = {results:dBresults};
-                res.json(temp);
-                return;
-            }
-            //else, request children for data
-            console.log("search path:"+req.originalUrl+"  baseUrl:"+req.baseUrl+"  path:"+req.path);
-
-
-            async.concat(noFoundUris,
-
-                function (queryParam, callback) {
-                    loopChild(req.baseUrl,queryParam, function (err, result) {
-                        if (err) {
-                            callback(err);
-                            return;
-                        }
-                        //extract null from result arr or object
-                        result = result.filter(function(n){ return n !== null && n!==undefined });
-                        if(result.length < 1){
-                            callback(new Error("Data can not be found"));
-                            return;
-                        }
-                        callback(null, result[0]);
-
-                    })
-                }
-                , function (err, childResults) {
-                    if (err) {
-                        console.log(err);
-                        res.status(500).send({error: err.message});
-                        return;
-                    }
-                    console.log("own db results: " +util.inspect(dBresults));
-                    console.log("children db results: " +util.inspect(childResults));
-                    let temp = {results:dBresults.concat(childResults)};
-                    console.log(temp);
-
-                    res.json(temp);
-
-                });
-
+                res.json(result);
         });
 
 
