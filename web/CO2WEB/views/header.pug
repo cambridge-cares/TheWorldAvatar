@@ -8,10 +8,13 @@ head
 
 body
     div(class="jumbotron text-center" id="topBanner")
-        img(float="left" src="/images/cam_lang_negativ1 NEW_0.png"  href = "http://www.cares.cam.ac.uk/node/101")
-        h1(id="head1") J-Park Simulator
-        block subtitle
-        p(id="description")
-            block description
+        div(class="col-md-4")
+            img(float="left" src="/images/cam_lang_negativ1 NEW_0.png"  href = "http://www.cares.cam.ac.uk/node/101")
+        div(class="col-md-8")
+            h1(id="head1") J-Park Simulator:&nbsp;
+                span
+                    block subtitle
+            p(id="description")
+                block description
 
     block content

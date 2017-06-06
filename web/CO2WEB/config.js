@@ -9,12 +9,12 @@
 var config = {};
 
 config.root = 
-"C:/TOMCAT/webapps/ROOT";
+//"C:/TOMCAT/webapps/ROOT";
 
 
-//__dirname + "/TestVisualization" ; // own folder for testing
+__dirname + "/TestVisualization" ; // own folder for testing
 
 config.rootNode = "TheWorld.owl";
-config.port = 82; //port for testing
+config.port = 3000; //port for testing
 
 module.exports = config;
