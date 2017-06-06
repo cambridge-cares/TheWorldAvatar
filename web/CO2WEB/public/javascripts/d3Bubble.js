@@ -44,6 +44,9 @@ var FileLinkMap = function (options) {
         var nodesArr = [];
 
         function getDomain(str) {
+			if(!str){
+				return null;
+			}
 
             str = str.replace("theworldavatar", "jparksimulator");
             str = str.replace("file:/C:/", "http://www.jparksimulator.com/");
@@ -62,6 +65,8 @@ var FileLinkMap = function (options) {
         }
 
         function getSimpleName(url) {
+       if(!url){
+return undefined;}
             var arr = url.split("/");
 
             //  return (arr[arr.length - 1] === "")? arr[arr.length-3]+'/'+arr[arr.length-2] : arr[arr.length-2]+"/"+arr[arr.length -1];

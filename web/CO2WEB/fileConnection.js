@@ -90,6 +90,20 @@ function readConnections(options, callback) {
             throw  err;
         }
     }
+	
+	function getUrl(root){
+		            for (var ns of root.namespaces()) {
+                //console.log(ns.prefix()+ ":"+ns.href());
+                //get base from xml
+                if (ns.prefix() === null) {//if prefix not null [ self namespace is defined with null prefix]
+                    console.log("prefix:" + ns.prefix());
+
+                  return ns.href();
+                }
+            }
+			
+			return null;
+	}
 
 
     function getChildren(root) {
@@ -152,7 +166,10 @@ function readConnections(options, callback) {
                var xmlDoc = libxmljs.parseXml(file);
                var root = xmlDoc.root();
                var myUri = (root.attrs() && root.attrs().length > 0) ? root.attrs()[0].value() : null;
-
+               
+			   if(myUri === null){
+			    myUri = getUrl(root);
+			   }
                console.log("myURI" + myUri);
                //TODO: request for remote  VS search with name on current?
                //TODO: xml parse the file => get targets list == childList => request on each child file
