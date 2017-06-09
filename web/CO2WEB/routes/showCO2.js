@@ -1,6 +1,4 @@
-/**
- * Created by Shaocong on 5/25/2017.
- */
+
 var express = require('express');
 var router = express.Router();
 var rdfParser = require("../rdfParser.js");

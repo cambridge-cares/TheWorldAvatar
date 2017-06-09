@@ -1,6 +1,4 @@
-/**
- * Created by Shaocong on 4/4/2017.
- */
+
 /*******IMPORT**********/
 var expect = require("chai").expect;
 var util = require("util");

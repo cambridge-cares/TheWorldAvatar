@@ -1,6 +1,4 @@
-/**
- * Created by Shaocong on 4/7/2017.
- */
+
 // http://blog.thomsonreuters.com/index.php/mobile-patent-suits-graphic-of-the-day/
 
 
@@ -43,6 +41,8 @@ var FileLinkMap = function (options) {
         var nodes = {};
         var nodesArr = [];
 
+
+		
         function getDomain(str) {
 			if(!str){
 				return null;
@@ -112,7 +112,13 @@ return undefined;}
              ***/
         });
 
-
+		let index = 0;
+		console.log("@@@@@@@@@@@@@@@@@@@@@@");
+		for(let link of links){
+			
+			console.log(index+"  :"+JSON.stringify(link));
+			index++;
+		}
         // console.log(JSON.stringify(nodes));
         //packs object :nodes into array
         for (var attr in nodes) {
@@ -299,40 +305,71 @@ return undefined;}
         function ticked() {
 
             path
-                .attr("x1", function (d) {
+                .attr("x1", function (d,i) {
+					if(d===undefined){
+					//	console.log("@@@@@@@@@@@@@"+i);
+                     return 0;
+					}
                     return d.source.x;
                 })
                 .attr("y1", function (d) {
+										if(d===undefined){
+                     return 0;
+					}
                     return d.source.y;
                 })
                 .attr("x2", function (d) {
+															if(d===undefined){
+                     return 0;
+					}
                     return d.target.x;
                 })
                 .attr("y2", function (d) {
-                    return d.target.y;
+                    										if(d===undefined){
+                     return 0;
+					}
+					return d.target.y;
                 });
 
             circle
                 .attr("x", function (d) {
-                    return d.x;
+                    															if(d===undefined){
+                     return 0;
+					}
+					return d.x;
                 })
                 .attr("y", function (d) {
-                    return d.y;
+                    															if(d===undefined){
+                     return 0;
+					}
+					return d.y;
                 });
 
             circleDraw
                 .attr("cx", function (d) {
-                    return d.x;
+															if(d===undefined){
+                     return 0;
+					}                
+				return d.x;
                 })
                 .attr("cy", function (d) {
-                    return d.y;
+                    															if(d===undefined){
+                     return 0;
+					}
+					return d.y;
                 });
             text
                 .attr("x", function (d) {
+																				if(d===undefined){
+                     return 0;
+					}
                     return d.x;
                 })
                 .attr("y", function (d) {
-                    return d.y;
+                    															if(d===undefined){
+                     return 0;
+					}
+					return d.y;
                 });
 
         }
@@ -409,6 +446,14 @@ if($('#checkShowImport').prop('checked')) {
                 console.log(JSON.stringify(links));
                 if(LinkRightFormat(links))
                 {
+					
+					for(let link of links){
+					if(link===undefined || link === null){
+						console.log("!!!!!!!!!!");
+						
+					}
+						
+					}
                     map.update(links);
 
 
