@@ -1,6 +1,3 @@
-/**
- * Created by Shaocong on 5/31/2017.
- */
 
 //Try libxmljs lib
 

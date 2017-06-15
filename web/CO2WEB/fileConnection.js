@@ -1,6 +1,4 @@
-/**
- * Created by Shaocong on 4/6/2017.
- */
+
 //import
 var path = require('path');
 var libxmljs = require("libxmljs");

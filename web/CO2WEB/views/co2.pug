@@ -10,7 +10,7 @@ block subtitle
 
     |CO
     sub 2
-    | Emission Meter
+    |&nbsp;Emission Meter
 
 block description
     |A real time CO
@@ -21,14 +21,21 @@ block description
 
 block content
 
-            div#container
-                p
-                    |Jurong Island CO
-                    sub 2
-                    |&nbsp;Emission:
-                p
-                span#co2Value  #{co2Value}
-                span  tonnes
+    div#container
+        p
+            | Jurong Island CO
+            sub 2
+            | &nbsp;Emission:
+        p
+        span#co2Value  #{co2Value}
+        span  tonnes/seconds
+
+        p#co2des
+            | The total CO
+            sub 2
+            |&nbsp;emission from Jurong Island is estimated as approximately 29 million tonnes
+            | per year using the Carnegie Mellon (US 2002 Producer Price) Model.
+				
 
             script(src="https://code.jquery.com/jquery-2.2.0.min.js")
             script(src="/javascripts//main.js")

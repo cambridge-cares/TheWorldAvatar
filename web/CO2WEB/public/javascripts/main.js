@@ -1,6 +1,4 @@
-/**
- * Created by Shaocong on 4/5/2017.
- */
+
 $( window ).on( "load", function() {
     console.log( "window loaded" );
 //ajax to get co2 value from server

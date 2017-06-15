@@ -1,6 +1,4 @@
-/**
- * Created by Shaocong on 4/4/2017.
- */
+
 /***import modules**/
 let $rdf = require('rdflib');
 let fs = require('fs');
