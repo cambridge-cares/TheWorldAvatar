@@ -21,6 +21,7 @@
     "rdflib": "^0.15.0",
     "readdirp": "^2.1.0",
     "request": "^2.81.0",
-    "serve-favicon": "~2.3.2"
+    "serve-favicon": "~2.3.2",
+    "socket.io": "^2.0.3"
   }
 }
