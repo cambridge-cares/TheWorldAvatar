@@ -520,6 +520,17 @@ function LineGraph(argsMap) {
             .attr("transform", "translate(-10,0)")
             .call(yAxisLeft);
 
+			
+		        var leftlabel = document.getElementsByClassName("y axis left");
+        var nodes = leftlabel[0].childNodes;
+
+        for(var i = 0; i < nodes.length - 1;i++)
+        {
+            nodes[i].childNodes[1].innerHTML = nodes[i].childNodes[1].innerHTML + " cbm/h";
+        }	
+			
+			
+			
         if(yAxisRight != undefined) {
             // Add the y-axis to the right if we need one
             graph.append("svg:g")

@@ -10,6 +10,8 @@ var visualize =require("./routes/visualize.js");
 var showCO2 = require("./routes/showCO2.js");
 var config = require("./config.js");
 var bmsplot= require("./routes/bmsplot.js");
+var bmsTemp = require("./routes/bmsNodeTemp");
+
 
 var app = express();
 var port = config.port;
@@ -34,7 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 //app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
 app.use('/visualize', visualize);
 app.use('/JurongIsland.owl/showCO2', showCO2);
-//app.use('/JPS_KB_CARES_Lab_Node/FH-01.owl', bmsTemp);
+app.use('/JPS_KB_CARES_Lab_Node/FH-01.owl', bmsTemp);
 app.use("/bmsplot", bmsplot);
 
 app.get('/', function (req, res) {
