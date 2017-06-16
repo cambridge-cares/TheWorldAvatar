@@ -18,7 +18,7 @@ $(document).ready(function () {
 
     var dataObj = {};
     /*settings*************/
-    dataObj["names"] = ["FH-01"];
+    dataObj["names"] = ["Air-Flow rate = "];
     dataObj["colors"] = ["green"];
     dataObj["scale"] = "linear";
 

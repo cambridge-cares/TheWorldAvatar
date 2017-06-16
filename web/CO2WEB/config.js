@@ -8,13 +8,13 @@
 
 var config = {};
 
-config.root = "C:/TOMCAT/webapps/ROOT";
+config.root = //"C:/TOMCAT/webapps/ROOT";
 
 
-//__dirname + "/TestVisualization" ; // own folder for testing
+__dirname + "/TestVisualization" ; // own folder for testing
 
 config.rootNode = "TheWorld.owl";
-config.port = 81;//port for testing
+config.port = 3000;//port for testing
 config.bmsUrl = "http://10.25.188.104/dataObserve";
 config.viewRoot = __dirname + "/views";
 config.myUrl = "http://www.theworldavatar.com:81/change";

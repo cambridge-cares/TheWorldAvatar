@@ -519,4 +519,3055 @@
       </coordinate_system:CoordinateValue>
     </system:isObservedAgainstBackdrop>
   </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_58">
+    <system:numericalValue rdf:whatever="no">1382.25</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:75:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_59">
+    <system:numericalValue rdf:whatever="no">1623.89</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:76:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_60">
+    <system:numericalValue rdf:whatever="no">1606.55</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:77:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_61">
+    <system:numericalValue rdf:whatever="no">1559.32</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:78:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_62">
+    <system:numericalValue rdf:whatever="no">1301.07</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:79:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_63">
+    <system:numericalValue rdf:whatever="no">1621.67</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:80:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_64">
+    <system:numericalValue rdf:whatever="no">1534.55</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:81:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_65">
+    <system:numericalValue rdf:whatever="no">1475.95</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:82:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_66">
+    <system:numericalValue rdf:whatever="no">1308.49</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:83:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_67">
+    <system:numericalValue rdf:whatever="no">1340.83</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:84:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_68">
+    <system:numericalValue rdf:whatever="no">1373.24</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:85:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_69">
+    <system:numericalValue rdf:whatever="no">1457.05</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:86:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_70">
+    <system:numericalValue rdf:whatever="no">1283.16</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:87:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_71">
+    <system:numericalValue rdf:whatever="no">1628.22</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:88:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_72">
+    <system:numericalValue rdf:whatever="no">1271.21</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:89:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_73">
+    <system:numericalValue rdf:whatever="no">1618.93</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:90:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_74">
+    <system:numericalValue rdf:whatever="no">1646.74</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:91:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_75">
+    <system:numericalValue rdf:whatever="no">1491.50</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:92:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_76">
+    <system:numericalValue rdf:whatever="no">1366.07</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:93:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_77">
+    <system:numericalValue rdf:whatever="no">1652.55</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:94:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_78">
+    <system:numericalValue rdf:whatever="no">1324.42</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:95:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_79">
+    <system:numericalValue rdf:whatever="no">1547.54</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:96:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_80">
+    <system:numericalValue rdf:whatever="no">1298.15</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:97:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_81">
+    <system:numericalValue rdf:whatever="no">1465.35</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:98:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_82">
+    <system:numericalValue rdf:whatever="no">1286.01</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:99:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_83">
+    <system:numericalValue rdf:whatever="no">1319.66</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:100:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_84">
+    <system:numericalValue rdf:whatever="no">1310.86</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:101:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_85">
+    <system:numericalValue rdf:whatever="no">1398.96</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:102:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_86">
+    <system:numericalValue rdf:whatever="no">1232.20</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:103:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_87">
+    <system:numericalValue rdf:whatever="no">1557.67</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:104:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_88">
+    <system:numericalValue rdf:whatever="no">1216.12</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:105:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_89">
+    <system:numericalValue rdf:whatever="no">1425.73</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:106:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_90">
+    <system:numericalValue rdf:whatever="no">1182.75</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:107:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_91">
+    <system:numericalValue rdf:whatever="no">1407.63</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:108:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_92">
+    <system:numericalValue rdf:whatever="no">1459.75</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:109:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_93">
+    <system:numericalValue rdf:whatever="no">1598.73</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:110:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_94">
+    <system:numericalValue rdf:whatever="no">1571.05</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:111:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_95">
+    <system:numericalValue rdf:whatever="no">1346.32</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:112:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_96">
+    <system:numericalValue rdf:whatever="no">1549.17</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:113:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_97">
+    <system:numericalValue rdf:whatever="no">1589.26</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:114:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_98">
+    <system:numericalValue rdf:whatever="no">1454.51</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:115:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_99">
+    <system:numericalValue rdf:whatever="no">1591.22</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:116:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_100">
+    <system:numericalValue rdf:whatever="no">1591.99</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:117:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_101">
+    <system:numericalValue rdf:whatever="no">1352.85</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:118:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_102">
+    <system:numericalValue rdf:whatever="no">1650.85</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:119:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_103">
+    <system:numericalValue rdf:whatever="no">1483.65</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:120:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_104">
+    <system:numericalValue rdf:whatever="no">1389.13</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:121:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_105">
+    <system:numericalValue rdf:whatever="no">1515.20</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:122:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_106">
+    <system:numericalValue rdf:whatever="no">1304.12</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:123:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_107">
+    <system:numericalValue rdf:whatever="no">1650.00</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:124:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_108">
+    <system:numericalValue rdf:whatever="no">1184.69</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:125:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_109">
+    <system:numericalValue rdf:whatever="no">1518.76</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:126:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_110">
+    <system:numericalValue rdf:whatever="no">1394.86</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:127:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_111">
+    <system:numericalValue rdf:whatever="no">1211.93</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:128:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_112">
+    <system:numericalValue rdf:whatever="no">1217.63</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:129:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_113">
+    <system:numericalValue rdf:whatever="no">1445.03</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:130:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_114">
+    <system:numericalValue rdf:whatever="no">1550.82</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:131:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_115">
+    <system:numericalValue rdf:whatever="no">1342.20</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:132:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_116">
+    <system:numericalValue rdf:whatever="no">1530.55</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:133:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_117">
+    <system:numericalValue rdf:whatever="no">1655.16</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:134:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_118">
+    <system:numericalValue rdf:whatever="no">1604.21</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:135:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_119">
+    <system:numericalValue rdf:whatever="no">1490.62</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:136:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_120">
+    <system:numericalValue rdf:whatever="no">1469.37</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:137:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_121">
+    <system:numericalValue rdf:whatever="no">1440.99</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:138:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_122">
+    <system:numericalValue rdf:whatever="no">1514.92</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:139:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_123">
+    <system:numericalValue rdf:whatever="no">1511.13</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:140:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_124">
+    <system:numericalValue rdf:whatever="no">1551.76</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:141:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_125">
+    <system:numericalValue rdf:whatever="no">1265.03</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:142:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_126">
+    <system:numericalValue rdf:whatever="no">1310.93</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:143:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_127">
+    <system:numericalValue rdf:whatever="no">1481.48</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:144:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_128">
+    <system:numericalValue rdf:whatever="no">1395.59</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:145:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_129">
+    <system:numericalValue rdf:whatever="no">1670.37</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:146:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_130">
+    <system:numericalValue rdf:whatever="no">1626.49</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:147:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_131">
+    <system:numericalValue rdf:whatever="no">1362.40</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:148:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_132">
+    <system:numericalValue rdf:whatever="no">1311.54</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:149:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_133">
+    <system:numericalValue rdf:whatever="no">1402.41</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:150:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_134">
+    <system:numericalValue rdf:whatever="no">1233.38</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:151:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_135">
+    <system:numericalValue rdf:whatever="no">1294.87</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:152:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_136">
+    <system:numericalValue rdf:whatever="no">1241.41</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:153:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_137">
+    <system:numericalValue rdf:whatever="no">1394.33</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:154:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_138">
+    <system:numericalValue rdf:whatever="no">1671.63</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:155:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_139">
+    <system:numericalValue rdf:whatever="no">1232.12</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:156:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_140">
+    <system:numericalValue rdf:whatever="no">1517.62</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:157:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_141">
+    <system:numericalValue rdf:whatever="no">1294.25</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:158:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_142">
+    <system:numericalValue rdf:whatever="no">1594.88</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:159:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_143">
+    <system:numericalValue rdf:whatever="no">1270.59</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:160:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_144">
+    <system:numericalValue rdf:whatever="no">1658.30</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:161:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_145">
+    <system:numericalValue rdf:whatever="no">1511.75</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:162:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_146">
+    <system:numericalValue rdf:whatever="no">1434.05</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:163:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_147">
+    <system:numericalValue rdf:whatever="no">1178.70</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:164:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_148">
+    <system:numericalValue rdf:whatever="no">1640.82</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:165:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_149">
+    <system:numericalValue rdf:whatever="no">1640.10</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:166:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_150">
+    <system:numericalValue rdf:whatever="no">1498.76</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:167:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_151">
+    <system:numericalValue rdf:whatever="no">1198.56</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:168:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_152">
+    <system:numericalValue rdf:whatever="no">1426.52</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:169:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_153">
+    <system:numericalValue rdf:whatever="no">1246.52</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:170:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_154">
+    <system:numericalValue rdf:whatever="no">1477.96</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:171:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_155">
+    <system:numericalValue rdf:whatever="no">1186.03</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:172:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_156">
+    <system:numericalValue rdf:whatever="no">1285.48</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:173:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_157">
+    <system:numericalValue rdf:whatever="no">1431.53</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:174:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_158">
+    <system:numericalValue rdf:whatever="no">1349.18</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:175:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_159">
+    <system:numericalValue rdf:whatever="no">1178.42</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:176:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_160">
+    <system:numericalValue rdf:whatever="no">1309.86</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:177:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_161">
+    <system:numericalValue rdf:whatever="no">1443.63</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:178:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_162">
+    <system:numericalValue rdf:whatever="no">1332.42</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:179:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_163">
+    <system:numericalValue rdf:whatever="no">1447.85</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:180:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_164">
+    <system:numericalValue rdf:whatever="no">1264.94</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:181:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_165">
+    <system:numericalValue rdf:whatever="no">1586.45</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:182:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_166">
+    <system:numericalValue rdf:whatever="no">1533.06</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:183:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_167">
+    <system:numericalValue rdf:whatever="no">1601.73</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:184:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_168">
+    <system:numericalValue rdf:whatever="no">1498.66</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:185:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_169">
+    <system:numericalValue rdf:whatever="no">1179.08</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:186:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_170">
+    <system:numericalValue rdf:whatever="no">1266.97</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:187:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_171">
+    <system:numericalValue rdf:whatever="no">1389.81</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:188:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_172">
+    <system:numericalValue rdf:whatever="no">1638.08</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:189:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_173">
+    <system:numericalValue rdf:whatever="no">1334.39</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:190:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_174">
+    <system:numericalValue rdf:whatever="no">1608.06</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:191:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_175">
+    <system:numericalValue rdf:whatever="no">1574.14</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:192:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_176">
+    <system:numericalValue rdf:whatever="no">1338.21</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:193:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_177">
+    <system:numericalValue rdf:whatever="no">1285.53</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:194:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_178">
+    <system:numericalValue rdf:whatever="no">1451.41</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:195:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_179">
+    <system:numericalValue rdf:whatever="no">1187.66</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:196:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_180">
+    <system:numericalValue rdf:whatever="no">1659.05</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:197:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_181">
+    <system:numericalValue rdf:whatever="no">1596.73</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:198:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_182">
+    <system:numericalValue rdf:whatever="no">1300.15</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:199:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_183">
+    <system:numericalValue rdf:whatever="no">1540.98</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:200:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_184">
+    <system:numericalValue rdf:whatever="no">1550.42</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:201:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_185">
+    <system:numericalValue rdf:whatever="no">1668.63</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:202:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_186">
+    <system:numericalValue rdf:whatever="no">1653.74</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:203:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_187">
+    <system:numericalValue rdf:whatever="no">1319.40</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:204:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_188">
+    <system:numericalValue rdf:whatever="no">1246.33</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:205:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_189">
+    <system:numericalValue rdf:whatever="no">1674.81</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:206:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_190">
+    <system:numericalValue rdf:whatever="no">1577.10</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:207:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_191">
+    <system:numericalValue rdf:whatever="no">1492.81</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:208:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_192">
+    <system:numericalValue rdf:whatever="no">1656.50</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:209:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_193">
+    <system:numericalValue rdf:whatever="no">1325.24</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:210:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_194">
+    <system:numericalValue rdf:whatever="no">1355.46</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:211:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_195">
+    <system:numericalValue rdf:whatever="no">1366.92</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:212:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_196">
+    <system:numericalValue rdf:whatever="no">1451.88</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:213:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_197">
+    <system:numericalValue rdf:whatever="no">1264.90</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:214:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_198">
+    <system:numericalValue rdf:whatever="no">1322.23</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:215:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_199">
+    <system:numericalValue rdf:whatever="no">1386.53</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:216:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_200">
+    <system:numericalValue rdf:whatever="no">1658.55</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:217:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_201">
+    <system:numericalValue rdf:whatever="no">1293.45</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:218:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_202">
+    <system:numericalValue rdf:whatever="no">1629.53</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:219:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_203">
+    <system:numericalValue rdf:whatever="no">1385.63</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:220:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_204">
+    <system:numericalValue rdf:whatever="no">1447.24</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:221:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_205">
+    <system:numericalValue rdf:whatever="no">1257.67</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:222:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_206">
+    <system:numericalValue rdf:whatever="no">1239.14</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:223:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_207">
+    <system:numericalValue rdf:whatever="no">1245.76</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:224:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_208">
+    <system:numericalValue rdf:whatever="no">1349.15</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:225:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_209">
+    <system:numericalValue rdf:whatever="no">1331.18</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:226:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_210">
+    <system:numericalValue rdf:whatever="no">1584.49</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:227:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_211">
+    <system:numericalValue rdf:whatever="no">1381.34</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:228:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_212">
+    <system:numericalValue rdf:whatever="no">1495.53</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:229:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_213">
+    <system:numericalValue rdf:whatever="no">1559.83</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:230:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_214">
+    <system:numericalValue rdf:whatever="no">1540.85</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:231:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_215">
+    <system:numericalValue rdf:whatever="no">1547.79</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:232:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_216">
+    <system:numericalValue rdf:whatever="no">1488.22</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:233:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_217">
+    <system:numericalValue rdf:whatever="no">1313.97</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:234:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_218">
+    <system:numericalValue rdf:whatever="no">1387.98</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:235:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_219">
+    <system:numericalValue rdf:whatever="no">1632.49</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:236:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_220">
+    <system:numericalValue rdf:whatever="no">1591.10</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:237:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_221">
+    <system:numericalValue rdf:whatever="no">1207.58</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:238:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_222">
+    <system:numericalValue rdf:whatever="no">1366.28</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:239:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_223">
+    <system:numericalValue rdf:whatever="no">1434.19</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:240:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_224">
+    <system:numericalValue rdf:whatever="no">1577.57</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:241:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_225">
+    <system:numericalValue rdf:whatever="no">1366.49</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:242:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_226">
+    <system:numericalValue rdf:whatever="no">1405.60</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:243:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_227">
+    <system:numericalValue rdf:whatever="no">1662.67</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:244:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_228">
+    <system:numericalValue rdf:whatever="no">1258.29</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:245:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_229">
+    <system:numericalValue rdf:whatever="no">1262.93</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:246:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_230">
+    <system:numericalValue rdf:whatever="no">1250.71</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:247:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_231">
+    <system:numericalValue rdf:whatever="no">1310.75</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:248:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_232">
+    <system:numericalValue rdf:whatever="no">1207.26</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:249:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_233">
+    <system:numericalValue rdf:whatever="no">1517.85</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:250:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_234">
+    <system:numericalValue rdf:whatever="no">1612.14</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:251:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_235">
+    <system:numericalValue rdf:whatever="no">1617.61</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:252:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_236">
+    <system:numericalValue rdf:whatever="no">1379.54</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:253:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_237">
+    <system:numericalValue rdf:whatever="no">1522.04</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:254:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_238">
+    <system:numericalValue rdf:whatever="no">1398.79</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:255:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_239">
+    <system:numericalValue rdf:whatever="no">1577.08</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:256:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_240">
+    <system:numericalValue rdf:whatever="no">1204.10</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:257:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_241">
+    <system:numericalValue rdf:whatever="no">1332.08</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:258:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_242">
+    <system:numericalValue rdf:whatever="no">1273.00</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:259:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_243">
+    <system:numericalValue rdf:whatever="no">1462.19</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:260:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_244">
+    <system:numericalValue rdf:whatever="no">1570.50</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:261:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_245">
+    <system:numericalValue rdf:whatever="no">1584.06</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:262:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_246">
+    <system:numericalValue rdf:whatever="no">1331.20</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:263:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_247">
+    <system:numericalValue rdf:whatever="no">1449.04</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:264:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_248">
+    <system:numericalValue rdf:whatever="no">1415.67</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:265:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_249">
+    <system:numericalValue rdf:whatever="no">1271.55</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:266:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_250">
+    <system:numericalValue rdf:whatever="no">1237.55</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:267:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_251">
+    <system:numericalValue rdf:whatever="no">1431.91</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:268:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_252">
+    <system:numericalValue rdf:whatever="no">1300.77</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:269:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_253">
+    <system:numericalValue rdf:whatever="no">1510.56</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:270:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_254">
+    <system:numericalValue rdf:whatever="no">1424.15</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:271:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_255">
+    <system:numericalValue rdf:whatever="no">1181.45</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:272:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_256">
+    <system:numericalValue rdf:whatever="no">1409.95</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:273:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_257">
+    <system:numericalValue rdf:whatever="no">1459.54</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:274:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_258">
+    <system:numericalValue rdf:whatever="no">1340.43</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:275:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_259">
+    <system:numericalValue rdf:whatever="no">1252.10</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:276:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_260">
+    <system:numericalValue rdf:whatever="no">1454.82</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:277:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_261">
+    <system:numericalValue rdf:whatever="no">1191.30</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:278:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_262">
+    <system:numericalValue rdf:whatever="no">1580.95</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:279:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_263">
+    <system:numericalValue rdf:whatever="no">1537.96</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:280:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_264">
+    <system:numericalValue rdf:whatever="no">1642.18</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:281:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_265">
+    <system:numericalValue rdf:whatever="no">1331.97</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:282:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_266">
+    <system:numericalValue rdf:whatever="no">1426.76</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:283:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_267">
+    <system:numericalValue rdf:whatever="no">1358.72</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:284:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_268">
+    <system:numericalValue rdf:whatever="no">1540.41</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:285:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_269">
+    <system:numericalValue rdf:whatever="no">1187.80</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:286:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_270">
+    <system:numericalValue rdf:whatever="no">1632.13</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:287:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_271">
+    <system:numericalValue rdf:whatever="no">1232.69</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:288:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_272">
+    <system:numericalValue rdf:whatever="no">1601.67</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:289:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_273">
+    <system:numericalValue rdf:whatever="no">1290.30</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:290:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_274">
+    <system:numericalValue rdf:whatever="no">1667.86</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:291:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_275">
+    <system:numericalValue rdf:whatever="no">1262.03</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:292:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_276">
+    <system:numericalValue rdf:whatever="no">1344.51</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:293:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_277">
+    <system:numericalValue rdf:whatever="no">1233.41</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:294:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_278">
+    <system:numericalValue rdf:whatever="no">1653.82</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:295:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_279">
+    <system:numericalValue rdf:whatever="no">1296.34</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:296:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_280">
+    <system:numericalValue rdf:whatever="no">1253.91</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:297:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_281">
+    <system:numericalValue rdf:whatever="no">1605.67</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:298:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_282">
+    <system:numericalValue rdf:whatever="no">1313.11</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:299:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_283">
+    <system:numericalValue rdf:whatever="no">1657.82</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:300:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_284">
+    <system:numericalValue rdf:whatever="no">1513.07</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:301:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_285">
+    <system:numericalValue rdf:whatever="no">1354.64</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:302:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_286">
+    <system:numericalValue rdf:whatever="no">1563.27</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:303:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_287">
+    <system:numericalValue rdf:whatever="no">1242.24</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:304:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_288">
+    <system:numericalValue rdf:whatever="no">1192.28</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:305:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_289">
+    <system:numericalValue rdf:whatever="no">1358.05</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:306:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_290">
+    <system:numericalValue rdf:whatever="no">1265.51</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:307:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_291">
+    <system:numericalValue rdf:whatever="no">1308.21</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:308:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_292">
+    <system:numericalValue rdf:whatever="no">1287.98</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:309:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_293">
+    <system:numericalValue rdf:whatever="no">1183.29</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:310:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_294">
+    <system:numericalValue rdf:whatever="no">1428.81</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:311:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_295">
+    <system:numericalValue rdf:whatever="no">1586.92</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:312:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_296">
+    <system:numericalValue rdf:whatever="no">1395.13</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:313:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_297">
+    <system:numericalValue rdf:whatever="no">1233.61</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:314:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_298">
+    <system:numericalValue rdf:whatever="no">1242.42</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:315:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_299">
+    <system:numericalValue rdf:whatever="no">1617.12</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:316:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_300">
+    <system:numericalValue rdf:whatever="no">1404.65</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:317:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_301">
+    <system:numericalValue rdf:whatever="no">1391.00</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:318:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_302">
+    <system:numericalValue rdf:whatever="no">1311.68</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:319:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_303">
+    <system:numericalValue rdf:whatever="no">1408.42</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:320:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_304">
+    <system:numericalValue rdf:whatever="no">1346.73</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:321:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_305">
+    <system:numericalValue rdf:whatever="no">1649.96</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:322:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_306">
+    <system:numericalValue rdf:whatever="no">1493.47</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:323:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_307">
+    <system:numericalValue rdf:whatever="no">1564.46</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:324:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_308">
+    <system:numericalValue rdf:whatever="no">1185.73</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:325:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_309">
+    <system:numericalValue rdf:whatever="no">1444.13</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:326:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_310">
+    <system:numericalValue rdf:whatever="no">1467.69</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:327:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_311">
+    <system:numericalValue rdf:whatever="no">1200.75</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:328:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_312">
+    <system:numericalValue rdf:whatever="no">1649.71</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:329:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_313">
+    <system:numericalValue rdf:whatever="no">1664.26</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:330:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_314">
+    <system:numericalValue rdf:whatever="no">1371.19</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:331:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_315">
+    <system:numericalValue rdf:whatever="no">1247.62</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:332:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_316">
+    <system:numericalValue rdf:whatever="no">1258.14</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:333:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_317">
+    <system:numericalValue rdf:whatever="no">1276.72</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:334:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_318">
+    <system:numericalValue rdf:whatever="no">1205.90</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:335:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_319">
+    <system:numericalValue rdf:whatever="no">1360.68</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:336:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_320">
+    <system:numericalValue rdf:whatever="no">1287.73</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:337:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_321">
+    <system:numericalValue rdf:whatever="no">1665.75</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:338:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_322">
+    <system:numericalValue rdf:whatever="no">1627.21</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:339:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_323">
+    <system:numericalValue rdf:whatever="no">1361.93</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:340:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_324">
+    <system:numericalValue rdf:whatever="no">1486.38</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:341:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_325">
+    <system:numericalValue rdf:whatever="no">1503.49</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:342:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_326">
+    <system:numericalValue rdf:whatever="no">1184.51</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:343:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_327">
+    <system:numericalValue rdf:whatever="no">1604.01</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:344:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_328">
+    <system:numericalValue rdf:whatever="no">1585.67</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:345:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_329">
+    <system:numericalValue rdf:whatever="no">1452.87</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:346:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_330">
+    <system:numericalValue rdf:whatever="no">1514.93</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:347:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_331">
+    <system:numericalValue rdf:whatever="no">1630.12</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:348:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_332">
+    <system:numericalValue rdf:whatever="no">1452.21</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:349:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_333">
+    <system:numericalValue rdf:whatever="no">1241.17</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:350:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_334">
+    <system:numericalValue rdf:whatever="no">1334.97</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:351:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_335">
+    <system:numericalValue rdf:whatever="no">1385.04</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:352:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_336">
+    <system:numericalValue rdf:whatever="no">1281.25</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:353:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_337">
+    <system:numericalValue rdf:whatever="no">1448.37</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:354:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_338">
+    <system:numericalValue rdf:whatever="no">1573.47</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:355:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_339">
+    <system:numericalValue rdf:whatever="no">1673.14</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:356:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_340">
+    <system:numericalValue rdf:whatever="no">1359.72</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:357:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_341">
+    <system:numericalValue rdf:whatever="no">1547.56</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:358:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_342">
+    <system:numericalValue rdf:whatever="no">1286.21</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:359:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_343">
+    <system:numericalValue rdf:whatever="no">1294.76</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:360:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_344">
+    <system:numericalValue rdf:whatever="no">1658.16</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:361:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_345">
+    <system:numericalValue rdf:whatever="no">1369.23</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:362:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_346">
+    <system:numericalValue rdf:whatever="no">1466.35</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:363:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_347">
+    <system:numericalValue rdf:whatever="no">1675.75</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:364:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_348">
+    <system:numericalValue rdf:whatever="no">1378.49</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:365:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_349">
+    <system:numericalValue rdf:whatever="no">1459.97</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:366:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_350">
+    <system:numericalValue rdf:whatever="no">1617.61</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:367:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_351">
+    <system:numericalValue rdf:whatever="no">1389.41</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:368:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_352">
+    <system:numericalValue rdf:whatever="no">1318.43</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:369:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_353">
+    <system:numericalValue rdf:whatever="no">1475.68</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:370:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_354">
+    <system:numericalValue rdf:whatever="no">1456.86</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:371:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_355">
+    <system:numericalValue rdf:whatever="no">1238.72</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:372:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_356">
+    <system:numericalValue rdf:whatever="no">1545.88</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:373:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_357">
+    <system:numericalValue rdf:whatever="no">1249.30</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:374:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_358">
+    <system:numericalValue rdf:whatever="no">1665.77</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:375:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_359">
+    <system:numericalValue rdf:whatever="no">1555.07</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:376:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_360">
+    <system:numericalValue rdf:whatever="no">1590.23</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:377:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_361">
+    <system:numericalValue rdf:whatever="no">1563.07</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:378:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_362">
+    <system:numericalValue rdf:whatever="no">1676.10</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:379:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_363">
+    <system:numericalValue rdf:whatever="no">1247.54</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:380:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_364">
+    <system:numericalValue rdf:whatever="no">1518.59</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:381:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_365">
+    <system:numericalValue rdf:whatever="no">1233.08</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:382:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_366">
+    <system:numericalValue rdf:whatever="no">1422.56</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:383:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_367">
+    <system:numericalValue rdf:whatever="no">1597.69</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:384:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_368">
+    <system:numericalValue rdf:whatever="no">1516.63</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:385:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_369">
+    <system:numericalValue rdf:whatever="no">1388.94</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:386:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_370">
+    <system:numericalValue rdf:whatever="no">1259.26</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:387:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_371">
+    <system:numericalValue rdf:whatever="no">1650.37</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:388:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_372">
+    <system:numericalValue rdf:whatever="no">1178.20</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:389:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_373">
+    <system:numericalValue rdf:whatever="no">1325.90</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:390:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_374">
+    <system:numericalValue rdf:whatever="no">1522.29</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:391:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_375">
+    <system:numericalValue rdf:whatever="no">1435.48</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:392:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_376">
+    <system:numericalValue rdf:whatever="no">1518.33</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:393:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_377">
+    <system:numericalValue rdf:whatever="no">1349.34</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:394:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_378">
+    <system:numericalValue rdf:whatever="no">1263.96</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:395:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_379">
+    <system:numericalValue rdf:whatever="no">1347.76</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:396:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_380">
+    <system:numericalValue rdf:whatever="no">1490.08</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:397:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_381">
+    <system:numericalValue rdf:whatever="no">1653.88</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:398:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_382">
+    <system:numericalValue rdf:whatever="no">1675.98</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:399:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_383">
+    <system:numericalValue rdf:whatever="no">1632.56</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:400:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_384">
+    <system:numericalValue rdf:whatever="no">1435.69</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:401:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_385">
+    <system:numericalValue rdf:whatever="no">1636.89</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:402:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_386">
+    <system:numericalValue rdf:whatever="no">1463.30</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:403:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_387">
+    <system:numericalValue rdf:whatever="no">1459.85</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:404:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_388">
+    <system:numericalValue rdf:whatever="no">1667.95</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:405:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_389">
+    <system:numericalValue rdf:whatever="no">1435.94</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:406:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_390">
+    <system:numericalValue rdf:whatever="no">1656.71</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:407:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_391">
+    <system:numericalValue rdf:whatever="no">1587.97</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:408:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_392">
+    <system:numericalValue rdf:whatever="no">1493.75</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:409:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_393">
+    <system:numericalValue rdf:whatever="no">1513.84</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:410:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_394">
+    <system:numericalValue rdf:whatever="no">1587.91</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:411:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_395">
+    <system:numericalValue rdf:whatever="no">1296.45</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:412:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:ID="v_AirFlow_396">
+    <system:numericalValue rdf:whatever="no">1519.73</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:whatever="no">CMH</system:hasUnitOfMeasure>
+    <system:isObservedAgainstBackdrop>
+      <coordinate_system:CoordinateValue rdf:ID="t_1">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6- 8-2017 21:413:00</system:numericalValue>
+      </coordinate_system:CoordinateValue>
+    </system:isObservedAgainstBackdrop>
+  </system:ScalarValue>
 </rdf:RDF>
