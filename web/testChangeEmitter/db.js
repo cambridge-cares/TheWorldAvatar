@@ -72,7 +72,7 @@ function db(){
 
         console.log(JSON.stringify(parts));
 
-        return Date.UTC(parts[3], parts[1] - 1, parts[2], parseInt(parts[4]) - 8, parts[5], parts[6]);
+        return Date.UTC(+parts[3], parts[1]-1, +parts[2], +parts[4]-8, +parts[5], parts[6]);
 
     }
 

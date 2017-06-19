@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var connectionsReader = require("../fileConnection.js");
+var connectionsReader = require("../util/fileConnection.js");
 
 /* GET users listing. */
 

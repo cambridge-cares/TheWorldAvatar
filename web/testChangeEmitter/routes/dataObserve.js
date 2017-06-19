@@ -38,6 +38,11 @@ console.log("get initial data: "+ req.body.getInitData);
 
 if(req.body.url){//TODO: check if valid url
 console.log("register " + req.body.url);
+
+   if(req.body.shutdown){
+
+     changeWatcher.deregister(req.body.url);
+   }
     changeWatcher.register(req.body.url);
 }
 
