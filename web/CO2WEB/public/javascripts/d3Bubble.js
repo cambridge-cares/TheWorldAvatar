@@ -140,7 +140,7 @@ return undefined;}
 
 
     function setBodyS(node) {
-         return -500*(node.count||1);
+         return -300*(1||node.count);
 
         //return charge;
     }
@@ -214,7 +214,7 @@ return undefined;}
 
         //set force simulation
         var simulation = d3.forceSimulation()
-            .force("link", d3.forceLink(links).distance(150))
+            .force("link", d3.forceLink(links).distance(70))
             .force("charge", d3.forceManyBody().strength(setBodyS))
             .force("center", d3.forceCenter(width / 2, height / 2));
 
