@@ -66,6 +66,8 @@ function register(callback) {
 
 };
 
+
+
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
@@ -136,6 +138,12 @@ app.use(function(err, req, res, next) {
 
 
 module.exports = app;
+
+http.on('close', function () {
+   //now deregister it
+
+
+});
 
 http.listen(port, function () {
   console.log('Server listening on port 3000');

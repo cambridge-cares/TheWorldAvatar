@@ -62,7 +62,7 @@ function watcher(options) {
                                 request.post({//http post to informee url
                                     url: informee, body: JSON.stringify(data), headers: {
                                         'content-type': contentType
-                                    }
+                                    }, agent:false
                                 }, function (err, response, body) {
 
                                     if (err) {
@@ -88,6 +88,7 @@ function watcher(options) {
     /*Register a new observer*/
     self.register = function (newObserver) {
 
+
         self.observers.push(newObserver);
     }
     /*Deregister an existing observer*/
@@ -105,7 +106,7 @@ function watcher(options) {
         return self.observers;
     }
 
-    return {register: self.register, setWatch: self.setWatch, getRegistered: self.getRegistered}
+    return {register: self.register,deregister: self.deregister, setWatch: self.setWatch, getRegistered: self.getRegistered}
 }
 
 module.exports = watcher;

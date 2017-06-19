@@ -2,11 +2,12 @@
 //import
 var path = require('path');
 var libxmljs = require("libxmljs");
+
 var async = require('async');
 var readdirp = require('readdirp');
 var fs = require('fs');
 var util = require('util');
-var config = require('./config.js');
+var config = require('../config.js');
 var folderLocation = config.root;
 let request = require('request');
 let rootNode  = config.rootNode;
@@ -70,19 +71,24 @@ function readConnections(options, callback) {
     function getXMLImports(root) {
         try {
 
-            let targets = [];
-            for (var ns of root.namespaces()) {
-                //console.log(ns.prefix()+ ":"+ns.href());
-                //get base from xml
-                if (ns.prefix() !== null) {//if prefix not null [ self namespace is defined with null prefix]
-                    console.log("prefix:" + ns.prefix());
+         //Get every tab defined in ontology tab
+              let imports =  root.find('//owl:Ontology//owl:imports', {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#resource"});
+              console.log(imports);
 
-                    var href = processHref(ns.href()); // text process href to extract #
-                    targets.push(href.trim());// add to target list
-                }
-            }
 
-            return targets;
+                let results = [];
+              if(imports ) {
+                  results = imports.map(function (item) {
+
+                      console.log(item.toString())
+
+                      console.log("resource:!!!!!!" + item.attr("resource").value());
+
+                      return item.attr("resource").value();
+                  });
+
+              }
+            return results;
         }
         catch (err) {
             throw  err;
@@ -187,30 +193,34 @@ function readConnections(options, callback) {
 					  console.log(err);
 				  }
                let children = getChildren(root);
+           //get my links
+           let myLinks = [];
+           var imports;
 
-               if (children.length < 1) { // no children is found, including devices and services
-
-                   let results = [];
-                   console.log(myUri + " is a leaf node return");
-                   if (showImport) {
-                       try {
-                           var imports = getXMLImports(root);
-                           for (let imported of imports) {
-                               results.push({source: myUri, target: imported})
-                           }
-                           ;
-
-                       } catch (err) {
-                           callback(err);
-                           return;
-                       }
+           if (showImport) {
+               try {
+                    imports = getXMLImports(root);
+                   for (let imported of imports) {
+                       console.log("import iri:" + imported);
+                       myLinks.push({source: myUri, target: imported,level:null})
+                      // children.push(imported);
                    }
-                   callback(null, results);
-                   return;
-               }//else
+                   ;
 
-               //get my links
-               let myLinks = [];
+               } catch (err) {
+                   callback(err);
+                   return;
+               }
+           }
+
+           if (children.length < 1) { // no children is found, including devices and services and call callback
+               console.log(myUri + " is a leaf node return");
+
+               callback(null, myLinks);
+               return;
+           }//else
+
+
 
 
                //push all children into link array
@@ -228,7 +238,9 @@ function readConnections(options, callback) {
                        myLinks.push({source: myUri, target: target, level: level});
                    }
                }
-
+           if (showImport) {
+               children = children.concat(imports);
+           }
                //request on each child, execute loopChild on it, then concate the result
                async.concat(children, requestChild, function (err, results) {
                    if (err) {

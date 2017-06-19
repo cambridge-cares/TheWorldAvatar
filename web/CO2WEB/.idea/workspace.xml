@@ -17,6 +17,26 @@
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
   </component>
+  <component name="DockManager">
+    <window id="2">
+      <content type="file-editors">
+        <state>
+          <leaf>
+            <file leaf-file-name="fileConnection.js" pinned="false" current-in-tab="true">
+              <entry file="file://$PROJECT_DIR$/util/fileConnection.js">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state relative-caret-position="342">
+                    <caret line="230" column="62" lean-forward="false" selection-start-line="230" selection-start-column="62" selection-end-line="230" selection-end-column="62" />
+                    <folding />
+                  </state>
+                </provider>
+              </entry>
+            </file>
+          </leaf>
+        </state>
+      </content>
+    </window>
+  </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
     <favorites_list name="CO2WEB" />
@@ -26,8 +46,28 @@
       <file leaf-file-name="style.css" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/stylesheets/style.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="396">
-              <caret line="18" column="1" lean-forward="true" selection-start-line="18" selection-start-column="1" selection-end-line="18" selection-end-column="1" />
+            <state relative-caret-position="352">
+              <caret line="16" column="3" lean-forward="false" selection-start-line="16" selection-start-column="3" selection-end-line="16" selection-end-column="3" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="tryXMLImport.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TestVisualization/tryXMLImport.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="22">
+              <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="d3Bubble.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/javascripts/d3Bubble.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="10362">
+              <caret line="471" column="9" lean-forward="false" selection-start-line="471" selection-start-column="9" selection-end-line="471" selection-end-column="9" />
               <folding />
             </state>
           </provider>
@@ -36,78 +76,40 @@
       <file leaf-file-name="config.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/config.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="374">
-              <caret line="17" column="18" lean-forward="false" selection-start-line="17" selection-start-column="18" selection-end-line="17" selection-end-column="18" />
+            <state relative-caret-position="308">
+              <caret line="14" column="0" lean-forward="false" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
+              <folding>
+                <marker date="1497855816041" expanded="true" signature="0:4" ph="/** Created by Shaocong on 5/25/2017. ...*/" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2706">
+              <caret line="123" column="0" lean-forward="false" selection-start-line="123" selection-start-column="0" selection-end-line="123" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="co2.pug" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/views/co2.pug">
+      <file leaf-file-name="visualize.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/routes/visualize.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="726">
-              <caret line="33" column="12" lean-forward="false" selection-start-line="33" selection-start-column="12" selection-end-line="33" selection-end-column="12" />
+            <state relative-caret-position="1210">
+              <caret line="55" column="5" lean-forward="false" selection-start-line="55" selection-start-column="5" selection-end-line="55" selection-end-column="5" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="main.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/javascripts/main.js">
+      <file leaf-file-name="bmsplot.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/routes/bmsplot.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="660">
-              <caret line="30" column="29" lean-forward="false" selection-start-line="30" selection-start-column="29" selection-end-line="30" selection-end-column="29" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="visual.pug" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/views/visual.pug">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="9" column="22" lean-forward="false" selection-start-line="9" selection-start-column="22" selection-end-line="9" selection-end-column="22" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="header.css" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/stylesheets/header.css">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="352">
-              <caret line="16" column="0" lean-forward="false" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/views/index.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="220">
-              <caret line="10" column="7" lean-forward="false" selection-start-line="10" selection-start-column="7" selection-end-line="10" selection-end-column="7" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="visual.css" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/stylesheets/visual.css">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="396">
-              <caret line="18" column="1" lean-forward="false" selection-start-line="18" selection-start-column="1" selection-end-line="18" selection-end-column="1" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="header.pug" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/views/header.pug">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="264">
-              <caret line="12" column="25" lean-forward="false" selection-start-line="12" selection-start-column="25" selection-end-line="12" selection-end-column="25" />
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -127,14 +129,8 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>why the</find>
-      <find>rdfParser</find>
-      <find>nodes</find>
-      <find>alloc</find>
-      <find>baseURL</find>
       <find>svg</find>
       <find>circle</find>
-      <find>level</find>
       <find>data-;egemd</find>
       <find>setBodyS</find>
       <find>lbbox</find>
@@ -157,6 +153,12 @@
       <find>allocateColor</find>
       <find>i</find>
       <find>V_CO2_Jurong</find>
+      <find>app</find>
+      <find>showImport</find>
+      <find>level</find>
+      <find>results</find>
+      <find>JurongIsland</find>
+      <find>Juron</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -191,7 +193,6 @@
         <option value="$PROJECT_DIR$/tryxmlparsing.js" />
         <option value="$PROJECT_DIR$/TestROOT/TheWorld.owl" />
         <option value="$PROJECT_DIR$/test.js" />
-        <option value="$PROJECT_DIR$/fileConnection.js" />
         <option value="$PROJECT_DIR$/routes/visualize.js" />
         <option value="$PROJECT_DIR$/TestROOT/test.js" />
         <option value="$PROJECT_DIR$/package.json" />
@@ -200,16 +201,19 @@
         <option value="$PROJECT_DIR$/routes/showCO2.js" />
         <option value="$PROJECT_DIR$/TestVisualization/JurongIsland.owl" />
         <option value="$PROJECT_DIR$/public/javascripts/d3Bubble.js" />
-        <option value="$PROJECT_DIR$/TestVisualization/visualization_test.js" />
-        <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/routes/bmsNodeTemp.js" />
         <option value="$PROJECT_DIR$/public/stylesheets/style.css" />
-        <option value="$PROJECT_DIR$/config.js" />
         <option value="$PROJECT_DIR$/public/javascripts/main.js" />
         <option value="$PROJECT_DIR$/views/co2.pug" />
         <option value="$PROJECT_DIR$/public/stylesheets/header.css" />
         <option value="$PROJECT_DIR$/views/header.pug" />
         <option value="$PROJECT_DIR$/views/visual.pug" />
+        <option value="$PROJECT_DIR$/app.js" />
+        <option value="$PROJECT_DIR$/config.js" />
+        <option value="$PROJECT_DIR$/fileConnection.js" />
+        <option value="$PROJECT_DIR$/TestVisualization/tryXMLImport.js" />
+        <option value="$PROJECT_DIR$/TestVisualization/visualization_test.js" />
+        <option value="$PROJECT_DIR$/util/fileConnection.js" />
       </list>
     </option>
   </component>
@@ -231,10 +235,10 @@
     <handled-path value="$PROJECT_DIR$/node_modules" />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="2617" />
-    <option name="y" value="79" />
-    <option name="width" value="2572" />
-    <option name="height" value="1456" />
+    <option name="x" value="2621" />
+    <option name="y" value="253" />
+    <option name="width" value="1920" />
+    <option name="height" value="1050" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -252,6 +256,7 @@
     </navigator>
     <panes>
       <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -275,6 +280,48 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="CO2WEB" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="CO2WEB" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="util" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="CO2WEB" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="CO2WEB" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="TestVisualization" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="CO2WEB" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="CO2WEB" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="routes" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -328,9 +375,22 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="CO2WEB" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="CO2WEB" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="playground" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -343,24 +403,24 @@
     <property name="JavaScriptPreferStrict" value="false" />
     <property name="JavaScriptWeakerCompletionTypeGuess" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="nodejs.mocha.mocha_node_package_dir" value="C:\Users\Shaocong\WORK\CO2WEB\node_modules\mocha" />
+    <property name="nodejs.mocha.mocha_node_package_dir" value="C:\Users\Shaocong\WORK\webJPSGit\irp3-WebJPS-git\CO2WEB\node_modules\mocha" />
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="list.type.of.created.stylesheet" value="CSS" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Shaocong\WORK\webJPSGit\irp3-WebJPS-git\CO2WEB\util" />
+      <recent name="C:\Users\Shaocong\WORK\webJPSGit\irp3-WebJPS-git\CO2WEB" />
+      <recent name="C:\Users\Shaocong\WORK\webJPSGit\irp3-WebJPS-git\CO2WEB\TestROOT" />
+      <recent name="C:\Users\Shaocong\WORK\CO2WEB\ROOT\JurongIsland" />
+      <recent name="C:\Users\Shaocong\WORK\CO2WEB\test" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Shaocong\WORK\CO2WEB\testFile" />
       <recent name="C:\Users\Shaocong\WORK\CO2WEB" />
       <recent name="C:\Users\Shaocong\WORK\CO2WEB\public\javascripts" />
       <recent name="C:\Users\Shaocong\WORK\CO2WEB\ROOT" />
       <recent name="C:\Users\Shaocong\WORK\CO2WEB\test" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Shaocong\WORK\webJPSGit\irp3-WebJPS-git\CO2WEB\TestROOT" />
-      <recent name="C:\Users\Shaocong\WORK\webJPSGit\irp3-WebJPS-git\CO2WEB" />
-      <recent name="C:\Users\Shaocong\WORK\CO2WEB\ROOT\JurongIsland" />
-      <recent name="C:\Users\Shaocong\WORK\CO2WEB\test" />
-      <recent name="C:\Users\Shaocong\WORK\CO2WEB\ROOT" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -375,54 +435,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Mocha.RDFParser: .could find the value of property of an indivdiual in a specific file">
-    <configuration default="false" name="extract connections.find only service type connection of each file with option:showServiceOnly" type="mocha-javascript-test-runner" factoryName="Mocha" temporary="true" nameIsGenerated="true">
-      <node-interpreter>project</node-interpreter>
-      <node-options />
-      <working-directory>$PROJECT_DIR$</working-directory>
-      <pass-parent-env>true</pass-parent-env>
-      <envs />
-      <ui>bdd</ui>
-      <extra-mocha-options />
-      <test-kind>TEST</test-kind>
-      <test-file>$PROJECT_DIR$/test.js</test-file>
-      <test-names>
-        <name value="extract connections" />
-        <name value="find only service type connection of each file with option:showServiceOnly" />
-      </test-names>
-      <method />
-    </configuration>
-    <configuration default="false" name="extract connections.find all connections of each file including imports with option:showImport" type="mocha-javascript-test-runner" factoryName="Mocha" temporary="true" nameIsGenerated="true">
-      <node-interpreter>project</node-interpreter>
-      <node-options />
-      <working-directory>$PROJECT_DIR$</working-directory>
-      <pass-parent-env>true</pass-parent-env>
-      <envs />
-      <ui>bdd</ui>
-      <extra-mocha-options />
-      <test-kind>TEST</test-kind>
-      <test-file>$PROJECT_DIR$/test.js</test-file>
-      <test-names>
-        <name value="extract connections" />
-        <name value="find all connections of each file including imports with option:showImport" />
-      </test-names>
-      <method />
-    </configuration>
-    <configuration default="false" name="RDFParser: " type="mocha-javascript-test-runner" factoryName="Mocha" temporary="true" nameIsGenerated="true">
-      <node-interpreter>project</node-interpreter>
-      <node-options />
-      <working-directory>$PROJECT_DIR$</working-directory>
-      <pass-parent-env>true</pass-parent-env>
-      <envs />
-      <ui>bdd</ui>
-      <extra-mocha-options />
-      <test-kind>SUITE</test-kind>
-      <test-file>$PROJECT_DIR$/test.js</test-file>
-      <test-names>
-        <name value="RDFParser: " />
-      </test-names>
-      <method />
-    </configuration>
+  <component name="RunManager" selected="Mocha.extract connections.find all connections of each file including imports with option:showImport (1)">
     <configuration default="false" name="RDFParser: .could find the value of property of an indivdiual in a specific file" type="mocha-javascript-test-runner" factoryName="Mocha" temporary="true" nameIsGenerated="true">
       <node-interpreter>project</node-interpreter>
       <node-options />
@@ -451,6 +464,50 @@
       <test-file>$PROJECT_DIR$/TestVisualization/visualization_test.js</test-file>
       <test-names>
         <name value="RDFParser: " />
+      </test-names>
+      <method />
+    </configuration>
+    <configuration default="false" name="extract connections.find all connections of each file including imports with option:showImport (1)" type="mocha-javascript-test-runner" factoryName="Mocha" temporary="true" nameIsGenerated="true">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <working-directory>$PROJECT_DIR$</working-directory>
+      <pass-parent-env>true</pass-parent-env>
+      <envs />
+      <ui>tdd</ui>
+      <extra-mocha-options />
+      <test-kind>TEST</test-kind>
+      <test-file>$PROJECT_DIR$/TestVisualization/visualization_test.js</test-file>
+      <test-names>
+        <name value="extract connections" />
+        <name value="find all connections of each file including imports with option:showImport" />
+      </test-names>
+      <method />
+    </configuration>
+    <configuration default="false" name="TestVisualization\visualization_test.js" type="mocha-javascript-test-runner" factoryName="Mocha" temporary="true" nameIsGenerated="true">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <working-directory>$PROJECT_DIR$</working-directory>
+      <pass-parent-env>true</pass-parent-env>
+      <envs />
+      <ui>bdd</ui>
+      <extra-mocha-options />
+      <test-kind>TEST_FILE</test-kind>
+      <test-file>$PROJECT_DIR$/TestVisualization/visualization_test.js</test-file>
+      <method />
+    </configuration>
+    <configuration default="false" name="extract connections.find only service type connection of each file with option:showServiceOnly" type="mocha-javascript-test-runner" factoryName="Mocha" temporary="true" nameIsGenerated="true">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <working-directory>$PROJECT_DIR$</working-directory>
+      <pass-parent-env>true</pass-parent-env>
+      <envs />
+      <ui>bdd</ui>
+      <extra-mocha-options />
+      <test-kind>TEST</test-kind>
+      <test-file>$PROJECT_DIR$/TestVisualization/visualization_test.js</test-file>
+      <test-names>
+        <name value="extract connections" />
+        <name value="find only service type connection of each file with option:showServiceOnly" />
       </test-names>
       <method />
     </configuration>
@@ -522,19 +579,19 @@
     </configuration>
     <list size="6">
       <item index="0" class="java.lang.String" itemvalue="Node.js.bin\www" />
-      <item index="1" class="java.lang.String" itemvalue="Mocha.extract connections.find only service type connection of each file with option:showServiceOnly" />
-      <item index="2" class="java.lang.String" itemvalue="Mocha.extract connections.find all connections of each file including imports with option:showImport" />
-      <item index="3" class="java.lang.String" itemvalue="Mocha.RDFParser: " />
-      <item index="4" class="java.lang.String" itemvalue="Mocha.RDFParser: .could find the value of property of an indivdiual in a specific file" />
-      <item index="5" class="java.lang.String" itemvalue="Mocha.RDFParser:  (1)" />
+      <item index="1" class="java.lang.String" itemvalue="Mocha.RDFParser: .could find the value of property of an indivdiual in a specific file" />
+      <item index="2" class="java.lang.String" itemvalue="Mocha.RDFParser:  (1)" />
+      <item index="3" class="java.lang.String" itemvalue="Mocha.extract connections.find all connections of each file including imports with option:showImport (1)" />
+      <item index="4" class="java.lang.String" itemvalue="Mocha.TestVisualization\visualization_test.js" />
+      <item index="5" class="java.lang.String" itemvalue="Mocha.extract connections.find only service type connection of each file with option:showServiceOnly" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Mocha.RDFParser: .could find the value of property of an indivdiual in a specific file" />
-        <item index="1" class="java.lang.String" itemvalue="Mocha.RDFParser:  (1)" />
-        <item index="2" class="java.lang.String" itemvalue="Mocha.extract connections.find all connections of each file including imports with option:showImport" />
-        <item index="3" class="java.lang.String" itemvalue="Mocha.RDFParser: " />
-        <item index="4" class="java.lang.String" itemvalue="Mocha.extract connections.find only service type connection of each file with option:showServiceOnly" />
+        <item index="0" class="java.lang.String" itemvalue="Mocha.extract connections.find all connections of each file including imports with option:showImport (1)" />
+        <item index="1" class="java.lang.String" itemvalue="Mocha.extract connections.find only service type connection of each file with option:showServiceOnly" />
+        <item index="2" class="java.lang.String" itemvalue="Mocha.TestVisualization\visualization_test.js" />
+        <item index="3" class="java.lang.String" itemvalue="Mocha.RDFParser: .could find the value of property of an indivdiual in a specific file" />
+        <item index="4" class="java.lang.String" itemvalue="Mocha.RDFParser:  (1)" />
       </list>
     </recent_temporary>
   </component>
@@ -595,75 +652,69 @@
       <workItem from="1496647653116" duration="1691000" />
       <workItem from="1496652946244" duration="130000" />
       <workItem from="1496653085583" duration="867000" />
+      <workItem from="1497585495790" duration="2297000" />
+      <workItem from="1497600834285" duration="2850000" />
+      <workItem from="1497851046345" duration="5154000" />
+      <workItem from="1497858105687" duration="7240000" />
     </task>
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="RDFParser___(1) - 2017.06.02 at 11h 59m 19s.xml">
-      <configuration name="RDFParser:  (1)" configurationId="mocha-javascript-test-runner" />
+    <history-entry file="extract_connections_find_all_connections_of_each_file_including_imports_with_option_showImport_(1) - 2017.06.19 at 16h 36m 22s.xml">
+      <configuration name="extract connections.find all connections of each file including imports with option:showImport (1)" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="RDFParser___could_find_the_value_of_property_of_an_indivdiual_in_a_specific_file - 2017.06.02 at 11h 58m 43s.xml">
-      <configuration name="RDFParser: .could find the value of property of an indivdiual in a specific file" configurationId="mocha-javascript-test-runner" />
+    <history-entry file="extract_connections_find_all_connections_of_each_file_including_imports_with_option_showImport_(1) - 2017.06.19 at 17h 08m 55s.xml">
+      <configuration name="extract connections.find all connections of each file including imports with option:showImport (1)" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="RDFParser___could_find_the_value_of_property_of_an_indivdiual_in_a_specific_file - 2017.06.02 at 12h 00m 06s.xml">
-      <configuration name="RDFParser: .could find the value of property of an indivdiual in a specific file" configurationId="mocha-javascript-test-runner" />
+    <history-entry file="extract_connections_find_all_connections_of_each_file_including_imports_with_option_showImport_(1) - 2017.06.19 at 17h 09m 21s.xml">
+      <configuration name="extract connections.find all connections of each file including imports with option:showImport (1)" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="RDFParser___could_find_the_value_of_property_of_an_indivdiual_in_a_specific_file - 2017.06.02 at 12h 01m 37s.xml">
-      <configuration name="RDFParser: .could find the value of property of an indivdiual in a specific file" configurationId="mocha-javascript-test-runner" />
+    <history-entry file="extract_connections_find_all_connections_of_each_file_including_imports_with_option_showImport_(1) - 2017.06.19 at 17h 10m 16s.xml">
+      <configuration name="extract connections.find all connections of each file including imports with option:showImport (1)" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="RDFParser___could_find_the_value_of_property_of_an_indivdiual_in_a_specific_file - 2017.06.02 at 12h 01m 47s.xml">
-      <configuration name="RDFParser: .could find the value of property of an indivdiual in a specific file" configurationId="mocha-javascript-test-runner" />
+    <history-entry file="extract_connections_find_all_connections_of_each_file_including_imports_with_option_showImport_(1) - 2017.06.19 at 17h 10m 29s.xml">
+      <configuration name="extract connections.find all connections of each file including imports with option:showImport (1)" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="RDFParser___could_find_the_value_of_property_of_an_indivdiual_in_a_specific_file - 2017.06.02 at 12h 02m 09s.xml">
-      <configuration name="RDFParser: .could find the value of property of an indivdiual in a specific file" configurationId="mocha-javascript-test-runner" />
+    <history-entry file="extract_connections_find_all_connections_of_each_file_including_imports_with_option_showImport_(1) - 2017.06.19 at 17h 10m 52s.xml">
+      <configuration name="extract connections.find all connections of each file including imports with option:showImport (1)" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="extract_connections_find_only_service_type_connection_of_each_file_with_option_showServiceOnly - 2017.05.31 at 11h 51m 59s.xml">
-      <configuration name="extract connections.find only service type connection of each file with option:showServiceOnly" configurationId="mocha-javascript-test-runner" />
+    <history-entry file="extract_connections_find_all_connections_of_each_file_including_imports_with_option_showImport_(1) - 2017.06.19 at 17h 20m 53s.xml">
+      <configuration name="extract connections.find all connections of each file including imports with option:showImport (1)" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="extract_connections_find_only_service_type_connection_of_each_file_with_option_showServiceOnly - 2017.05.31 at 11h 52m 46s.xml">
-      <configuration name="extract connections.find only service type connection of each file with option:showServiceOnly" configurationId="mocha-javascript-test-runner" />
+    <history-entry file="extract_connections_find_all_connections_of_each_file_including_imports_with_option_showImport_(1) - 2017.06.19 at 17h 27m 59s.xml">
+      <configuration name="extract connections.find all connections of each file including imports with option:showImport (1)" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="extract_connections_find_only_service_type_connection_of_each_file_with_option_showServiceOnly - 2017.05.31 at 11h 54m 51s.xml">
-      <configuration name="extract connections.find only service type connection of each file with option:showServiceOnly" configurationId="mocha-javascript-test-runner" />
+    <history-entry file="extract_connections_find_all_connections_of_each_file_including_imports_with_option_showImport_(1) - 2017.06.19 at 17h 36m 25s.xml">
+      <configuration name="extract connections.find all connections of each file including imports with option:showImport (1)" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="extract_connections_find_only_service_type_connection_of_each_file_with_option_showServiceOnly - 2017.05.31 at 11h 56m 13s.xml">
+    <history-entry file="extract_connections_find_only_service_type_connection_of_each_file_with_option_showServiceOnly - 2017.06.19 at 16h 36m 33s.xml">
       <configuration name="extract connections.find only service type connection of each file with option:showServiceOnly" configurationId="mocha-javascript-test-runner" />
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="196255000" />
+    <option name="totallyTimeSpent" value="213829000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="2617" y="79" width="2572" height="1456" extended-state="0" />
+    <frame x="2621" y="253" width="1920" height="1050" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3071205" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30882353" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32976282" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2800306" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34537727" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.38752785" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.38752785" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32976282" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3071205" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27171493" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.38752785" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -688,14 +739,11 @@
           <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="25" />
+      <option name="time" value="27" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/testFile/tst.xml" />
-    <entry file="file://$PROJECT_DIR$/testFile/testSub/OntoCAPE.owl" />
-    <entry file="file://$PROJECT_DIR$/playground.js" />
     <entry file="file://$PROJECT_DIR$/output.json" />
     <entry file="file://$USER_HOME$/Downloads/d3/d3.js" />
     <entry file="file://$PROJECT_DIR$/ROOT/BiodieselPlant.owl" />
@@ -742,7 +790,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="833">
           <caret line="102" column="11" lean-forward="false" selection-start-line="102" selection-start-column="11" selection-end-line="102" selection-end-column="11" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -790,98 +837,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/public/javascripts/d3Bubble.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1254">
-          <caret line="59" column="13" lean-forward="false" selection-start-line="59" selection-start-column="13" selection-end-line="59" selection-end-column="13" />
-          <folding>
-            <element signature="e#0#43#0" expanded="false" />
-            <marker date="1496653062635" expanded="true" signature="167:11323" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="433:1566" ph="[...]" />
-            <marker date="1496653062635" expanded="true" signature="1591:1701" ph="[...]" />
-            <marker date="1496653062635" expanded="true" signature="1754:1838" ph="//..." />
-            <marker date="1496653062635" expanded="true" signature="1874:4521" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="1960:2431" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="2239:2290" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="2342:2394" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="2469:2774" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="2868:4005" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="2941:3135" ph="{&quot;url&quot;: link.source...}" />
-            <marker date="1496653062635" expanded="true" signature="3173:3255" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="3327:3573" ph="{&quot;url&quot;: link.target...}" />
-            <marker date="1496653062635" expanded="true" signature="3635:3995" ph="/** if (nodes[link.source] != null) { ...*/" />
-            <marker date="1496653062635" expanded="true" signature="4018:4097" ph="//..." />
-            <marker date="1496653062635" expanded="true" signature="4130:4490" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="4179:4480" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="4300:4362" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="4552:4623" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="4645:4677" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="4684:4811" ph="/** Allocate color for nodes of each domain ...*/" />
-            <marker date="1496653062635" expanded="true" signature="4842:5280" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="4957:5009" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="5126:5238" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="5311:5466" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="5387:5434" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="5496:5644" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="5571:5612" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="5818:5989" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="6018:11191" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="6435:6540" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="6652:6713" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="6760:6827" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="7007:7064" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="7242:7288" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="8077:8134" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="8332:8378" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="8852:9911" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="8913:8971" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="9014:9072" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="9115:9173" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="9216:9274" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="9337:9388" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="9430:9481" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="9549:9600" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="9643:9694" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="9754:9805" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="9847:9898" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="9946:10078" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="10108:10181" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="10213:10335" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="10379:10991" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="10540:10981" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="10818:10933" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="11034:11185" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="11048:11111" ph="//..." />
-            <marker date="1496653062635" expanded="true" signature="11356:14340" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="11516:12247" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="11560:12177" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="11701:12172" ph="{&quot;url&quot;: '/visualize/includeImport'...}" />
-            <marker date="1496653062635" expanded="true" signature="11797:12075" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="11833:12074" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="11999:12059" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="12111:12162" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="12183:12239" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="12301:13166" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="12358:13094" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="12514:13081" ph="{&quot;url&quot;: '/visualize/showServiceOnly'...}" />
-            <marker date="1496653062635" expanded="true" signature="12624:12968" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="12668:12967" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="12868:12944" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="13008:13067" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="13100:13160" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="13211:13339" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="13260:13338" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="13377:13650" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="13417:13454" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="13485:13623" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="13567:13612" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="13692:14118" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="13856:14090" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="14166:14335" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="14207:14326" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="14246:14307" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="14375:14636" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="14453:14514" ph="{...}" />
-            <marker date="1496653062635" expanded="true" signature="14568:14634" ph="{...}" />
-          </folding>
+        <state relative-caret-position="10362">
+          <caret line="471" column="9" lean-forward="false" selection-start-line="471" selection-start-column="9" selection-end-line="471" selection-end-column="9" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -889,15 +847,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="417">
           <caret line="342" column="65" lean-forward="true" selection-start-line="342" selection-start-column="65" selection-end-line="342" selection-end-column="65" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TestVisualization/visualization_test.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="594">
-          <caret line="29" column="32" lean-forward="false" selection-start-line="29" selection-start-column="32" selection-end-line="29" selection-end-column="32" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -908,44 +857,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/routes/visualize.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="616">
-          <caret line="28" column="5" lean-forward="false" selection-start-line="28" selection-start-column="5" selection-end-line="28" selection-end-column="5" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/routes/bmsNodeTemp.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="550">
           <caret line="27" column="0" lean-forward="false" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#43#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="704">
-          <caret line="32" column="51" lean-forward="false" selection-start-line="32" selection-start-column="51" selection-end-line="32" selection-end-column="51" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/fileConnection.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="22">
-          <caret line="58" column="79" lean-forward="false" selection-start-line="58" selection-start-column="79" selection-end-line="58" selection-end-column="79" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/config.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="17" column="18" lean-forward="false" selection-start-line="17" selection-start-column="18" selection-end-line="17" selection-end-column="18" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -953,7 +868,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="660">
           <caret line="30" column="29" lean-forward="false" selection-start-line="30" selection-start-column="29" selection-end-line="30" selection-end-column="29" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -961,7 +875,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="396">
           <caret line="18" column="1" lean-forward="false" selection-start-line="18" selection-start-column="1" selection-end-line="18" selection-end-column="1" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -969,15 +882,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="726">
           <caret line="33" column="12" lean-forward="false" selection-start-line="33" selection-start-column="12" selection-end-line="33" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/stylesheets/style.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="396">
-          <caret line="18" column="1" lean-forward="true" selection-start-line="18" selection-start-column="1" selection-end-line="18" selection-end-column="1" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -985,7 +889,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="220">
           <caret line="10" column="7" lean-forward="false" selection-start-line="10" selection-start-column="7" selection-end-line="10" selection-end-column="7" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -993,7 +896,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="352">
           <caret line="16" column="0" lean-forward="false" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1001,7 +903,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="264">
           <caret line="12" column="25" lean-forward="false" selection-start-line="12" selection-start-column="25" selection-end-line="12" selection-end-column="25" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1009,6 +910,79 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="198">
           <caret line="9" column="22" lean-forward="false" selection-start-line="9" selection-start-column="22" selection-end-line="9" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2706">
+          <caret line="123" column="0" lean-forward="false" selection-start-line="123" selection-start-column="0" selection-end-line="123" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/routes/bmsplot.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="308">
+          <caret line="14" column="0" lean-forward="false" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
+          <folding>
+            <marker date="1497855816041" expanded="true" signature="0:4" ph="/** Created by Shaocong on 5/25/2017. ...*/" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/fileConnection.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="22">
+          <caret line="80" column="92" lean-forward="false" selection-start-line="80" selection-start-column="92" selection-end-line="80" selection-end-column="92" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TestVisualization/tryXMLImport.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="22">
+          <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TestVisualization/visualization_test.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-822">
+          <caret line="74" column="33" lean-forward="true" selection-start-line="74" selection-start-column="33" selection-end-line="74" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/stylesheets/style.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="352">
+          <caret line="16" column="3" lean-forward="false" selection-start-line="16" selection-start-column="3" selection-end-line="16" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/fileConnection.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="342">
+          <caret line="230" column="62" lean-forward="false" selection-start-line="230" selection-start-column="62" selection-end-line="230" selection-end-column="62" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/routes/visualize.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1210">
+          <caret line="55" column="5" lean-forward="false" selection-start-line="55" selection-start-column="5" selection-end-line="55" selection-end-column="5" />
           <folding />
         </state>
       </provider>

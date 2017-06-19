@@ -5,7 +5,7 @@ var util = require("util");
 var rdfParser = require( "../rdfParser.js");
 var request = require("request");
 var path = require("path");
-var connections = require("../fileConnection.js");
+var connections = require("../util/fileConnection.js");
 
 
 var config = require("../config");
@@ -67,7 +67,7 @@ describe("extract connections", function () {
     });
 
     it('find all connections of each file including imports with option:showImport', function (done) {
-  this.timeout(3000);
+  this.timeout(300000);
 
         connections({showImport:true}, function(err, results){
 
@@ -93,7 +93,7 @@ describe("extract connections", function () {
     });
 
     it('find only service type connection of each file with option:showServiceOnly', function (done) {
-  this.timeout(3000);
+  this.timeout(6000);
 
         connections({showServiceOnly:true}, function(err, results){
 
