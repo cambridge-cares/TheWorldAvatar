@@ -105,7 +105,10 @@ function readConnections(options, callback) {
 
 
     function getChildren(root) {
-
+		if(!root){
+			
+			return [];
+		}
         var children = [];
         var namespaceOb = {};//construct namespaceOb for find in root with nested namespace
 
@@ -138,6 +141,11 @@ function readConnections(options, callback) {
      * @returns {*}  an array of services urls
      */
     function getServices(root){
+		
+		if(!root){
+			
+			return [];
+		}
         var services = [];
         var namespaceOb = {};//construct namespaceOb for find in root with nested namespace
         namespaceOb['owl'] = "http://www.w3.org/2002/07/owl#";
@@ -160,9 +168,12 @@ function readConnections(options, callback) {
 
        function loopChildrenRecur(file, level, callback) {
 
-           console.log("------------loopChildRecur--------------------");
+	   
+		       console.log("------------loopChildRecur--------------------");
+			   var root;
+			      try{
                var xmlDoc = libxmljs.parseXml(file);
-               var root = xmlDoc.root();
+                root = xmlDoc.root();
                var myUri = (root.attrs() && root.attrs().length > 0) ? root.attrs()[0].value() : null;
                
 			   if(myUri === null){
@@ -172,6 +183,9 @@ function readConnections(options, callback) {
                //TODO: request for remote  VS search with name on current?
                //TODO: xml parse the file => get targets list == childList => request on each child file
 
+				  } catch(err){
+					  console.log(err);
+				  }
                let children = getChildren(root);
 
                if (children.length < 1) { // no children is found, including devices and services
@@ -254,6 +268,8 @@ function readConnections(options, callback) {
                });
 
            }
+
+       
     }
 
 
