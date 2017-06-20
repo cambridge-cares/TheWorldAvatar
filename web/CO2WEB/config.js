@@ -8,19 +8,19 @@
 
 var config = {};
 
-config.root = //"C:/TOMCAT/webapps/ROOT";
+config.root = "C:/TOMCAT/webapps/ROOT";
 
 
-__dirname + "/TestVisualization" ; // own folder for testing
+//__dirname + "/TestVisualization" ; // own folder for testing
 
 config.rootNode = "TheWorld.owl";
-config.port = 3000;//port for deploy
-config.bmsUrl =  "http://localhost:2000/dataObserve";           //testing
+config.port = 82;//port for deploy
+config.bmsUrl = // "http://localhost:2000/dataObserve";           //testing
 
-    //"http://10.25.188.104/dataObserve";
+    "http://10.25.188.104/dataObserve";
 config.viewRoot = __dirname + "/views";
-config.myUrl = "http://localhost:3000/change";
+config.myUrl = //"http://localhost:3000/change";
 
-    //"http://www.theworldavatar.com:82/change";
+    "http://www.theworldavatar.com:82/change";
 
 module.exports = config;
