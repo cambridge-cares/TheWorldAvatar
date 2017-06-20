@@ -12,6 +12,7 @@ var fs = require("fs");
 var express = require('express');
 var request = require('request');
 var async = require('async');
+var config = require('../config');
 var db = require('../db')();
 
 //var loc = __dirname+'/test.xml';
@@ -60,7 +61,7 @@ function watcher(options) {
                             function inform(informee, callback) {
 
                                 request.post({//http post to informee url
-                                    url: informee, body: JSON.stringify(data), headers: {
+                                    url: informee, body: JSON.stringify({name:config.fileName, data: data}), headers: {
                                         'content-type': contentType
                                     }
                                 }, function (err, response, body) {
@@ -68,6 +69,7 @@ function watcher(options) {
                                     if (err) {
 
                                         callback(null, {informee: informee, result: err.message});
+										return;
                                         // throw err;
                                     }
 

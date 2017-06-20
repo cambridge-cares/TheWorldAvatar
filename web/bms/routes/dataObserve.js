@@ -22,7 +22,7 @@ var db = require('../db')();
 changeWatcher.setWatch(function (err, results) {
 
     if(err){
-        throw err;
+        console.log(err);//TODO err handling
     }
 
     console.log(results);
@@ -52,7 +52,7 @@ console.log("register " + req.body.url);
                res.status(500).send({error: err});
                return;
            }
-           res.status(200).json(results);
+           res.status(200).json({data:results, name:config.fileName});
 
 
        });

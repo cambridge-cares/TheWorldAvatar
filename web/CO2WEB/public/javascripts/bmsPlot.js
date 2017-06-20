@@ -29,22 +29,28 @@ $(document).ready(function () {
     socket.on('initial', function(idata){
         console.log(idata);
         //TODO: check this is indeed updated Data point
-        initialData = JSON.parse(idata);
-        //wrap initial data into data obj
-        dataObj["start"] = initialData[0].time;
-        dataObj["end"] = initialData[initialData.length - 1].time;
-        dataObj["step"] = Math.round( (dataObj.end - dataObj.start) / initialData.length);
-        dataObj["values"] = [initialData.map((item)=>{ return item.value})];
+        let parsedData = JSON.parse(idata);
+        let name = parsedData['name'];
+        if(name==="FH-01.owl") {//check the update comes from correct source
+            initialData = parsedData['data'];
+            console.log(initialData);
+            //wrap initial data into data obj
+            dataObj["start"] = initialData[0].time;
+            dataObj["end"] = initialData[initialData.length - 1].time;
+            dataObj["step"] = Math.round((dataObj.end - dataObj.start) / initialData.length);
+            dataObj["values"] = [initialData.map((item) => {
+                return item.value
+            })];
 
-        l1 = new LineGraph({containerId: 'graph1', data: dataObj});
-        console.log(dataObj["start"]);
-        console.log(dataObj["end"]);
-        console.log(dataObj["step"]);
-        console.log(dataObj["values"]);
-        isInitialized = true;
-        newDataObj["start"] = initialData[initialData.length - 1].time;
-        newDataObj["names"] = ["FH-01"];
-
+            l1 = new LineGraph({containerId: 'graph1', data: dataObj});
+            console.log(dataObj["start"]);
+            console.log(dataObj["end"]);
+            console.log(dataObj["step"]);
+            console.log(dataObj["values"]);
+            isInitialized = true;
+            newDataObj["start"] = initialData[initialData.length - 1].time;
+            newDataObj["names"] = ["FH-01"];
+        }
     });
 
 
@@ -52,14 +58,18 @@ $(document).ready(function () {
     socket.on('update', function(data){
         //TODO: check this is indeed updated Data point
 
-        data = JSON.parse(data);
-        console.log("!!!!!!")
-        console.log(data);
+        let parsedData = JSON.parse(data);
+        let name = parsedData['name'];
+        if(name==="FH-01.owl") {
+            data = parsedData['data'];
+            console.log("!!!!!!")
+            console.log(data);
 
-        if(isInitialized) {
-            var newData = data[data.length - 1];
+            if (isInitialized) {
+                var newData = data[data.length - 1];
 
-            updateGraph(newData);
+                updateGraph(newData);
+            }
         }
 
     });

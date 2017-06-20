@@ -4,8 +4,13 @@
 
 var path = require('path');
 
-exports.filePath =  __dirname + "/ROOT"; //folder that contains the data file
-exports.fileLocation  = exports.filePath + "/dummy.xml";// location of the data file ,filename Included
+exports.filePath = 
+//"D:/apache-tomcat-9.0.0.M21/webapps/ROOT/JPS_KB_CARES_Lab_Node";
+ __dirname + "/ROOT"; //folder that contains the data file
 
-exports.port = 2000;//port of testing
-//=82; //port for deploying
+exports.fileName = "FH-01.owl";
+exports.fileLocation  = exports.filePath + "/"+exports.fileName;// location of the data file ,filename Included
+
+
+exports.port = 3000;//port of testing
+//=80; //port for deploying

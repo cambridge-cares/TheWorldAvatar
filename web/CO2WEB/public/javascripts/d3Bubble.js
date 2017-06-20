@@ -1,6 +1,8 @@
 
 // http://blog.thomsonreuters.com/index.php/mobile-patent-suits-graphic-of-the-day/
 
+var socket = io();
+
 
 var FileLinkMap = function (options) {
     var width = $(document).width(),
@@ -22,20 +24,12 @@ var FileLinkMap = function (options) {
         "#575329", "#00FECF", "#B05B6F", "#8CD0FF", "#3B9700", "#04F757", "#C8A1A1", "#1E6E00",
         "#7900D7", "#A77500", "#6367A9", "#A05837", "#6B002C", "#772600", "#D790FF", "#9B9700",
         "#549E79", "#FFF69F", "#201625", "#72418F", "#BC23FF", "#99ADC0", "#3A2465", "#922329"];
-
-
     var colorList2 = [
 
 
         "#5B4534", "#FDE8DC", "#404E55", "#0089A3", "#CB7E98", "#A4E804", "#324E72", "#6A3A4C", "#000000"];
-
     var colorMap = {};
     var mapSize = 0;
-
-
-    //TODO: side bar shows domain
-    //TODO: onclick hightlight all conenctions to this
-
 
     function packNodesArr(links) {
         var nodes = {};
@@ -137,19 +131,14 @@ return undefined;}
         }
         return nodesArr;
     }
-
-
     function setBodyS(node) {
          return -300*(1||node.count);
 
         //return charge;
     }
-
     function setD() {
         return distance;
     }
-
-
     /**
      * Allocate color for nodes of each domain
      * @param d  datum
@@ -172,8 +161,6 @@ return undefined;}
 
         return colorMap[d.domain];
     }
-
-
     function sortOrder(d,i) {
 
         if(d.level !== undefined && d.level !== null && !isNaN(d.level)) {
@@ -183,7 +170,6 @@ return undefined;}
 
         return 100000+i;
     }
-
     function defineLegend(d){
         if(d.level !== undefined && d.level !== null && !isNaN(d.level)) {
 
@@ -193,15 +179,10 @@ return undefined;}
         return d.domain;
     }
 
-
-
-
     var svg = d3.select("#draw-panel").append("svg")
         .attr("width", width)
         .attr("height", height);
     var g = svg.append("g");
-
-
 
     function clear() {
         g.selectAll("line").data([]).exit().remove();
@@ -252,6 +233,9 @@ return undefined;}
             })
 
             .append("circle")
+            .attr("id", function (d) {
+                return d.name;
+            })
             .attr("r", nodeR)
             .attr("class", "nodes")
             .attr("fill", allocateColor)
@@ -547,6 +531,19 @@ if($('#checkShowImport').prop('checked')) {
          }
 
       }
+
+      /*socket****/
+    //blink any updated data
+    socket.on('update', function (data) {
+
+        let parsedData = JSON.parse(data);
+        let name = parsedData.name;
+        //search name among nodes to grab the correct one
+     console.log($("circle#"+name));
+        $("circle#"+name).effect("hightlight");
+
+
+    })
 
 
 
