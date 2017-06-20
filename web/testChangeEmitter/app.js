@@ -16,8 +16,16 @@ var port = config.port;
 var dataObserve = require("./routes/dataObserve");
 app.use("/", dataObserve);
 
+function setHeader(res, mpath){
+  console.log("path"+ mpath);
+  res.setHeader("Content-Type","text/xml");
+  res.setHeader("Content-Disposition","inline");
+    console.log("SEtting headers");
+
+
+}
 /*serve static data file*/
-app.use(express.static(config.filePath));
+app.use(express.static(config.filePath, {'setHeaders': setHeader}));
 
 
 

@@ -46,6 +46,8 @@ app.get('/', function (req, res) {
 
 /*posting to dataObserve to get orginal data & register for future data change*/
 var dataCopy = null;
+
+//TODO: how to store infor as who to register to ? => url link
 function register(callback) {
     request.post({url: config.bmsUrl ,body: JSON.stringify({url:config.myUrl, getInitData:true}),headers: {
         'content-type': 'application/json'
@@ -86,6 +88,8 @@ app.post("/change", function (req, res) {
 //console.log(req.header('content-type'));
 //TODO: socket, send this info to all clients
     dataCopy = req.body;
+
+
     io.emit("update", req.body);
     res.status(200).send("success");
 });
@@ -94,8 +98,8 @@ app.post("/change", function (req, res) {
 
 /*socket io***/
 io.on('connection', function(socket){
-    if(dataCopy === null){
-        register(function (err, initialData) {
+    if(dataCopy === null){//no cached data copy, this is the first client
+        register(function (err, initialData) {//register to changing-data node
             if(err){
                 console.log(err);
                 return;//TODO: err handling

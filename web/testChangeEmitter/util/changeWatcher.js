@@ -12,7 +12,8 @@ var fs = require("fs");
 var express = require('express');
 var request = require('request');
 var async = require('async');
-var db = require('../db')();
+var config = require('../config');
+var db = require('../dbtest')();
 
 //var loc = __dirname+'/test.xml';
 
@@ -60,14 +61,15 @@ function watcher(options) {
                             function inform(informee, callback) {
 
                                 request.post({//http post to informee url
-                                    url: informee, body: JSON.stringify(data), headers: {
+                                    url: informee, body: JSON.stringify({name:config.fileName, data: data}), headers: {
                                         'content-type': contentType
-                                    }, agent:false
+                                    }
                                 }, function (err, response, body) {
 
                                     if (err) {
 
                                         callback(null, {informee: informee, result: err.message});
+										return;
                                         // throw err;
                                     }
 
@@ -88,7 +90,6 @@ function watcher(options) {
     /*Register a new observer*/
     self.register = function (newObserver) {
 
-
         self.observers.push(newObserver);
     }
     /*Deregister an existing observer*/
@@ -106,7 +107,7 @@ function watcher(options) {
         return self.observers;
     }
 
-    return {register: self.register,deregister: self.deregister, setWatch: self.setWatch, getRegistered: self.getRegistered}
+    return {register: self.register, setWatch: self.setWatch, getRegistered: self.getRegistered}
 }
 
 module.exports = watcher;

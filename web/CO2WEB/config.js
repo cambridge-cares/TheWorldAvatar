@@ -15,8 +15,12 @@ config.root = "C:/TOMCAT/webapps/ROOT";
 
 config.rootNode = "TheWorld.owl";
 config.port = 82;//port for deploy
-config.bmsUrl = "http://10.25.188.104/dataObserve";
+config.bmsUrl = // "http://localhost:2000/dataObserve";           //testing
+
+    "http://10.25.188.104/dataObserve";
 config.viewRoot = __dirname + "/views";
-config.myUrl = "http://www.theworldavatar.com:82/change";
+config.myUrl = //"http://localhost:3000/change";
+
+    "http://www.theworldavatar.com:82/change";
 
 module.exports = config;

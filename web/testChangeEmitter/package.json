@@ -17,6 +17,7 @@
     "request": "^2.81.0",
     "serve-favicon": "~2.3.2",
     "sinon": "^2.3.2",
-    "xml2js": "^0.4.17"
+    "xml2js": "^0.4.17",
+    "xml2js-xpath": "^0.8.0"
   }
 }

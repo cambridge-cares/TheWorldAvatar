@@ -14,7 +14,7 @@ var file = config.fileLocation;
 
 
 //add a new value to fake bms owl/dummy every 10s
-setInterval(add2Dummy, 10000);//TODO: should actually be 60s, for ease of testing use 10s
+setInterval(add2Dummy, 2000);//TODO: should actually be 60s, for ease of testing use 10s
 
  function add2Dummy() {
 
