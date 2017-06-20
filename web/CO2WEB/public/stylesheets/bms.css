@@ -22,6 +22,7 @@ svg.line-graph .axis {
 
 svg.line-graph .x.axis line {
     stroke: #D3D3D3;
+
 }
 
 svg.line-graph .x.axis .minor {

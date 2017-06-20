@@ -17,12 +17,12 @@ var config = require("../config");
 
 
 var changeWatcher = watcherConfig({location:config.fileLocation, contentType:"text/xml"});
-var db = require('../db')();
+var db = require('../dbtest')();
 
 changeWatcher.setWatch(function (err, results) {
 
     if(err){
-        throw err;
+        console.log(err);//TODO err handling
     }
 
     console.log(results);
@@ -38,11 +38,6 @@ console.log("get initial data: "+ req.body.getInitData);
 
 if(req.body.url){//TODO: check if valid url
 console.log("register " + req.body.url);
-
-   if(req.body.shutdown){
-
-     changeWatcher.deregister(req.body.url);
-   }
     changeWatcher.register(req.body.url);
 }
 
@@ -57,7 +52,7 @@ console.log("register " + req.body.url);
                res.status(500).send({error: err});
                return;
            }
-           res.status(200).json(results);
+           res.status(200).json({data:results, name:config.fileName});
 
 
        });

@@ -14,9 +14,13 @@ config.root = //"C:/TOMCAT/webapps/ROOT";
 __dirname + "/TestVisualization" ; // own folder for testing
 
 config.rootNode = "TheWorld.owl";
-config.port = 2000;//port for deploy
-config.bmsUrl = "http://10.25.188.104/dataObserve";
+config.port = 3000;//port for deploy
+config.bmsUrl =  "http://localhost:2000/dataObserve";           //testing
+
+    //"http://10.25.188.104/dataObserve";
 config.viewRoot = __dirname + "/views";
-config.myUrl = "http://www.theworldavatar.com:82/change";
+config.myUrl = "http://localhost:3000/change";
+
+    //"http://www.theworldavatar.com:82/change";
 
 module.exports = config;
