@@ -94,10 +94,17 @@ function watcher(options) {
     }
     /*Deregister an existing observer*/
     self.deregister = function (observer2Delete) {
+        let success = false;
         for (let i = 0; i < self.observers.length; i++) {
             if (observers[i] === observer2Delete) {
                 observers.splice(i, 1);
+                return true;
             }
+        }
+
+        if(!success){
+            console.log("can not find this url");//TODO: err handling
+            return false;
         }
     }
 

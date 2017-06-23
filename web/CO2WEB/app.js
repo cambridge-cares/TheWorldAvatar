@@ -1,3 +1,7 @@
+/***
+ * app main
+ * @type {*}
+ */
 var express = require('express');
 var path = require('path');
 var logger = require('morgan');
@@ -12,15 +16,15 @@ var config = require("./config.js");
 var bmsplot= require("./routes/bmsplot.js");
 var bmsTemp = require("./routes/bmsNodeTemp");
 
+var registerer= require("./util/register2DataChange");
+var registerUrl = config.bmsUrlPath;
+var myUrl = config.myUrlPath;
 
 var app = express();
 var port = config.port;
 process.env.UV_THREADPOOL_SIZE = 128;
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.set('view engine', 'pug');
-
 app.use(logger('dev'));
 
 function setHeader(res, mpath){
@@ -31,14 +35,14 @@ function setHeader(res, mpath){
 
 
 }
-//serve static file
+/*serve static file***/
 app.use(express.static(path.join(__dirname, 'public')));
 //app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
+/*define routes*/
 app.use('/visualize', visualize);
 app.use('/JurongIsland.owl/showCO2', showCO2);
 app.use('/JPS_KB_CARES_Lab_Node/FH-01.owl', bmsTemp);
 app.use("/bmsplot", bmsplot);
-
 app.get('/', function (req, res) {
 	        res.sendFile(path.join(__dirname, 'views/index.html'));
 
@@ -47,59 +51,31 @@ app.get('/', function (req, res) {
 /*posting to dataObserve to get orginal data & register for future data change*/
 var dataCopy = null;
 
-//TODO: how to store infor as who to register to ? => url link
-function register(callback) {
-    request.post({url: config.bmsUrl ,body: JSON.stringify({url:config.myUrl, getInitData:true}),headers: {
-        'content-type': 'application/json'
-    }}, function (err,res ,body) {
-
-        console.log("posting to dataObserve localhost 2000");
-
-        if(err){
-            console.log(err);
-            callback(err);
-            return;
-        }
-        console.log("intial body");
-        console.log(body);
-        dataCopy = body;
-        callback(null, body);
-    });
-
-};
-
-
 
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
 /*future data change will be post to this route*/
-
-app.use(bodyParser.text({ type: 'text/xml' }));
-
-app.post("/change", function (req, res) {
-    //retreive changed data
-    //do whatever you need to do with this data
+app.use(bodyParser.text({ type: 'application/json' }));
+app.post("/change", function (req, res) {//data change of other nodes will be post to here
+    //retreive changed data//do whatever you need to do with this data
     //now we only record it down
-
-    console.log("update body");
-    console.log(util.inspect(req.body));
-
-//console.log(req.header('content-type'));
-//TODO: socket, send this info to all clients
     dataCopy = req.body;
-
-
+    console.log(req.body);
     io.emit("update", req.body);
-    res.status(200).send("success");
+
+        res.status(200).send("success");
+
 });
 
 
 
 /*socket io***/
+//TODO: multiple nodes may post to here, need a map of dataCopy, name as key
+//TODO: else, post again for initial data(seperate it with register)
 io.on('connection', function(socket){
     if(dataCopy === null){//no cached data copy, this is the first client
-        register(function (err, initialData) {//register to changing-data node
+        registerer.register(registerUrl, myUrl, function (err, initialData) {//register to changing-data node
             if(err){
                 console.log(err);
                 return;//TODO: err handling
@@ -136,15 +112,20 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+/********************/
 
 
-
-
-
-module.exports = app;
 
 http.on('close', function () {
    //now deregister it
+    registerer.deregister(registerUrl, myUrl, function (err, result) {
+          //server is close down, no way to put this msg to anyone, just print it out
+          if(err){
+              console.log(err);
+          }
+
+          console.log(result);
+      })
 
 
 });
@@ -152,3 +133,5 @@ http.on('close', function () {
 http.listen(port, function () {
   console.log('Server listening on port 3000');
 });
+
+module.exports = http;

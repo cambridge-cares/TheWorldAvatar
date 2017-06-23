@@ -1,4 +1,23 @@
+/***
+ * Read all connecitons defined in current grOWl system, starting from a top node file on disk
+ * All following children will be retreive by url online
+ * Following definition will be considered a connection:
+ *  //owl:NamedIndividual/Eco-industrialPark:hasIRI
+ *  //owl:NamedIndividual/system:hasIRI
+ *
+ *   option: showImport
+ *   Following is also considered connection if showImport ticked
+ *   owl:Ontology//owl:imports
+ *
+ *   option: showServiceOnly
+ *   Connection is logged only when
+ *   //owl:NamedIndividual[rdf:type[contains(@rdf:resource,'http://www.theworldavatar.com/Service.owl')]]
+ *
+ *   Connections are saved as:
+ *   [{source, target: , level: },..]
+ *   Import connections only have level: null
 
+ */
 //import
 var path = require('path');
 var libxmljs = require("libxmljs");
@@ -13,7 +32,7 @@ let request = require('request');
 let rootNode  = config.rootNode;
 /**out a asyn function, provide data :
  [
- {source: , target:  }
+ {source: , target: , level: }
  ]
 
 
@@ -141,6 +160,18 @@ function readConnections(options, callback) {
         return children;
     }
 
+    function getGeoCoord(root) {
+        if(!root){
+            return null;
+        }
+        let x =  root.find("//owl:NamedIndividual[contains(@rdf:about, 'ValueOf_x_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
+        console.log(x);
+
+        let y =  root.find("//owl:NamedIndividual[contains(@rdf:about, 'ValueOf_y_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
+
+	  return {x: x[0].text().trim(),y : y[0].text().trim()};
+	}
+
     /**
      * return all services defined in the owl, service definition : contains "http://www.theworldavatar.com/Service.owl" in rdf:type
      * @param root   root node of parsed xml
@@ -195,7 +226,14 @@ function readConnections(options, callback) {
                let children = getChildren(root);
            //get my links
            let myLinks = [];
+           let geoCoords = [];
            var imports;
+
+           //get this geoCoord, push it on result links
+           var coord = getGeoCoord(root);
+           if(coord) {
+               geoCoords.push({url : myUri, coord: coord});
+           }
 
            if (showImport) {
                try {

@@ -1,4 +1,6 @@
-
+/***
+ * rdfParser
+ */
 /***import modules**/
 let $rdf = require('rdflib');
 let fs = require('fs');
