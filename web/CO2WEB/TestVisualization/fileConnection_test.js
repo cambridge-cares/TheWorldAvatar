@@ -26,16 +26,28 @@ describe("extract connections", function () {
                 done(err);
             }
             console.log(JSON.stringify(results));
-            expect(results).to.be.a('array');
-            expect(results).to.have.length.above(0);
-            for(let conn of results){
+            expect(results).to.be.a('object');
+            expect(results).to.have.property('connections');
+            expect(results).to.have.property('geoCoords');
+            expect(results['connections']).to.have.length.above(0);
+            expect(results['geoCoords']).to.have.length.above(0);
+
+            for(let conn of results['connections']){
                 expect(conn).to.have.property('source');
                 expect(conn).to.have.property('target');
                 expect(conn).to.have.property('level');
-                console.log("find connections: "+ results.length);
+                console.log("find connections: "+ results['connections'].length);
 
             }
+            for(let coord of results['geoCoords']){
+                expect(coord).to.have.property('url');
+                expect(coord).to.have.property('coord');
+                expect(coord['coord']).to.have.property('x');
+                expect(coord['coord']).to.have.property('y');
 
+                console.log("find coordis: "+ results['geoCoords'].length);
+
+            }
             done();
 
         })
@@ -51,14 +63,18 @@ describe("extract connections", function () {
                 done(err);
             }
             console.log(JSON.stringify(results));
-            expect(results).to.be.a('array');
-            expect(results).to.have.length.above(0);
-            console.log("find connections: "+ results.length);
-            for(let conn of results){
+            expect(results).to.be.a('object');
+            expect(results).to.have.property('connections');
+            expect(results).to.have.property('geoCoords');
+            expect(results['connections']).to.have.length.above(0);
+            expect(results['geoCoords']).to.have.length.above(0);
+
+            for(let conn of results['connections']){
                 console.log(conn);
                 expect(conn).to.have.property('source');
                 expect(conn).to.have.property('target');
                 //        expect(conn).to.have.property('level');
+                console.log("find connections: "+ results['connections'].length);
 
             }
 
@@ -77,14 +93,19 @@ describe("extract connections", function () {
                 done(err);
             }
             console.log(JSON.stringify(results));
-            expect(results).to.be.a('array');
-            expect(results).to.have.length.above(0);
-            console.log("find connections: "+ results.length);
-            for(let conn of results){
+            expect(results).to.be.a('object');
+            expect(results).to.have.property('connections');
+            expect(results).to.have.property('geoCoords');
+            expect(results['connections']).to.have.length.above(0);
+            expect(results['geoCoords']).to.have.length.above(0);
+
+            for(let conn of results['connections']){
                 console.log(conn);
                 expect(conn).to.have.property('source');
                 expect(conn).to.have.property('target');
-                expect(conn).to.not.have.property('level');
+                //        expect(conn).to.have.property('level');
+                console.log("find connections: "+ results['connections'].length);
+
             }
 
             done();

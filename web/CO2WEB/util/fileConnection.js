@@ -165,12 +165,16 @@ function readConnections(options, callback) {
             return null;
         }
         let x =  root.find("//owl:NamedIndividual[contains(@rdf:about, 'ValueOf_x_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
-        console.log(x);
 
         let y =  root.find("//owl:NamedIndividual[contains(@rdf:about, 'ValueOf_y_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
 
-	  return {x: x[0].text().trim(),y : y[0].text().trim()};
-	}
+        if(x.length > 0 && y.length > 0) {
+            console.log("#########################findcoordis:" + x[0].text().trim());
+            return {x: x[0].text().trim(), y: y[0].text().trim()};
+        } else {
+            return null;
+        }
+        }
 
     /**
      * return all services defined in the owl, service definition : contains "http://www.theworldavatar.com/Service.owl" in rdf:type
@@ -235,6 +239,7 @@ function readConnections(options, callback) {
                geoCoords.push({url : myUri, coord: coord});
            }
 
+           console.log(util.inspect(geoCoords));
            if (showImport) {
                try {
                     imports = getXMLImports(root);
@@ -254,7 +259,7 @@ function readConnections(options, callback) {
            if (children.length < 1) { // no children is found, including devices and services and call callback
                console.log(myUri + " is a leaf node return");
 
-               callback(null, myLinks);
+               callback(null, {connections: myLinks, geoCoords: geoCoords});
                return;
            }//else
 
@@ -289,8 +294,32 @@ function readConnections(options, callback) {
                    }
                    console.log("concat results");
 
-                   results = results.clean(null);
-                   callback(null, results.concat(myLinks));
+
+                   let connectionsAll = myLinks;
+                   let geoCoordsAll = geoCoords;
+
+                   console.log("!!!!!!!!!!!!!!!!!!!!!" + results.length);
+                   //console.log(geoCoords)
+                   for (let result of results){
+                       console.log(util.inspect(result));
+
+                       let connectionThis = result.connections;
+                       //console.log(connectionThis);
+                     //  connectionThis = connectionThis.clean(null);
+                       let geoCoordsThis = result.geoCoords;
+                       console.log(util.inspect(geoCoordsThis));
+
+                       //  geoCoordsThis = geoCoordsThis.clean(null);
+                       connectionsAll = connectionsAll.concat(connectionThis);
+                       geoCoordsAll=   geoCoordsAll.concat(geoCoordsThis);
+                   }
+
+
+                   console.log("********************concated");
+                   console.log(util.inspect(connectionsAll));
+                   console.log(util.inspect(geoCoordsAll));
+
+                   callback(null, {connections:connectionsAll, geoCoords:geoCoordsAll});
 
                });
 
