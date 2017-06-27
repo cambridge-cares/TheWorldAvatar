@@ -1,17 +1,26 @@
 body {
   padding: 50px;
   font: 20px "Lucida Grande", Helvetica, Arial, sans-serif;
-  color:white;
-  background-color: #00B7FF;
 }
 
 a {
   color: #00B7FF;
 }
 #container {
-  padding: 300px 15px;
+  padding: 320px 15px;
   text-align: center;
   font-size: 80px;
   font-weight: 300;
 
+}
+
+h1{
+  color: white;
+}
+
+#co2des{
+	padding-top:50px;
+	  font-size: 20px;
+
+	
 }

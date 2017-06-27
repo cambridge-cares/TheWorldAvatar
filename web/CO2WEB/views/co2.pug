@@ -1,17 +1,41 @@
-//
-   Created by Shaocong on 4/5/2017.
-html
-    head
-        title  Jurong CO2
-        link(rel='stylesheet' href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css")
+extends header.pug
+block title
+        title  CO2 Emission Meter
+
+block sheets
         link(rel="stylesheet" href='/stylesheets/style.css')
 
-        body
-            div#container
-                p Jurong Island CO2 Emission:
-                p
-                span#co2Value  #{co2Value}
-                span  ton
+block subtitle
 
-        script(src="https://code.jquery.com/jquery-2.2.0.min.js")
-        script(src="/javascripts//main.js")
+    |CO
+    sub 2
+    |&nbsp;Emission Meter
+
+block description
+    |A real time CO
+    sub 2
+    |&nbsp;emission meter estimating the total CO
+    sub 2
+    |&nbsp;emission from Singapore's Jurong Island.
+
+block content
+
+    div#container
+        p
+            | Jurong Island CO
+            sub 2
+            | &nbsp;Emission:
+        p
+        span#co2Value  #{co2Value}
+        span  tonnes/seconds
+
+        p#co2des
+            | The total CO
+            sub 2
+            |&nbsp;emission from Jurong Island is estimated as approximately 29 million tonnes
+            | per year using the Carnegie Mellon (US 2002 Producer Price) Model.
+				
+
+            script(src="https://code.jquery.com/jquery-2.2.0.min.js")
+
+            script(src="/javascripts//co2.js")

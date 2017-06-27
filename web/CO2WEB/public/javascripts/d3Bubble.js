@@ -1,11 +1,11 @@
-/**
- * Created by Shaocong on 4/7/2017.
- */
+
 // http://blog.thomsonreuters.com/index.php/mobile-patent-suits-graphic-of-the-day/
+
+var socket = io();
 
 
 var FileLinkMap = function (options) {
-    var width = options.width || 1500,
+    var width = $(document).width(),
         height = options.height || 1200,
         charge = options.charge || -3000,
         distance = options.distance || 100,
@@ -24,35 +24,43 @@ var FileLinkMap = function (options) {
         "#575329", "#00FECF", "#B05B6F", "#8CD0FF", "#3B9700", "#04F757", "#C8A1A1", "#1E6E00",
         "#7900D7", "#A77500", "#6367A9", "#A05837", "#6B002C", "#772600", "#D790FF", "#9B9700",
         "#549E79", "#FFF69F", "#201625", "#72418F", "#BC23FF", "#99ADC0", "#3A2465", "#922329"];
-
-
     var colorList2 = [
 
 
         "#5B4534", "#FDE8DC", "#404E55", "#0089A3", "#CB7E98", "#A4E804", "#324E72", "#6A3A4C", "#000000"];
-
     var colorMap = {};
     var mapSize = 0;
-
-
-    //TODO: side bar shows domain
-    //TODO: onclick hightlight all conenctions to this
-
 
     function packNodesArr(links) {
         var nodes = {};
         var nodesArr = [];
 
+
+		
         function getDomain(str) {
+			if(!str){
+				return null;
+			}
+
+            str = str.replace("theworldavatar", "jparksimulator");
+            str = str.replace("file:/C:/", "http://www.jparksimulator.com/");
             var arr = str.split("/");
-            if(arr.length >3) {
-                return arr[0] + "/" + arr[1] + "/" + arr[2] + "/" + arr[3];
-            } else{
-                return arr[0] + "/" + arr[1] + "/" + arr[2];
+
+
+            console.log(arr);
+             let domain = "";
+             if(arr.length < 3){
+                 domain += arr[2];
+             }
+            for(let i = 2 ; i < arr.length -1; i++){
+               domain += "/"+arr[i];
             }
+            return domain;
         }
 
         function getSimpleName(url) {
+       if(!url){
+return undefined;}
             var arr = url.split("/");
 
             //  return (arr[arr.length - 1] === "")? arr[arr.length-3]+'/'+arr[arr.length-2] : arr[arr.length-2]+"/"+arr[arr.length -1];
@@ -98,7 +106,13 @@ var FileLinkMap = function (options) {
              ***/
         });
 
-
+		let index = 0;
+		console.log("@@@@@@@@@@@@@@@@@@@@@@");
+		for(let link of links){
+			
+			console.log(index+"  :"+JSON.stringify(link));
+			index++;
+		}
         // console.log(JSON.stringify(nodes));
         //packs object :nodes into array
         for (var attr in nodes) {
@@ -117,19 +131,14 @@ var FileLinkMap = function (options) {
         }
         return nodesArr;
     }
-
-
     function setBodyS(node) {
-         return -400*(node.count||1);
+         return -300*(1||node.count);
 
         //return charge;
     }
-
     function setD() {
         return distance;
     }
-
-
     /**
      * Allocate color for nodes of each domain
      * @param d  datum
@@ -138,7 +147,7 @@ var FileLinkMap = function (options) {
     function allocateColor(d) {
         // is this exist in color map?
 
-        if(d.level !== undefined && d.level !== null) {
+        if(d.level !== undefined && d.level !== null && !isNaN(d.level)) {
 
             return colorList2[d.level];
         }
@@ -152,10 +161,17 @@ var FileLinkMap = function (options) {
 
         return colorMap[d.domain];
     }
+    function sortOrder(d,i) {
 
+        if(d.level !== undefined && d.level !== null && !isNaN(d.level)) {
 
+            return d.level*1000+i;
+        }
+
+        return 100000+i;
+    }
     function defineLegend(d){
-        if(d.level !== undefined && d.level !== null) {
+        if(d.level !== undefined && d.level !== null && !isNaN(d.level)) {
 
             return d.level ;
         }
@@ -163,15 +179,10 @@ var FileLinkMap = function (options) {
         return d.domain;
     }
 
-
-
-
     var svg = d3.select("#draw-panel").append("svg")
         .attr("width", width)
         .attr("height", height);
     var g = svg.append("g");
-
-
 
     function clear() {
         g.selectAll("line").data([]).exit().remove();
@@ -184,7 +195,7 @@ var FileLinkMap = function (options) {
 
         //set force simulation
         var simulation = d3.forceSimulation()
-            .force("link", d3.forceLink(links).distance(200))
+            .force("link", d3.forceLink(links).distance(70))
             .force("charge", d3.forceManyBody().strength(setBodyS))
             .force("center", d3.forceCenter(width / 2, height / 2));
 
@@ -222,9 +233,13 @@ var FileLinkMap = function (options) {
             })
 
             .append("circle")
+            .attr("id", function (d) {
+                return d.name;
+            })
             .attr("r", nodeR)
             .attr("class", "nodes")
             .attr("fill", allocateColor)
+            .attr("data-legend-pos", sortOrder)
             .attr("data-legend", defineLegend)
             .on("mouseover", handleMouseOver)         //highlight all links when mouse over
             .on("mouseout", handleMouseOut)
@@ -261,48 +276,84 @@ var FileLinkMap = function (options) {
         simulation.force("link")
             .links(links);
 
+
+        var preLengend = svg.selectAll("g.legend").remove();
+
        var  legend = svg.append("g")
             .attr("class","legend")
             .attr("transform","translate(50,30)")
             .style("font-size","12px")
             .call(d3.legend);
+
+
         function ticked() {
 
             path
-                .attr("x1", function (d) {
+                .attr("x1", function (d,i) {
+					if(d===undefined){
+					//	console.log("@@@@@@@@@@@@@"+i);
+                     return 0;
+					}
                     return d.source.x;
                 })
                 .attr("y1", function (d) {
+										if(d===undefined){
+                     return 0;
+					}
                     return d.source.y;
                 })
                 .attr("x2", function (d) {
+															if(d===undefined){
+                     return 0;
+					}
                     return d.target.x;
                 })
                 .attr("y2", function (d) {
-                    return d.target.y;
+                    										if(d===undefined){
+                     return 0;
+					}
+					return d.target.y;
                 });
 
             circle
                 .attr("x", function (d) {
-                    return d.x;
+                    															if(d===undefined){
+                     return 0;
+					}
+					return d.x;
                 })
                 .attr("y", function (d) {
-                    return d.y;
+                    															if(d===undefined){
+                     return 0;
+					}
+					return d.y;
                 });
 
             circleDraw
                 .attr("cx", function (d) {
-                    return d.x;
+															if(d===undefined){
+                     return 0;
+					}                
+				return d.x;
                 })
                 .attr("cy", function (d) {
-                    return d.y;
+                    															if(d===undefined){
+                     return 0;
+					}
+					return d.y;
                 });
             text
                 .attr("x", function (d) {
+																				if(d===undefined){
+                     return 0;
+					}
                     return d.x;
                 })
                 .attr("y", function (d) {
-                    return d.y;
+                    															if(d===undefined){
+                     return 0;
+					}
+					return d.y;
                 });
 
         }
@@ -358,24 +409,41 @@ var FileLinkMap = function (options) {
 
 };
 
-$(document).ready(function () {// when web dom ready
+$(window).load(function () {// when web dom ready
     let url = window.location.href;     // Returns full URL
 
     var map = FileLinkMap({});
     $("#checkShowImport").change(function () {
 if($('#checkShowImport').prop('checked')) {
+    disableThenEnableAfterTimeout();
 
         //TODO:ajax, only change data, but with d3...how? should use angular instead?
         $.ajax({
             url: '/visualize/includeImport',
             type: 'GET',
 
-            success: function (data) {
+            statusCode:{
+            200: function (links) {
                 console.log('ajax successful!\n');
-                console.log(JSON.stringify(data));
-                map.update(data);
 
-            },
+
+                console.log(JSON.stringify(links));
+                if(LinkRightFormat(links))
+                {
+					
+					for(let link of links){
+					if(link===undefined || link === null){
+						console.log("!!!!!!!!!!");
+						
+					}
+						
+					}
+                    map.update(links);
+
+
+                }
+
+            }},
             error: function (err) {
                 console.log(err);
 
@@ -385,10 +453,136 @@ if($('#checkShowImport').prop('checked')) {
 
 } else {
 	       window.location.href = '/visualize';
-}
+        }
+
+
+    });
+
+    $("#checkShowServiceOnly").change(function () {
+        if($('#checkShowServiceOnly').prop('checked')) {
+            disableThenEnableAfterTimeout();
+            //TODO:ajax, only change data, but with d3...how? should use angular instead?
+            $.ajax({
+                url: '/visualize/showServiceOnly',
+                type: 'GET',
+
+                statusCode:{
+                    200: function (links) {
+                        console.log('ajax successful!\n');
+
+
+                   //     console.log(JSON.stringify(links));
+                        if(LinkRightFormat(links))
+                        {
+                            map.update(links);
+
+
+                        }
+
+                    }},
+                error: function (err) {
+                    console.log(err);
+
+
+                }
+            });
+
+        } else {
+            window.location.href = '/visualize';
+        }
     })
 
+    $("#checkdefault").change(function () {
+        if($('#checkdefault').prop('checked')) {
 
+            window.location.href = '/visualize'; //return to default
+
+    }});
+    function LinkRightFormat(links){
+        if(!links || links.length < 1){
+            return false;
+        }
+        for(let link of links){
+            if(!link.hasOwnProperty("target") || !link.hasOwnProperty("source")){
+                return false;
+            }
+
+        }
+        return true;
+    }
+    function DisableOptionButton(disable){
+      //  console.log(disable);
+
+        if($( "#checkShowImport" ).prop( "disabled") === !disable &&$( "#checkShowServiceOnly" ).prop( "disabled") === !disable) {
+            $("#checkShowImport").prop("disabled", disable);
+            $("#checkShowServiceOnly").prop("disabled", disable);
+            console.log("now :" + (disable === true?"disable":"enable"));
+         return true;
+        }
+        return false;
+    }
+
+      function disableThenEnableAfterTimeout(){
+         if( DisableOptionButton(true)){
+
+             setTimeout(function () {
+                 DisableOptionButton(false);
+             }, 5000);
+         }
+
+      }
+
+      let blinkTimer;
+
+      /*socket****/
+    //blink any updated data
+    socket.on('update', function (data) {
+  console.log("!!!!!!!!!dataUpdate");
+        let parsedData = JSON.parse(data);
+        let name = parsedData.name;
+        console.log(name);
+        //search name among nodes to grab the correct one
+       // console.log($('circle'));
+       // console.log($('#FH-01.owl'));
+        console.log($("circle[id='FH-01.owl']"));
+
+        let node =  $("circle[id='FH-01.owl']");
+
+        let oriColor =        node.css("fill");
+
+        let orSize = node.attr("r");
+        //console.log($('circle#FH-01.owl'));
+        console.log(orSize);
+
+        node.animate({'r': 20}, 500)
+            .css({'fill': '#FFFC94', 'transition': 'fill 0.5s'})
+            .css({'stroke': '#FFF700', 'transition': 'stroke 0.5s'});
+        ;
+        blinkTimer= setTimeout(function () {
+            node.animate({'r': orSize}, 500)
+                .css({'stroke': '#000000', 'transition': 'stroke 0.5s'})
+            .css({'fill': oriColor, 'transition': 'fill 0.5s'});
+
+        }, 500);
+
+    });
+
+
+
+
+
+});
+
+
+$( window ).unload(function() {
+    console.log("unload");
+
+    if(  $("#checkShowImport").prop('checked')) {
+        $("#checkShowImport").prop('checked', false);
+    }
+    if(  $("#checkShowServiceOnly").prop('checked')) {
+        $("#checkShowServiceOnly").prop('checked', false);
+    }
 });
 
 //module.exports = FileLinkMap;

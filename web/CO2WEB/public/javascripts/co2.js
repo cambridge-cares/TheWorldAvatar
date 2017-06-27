@@ -1,6 +1,4 @@
-/**
- * Created by Shaocong on 4/5/2017.
- */
+
 $( window ).on( "load", function() {
     console.log( "window loaded" );
 //ajax to get co2 value from server
@@ -26,9 +24,9 @@ function setFluctuate(){
 function fluctuate(oldValue){
 
 
-    oldValue +=Math.random()*20 - 10;//add a random [-10,10)
+    oldValue +=Math.random()*0.02 - 0.01;//add a random [-0.01,0.01)
 
-    return oldValue.toFixed(4);
+    return oldValue.toFixed(2);
 
 }
 

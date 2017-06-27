@@ -1,30 +1,44 @@
-html
-head
+extends header.pug
+block title
+    title Visualization
 
-    title OWL STRUCTURE
+block sheets
     link(rel="stylesheet" href='/stylesheets/visual.css')
-    link(rel='stylesheet' href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css")
+    link(rel="stylesheet" href='/stylesheets/jquery-ui.min.css')
+
+block subtitle
+        |Visualization
 
 
+block description
+    |A tool to display the ontology based wealth of data present in J-Park Simulator.
 
-body
-    script(src="https://code.jquery.com/jquery-2.2.0.min.js")
-    script(src="https://d3js.org/d3.v4.min.js")
-    script(src="/javascripts/d3.legend.js")
-    script(src="/javascripts/d3Bubble.js")
+block content
+    body
+        script(src="https://code.jquery.com/jquery-2.2.0.min.js")
+        script(src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js')
 
-    input(
-    type = "hidden"
-    id = 'data'
-    value = result
-    )
+        script(src="https://d3js.org/d3.v4.min.js")
+        script(src="/javascripts/d3.legend.js")
+        script(src="/javascripts/d3Bubble.js")
 
-div(class='col-sm-1' id="choice-div")
-    div(class="panel panel-default" id="choice-panel")
-        div(class="panel-body")
-            div(class="checkbox")
-                input(type="checkbox" id="checkShowImport" value="")
-                label Show Import
+        input(
+        type = "hidden"
+        id = 'data'
+        value = result
+        )
 
+    div(class='col-sm-1' id="choice-div")
+        div(class="panel panel-default" id="choice-panel")
+            div(class="panel-body")
+                div(class="checkbox")
+                    input(type="radio" name="option" id="checkShowImport" value="")
+                    label Show Import
+                    br
+                    input(type="radio" name="option" id="checkShowServiceOnly" value="")
+                    label Show Agents Only
+                    br
+                    input(type="radio" name="option" id="checkdefault" value="")
+                    label Show Default
 
-div(class='col-sm-11' id="draw-panel")
+    div(class='col-sm-12' id="draw-panel")
