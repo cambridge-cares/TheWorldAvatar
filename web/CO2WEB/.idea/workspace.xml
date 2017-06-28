@@ -23,107 +23,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="d3Bubble.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/public/javascripts/d3Bubble.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1831">
-              <caret line="236" column="30" lean-forward="true" selection-start-line="236" selection-start-column="30" selection-end-line="236" selection-end-column="30" />
-              <folding>
-                <element signature="e#410#1543#0" expanded="false" />
-                <element signature="e#1566#1676#0" expanded="false" />
-                <element signature="e#1756#4631#0" expanded="false" />
-                <element signature="e#4660#4731#0" expanded="false" />
-                <element signature="e#4752#4784#0" expanded="false" />
-                <element signature="e#4789#4916#0" expanded="false" />
-                <element signature="e#4947#5385#0" expanded="false" />
-                <element signature="e#5414#5569#0" expanded="false" />
-                <element signature="e#5598#5746#0" expanded="false" />
-                <element signature="e#5915#6086#0" expanded="false" />
-                <element signature="e#9033#10864#0" expanded="false" />
-                <element signature="e#10899#11031#0" expanded="false" />
-                <element signature="e#11061#11134#0" expanded="false" />
-                <element signature="e#11166#11288#0" expanded="false" />
-                <element signature="e#11332#11944#0" expanded="false" />
-                <element signature="e#11987#12138#0" expanded="false" />
-                <element signature="e#12466#13337#0" expanded="false" />
-                <element signature="e#13391#14256#0" expanded="false" />
-                <element signature="e#14301#14429#0" expanded="false" />
-                <element signature="e#14467#14740#0" expanded="false" />
-                <element signature="e#14782#15208#0" expanded="false" />
-                <element signature="e#15256#15425#0" expanded="false" />
-                <marker date="1497945714616" expanded="true" signature="6296:12144" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="bmsPlot.pug" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/views/bmsPlot.pug">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="15" column="89" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="co2.pug" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/views/co2.pug">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="858">
-              <caret line="39" column="0" lean-forward="false" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="config.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/config.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="462">
-              <caret line="21" column="44" lean-forward="false" selection-start-line="21" selection-start-column="44" selection-end-line="21" selection-end-column="44" />
-              <folding>
-                <marker date="1497942538673" expanded="true" signature="0:4" ph="/** Created by Shaocong on 5/25/2017. ...*/" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="visual.pug" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/views/visual.pug">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="726">
-              <caret line="33" column="34" lean-forward="false" selection-start-line="33" selection-start-column="34" selection-end-line="33" selection-end-column="34" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="48">
-              <caret line="109" column="44" lean-forward="false" selection-start-line="109" selection-start-column="44" selection-end-line="109" selection-end-column="44" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="bmsPlot.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/javascripts/bmsPlot.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-704">
-              <caret line="13" column="31" lean-forward="false" selection-start-line="13" selection-start-column="31" selection-end-line="13" selection-end-column="31" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="bmsData.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/util/bmsData.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="550">
+              <caret line="25" column="13" lean-forward="false" selection-start-line="25" selection-start-column="13" selection-end-line="25" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -132,8 +36,98 @@
       <file leaf-file-name="fileConnection.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/util/fileConnection.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3576">
-              <caret line="230" column="62" lean-forward="false" selection-start-line="230" selection-start-column="62" selection-end-line="230" selection-end-column="62" />
+            <state relative-caret-position="481">
+              <caret line="244" column="28" lean-forward="true" selection-start-line="244" selection-start-column="28" selection-end-line="244" selection-end-column="28" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="change_data_test.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TestVisualization/change_data_test.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="fileConnection_test.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TestVisualization/fileConnection_test.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="396">
+              <caret line="18" column="45" lean-forward="true" selection-start-line="18" selection-start-column="45" selection-end-line="18" selection-end-column="45" />
+              <folding>
+                <element signature="n#!!doc" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rdfParser_test.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TestVisualization/rdfParser_test.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding>
+                <element signature="n#!!doc" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="visualizeWorld.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/routes/visualizeWorld.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="44">
+              <caret line="4" column="24" lean-forward="false" selection-start-line="4" selection-start-column="24" selection-end-line="4" selection-end-column="24" />
+              <folding>
+                <element signature="e#0#44#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="visualizeBms.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/routes/visualizeBms.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="22">
+              <caret line="3" column="43" lean-forward="false" selection-start-line="3" selection-start-column="43" selection-end-line="3" selection-end-column="43" />
+              <folding>
+                <element signature="e#0#44#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="routes_test.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TestVisualization/routes_test.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="409">
+              <caret line="161" column="39" lean-forward="true" selection-start-line="161" selection-start-column="39" selection-end-line="161" selection-end-column="39" />
+              <folding>
+                <element signature="n#!!doc" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="showCO2.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/routes/showCO2.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="198">
+              <caret line="9" column="37" lean-forward="true" selection-start-line="9" selection-start-column="37" selection-end-line="9" selection-end-column="37" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="d3Bubble.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/javascripts/d3Bubble.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="200">
+              <caret line="425" column="35" lean-forward="true" selection-start-line="425" selection-start-column="35" selection-end-line="425" selection-end-column="35" />
               <folding />
             </state>
           </provider>
@@ -153,7 +147,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>time</find>
       <find>Service</find>
       <find>Bio</find>
       <find>biodieselPlant3</find>
@@ -162,7 +155,6 @@
       <find>strength</find>
       <find>map</find>
       <find>fileli</find>
-      <find>ajax</find>
       <find>console</find>
       <find>update</find>
       <find>CO2</find>
@@ -183,19 +175,13 @@
       <find>request</find>
       <find>registet</find>
       <find>color</find>
+      <find>rootNode</find>
+      <find>ajax</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/testParser.js" />
-        <option value="$PROJECT_DIR$/JurongIsland.owl" />
-        <option value="$PROJECT_DIR$/testRDFLIB.js" />
-        <option value="$PROJECT_DIR$/test/f-oaf.owl" />
-        <option value="$PROJECT_DIR$/test/OntoCAPE.owl" />
-        <option value="$PROJECT_DIR$/test/tst.xml" />
-        <option value="$PROJECT_DIR$/testXMLParser.js" />
-        <option value="$PROJECT_DIR$/testWalk.js" />
         <option value="$PROJECT_DIR$/testRD.js" />
         <option value="$PROJECT_DIR$/testFC.js" />
         <option value="$PROJECT_DIR$/playground.js" />
@@ -226,19 +212,27 @@
         <option value="$PROJECT_DIR$/views/header.pug" />
         <option value="$PROJECT_DIR$/fileConnection.js" />
         <option value="$PROJECT_DIR$/TestVisualization/tryXMLImport.js" />
-        <option value="$PROJECT_DIR$/TestVisualization/visualization_test.js" />
-        <option value="$PROJECT_DIR$/util/fileConnection.js" />
-        <option value="$PROJECT_DIR$/routes/visualize.js" />
         <option value="$PROJECT_DIR$/../testChangeEmitter/db.js" />
         <option value="$PROJECT_DIR$/../testChangeEmitter/routes/dataObserve.js" />
         <option value="$PROJECT_DIR$/../testChangeEmitter/util/changeWatcher.js" />
-        <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/public/javascripts/bmsPlot.js" />
         <option value="$PROJECT_DIR$/views/co2.pug" />
         <option value="$PROJECT_DIR$/views/visual.pug" />
-        <option value="$PROJECT_DIR$/config.js" />
         <option value="$PROJECT_DIR$/public/stylesheets/bms.css" />
+        <option value="$PROJECT_DIR$/util/data.json" />
+        <option value="$PROJECT_DIR$/routes/visualize.js" />
+        <option value="$PROJECT_DIR$/TestVisualization/visualization_test.js" />
+        <option value="$PROJECT_DIR$/app.js" />
+        <option value="$PROJECT_DIR$/config.js" />
+        <option value="$PROJECT_DIR$/routes/visualizeRouterFact.js" />
+        <option value="$PROJECT_DIR$/routes/visualizeWorld.js" />
+        <option value="$PROJECT_DIR$/routes/visualizeSemakau.js" />
+        <option value="$PROJECT_DIR$/routes/visualizeJurong.js" />
+        <option value="$PROJECT_DIR$/routes/visualizeBms.js" />
+        <option value="$PROJECT_DIR$/TestVisualization/fileConnection_test.js" />
+        <option value="$PROJECT_DIR$/util/fileConnection.js" />
         <option value="$PROJECT_DIR$/public/javascripts/d3Bubble.js" />
+        <option value="$PROJECT_DIR$/TestVisualization/routes_test.js" />
       </list>
     </option>
   </component>
@@ -280,6 +274,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -412,41 +407,8 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CO2WEB" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CO2WEB" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="node_modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CO2WEB" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CO2WEB" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="node_modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="rdflib" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="Scratches" />
     </panes>
   </component>
@@ -492,24 +454,8 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Mocha.extract connections.find all connections of each file including imports with option:showImport (1)">
-    <configuration default="false" name="RDFParser: .could find the value of property of an indivdiual in a specific file" type="mocha-javascript-test-runner" factoryName="Mocha" temporary="true" nameIsGenerated="true">
-      <node-interpreter>project</node-interpreter>
-      <node-options />
-      <working-directory>$PROJECT_DIR$</working-directory>
-      <pass-parent-env>true</pass-parent-env>
-      <envs />
-      <ui>bdd</ui>
-      <extra-mocha-options />
-      <test-kind>TEST</test-kind>
-      <test-file>$PROJECT_DIR$/TestVisualization/visualization_test.js</test-file>
-      <test-names>
-        <name value="RDFParser: " />
-        <name value="could find the value of property of an indivdiual in a specific file" />
-      </test-names>
-      <method />
-    </configuration>
-    <configuration default="false" name="RDFParser:  (1)" type="mocha-javascript-test-runner" factoryName="Mocha" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Mocha.get /visualizeBms">
+    <configuration default="false" name="extract connections (1)" type="mocha-javascript-test-runner" factoryName="Mocha" temporary="true" nameIsGenerated="true">
       <node-interpreter>project</node-interpreter>
       <node-options />
       <working-directory>$PROJECT_DIR$</working-directory>
@@ -518,29 +464,58 @@
       <ui>bdd</ui>
       <extra-mocha-options />
       <test-kind>SUITE</test-kind>
-      <test-file>$PROJECT_DIR$/TestVisualization/visualization_test.js</test-file>
+      <test-file>$PROJECT_DIR$/TestVisualization/fileConnection_test.js</test-file>
+      <test-names>
+        <name value="extract connections" />
+      </test-names>
+      <method />
+    </configuration>
+    <configuration default="false" name="registerer" type="mocha-javascript-test-runner" factoryName="Mocha" temporary="true" nameIsGenerated="true">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <working-directory>$PROJECT_DIR$</working-directory>
+      <pass-parent-env>true</pass-parent-env>
+      <envs />
+      <ui>bdd</ui>
+      <extra-mocha-options />
+      <test-kind>SUITE</test-kind>
+      <test-file>$PROJECT_DIR$/TestVisualization/change_data_test.js</test-file>
+      <test-names>
+        <name value="registerer" />
+      </test-names>
+      <method />
+    </configuration>
+    <configuration default="false" name="RDFParser: " type="mocha-javascript-test-runner" factoryName="Mocha" temporary="true" nameIsGenerated="true">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <working-directory>$PROJECT_DIR$</working-directory>
+      <pass-parent-env>true</pass-parent-env>
+      <envs />
+      <ui>bdd</ui>
+      <extra-mocha-options />
+      <test-kind>SUITE</test-kind>
+      <test-file>$PROJECT_DIR$/TestVisualization/rdfParser_test.js</test-file>
       <test-names>
         <name value="RDFParser: " />
       </test-names>
       <method />
     </configuration>
-    <configuration default="false" name="extract connections.find all connections of each file including imports with option:showImport (1)" type="mocha-javascript-test-runner" factoryName="Mocha" temporary="true" nameIsGenerated="true">
+    <configuration default="false" name="get /visualizeWorld" type="mocha-javascript-test-runner" factoryName="Mocha" temporary="true" nameIsGenerated="true">
       <node-interpreter>project</node-interpreter>
       <node-options />
       <working-directory>$PROJECT_DIR$</working-directory>
       <pass-parent-env>true</pass-parent-env>
       <envs />
-      <ui>tdd</ui>
+      <ui>bdd</ui>
       <extra-mocha-options />
-      <test-kind>TEST</test-kind>
-      <test-file>$PROJECT_DIR$/TestVisualization/visualization_test.js</test-file>
+      <test-kind>SUITE</test-kind>
+      <test-file>$PROJECT_DIR$/TestVisualization/routes_test.js</test-file>
       <test-names>
-        <name value="extract connections" />
-        <name value="find all connections of each file including imports with option:showImport" />
+        <name value="get /visualizeWorld" />
       </test-names>
       <method />
     </configuration>
-    <configuration default="false" name="TestVisualization\visualization_test.js" type="mocha-javascript-test-runner" factoryName="Mocha" temporary="true" nameIsGenerated="true">
+    <configuration default="false" name="get /visualizeBms" type="mocha-javascript-test-runner" factoryName="Mocha" temporary="true" nameIsGenerated="true">
       <node-interpreter>project</node-interpreter>
       <node-options />
       <working-directory>$PROJECT_DIR$</working-directory>
@@ -548,23 +523,10 @@
       <envs />
       <ui>bdd</ui>
       <extra-mocha-options />
-      <test-kind>TEST_FILE</test-kind>
-      <test-file>$PROJECT_DIR$/TestVisualization/visualization_test.js</test-file>
-      <method />
-    </configuration>
-    <configuration default="false" name="extract connections.find only service type connection of each file with option:showServiceOnly" type="mocha-javascript-test-runner" factoryName="Mocha" temporary="true" nameIsGenerated="true">
-      <node-interpreter>project</node-interpreter>
-      <node-options />
-      <working-directory>$PROJECT_DIR$</working-directory>
-      <pass-parent-env>true</pass-parent-env>
-      <envs />
-      <ui>bdd</ui>
-      <extra-mocha-options />
-      <test-kind>TEST</test-kind>
-      <test-file>$PROJECT_DIR$/TestVisualization/visualization_test.js</test-file>
+      <test-kind>SUITE</test-kind>
+      <test-file>$PROJECT_DIR$/TestVisualization/routes_test.js</test-file>
       <test-names>
-        <name value="extract connections" />
-        <name value="find only service type connection of each file with option:showServiceOnly" />
+        <name value="get /visualizeBms" />
       </test-names>
       <method />
     </configuration>
@@ -636,19 +598,19 @@
     </configuration>
     <list size="6">
       <item index="0" class="java.lang.String" itemvalue="Node.js.bin\www" />
-      <item index="1" class="java.lang.String" itemvalue="Mocha.RDFParser: .could find the value of property of an indivdiual in a specific file" />
-      <item index="2" class="java.lang.String" itemvalue="Mocha.RDFParser:  (1)" />
-      <item index="3" class="java.lang.String" itemvalue="Mocha.extract connections.find all connections of each file including imports with option:showImport (1)" />
-      <item index="4" class="java.lang.String" itemvalue="Mocha.TestVisualization\visualization_test.js" />
-      <item index="5" class="java.lang.String" itemvalue="Mocha.extract connections.find only service type connection of each file with option:showServiceOnly" />
+      <item index="1" class="java.lang.String" itemvalue="Mocha.extract connections (1)" />
+      <item index="2" class="java.lang.String" itemvalue="Mocha.registerer" />
+      <item index="3" class="java.lang.String" itemvalue="Mocha.RDFParser: " />
+      <item index="4" class="java.lang.String" itemvalue="Mocha.get /visualizeWorld" />
+      <item index="5" class="java.lang.String" itemvalue="Mocha.get /visualizeBms" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Mocha.extract connections.find all connections of each file including imports with option:showImport (1)" />
-        <item index="1" class="java.lang.String" itemvalue="Mocha.extract connections.find only service type connection of each file with option:showServiceOnly" />
-        <item index="2" class="java.lang.String" itemvalue="Mocha.TestVisualization\visualization_test.js" />
-        <item index="3" class="java.lang.String" itemvalue="Mocha.RDFParser: .could find the value of property of an indivdiual in a specific file" />
-        <item index="4" class="java.lang.String" itemvalue="Mocha.RDFParser:  (1)" />
+        <item index="0" class="java.lang.String" itemvalue="Mocha.get /visualizeBms" />
+        <item index="1" class="java.lang.String" itemvalue="Mocha.get /visualizeWorld" />
+        <item index="2" class="java.lang.String" itemvalue="Mocha.RDFParser: " />
+        <item index="3" class="java.lang.String" itemvalue="Mocha.registerer" />
+        <item index="4" class="java.lang.String" itemvalue="Mocha.extract connections (1)" />
       </list>
     </recent_temporary>
   </component>
@@ -715,43 +677,46 @@
       <workItem from="1497858105687" duration="7240000" />
       <workItem from="1497923784997" duration="25000" />
       <workItem from="1497925669109" duration="11752000" />
+      <workItem from="1498558019387" duration="1295000" />
+      <workItem from="1498615615473" duration="4503000" />
+      <workItem from="1498629163070" duration="3069000" />
     </task>
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="extract_connections_find_all_connections_of_each_file_including_imports_with_option_showImport_(1) - 2017.06.19 at 16h 36m 22s.xml">
-      <configuration name="extract connections.find all connections of each file including imports with option:showImport (1)" configurationId="mocha-javascript-test-runner" />
+    <history-entry file="RDFParser__ - 2017.06.28 at 14h 36m 46s.xml">
+      <configuration name="RDFParser: " configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="extract_connections_find_all_connections_of_each_file_including_imports_with_option_showImport_(1) - 2017.06.19 at 17h 08m 55s.xml">
-      <configuration name="extract connections.find all connections of each file including imports with option:showImport (1)" configurationId="mocha-javascript-test-runner" />
+    <history-entry file="extract_connections_(1) - 2017.06.28 at 13h 54m 22s.xml">
+      <configuration name="extract connections (1)" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="extract_connections_find_all_connections_of_each_file_including_imports_with_option_showImport_(1) - 2017.06.19 at 17h 09m 21s.xml">
-      <configuration name="extract connections.find all connections of each file including imports with option:showImport (1)" configurationId="mocha-javascript-test-runner" />
+    <history-entry file="extract_connections_(1) - 2017.06.28 at 13h 57m 27s.xml">
+      <configuration name="extract connections (1)" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="extract_connections_find_all_connections_of_each_file_including_imports_with_option_showImport_(1) - 2017.06.19 at 17h 10m 16s.xml">
-      <configuration name="extract connections.find all connections of each file including imports with option:showImport (1)" configurationId="mocha-javascript-test-runner" />
-    </history-entry>
-    <history-entry file="extract_connections_find_all_connections_of_each_file_including_imports_with_option_showImport_(1) - 2017.06.19 at 17h 10m 29s.xml">
-      <configuration name="extract connections.find all connections of each file including imports with option:showImport (1)" configurationId="mocha-javascript-test-runner" />
-    </history-entry>
-    <history-entry file="extract_connections_find_all_connections_of_each_file_including_imports_with_option_showImport_(1) - 2017.06.19 at 17h 10m 52s.xml">
-      <configuration name="extract connections.find all connections of each file including imports with option:showImport (1)" configurationId="mocha-javascript-test-runner" />
-    </history-entry>
-    <history-entry file="extract_connections_find_all_connections_of_each_file_including_imports_with_option_showImport_(1) - 2017.06.19 at 17h 20m 53s.xml">
-      <configuration name="extract connections.find all connections of each file including imports with option:showImport (1)" configurationId="mocha-javascript-test-runner" />
-    </history-entry>
-    <history-entry file="extract_connections_find_all_connections_of_each_file_including_imports_with_option_showImport_(1) - 2017.06.19 at 17h 27m 59s.xml">
-      <configuration name="extract connections.find all connections of each file including imports with option:showImport (1)" configurationId="mocha-javascript-test-runner" />
-    </history-entry>
-    <history-entry file="extract_connections_find_all_connections_of_each_file_including_imports_with_option_showImport_(1) - 2017.06.19 at 17h 36m 25s.xml">
-      <configuration name="extract connections.find all connections of each file including imports with option:showImport (1)" configurationId="mocha-javascript-test-runner" />
+    <history-entry file="extract_connections_(1) - 2017.06.28 at 14h 34m 55s.xml">
+      <configuration name="extract connections (1)" configurationId="mocha-javascript-test-runner" />
     </history-entry>
     <history-entry file="extract_connections_find_only_service_type_connection_of_each_file_with_option_showServiceOnly - 2017.06.19 at 16h 36m 33s.xml">
       <configuration name="extract connections.find only service type connection of each file with option:showServiceOnly" configurationId="mocha-javascript-test-runner" />
     </history-entry>
+    <history-entry file="extract_connections_find_only_service_type_connection_of_each_file_with_option_showServiceOnly - 2017.06.28 at 10h 51m 05s.xml">
+      <configuration name="extract connections.find only service type connection of each file with option:showServiceOnly" configurationId="mocha-javascript-test-runner" />
+    </history-entry>
+    <history-entry file="get__visualizeBms - 2017.06.28 at 14h 37m 41s.xml">
+      <configuration name="get /visualizeBms" configurationId="mocha-javascript-test-runner" />
+    </history-entry>
+    <history-entry file="get__visualizeWorld - 2017.06.28 at 14h 36m 57s.xml">
+      <configuration name="get /visualizeWorld" configurationId="mocha-javascript-test-runner" />
+    </history-entry>
+    <history-entry file="get__visualizeWorld - 2017.06.28 at 14h 37m 29s.xml">
+      <configuration name="get /visualizeWorld" configurationId="mocha-javascript-test-runner" />
+    </history-entry>
+    <history-entry file="registerer - 2017.06.28 at 14h 36m 38s.xml">
+      <configuration name="registerer" configurationId="mocha-javascript-test-runner" />
+    </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="225606000" />
+    <option name="totallyTimeSpent" value="234473000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="2552" y="-8" width="2576" height="1456" extended-state="6" />
@@ -759,9 +724,10 @@
       <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30859375" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2798812" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34537727" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3452116" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
@@ -771,7 +737,6 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2800306" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -791,20 +756,11 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="29" />
+      <option name="time" value="30" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/ROOT/BiodieselPlant1WOWHR.owl" />
-    <entry file="file://$PROJECT_DIR$/ROOT/JurongIsland.owl" />
-    <entry file="file://$PROJECT_DIR$/ROOT/JurongIsland/BiodieselPlant1WOWHR.owl" />
-    <entry file="file://$PROJECT_DIR$/ROOT/JurongIsland/Buildings.owl" />
-    <entry file="file://$PROJECT_DIR$/ROOT/JurongIsland/BiodieselPlant2WWHR.owl" />
-    <entry file="file://$PROJECT_DIR$/ROOT/JurongIsland/BiodieselPlant.owl" />
-    <entry file="file://$PROJECT_DIR$/ROOT/JurongIsland/TheWorld.owl" />
-    <entry file="file://$PROJECT_DIR$/ROOT/JurongIsland/BiodieselPlant3.owl" />
-    <entry file="file://$PROJECT_DIR$/ROOT/JurongIsland/JurongIsland.owl" />
     <entry file="file://$APPLICATION_CONFIG_DIR$/javascript/nodejs/7.7.3/core-modules/module.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="10318">
@@ -836,13 +792,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tryxmlparsing.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="19" column="30" lean-forward="true" selection-start-line="19" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/tryxmlparsing.js" />
     <entry file="file://$PROJECT_DIR$/package.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="132">
@@ -850,13 +800,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/rdfParser.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="17" column="43" lean-forward="true" selection-start-line="17" selection-start-column="43" selection-end-line="17" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/rdfParser.js" />
     <entry file="file://$PROJECT_DIR$/public/javascripts/d3.legend.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="726">
@@ -868,13 +812,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="417">
           <caret line="342" column="65" lean-forward="true" selection-start-line="342" selection-start-column="65" selection-end-line="342" selection-end-column="65" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/routes/index.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -914,34 +851,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/TestVisualization/tryXMLImport.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="22">
-          <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TestVisualization/visualization_test.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-822">
-          <caret line="74" column="33" lean-forward="true" selection-start-line="74" selection-start-column="33" selection-end-line="74" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/TestVisualization/tryXMLImport.js" />
     <entry file="file://$PROJECT_DIR$/public/stylesheets/style.css">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="352">
           <caret line="16" column="3" lean-forward="false" selection-start-line="16" selection-start-column="3" selection-end-line="16" selection-end-column="3" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/routes/visualize.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1208">
-          <caret line="55" column="5" lean-forward="false" selection-start-line="55" selection-start-column="5" selection-end-line="55" selection-end-column="5" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -949,7 +863,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="572">
           <caret line="26" column="3" lean-forward="true" selection-start-line="26" selection-start-column="3" selection-end-line="26" selection-end-column="3" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -957,7 +870,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -965,7 +877,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="368">
           <caret line="21" column="48" lean-forward="false" selection-start-line="21" selection-start-column="48" selection-end-line="21" selection-end-column="48" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -973,7 +884,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="704">
           <caret line="59" column="65" lean-forward="false" selection-start-line="59" selection-start-column="65" selection-end-line="59" selection-end-column="65" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -989,15 +899,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="660">
           <caret line="30" column="1" lean-forward="false" selection-start-line="30" selection-start-column="1" selection-end-line="30" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/routes/showCO2.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="660">
-          <caret line="30" column="0" lean-forward="false" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1005,7 +906,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1013,7 +913,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="594">
           <caret line="27" column="0" lean-forward="false" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1021,7 +920,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1037,7 +935,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="858">
           <caret line="39" column="0" lean-forward="false" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1045,19 +942,123 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="726">
           <caret line="33" column="34" lean-forward="false" selection-start-line="33" selection-start-column="34" selection-end-line="33" selection-end-column="34" />
-          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/bmsData.js" />
+    <entry file="file://$PROJECT_DIR$/public/stylesheets/bms.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="24" column="0" lean-forward="true" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/data.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="82" lean-forward="false" selection-start-line="0" selection-start-column="82" selection-end-line="0" selection-end-column="82" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/javascripts/bmsPlot.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-704">
+        <state relative-caret-position="286">
           <caret line="13" column="31" lean-forward="false" selection-start-line="13" selection-start-column="31" selection-end-line="13" selection-end-column="31" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/util/bmsData.js">
+    <entry file="file://$PROJECT_DIR$/routes/index.js" />
+    <entry file="file://$PROJECT_DIR$/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="594">
+          <caret line="27" column="20" lean-forward="false" selection-start-line="27" selection-start-column="20" selection-end-line="27" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/routes/visualizeSemakau.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="44">
+          <caret line="4" column="24" lean-forward="false" selection-start-line="4" selection-start-column="24" selection-end-line="4" selection-end-column="24" />
+          <folding>
+            <element signature="e#0#44#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/routes/visualizeJurong.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="22">
+          <caret line="1" column="24" lean-forward="false" selection-start-line="1" selection-start-column="24" selection-end-line="1" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="550">
+          <caret line="25" column="13" lean-forward="false" selection-start-line="25" selection-start-column="13" selection-end-line="25" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/routes/visualizeRouterFact.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="88">
+          <caret line="7" column="57" lean-forward="false" selection-start-line="7" selection-start-column="57" selection-end-line="7" selection-end-column="57" />
+          <folding>
+            <element signature="e#1037#1601#0" expanded="false" />
+            <element signature="e#1666#2201#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/routes/visualizeWorld.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="44">
+          <caret line="4" column="24" lean-forward="false" selection-start-line="4" selection-start-column="24" selection-end-line="4" selection-end-column="24" />
+          <folding>
+            <element signature="e#0#44#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/javascripts/d3Bubble.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="200">
+          <caret line="425" column="35" lean-forward="true" selection-start-line="425" selection-start-column="35" selection-end-line="425" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TestVisualization/visualization_test.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="550">
+          <caret line="46" column="45" lean-forward="false" selection-start-line="46" selection-start-column="21" selection-end-line="46" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/routes/visualizeBms.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="22">
+          <caret line="3" column="43" lean-forward="false" selection-start-line="3" selection-start-column="43" selection-end-line="3" selection-end-column="43" />
+          <folding>
+            <element signature="e#0#44#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/fileConnection.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="481">
+          <caret line="244" column="28" lean-forward="true" selection-start-line="244" selection-start-column="28" selection-end-line="244" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TestVisualization/change_data_test.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1065,69 +1066,41 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/util/fileConnection.js">
+    <entry file="file://$PROJECT_DIR$/TestVisualization/fileConnection_test.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3576">
-          <caret line="230" column="62" lean-forward="false" selection-start-line="230" selection-start-column="62" selection-end-line="230" selection-end-column="62" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/config.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="462">
-          <caret line="21" column="44" lean-forward="false" selection-start-line="21" selection-start-column="44" selection-end-line="21" selection-end-column="44" />
+        <state relative-caret-position="396">
+          <caret line="18" column="45" lean-forward="true" selection-start-line="18" selection-start-column="45" selection-end-line="18" selection-end-column="45" />
           <folding>
-            <marker date="1497942538673" expanded="true" signature="0:4" ph="/** Created by Shaocong on 5/25/2017. ...*/" />
+            <element signature="n#!!doc" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app.js">
+    <entry file="file://$PROJECT_DIR$/TestVisualization/rdfParser_test.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="48">
-          <caret line="109" column="44" lean-forward="false" selection-start-line="109" selection-start-column="44" selection-end-line="109" selection-end-column="44" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/stylesheets/bms.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="24" column="0" lean-forward="true" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/javascripts/d3Bubble.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1831">
-          <caret line="236" column="30" lean-forward="true" selection-start-line="236" selection-start-column="30" selection-end-line="236" selection-end-column="30" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#410#1543#0" expanded="false" />
-            <element signature="e#1566#1676#0" expanded="false" />
-            <element signature="e#1756#4631#0" expanded="false" />
-            <element signature="e#4660#4731#0" expanded="false" />
-            <element signature="e#4752#4784#0" expanded="false" />
-            <element signature="e#4789#4916#0" expanded="false" />
-            <element signature="e#4947#5385#0" expanded="false" />
-            <element signature="e#5414#5569#0" expanded="false" />
-            <element signature="e#5598#5746#0" expanded="false" />
-            <element signature="e#5915#6086#0" expanded="false" />
-            <element signature="e#9033#10864#0" expanded="false" />
-            <element signature="e#10899#11031#0" expanded="false" />
-            <element signature="e#11061#11134#0" expanded="false" />
-            <element signature="e#11166#11288#0" expanded="false" />
-            <element signature="e#11332#11944#0" expanded="false" />
-            <element signature="e#11987#12138#0" expanded="false" />
-            <element signature="e#12466#13337#0" expanded="false" />
-            <element signature="e#13391#14256#0" expanded="false" />
-            <element signature="e#14301#14429#0" expanded="false" />
-            <element signature="e#14467#14740#0" expanded="false" />
-            <element signature="e#14782#15208#0" expanded="false" />
-            <element signature="e#15256#15425#0" expanded="false" />
-            <marker date="1497945714616" expanded="true" signature="6296:12144" ph="{...}" />
+            <element signature="n#!!doc" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TestVisualization/routes_test.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="409">
+          <caret line="161" column="39" lean-forward="true" selection-start-line="161" selection-start-column="39" selection-end-line="161" selection-end-column="39" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/routes/showCO2.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="9" column="37" lean-forward="true" selection-start-line="9" selection-start-column="37" selection-end-line="9" selection-end-column="37" />
+          <folding />
         </state>
       </provider>
     </entry>

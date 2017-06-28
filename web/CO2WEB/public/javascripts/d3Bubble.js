@@ -426,7 +426,6 @@ if($('#checkShowImport').prop('checked')) {
             200: function (links) {
                 console.log('ajax successful!\n');
 
-
                 console.log(JSON.stringify(links));
                 if(LinkRightFormat(links))
                 {
@@ -534,37 +533,45 @@ if($('#checkShowImport').prop('checked')) {
 
       let blinkTimer;
 
+
+      let preTime = Date.now();
+
+
       /*socket****/
     //blink any updated data
     socket.on('update', function (data) {
-  console.log("!!!!!!!!!dataUpdate");
-        let parsedData = JSON.parse(data);
-        let name = parsedData.name;
-        console.log(name);
-        //search name among nodes to grab the correct one
-       // console.log($('circle'));
-       // console.log($('#FH-01.owl'));
-        console.log($("circle[id='FH-01.owl']"));
+        //check if time less than 1s, if true, do not do anything
+        if(Date.now() - preTime > 1000){
+            preTime = Date.now();
+            console.log("!!!!!!!!!dataUpdate");
+            let parsedData = JSON.parse(data);
+            let name = parsedData.name;
+            console.log(name);
+            //search name among nodes to grab the correct one
+            // console.log($('circle'));
+            // console.log($('#FH-01.owl'));
+            // console.log($("circle[id='FH-01.owl']"));
 
-        let node =  $("circle[id='FH-01.owl']");
+            let node = $("circle[id='FH-01.owl']");
 
-        let oriColor =        node.css("fill");
+            let oriColor = node.css("fill");
 
-        let orSize = node.attr("r");
-        //console.log($('circle#FH-01.owl'));
-        console.log(orSize);
+            let orSize = node.attr("r");
+            //console.log($('circle#FH-01.owl'));
+            console.log(orSize);
 
-        node.animate({'r': 20}, 1000)
-            .css({'fill': '#FFFC94', 'transition': 'fill 1s'})
-            .css({'stroke': '#FFF700', 'transition': 'stroke 1s'});
-        ;
-        blinkTimer= setTimeout(function () {
-            node.animate({'r': orSize}, 1000)
-                .css({'stroke': '#000000', 'transition': 'stroke 1s'})
-            .css({'fill': oriColor, 'transition': 'fill 1s'});
+            node.animate({'r': 20}, 500)
+                .css({'fill': '#FFFC94', 'transition': 'fill 0.5s'})
+                .css({'stroke': '#FFF700', 'transition': 'stroke 0.5s'});
+            ;
+            blinkTimer = setTimeout(function () {
+                node.animate({'r': orSize}, 500)
+                    .css({'stroke': '#000000', 'transition': 'stroke 0.5s'})
+                    .css({'fill': oriColor, 'transition': 'fill 0.5s'});
 
-        }, 1000);
+            }, 500);//on 0.5s, back to normal
 
+        }
     });
 
 

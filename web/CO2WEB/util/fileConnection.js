@@ -1,4 +1,23 @@
+/***
+ * Read all connecitons defined in current grOWl system, starting from a top node file on disk
+ * All following children will be retreive by url online
+ * Following definition will be considered a connection:
+ *  //owl:NamedIndividual/Eco-industrialPark:hasIRI
+ *  //owl:NamedIndividual/system:hasIRI
+ *
+ *   option: showImport
+ *   Following is also considered connection if showImport ticked
+ *   owl:Ontology//owl:imports
+ *
+ *   option: showServiceOnly
+ *   Connection is logged only when
+ *   //owl:NamedIndividual[rdf:type[contains(@rdf:resource,'http://www.theworldavatar.com/Service.owl')]]
+ *
+ *   Connections are saved as:
+ *   [{source, target: , level: },..]
+ *   Import connections only have level: null
 
+ */
 //import
 var path = require('path');
 var libxmljs = require("libxmljs");
@@ -8,12 +27,11 @@ var readdirp = require('readdirp');
 var fs = require('fs');
 var util = require('util');
 var config = require('../config.js');
-var folderLocation = config.root;
+//var folderLocation = config.root;
 let request = require('request');
-let rootNode  = config.rootNode;
 /**out a asyn function, provide data :
  [
- {source: , target:  }
+ {source: , target: , level: }
  ]
 
 
@@ -23,13 +41,18 @@ let rootNode  = config.rootNode;
 
 /**
  *
- * @param options  [showServiceOnly(bool) } showImport(bool)]
+ * @param options  topnode(topnode address on disk), [showServiceOnly(bool) } showImport(bool)]
  * @param callback  fn(err, results)
  */
 function readConnections(options, callback) {
 
     let showServiceOnly = options.showServiceOnly || false;
     let showImport = options.showImport&&!showServiceOnly || false; // if showServiceOnly is chosen, will not show Import
+    let fileLocation = options.topnode;
+    if(!fileLocation){
+        callback(new Error("top node not specified"));
+        return;
+    }
 
 
     // if (connections && connections.length > 0) {
@@ -55,7 +78,7 @@ function readConnections(options, callback) {
     function startFromRoot2GetConns(callback) {
 
         //read root file on disk
-        fs.readFile(path.join(folderLocation, rootNode), function (err, file) {
+        fs.readFile(fileLocation, function (err, file) {
             if (err) {
                 console.log("errReadingFile");
                 callback(err);
@@ -141,6 +164,21 @@ function readConnections(options, callback) {
         return children;
     }
 
+    function getGeoCoord(root) {
+        if(!root){
+            return null;
+        }
+        let x =  root.find("//owl:NamedIndividual[contains(@rdf:about, 'ValueOf_x_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
+        console.log(x);
+
+        let y =  root.find("//owl:NamedIndividual[contains(@rdf:about, 'ValueOf_y_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
+
+        if(x && y && x.length > 0 && y.length > 0 ) {
+            return {x: x[0].text().trim(), y: y[0].text().trim()};
+        }
+        return null;
+	}
+
     /**
      * return all services defined in the owl, service definition : contains "http://www.theworldavatar.com/Service.owl" in rdf:type
      * @param root   root node of parsed xml
@@ -195,7 +233,14 @@ function readConnections(options, callback) {
                let children = getChildren(root);
            //get my links
            let myLinks = [];
+           let geoCoords = [];
            var imports;
+
+           //get this geoCoord, push it on result links
+           var coord = getGeoCoord(root);
+           if(coord) {
+               geoCoords.push({url : myUri, coord: coord});
+           }
 
            if (showImport) {
                try {

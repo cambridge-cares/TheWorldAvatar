@@ -1,0 +1,179 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.jparksimulator.com/C-301.owl#"
+     xml:base="http://www.jparksimulator.com/C-301.owl"
+     xmlns:space_and_time_extended="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:topology="http://www.theworldavatar.com/OntoCAPE/meta_model/topology/topology.owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:coordinate_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:plant="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#"
+     xmlns:technical_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/technical_system.owl#"
+     xmlns:behavior="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#"
+     xmlns:economic_performance="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#">
+    <owl:Ontology rdf:about="http://www.jparksimulator.com/C-301.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/OntoCAPE.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.jparksimulator.com/C-301.owl#C-301 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/C-301.owl#C-301">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <plant:hasConnector rdf:resource="http://www.jparksimulator.com/C-301.owl#C-301_in"/>
+        <plant:hasConnector rdf:resource="http://www.jparksimulator.com/C-301.owl#C-301_out"/>
+        <space_and_time_extended:hasGISCoordinateSystem rdf:resource="http://www.jparksimulator.com/C-301.owl#C-301_CoordinateSystem"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/C-301.owl#Compressing_Utility_A-301"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/C-301.owl#C-301_CoordinateSystem -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/C-301.owl#C-301_CoordinateSystem">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.jparksimulator.com/C-301.owl#x_C-301"/>
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.jparksimulator.com/C-301.owl#y_C-301"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/C-301.owl#C-301_in -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/C-301.owl#C-301_in">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/meta_model/topology/topology.owl#Connector"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/C-301.owl#C-301_out -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/C-301.owl#C-301_out">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/meta_model/topology/topology.owl#Connector"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/C-301.owl#Compressing_Utility_A-301 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/C-301.owl#Compressing_Utility_A-301">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#ProcessStep"/>
+        <topology:hasInput rdf:resource="http://www.jparksimulator.com/C-301.owl#Utility_A-301"/>
+        <topology:hasOutput rdf:resource="http://www.jparksimulator.com/C-301.owl#ProcessStream_A-302"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/C-301.owl#EquipmentCost_C-301 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/C-301.owl#EquipmentCost_C-301">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#EquipmentCosts"/>
+        <economic_performance:isCostOfPlantItem rdf:resource="http://www.jparksimulator.com/C-301.owl#C-301"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/C-301.owl#ValueOf_EquipmentCost_C-301"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/C-301.owl#Pipe_A-301 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/C-301.owl#Pipe_A-301">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Pipe"/>
+        <system:isConnectedTo rdf:resource="http://www.jparksimulator.com/C-301.owl#C-301_in"/>
+        <topology:hasInput rdf:resource="http://www.jparksimulator.com/C-301.owl#Utility_A-301"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/C-301.owl#Pipe_A-302 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/C-301.owl#Pipe_A-302">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Pipe"/>
+        <system:isConnectedTo rdf:resource="http://www.jparksimulator.com/C-301.owl#C-301_out"/>
+        <topology:hasInput rdf:resource="http://www.jparksimulator.com/C-301.owl#ProcessStream_A-302"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/C-301.owl#ProcessStream_A-302 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/C-301.owl#ProcessStream_A-302"/>
+    
+
+
+    <!-- http://www.jparksimulator.com/C-301.owl#Utility_A-301 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/C-301.owl#Utility_A-301"/>
+    
+
+
+    <!-- http://www.jparksimulator.com/C-301.owl#ValueOf_EquipmentCost_C-301 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/C-301.owl#ValueOf_EquipmentCost_C-301">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">900900.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/C-301.owl#ValueOf_x_C-301 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/C-301.owl#ValueOf_x_C-301">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.15414665404499E7</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/C-301.owl#ValueOf_y_C-301 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/C-301.owl#ValueOf_y_C-301">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">140092.304867027</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/C-301.owl#x_C-301 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/C-301.owl#x_C-301">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/C-301.owl#ValueOf_x_C-301"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/C-301.owl#y_C-301 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/C-301.owl#y_C-301">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/C-301.owl#ValueOf_y_C-301"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.6.20160910-2108) https://github.com/owlcs/owlapi -->
+

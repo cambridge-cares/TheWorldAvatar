@@ -16,7 +16,7 @@ var watcherConfig = require("../util/changeWatcher");
 var config = require("../config");
 
 
-var changeWatcher = watcherConfig({location:config.fileLocation, contentType:"text/xml"});
+var changeWatcher = watcherConfig({location:config.fileLocation, contentType:"application/json"});
 var db = require('../dbtest')();
 
 changeWatcher.setWatch(function (err, results) {
@@ -37,9 +37,16 @@ router.post("/dataObserve", function (req, res) {
 console.log("get initial data: "+ req.body.getInitData);
 
 if(req.body.url){//TODO: check if valid url
-console.log("register " + req.body.url);
-    changeWatcher.register(req.body.url);
-}
+
+    if(req.body.register) {
+        console.log("register " + req.body.url);
+        changeWatcher.register(req.body.url);
+    } else if(req.body.deregister){
+        if(!changeWatcher.deregister(req.body.url)){
+            res.status(400).send("this url is not registered");
+        }
+    }
+    }
 
     if(req.body.getInitData){//also req to get initial data from this node db?
         //return with init data
@@ -67,5 +74,6 @@ console.log("register " + req.body.url);
 
 
 });
+
 
 module.exports = router;

@@ -1,7 +1,7 @@
 
 var express = require('express');
 var router = express.Router();
-var rdfParser = require("../rdfParser.js");
+var rdfParser = require("../util/rdfParser.js");
 
 let fileFolder = require("../config.js").root;
 
