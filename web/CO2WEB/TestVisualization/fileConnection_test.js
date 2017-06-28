@@ -13,13 +13,14 @@ var connections = require("../util/fileConnection.js");
 
 var config = require("../config");
 
+var topNodeAddress = config.worldNode;
 
 
 describe("extract connections", function () {
     it('find all connections of each file with no extra options', function (done) {
         this.timeout(3000);
 
-        connections({}, function(err, results){
+        connections({topnode : topNodeAddress}, function(err, results){
 
             if(err){
                 console.log(err);
@@ -44,7 +45,7 @@ describe("extract connections", function () {
     it('find all connections of each file including imports with option:showImport', function (done) {
         this.timeout(300000);
 
-        connections({showImport:true}, function(err, results){
+        connections({topnode : topNodeAddress,showImport:true}, function(err, results){
 
             if(err){
                 console.log(err);
@@ -70,7 +71,7 @@ describe("extract connections", function () {
     it('find only service type connection of each file with option:showServiceOnly', function (done) {
         this.timeout(6000);
 
-        connections({showServiceOnly:true}, function(err, results){
+        connections({topnode : topNodeAddress, showServiceOnly:true}, function(err, results){
 
             if(err){
                 console.log(err);

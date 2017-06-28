@@ -173,7 +173,10 @@ function readConnections(options, callback) {
 
         let y =  root.find("//owl:NamedIndividual[contains(@rdf:about, 'ValueOf_y_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
 
-	  return {x: x[0].text().trim(),y : y[0].text().trim()};
+        if(x && y && x.length > 0 && y.length > 0 ) {
+            return {x: x[0].text().trim(), y: y[0].text().trim()};
+        }
+        return null;
 	}
 
     /**

@@ -426,7 +426,6 @@ if($('#checkShowImport').prop('checked')) {
             200: function (links) {
                 console.log('ajax successful!\n');
 
-
                 console.log(JSON.stringify(links));
                 if(LinkRightFormat(links))
                 {

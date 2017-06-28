@@ -25,12 +25,11 @@ before(function () {//open server before all tests
 });
 
 
-describe('get /visualize', function () {
-
-
+describe('get /visualizeWorld', function () {
 
     it('returns status 200',function (done) {
-        let url = baseURL + "/visualize";
+        this.timeout(30000);
+        let url = baseURL + "/visualizeWorld";
         console.log("request "+ url);
 
         request.get({url : url}, function(error, response, body) {
@@ -48,7 +47,71 @@ describe('get /visualize', function () {
 
 });
 
-describe('get /visualize/includeImport', function(){
+describe('get /visualizeBms', function () {
+
+    it('returns status 200',function (done) {
+        this.timeout(30000);
+
+        let url = baseURL + "/visualizeBms";
+        console.log("request "+ url);
+
+        request.get({url : url}, function(error, response, body) {
+            if(error){
+                console.log(error);
+                done(error);
+            }
+            expect(response.statusCode).to.equal(200);
+
+
+            done();
+        })
+
+    })
+
+});
+describe('get /visualizeJurong', function () {
+
+    it('returns status 200',function (done) {
+        let url = baseURL + "/visualizeJurong";
+        console.log("request "+ url);
+
+        request.get({url : url}, function(error, response, body) {
+            if(error){
+                console.log(error);
+                done(error);
+            }
+            expect(response.statusCode).to.equal(200);
+
+
+            done();
+        })
+
+    })
+
+});
+describe('get /visualizeSemakau', function () {
+
+    it('returns status 200',function (done) {
+        let url = baseURL + "/visualizeSemakau";
+        console.log("request "+ url);
+
+        request.get({url : url}, function(error, response, body) {
+            if(error){
+                console.log(error);
+                done(error);
+            }
+            expect(response.statusCode).to.equal(200);
+
+
+            done();
+        })
+
+    })
+
+});
+
+
+describe('get /visualizeWorld/includeImport', function(){
 
     it('returns json', function(){
         let url = baseURL + "/visualize/includeImport";
@@ -115,21 +178,3 @@ describe('get /bmsplot ', function () {
     })
 });
 
-describe('get /bmsplot ', function () {
-    it('returns status 200',function (done) {
-        let url = baseURL + "/bmsplot";
-        console.log("request "+ url);
-
-        request.get({url : url}, function(error, response, body) {
-            if(error){
-                console.log(error);
-                done(error);
-            }
-            expect(response.statusCode).to.equal(200);
-
-
-            done();
-        })
-
-    })
-});
