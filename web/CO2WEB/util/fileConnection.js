@@ -27,9 +27,8 @@ var readdirp = require('readdirp');
 var fs = require('fs');
 var util = require('util');
 var config = require('../config.js');
-var folderLocation = config.root;
+//var folderLocation = config.root;
 let request = require('request');
-let rootNode  = config.rootNode;
 /**out a asyn function, provide data :
  [
  {source: , target: , level: }
@@ -42,13 +41,18 @@ let rootNode  = config.rootNode;
 
 /**
  *
- * @param options  [showServiceOnly(bool) } showImport(bool)]
+ * @param options  topnode(topnode address on disk), [showServiceOnly(bool) } showImport(bool)]
  * @param callback  fn(err, results)
  */
 function readConnections(options, callback) {
 
     let showServiceOnly = options.showServiceOnly || false;
     let showImport = options.showImport&&!showServiceOnly || false; // if showServiceOnly is chosen, will not show Import
+    let fileLocation = options.topnode;
+    if(!fileLocation){
+        callback(new Error("top node not specified"));
+        return;
+    }
 
 
     // if (connections && connections.length > 0) {
@@ -74,7 +78,7 @@ function readConnections(options, callback) {
     function startFromRoot2GetConns(callback) {
 
         //read root file on disk
-        fs.readFile(path.join(folderLocation, rootNode), function (err, file) {
+        fs.readFile(fileLocation, function (err, file) {
             if (err) {
                 console.log("errReadingFile");
                 callback(err);
