@@ -15,6 +15,7 @@ var opts = {
     uri: 'http://www.theworldavatar.com/JurongIsland.owl'
 };
 var baseURL = "http://localhost:" + config.port;
+var topNodeAddress = config.worldNode;
 
 
 
@@ -39,12 +40,11 @@ describe('RDFParser: ', function () {
 
 
 
-
+//TODO: added {topnode: } to options
 describe("extract connections", function () {
     it('find all connections of each file with no extra options', function (done) {
   this.timeout(3000);
-
-        connections({}, function(err, results){
+        connections({topnode : topNodeAddress}, function(err, results){
 
             if(err){
                 console.log(err);
@@ -69,7 +69,7 @@ describe("extract connections", function () {
     it('find all connections of each file including imports with option:showImport', function (done) {
   this.timeout(300000);
 
-        connections({showImport:true}, function(err, results){
+        connections({showImport:true,topnode : topNodeAddress}, function(err, results){
 
             if(err){
                 console.log(err);
@@ -95,7 +95,7 @@ describe("extract connections", function () {
     it('find only service type connection of each file with option:showServiceOnly', function (done) {
   this.timeout(6000);
 
-        connections({showServiceOnly:true}, function(err, results){
+        connections({showServiceOnly:true, topnode : topNodeAddress}, function(err, results){
 
             if(err){
                 console.log(err);
@@ -122,6 +122,7 @@ describe("extract connections", function () {
 });
 
 
+//TODO: added several new routes
 describe('get /visualize', function () {
 
     it('returns status 200',function (done) {

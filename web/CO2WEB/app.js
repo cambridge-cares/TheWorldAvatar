@@ -6,7 +6,12 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var util = require('util');
 
-var visualize =require("./routes/visualize.js");
+var visualizeWorld =require("./routes/visualizeWorld.js");
+var visualizeBMS =require("./routes/visualizeBms.js");
+var visualizeSemakau =require("./routes/visualizeSemakau.js");
+
+var visualizeJurong =require("./routes/visualizeJurong.js");
+
 var showCO2 = require("./routes/showCO2.js");
 var config = require("./config.js");
 var bmsplot= require("./routes/bmsplot.js");
@@ -34,7 +39,11 @@ function setHeader(res, mpath){
 //serve static file
 app.use(express.static(path.join(__dirname, 'public')));
 //app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
-app.use('/visualize', visualize);
+app.use('/visualizeWorld', visualizeWorld);
+app.use('/visualizeBMS', visualizeBMS);
+app.use('/visualizeSemakau', visualizeSemakau);
+app.use('/visualizeJurong', visualizeJurong);
+
 app.use('/JurongIsland.owl/showCO2', showCO2);
 app.use('/JPS_KB_CARES_Lab_Node/FH-01.owl', bmsTemp);
 app.use("/bmsplot", bmsplot);

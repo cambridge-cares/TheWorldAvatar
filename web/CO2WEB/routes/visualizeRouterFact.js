@@ -1,0 +1,86 @@
+var express = require('express');
+var connectionsReader = require("../util/fileConnection.js");
+
+/* GET users listing. */
+
+//TODO: buffer logic, so no need recalculate for each request, but still robust,
+//TODO: could be time, or responding to change
+var visualizationRouterFactory = function (topNodeAddress) {
+    var router = express.Router();
+
+    router.get('/', function(req, res, next) {
+
+
+            connectionsReader({topnode : topNodeAddress}, function (err, results) {
+
+                if(err){
+                    res.status(500).send(err);
+                    console.log(err);
+                    return;
+                }
+
+                console.log("read connections");
+
+                //res.setHeader('Content-Type', 'application/json');
+                //res.json(results);//for testing
+                conns = results;
+                res.render('visual', { result: JSON.stringify(results) }); //render the view with this value
+
+
+            });
+
+    });
+
+
+    router.get('/includeImport', function(req, res, next) {
+
+
+        connectionsReader({ showImport : true, topnode : topNodeAddress}, function (err, results) {
+
+            if(err){
+                console.log(err);
+                res.status(500).send(err);
+            }
+
+            console.log("read connections");
+            for(var con of results){
+                console.log("\nS:"+con.source+"\nT:"+con.target);
+
+            }
+            //res.setHeader('Content-Type', 'application/json');
+            // res.json(results);
+            res.json(results); //render the view with this value
+
+
+        });
+    });
+
+
+    router.get('/showServiceOnly', function(req, res, next) {
+
+        connectionsReader({ showServiceOnly : true,topnode : topNodeAddress}, function (err, results) {
+
+            if(err){
+                res.status(500).send(err);
+            }
+
+            console.log("read connections");
+            for(var con of results){
+                console.log("\nS:"+con.source+"\nT:"+con.target);
+
+            }
+            //res.setHeader('Content-Type', 'application/json');
+            // res.json(results);
+            res.json(results); //render the view with this value
+
+
+        });
+
+
+    });
+
+    return router;
+};
+
+
+module.exports = visualizationRouterFactory;
