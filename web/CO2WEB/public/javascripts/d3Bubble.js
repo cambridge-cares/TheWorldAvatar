@@ -554,16 +554,16 @@ if($('#checkShowImport').prop('checked')) {
         //console.log($('circle#FH-01.owl'));
         console.log(orSize);
 
-        node.animate({'r': 20}, 500)
-            .css({'fill': '#FFFC94', 'transition': 'fill 0.5s'})
-            .css({'stroke': '#FFF700', 'transition': 'stroke 0.5s'});
+        node.animate({'r': 20}, 1000)
+            .css({'fill': '#FFFC94', 'transition': 'fill 1s'})
+            .css({'stroke': '#FFF700', 'transition': 'stroke 1s'});
         ;
         blinkTimer= setTimeout(function () {
-            node.animate({'r': orSize}, 500)
-                .css({'stroke': '#000000', 'transition': 'stroke 0.5s'})
-            .css({'fill': oriColor, 'transition': 'fill 0.5s'});
+            node.animate({'r': orSize}, 1000)
+                .css({'stroke': '#000000', 'transition': 'stroke 1s'})
+            .css({'fill': oriColor, 'transition': 'fill 1s'});
 
-        }, 500);
+        }, 1000);
 
     });
 
