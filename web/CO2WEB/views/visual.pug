@@ -41,8 +41,15 @@ block content
                     input(type="radio" name="option" id="checkdefault" value="")
                     label Show Default
                 //coordinates search
-                //- to be rearranged
+                //- TODO:to be rearranged
                 div#coordinate-search-panel
-                    
+                    label Center x:
+                    input(type="text" id="search-center-x" value="")
+                    label Center y:
+                    input(type="text" id="search-center-y" value="")
+                    label Radius:
+                    input(type="text" id="search-radius" value="")
+                    button(type="button" id= "search-submit" class="btn btn-primary") Search
+
 
     div(class='col-sm-12' id="draw-panel")

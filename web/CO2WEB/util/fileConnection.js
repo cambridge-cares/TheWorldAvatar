@@ -21,6 +21,8 @@
 //import
 var path = require('path');
 var libxmljs = require("libxmljs");
+var proj4 = require('proj4');
+
 
 var async = require('async');
 var readdirp = require('readdirp');
@@ -170,11 +172,29 @@ function readConnections(options, callback) {
 
         if(x.length > 0 && y.length > 0) {
             console.log("#########################findcoordis:" + x[0].text().trim());
-            return {x: x[0].text().trim(), y: y[0].text().trim()};
+            console.log("converted coordi: " +  util.inspect(convertCoordinate(x[0].text().trim(), y[0].text().trim(), false)));
+            return convertCoordinate(x[0].text().trim(), y[0].text().trim(), false);
         } else {
             return null;
         }
         }
+
+    //convert google GPS coordi to 1984w coordi(the one used in our own)
+    var convertCoordinate = function (GPSLong, GPSLat, google2Owl) {
+//https://github.com/proj4js/proj4js
+        var googleProjection = 'EPSG:4326'; //google
+        var ourProjection = 'EPSG:3857';//our
+//console.log("convert coordis: ["+parseInt(GPSLong)+", "+parseInt(GPSLat)+"] to "+proj4(fromProjection, toProjection, [parseInt(GPSLong),parseInt(GPSLat)]));
+
+        return google2Owl?converted(googleProjection, ourProjection) : converted(ourProjection, googleProjection);
+        function converted(fromProjection, toProjection){
+
+            var result =  proj4(fromProjection, toProjection, [parseFloat(GPSLong),parseFloat(GPSLat)]);
+
+            return {x: result[0], y:result[1]};
+        }
+
+    };
 
     /**
      * return all services defined in the owl, service definition : contains "http://www.theworldavatar.com/Service.owl" in rdf:type
