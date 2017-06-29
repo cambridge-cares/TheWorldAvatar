@@ -400,14 +400,34 @@ return undefined;}
             svg.selectAll("line").style("stroke", "#008000");
 
         }
+
+        function updateByCoordi(center, radius) {
+
+            svg.selectAll("a.cir").select("circle.nodes").attr('opacity', function (d) {
+                //TODO: check if in range
+                let dx = d.coord.x - center.x;
+                let dy = d.coord.y- center.y;
+                let eps = 0.001;
+                return (radius*radius - dx*dx -dy*dy > eps) ? 1 : 0.25;
+
+            });
+            //TODO: deal with path
+
+            //TODO: deal with label
+
+
+        }
+
     }
 
 
-    var links = JSON.parse($("#data").val());//extract link data from web page
+    var data = JSON.parse($("#data").val());//extract link data from web page
+    var links = data.connections;
     update(links);
     return {update: update};
 
 };
+
 
 $(window).load(function () {// when web dom ready
     let url = window.location.href;     // Returns full URL
@@ -423,7 +443,9 @@ if($('#checkShowImport').prop('checked')) {
             type: 'GET',
 
             statusCode:{
-            200: function (links) {
+            200: function (data) {
+                let links = data.connections;
+
                 console.log('ajax successful!\n');
 
 
@@ -467,7 +489,9 @@ if($('#checkShowImport').prop('checked')) {
                 type: 'GET',
 
                 statusCode:{
-                    200: function (links) {
+                    200: function (data) {
+
+                        let links = data.connections;
                         console.log('ajax successful!\n');
 
 

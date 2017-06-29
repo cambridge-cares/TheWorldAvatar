@@ -44,10 +44,7 @@ router.get('/includeImport', function(req, res, next) {
     }
 
     console.log("read connections");
-    for(var con of results){
-      console.log("\nS:"+con.source+"\nT:"+con.target);
 
-    }
     //res.setHeader('Content-Type', 'application/json');
     // res.json(results);
     res.json(results); //render the view with this value
@@ -66,10 +63,6 @@ router.get('/showServiceOnly', function(req, res, next) {
         }
 
         console.log("read connections");
-        for(var con of results){
-            console.log("\nS:"+con.source+"\nT:"+con.target);
-
-        }
         //res.setHeader('Content-Type', 'application/json');
         // res.json(results);
         res.json(results); //render the view with this value
