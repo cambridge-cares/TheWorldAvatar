@@ -30,6 +30,9 @@ var FileLinkMap = function (options) {
     var colorMap = {};
     var mapSize = 0;
 
+    var bubbleMap = {};
+    bubbleMap.nodesArr =[];
+
     function packNodesArr(links, coords) {
         var nodes = {};
         var nodesArr = [];
@@ -207,8 +210,8 @@ var FileLinkMap = function (options) {
         g.selectAll("text").data([]).exit().remove();
     }
 
-    function update(links, coords) {
-        let nodesArr = packNodesArr(links, coords);
+    bubbleMap.update = function(links, coords) {
+         bubbleMap.nodesArr = packNodesArr(links, coords);
 
         //set force simulation
         var simulation = d3.forceSimulation()
@@ -236,7 +239,7 @@ var FileLinkMap = function (options) {
         path = g.selectAll("line");
 
         var circle = g.selectAll("a.cir") //node bubbles
-            .data(nodesArr, function (d) {
+            .data(bubbleMap.nodesArr, function (d) {
                 return d.domain + d.name;
             });
 
@@ -271,7 +274,7 @@ var FileLinkMap = function (options) {
         var circleDraw = g.selectAll("a.cir").select("circle.nodes");
 
         var text = g.selectAll("text.nodeTag")  //node tags
-            .data(nodesArr, function (d) {
+            .data(bubbleMap.nodesArr, function (d) {
                 return d.domain + d.name;
             });
         text.exit().remove();
@@ -287,7 +290,7 @@ var FileLinkMap = function (options) {
         text = g.selectAll("text.nodeTag");
 
         simulation
-            .nodes(nodesArr)
+            .nodes(bubbleMap.nodesArr)
             .on("tick", ticked);
 
         simulation.force("link")
@@ -417,12 +420,11 @@ var FileLinkMap = function (options) {
             svg.selectAll("line").style("stroke", "#008000");
 
         }
-
-
+        bubbleMap.defaultOpa();
     }
 
     //TODO: add coordinates to nodes data
-    function updateByCoord(center, radius) {
+    bubbleMap.updateByCoord = function updateByCoord(center, radius) {
         svg.selectAll("a.cir").select('circle.nodes').attr("opacity",function(d) {
                 if(d.coord) {
                     console.log("@@@@@@@@@@@in d3 node dta: " + JSON.stringify(d.coord))
@@ -440,17 +442,36 @@ var FileLinkMap = function (options) {
 
         //TODO: deal with path
 
-        //TODO: deal with label
+        // deal with label
+        svg.selectAll("text.nodeTag").attr("visibility",function(d) {
+            if(d.coord) {
+                console.log("@@@@@@@@@@@in d3 node dta: " + JSON.stringify(d.coord))
+                let dx = d.coord.x - center.x;
+                let dy = d.coord.y - center.y;
+                let eps = Number.EPSILON;
+                console.log(radius * radius - dx * dx - dy * dy);
+                return (radius * radius - dx * dx - dy * dy > eps) ? "visible" : "hidden";
+            } else {//This node does not have coordinates
+                // console.log(" node: "+d.url+" does not have coordinates");
+                return "hidden";
+            }
+        });
 
 
     }
+
+    bubbleMap.defaultOpa = function () {
+        svg.selectAll("a.cir").select('circle.nodes').attr("opacity",function(d) {
+        return 1;
+        })
+    };
 
     var data = JSON.parse($("#data").val());//extract link data from web page
     var links = data.connections;
     var coords = data.geoCoords;
     console.log("Extract from initial data: coords: "+ coords);
-    update(links, coords);
-    return {update, updateByCoord};
+    bubbleMap.update(links, coords);
+    return bubbleMap;
 
 };
 /*END constructor: d3 link graph*********************************************/
@@ -461,6 +482,11 @@ $(window).load(function () {// when web dom ready
 
     /*init d3 map*/
     var map = FileLinkMap({});
+
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
 
     /*choice panel*************************************************/
         /*button : show Import **/
@@ -530,7 +556,8 @@ $(window).load(function () {// when web dom ready
 
                         //     console.log(JSON.stringify(links));
                         if (LinkRightFormat(links)) {
-                            map.update(links, geoCoords);
+                            clearSelectBar();
+                            map.update(links, coords);
 
 
                         }
@@ -618,23 +645,109 @@ $(window).load(function () {// when web dom ready
     /*END  choice panel***************************************************/
 
     /*GEO Search Panel***************************************************************/
+
+    function updateSelectBar() {
+        //initiate select with data
+        clearSelectBar();
+        map.nodesArr.forEach(function (item) {    // for each in data list
+            if(item.coord) {        //only do this if has a coord'
+                $("#device-select").append("<option value='" + item.coord.x + "/" + item.coord.y + "'>" + item.name + "</option>");
+            }
+        });
+    }
+
+    function clearSelectBar() {
+        $("#device-select").html("");
+    }
+
+    updateSelectBar();
+
+
+   //TODO: check cross senario:
+   //TODO: disable geo-search panel when show agents only is checked?
+
+    //when choose from select, update coord to x,y input
+    $('#device-select').on('change', function() {
+       // alert( this.value );
+        let coordStr = $("select#device-select option:selected").val();
+        let coordArr = coordStr.split("/");
+        $("#search-center-x").val(coordArr[0]);
+        $("#search-center-y").val(coordArr[1]);
+    });
+
+
     //when user clicked submit
     $("#search-submit").click(function () {
         //retreive search center and radius
         let x = parseFloat($("#search-center-x").val());
         let y = parseFloat($("#search-center-y").val());
 
-        //TODO: check validity, display err msg
-        //Todo: x,y,radius must be numbers .range checking also? min radius : 0.0000001
+        // check validity, display err msg
         let radius = parseFloat($("#search-radius").val());
+        if(x===null || y===null || radius===null || isNaN(x) || isNaN(y) || isNaN(radius) ){
+            displayMsg("Input parameters are not number", "danger");
+            return;
+        }
+        //Todo: or not to do. x,y,radius must be numbers .range checking also? min radius : 0.0000001
+        /**
+        //truncate radius to 7 digits, show warning
+        if(decimalPlaces(x) > 7){
+            x= x.toFixed(7);
+            $("#search-center-x").val(x);
+            displayMsg("Numbers beyond 7 decimal places will be truncated");
+        }
+        if(decimalPlaces(y) > 7){
+            y= x.toFixed(7);
+            $("#search-center-y").val(y);
+            displayMsg("Numbers beyond 7 decimal places will be truncated");
+        }
+        if(decimalPlaces(y) > 7){
+            radius = radius.toFixed(7);
+            $("#search-center-y").val(radius);
+            displayMsg("Numbers beyond 7 decimal places will be truncated");
+        }
+        **/
+
         console.log("CX:" + x +" Y:" + y+ "  R:" + radius);
         //pack x, y into object
         map.updateByCoord({x, y}, radius);
+        displayMsg("Search for device near center point :("+x+" ,"+y+") with radius : "+radius, "success");
 
+        function decimalPlaces(num) {
+            var match = (''+num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+            if (!match) { return 0; }
+            return Math.max(
+                0,
+                // Number of digits right of decimal point.
+                (match[1] ? match[1].length : 0)
+                // Adjust for scientific notation.
+                - (match[2] ? +match[2] : 0));
+        }
 
     });
 
     /*END GEO Search Panel***************************************************************/
+
+    /*Err Msg Bar************************************************************************/
+    var template = function (msg, type){
+
+        return "<p class='alert alert-"+type+"'>"+msg+"</p>";
+    };
+
+    /**
+     *
+     * @param msg
+     * @param type  [success/info/warning/danger]
+     */
+    function displayMsg(msg,type) {
+
+        $("#err-msg-panel").html("");
+        $("#err-msg-panel").append(template(msg, type));
+
+    }
+
+
+    /*End Err Msg Bar*******************************************************************/
 
     /*socket**************************************************************/
     //blink any updated data

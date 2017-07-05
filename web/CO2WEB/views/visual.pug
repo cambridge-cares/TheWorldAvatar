@@ -27,29 +27,56 @@ block content
         id = 'data'
         value = result
         )
-    //choice panel
-    div(class='col-sm-1' id="choice-div")
-        div(class="panel panel-default" id="choice-panel")
-            div(class="panel-body")
-                div(class="checkbox")
-                    input(type="radio" name="option" id="checkShowImport" value="")
-                    label Show Import
-                    br
-                    input(type="radio" name="option" id="checkShowServiceOnly" value="")
-                    label Show Agents Only
-                    br
-                    input(type="radio" name="option" id="checkdefault" value="")
-                    label Show Default
-                //coordinates search
-                //- TODO:to be rearranged
-                div#coordinate-search-panel
-                    label Center x:
-                    input(type="text" id="search-center-x" value="")
-                    label Center y:
-                    input(type="text" id="search-center-y" value="")
-                    label Radius:
-                    input(type="text" id="search-radius" value="")
-                    button(type="button" id= "search-submit" class="btn btn-primary") Search
 
 
-    div(class='col-sm-12' id="draw-panel")
+
+
+        div#wrapper
+            
+
+            div#sidebar-wrapper
+                ul.sidebar-nav.container-fluid
+                    li
+                        input(type="radio" name="option" id="checkShowImport" value="")
+                        label Show Import
+                    li
+                        input(type="radio" name="option" id="checkShowServiceOnly" value="")
+                        label Show Agents Only
+                    li
+                        input(type="radio" name="option" id="checkdefault" value="")
+                        label Show Default
+                    li
+                        div.customHr
+                    li
+                        table#xyr-inputs
+                            tr
+                                td
+                                    label(for="search-center-x") Center x:
+                                td
+                                    input(type="text" id="search-center-x" value="")
+
+                            tr
+                                td
+                                    label Center y:
+                                td
+                                    input(type="text" id="search-center-y" value="")
+                            tr
+                                td
+                                    label Radius:
+                                td
+                                    input(type="text" id="search-radius" value="")
+
+                    li
+                        label(for="device-select") Choose a device:
+                    li
+                        select(class="form-control" id="device-select")
+                    li
+                        button(type="button" id= "search-submit" class="btn btn-primary") Search
+
+            div#page-content-wrapper
+                a#menu-toggle(href="#menu-toggle" class="btn btn-default") Try Toggle
+                div(class='col-sm-12' id="draw-panel")
+                div#geo-search-result-panel
+                    div#result-table-wrapper
+                    div#result-map-wrapper
+
