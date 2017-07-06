@@ -68,12 +68,16 @@ app.use(bodyParser.text({ type: 'application/json' }));
 app.post("/change", function (req, res) {//data change of other nodes will be post to here
     //retreive changed data//do whatever you need to do with this data
     //now we only record it down
+    if(req.body) {
     dataCopy = req.body;
     console.log(req.body);
     io.emit("update", req.body);
-
         res.status(200).send("success");
+} else {
+  console.log("Receive empty data");
+          res.status(400).send("empty req body: should contain data");
 
+}
 });
 
 
@@ -97,6 +101,7 @@ io.on('connection', function(socket){
 
 
     } else {
+         console.log("Saved initial dataCopy: " + dataCopy);
         socket.emit("initial", dataCopy);
         console.log('a user connected');
     }

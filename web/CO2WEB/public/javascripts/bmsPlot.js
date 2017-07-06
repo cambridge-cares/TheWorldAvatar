@@ -26,9 +26,10 @@ $(document).ready(function () {
 
 
     var isInitialized = false;
-    socket.on('initial', function(idata){
-        console.log(idata);
+    socket.on('initial', function(idata){// receive initial event from 
+        console.log(JSON.stringify(idata));
         //TODO: check this is indeed updated Data point
+		if(idata){ //check if this data is not null 
         let parsedData = JSON.parse(idata);
         let name = parsedData['name'];
         if(name==="FH-01.owl") {//check the update comes from correct source
@@ -42,7 +43,7 @@ $(document).ready(function () {
                 return item.value
             })];
 
-            l1 = new LineGraph({containerId: 'graph1', data: dataObj});
+            l1 = new LineGraph({containerId: 'graph1', data: dataObj});//init this graph
             console.log(dataObj["start"]);
             console.log(dataObj["end"]);
             console.log(dataObj["step"]);
@@ -51,6 +52,9 @@ $(document).ready(function () {
             newDataObj["start"] = initialData[initialData.length - 1].time;
             newDataObj["names"] = ["FH-01"];
         }
+		} else {
+			//TODO: init one without previous data?
+		}
     });
 
 

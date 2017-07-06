@@ -1,6 +1,7 @@
 
 // http://blog.thomsonreuters.com/index.php/mobile-patent-suits-graphic-of-the-day/
 
+
 var socket = io();
 
 
@@ -132,7 +133,8 @@ return undefined;}
         return nodesArr;
     }
     function setBodyS(node) {
-         return -300*(1||node.count);
+        // return -200*(1||node.count);
+         return -200;
 
         //return charge;
     }
@@ -195,7 +197,7 @@ return undefined;}
 
         //set force simulation
         var simulation = d3.forceSimulation()
-            .force("link", d3.forceLink(links).distance(70))
+            .force("link", d3.forceLink(links).distance(50))
             .force("charge", d3.forceManyBody().strength(setBodyS))
             .force("center", d3.forceCenter(width / 2, height / 2));
 
@@ -419,7 +421,7 @@ if($('#checkShowImport').prop('checked')) {
 
         //TODO:ajax, only change data, but with d3...how? should use angular instead?
         $.ajax({
-            url: '/visualize/includeImport',
+            url: url+'/includeImport',
             type: 'GET',
 
             statusCode:{
@@ -451,8 +453,10 @@ if($('#checkShowImport').prop('checked')) {
         });
 
 } else {
-	       window.location.href = '/visualize';
-        }
+	       //window.location.href = '/visualize';
+        location.reload(true);
+       
+	   }
 
 
     });
@@ -462,7 +466,7 @@ if($('#checkShowImport').prop('checked')) {
             disableThenEnableAfterTimeout();
             //TODO:ajax, only change data, but with d3...how? should use angular instead?
             $.ajax({
-                url: '/visualize/showServiceOnly',
+                url: url+'/showServiceOnly',
                 type: 'GET',
 
                 statusCode:{
@@ -487,15 +491,16 @@ if($('#checkShowImport').prop('checked')) {
             });
 
         } else {
-            window.location.href = '/visualize';
-        }
+           // window.location.href = '/visualize';
+        location.reload(true);
+		}
     })
 
     $("#checkdefault").change(function () {
         if($('#checkdefault').prop('checked')) {
 
-            window.location.href = '/visualize'; //return to default
-
+           // window.location.href = '/visualize'; //return to default
+location.reload(true);
     }});
     function LinkRightFormat(links){
         if(!links || links.length < 1){
