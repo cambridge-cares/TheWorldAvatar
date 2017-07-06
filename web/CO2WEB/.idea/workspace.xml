@@ -26,8 +26,8 @@
       <file leaf-file-name="visual.pug" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/views/visual.pug">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1050">
-              <caret line="83" column="48" lean-forward="false" selection-start-line="83" selection-start-column="48" selection-end-line="83" selection-end-column="48" />
+            <state relative-caret-position="544">
+              <caret line="42" column="18" lean-forward="false" selection-start-line="42" selection-start-column="18" selection-end-line="42" selection-end-column="18" />
               <folding />
             </state>
           </provider>
@@ -36,36 +36,38 @@
       <file leaf-file-name="visual.css" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/stylesheets/visual.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="880">
-              <caret line="40" column="12" lean-forward="true" selection-start-line="40" selection-start-column="12" selection-end-line="40" selection-end-column="12" />
+            <state relative-caret-position="110">
+              <caret line="5" column="10" lean-forward="false" selection-start-line="5" selection-start-column="4" selection-end-line="5" selection-end-column="10" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="d3Bubble.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="d3Bubble.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/public/javascripts/d3Bubble.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="773">
-              <caret line="425" column="32" lean-forward="true" selection-start-line="425" selection-start-column="32" selection-end-line="425" selection-end-column="32" />
+            <state relative-caret-position="531">
+              <caret line="497" column="45" lean-forward="false" selection-start-line="497" selection-start-column="45" selection-end-line="497" selection-end-column="45" />
               <folding>
                 <element signature="e#485#1618#0" expanded="false" />
                 <element signature="e#1641#1751#0" expanded="false" />
+                <element signature="e#1892#5419#0" expanded="false" />
                 <element signature="e#1979#2520#0" expanded="false" />
                 <element signature="e#2558#2935#0" expanded="false" />
                 <element signature="e#3030#3425#0" expanded="false" />
                 <element signature="e#5895#6334#0" expanded="false" />
-                <marker date="1499313741211" expanded="false" signature="16915:18143" ph="{...}" />
-                <marker date="1499313741211" expanded="false" signature="19345:19483" ph="{...}" />
-                <marker date="1499313741211" expanded="false" signature="19569:19860" ph="{...}" />
-                <marker date="1499313741211" expanded="false" signature="19905:20042" ph="/** utility function, check if link is of correct format ...*/" />
-                <marker date="1499313741211" expanded="false" signature="20079:20358" ph="{...}" />
-                <marker date="1499313741211" expanded="false" signature="20363:20490" ph="/** Utility function: disable option buttons ...*/" />
-                <marker date="1499313741211" expanded="false" signature="20533:20964" ph="{...}" />
-                <marker date="1499313741211" expanded="false" signature="20969:21056" ph="/** utility function : disable all buttons then enable all after timeout ...*/" />
-                <marker date="1499313741211" expanded="false" signature="21102:21265" ph="{...}" />
-                <marker date="1499313741211" expanded="false" signature="24674:25054" ph="{...}" />
-                <marker date="1499313741211" expanded="false" signature="25878:27129" ph="{...}" />
+                <element signature="e#10450#12561#0" expanded="false" />
+                <marker date="1499319625596" expanded="false" signature="20688:21916" ph="{...}" />
+                <marker date="1499319625596" expanded="false" signature="23118:23256" ph="{...}" />
+                <marker date="1499319625596" expanded="false" signature="23342:23633" ph="{...}" />
+                <marker date="1499319625596" expanded="false" signature="23678:23815" ph="/** utility function, check if link is of correct format ...*/" />
+                <marker date="1499319625596" expanded="false" signature="23852:24131" ph="{...}" />
+                <marker date="1499319625596" expanded="false" signature="24136:24263" ph="/** Utility function: disable option buttons ...*/" />
+                <marker date="1499319625596" expanded="false" signature="24306:24737" ph="{...}" />
+                <marker date="1499319625596" expanded="false" signature="24742:24829" ph="/** utility function : disable all buttons then enable all after timeout ...*/" />
+                <marker date="1499319625596" expanded="false" signature="24875:25038" ph="{...}" />
+                <marker date="1499319625596" expanded="false" signature="28447:28827" ph="{...}" />
+                <marker date="1499319625596" expanded="false" signature="29651:30902" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -76,16 +78,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="3190">
               <caret line="145" column="47" lean-forward="true" selection-start-line="145" selection-start-column="47" selection-end-line="145" selection-end-column="47" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="visualize.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/routes/visualize.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="421">
-              <caret line="23" column="19" lean-forward="false" selection-start-line="23" selection-start-column="19" selection-end-line="23" selection-end-column="19" />
               <folding />
             </state>
           </provider>
@@ -168,8 +160,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>!!!!</find>
-      <find>links</find>
       <find>map</find>
       <find>ajax</find>
       <find>circleDraw</find>
@@ -180,7 +170,6 @@
       <find>mao</find>
       <find>pack</find>
       <find>updateSlec</find>
-      <find>update</find>
       <find>svg</find>
       <find>choice</find>
       <find>checkbox</find>
@@ -198,6 +187,9 @@
       <find>g</find>
       <find>set</find>
       <find>color</find>
+      <find>update</find>
+      <find>hand</find>
+      <find>stroke</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -252,8 +244,8 @@
         <option value="$PROJECT_DIR$/public/stylesheets/header.css" />
         <option value="$PROJECT_DIR$/views/header.pug" />
         <option value="$PROJECT_DIR$/views/visual.pug" />
-        <option value="$PROJECT_DIR$/public/javascripts/d3Bubble.js" />
         <option value="$PROJECT_DIR$/public/stylesheets/visual.css" />
+        <option value="$PROJECT_DIR$/public/javascripts/d3Bubble.js" />
       </list>
     </option>
   </component>
@@ -723,7 +715,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="316194000" />
+    <option name="totallyTimeSpent" value="317679000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="2552" y="-8" width="2576" height="1456" extended-state="0" />
@@ -800,7 +792,7 @@
           <option name="timeStamp" value="47" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="49" />
+      <option name="time" value="50" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -1110,44 +1102,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/views/visualBUSideMenu.pug" />
     <entry file="file://$PROJECT_DIR$/public/stylesheets/temp.pug" />
-    <entry file="file://$PROJECT_DIR$/public/stylesheets/visual.css">
+    <entry file="file://$PROJECT_DIR$/routes/visualize.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="880">
-          <caret line="40" column="12" lean-forward="true" selection-start-line="40" selection-start-column="12" selection-end-line="40" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/javascripts/d3Bubble.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="773">
-          <caret line="425" column="32" lean-forward="true" selection-start-line="425" selection-start-column="32" selection-end-line="425" selection-end-column="32" />
-          <folding>
-            <element signature="e#485#1618#0" expanded="false" />
-            <element signature="e#1641#1751#0" expanded="false" />
-            <element signature="e#1979#2520#0" expanded="false" />
-            <element signature="e#2558#2935#0" expanded="false" />
-            <element signature="e#3030#3425#0" expanded="false" />
-            <element signature="e#5895#6334#0" expanded="false" />
-            <marker date="1499313741211" expanded="false" signature="16915:18143" ph="{...}" />
-            <marker date="1499313741211" expanded="false" signature="19345:19483" ph="{...}" />
-            <marker date="1499313741211" expanded="false" signature="19569:19860" ph="{...}" />
-            <marker date="1499313741211" expanded="false" signature="19905:20042" ph="/** utility function, check if link is of correct format ...*/" />
-            <marker date="1499313741211" expanded="false" signature="20079:20358" ph="{...}" />
-            <marker date="1499313741211" expanded="false" signature="20363:20490" ph="/** Utility function: disable option buttons ...*/" />
-            <marker date="1499313741211" expanded="false" signature="20533:20964" ph="{...}" />
-            <marker date="1499313741211" expanded="false" signature="20969:21056" ph="/** utility function : disable all buttons then enable all after timeout ...*/" />
-            <marker date="1499313741211" expanded="false" signature="21102:21265" ph="{...}" />
-            <marker date="1499313741211" expanded="false" signature="24674:25054" ph="{...}" />
-            <marker date="1499313741211" expanded="false" signature="25878:27129" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/visual.pug">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1050">
-          <caret line="83" column="48" lean-forward="false" selection-start-line="83" selection-start-column="48" selection-end-line="83" selection-end-column="48" />
+        <state relative-caret-position="531">
+          <caret line="28" column="5" lean-forward="true" selection-start-line="28" selection-start-column="5" selection-end-line="28" selection-end-column="5" />
           <folding />
         </state>
       </provider>
@@ -1160,11 +1118,47 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/routes/visualize.js">
+    <entry file="file://$PROJECT_DIR$/views/visual.pug">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="421">
-          <caret line="23" column="19" lean-forward="false" selection-start-line="23" selection-start-column="19" selection-end-line="23" selection-end-column="19" />
+        <state relative-caret-position="544">
+          <caret line="42" column="18" lean-forward="false" selection-start-line="42" selection-start-column="18" selection-end-line="42" selection-end-column="18" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/stylesheets/visual.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="110">
+          <caret line="5" column="10" lean-forward="false" selection-start-line="5" selection-start-column="4" selection-end-line="5" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/javascripts/d3Bubble.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="531">
+          <caret line="497" column="45" lean-forward="false" selection-start-line="497" selection-start-column="45" selection-end-line="497" selection-end-column="45" />
+          <folding>
+            <element signature="e#485#1618#0" expanded="false" />
+            <element signature="e#1641#1751#0" expanded="false" />
+            <element signature="e#1892#5419#0" expanded="false" />
+            <element signature="e#1979#2520#0" expanded="false" />
+            <element signature="e#2558#2935#0" expanded="false" />
+            <element signature="e#3030#3425#0" expanded="false" />
+            <element signature="e#5895#6334#0" expanded="false" />
+            <element signature="e#10450#12561#0" expanded="false" />
+            <marker date="1499319625596" expanded="false" signature="20688:21916" ph="{...}" />
+            <marker date="1499319625596" expanded="false" signature="23118:23256" ph="{...}" />
+            <marker date="1499319625596" expanded="false" signature="23342:23633" ph="{...}" />
+            <marker date="1499319625596" expanded="false" signature="23678:23815" ph="/** utility function, check if link is of correct format ...*/" />
+            <marker date="1499319625596" expanded="false" signature="23852:24131" ph="{...}" />
+            <marker date="1499319625596" expanded="false" signature="24136:24263" ph="/** Utility function: disable option buttons ...*/" />
+            <marker date="1499319625596" expanded="false" signature="24306:24737" ph="{...}" />
+            <marker date="1499319625596" expanded="false" signature="24742:24829" ph="/** utility function : disable all buttons then enable all after timeout ...*/" />
+            <marker date="1499319625596" expanded="false" signature="24875:25038" ph="{...}" />
+            <marker date="1499319625596" expanded="false" signature="28447:28827" ph="{...}" />
+            <marker date="1499319625596" expanded="false" signature="29651:30902" ph="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>

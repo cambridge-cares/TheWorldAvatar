@@ -206,10 +206,11 @@ var FileLinkMap = function (options) {
     var svg = d3.select("#draw-panel").append("svg")
         .attr("width", width)
         .attr("height", height);
-    var gP = svg.append("g").attr("class", "pathsg");;
-    var gN = svg.append("g").attr("class", "nodesg");
+    var container = svg.append("g");
+    var gP = container.append("g").attr("class", "pathsg");;
+    var gN = container.append("g").attr("class", "nodesg");
 
-    var gT = svg.append("g").attr("class", "textsg");;
+    var gT = container.append("g").attr("class", "textsg");;
 
     function clear() {
         g.selectAll("line").data([]).exit().remove();
@@ -270,8 +271,13 @@ var FileLinkMap = function (options) {
             .attr("fill", allocateColor)
             .attr("data-legend-pos", sortOrder)
             .attr("data-legend", defineLegend)
-            .on("mouseover", handleMouseOver)         //highlight all links when mouse over
-            .on("mouseout", handleMouseOut)
+            .on("mouseover", function (d) {
+                handleMouseOver(d3.select(this), d);
+            })         //highlight all links when mouse over
+            .on("mouseout", function (d) {
+                handleMouseOut(d3.select(this), d);
+
+            })
             .call(d3.drag()                         //enable user to drag
                 .on("start", dragstarted)
                 .on("drag", dragged)
@@ -387,6 +393,85 @@ var FileLinkMap = function (options) {
 
         }
 
+        function newTick() {
+
+            path
+                .attr("x1", function (d, i) {
+                    if (d === undefined) {
+                        //	console.log("@@@@@@@@@@@@@"+i);
+                        return 0;
+                    }
+                    return d.source.fx;
+                })
+                .attr("y1", function (d) {
+                    if (d === undefined) {
+                        return 0;
+                    }
+                    return d.source.fy;
+                })
+                .attr("x2", function (d) {
+                    if (d === undefined) {
+                        return 0;
+                    }
+                    return d.target.fx;
+                })
+                .attr("y2", function (d) {
+                    if (d === undefined) {
+                        return 0;
+                    }
+                    return d.target.fy;
+                });
+
+            circle
+                .attr("x", function (d) {
+                    if (d === undefined) {
+                        return 0;
+                    }d.fx=d.x;
+                    return d.x;
+                })
+                .attr("y", function (d) {
+                    if (d === undefined) {
+                        return 0;
+                    }
+                    d.fy=d.y;
+                    return d.y;
+                });
+
+            circleDraw
+                .attr("cx", function (d) {
+                    if (d === undefined) {
+                        return 0;
+                    }
+                    d.fx=d.x;
+                    return d.x;
+                })
+                .attr("cy", function (d) {
+                    if (d === undefined) {
+                        return 0;
+                    }
+                    d.fy=d.y;
+
+                    return d.y;
+                });
+            text
+                .attr("x", function (d) {
+                    if (d === undefined) {
+                        return 0;
+                    }
+                    d.fx=d.x;
+
+                    return d.x;
+                })
+                .attr("y", function (d) {
+                    if (d === undefined) {
+                        return 0;
+                    }
+                    d.fy=d.y;
+
+                    return d.y;
+                });
+
+        }
 
         function dragstarted(d) {
             if (!d3.event.active) simulation.alphaTarget(0.3).restart();
@@ -401,14 +486,17 @@ var FileLinkMap = function (options) {
 
         function dragended(d) {
             if (!d3.event.active) simulation.alphaTarget(0);
-            d.fx = null;
-            d.fy = null;
+           // d.fx = null;
+           // d.fy = null;
         }
 
-        function handleMouseOver(dCircle) {
+        function handleMouseOver(nodeCircle, dCircle) {
             //node name : d.name
             gP.selectAll("line")
                 .style("stroke", highlightPath);
+
+            nodeCircle.style("stroke-width","6px");
+            nodeCircle.style("stroke","#fff");
 
             function highlightPath(dLink) {
                 // console.log("source: "+JSON.stringify(dLink.source)+"  target: "+ JSON.stringify(dLink.target) +" node name: "+dCircle.name);
@@ -422,14 +510,59 @@ var FileLinkMap = function (options) {
             }
         }
 
-        function handleMouseOut(dCircle) {
+        function handleMouseOut(nodeCircle, dCircle) {
             //node name : d.name
             // console.log("change back");
 
             gP.selectAll("line").style("stroke", "#666");
+            nodeCircle.style("stroke-width","4px");
+            nodeCircle.style("stroke","#666");
 
         }
         bubbleMap.defaultOpa();
+        /*freeze**/
+        setTimeout(function () {
+            console.log("Stop moving!")
+            var node = svg.selectAll("circle");
+            /**
+            circle.attr("fx", function (d) {
+
+                return d.x;
+            }).attr("fy", function (d) {
+                return d.y;
+
+            });
+            circleDraw.attr("fx", function (d) {
+
+                return d.x;
+            }).attr("fy", function (d) {
+                return d.y;
+
+            });
+            text.attr("fx", function (d) {
+
+                return d.x;
+            }).attr("fy", function (d) {
+                return d.y;
+
+            });
+             **/
+            simulation.stop();
+            simulation
+                .nodes( bubbleMap.nodesArr)
+                .on("tick", newTick);
+
+        }, 1000)
+        svg.call(d3.zoom()
+            .scaleExtent([1 / 2, 8])
+            .on("zoom", zoomed));
+
+    }
+
+    function zoomed() {
+        container.attr("transform", d3.event.transform);
+        // link.attr("transform", d3.event.transform);
+
     }
 
     //TODO: add coordinates to nodes data
