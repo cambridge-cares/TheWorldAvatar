@@ -26,7 +26,7 @@
       <file leaf-file-name="visual.pug" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/views/visual.pug">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1826">
+            <state relative-caret-position="1050">
               <caret line="83" column="48" lean-forward="false" selection-start-line="83" selection-start-column="48" selection-end-line="83" selection-end-column="48" />
               <folding />
             </state>
@@ -36,44 +36,57 @@
       <file leaf-file-name="visual.css" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/stylesheets/visual.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1540">
-              <caret line="70" column="0" lean-forward="false" selection-start-line="70" selection-start-column="0" selection-end-line="70" selection-end-column="0" />
+            <state relative-caret-position="880">
+              <caret line="40" column="12" lean-forward="true" selection-start-line="40" selection-start-column="12" selection-end-line="40" selection-end-column="12" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="d3Bubble.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="d3Bubble.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/javascripts/d3Bubble.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1015">
-              <caret line="147" column="5" lean-forward="true" selection-start-line="147" selection-start-column="5" selection-end-line="147" selection-end-column="5" />
+            <state relative-caret-position="773">
+              <caret line="425" column="32" lean-forward="true" selection-start-line="425" selection-start-column="32" selection-end-line="425" selection-end-column="32" />
               <folding>
                 <element signature="e#485#1618#0" expanded="false" />
                 <element signature="e#1641#1751#0" expanded="false" />
                 <element signature="e#1979#2520#0" expanded="false" />
                 <element signature="e#2558#2935#0" expanded="false" />
                 <element signature="e#3030#3425#0" expanded="false" />
-                <element signature="e#4933#5466#0" expanded="false" />
-                <element signature="e#5527#5601#0" expanded="false" />
-                <element signature="e#5623#5655#0" expanded="false" />
-                <element signature="e#5819#6258#0" expanded="false" />
-                <element signature="e#6289#6451#0" expanded="false" />
-                <element signature="e#6482#6630#0" expanded="false" />
-                <element signature="e#6799#6970#0" expanded="false" />
-                <element signature="e#9993#12104#0" expanded="false" />
-                <element signature="e#16657#17885#0" expanded="false" />
-                <element signature="e#19087#19225#0" expanded="false" />
-                <element signature="e#19311#19602#0" expanded="false" />
-                <element signature="e#19647#19784#0" expanded="false" />
-                <element signature="e#19821#20100#0" expanded="false" />
-                <element signature="e#20105#20232#0" expanded="false" />
-                <element signature="e#20275#20706#0" expanded="false" />
-                <element signature="e#20711#20798#0" expanded="false" />
-                <element signature="e#20844#21007#0" expanded="false" />
-                <element signature="e#24416#24796#0" expanded="false" />
-                <element signature="e#25620#26871#0" expanded="false" />
+                <element signature="e#5895#6334#0" expanded="false" />
+                <marker date="1499313741211" expanded="false" signature="16915:18143" ph="{...}" />
+                <marker date="1499313741211" expanded="false" signature="19345:19483" ph="{...}" />
+                <marker date="1499313741211" expanded="false" signature="19569:19860" ph="{...}" />
+                <marker date="1499313741211" expanded="false" signature="19905:20042" ph="/** utility function, check if link is of correct format ...*/" />
+                <marker date="1499313741211" expanded="false" signature="20079:20358" ph="{...}" />
+                <marker date="1499313741211" expanded="false" signature="20363:20490" ph="/** Utility function: disable option buttons ...*/" />
+                <marker date="1499313741211" expanded="false" signature="20533:20964" ph="{...}" />
+                <marker date="1499313741211" expanded="false" signature="20969:21056" ph="/** utility function : disable all buttons then enable all after timeout ...*/" />
+                <marker date="1499313741211" expanded="false" signature="21102:21265" ph="{...}" />
+                <marker date="1499313741211" expanded="false" signature="24674:25054" ph="{...}" />
+                <marker date="1499313741211" expanded="false" signature="25878:27129" ph="{...}" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="fileConnection.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/util/fileConnection.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="3190">
+              <caret line="145" column="47" lean-forward="true" selection-start-line="145" selection-start-column="47" selection-end-line="145" selection-end-column="47" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="visualize.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/routes/visualize.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="421">
+              <caret line="23" column="19" lean-forward="false" selection-start-line="23" selection-start-column="19" selection-end-line="23" selection-end-column="19" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -155,12 +168,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>x</find>
-      <find>change</find>
-      <find>coordinate</find>
-      <find>[]</find>
-      <find>geoCoords</find>
-      <find>!!!</find>
       <find>!!!!</find>
       <find>links</find>
       <find>map</find>
@@ -185,6 +192,12 @@
       <find>updateBy</find>
       <find>page=</find>
       <find>node</find>
+      <find>opacity</find>
+      <find>enter</find>
+      <find>console</find>
+      <find>g</find>
+      <find>set</find>
+      <find>color</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -238,9 +251,9 @@
         <option value="$PROJECT_DIR$/public/stylesheets/temp.pug" />
         <option value="$PROJECT_DIR$/public/stylesheets/header.css" />
         <option value="$PROJECT_DIR$/views/header.pug" />
-        <option value="$PROJECT_DIR$/public/stylesheets/visual.css" />
         <option value="$PROJECT_DIR$/views/visual.pug" />
         <option value="$PROJECT_DIR$/public/javascripts/d3Bubble.js" />
+        <option value="$PROJECT_DIR$/public/stylesheets/visual.css" />
       </list>
     </option>
   </component>
@@ -710,12 +723,13 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="313027000" />
+    <option name="totallyTimeSpent" value="316194000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="2552" y="-8" width="2576" height="1456" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13359375" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13359375" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36154416" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -726,12 +740,22 @@
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.38752785" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36154416" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13359375" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2798812" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.38752785" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -988,13 +1012,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/util/fileConnection.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="440">
-          <caret line="20" column="8" lean-forward="false" selection-start-line="20" selection-start-column="8" selection-end-line="20" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/TestVisualization/fileConnection_test.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="704">
@@ -1006,13 +1023,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="635">
           <caret line="30577" column="28" lean-forward="false" selection-start-line="30577" selection-start-column="28" selection-end-line="30577" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/routes/visualize.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="12" column="58" lean-forward="true" selection-start-line="12" selection-start-column="58" selection-end-line="12" selection-end-column="58" />
         </state>
       </provider>
     </entry>
@@ -1098,67 +1108,63 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/views/visualBUSideMenu.pug">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1028">
-          <caret line="78" column="22" lean-forward="false" selection-start-line="78" selection-start-column="18" selection-end-line="78" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/views/visualBUSideMenu.pug" />
+    <entry file="file://$PROJECT_DIR$/public/stylesheets/temp.pug" />
     <entry file="file://$PROJECT_DIR$/public/stylesheets/visual.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1540">
-          <caret line="70" column="0" lean-forward="false" selection-start-line="70" selection-start-column="0" selection-end-line="70" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/visual.pug">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1826">
-          <caret line="83" column="48" lean-forward="false" selection-start-line="83" selection-start-column="48" selection-end-line="83" selection-end-column="48" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/stylesheets/temp.pug">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="396">
-          <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="26" selection-end-column="88" />
+        <state relative-caret-position="880">
+          <caret line="40" column="12" lean-forward="true" selection-start-line="40" selection-start-column="12" selection-end-line="40" selection-end-column="12" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/javascripts/d3Bubble.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1015">
-          <caret line="147" column="5" lean-forward="true" selection-start-line="147" selection-start-column="5" selection-end-line="147" selection-end-column="5" />
+        <state relative-caret-position="773">
+          <caret line="425" column="32" lean-forward="true" selection-start-line="425" selection-start-column="32" selection-end-line="425" selection-end-column="32" />
           <folding>
             <element signature="e#485#1618#0" expanded="false" />
             <element signature="e#1641#1751#0" expanded="false" />
             <element signature="e#1979#2520#0" expanded="false" />
             <element signature="e#2558#2935#0" expanded="false" />
             <element signature="e#3030#3425#0" expanded="false" />
-            <element signature="e#4933#5466#0" expanded="false" />
-            <element signature="e#5527#5601#0" expanded="false" />
-            <element signature="e#5623#5655#0" expanded="false" />
-            <element signature="e#5819#6258#0" expanded="false" />
-            <element signature="e#6289#6451#0" expanded="false" />
-            <element signature="e#6482#6630#0" expanded="false" />
-            <element signature="e#6799#6970#0" expanded="false" />
-            <element signature="e#9993#12104#0" expanded="false" />
-            <element signature="e#16657#17885#0" expanded="false" />
-            <element signature="e#19087#19225#0" expanded="false" />
-            <element signature="e#19311#19602#0" expanded="false" />
-            <element signature="e#19647#19784#0" expanded="false" />
-            <element signature="e#19821#20100#0" expanded="false" />
-            <element signature="e#20105#20232#0" expanded="false" />
-            <element signature="e#20275#20706#0" expanded="false" />
-            <element signature="e#20711#20798#0" expanded="false" />
-            <element signature="e#20844#21007#0" expanded="false" />
-            <element signature="e#24416#24796#0" expanded="false" />
-            <element signature="e#25620#26871#0" expanded="false" />
+            <element signature="e#5895#6334#0" expanded="false" />
+            <marker date="1499313741211" expanded="false" signature="16915:18143" ph="{...}" />
+            <marker date="1499313741211" expanded="false" signature="19345:19483" ph="{...}" />
+            <marker date="1499313741211" expanded="false" signature="19569:19860" ph="{...}" />
+            <marker date="1499313741211" expanded="false" signature="19905:20042" ph="/** utility function, check if link is of correct format ...*/" />
+            <marker date="1499313741211" expanded="false" signature="20079:20358" ph="{...}" />
+            <marker date="1499313741211" expanded="false" signature="20363:20490" ph="/** Utility function: disable option buttons ...*/" />
+            <marker date="1499313741211" expanded="false" signature="20533:20964" ph="{...}" />
+            <marker date="1499313741211" expanded="false" signature="20969:21056" ph="/** utility function : disable all buttons then enable all after timeout ...*/" />
+            <marker date="1499313741211" expanded="false" signature="21102:21265" ph="{...}" />
+            <marker date="1499313741211" expanded="false" signature="24674:25054" ph="{...}" />
+            <marker date="1499313741211" expanded="false" signature="25878:27129" ph="{...}" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/visual.pug">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1050">
+          <caret line="83" column="48" lean-forward="false" selection-start-line="83" selection-start-column="48" selection-end-line="83" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/fileConnection.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3190">
+          <caret line="145" column="47" lean-forward="true" selection-start-line="145" selection-start-column="47" selection-end-line="145" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/routes/visualize.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="421">
+          <caret line="23" column="19" lean-forward="false" selection-start-line="23" selection-start-column="19" selection-end-line="23" selection-end-column="19" />
+          <folding />
         </state>
       </provider>
     </entry>

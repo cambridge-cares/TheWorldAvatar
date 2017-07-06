@@ -13,7 +13,9 @@ body {
 }
 
 .link.licensing {
-    stroke: green;
+    stroke: #666;
+    stroke-width: 4px;
+    opacity: 0.5;
 
 }
 
@@ -22,8 +24,8 @@ body {
 }
 
 circle.nodes {
-    stroke: #333;
-    stroke-width: 2px;
+    stroke: #666;
+    stroke-width: 4px;
 }
 
 text.nodeTag {

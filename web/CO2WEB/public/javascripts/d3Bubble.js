@@ -88,6 +88,16 @@ var FileLinkMap = function (options) {
         // Compute the distinct nodes from the links.
         links.forEach(function (link) {
 
+             if (nodes[link.source] != null) {
+                nodes[link.source].count = nodes[link.source].count + 1;
+                console.log("++");
+            }
+             if (nodes[link.target] != null) {
+                nodes[link.target].count = nodes[link.target].count + 1;
+                console.log("++");
+
+            }
+
             link.source = nodes[link.source] || (nodes[link.source] = {
                     url: link.source,
 
@@ -108,18 +118,7 @@ var FileLinkMap = function (options) {
 
                 });
 
-            //get count of links on each node
-            /**
-             if (nodes[link.source] != null) {
-                nodes[link.source].count = nodes[link.source].count + 1;
-                console.log("++");
-            }
-             if (nodes[link.target] != null) {
-                nodes[link.target].count = nodes[link.target].count + 1;
-                console.log("++");
 
-            }
-             ***/
         });
 
         let index = 0;
@@ -148,13 +147,18 @@ var FileLinkMap = function (options) {
     }
 
     function setBodyS(node) {
-        return -300 * (1 || node.count);
+        return -150 ;
 
         //return charge;
     }
 
-    function setD() {
-        return distance;
+    function setD(link) {
+        console.log(link.source.count);
+        var nodeNThre = 5
+        if(link.source.count > nodeNThre || link.target.count > nodeNThre){
+            return 100;
+        }
+        return 1;
     }
 
     /**
@@ -202,7 +206,10 @@ var FileLinkMap = function (options) {
     var svg = d3.select("#draw-panel").append("svg")
         .attr("width", width)
         .attr("height", height);
-    var g = svg.append("g");
+    var gP = svg.append("g").attr("class", "pathsg");;
+    var gN = svg.append("g").attr("class", "nodesg");
+
+    var gT = svg.append("g").attr("class", "textsg");;
 
     function clear() {
         g.selectAll("line").data([]).exit().remove();
@@ -215,11 +222,11 @@ var FileLinkMap = function (options) {
 
         //set force simulation
         var simulation = d3.forceSimulation()
-            .force("link", d3.forceLink(links).distance(70))
+            .force("link", d3.forceLink(links).distance(setD))
             .force("charge", d3.forceManyBody().strength(setBodyS))
             .force("center", d3.forceCenter(width / 2, height / 2));
 
-        var path = g.selectAll("line") //linking lines
+        var path = gP.selectAll("line") //linking lines
             .data(links, function (d) {
                 return d.source.domain + d.source.name + d.target.domain + d.target.name;
             });
@@ -229,17 +236,18 @@ var FileLinkMap = function (options) {
 
         path.enter().append("line")
             .attr("class", function (d) {
+                console.log("@@@@@@@@@@@@draw link : "+d.source.name+'--------'+d.target.name);
+
                 return "link " + "licensing";
             })
-            .attr("marker-end", function (d) {
-                return "url(#" + "licensing" + ")";
-            })
+
         ;
         // path.exit().remove();
-        path = g.selectAll("line");
+        path = gP.selectAll("line");
 
-        var circle = g.selectAll("a.cir") //node bubbles
+        var circle = gN.selectAll("a.cir") //node bubbles
             .data(bubbleMap.nodesArr, function (d) {
+
                 return d.domain + d.name;
             });
 
@@ -249,6 +257,7 @@ var FileLinkMap = function (options) {
             .attr('class', 'cir')
             //.append("a")
             .attr("xlink:href", function (d) {
+                console.log("@@@@@@@@@@@@draw node: "+d.name);
                 return d.url;
             })
 
@@ -270,10 +279,10 @@ var FileLinkMap = function (options) {
             );
 
 
-        circle = g.selectAll("a.cir");
-        var circleDraw = g.selectAll("a.cir").select("circle.nodes");
+        circle = gN.selectAll("a.cir");
+        var circleDraw = gN.selectAll("a.cir").select("circle.nodes");
 
-        var text = g.selectAll("text.nodeTag")  //node tags
+        var text = gT.selectAll("text.nodeTag")  //node tags
             .data(bubbleMap.nodesArr, function (d) {
                 return d.domain + d.name;
             });
@@ -287,7 +296,7 @@ var FileLinkMap = function (options) {
             .text(function (d) {
                 return d.name;
             });
-        text = g.selectAll("text.nodeTag");
+        text = gT.selectAll("text.nodeTag");
 
         simulation
             .nodes(bubbleMap.nodesArr)
@@ -398,7 +407,7 @@ var FileLinkMap = function (options) {
 
         function handleMouseOver(dCircle) {
             //node name : d.name
-            svg.selectAll("line")
+            gP.selectAll("line")
                 .style("stroke", highlightPath);
 
             function highlightPath(dLink) {
@@ -409,7 +418,7 @@ var FileLinkMap = function (options) {
 
                     return "#ffff00";
                 }
-                return "#008000";
+                return "#666";
             }
         }
 
@@ -417,7 +426,7 @@ var FileLinkMap = function (options) {
             //node name : d.name
             // console.log("change back");
 
-            svg.selectAll("line").style("stroke", "#008000");
+            gP.selectAll("line").style("stroke", "#666");
 
         }
         bubbleMap.defaultOpa();
@@ -427,7 +436,7 @@ var FileLinkMap = function (options) {
     bubbleMap.updateByCoord = function updateByCoord(center, radius) {
 
         var resultArr = [];
-        svg.selectAll("a.cir").select('circle.nodes').attr("opacity",function(d) {
+        gN.selectAll("a.cir").select('circle.nodes').attr("opacity",function(d) {
                 if(d.coord) {
                     console.log("@@@@@@@@@@@in d3 node dta: " + JSON.stringify(d.coord))
                     let dx = d.coord.x - center.x;
@@ -451,7 +460,7 @@ var FileLinkMap = function (options) {
         //TODO: deal with path
 
         // deal with label
-        svg.selectAll("text.nodeTag").attr("visibility",function(d) {
+        gT.selectAll("text.nodeTag").attr("visibility",function(d) {
             if(d.coord) {
                 console.log("@@@@@@@@@@@in d3 node dta: " + JSON.stringify(d.coord))
                 let dx = d.coord.x - center.x;
@@ -469,7 +478,7 @@ return resultArr;
     }
 
     bubbleMap.defaultOpa = function () {
-        svg.selectAll("a.cir").select('circle.nodes').attr("opacity",function(d) {
+        gN.selectAll("a.cir").select('circle.nodes').attr("opacity",function(d) {
         return 1;
         })
     };
