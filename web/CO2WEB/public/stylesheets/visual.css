@@ -1,6 +1,5 @@
-body{
+body {
     overflow-x: hidden;
-
 }
 .link {
     fill: none;
@@ -71,24 +70,24 @@ text.nodeTag {
 /* Toggle Styles */
 
 #wrapper {
-    padding-left: 0;
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
-    transition: all 0.5s ease;
+    position: relative;
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+
+    font-size:20px;
+
+
 }
 
-#wrapper.toggled {
-    padding-left: 300px;
+#sidebar-wrapper.toggled {
+    width: 350px;
 }
 
 #sidebar-wrapper {
     z-index: 1000;
     position: fixed;
-    left: 300px;
     width: 0;
-    height: 100%;
-    margin-left: -300px;
+    height: 50%;
+    bottom: 0;
     overflow-y: auto;
     background: #aaaaaa;
     -webkit-transition: all 0.5s ease;
@@ -97,27 +96,23 @@ text.nodeTag {
     transition: all 0.5s ease;
 }
 
-#wrapper.toggled #sidebar-wrapper {
-    width: 300px;
-}
+
+
 
 #page-content-wrapper {
     width: 100%;
-    position: absolute;
+    position: relative;
     padding: 15px;
 }
 
-#wrapper.toggled #page-content-wrapper {
-    position: absolute;
-    margin-right: -300px;
-}
+
 /*Side bar*******************/
 /* Sidebar Styles */
 
 .sidebar-nav {
     position: absolute;
     top: 0;
-    width: 300px;
+    width: 100%;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -134,7 +129,7 @@ text.nodeTag {
 
 }
 .sidebar-nav td{
-    width:50%
+    width:40%
 }
 .sidebar-nav button{
     margin-top: 20px;
@@ -155,22 +150,9 @@ text.nodeTag {
 .sidebar-nav li a:focus {
     text-decoration: none;
 }
-
-.sidebar-nav > .sidebar-brand {
-    height: 65px;
-    font-size: 18px;
-    line-height: 60px;
+.sidebar-nav input{
+    color: #6E7B8B;
 }
-
-.sidebar-nav > .sidebar-brand a {
-    color: #999999;
-}
-
-.sidebar-nav > .sidebar-brand a:hover {
-    color: #fff;
-    background: none;
-}
-
 .customHr {
     width: 100%;
     font-size: 1px;
@@ -182,30 +164,50 @@ text.nodeTag {
     margin-bottom: 10px;
 }
 
-@media(min-width:768px) {
-    #wrapper {
-        padding-left: 0;
-    }
 
-    #wrapper.toggled {
-        padding-left: 300px;
-    }
+/**restruct settings menu*/
+#menu-toggle{
+    position: fixed;
+    z-index: 100;
+    background-color: #6E7B8B;
+    bottom: 0;
 
-    #sidebar-wrapper {
-        width: 0;
-    }
-
-    #wrapper.toggled #sidebar-wrapper {
-        width: 300px;
-    }
-
-    #page-content-wrapper {
-        padding: 20px;
-        position: relative;
-    }
-
-    #wrapper.toggled #page-content-wrapper {
-        position: relative;
-        margin-right: 0;
-    }
 }
+.glyphicon {
+    font-size: 50px;
+    color: #ffffff;
+}
+
+/**content***/
+
+/**draw panel*/
+
+#draw-panel{
+    position: relative;
+    display: block;
+}
+
+#geo-search-result-panel
+{
+    position: relative;
+    display: block;
+
+}
+
+#geo-search-result-panel table
+{
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 50%;
+}
+#geo-search-result-panel table td, #geo-search-result-panel table tr
+{
+    border: 2px solid  #ddd;
+    padding: 5px;
+}
+#geo-search-result-panel table tr:nth-child(even)
+{
+background-color: #aaaaaa;
+}
+#geo-search-result-panel table tr:hover {background-color: #ddd;}
+

@@ -425,14 +425,22 @@ var FileLinkMap = function (options) {
 
     //TODO: add coordinates to nodes data
     bubbleMap.updateByCoord = function updateByCoord(center, radius) {
+
+        var resultArr = [];
         svg.selectAll("a.cir").select('circle.nodes').attr("opacity",function(d) {
                 if(d.coord) {
                     console.log("@@@@@@@@@@@in d3 node dta: " + JSON.stringify(d.coord))
                     let dx = d.coord.x - center.x;
                     let dy = d.coord.y - center.y;
                     let eps = Number.EPSILON;
-                      console.log(radius * radius - dx * dx - dy * dy);
-                    return (radius * radius - dx * dx - dy * dy > eps) ? 1 : 0.25;
+                      //console.log(radius * radius - dx * dx - dy * dy);
+                      if(radius * radius - dx * dx - dy * dy > eps){
+                        resultArr.push(d.name);
+                        console.log("!!!!!!!!!!"+d.name)
+                          return 1;
+                      } else{
+                          return 0.25;
+                      }
                 } else {//This node does not have coordinates
                    // console.log(" node: "+d.url+" does not have coordinates");
                     return 0.25;
@@ -457,7 +465,7 @@ var FileLinkMap = function (options) {
             }
         });
 
-
+return resultArr;
     }
 
     bubbleMap.defaultOpa = function () {
@@ -477,16 +485,34 @@ var FileLinkMap = function (options) {
 /*END constructor: d3 link graph*********************************************/
 
 /*DOM LOGIC**************************************************************/
+
+
 $(window).load(function () {// when web dom ready
     let url = window.location.href;     // Returns full URL
 
     /*init d3 map*/
     var map = FileLinkMap({});
+let btn = $("#menu-toggle");
 
-    $("#menu-toggle").click(function(e) {
+    btn.click(function(e) {
+        console.log("btn clicked")
         e.preventDefault();
-        $("#wrapper").toggleClass("toggled");
+        e.stopImmediatePropagation();
+        $("#sidebar-wrapper").toggleClass("toggled");
+        /*settings menu*****/
+        $('#sidebar-wrapper').on('clickout', function (e) {
+            console.log('!!!!!!!!!!!!!!!Outside element click')
+            $("#sidebar-wrapper").toggleClass("toggled");
+            $("#sidebar-wrapper").off("clickout");
+
+        })
+
     });
+
+
+
+
+
 
     /*choice panel*************************************************/
         /*button : show Import **/
@@ -710,7 +736,29 @@ $(window).load(function () {// when web dom ready
 
         console.log("CX:" + x +" Y:" + y+ "  R:" + radius);
         //pack x, y into object
-        map.updateByCoord({x, y}, radius);
+        let resultArr = map.updateByCoord({x, y}, radius);
+
+        console.log(resultArr.toString())
+
+        //check if result panel is show
+        if( $("#geo-search-result-panel").css('display').toLowerCase() == 'none') {
+            $("#geo-search-result-panel").css({"display" :"block"});//show the result panel
+
+        }
+        //clear previous results, if any
+        $("#result-table-wrapper").html("");
+        // /append a result table
+        var template = "<table>";
+
+        resultArr.forEach(function (item) {
+            template+="<tr><td>"+item+"</td></tr>";
+        });
+        template+="</table>";
+        console.log(template);
+        $("#result-table-wrapper").append(template);
+
+        //todo : append a map
+
         displayMsg("Search for device near center point :("+x+" ,"+y+") with radius : "+radius, "success");
 
         function decimalPlaces(num) {

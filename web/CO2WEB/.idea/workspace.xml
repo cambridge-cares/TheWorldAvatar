@@ -17,84 +17,43 @@
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
   </component>
-  <component name="DockManager">
-    <window id="1">
-      <content type="file-editors">
-        <state>
-          <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-            <file leaf-file-name="temp.pug" pinned="false" current-in-tab="true">
-              <entry file="file://$PROJECT_DIR$/public/stylesheets/temp.pug">
-                <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="396">
-                    <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="26" selection-end-column="88" />
-                    <folding />
-                  </state>
-                </provider>
-              </entry>
-            </file>
-          </leaf>
-        </state>
-      </content>
-    </window>
-  </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
     <favorites_list name="CO2WEB" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="visualBUSideMenu.pug" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/views/visualBUSideMenu.pug">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1050">
-              <caret line="78" column="0" lean-forward="false" selection-start-line="78" selection-start-column="0" selection-end-line="78" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="visual.pug" pinned="false" current-in-tab="true">
+      <file leaf-file-name="visual.pug" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/views/visual.pug">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="104">
-              <caret line="34" column="7" lean-forward="true" selection-start-line="34" selection-start-column="7" selection-end-line="34" selection-end-column="7" />
+            <state relative-caret-position="1826">
+              <caret line="83" column="48" lean-forward="false" selection-start-line="83" selection-start-column="48" selection-end-line="83" selection-end-column="48" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="header.pug" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/views/header.pug">
+      <file leaf-file-name="visual.css" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/stylesheets/visual.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="462">
-              <caret line="21" column="17" lean-forward="false" selection-start-line="21" selection-start-column="17" selection-end-line="21" selection-end-column="17" />
+            <state relative-caret-position="1540">
+              <caret line="70" column="0" lean-forward="false" selection-start-line="70" selection-start-column="0" selection-end-line="70" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="header.css" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/stylesheets/header.css">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="88">
-              <caret line="4" column="20" lean-forward="false" selection-start-line="4" selection-start-column="20" selection-end-line="4" selection-end-column="20" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="d3Bubble.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="d3Bubble.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/public/javascripts/d3Bubble.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="7722">
-              <caret line="665" column="16" lean-forward="false" selection-start-line="665" selection-start-column="16" selection-end-line="665" selection-end-column="16" />
+            <state relative-caret-position="1015">
+              <caret line="147" column="5" lean-forward="true" selection-start-line="147" selection-start-column="5" selection-end-line="147" selection-end-column="5" />
               <folding>
                 <element signature="e#485#1618#0" expanded="false" />
                 <element signature="e#1641#1751#0" expanded="false" />
                 <element signature="e#1979#2520#0" expanded="false" />
                 <element signature="e#2558#2935#0" expanded="false" />
                 <element signature="e#3030#3425#0" expanded="false" />
-                <element signature="e#3518#4658#0" expanded="false" />
                 <element signature="e#4933#5466#0" expanded="false" />
                 <element signature="e#5527#5601#0" expanded="false" />
                 <element signature="e#5623#5655#0" expanded="false" />
@@ -103,18 +62,28 @@
                 <element signature="e#6482#6630#0" expanded="false" />
                 <element signature="e#6799#6970#0" expanded="false" />
                 <element signature="e#9993#12104#0" expanded="false" />
-                <element signature="e#16010#17238#0" expanded="false" />
-                <element signature="e#18440#18578#0" expanded="false" />
-                <element signature="e#18664#18955#0" expanded="false" />
-                <element signature="e#19000#19137#0" expanded="false" />
-                <element signature="e#19174#19453#0" expanded="false" />
-                <element signature="e#19458#19585#0" expanded="false" />
-                <element signature="e#19628#20059#0" expanded="false" />
-                <element signature="e#20064#20151#0" expanded="false" />
-                <element signature="e#20197#20360#0" expanded="false" />
-                <element signature="e#23073#23453#0" expanded="false" />
-                <element signature="e#24277#25528#0" expanded="false" />
+                <element signature="e#16657#17885#0" expanded="false" />
+                <element signature="e#19087#19225#0" expanded="false" />
+                <element signature="e#19311#19602#0" expanded="false" />
+                <element signature="e#19647#19784#0" expanded="false" />
+                <element signature="e#19821#20100#0" expanded="false" />
+                <element signature="e#20105#20232#0" expanded="false" />
+                <element signature="e#20275#20706#0" expanded="false" />
+                <element signature="e#20711#20798#0" expanded="false" />
+                <element signature="e#20844#21007#0" expanded="false" />
+                <element signature="e#24416#24796#0" expanded="false" />
+                <element signature="e#25620#26871#0" expanded="false" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="jquery-clickout.min.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/javascripts/jquery-clickout.min.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -186,11 +155,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>emit</find>
-      <find>blinkTimer</find>
-      <find>http</find>
-      <find>showService</find>
-      <find>showServiceOnly</find>
       <find>x</find>
       <find>change</find>
       <find>coordinate</find>
@@ -216,6 +180,11 @@
       <find>coordinate-search</find>
       <find>li</find>
       <find>250</find>
+      <find>search</find>
+      <find>table</find>
+      <find>updateBy</find>
+      <find>page=</find>
+      <find>node</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -242,7 +211,6 @@
         <option value="$PROJECT_DIR$/routes/bmsNodeTemp.js" />
         <option value="$PROJECT_DIR$/public/stylesheets/style.css" />
         <option value="$PROJECT_DIR$/public/javascripts/main.js" />
-        <option value="$PROJECT_DIR$/views/header.pug" />
         <option value="$PROJECT_DIR$/fileConnection.js" />
         <option value="$PROJECT_DIR$/TestVisualization/tryXMLImport.js" />
         <option value="$PROJECT_DIR$/TestVisualization/visualization_test.js" />
@@ -268,10 +236,11 @@
         <option value="$PROJECT_DIR$/util/fileConnection.js" />
         <option value="$PROJECT_DIR$/TestVisualization/pg.js" />
         <option value="$PROJECT_DIR$/public/stylesheets/temp.pug" />
-        <option value="$PROJECT_DIR$/public/javascripts/d3Bubble.js" />
         <option value="$PROJECT_DIR$/public/stylesheets/header.css" />
+        <option value="$PROJECT_DIR$/views/header.pug" />
         <option value="$PROJECT_DIR$/public/stylesheets/visual.css" />
         <option value="$PROJECT_DIR$/views/visual.pug" />
+        <option value="$PROJECT_DIR$/public/javascripts/d3Bubble.js" />
       </list>
     </option>
   </component>
@@ -314,7 +283,6 @@
     </navigator>
     <panes>
       <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -449,6 +417,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -467,11 +436,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Shaocong\WORK\webJPSGit\irp3-WebJPS-git\CO2WEB\public\javascripts" />
       <recent name="C:\Users\Shaocong\WORK\webJPSGit\irp3-WebJPS-git\CO2WEB\views" />
       <recent name="C:\Users\Shaocong\WORK\webJPSGit\irp3-WebJPS-git\CO2WEB\public\stylesheets" />
       <recent name="C:\Users\Shaocong\WORK\CO2WEB\testFile" />
       <recent name="C:\Users\Shaocong\WORK\CO2WEB" />
-      <recent name="C:\Users\Shaocong\WORK\CO2WEB\public\javascripts" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\Shaocong\WORK\webJPSGit\irp3-WebJPS-git\CO2WEB\TestVisualization" />
@@ -703,7 +672,8 @@
       <workItem from="1498789486981" duration="3971000" />
       <workItem from="1499047818031" duration="10168000" />
       <workItem from="1499136154241" duration="12860000" />
-      <workItem from="1499222774003" duration="882000" />
+      <workItem from="1499222774003" duration="10655000" />
+      <workItem from="1499307202852" duration="567000" />
     </task>
     <servers />
   </component>
@@ -740,13 +710,12 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="302687000" />
+    <option name="totallyTimeSpent" value="313027000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="2552" y="-8" width="2576" height="1456" extended-state="0" />
-    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13359375" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13359375" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36154416" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -812,13 +781,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/util/fileConnection.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="22">
-          <caret line="80" column="92" lean-forward="false" selection-start-line="80" selection-start-column="92" selection-end-line="80" selection-end-column="92" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/stylesheets/style.css">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="352">
@@ -1013,6 +975,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2530">
           <caret line="117" column="39" lean-forward="false" selection-start-line="117" selection-start-column="39" selection-end-line="117" selection-end-column="39" />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1055,6 +1020,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="308">
           <caret line="23" column="23" lean-forward="true" selection-start-line="23" selection-start-column="23" selection-end-line="23" selection-end-column="23" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1081,14 +1047,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/rdflib/lib/util.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="10230">
-          <caret line="465" column="28" lean-forward="false" selection-start-line="465" selection-start-column="28" selection-end-line="465" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/node_modules/xmlhttprequest/lib/XMLHttpRequest.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4466">
@@ -1110,37 +1068,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/javascripts/d3Bubble.js">
+    <entry file="file://$PROJECT_DIR$/views/header.pug">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7722">
-          <caret line="665" column="16" lean-forward="false" selection-start-line="665" selection-start-column="16" selection-end-line="665" selection-end-column="16" />
-          <folding>
-            <element signature="e#485#1618#0" expanded="false" />
-            <element signature="e#1641#1751#0" expanded="false" />
-            <element signature="e#1979#2520#0" expanded="false" />
-            <element signature="e#2558#2935#0" expanded="false" />
-            <element signature="e#3030#3425#0" expanded="false" />
-            <element signature="e#3518#4658#0" expanded="false" />
-            <element signature="e#4933#5466#0" expanded="false" />
-            <element signature="e#5527#5601#0" expanded="false" />
-            <element signature="e#5623#5655#0" expanded="false" />
-            <element signature="e#5819#6258#0" expanded="false" />
-            <element signature="e#6289#6451#0" expanded="false" />
-            <element signature="e#6482#6630#0" expanded="false" />
-            <element signature="e#6799#6970#0" expanded="false" />
-            <element signature="e#9993#12104#0" expanded="false" />
-            <element signature="e#16010#17238#0" expanded="false" />
-            <element signature="e#18440#18578#0" expanded="false" />
-            <element signature="e#18664#18955#0" expanded="false" />
-            <element signature="e#19000#19137#0" expanded="false" />
-            <element signature="e#19174#19453#0" expanded="false" />
-            <element signature="e#19458#19585#0" expanded="false" />
-            <element signature="e#19628#20059#0" expanded="false" />
-            <element signature="e#20064#20151#0" expanded="false" />
-            <element signature="e#20197#20360#0" expanded="false" />
-            <element signature="e#23073#23453#0" expanded="false" />
-            <element signature="e#24277#25528#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="0">
+          <caret line="0" column="12" lean-forward="false" selection-start-line="0" selection-start-column="12" selection-end-line="0" selection-end-column="12" />
         </state>
       </provider>
     </entry>
@@ -1148,22 +1079,44 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="88">
           <caret line="4" column="20" lean-forward="false" selection-start-line="4" selection-start-column="20" selection-end-line="4" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/rdflib/lib/util.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="10230">
+          <caret line="465" column="28" lean-forward="false" selection-start-line="465" selection-start-column="28" selection-end-line="465" selection-end-column="28" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/views/header.pug">
+    <entry file="file://$PROJECT_DIR$/public/javascripts/jquery-clickout.min.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="462">
-          <caret line="21" column="17" lean-forward="false" selection-start-line="21" selection-start-column="17" selection-end-line="21" selection-end-column="17" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/visualBUSideMenu.pug">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1028">
+          <caret line="78" column="22" lean-forward="false" selection-start-line="78" selection-start-column="18" selection-end-line="78" selection-end-column="22" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/stylesheets/visual.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="119" column="17" lean-forward="true" selection-start-line="119" selection-start-column="17" selection-end-line="119" selection-end-column="17" />
+        <state relative-caret-position="1540">
+          <caret line="70" column="0" lean-forward="false" selection-start-line="70" selection-start-column="0" selection-end-line="70" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/visual.pug">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1826">
+          <caret line="83" column="48" lean-forward="false" selection-start-line="83" selection-start-column="48" selection-end-line="83" selection-end-column="48" />
           <folding />
         </state>
       </provider>
@@ -1176,19 +1129,36 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/views/visualBUSideMenu.pug">
+    <entry file="file://$PROJECT_DIR$/public/javascripts/d3Bubble.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1050">
-          <caret line="78" column="0" lean-forward="false" selection-start-line="78" selection-start-column="0" selection-end-line="78" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/visual.pug">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="104">
-          <caret line="34" column="7" lean-forward="true" selection-start-line="34" selection-start-column="7" selection-end-line="34" selection-end-column="7" />
-          <folding />
+        <state relative-caret-position="1015">
+          <caret line="147" column="5" lean-forward="true" selection-start-line="147" selection-start-column="5" selection-end-line="147" selection-end-column="5" />
+          <folding>
+            <element signature="e#485#1618#0" expanded="false" />
+            <element signature="e#1641#1751#0" expanded="false" />
+            <element signature="e#1979#2520#0" expanded="false" />
+            <element signature="e#2558#2935#0" expanded="false" />
+            <element signature="e#3030#3425#0" expanded="false" />
+            <element signature="e#4933#5466#0" expanded="false" />
+            <element signature="e#5527#5601#0" expanded="false" />
+            <element signature="e#5623#5655#0" expanded="false" />
+            <element signature="e#5819#6258#0" expanded="false" />
+            <element signature="e#6289#6451#0" expanded="false" />
+            <element signature="e#6482#6630#0" expanded="false" />
+            <element signature="e#6799#6970#0" expanded="false" />
+            <element signature="e#9993#12104#0" expanded="false" />
+            <element signature="e#16657#17885#0" expanded="false" />
+            <element signature="e#19087#19225#0" expanded="false" />
+            <element signature="e#19311#19602#0" expanded="false" />
+            <element signature="e#19647#19784#0" expanded="false" />
+            <element signature="e#19821#20100#0" expanded="false" />
+            <element signature="e#20105#20232#0" expanded="false" />
+            <element signature="e#20275#20706#0" expanded="false" />
+            <element signature="e#20711#20798#0" expanded="false" />
+            <element signature="e#20844#21007#0" expanded="false" />
+            <element signature="e#24416#24796#0" expanded="false" />
+            <element signature="e#25620#26871#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
