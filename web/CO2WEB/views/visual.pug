@@ -20,6 +20,8 @@ block content
 
         script(src="https://d3js.org/d3.v4.min.js")
         script(src="/javascripts/d3.legend.js")
+        script(src="/javascripts/jquery-clickout.min.js")
+
         script(src="/javascripts/d3Bubble.js")
 
         input(
@@ -28,17 +30,59 @@ block content
         value = result
         )
 
-    div(class='col-sm-1' id="choice-div")
-        div(class="panel panel-default" id="choice-panel")
-            div(class="panel-body")
-                div(class="checkbox")
-                    input(type="radio" name="option" id="checkShowImport" value="")
-                    label Show Import
-                    br
-                    input(type="radio" name="option" id="checkShowServiceOnly" value="")
-                    label Show Agents Only
-                    br
-                    input(type="radio" name="option" id="checkdefault" value="")
-                    label Show Default
 
-    div(class='col-sm-12' id="draw-panel")
+
+
+        div#wrapper
+
+
+            button#menu-toggle( class="btn btn-default btn-lg" aria-label="Settings")
+                span(class="glyphicon glyphicon-cog" aria-hidden="true")
+
+            div#sidebar-wrapper
+                ul.sidebar-nav.container-fluid
+                    li
+                        input(type="radio" name="option" id="checkShowImport" value="")
+                        label Show Import
+                    li
+                        input(type="radio" name="option" id="checkShowServiceOnly" value="")
+                        label Show Agents Only
+                    li
+                        input(type="radio" name="option" id="checkdefault" value="")
+                        label Show Default
+                    li
+                        div.customHr
+                    li
+                        table#xyr-inputs
+                            tr
+                                td
+                                    label(for="search-center-x") Center x:
+                                td
+                                    input(type="text" id="search-center-x" value="")
+
+                            tr
+                                td
+                                    label Center y:
+                                td
+                                    input(type="text" id="search-center-y" value="")
+                            tr
+                                td
+                                    label Radius:
+                                td
+                                    input(type="text" id="search-radius" value="")
+
+                    li
+                        label(for="device-select") Choose a device:
+                    li
+                        select(class="form-control" id="device-select")
+                    li
+                        button(type="button" id= "search-submit" class="btn btn-primary") Search
+
+            div#page-content-wrapper
+                div#draw-panel()
+                div#geo-search-result-panel(class="panel panel-default" style="display:none")
+                    div(class="panel-heading") Results
+                    div(class="panel-body")
+                        div#result-table-wrapper
+                        div#result-map-wrapper
+

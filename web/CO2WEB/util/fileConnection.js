@@ -21,6 +21,8 @@
 //import
 var path = require('path');
 var libxmljs = require("libxmljs");
+var proj4 = require('proj4');
+
 
 var async = require('async');
 var readdirp = require('readdirp');
@@ -169,15 +171,34 @@ function readConnections(options, callback) {
             return null;
         }
         let x =  root.find("//owl:NamedIndividual[contains(@rdf:about, 'ValueOf_x_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
-        console.log(x);
 
         let y =  root.find("//owl:NamedIndividual[contains(@rdf:about, 'ValueOf_y_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
 
-        if(x && y && x.length > 0 && y.length > 0 ) {
-            return {x: x[0].text().trim(), y: y[0].text().trim()};
+        if(x.length > 0 && y.length > 0) {
+            console.log("#########################findcoordis:" + x[0].text().trim());
+            console.log("converted coordi: " +  util.inspect(convertCoordinate(x[0].text().trim(), y[0].text().trim(), false)));
+            return convertCoordinate(x[0].text().trim(), y[0].text().trim(), false);
+        } else {
+            return null;
         }
-        return null;
-	}
+        }
+
+    //convert google GPS coordi to 1984w coordi(the one used in our own)
+    var convertCoordinate = function (GPSLong, GPSLat, google2Owl) {
+//https://github.com/proj4js/proj4js
+        var googleProjection = 'EPSG:4326'; //google
+        var ourProjection = 'EPSG:3857';//our
+//console.log("convert coordis: ["+parseInt(GPSLong)+", "+parseInt(GPSLat)+"] to "+proj4(fromProjection, toProjection, [parseInt(GPSLong),parseInt(GPSLat)]));
+
+        return google2Owl?converted(googleProjection, ourProjection) : converted(ourProjection, googleProjection);
+        function converted(fromProjection, toProjection){
+
+            var result =  proj4(fromProjection, toProjection, [parseFloat(GPSLong),parseFloat(GPSLat)]);
+
+            return {x: result[0], y:result[1]};
+        }
+
+    };
 
     /**
      * return all services defined in the owl, service definition : contains "http://www.theworldavatar.com/Service.owl" in rdf:type
@@ -242,6 +263,7 @@ function readConnections(options, callback) {
                geoCoords.push({url : myUri, coord: coord});
            }
 
+           console.log(util.inspect(geoCoords));
            if (showImport) {
                try {
                     imports = getXMLImports(root);
@@ -261,7 +283,7 @@ function readConnections(options, callback) {
            if (children.length < 1) { // no children is found, including devices and services and call callback
                console.log(myUri + " is a leaf node return");
 
-               callback(null, myLinks);
+               callback(null, {connections: myLinks, geoCoords: geoCoords});
                return;
            }//else
 
@@ -296,8 +318,32 @@ function readConnections(options, callback) {
                    }
                    console.log("concat results");
 
-                   results = results.clean(null);
-                   callback(null, results.concat(myLinks));
+
+                   let connectionsAll = myLinks;
+                   let geoCoordsAll = geoCoords;
+
+                   console.log("!!!!!!!!!!!!!!!!!!!!!" + results.length);
+                   //console.log(geoCoords)
+                   for (let result of results){
+                       console.log(util.inspect(result));
+
+                       let connectionThis = result.connections;
+                       //console.log(connectionThis);
+                     //  connectionThis = connectionThis.clean(null);
+                       let geoCoordsThis = result.geoCoords;
+                       console.log(util.inspect(geoCoordsThis));
+
+                       //  geoCoordsThis = geoCoordsThis.clean(null);
+                       connectionsAll = connectionsAll.concat(connectionThis);
+                       geoCoordsAll=   geoCoordsAll.concat(geoCoordsThis);
+                   }
+
+
+                   console.log("********************concated");
+                   console.log(util.inspect(connectionsAll));
+                   console.log(util.inspect(geoCoordsAll));
+
+                   callback(null, {connections:connectionsAll, geoCoords:geoCoordsAll});
 
                });
 

@@ -1,3 +1,6 @@
+body {
+    overflow-x: hidden;
+}
 .link {
     fill: none;
     stroke: #666;
@@ -10,7 +13,9 @@
 }
 
 .link.licensing {
-    stroke: green;
+    stroke: #666;
+    stroke-width: 4px;
+    opacity: 0.5;
 
 }
 
@@ -19,8 +24,8 @@
 }
 
 circle.nodes {
-    stroke: #333;
-    stroke-width: 2px;
+    stroke: #666;
+    stroke-width: 4px;
 }
 
 text.nodeTag {
@@ -63,3 +68,150 @@ text.nodeTag {
     bottom: 0px;
     float:left;
 }
+
+/* Toggle Styles */
+
+#wrapper {
+    position: relative;
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+
+    font-size:20px;
+
+
+}
+
+#sidebar-wrapper.toggled {
+    width: 350px;
+}
+
+#sidebar-wrapper {
+    z-index: 1000;
+    position: fixed;
+    width: 0;
+    height: 50%;
+    bottom: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    background: #aaaaaa;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+
+
+
+#page-content-wrapper {
+    width: 100%;
+    position: relative;
+    padding: 15px;
+}
+
+
+/*Side bar*******************/
+/* Sidebar Styles */
+
+.sidebar-nav {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 18px;
+    color:white;
+}
+
+.sidebar-nav li {
+    line-height: 40px;
+}
+
+.sidebar-nav tr{
+    line-height: 40px;
+
+}
+.sidebar-nav td{
+    width:40%
+}
+.sidebar-nav button{
+    margin-top: 20px;
+}
+.sidebar-nav li a {
+    display: block;
+    text-decoration: none;
+    color: #999999;
+}
+
+.sidebar-nav li a:hover {
+    text-decoration: none;
+    color: #fff;
+    background: rgba(255,255,255,0.2);
+}
+
+.sidebar-nav li a:active,
+.sidebar-nav li a:focus {
+    text-decoration: none;
+}
+.sidebar-nav input{
+    color: #6E7B8B;
+}
+.customHr {
+    width: 100%;
+    font-size: 1px;
+    color: #fefff3;
+     height: 4px;
+
+    background-color: grey;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+
+/**restruct settings menu*/
+#menu-toggle{
+    position: fixed;
+    z-index: 100;
+    background-color: #6E7B8B;
+    bottom: 0;
+
+}
+.glyphicon {
+    font-size: 50px;
+    color: #ffffff;
+}
+
+/**content***/
+
+/**draw panel*/
+
+#draw-panel{
+    position: relative;
+    display: block;
+}
+
+#geo-search-result-panel
+{
+    position: relative;
+    display: block;
+
+}
+
+#geo-search-result-panel table
+{
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 50%;
+}
+#geo-search-result-panel table td, #geo-search-result-panel table tr
+{
+    border: 2px solid  #ddd;
+    padding: 5px;
+}
+#geo-search-result-panel table tr:nth-child(even)
+{
+background-color: #aaaaaa;
+}
+#geo-search-result-panel table tr:hover {background-color: #ddd;}
+
