@@ -1,6 +1,5 @@
 // http://blog.thomsonreuters.com/index.php/mobile-patent-suits-graphic-of-the-day/
 
-
 var socket = io();
 
 /*constructor: d3 link graph***********************************************/
@@ -32,7 +31,7 @@ var FileLinkMap = function (options) {
     var mapSize = 0;
 
     var bubbleMap = {};
-    bubbleMap.nodesArr = [];
+    bubbleMap.nodesArr =[];
 
     function packNodesArr(links, coords) {
         var nodes = {};
@@ -74,27 +73,26 @@ var FileLinkMap = function (options) {
 
         /*search for coordinates in coordinate array by url*/
         function getCoord(url) {
-            for (let i = 0; i < coords.length; i++) {
+            for(let i = 0; i < coords.length; i++){
                 let coord = coords[i];
-                //   console.log("url in packed coords+ " +coord.url);
+              //   console.log("url in packed coords+ " +coord.url);
                 //console.log("coord in packed coords+ " +JSON.stringify(coord.coord));
 
-                if (coord.url == url) {
-                    return coord.coord;
+                if(coord.url == url){
+                   return coord.coord;
                 }
             }
 
             return null;
         }
-
         // Compute the distinct nodes from the links.
         links.forEach(function (link) {
 
-            if (nodes[link.source] != null) {
+             if (nodes[link.source] != null) {
                 nodes[link.source].count = nodes[link.source].count + 1;
                 console.log("++");
             }
-            if (nodes[link.target] != null) {
+             if (nodes[link.target] != null) {
                 nodes[link.target].count = nodes[link.target].count + 1;
                 console.log("++");
 
@@ -105,7 +103,9 @@ var FileLinkMap = function (options) {
 
                     name: getSimpleName(link.source),
                     domain: getDomain(link.source),
-                    count: 0
+                    count: 0,
+                    coord : getCoord(link.source)
+
                 });
 
             if (nodes[link.target]) {
@@ -117,6 +117,8 @@ var FileLinkMap = function (options) {
                     domain: getDomain(link.target),
                     count: 0
                     , level: parseInt(link.level) + 1
+                    ,                //add to node attri: geo coordinates
+                    coord : getCoord(link.target)
 
                 });
 
@@ -138,8 +140,7 @@ var FileLinkMap = function (options) {
                 {
                     nodes[URI].level = 0;
                 }
-                //add to node attri: geo coordinates
-                nodes[URI].coord = getCoord(URI);
+
                 nodesArr.push(nodes[URI]);
                 console.log("packed node: " + JSON.stringify(nodes[URI]))
                 //console.log("count" + nodes[attr].count);
@@ -149,7 +150,7 @@ var FileLinkMap = function (options) {
     }
 
     function setBodyS(node) {
-        return -200;
+        return -150 ;
 
         //return charge;
     }
@@ -157,10 +158,10 @@ var FileLinkMap = function (options) {
     function setD(link) {
         console.log(link.source.count);
         var nodeNThre = 5
-        if (link.source.count > nodeNThre || link.target.count > nodeNThre) {
+        if(link.source.count > nodeNThre || link.target.count > nodeNThre){
             return 100;
         }
-        return 50;
+        return 1;
     }
 
     /**
@@ -209,12 +210,10 @@ var FileLinkMap = function (options) {
         .attr("width", width)
         .attr("height", height);
     var container = svg.append("g");
-    var gP = container.append("g").attr("class", "pathsg");
-    ;
+    var gP = container.append("g").attr("class", "pathsg");;
     var gN = container.append("g").attr("class", "nodesg");
 
-    var gT = container.append("g").attr("class", "textsg");
-    ;
+    var gT = container.append("g").attr("class", "textsg");;
 
     function clear() {
         g.selectAll("line").data([]).exit().remove();
@@ -222,8 +221,8 @@ var FileLinkMap = function (options) {
         g.selectAll("text").data([]).exit().remove();
     }
 
-    bubbleMap.update = function (links, coords) {
-        bubbleMap.nodesArr = packNodesArr(links, coords);
+    bubbleMap.update = function(links, coords) {
+         bubbleMap.nodesArr = packNodesArr(links, coords);
 
         //set force simulation
         var simulation = d3.forceSimulation()
@@ -241,7 +240,7 @@ var FileLinkMap = function (options) {
 
         path.enter().append("line")
             .attr("class", function (d) {
-                console.log("@@@@@@@@@@@@draw link : " + d.source.name + '--------' + d.target.name);
+                console.log("@@@@@@@@@@@@draw link : "+d.source.name+'--------'+d.target.name);
 
                 return "link " + "licensing";
             })
@@ -250,24 +249,28 @@ var FileLinkMap = function (options) {
         // path.exit().remove();
         path = gP.selectAll("line");
 
+        console.log(JSON.stringify(bubbleMap.nodesArr))
         var circle = gN.selectAll("a.cir") //node bubbles
             .data(bubbleMap.nodesArr, function (d) {
 
-                return d.domain + d.name;
+                return d.url;
             });
 
         circle.exit().remove();
+        console.log(circle.enter());
 
         circle.enter().append("a")
             .attr('class', 'cir')
             //.append("a")
             .attr("xlink:href", function (d) {
-                console.log("@@@@@@@@@@@@draw node: " + d.name);
+                console.log("@@@@@@@@@@@@draw node: "+d.name);
                 return d.url;
             })
 
             .append("circle")
             .attr("id", function (d) {
+                console.log("!!!!!!!!!!!!!!")
+                console.log(d);
                 return d.name;
             })
             .attr("r", nodeR)
@@ -427,19 +430,23 @@ var FileLinkMap = function (options) {
                 });
 
             circle
-                .attr("x", function (d) {
-                    if (d === undefined) {
+                .attr("x", function (d, i) {
+
+                    if(i===2) {
+                    //    console.log("!!!!!!!!!!!!!!!!!!!!!!!" + d.fx + "!!!!" + d.x)
+                    }
+                        if (d === undefined) {
                         return 0;
                     }
-                    d.fx = d.x;
-                    return d.x;
+                   d.fx=d.x;
+                    return d.fx;
                 })
                 .attr("y", function (d) {
                     if (d === undefined) {
                         return 0;
                     }
-                    d.fy = d.y;
-                    return d.y;
+                    d.fy=d.y;
+                    return d.fy;
                 });
 
             circleDraw
@@ -447,23 +454,23 @@ var FileLinkMap = function (options) {
                     if (d === undefined) {
                         return 0;
                     }
-                    d.fx = d.x;
-                    return d.x;
+                    d.fx=d.x;
+                    return d.fx;
                 })
                 .attr("cy", function (d) {
                     if (d === undefined) {
                         return 0;
                     }
-                    d.fy = d.y;
+                    d.fy=d.y;
 
-                    return d.y;
+                    return d.fy;
                 });
             text
                 .attr("x", function (d) {
                     if (d === undefined) {
                         return 0;
                     }
-                    d.fx = d.x;
+                    d.fx=d.x;
 
                     return d.x;
                 })
@@ -471,7 +478,7 @@ var FileLinkMap = function (options) {
                     if (d === undefined) {
                         return 0;
                     }
-                    d.fy = d.y;
+                    d.fy=d.y;
 
                     return d.y;
                 });
@@ -480,6 +487,7 @@ var FileLinkMap = function (options) {
 
         function dragstarted(d) {
             if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            console.log("DRag")
             d.fx = d.x;
             d.fy = d.y;
         }
@@ -487,12 +495,15 @@ var FileLinkMap = function (options) {
         function dragged(d) {
             d.fx = d3.event.x;
             d.fy = d3.event.y;
+
+            d.x = d3.event.x;
+            d.y = d3.event.y;
         }
 
         function dragended(d) {
             if (!d3.event.active) simulation.alphaTarget(0);
-            // d.fx = null;
-            // d.fy = null;
+            //d.fx = null;
+            //d.fy = null;
         }
 
         function handleMouseOver(nodeCircle, dCircle) {
@@ -500,8 +511,8 @@ var FileLinkMap = function (options) {
             gP.selectAll("line")
                 .style("stroke", highlightPath);
 
-            nodeCircle.style("stroke-width", "6px");
-            nodeCircle.style("stroke", "#fff");
+            nodeCircle.style("stroke-width","6px");
+            nodeCircle.style("stroke","#fff");
 
             function highlightPath(dLink) {
                 // console.log("source: "+JSON.stringify(dLink.source)+"  target: "+ JSON.stringify(dLink.target) +" node name: "+dCircle.name);
@@ -520,46 +531,26 @@ var FileLinkMap = function (options) {
             // console.log("change back");
 
             gP.selectAll("line").style("stroke", "#666");
-            nodeCircle.style("stroke-width", "4px");
-            nodeCircle.style("stroke", "#666");
+            nodeCircle.style("stroke-width","4px");
+            nodeCircle.style("stroke","#666");
 
         }
-
         bubbleMap.defaultOpa();
         /*freeze**/
+
+
         setTimeout(function () {
             console.log("Stop moving!")
-            var node = svg.selectAll("circle");
-            /**
-             circle.attr("fx", function (d) {
 
-                return d.x;
-            }).attr("fy", function (d) {
-                return d.y;
-
-            });
-             circleDraw.attr("fx", function (d) {
-
-                return d.x;
-            }).attr("fy", function (d) {
-                return d.y;
-
-            });
-             text.attr("fx", function (d) {
-
-                return d.x;
-            }).attr("fy", function (d) {
-                return d.y;
-
-            });
-             **/
             simulation.stop();
+
+
             simulation
-                .nodes(bubbleMap.nodesArr)
+                .nodes( bubbleMap.nodesArr)
                 .on("tick", newTick);
 
         }, 1000)
-        svg.call(d3.zoom()
+svg.call(d3.zoom()
             .scaleExtent([1 / 2, 8])
             .on("zoom", zoomed));
 
@@ -575,32 +566,32 @@ var FileLinkMap = function (options) {
     bubbleMap.updateByCoord = function updateByCoord(center, radius) {
 
         var resultArr = [];
-        gN.selectAll("a.cir").select('circle.nodes').attr("opacity", function (d) {
-            if (d.coord) {
-                console.log("@@@@@@@@@@@in d3 node dta: " + JSON.stringify(d.coord))
-                let dx = d.coord.x - center.x;
-                let dy = d.coord.y - center.y;
-                let eps = Number.EPSILON;
-                //console.log(radius * radius - dx * dx - dy * dy);
-                if (radius * radius - dx * dx - dy * dy > eps) {
-                    resultArr.push(d.name);
-                    console.log("!!!!!!!!!!" + d.name)
-                    return 1;
-                } else {
+        gN.selectAll("a.cir").select('circle.nodes').attr("opacity",function(d) {
+                if(d.coord) {
+                    console.log("@@@@@@@@@@@in d3 node dta: " + JSON.stringify(d.coord))
+                    let dx = d.coord.x - center.x;
+                    let dy = d.coord.y - center.y;
+                    let eps = Number.EPSILON;
+                      //console.log(radius * radius - dx * dx - dy * dy);
+                      if(radius * radius - dx * dx - dy * dy > eps){
+                        resultArr.push(d.name);
+                        console.log("!!!!!!!!!!"+d.name)
+                          return 1;
+                      } else{
+                          return 0.25;
+                      }
+                } else {//This node does not have coordinates
+                   // console.log(" node: "+d.url+" does not have coordinates");
                     return 0.25;
                 }
-            } else {//This node does not have coordinates
-                // console.log(" node: "+d.url+" does not have coordinates");
-                return 0.25;
-            }
-        });
+            });
 
 
         //TODO: deal with path
 
         // deal with label
-        gT.selectAll("text.nodeTag").attr("visibility", function (d) {
-            if (d.coord) {
+        gT.selectAll("text.nodeTag").attr("visibility",function(d) {
+            if(d.coord) {
                 console.log("@@@@@@@@@@@in d3 node dta: " + JSON.stringify(d.coord))
                 let dx = d.coord.x - center.x;
                 let dy = d.coord.y - center.y;
@@ -613,19 +604,19 @@ var FileLinkMap = function (options) {
             }
         });
 
-        return resultArr;
+return resultArr;
     }
 
     bubbleMap.defaultOpa = function () {
-        gN.selectAll("a.cir").select('circle.nodes').attr("opacity", function (d) {
-            return 1;
+        gN.selectAll("a.cir").select('circle.nodes').attr("opacity",function(d) {
+        return 1;
         })
     };
 
     var data = JSON.parse($("#data").val());//extract link data from web page
     var links = data.connections;
     var coords = data.geoCoords;
-    console.log("Extract from initial data: coords: " + coords);
+    console.log("Extract from initial data: coords: "+ coords);
     bubbleMap.update(links, coords);
     return bubbleMap;
 
@@ -640,9 +631,9 @@ $(window).load(function () {// when web dom ready
 
     /*init d3 map*/
     var map = FileLinkMap({});
-    let btn = $("#menu-toggle");
+let btn = $("#menu-toggle");
 
-    btn.click(function (e) {
+    btn.click(function(e) {
         console.log("btn clicked")
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -658,15 +649,19 @@ $(window).load(function () {// when web dom ready
     });
 
 
+
+
+
+
     /*choice panel*************************************************/
-    /*button : show Import **/
+        /*button : show Import **/
     $("#checkShowImport").change(function () {
         if ($('#checkShowImport').prop('checked')) {
             disableThenEnableAfterTimeout();
 
             //TODO:ajax, only change data, but with d3...how? should use angular instead?
             $.ajax({
-                url: url + '/includeImport',
+                url: '/visualize/includeImport',
                 type: 'GET',
 
                 statusCode: {
@@ -674,6 +669,7 @@ $(window).load(function () {// when web dom ready
                         let links = data.connections;
                         let coords = data.geoCoords;
                         console.log('ajax successful!\n');
+
 
                         console.log(JSON.stringify(links));
                         if (LinkRightFormat(links)) {
@@ -686,298 +682,301 @@ $(window).load(function () {// when web dom ready
 
                             }
                             map.update(links, coords);
+
+
                         }
+
                     }
+                },
+                error: function (err) {
+                    console.log(err);
+
+
                 }
             });
-        } else{
-            location.reload(true);
+
+        } else {
+            window.location.href = '/visualize';
+        }
+
+
+    });
+        /*button : show Service Only **/
+    $("#checkShowServiceOnly").change(function () {
+        if ($('#checkShowServiceOnly').prop('checked')) {
+            disableThenEnableAfterTimeout();
+            //TODO:ajax, only change data, but with d3...how? should use angular instead?
+            $.ajax({
+                url: '/visualize/showServiceOnly',
+                type: 'GET',
+
+                statusCode: {
+                    200: function (data) {
+
+                        let links = data.connections;
+                        let coords = data.geoCoords;
+
+                        console.log('ajax successful!\n');
+
+
+                        //     console.log(JSON.stringify(links));
+                        if (LinkRightFormat(links)) {
+                            clearSelectBar();
+                            map.update(links, coords);
+
+
+                        }
+
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+
+
+                }
+            });
+
+        } else {
+            window.location.href = '/visualize';
+        }
+    })
+        /*button : show Default **/
+    $("#checkdefault").change(function () {
+        if ($('#checkdefault').prop('checked')) {
+
+            window.location.href = '/visualize'; //return to default
 
         }
     });
-            /*button : show Service Only **/
-            $("#checkShowServiceOnly").change(function () {
-                if ($('#checkShowServiceOnly').prop('checked')) {
-                    disableThenEnableAfterTimeout();
-                    //TODO:ajax, only change data, but with d3...how? should use angular instead?
-                    $.ajax({
-                        url: url + '/showServiceOnly',
-                        type: 'GET',
+        /*check box back to default when unload*/
+    $(window).unload(function () {
+        console.log("unload");
 
-                        statusCode: {
-                            200: function (data) {
-
-                                let links = data.connections;
-                                let coords = data.geoCoords;
-
-                                console.log('ajax successful!\n');
-
-
-                                //     console.log(JSON.stringify(links));
-                                if (LinkRightFormat(links)) {
-                                    clearSelectBar();
-                                    map.update(links, coords);
-
-
-                                }
-
-                            }
-                        },
-                        error: function (err) {
-                            console.log(err);
-
-
-                        }
-                    });
-
-                } else {
-                    // window.location.href = '/visualize';
-                    location.reload(true);
-                }
-            })
-            /*button : show Default **/
-            $("#checkdefault").change(function () {
-                if ($('#checkdefault').prop('checked')) {
-
-                    // window.location.href = '/visualize'; //return to default
-                    location.reload(true);
-                }
-            });
-            /*check box back to default when unload*/
-            $(window).unload(function () {
-                console.log("unload");
-
-                if ($("#checkShowImport").prop('checked')) {
-                    $("#checkShowImport").prop('checked', false);
-                }
-                if ($("#checkShowServiceOnly").prop('checked')) {
-                    $("#checkShowServiceOnly").prop('checked', false);
-                }
-            });
-            /*utility functions*********/
-            /**
-             * utility function, check if link is of correct format
-             * @param links
-             * @returns {boolean}
-             * @constructor
-             */
-            function LinkRightFormat(links) {
-                if (!links || links.length < 1) {
-                    return false;
-                }
-                for (let link of links) {
-                    if (!link.hasOwnProperty("target") || !link.hasOwnProperty("source")) {
-                        return false;
-                    }
-
-                }
-                return true;
-            }
-
-            /**
-             * Utility function: disable option buttons
-             * @param disable
-             * @returns {boolean}
-             * @constructor
-             */
-            function DisableOptionButton(disable) {
-                //  console.log(disable);
-
-                if ($("#checkShowImport").prop("disabled") === !disable && $("#checkShowServiceOnly").prop("disabled") === !disable) {
-                    $("#checkShowImport").prop("disabled", disable);
-                    $("#checkShowServiceOnly").prop("disabled", disable);
-                    console.log("now :" + (disable === true ? "disable" : "enable"));
-                    return true;
-                }
+        if ($("#checkShowImport").prop('checked')) {
+            $("#checkShowImport").prop('checked', false);
+        }
+        if ($("#checkShowServiceOnly").prop('checked')) {
+            $("#checkShowServiceOnly").prop('checked', false);
+        }
+    });
+        /*utility functions*********/
+    /**
+     * utility function, check if link is of correct format
+     * @param links
+     * @returns {boolean}
+     * @constructor
+     */
+    function LinkRightFormat(links) {
+        if (!links || links.length < 1) {
+            return false;
+        }
+        for (let link of links) {
+            if (!link.hasOwnProperty("target") || !link.hasOwnProperty("source")) {
                 return false;
             }
 
-            /**
-             * utility function : disable all buttons then enable all after timeout
-             */
-            function disableThenEnableAfterTimeout() {
-                if (DisableOptionButton(true)) {
+        }
+        return true;
+    }
+    /**
+     * Utility function: disable option buttons
+     * @param disable
+     * @returns {boolean}
+     * @constructor
+     */
+    function DisableOptionButton(disable) {
+        //  console.log(disable);
 
-                    setTimeout(function () {
-                        DisableOptionButton(false);
-                    }, 5000);
-                }
+        if ($("#checkShowImport").prop("disabled") === !disable && $("#checkShowServiceOnly").prop("disabled") === !disable) {
+            $("#checkShowImport").prop("disabled", disable);
+            $("#checkShowServiceOnly").prop("disabled", disable);
+            console.log("now :" + (disable === true ? "disable" : "enable"));
+            return true;
+        }
+        return false;
+    }
+    /**
+     * utility function : disable all buttons then enable all after timeout
+     */
+    function disableThenEnableAfterTimeout() {
+        if (DisableOptionButton(true)) {
 
+            setTimeout(function () {
+                DisableOptionButton(false);
+            }, 5000);
+        }
+
+    }
+    /*END  choice panel***************************************************/
+
+    /*GEO Search Panel***************************************************************/
+
+    function updateSelectBar() {
+        //initiate select with data
+        clearSelectBar();
+        map.nodesArr.forEach(function (item) {    // for each in data list
+            if(item.coord) {        //only do this if has a coord'
+                $("#device-select").append("<option value='" + item.coord.x + "/" + item.coord.y + "'>" + item.name + "</option>");
             }
+        });
+    }
 
-            /*END  choice panel***************************************************/
+    function clearSelectBar() {
+        $("#device-select").html("");
+    }
 
-            /*GEO Search Panel***************************************************************/
-
-            function updateSelectBar() {
-                //initiate select with data
-                clearSelectBar();
-                map.nodesArr.forEach(function (item) {    // for each in data list
-                    if (item.coord) {        //only do this if has a coord'
-                        $("#device-select").append("<option value='" + item.coord.x + "/" + item.coord.y + "'>" + item.name + "</option>");
-                    }
-                });
-            }
-
-            function clearSelectBar() {
-                $("#device-select").html("");
-            }
-
-            updateSelectBar();
+    updateSelectBar();
 
 
-            //TODO: check cross senario:
-            //TODO: disable geo-search panel when show agents only is checked?
+   //TODO: check cross senario:
+   //TODO: disable geo-search panel when show agents only is checked?
 
-            //when choose from select, update coord to x,y input
-            $('#device-select').on('change', function () {
-                // alert( this.value );
-                let coordStr = $("select#device-select option:selected").val();
-                let coordArr = coordStr.split("/");
-                $("#search-center-x").val(coordArr[0]);
-                $("#search-center-y").val(coordArr[1]);
-            });
+    //when choose from select, update coord to x,y input
+    $('#device-select').on('change', function() {
+       // alert( this.value );
+        let coordStr = $("select#device-select option:selected").val();
+        let coordArr = coordStr.split("/");
+        $("#search-center-x").val(coordArr[0]);
+        $("#search-center-y").val(coordArr[1]);
+    });
 
 
-            //when user clicked submit
-            $("#search-submit").click(function () {
-                //retreive search center and radius
-                let x = parseFloat($("#search-center-x").val());
-                let y = parseFloat($("#search-center-y").val());
+    //when user clicked submit
+    $("#search-submit").click(function () {
+        //retreive search center and radius
+        let x = parseFloat($("#search-center-x").val());
+        let y = parseFloat($("#search-center-y").val());
 
-                // check validity, display err msg
-                let radius = parseFloat($("#search-radius").val());
-                if (x === null || y === null || radius === null || isNaN(x) || isNaN(y) || isNaN(radius)) {
-                    displayMsg("Input parameters are not number", "danger");
-                    return;
-                }
-                //Todo: or not to do. x,y,radius must be numbers .range checking also? min radius : 0.0000001
-                /**
-                 //truncate radius to 7 digits, show warning
-                 if(decimalPlaces(x) > 7){
+        // check validity, display err msg
+        let radius = parseFloat($("#search-radius").val());
+        if(x===null || y===null || radius===null || isNaN(x) || isNaN(y) || isNaN(radius) ){
+            displayMsg("Input parameters are not number", "danger");
+            return;
+        }
+        //Todo: or not to do. x,y,radius must be numbers .range checking also? min radius : 0.0000001
+        /**
+        //truncate radius to 7 digits, show warning
+        if(decimalPlaces(x) > 7){
             x= x.toFixed(7);
             $("#search-center-x").val(x);
             displayMsg("Numbers beyond 7 decimal places will be truncated");
         }
-                 if(decimalPlaces(y) > 7){
+        if(decimalPlaces(y) > 7){
             y= x.toFixed(7);
             $("#search-center-y").val(y);
             displayMsg("Numbers beyond 7 decimal places will be truncated");
         }
-                 if(decimalPlaces(y) > 7){
+        if(decimalPlaces(y) > 7){
             radius = radius.toFixed(7);
             $("#search-center-y").val(radius);
             displayMsg("Numbers beyond 7 decimal places will be truncated");
         }
-                 **/
+        **/
 
-                console.log("CX:" + x + " Y:" + y + "  R:" + radius);
-                //pack x, y into object
-                let resultArr = map.updateByCoord({x, y}, radius);
+        console.log("CX:" + x +" Y:" + y+ "  R:" + radius);
+        //pack x, y into object
+        let resultArr = map.updateByCoord({x, y}, radius);
 
-                console.log(resultArr.toString())
+        console.log(resultArr.toString())
 
-                //check if result panel is show
-                if ($("#geo-search-result-panel").css('display').toLowerCase() == 'none') {
-                    $("#geo-search-result-panel").css({"display": "block"});//show the result panel
-
-                }
-                //clear previous results, if any
-                $("#result-table-wrapper").html("");
-                // /append a result table
-                var template = "<table>";
-
-                resultArr.forEach(function (item) {
-                    template += "<tr><td>" + item + "</td></tr>";
-                });
-                template += "</table>";
-                console.log(template);
-                $("#result-table-wrapper").append(template);
-
-                //todo : append a map
-
-                displayMsg("Search for device near center point :(" + x + " ," + y + ") with radius : " + radius, "success");
-
-                function decimalPlaces(num) {
-                    var match = ('' + num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
-                    if (!match) {
-                        return 0;
-                    }
-                    return Math.max(
-                        0,
-                        // Number of digits right of decimal point.
-                        (match[1] ? match[1].length : 0)
-                        // Adjust for scientific notation.
-                        - (match[2] ? +match[2] : 0));
-                }
-
-            });
-
-            /*END GEO Search Panel***************************************************************/
-
-            /*Err Msg Bar************************************************************************/
-            var template = function (msg, type) {
-
-                return "<p class='alert alert-" + type + "'>" + msg + "</p>";
-            };
-
-            /**
-             *
-             * @param msg
-             * @param type  [success/info/warning/danger]
-             */
-            function displayMsg(msg, type) {
-
-                $("#err-msg-panel").html("");
-                $("#err-msg-panel").append(template(msg, type));
-
-            }
-
-
-            /*End Err Msg Bar*******************************************************************/
-
-            /*socket**************************************************************/
-            //blink any updated data
-            let blinkTimer;
-            let preTime = Date.now();
-            socket.on('update', function (data) {
-                //check if time less than 1s, if true, do not do anything
-                if (Date.now() - preTime > 1000) {
-                    preTime = Date.now();
-                    console.log("!!!!!!!!!dataUpdate");
-                    let parsedData = JSON.parse(data);
-                    let name = parsedData.name;
-                    console.log(name);
-                    //search name among nodes to grab the correct one
-                    // console.log($('circle'));
-                    // console.log($('#FH-01.owl'));
-                    // console.log($("circle[id='FH-01.owl']"));
-
-                    let node = $("circle[id='FH-01.owl']");
-
-                    let oriColor = node.css("fill");
-
-                    let orSize = node.attr("r");
-                    //console.log($('circle#FH-01.owl'));
-                    console.log(orSize);
-
-                    node.animate({'r': 20}, 500)
-                        .css({'fill': '#FFFC94', 'transition': 'fill 0.5s'})
-                        .css({'stroke': '#FFF700', 'transition': 'stroke 0.5s'});
-                    ;
-                    blinkTimer = setTimeout(function () {
-                        node.animate({'r': orSize}, 500)
-                            .css({'stroke': '#000000', 'transition': 'stroke 0.5s'})
-                            .css({'fill': oriColor, 'transition': 'fill 0.5s'});
-
-                    }, 500);//on 0.5s, back to normal
-
-                }
-            });
-            /*END socket **********************************************************/
+        //check if result panel is show
+        if( $("#geo-search-result-panel").css('display').toLowerCase() == 'none') {
+            $("#geo-search-result-panel").css({"display" :"block"});//show the result panel
 
         }
-        );
+        //clear previous results, if any
+        $("#result-table-wrapper").html("");
+        // /append a result table
+        var template = "<table>";
+
+        resultArr.forEach(function (item) {
+            template+="<tr><td>"+item+"</td></tr>";
+        });
+        template+="</table>";
+        console.log(template);
+        $("#result-table-wrapper").append(template);
+
+        //todo : append a map
+
+        displayMsg("Search for device near center point :("+x+" ,"+y+") with radius : "+radius, "success");
+
+        function decimalPlaces(num) {
+            var match = (''+num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+            if (!match) { return 0; }
+            return Math.max(
+                0,
+                // Number of digits right of decimal point.
+                (match[1] ? match[1].length : 0)
+                // Adjust for scientific notation.
+                - (match[2] ? +match[2] : 0));
+        }
+
+    });
+
+    /*END GEO Search Panel***************************************************************/
+
+    /*Err Msg Bar************************************************************************/
+    var template = function (msg, type){
+
+        return "<p class='alert alert-"+type+"'>"+msg+"</p>";
+    };
+
+    /**
+     *
+     * @param msg
+     * @param type  [success/info/warning/danger]
+     */
+    function displayMsg(msg,type) {
+
+        $("#err-msg-panel").html("");
+        $("#err-msg-panel").append(template(msg, type));
+
+    }
+
+
+    /*End Err Msg Bar*******************************************************************/
+
+    /*socket**************************************************************/
+    //blink any updated data
+    let blinkTimer;
+    let preTime = Date.now();
+    socket.on('update', function (data) {
+        //check if time less than 1s, if true, do not do anything
+        if (Date.now() - preTime > 1000) {
+            preTime = Date.now();
+            console.log("!!!!!!!!!dataUpdate");
+            let parsedData = JSON.parse(data);
+            let name = parsedData.name;
+            console.log(name);
+            //search name among nodes to grab the correct one
+            // console.log($('circle'));
+            // console.log($('#FH-01.owl'));
+            // console.log($("circle[id='FH-01.owl']"));
+
+            let node = $("circle[id='FH-01.owl']");
+
+            let oriColor = node.css("fill");
+
+            let orSize = node.attr("r");
+            //console.log($('circle#FH-01.owl'));
+            console.log(orSize);
+
+            node.animate({'r': 20}, 500)
+                .css({'fill': '#FFFC94', 'transition': 'fill 0.5s'})
+                .css({'stroke': '#FFF700', 'transition': 'stroke 0.5s'});
+            ;
+            blinkTimer = setTimeout(function () {
+                node.animate({'r': orSize}, 500)
+                    .css({'stroke': '#000000', 'transition': 'stroke 0.5s'})
+                    .css({'fill': oriColor, 'transition': 'fill 0.5s'});
+
+            }, 500);//on 0.5s, back to normal
+
+        }
+    });
+    /*END socket **********************************************************/
+
+});
 /*END DOM LOGIC**************************************************************/
 
 

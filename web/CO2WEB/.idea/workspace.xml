@@ -17,26 +17,6 @@
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
   </component>
-  <component name="DockManager">
-    <window id="1">
-      <content type="file-editors">
-        <state>
-          <leaf>
-            <file leaf-file-name="visualizeRouterFact.js" pinned="false" current-in-tab="true">
-              <entry file="file://$PROJECT_DIR$/routes/visualizeRouterFact.js">
-                <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="792">
-                    <caret line="64" column="0" lean-forward="false" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
-                    <folding />
-                  </state>
-                </provider>
-              </entry>
-            </file>
-          </leaf>
-        </state>
-      </content>
-    </window>
-  </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
     <favorites_list name="CO2WEB" />
@@ -46,8 +26,8 @@
       <file leaf-file-name="config.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/config.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="264">
-              <caret line="12" column="16" lean-forward="false" selection-start-line="12" selection-start-column="16" selection-end-line="12" selection-end-column="16" />
+            <state relative-caret-position="242">
+              <caret line="11" column="16" lean-forward="false" selection-start-line="11" selection-start-column="16" selection-end-line="11" selection-end-column="16" />
               <folding />
             </state>
           </provider>
@@ -56,50 +36,10 @@
       <file leaf-file-name="fileConnection.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/util/fileConnection.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1232">
-              <caret line="248" column="28" lean-forward="false" selection-start-line="248" selection-start-column="28" selection-end-line="248" selection-end-column="28" />
+            <state relative-caret-position="421">
+              <caret line="252" column="23" lean-forward="false" selection-start-line="252" selection-start-column="18" selection-end-line="252" selection-end-column="23" />
               <folding>
-                <marker date="1499405053086" expanded="true" signature="6453:6689" ph="/** return all services defined in the owl, service definition : contains &quot;http://www.theworldavatar.com/Service.owl&quot; in rdf:type ...*/" />
-                <marker date="1499405053086" expanded="true" signature="6720:7519" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="6736:6759" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="7363:7487" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="7580:12632" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="7688:8196" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="7924:7962" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="8023:8187" ph="//..." />
-                <marker date="1499405053086" expanded="true" signature="8207:8241" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="8521:8595" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="8673:9156" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="8694:9051" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="8796:9012" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="9064:9143" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="9194:9445" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="9543:9855" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="9681:9837" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="9862:10095" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="9912:10078" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="10123:10189" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="10355:11807" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="10385:10575" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="10891:11511" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="11039:11139" ph="//..." />
-                <marker date="1499405053086" expanded="true" signature="11787:11807" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="11861:12617" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="11988:12601" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="12050:12222" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="12276:12465" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="12685:12884" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="12733:12857" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="12776:12847" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="12890:13054" ph="/** @deprecated ...*/" />
-                <marker date="1499405053086" expanded="true" signature="13059:14543" ph="/** function walkThroughFolder2GetConns( callback) { ...*/" />
-                <marker date="1499405053086" expanded="true" signature="14548:16775" ph="/** function readConnectionsFromOwl(file, filepath, callback) { ...*/" />
-                <marker date="1499405053086" expanded="true" signature="16780:16922" ph="/** function readConnectionInChildren(iriList, callback){ ...*/" />
-                <marker date="1499405053086" expanded="true" signature="16927:17002" ph="/** @deprecated ...*/" />
-                <marker date="1499405053086" expanded="true" signature="17007:17910" ph="/** function readConnectionInSingleChild(iri, callback){ ...*/" />
-                <marker date="1499405053086" expanded="true" signature="17916:18121" ph="/** Utility function: Process href to be actual file uri ...*/" />
-                <marker date="1499405053086" expanded="true" signature="18153:18360" ph="{...}" />
-                <marker date="1499405053086" expanded="true" signature="18188:18333" ph="{...}" />
+                <marker date="1499406568980" expanded="true" signature="1984:2217" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -121,9 +61,7 @@
             <state relative-caret-position="22">
               <caret line="1" column="20" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
               <folding>
-                <marker date="1499404754102" expanded="true" signature="3138:4037" ph="{...}" />
-                <marker date="1499404754102" expanded="true" signature="3205:3281" ph="{...}" />
-                <marker date="1499404754102" expanded="true" signature="3685:3998" ph="{...}" />
+                <marker date="1499406568966" expanded="true" signature="3024:3923" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -152,7 +90,7 @@
       <file leaf-file-name="visualize.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/routes/visualize.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="638">
+            <state relative-caret-position="1166">
               <caret line="53" column="3" lean-forward="true" selection-start-line="53" selection-start-column="3" selection-end-line="53" selection-end-column="3" />
               <folding />
             </state>
@@ -162,9 +100,11 @@
       <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="352">
-              <caret line="58" column="36" lean-forward="false" selection-start-line="58" selection-start-column="36" selection-end-line="58" selection-end-column="36" />
-              <folding />
+            <state relative-caret-position="176">
+              <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+              <folding>
+                <marker date="1499406568970" expanded="true" signature="2684:2773" ph="{...}" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -182,11 +122,12 @@
       <file leaf-file-name="d3Bubble.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/public/javascripts/d3Bubble.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="44">
-              <caret line="458" column="18" lean-forward="false" selection-start-line="458" selection-start-column="18" selection-end-line="458" selection-end-column="18" />
+            <state relative-caret-position="564">
+              <caret line="492" column="9" lean-forward="true" selection-start-line="492" selection-start-column="9" selection-end-line="492" selection-end-column="9" />
               <folding>
-                <element signature="e#23278#23493#0" expanded="false" />
-                <element signature="e#23591#23946#0" expanded="false" />
+                <element signature="e#13147#13305#0" expanded="false" />
+                <element signature="e#13348#13506#0" expanded="false" />
+                <element signature="e#13549#13707#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -206,8 +147,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>biodieselPlant3</find>
-      <find>B</find>
       <find>legend</find>
       <find>strength</find>
       <find>map</find>
@@ -236,6 +175,8 @@
       <find>ajax</find>
       <find>setD</find>
       <find>drag</find>
+      <find>coord</find>
+      <find>simulation</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -313,10 +254,10 @@
     <handled-path value="$PROJECT_DIR$/node_modules" />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
+    <option name="x" value="2552" />
     <option name="y" value="-8" />
     <option name="width" value="2576" />
-    <option name="height" value="1416" />
+    <option name="height" value="1456" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -486,19 +427,19 @@
     <property name="list.type.of.created.stylesheet" value="CSS" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\Shaocong\WORK\webJPSGit\irp3-WebJPS-git\CO2WEB\public\stylesheets" />
-      <recent name="C:\Users\Shaocong\WORK\CO2WEB\testFile" />
-      <recent name="C:\Users\Shaocong\WORK\CO2WEB" />
-      <recent name="C:\Users\Shaocong\WORK\CO2WEB\public\javascripts" />
-      <recent name="C:\Users\Shaocong\WORK\CO2WEB\ROOT" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\Shaocong\WORK\webJPSGit\irp3-WebJPS-git\CO2WEB\util" />
       <recent name="C:\Users\Shaocong\WORK\webJPSGit\irp3-WebJPS-git\CO2WEB" />
       <recent name="C:\Users\Shaocong\WORK\webJPSGit\irp3-WebJPS-git\CO2WEB\TestROOT" />
       <recent name="C:\Users\Shaocong\WORK\CO2WEB\ROOT\JurongIsland" />
       <recent name="C:\Users\Shaocong\WORK\CO2WEB\test" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Shaocong\WORK\webJPSGit\irp3-WebJPS-git\CO2WEB\public\stylesheets" />
+      <recent name="C:\Users\Shaocong\WORK\CO2WEB\testFile" />
+      <recent name="C:\Users\Shaocong\WORK\CO2WEB" />
+      <recent name="C:\Users\Shaocong\WORK\CO2WEB\public\javascripts" />
+      <recent name="C:\Users\Shaocong\WORK\CO2WEB\ROOT" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -727,6 +668,8 @@
       <workItem from="1498558019387" duration="1295000" />
       <workItem from="1498615615473" duration="4503000" />
       <workItem from="1498629163070" duration="3069000" />
+      <workItem from="1499660582584" duration="1580000" />
+      <workItem from="1499740902009" duration="4931000" />
     </task>
     <servers />
   </component>
@@ -763,39 +706,29 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="236014000" />
+    <option name="totallyTimeSpent" value="242586000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="2576" height="1416" extended-state="6" />
+    <frame x="2552" y="-8" width="2576" height="1456" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30859375" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2792655" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.27913883" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.0" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3452116" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.38752785" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3452116" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30859375" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.38752785" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -918,47 +851,7 @@
         <state relative-caret-position="22">
           <caret line="80" column="92" lean-forward="false" selection-start-line="80" selection-start-column="92" selection-end-line="80" selection-end-column="92" />
           <folding>
-            <marker date="1499405053086" expanded="true" signature="6453:6689" ph="/** return all services defined in the owl, service definition : contains &quot;http://www.theworldavatar.com/Service.owl&quot; in rdf:type ...*/" />
-            <marker date="1499405053086" expanded="true" signature="6720:7519" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="6736:6759" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="7363:7487" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="7580:12632" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="7688:8196" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="7924:7962" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="8023:8187" ph="//..." />
-            <marker date="1499405053086" expanded="true" signature="8207:8241" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="8521:8595" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="8673:9156" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="8694:9051" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="8796:9012" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="9064:9143" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="9194:9445" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="9543:9855" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="9681:9837" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="9862:10095" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="9912:10078" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="10123:10189" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="10355:11807" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="10385:10575" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="10891:11511" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="11039:11139" ph="//..." />
-            <marker date="1499405053086" expanded="true" signature="11787:11807" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="11861:12617" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="11988:12601" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="12050:12222" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="12276:12465" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="12685:12884" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="12733:12857" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="12776:12847" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="12890:13054" ph="/** @deprecated ...*/" />
-            <marker date="1499405053086" expanded="true" signature="13059:14543" ph="/** function walkThroughFolder2GetConns( callback) { ...*/" />
-            <marker date="1499405053086" expanded="true" signature="14548:16775" ph="/** function readConnectionsFromOwl(file, filepath, callback) { ...*/" />
-            <marker date="1499405053086" expanded="true" signature="16780:16922" ph="/** function readConnectionInChildren(iriList, callback){ ...*/" />
-            <marker date="1499405053086" expanded="true" signature="16927:17002" ph="/** @deprecated ...*/" />
-            <marker date="1499405053086" expanded="true" signature="17007:17910" ph="/** function readConnectionInSingleChild(iri, callback){ ...*/" />
-            <marker date="1499405053086" expanded="true" signature="17916:18121" ph="/** Utility function: Process href to be actual file uri ...*/" />
-            <marker date="1499405053086" expanded="true" signature="18153:18360" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="18188:18333" ph="{...}" />
+            <marker date="1499406568980" expanded="true" signature="1984:2217" ph="{...}" />
           </folding>
         </state>
       </provider>
@@ -1003,7 +896,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1064,13 +956,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/util/data.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="82" lean-forward="false" selection-start-line="0" selection-start-column="82" selection-end-line="0" selection-end-column="82" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/util/data.json" />
     <entry file="file://$PROJECT_DIR$/public/javascripts/bmsPlot.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="286">
@@ -1080,78 +966,10 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/routes/index.js" />
-    <entry file="file://$PROJECT_DIR$/routes/visualizeSemakau.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="44">
-          <caret line="4" column="24" lean-forward="false" selection-start-line="4" selection-start-column="24" selection-end-line="4" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/routes/visualizeJurong.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="22">
-          <caret line="1" column="24" lean-forward="false" selection-start-line="1" selection-start-column="24" selection-end-line="1" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/routes/visualizeWorld.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="44">
-          <caret line="4" column="24" lean-forward="false" selection-start-line="4" selection-start-column="24" selection-end-line="4" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/routes/visualizeSemakau.js" />
+    <entry file="file://$PROJECT_DIR$/routes/visualizeJurong.js" />
+    <entry file="file://$PROJECT_DIR$/routes/visualizeWorld.js" />
     <entry file="file://$PROJECT_DIR$/TestVisualization/visualization_test.js" />
-    <entry file="file://$PROJECT_DIR$/util/fileConnection.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1232">
-          <caret line="248" column="28" lean-forward="false" selection-start-line="248" selection-start-column="28" selection-end-line="248" selection-end-column="28" />
-          <folding>
-            <marker date="1499405053086" expanded="true" signature="6453:6689" ph="/** return all services defined in the owl, service definition : contains &quot;http://www.theworldavatar.com/Service.owl&quot; in rdf:type ...*/" />
-            <marker date="1499405053086" expanded="true" signature="6720:7519" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="6736:6759" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="7363:7487" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="7580:12632" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="7688:8196" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="7924:7962" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="8023:8187" ph="//..." />
-            <marker date="1499405053086" expanded="true" signature="8207:8241" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="8521:8595" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="8673:9156" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="8694:9051" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="8796:9012" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="9064:9143" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="9194:9445" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="9543:9855" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="9681:9837" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="9862:10095" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="9912:10078" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="10123:10189" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="10355:11807" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="10385:10575" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="10891:11511" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="11039:11139" ph="//..." />
-            <marker date="1499405053086" expanded="true" signature="11787:11807" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="11861:12617" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="11988:12601" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="12050:12222" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="12276:12465" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="12685:12884" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="12733:12857" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="12776:12847" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="12890:13054" ph="/** @deprecated ...*/" />
-            <marker date="1499405053086" expanded="true" signature="13059:14543" ph="/** function walkThroughFolder2GetConns( callback) { ...*/" />
-            <marker date="1499405053086" expanded="true" signature="14548:16775" ph="/** function readConnectionsFromOwl(file, filepath, callback) { ...*/" />
-            <marker date="1499405053086" expanded="true" signature="16780:16922" ph="/** function readConnectionInChildren(iriList, callback){ ...*/" />
-            <marker date="1499405053086" expanded="true" signature="16927:17002" ph="/** @deprecated ...*/" />
-            <marker date="1499405053086" expanded="true" signature="17007:17910" ph="/** function readConnectionInSingleChild(iri, callback){ ...*/" />
-            <marker date="1499405053086" expanded="true" signature="17916:18121" ph="/** Utility function: Process href to be actual file uri ...*/" />
-            <marker date="1499405053086" expanded="true" signature="18153:18360" ph="{...}" />
-            <marker date="1499405053086" expanded="true" signature="18188:18333" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/TestVisualization/change_data_test.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="44">
@@ -1165,9 +983,7 @@
         <state relative-caret-position="22">
           <caret line="1" column="20" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
           <folding>
-            <marker date="1499404754102" expanded="true" signature="3138:4037" ph="{...}" />
-            <marker date="1499404754102" expanded="true" signature="3205:3281" ph="{...}" />
-            <marker date="1499404754102" expanded="true" signature="3685:3998" ph="{...}" />
+            <marker date="1499406568966" expanded="true" signature="3024:3923" ph="{...}" />
           </folding>
         </state>
       </provider>
@@ -1190,22 +1006,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/config.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="12" column="16" lean-forward="false" selection-start-line="12" selection-start-column="16" selection-end-line="12" selection-end-column="16" />
+        <state relative-caret-position="242">
+          <caret line="11" column="16" lean-forward="false" selection-start-line="11" selection-start-column="16" selection-end-line="11" selection-end-column="16" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/routes/visualizeBms.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="22">
-          <caret line="3" column="43" lean-forward="false" selection-start-line="3" selection-start-column="43" selection-end-line="3" selection-end-column="43" />
-          <folding>
-            <element signature="e#0#44#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/routes/visualizeBms.js" />
     <entry file="file://$PROJECT_DIR$/TestVisualization/routes_test.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="22">
@@ -1216,35 +1023,41 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/routes/visualize.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="638">
+        <state relative-caret-position="1166">
           <caret line="53" column="3" lean-forward="true" selection-start-line="53" selection-start-column="3" selection-end-line="53" selection-end-column="3" />
           <folding />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/routes/visualizeRouterFact.js" />
     <entry file="file://$PROJECT_DIR$/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="58" column="36" lean-forward="false" selection-start-line="58" selection-start-column="36" selection-end-line="58" selection-end-column="36" />
-          <folding />
+        <state relative-caret-position="176">
+          <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+          <folding>
+            <marker date="1499406568970" expanded="true" signature="2684:2773" ph="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/routes/visualizeRouterFact.js">
+    <entry file="file://$PROJECT_DIR$/util/fileConnection.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="792">
-          <caret line="64" column="0" lean-forward="false" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="421">
+          <caret line="252" column="23" lean-forward="false" selection-start-line="252" selection-start-column="18" selection-end-line="252" selection-end-column="23" />
+          <folding>
+            <marker date="1499406568980" expanded="true" signature="1984:2217" ph="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/javascripts/d3Bubble.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="44">
-          <caret line="458" column="18" lean-forward="false" selection-start-line="458" selection-start-column="18" selection-end-line="458" selection-end-column="18" />
+        <state relative-caret-position="564">
+          <caret line="492" column="9" lean-forward="true" selection-start-line="492" selection-start-column="9" selection-end-line="492" selection-end-column="9" />
           <folding>
-            <element signature="e#23278#23493#0" expanded="false" />
-            <element signature="e#23591#23946#0" expanded="false" />
+            <element signature="e#13147#13305#0" expanded="false" />
+            <element signature="e#13348#13506#0" expanded="false" />
+            <element signature="e#13549#13707#0" expanded="false" />
           </folding>
         </state>
       </provider>
