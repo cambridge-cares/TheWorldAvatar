@@ -103,7 +103,9 @@ var FileLinkMap = function (options) {
 
                     name: getSimpleName(link.source),
                     domain: getDomain(link.source),
-                    count: 0
+                    count: 0,
+                    coord : getCoord(link.source)
+
                 });
 
             if (nodes[link.target]) {
@@ -115,6 +117,8 @@ var FileLinkMap = function (options) {
                     domain: getDomain(link.target),
                     count: 0
                     , level: parseInt(link.level) + 1
+                    ,                //add to node attri: geo coordinates
+                    coord : getCoord(link.target)
 
                 });
 
@@ -136,8 +140,7 @@ var FileLinkMap = function (options) {
                 {
                     nodes[URI].level = 0;
                 }
-                //add to node attri: geo coordinates
-                nodes[URI].coord = getCoord(URI);
+
                 nodesArr.push(nodes[URI]);
                 console.log("packed node: " + JSON.stringify(nodes[URI]))
                 //console.log("count" + nodes[attr].count);
@@ -246,13 +249,15 @@ var FileLinkMap = function (options) {
         // path.exit().remove();
         path = gP.selectAll("line");
 
+        console.log(JSON.stringify(bubbleMap.nodesArr))
         var circle = gN.selectAll("a.cir") //node bubbles
             .data(bubbleMap.nodesArr, function (d) {
 
-                return d.domain + d.name;
+                return d.url;
             });
 
         circle.exit().remove();
+        console.log(circle.enter());
 
         circle.enter().append("a")
             .attr('class', 'cir')
@@ -264,6 +269,8 @@ var FileLinkMap = function (options) {
 
             .append("circle")
             .attr("id", function (d) {
+                console.log("!!!!!!!!!!!!!!")
+                console.log(d);
                 return d.name;
             })
             .attr("r", nodeR)
@@ -423,18 +430,23 @@ var FileLinkMap = function (options) {
                 });
 
             circle
-                .attr("x", function (d) {
-                    if (d === undefined) {
+                .attr("x", function (d, i) {
+
+                    if(i===2) {
+                    //    console.log("!!!!!!!!!!!!!!!!!!!!!!!" + d.fx + "!!!!" + d.x)
+                    }
+                        if (d === undefined) {
                         return 0;
-                    }d.fx=d.x;
-                    return d.x;
+                    }
+                   d.fx=d.x;
+                    return d.fx;
                 })
                 .attr("y", function (d) {
                     if (d === undefined) {
                         return 0;
                     }
                     d.fy=d.y;
-                    return d.y;
+                    return d.fy;
                 });
 
             circleDraw
@@ -443,7 +455,7 @@ var FileLinkMap = function (options) {
                         return 0;
                     }
                     d.fx=d.x;
-                    return d.x;
+                    return d.fx;
                 })
                 .attr("cy", function (d) {
                     if (d === undefined) {
@@ -451,7 +463,7 @@ var FileLinkMap = function (options) {
                     }
                     d.fy=d.y;
 
-                    return d.y;
+                    return d.fy;
                 });
             text
                 .attr("x", function (d) {
@@ -475,6 +487,7 @@ var FileLinkMap = function (options) {
 
         function dragstarted(d) {
             if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            console.log("DRag")
             d.fx = d.x;
             d.fy = d.y;
         }
@@ -482,12 +495,15 @@ var FileLinkMap = function (options) {
         function dragged(d) {
             d.fx = d3.event.x;
             d.fy = d3.event.y;
+
+            d.x = d3.event.x;
+            d.y = d3.event.y;
         }
 
         function dragended(d) {
             if (!d3.event.active) simulation.alphaTarget(0);
-           // d.fx = null;
-           // d.fy = null;
+            //d.fx = null;
+            //d.fy = null;
         }
 
         function handleMouseOver(nodeCircle, dCircle) {
@@ -521,39 +537,20 @@ var FileLinkMap = function (options) {
         }
         bubbleMap.defaultOpa();
         /*freeze**/
+
+
         setTimeout(function () {
             console.log("Stop moving!")
-            var node = svg.selectAll("circle");
-            /**
-            circle.attr("fx", function (d) {
 
-                return d.x;
-            }).attr("fy", function (d) {
-                return d.y;
-
-            });
-            circleDraw.attr("fx", function (d) {
-
-                return d.x;
-            }).attr("fy", function (d) {
-                return d.y;
-
-            });
-            text.attr("fx", function (d) {
-
-                return d.x;
-            }).attr("fy", function (d) {
-                return d.y;
-
-            });
-             **/
             simulation.stop();
+
+
             simulation
                 .nodes( bubbleMap.nodesArr)
                 .on("tick", newTick);
 
         }, 1000)
-        svg.call(d3.zoom()
+svg.call(d3.zoom()
             .scaleExtent([1 / 2, 8])
             .on("zoom", zoomed));
 
