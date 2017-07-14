@@ -28,6 +28,16 @@ circle.nodes {
     stroke-width: 4px;
 }
 
+circle.selected {
+    stroke: #fffb68;
+    stroke-width: 6px;
+}
+
+circle.hovered {
+    stroke: #fff;
+    stroke-width: 6px;
+}
+
 text.nodeTag {
     font: 15px sans-serif;
     pointer-events: none;
@@ -209,9 +219,21 @@ text.nodeTag {
     border: 2px solid  #ddd;
     padding: 5px;
 }
-#geo-search-result-panel table tr:nth-child(even)
+
+#geo-search-result-panel table tr:nth-child(even).default
 {
 background-color: #aaaaaa;
 }
+
+#geo-search-result-panel table tr.selected{
+    background-color: #fbff83;
+}
+
 #geo-search-result-panel table tr:hover {background-color: #ddd;}
+
+/***map************/
+#map {
+    height: 800px;
+    width: 100%;
+}
 

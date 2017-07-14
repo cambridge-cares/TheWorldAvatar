@@ -2,6 +2,20 @@
 
 var socket = io();
 
+let resultArr;
+var shapeSaved = {};
+
+function getIdFromNameInResults(name) {
+    if (!resultArr || resultArr.length < 1) {
+        return null;
+    }
+
+    for (let idx = 0; idx < resultArr.length; idx++) {
+        if (resultArr[idx].name == name) {
+            return idx;
+        }
+    }
+}
 /*constructor: d3 link graph***********************************************/
 var FileLinkMap = function (options) {
     var width = $(document).width(),
@@ -31,7 +45,7 @@ var FileLinkMap = function (options) {
     var mapSize = 0;
 
     var bubbleMap = {};
-    bubbleMap.nodesArr =[];
+    bubbleMap.nodesArr = [];
 
     function packNodesArr(links, coords) {
         var nodes = {};
@@ -73,26 +87,27 @@ var FileLinkMap = function (options) {
 
         /*search for coordinates in coordinate array by url*/
         function getCoord(url) {
-            for(let i = 0; i < coords.length; i++){
+            for (let i = 0; i < coords.length; i++) {
                 let coord = coords[i];
-              //   console.log("url in packed coords+ " +coord.url);
+                //   console.log("url in packed coords+ " +coord.url);
                 //console.log("coord in packed coords+ " +JSON.stringify(coord.coord));
 
-                if(coord.url == url){
-                   return coord.coord;
+                if (coord.url == url) {
+                    return coord.coord;
                 }
             }
 
             return null;
         }
+
         // Compute the distinct nodes from the links.
         links.forEach(function (link) {
 
-             if (nodes[link.source] != null) {
+            if (nodes[link.source] != null) {
                 nodes[link.source].count = nodes[link.source].count + 1;
                 console.log("++");
             }
-             if (nodes[link.target] != null) {
+            if (nodes[link.target] != null) {
                 nodes[link.target].count = nodes[link.target].count + 1;
                 console.log("++");
 
@@ -104,7 +119,7 @@ var FileLinkMap = function (options) {
                     name: getSimpleName(link.source),
                     domain: getDomain(link.source),
                     count: 0,
-                    coord : getCoord(link.source)
+                    coord: getCoord(link.source)
 
                 });
 
@@ -118,7 +133,7 @@ var FileLinkMap = function (options) {
                     count: 0
                     , level: parseInt(link.level) + 1
                     ,                //add to node attri: geo coordinates
-                    coord : getCoord(link.target)
+                    coord: getCoord(link.target)
 
                 });
 
@@ -150,7 +165,7 @@ var FileLinkMap = function (options) {
     }
 
     function setBodyS(node) {
-        return -150 ;
+        return -150;
 
         //return charge;
     }
@@ -158,7 +173,7 @@ var FileLinkMap = function (options) {
     function setD(link) {
         console.log(link.source.count);
         var nodeNThre = 5
-        if(link.source.count > nodeNThre || link.target.count > nodeNThre){
+        if (link.source.count > nodeNThre || link.target.count > nodeNThre) {
             return 100;
         }
         return 1;
@@ -210,10 +225,10 @@ var FileLinkMap = function (options) {
         .attr("width", width)
         .attr("height", height);
     var container = svg.append("g");
-    var gP = container.append("g").attr("class", "pathsg");;
+    var gP = container.append("g").attr("class", "pathsg");
     var gN = container.append("g").attr("class", "nodesg");
 
-    var gT = container.append("g").attr("class", "textsg");;
+    var gT = container.append("g").attr("class", "textsg");
 
     function clear() {
         g.selectAll("line").data([]).exit().remove();
@@ -221,8 +236,8 @@ var FileLinkMap = function (options) {
         g.selectAll("text").data([]).exit().remove();
     }
 
-    bubbleMap.update = function(links, coords) {
-         bubbleMap.nodesArr = packNodesArr(links, coords);
+    bubbleMap.update = function (links, coords) {
+        bubbleMap.nodesArr = packNodesArr(links, coords);
 
         //set force simulation
         var simulation = d3.forceSimulation()
@@ -240,7 +255,7 @@ var FileLinkMap = function (options) {
 
         path.enter().append("line")
             .attr("class", function (d) {
-                console.log("@@@@@@@@@@@@draw link : "+d.source.name+'--------'+d.target.name);
+                console.log("@@@@@@@@@@@@draw link : " + d.source.name + '--------' + d.target.name);
 
                 return "link " + "licensing";
             })
@@ -252,9 +267,8 @@ var FileLinkMap = function (options) {
         console.log(JSON.stringify(bubbleMap.nodesArr))
         var circle = gN.selectAll("a.cir") //node bubbles
             .data(bubbleMap.nodesArr, function (d) {
-
                 return d.url;
-            });
+            })
 
         circle.exit().remove();
         console.log(circle.enter());
@@ -263,8 +277,25 @@ var FileLinkMap = function (options) {
             .attr('class', 'cir')
             //.append("a")
             .attr("xlink:href", function (d) {
-                console.log("@@@@@@@@@@@@draw node: "+d.name);
+                console.log("@@@@@@@@@@@@draw node: " + d.name);
                 return d.url;
+            })
+            .on("click", function (d) {//update this infor in
+                console.log(d3.select(this));
+                let d3node = d3.select(this)
+                d3.event.preventDefault();
+                d3.event.stopPropagation();
+                unHighLightAll();
+                hightLightResult(d.name, d3node);
+                if (d.coord) {
+                    $("#search-center-x").val(d.coord.x);
+                    $("#search-center-y").val(d.coord.y);
+                }
+            })
+            .on("dblclick", function (d) {
+                d3.event.stopPropagation()
+                window.open(d.url);
+
             })
 
             .append("circle")
@@ -432,20 +463,20 @@ var FileLinkMap = function (options) {
             circle
                 .attr("x", function (d, i) {
 
-                    if(i===2) {
-                    //    console.log("!!!!!!!!!!!!!!!!!!!!!!!" + d.fx + "!!!!" + d.x)
+                    if (i === 2) {
+                        //    console.log("!!!!!!!!!!!!!!!!!!!!!!!" + d.fx + "!!!!" + d.x)
                     }
-                        if (d === undefined) {
+                    if (d === undefined) {
                         return 0;
                     }
-                   d.fx=d.x;
+                    d.fx = d.x;
                     return d.fx;
                 })
                 .attr("y", function (d) {
                     if (d === undefined) {
                         return 0;
                     }
-                    d.fy=d.y;
+                    d.fy = d.y;
                     return d.fy;
                 });
 
@@ -454,14 +485,14 @@ var FileLinkMap = function (options) {
                     if (d === undefined) {
                         return 0;
                     }
-                    d.fx=d.x;
+                    d.fx = d.x;
                     return d.fx;
                 })
                 .attr("cy", function (d) {
                     if (d === undefined) {
                         return 0;
                     }
-                    d.fy=d.y;
+                    d.fy = d.y;
 
                     return d.fy;
                 });
@@ -470,7 +501,7 @@ var FileLinkMap = function (options) {
                     if (d === undefined) {
                         return 0;
                     }
-                    d.fx=d.x;
+                    d.fx = d.x;
 
                     return d.x;
                 })
@@ -478,7 +509,7 @@ var FileLinkMap = function (options) {
                     if (d === undefined) {
                         return 0;
                     }
-                    d.fy=d.y;
+                    d.fy = d.y;
 
                     return d.y;
                 });
@@ -511,8 +542,7 @@ var FileLinkMap = function (options) {
             gP.selectAll("line")
                 .style("stroke", highlightPath);
 
-            nodeCircle.style("stroke-width","6px");
-            nodeCircle.style("stroke","#fff");
+            nodeCircle.attr("class", "hovered");
 
             function highlightPath(dLink) {
                 // console.log("source: "+JSON.stringify(dLink.source)+"  target: "+ JSON.stringify(dLink.target) +" node name: "+dCircle.name);
@@ -531,10 +561,13 @@ var FileLinkMap = function (options) {
             // console.log("change back");
 
             gP.selectAll("line").style("stroke", "#666");
-            nodeCircle.style("stroke-width","4px");
-            nodeCircle.style("stroke","#666");
+            //    nodeCircle.style("stroke-width","4px");
+            // nodeCircle.style("stroke","#666");
+            nodeCircle.attr("class", "nodes");
+
 
         }
+
         bubbleMap.defaultOpa();
         /*freeze**/
 
@@ -546,15 +579,16 @@ var FileLinkMap = function (options) {
 
 
             simulation
-                .nodes( bubbleMap.nodesArr)
+                .nodes(bubbleMap.nodesArr)
                 .on("tick", newTick);
 
         }, 1000)
-svg.call(d3.zoom()
+        svg.call(d3.zoom()
             .scaleExtent([1 / 2, 8])
             .on("zoom", zoomed));
 
     }
+
 
     function zoomed() {
         container.attr("transform", d3.event.transform);
@@ -566,32 +600,32 @@ svg.call(d3.zoom()
     bubbleMap.updateByCoord = function updateByCoord(center, radius) {
 
         var resultArr = [];
-        gN.selectAll("a.cir").select('circle.nodes').attr("opacity",function(d) {
-                if(d.coord) {
-                    console.log("@@@@@@@@@@@in d3 node dta: " + JSON.stringify(d.coord))
-                    let dx = d.coord.x - center.x;
-                    let dy = d.coord.y - center.y;
-                    let eps = Number.EPSILON;
-                      //console.log(radius * radius - dx * dx - dy * dy);
-                      if(radius * radius - dx * dx - dy * dy > eps){
-                        resultArr.push(d.name);
-                        console.log("!!!!!!!!!!"+d.name)
-                          return 1;
-                      } else{
-                          return 0.25;
-                      }
-                } else {//This node does not have coordinates
-                   // console.log(" node: "+d.url+" does not have coordinates");
+        gN.selectAll("a.cir").select('circle.nodes').attr("opacity", function (d) {
+            if (d.coord) {
+                console.log("@@@@@@@@@@@in d3 node dta: " + JSON.stringify(d.coord))
+                let dx = d.coord.x - center.x;
+                let dy = d.coord.y - center.y;
+                let eps = Number.EPSILON;
+                //console.log(radius * radius - dx * dx - dy * dy);
+                if (radius * radius - dx * dx - dy * dy > eps) {
+                    resultArr.push({name: d.name, x: d.coord.x, y: d.coord.y});
+                    console.log("!!!!!!!!!!" + d.name)
+                    return 1;
+                } else {
                     return 0.25;
                 }
-            });
+            } else {//This node does not have coordinates
+                // console.log(" node: "+d.url+" does not have coordinates");
+                return 0.25;
+            }
+        });
 
 
         //TODO: deal with path
 
         // deal with label
-        gT.selectAll("text.nodeTag").attr("visibility",function(d) {
-            if(d.coord) {
+        gT.selectAll("text.nodeTag").attr("visibility", function (d) {
+            if (d.coord) {
                 console.log("@@@@@@@@@@@in d3 node dta: " + JSON.stringify(d.coord))
                 let dx = d.coord.x - center.x;
                 let dy = d.coord.y - center.y;
@@ -604,36 +638,65 @@ svg.call(d3.zoom()
             }
         });
 
-return resultArr;
+        return resultArr;
     }
 
+    bubbleMap.highlightNode = function hlNode(node, name) {
+        if (!node) {
+            gN.selectAll("a.cir").select('circle.nodes').attr("class", function (d) {
+                if (d.name == name) {
+                    return "nodes selected"
+                }
+                return "nodes"
+            })
+
+            return;
+        }
+
+        node.attr("class", function (d) {
+            return "nodes selected"
+        })
+    };
+
+    bubbleMap.unhighlightAll = function () {
+        gN.selectAll("a.cir").select('circle.nodes').attr("class", function (d) {
+            return "nodes";
+        })
+    }
     bubbleMap.defaultOpa = function () {
-        gN.selectAll("a.cir").select('circle.nodes').attr("opacity",function(d) {
-        return 1;
+        gN.selectAll("a.cir").select('circle.nodes').attr("opacity", function (d) {
+            return 1;
         })
     };
 
     var data = JSON.parse($("#data").val());//extract link data from web page
     var links = data.connections;
     var coords = data.geoCoords;
-    console.log("Extract from initial data: coords: "+ coords);
+    console.log("Extract from initial data: coords: " + coords);
     bubbleMap.update(links, coords);
     return bubbleMap;
 
 };
 /*END constructor: d3 link graph*********************************************/
 
+
+
 /*DOM LOGIC**************************************************************/
 
+var map;
 
 $(window).load(function () {// when web dom ready
+    /*init d3 map*/
+
+    map = FileLinkMap({});
+
+    $("#geo-search-result-panel").hide()
+
     let url = window.location.href;     // Returns full URL
 
-    /*init d3 map*/
-    var map = FileLinkMap({});
-let btn = $("#menu-toggle");
+    let btn = $("#menu-toggle");
 
-    btn.click(function(e) {
+    btn.click(function (e) {
         console.log("btn clicked")
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -649,19 +712,15 @@ let btn = $("#menu-toggle");
     });
 
 
-
-
-
-
     /*choice panel*************************************************/
-        /*button : show Import **/
+    /*button : show Import **/
     $("#checkShowImport").change(function () {
         if ($('#checkShowImport').prop('checked')) {
             disableThenEnableAfterTimeout();
 
             //TODO:ajax, only change data, but with d3...how? should use angular instead?
             $.ajax({
-                url: '/visualize/includeImport',
+                url: url + '/includeImport',
                 type: 'GET',
 
                 statusCode: {
@@ -701,13 +760,13 @@ let btn = $("#menu-toggle");
 
 
     });
-        /*button : show Service Only **/
+    /*button : show Service Only **/
     $("#checkShowServiceOnly").change(function () {
         if ($('#checkShowServiceOnly').prop('checked')) {
             disableThenEnableAfterTimeout();
             //TODO:ajax, only change data, but with d3...how? should use angular instead?
             $.ajax({
-                url: '/visualize/showServiceOnly',
+                url: url + '/showServiceOnly',
                 type: 'GET',
 
                 statusCode: {
@@ -740,7 +799,7 @@ let btn = $("#menu-toggle");
             window.location.href = '/visualize';
         }
     })
-        /*button : show Default **/
+    /*button : show Default **/
     $("#checkdefault").change(function () {
         if ($('#checkdefault').prop('checked')) {
 
@@ -748,7 +807,7 @@ let btn = $("#menu-toggle");
 
         }
     });
-        /*check box back to default when unload*/
+    /*check box back to default when unload*/
     $(window).unload(function () {
         console.log("unload");
 
@@ -759,7 +818,7 @@ let btn = $("#menu-toggle");
             $("#checkShowServiceOnly").prop('checked', false);
         }
     });
-        /*utility functions*********/
+    /*utility functions*********/
     /**
      * utility function, check if link is of correct format
      * @param links
@@ -778,6 +837,7 @@ let btn = $("#menu-toggle");
         }
         return true;
     }
+
     /**
      * Utility function: disable option buttons
      * @param disable
@@ -795,6 +855,7 @@ let btn = $("#menu-toggle");
         }
         return false;
     }
+
     /**
      * utility function : disable all buttons then enable all after timeout
      */
@@ -807,6 +868,7 @@ let btn = $("#menu-toggle");
         }
 
     }
+
     /*END  choice panel***************************************************/
 
     /*GEO Search Panel***************************************************************/
@@ -815,7 +877,7 @@ let btn = $("#menu-toggle");
         //initiate select with data
         clearSelectBar();
         map.nodesArr.forEach(function (item) {    // for each in data list
-            if(item.coord) {        //only do this if has a coord'
+            if (item.coord) {        //only do this if has a coord'
                 $("#device-select").append("<option value='" + item.coord.x + "/" + item.coord.y + "'>" + item.name + "</option>");
             }
         });
@@ -828,12 +890,12 @@ let btn = $("#menu-toggle");
     updateSelectBar();
 
 
-   //TODO: check cross senario:
-   //TODO: disable geo-search panel when show agents only is checked?
+    //TODO: check cross senario:
+    //TODO: disable geo-search panel when show agents only is checked?
 
     //when choose from select, update coord to x,y input
-    $('#device-select').on('change', function() {
-       // alert( this.value );
+    $('#device-select').on('change', function () {
+        // alert( this.value );
         let coordStr = $("select#device-select option:selected").val();
         let coordArr = coordStr.split("/");
         $("#search-center-x").val(coordArr[0]);
@@ -849,60 +911,102 @@ let btn = $("#menu-toggle");
 
         // check validity, display err msg
         let radius = parseFloat($("#search-radius").val());
-        if(x===null || y===null || radius===null || isNaN(x) || isNaN(y) || isNaN(radius) ){
+        if (x === null || y === null || radius === null || isNaN(x) || isNaN(y) || isNaN(radius)) {
             displayMsg("Input parameters are not number", "danger");
             return;
         }
         //Todo: or not to do. x,y,radius must be numbers .range checking also? min radius : 0.0000001
         /**
-        //truncate radius to 7 digits, show warning
-        if(decimalPlaces(x) > 7){
+         //truncate radius to 7 digits, show warning
+         if(decimalPlaces(x) > 7){
             x= x.toFixed(7);
             $("#search-center-x").val(x);
             displayMsg("Numbers beyond 7 decimal places will be truncated");
         }
-        if(decimalPlaces(y) > 7){
+         if(decimalPlaces(y) > 7){
             y= x.toFixed(7);
             $("#search-center-y").val(y);
             displayMsg("Numbers beyond 7 decimal places will be truncated");
         }
-        if(decimalPlaces(y) > 7){
+         if(decimalPlaces(y) > 7){
             radius = radius.toFixed(7);
             $("#search-center-y").val(radius);
             displayMsg("Numbers beyond 7 decimal places will be truncated");
         }
-        **/
+         **/
 
-        console.log("CX:" + x +" Y:" + y+ "  R:" + radius);
+        console.log("CX:" + x + " Y:" + y + "  R:" + radius);
         //pack x, y into object
-        let resultArr = map.updateByCoord({x, y}, radius);
+        resultArr = map.updateByCoord({x, y}, radius);
 
         console.log(resultArr.toString())
 
+        //clear everything on map
+        deleteAllShapes();
+        let resultPanel = $("#geo-search-result-panel");
+
+
         //check if result panel is show
-        if( $("#geo-search-result-panel").css('display').toLowerCase() == 'none') {
-            $("#geo-search-result-panel").css({"display" :"block"});//show the result panel
+        if (resultPanel.css('display').toLowerCase() == 'none') {
+            resultPanel.css({"display": "block"});//show the result panel
 
         }
+
+        //scroll down to result panel
+
+        let mwindow = $(window)
+        mwindow.scrollTop(
+            resultPanel.offset().top
+        );
         //clear previous results, if any
         $("#result-table-wrapper").html("");
         // /append a result table
         var template = "<table>";
 
         resultArr.forEach(function (item) {
-            template+="<tr><td>"+item+"</td></tr>";
+            let noAffixName = item.name.split('.')[0];
+            console.log("@@@@@@@@@@@@@"+noAffixName)
+            template += "<tr id='tr" + noAffixName + "'><td>" + item.name + "</td></tr>";
+            //create this shape on map
+            //TODO: resultArr does not have information about coordinates though, find this infor, either by search or change result arr structure
+            placeShape(new google.maps.LatLng(item.y, item.x), extractTypeInName(item.name), item.name);
+
         });
-        template+="</table>";
-        console.log(template);
+        template += "</table>";
         $("#result-table-wrapper").append(template);
+        //add listeners
+        resultArr.forEach(function (item) {
+            let noAffixName = item.name.split('.')[0];
+            console.log("@@@@@@@@@@@@@"+noAffixName);
+            //add listener
+            $("tr#tr"+noAffixName).click(function () {
+                unHighLightAll();
+                hightLightResult(item.name);
+            })
 
-        //todo : append a map
+        });
 
-        displayMsg("Search for device near center point :("+x+" ,"+y+") with radius : "+radius, "success");
+
+
+        displayMsg("Search for device near center point :(" + x + " ," + y + ") with radius : " + radius, "success");
+
+        //Draw all devices on map
+
+        function extractTypeInName(name) {
+            var arr = name.split("-");
+            if (arr.length < 2) {
+                console.log("not correct device name")
+                return null;
+            }
+            return arr[0];
+        }
+
 
         function decimalPlaces(num) {
-            var match = (''+num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
-            if (!match) { return 0; }
+            var match = ('' + num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+            if (!match) {
+                return 0;
+            }
             return Math.max(
                 0,
                 // Number of digits right of decimal point.
@@ -916,9 +1020,9 @@ let btn = $("#menu-toggle");
     /*END GEO Search Panel***************************************************************/
 
     /*Err Msg Bar************************************************************************/
-    var template = function (msg, type){
+    var template = function (msg, type) {
 
-        return "<p class='alert alert-"+type+"'>"+msg+"</p>";
+        return "<p class='alert alert-" + type + "'>" + msg + "</p>";
     };
 
     /**
@@ -926,7 +1030,7 @@ let btn = $("#menu-toggle");
      * @param msg
      * @param type  [success/info/warning/danger]
      */
-    function displayMsg(msg,type) {
+    function displayMsg(msg, type) {
 
         $("#err-msg-panel").html("");
         $("#err-msg-panel").append(template(msg, type));
@@ -944,10 +1048,8 @@ let btn = $("#menu-toggle");
         //check if time less than 1s, if true, do not do anything
         if (Date.now() - preTime > 1000) {
             preTime = Date.now();
-            console.log("!!!!!!!!!dataUpdate");
             let parsedData = JSON.parse(data);
             let name = parsedData.name;
-            console.log(name);
             //search name among nodes to grab the correct one
             // console.log($('circle'));
             // console.log($('#FH-01.owl'));
@@ -959,7 +1061,6 @@ let btn = $("#menu-toggle");
 
             let orSize = node.attr("r");
             //console.log($('circle#FH-01.owl'));
-            console.log(orSize);
 
             node.animate({'r': 20}, 500)
                 .css({'fill': '#FFFC94', 'transition': 'fill 0.5s'})
@@ -979,6 +1080,160 @@ let btn = $("#menu-toggle");
 });
 /*END DOM LOGIC**************************************************************/
 
+/*Map************************/
+var googleMap;
 
 
+function initMap() {
+    console.log("init map")
+    //initiate map, set center on Jurong
+    var jurong = {lat: 1.276, lng: 103.677};
+    googleMap = new google.maps.Map(document.getElementById('map'), {
+        zoom: 14
+        , center: jurong
+    });
+
+
+}
+
+
+let deviceMap = (function initDeviceMap() {
+    //TODO: add this to backend
+    let deviceMap = new Map();
+    $.getJSON("JSON/prototypeDevices.json", function (data) {
+
+
+
+        for (let device of Object.keys(data)) {
+            console.log("loading device: "+device);
+            deviceMap.set(device, data[device]);
+        }
+
+    });
+
+    return deviceMap;
+
+})();
+
+
+function placeShape(position, type, name) {
+  //  console.log("lng:" + position.lng());
+   // console.log("lat:" + position.lat());
+
+    let defaultType = "blower";
+    if (!deviceMap) {
+        console.log("device type Map not set, can not retrieve prototypes");
+        return null;
+    }
+
+    let shape;
+
+    if (!type) {
+        return null;
+    }
+
+    shape = deviceMap.get(type);
+    console.log("shape:" + shape);
+    if (!shape) {//everything not defined in Map
+        console.log("prototype device coordinates : " + type + " can not be find, use " + defaultType + " to draw instead");
+        //shape = deviceMap.get(defaultType);
+        return null;
+    }
+
+    /*____Construct coordinates from Shape Str_______*/
+
+    let coordis = shape.coordinates;
+
+    let newCoor = [];
+    //for each pair in coordinates, add position
+
+    let dLng = position.lng() - coordis[0].lng;
+    let dLat = position.lat() - coordis[0].lat;
+
+    newCoor.push({lng: position.lng(), lat: position.lat()});
+    for (let idx = 1; idx < coordis.length - 1; idx++) {
+
+        newCoor.push({lng: coordis[idx].lng + dLng, lat: coordis[idx].lat + dLat});
+    }
+
+    let pl = createPolygon(newCoor);
+
+    pl.addListener('click', function () {//when clicked, hightlight both bubble node and rd row
+        unHighLightAll();
+        hightLightResult(name);
+    });
+
+    shapeSaved[name] = pl;
+
+}
+
+
+function hightLightResult(name, d3node) {
+    //hightlight select
+    //hightlight this shape
+    let noaffixname = name.split('.')[0];
+
+    shapeSaved[name].setOptions({fillOpacity: 0.8});
+    //hightlight corresponding row
+    let row = $("#tr" + noaffixname);
+
+    if (row) {
+        console.log(row);
+        row.addClass("selected");
+    }
+    console.log("!!!!!!!!!!!!!now hightlight " + name);
+    //TODO:hightlight bubble
+
+
+    map.highlightNode(d3node, name);
+}
+
+
+function unHighLightAll() {
+    //unhightlight all pre
+    for (let shape in shapeSaved) {
+        if (shapeSaved.hasOwnProperty(shape)) {
+
+            shapeSaved[shape].setOptions({fillOpacity: 0.35});
+            let noaffixname = shape.split('.')[0];
+
+            $("tr#tr" + noaffixname).removeClass("selected");
+
+        }
+    }
+
+    map.unhighlightAll();
+}
+
+function deleteAllShapes() {
+
+    setMapOnAllShape(null);
+    shapeSaved = {};
+}
+
+function createPolygon(coords) {
+    let poly = new google.maps.Polygon({
+        paths: coords,
+        strokeColor: '#FF0000',
+        strokeOpacity: 0.8,
+        strokeWeight: 3,
+        fillColor: '#FF0000',
+        fillOpacity: 0.35,
+    });
+
+    poly.setMap(googleMap);
+    return poly;
+}
+
+function setMapOnAllShape(map) {
+
+    for (let shape in shapeSaved) {
+        if (shapeSaved.hasOwnProperty(shape)) {
+            shapeSaved[shape].setMap(map);
+
+        }
+    }
+}
+
+/*END MAP****************/
 //module.exports = FileLinkMap;

@@ -23,6 +23,7 @@ block content
         script(src="/javascripts/jquery-clickout.min.js")
 
         script(src="/javascripts/d3Bubble.js")
+        script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnIPTFH_vdwakGsRIXJMwHvAJ3DhiWlvE&callback=initMap")
 
         input(
         type = "hidden"
@@ -80,9 +81,10 @@ block content
 
             div#page-content-wrapper
                 div#draw-panel()
-                div#geo-search-result-panel(class="panel panel-default" style="display:none")
+                div#geo-search-result-panel(class="panel panel-default" style="display:block")
                     div(class="panel-heading") Results
-                    div(class="panel-body")
-                        div#result-table-wrapper
-                        div#result-map-wrapper
-
+                    div(class="panel-body container-fluid")
+                        div#result-wrapper.row
+                            div#result-table-wrapper.col-lg-6
+                            div#result-map-wrapper.col-lg-6
+                                div#map
