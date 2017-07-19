@@ -1173,19 +1173,21 @@ function hightLightResult(name, d3node) {
     //hightlight this shape
     let noaffixname = name.split('.')[0];
 
-    shapeSaved[name].setOptions({fillOpacity: 0.8});
-    //hightlight corresponding row
-    let row = $("#tr" + noaffixname);
+    if( shapeSaved[name]){
+        shapeSaved[name].setOptions({fillOpacity: 0.8});
+        //hightlight corresponding row
+        let row = $("#tr" + noaffixname);
 
-    if (row) {
-        console.log(row);
-        row.addClass("selected");
+        if (row) {
+            console.log(row);
+            row.addClass("selected");
+        }
+        console.log("!!!!!!!!!!!!!now hightlight " + name);
+        //TODO:hightlight bubble
+
+        map.highlightNode(d3node, name);
     }
-    console.log("!!!!!!!!!!!!!now hightlight " + name);
-    //TODO:hightlight bubble
 
-
-    map.highlightNode(d3node, name);
 }
 
 

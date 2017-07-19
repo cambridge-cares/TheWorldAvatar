@@ -8,7 +8,7 @@ var util = require("util");
 var rdfParser = require( "../util/rdfParser.js");
 var request = require("request");
 var path = require("path");
-var connections = require("../util/fileConnection.js");
+var connections = require("../agents/fileConnection.js");
 
 
 var config = require("../config");

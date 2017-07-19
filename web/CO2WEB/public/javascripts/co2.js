@@ -6,7 +6,7 @@ $( window ).on( "load", function() {
 
 //set timer to do fluctuate
 
-window.setInterval(setFluctuate, 2000);
+//window.setInterval(setFluctuate, 2000);
 
 
 

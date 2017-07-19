@@ -73,6 +73,10 @@ let rdfParser = function (opts, callback) {
             }
 
         };
+        
+        let query = function () {
+            
+        }
 
         /**
          * utility function to parse the rdf file body, sync function, may throw err

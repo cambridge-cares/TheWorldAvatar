@@ -13,12 +13,15 @@ var config = {};
 config.root = "C:/TOMCAT/webapps/ROOT";
 
 
-//__dirname + "/TestVisualization" ; // own folder for testing
+//__dirname + "/TestFile" ; // own folder for testing
+
 
 config.worldNode = config.root + "/TheWorld.owl";
 config.jurongNode = config.root + "/JurongIsland.owl";
 config.bmsNode = config.root + "/CARES_Lab.owl";
 config.semakauNode = config.root + "/SemakauIsland.owl";
+
+config.landLotNode=config.root + "/JParkLandLots.owl";
 
 config.port = 3000;//port for deploy
 config.registerPath = "dataObserve";
