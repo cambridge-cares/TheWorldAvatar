@@ -23,7 +23,7 @@ config.semakauNode = config.root + "/SemakauIsland.owl";
 
 config.landLotNode=config.root + "/JParkLandLots.owl";
 
-config.port = 3000;//port for deploy
+config.port = 82;//port for deploy
 config.registerPath = "dataObserve";
 config.registerUrl = "http://10.25.188.104";
 //"http://localhost:2000";
