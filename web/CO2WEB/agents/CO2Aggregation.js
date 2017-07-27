@@ -27,7 +27,8 @@ function getCO2Aggregation(callback) {
 //TODO: error handle
 
 
-   if(result === null){
+   if(!result){
+       console.log("doing cal");
     result = 0;
     parser.graph.query($rdf.SPARQLToQuery(SPA, false, parser.graph), function (data) {//each data point
 
@@ -48,6 +49,7 @@ function getCO2Aggregation(callback) {
         callback(null, result);
     });
   } else{
+       console.log(result);
         callback(null, result);
 }
 
