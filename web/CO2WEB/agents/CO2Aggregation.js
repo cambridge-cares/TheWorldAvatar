@@ -27,7 +27,7 @@ function getCO2Aggregation(callback) {
 //TODO: error handle
 
 
-   if(result === null){
+   if(!result){
     result = 0;
     parser.graph.query($rdf.SPARQLToQuery(SPA, false, parser.graph), function (data) {//each data point
 
