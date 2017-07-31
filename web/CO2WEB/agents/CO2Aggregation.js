@@ -48,6 +48,7 @@ function getCO2Aggregation(callback) {
         callback(null, result);
     });
   } else{
+       console.log(result);
         callback(null, result);
 }
 
