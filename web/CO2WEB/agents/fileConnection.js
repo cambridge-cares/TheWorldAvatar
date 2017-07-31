@@ -157,7 +157,7 @@ function readConnections(options, callback) {
             children.push(curi.text().trim());//push to targets list
         }
         //find all node with SYSTEM:hasIRI property
-        let urisS = root.find("//owl:NamedIndividual/system:hasIRI", namespaceOb);
+        let urisS = root.find("//system:hasIRI", namespaceOb);
         console.log("found node system:hasIRI:"+urisS.length);
         for(let curi of urisS){
             //    console.log(curi.name());
