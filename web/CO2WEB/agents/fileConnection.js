@@ -150,7 +150,7 @@ function readConnections(options, callback) {
         console.log(util.inspect(namespaceOb));
 
         //find all node with hasIRI property
-        var uris = root.find("//owl:NamedIndividual/Eco-industrialPark:hasIRI", namespaceOb);
+        var uris = root.find("//Eco-industrialPark:hasIRI", namespaceOb);
         console.log("found node Eco-industrialPark:hasIRI:" + uris.length);
         for (let curi of uris) {
            // console.log(curi.name());

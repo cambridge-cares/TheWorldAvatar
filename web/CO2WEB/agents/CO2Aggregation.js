@@ -42,6 +42,7 @@ function getCO2Aggregation(callback) {
        // console.log("@@@@@@@@@@@done")
        // console.log(result)
        if(err){
+		   console.log(err);
 	callback(err);       
 }
         //Now result is ready
