@@ -239,12 +239,17 @@ function readConnections(options, callback) {
 			      try{
                let xmlDoc = libxmljs.parseXml(file);
                 root = xmlDoc.root();
-               var myUri = (root.attrs() && root.attrs().length > 0) ? root.attrs()[0].value() : null;
-               
-			   if(myUri === null){
-			    myUri = getUrl(root);
-			   }
+              		let urisear = root.find('//owl:Ontology', {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#resource"});
+		
+               var myUri = urisear[0].attr("about").value();
                console.log("myURI" + myUri);
+			   
+			   if(!myUri){
+				   myUri = getUrl(root);
+				   
+				  myUri = myUri.replace(/#$/, "");
+			   }
+			   //myUri = myUri.replace("www.jparksimulator", "www.theworldavatar");
                //TODO: request for remote  VS search with name on current?
                //TODO: xml parse the file => get targets list == childList => request on each child file
 
