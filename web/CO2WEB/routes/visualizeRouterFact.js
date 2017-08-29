@@ -1,3 +1,8 @@
+/****
+ * Factory to create a router with file-connection-reader module.
+ * Parameter : topNode file
+ * @type {*}
+ */
 var express = require('express');
 var connectionsReader = require("../agents/fileConnection.js");
 
@@ -5,6 +10,10 @@ var connectionsReader = require("../agents/fileConnection.js");
 
 //TODO: buffer logic, so no need recalculate for each request, but still robust,
 //TODO: could be time, or responding to change
+/****
+ * Factory to create a router with file-connection-reader module.
+ * @param topNodeAddress  address of top node file
+ */
 var visualizationRouterFactory = function (topNodeAddress) {
     var router = express.Router();
 
@@ -55,7 +64,7 @@ var visualizationRouterFactory = function (topNodeAddress) {
 
     router.get('/showServiceOnly', function(req, res, next) {
 
-        connectionsReader({ showServiceOnly : true,topnode : topNodeAddress}, function (err, results) {
+        connectionsReader({ showServiceOnly : true, showServiceUrl: true, topnode : topNodeAddress}, function (err, results) {
 
             if(err){
                 res.status(500).send(err);

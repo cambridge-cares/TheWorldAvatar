@@ -5,6 +5,8 @@ var socket = io();
 let resultArr;
 var shapeSaved = {};
 
+let defaultLocation = location;
+
 function getIdFromNameInResults(name) {
     if (!resultArr || resultArr.length < 1) {
         return null;
@@ -47,7 +49,8 @@ var FileLinkMap = function (options) {
     var bubbleMap = {};
     bubbleMap.nodesArr = [];
 
-    function packNodesArr(links, coords) {
+    function packNodesArr(links, coords, serviceUrls) {
+        console.log("@@@@@@@@@@@@@@@@@@@"+JSON.stringify(serviceUrls))
         var nodes = {};
         var nodesArr = [];
 
@@ -75,25 +78,51 @@ var FileLinkMap = function (options) {
 
         function getSimpleName(url) {
             if (!url) {
-                return undefined;
+                return "";
             }
             var arr = url.split("/");
 
             //  return (arr[arr.length - 1] === "")? arr[arr.length-3]+'/'+arr[arr.length-2] : arr[arr.length-2]+"/"+arr[arr.length -1];
+            if(arr.length < 2){
+                console.log("undefined name :" + url)
+                return "";
+            }
             return (arr[arr.length - 1] === "") ? arr[arr.length - 2] : arr[arr.length - 1];
 
             return url;
         }
 
-        /*search for coordinates in coordinate array by url*/
-        function getCoord(url) {
+        /*search for coordinates in coordinate array by uri*/
+        function getCoord(uri) {
             for (let i = 0; i < coords.length; i++) {
                 let coord = coords[i];
                 //   console.log("url in packed coords+ " +coord.url);
                 //console.log("coord in packed coords+ " +JSON.stringify(coord.coord));
 
-                if (coord.url == url) {
+                if (coord.url == uri) {
                     return coord.coord;
+                }
+            }
+
+            return null;
+        }
+
+        /***
+         * search for serivceUrl in service array by uri
+         */
+        function  getServiceUrl(uri) {
+            console.log("search service url for "+uri)
+
+            if(!serviceUrls||serviceUrls.length < 1){
+                console.log("Did not find any service urls")
+                return null;
+            }
+            for (let i = 0; i < serviceUrls.length; i++) {
+                let serviceUrl = serviceUrls[i];
+                console.log("comparing :"+ serviceUrl.url)
+                if (serviceUrl&& serviceUrl.url == uri) {
+                    console.log("!!!!!!!!!! found service Url node for "+serviceUrl )
+                    return serviceUrl.serviceUrl;
                 }
             }
 
@@ -119,7 +148,8 @@ var FileLinkMap = function (options) {
                     name: getSimpleName(link.source),
                     domain: getDomain(link.source),
                     count: 0,
-                    coord: getCoord(link.source)
+                    coord: getCoord(link.source),
+                    serviceUrl:getServiceUrl(link.source)
 
                 });
 
@@ -133,7 +163,8 @@ var FileLinkMap = function (options) {
                     count: 0
                     , level: parseInt(link.level) + 1
                     ,                //add to node attri: geo coordinates
-                    coord: getCoord(link.target)
+                    coord: getCoord(link.target),
+                    serviceUrl:getServiceUrl(link.target)
 
                 });
 
@@ -236,8 +267,8 @@ var FileLinkMap = function (options) {
         g.selectAll("text").data([]).exit().remove();
     }
 
-    bubbleMap.update = function (links, coords) {
-        bubbleMap.nodesArr = packNodesArr(links, coords);
+    bubbleMap.update = function (links, coords, serviceUrls) {
+        bubbleMap.nodesArr = packNodesArr(links, coords, serviceUrls);
 
         //set force simulation
         var simulation = d3.forceSimulation()
@@ -273,6 +304,8 @@ var FileLinkMap = function (options) {
         circle.exit().remove();
         console.log(circle.enter());
 
+        let timer = 0;
+        let sglclickPrevent = false;
         circle.enter().append("a")
             .attr('class', 'cir')
             //.append("a")
@@ -281,18 +314,36 @@ var FileLinkMap = function (options) {
                 return d.url;
             })
             .on("click", function (d) {//update this infor in
-                console.log(d3.select(this));
-                let d3node = d3.select(this)
                 d3.event.preventDefault();
                 d3.event.stopPropagation();
-                unHighLightAll();
-                hightLightResult(d.name, d3node);
-                if (d.coord) {
-                    $("#search-center-x").val(d.coord.x);
-                    $("#search-center-y").val(d.coord.y);
+
+                timer = setTimeout(function() {
+                    if (!sglclickPrevent) {
+                        clickAction();
+                    }
+                    sglclickPrevent = false;
+                }, 200);
+
+
+                function clickAction() {
+                    if(d.serviceUrl && d.serviceUrl!==""){
+                        console.log(d.serviceUrl);
+                        window.open(d.serviceUrl);
+                    }
+
+                    console.log(d3.select(this));
+                    let d3node = d3.select(this)
+                    unHighLightAll();
+                    hightLightResult(d.name, d3node);
+                    if (d.coord) {
+                        $("#search-center-x").val(d.coord.x);
+                        $("#search-center-y").val(d.coord.y);
+                    }
                 }
             })
             .on("dblclick", function (d) {
+                clearTimeout(timer);
+                sglclickPrevent = true;
                 d3.event.stopPropagation()
                 window.open(d.url);
 
@@ -672,8 +723,8 @@ var FileLinkMap = function (options) {
     var data = JSON.parse($("#data").val());//extract link data from web page
     var links = data.connections;
     var coords = data.geoCoords;
-    console.log("Extract from initial data: coords: " + coords);
-    bubbleMap.update(links, coords);
+    var serviceUrls = data.serviceUrls;
+    bubbleMap.update(links, coords, serviceUrls);
     return bubbleMap;
 
 };
@@ -755,7 +806,7 @@ $(window).load(function () {// when web dom ready
             });
 
         } else {
-            window.location.href = '/visualize';
+            window.location.href = defaultLocation;
         }
 
 
@@ -774,6 +825,7 @@ $(window).load(function () {// when web dom ready
 
                         let links = data.connections;
                         let coords = data.geoCoords;
+                        let serviceUrls = data.serviceUrls
 
                         console.log('ajax successful!\n');
 
@@ -781,7 +833,7 @@ $(window).load(function () {// when web dom ready
                         //     console.log(JSON.stringify(links));
                         if (LinkRightFormat(links)) {
                             clearSelectBar();
-                            map.update(links, coords);
+                            map.update(links, coords,serviceUrls);
 
 
                         }
@@ -796,14 +848,14 @@ $(window).load(function () {// when web dom ready
             });
 
         } else {
-            window.location.href = '/visualize';
+            window.location.href = defaultLocation;
         }
     })
     /*button : show Default **/
     $("#checkdefault").change(function () {
         if ($('#checkdefault').prop('checked')) {
 
-            window.location.href = '/visualize'; //return to default
+            window.location.href = defaultLocation; //return to default
 
         }
     });
