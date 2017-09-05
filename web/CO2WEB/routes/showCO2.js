@@ -13,6 +13,7 @@ router.get('/', function (req, res) {
 
     co2Add(function (err, result) {
         if(err){
+			console.log("co2ADD Module err: "+err);
           next(err);
          return;
         }

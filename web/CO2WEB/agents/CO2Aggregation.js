@@ -22,13 +22,13 @@ order by DESC(?ValueOf_CarbonEmissions)
 `;
 /***********************************/
 
-    let result;
+    var CO2Addresult;
 function getCO2Aggregation(callback) {
 //TODO: error handle
 
 
-   if(!result){
-    result = 0;
+   if(!CO2Addresult){
+    CO2Addresult = 0;
     parser.graph.query($rdf.SPARQLToQuery(SPA, false, parser.graph), function (data) {//each data point
 
         //      console.log("!!!!!!!!!!!!!!!!!!!!")
@@ -36,7 +36,7 @@ function getCO2Aggregation(callback) {
        // console.log( data['?ValueOf_CarbonEmissions']['value']);
         // console.log(counter++)
 
-        result+=parseFloat(data['?ValueOf_CarbonEmissions']['value']);
+        CO2Addresult+=parseFloat(data['?ValueOf_CarbonEmissions']['value']);
 
     }, null, function (err) {//when all is done
        // console.log("@@@@@@@@@@@done")
@@ -46,11 +46,11 @@ function getCO2Aggregation(callback) {
 	callback(err);       
 }
         //Now result is ready
-        callback(null, result);
+        callback(null, CO2Addresult);
     });
   } else{
-       console.log(result);
-        callback(null, result);
+       console.log(CO2Addresult);
+        callback(null, CO2Addresult);
 }
 
 
