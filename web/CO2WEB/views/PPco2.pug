@@ -1,0 +1,67 @@
+extends header.pug
+block title
+    title  CO2 Emission Meter
+
+block sheets
+    link(rel="stylesheet" href='/stylesheets/style.css')
+
+block subtitle
+
+    | World power Plant CO
+    sub 2
+    | &nbsp;Emission Meter
+
+block description
+    | A CO
+    sub 2
+    | &nbsp;emission meter estimating the total CO
+    sub 2
+    | &nbsp;emission from World's Power Plant.
+
+block content
+
+    body
+        div#container
+            div#co2-sum-panel
+                p
+                    | World Power Plant CO
+                    sub 2
+                    | &nbsp;Emission:
+                p
+                span#co2Value  #{co2Value}
+                span  tonnes/seconds
+
+                p#co2des
+                    | The total CO
+                    sub 2
+                    | &nbsp;emission from Jurong Island is estimated
+                    | using
+
+            div#country-sum-panel.mypanel.container-fluid
+                select#country-select.col-lg-2
+                    each country in countries
+                        option(value= {country}) #{country}
+                div#table-panel.col-lg-7
+                div#country-total-panel.col-lg-3
+                    |Total country's CO2 emission:
+                    span#country-total-echo
+            div#convert-panel.mypanel
+                p.p2 Enter percenteage of existing coal power plant capacity to be converted to natural gas:
+                    input#input-percentage(type="text")
+                    span %
+
+                p.p2 Total CO2 Emission reduction by converting&nbsp;
+                    span#input-percentage-echo
+                    | % of coal power plant capacity to natural gas in&nbsp;
+                    span#select-country-echo
+                    | :&nbsp;
+                    span#convert-result-echo
+            div#err-msg-panel
+
+
+
+
+
+                script(src="https://code.jquery.com/jquery-2.2.0.min.js")
+
+                script(src="/javascripts/PPco2.js")

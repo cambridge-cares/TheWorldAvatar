@@ -20,7 +20,7 @@ var showCO2 = require("./routes/showCO2.js");
 var config = require("./config.js");
 var bmsplot= require("./routes/bmsplot.js");
 var bmsTemp = require("./routes/bmsNodeTemp");
-
+var PPCO2 = require("./routes/powerplantCO2");
 var registerer= require("./util/register2DataChange");
 var registerUrl = config.bmsUrlPath;
 var myUrl = config.myUrlPath;
@@ -39,7 +39,8 @@ function setHeader(res, mpath){
     console.log("SEtting headers");
 
 
-}
+}app.use(bodyParser.text({ type: 'application/json' }));
+
 /*serve static file***/
 app.use(express.static(path.join(__dirname, 'public')));
 //app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
@@ -47,6 +48,7 @@ app.use('/visualizeWorld', visualizeWorld);
 app.use('/visualizeBMS', visualizeBMS);
 app.use('/visualizeSemakau', visualizeSemakau);
 app.use('/visualizeJurong', visualizeJurong);
+app.use('/PowerPlantCO2',  PPCO2);
 
 app.use('/JurongIsland.owl/showCO2', showCO2);
 app.use('/JPS_KB_CARES_Lab_Node/FH-01.owl', bmsTemp);
@@ -64,7 +66,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
 /*future data change will be post to this route*/
-app.use(bodyParser.text({ type: 'application/json' }));
+
 app.post("/change", function (req, res) {//data change of other nodes will be post to here
     //retreive changed data//do whatever you need to do with this data
     //now we only record it down
@@ -123,7 +125,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render('error', {error: err});
 });
 /********************/
 

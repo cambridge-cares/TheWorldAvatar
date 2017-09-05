@@ -35,18 +35,18 @@ let request = require('request');
  [
  {source: , target: , level: }
  ]
-
-
  ****/
 //commented out lazy innitiation
 //var connections = [];
+
+var owlProcessor = {};
 
 /**
  * main function, async
  * @param options  topnode(topnode address on disk), [showServiceOnly(bool) } showImport(bool)]
  * @param callback  fn(err, results)
  */
-function readConnections(options, callback) {
+owlProcessor.readConnections = function(options, callback) {
 
     /*settings***********************/
     let showServiceOnly = options.showServiceOnly || false;
@@ -99,111 +99,6 @@ function readConnections(options, callback) {
 
     }
 
-    function getXMLImports(root) {
-        try {
-
-         //Get every tab defined in ontology tab
-              let imports =  root.find('//owl:Ontology//owl:imports', {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#resource"});
-           //   console.log(imports);
-                let results = [];
-              if(imports ) {
-                  results = imports.map(function (item) {
-                      return item.attr("resource").value();
-                  });
-
-              }
-            return results;
-        }
-        catch (err) {
-            throw  err;
-        }
-    }
-	
-	function getUri(root){
-        /**
-		            for (var ns of root.namespaces()) {
-                if (ns.prefix() === null) {//if prefix not null [ self namespace is defined with null prefix]
-                  return ns.href();
-                }
-            }
-			***/
-        let uri = root.find('//owl:Ontology', {owl:'http://www.w3.org/2002/07/owl#'});
-        if(!uri || uri.length < 1){
-            return null;
-        }
-
-        return uri[0].attr("about").value();
-
-	}
-
-
-
-    /**
-     * A link to the service page is defined in the service owl. this function retrieves it
-     * @root  xml root of the file
-     */
-	function getServiceUrl(root) {
-
-	    let urls  = root.find("//Service:hasUrl", {"Service" :"http://www.theworldavatar.com/Service.owl#"});
-
-         if(!urls || urls.length < 1){
-
-             return null;
-         }
-        console.log("found service url in func: " +urls[0].text().trim())
-
-	    return  urls[0].text().trim();
-    }
-
-
-    /**
-     * Find all children defined in an owl file
-     * @param root
-     * @returns {Array}
-     */
-    function getChildren(root) {
-		if(!root){
-			return [];
-		}
-        var children = [];
-        var namespaceOb = {};//construct namespaceOb for find in root with nested namespace
-        namespaceOb['owl'] = "http://www.w3.org/2002/07/owl#";
-        namespaceOb['Eco-industrialPark'] = "http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#";
-        namespaceOb['system'] = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#";
-
-        //find all node with hasIRI property
-        var uris = root.find("//Eco-industrialPark:hasIRI", namespaceOb);
-      //  console.log("found node Eco-industrialPark:hasIRI:" + uris.length);
-        for (let curi of uris) {
-           // console.log(curi.name());
-            children.push(curi.text().trim());//push to targets list
-        }
-        //find all node with SYSTEM:hasIRI property
-        let urisS = root.find("//system:hasIRI", namespaceOb);
-        //console.log("found node system:hasIRI:"+urisS.length);
-        for(let curi of urisS){
-            //    console.log(curi.name());
-            children.push(curi.text().trim());//push to targets list
-        }
-        return children;
-    }
-
-    function getGeoCoord(root) {
-        if(!root){
-            return null;
-        }
-        let x =  root.find("//owl:NamedIndividual[contains(@rdf:about, 'ValueOf_x_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
-
-        let y =  root.find("//owl:NamedIndividual[contains(@rdf:about, 'ValueOf_y_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
-
-        if(x.length > 0 && y.length > 0) {
-           // console.log("#########################findcoordis:" + x[0].text().trim());
-           // console.log("converted coordi: " +  util.inspect(convertCoordinate(x[0].text().trim(), y[0].text().trim(), false)));
-            return convertCoordinate(x[0].text().trim(), y[0].text().trim(), false);
-        } else {
-            return null;
-        }
-        }
 
     //convert google GPS coordi to 1984w coordi(the one used in our own)
     var convertCoordinate = function (GPSLong, GPSLat, google2Owl) {
@@ -257,22 +152,11 @@ function readConnections(options, callback) {
 
 	   
 		       console.log("------------loopChildRecur--------------------");
-			   var root;
-			      try{
-               let xmlDoc = libxmljs.parseXml(file);
-                root = xmlDoc.root();
-              // var myUri = (root.attrs() && root.attrs().length > 0) ? root.attrs()[0].value() : null;
+			   var root = parseXMLFile(file);
 
-			    var myUri = getUri(root);
+           var myUri = getUri(root);
 
-          //     console.log("myURI" + myUri);
-               //TODO: request for remote  VS search with name on current?
-               //TODO: xml parse the file => get targets list == childList => request on each child file
-
-				  } catch(err){
-					  console.log(err);
-				  }
-               let children = getChildren(root);
+           let children = getChildren(root);
            //get my links
            let connectionParent = [],geoCoordsParent = [],serviceUrlsParent = [];
            var imports;
@@ -420,4 +304,123 @@ function readConnections(options, callback) {
     }
 }
 
-module.exports = readConnections;
+
+owlProcessor.parseXMLFile = function(file) {
+    try{
+        let xmlDoc = libxmljs.parseXml(file);
+        let root = xmlDoc.root();
+        // var myUri = (root.attrs() && root.attrs().length > 0) ? root.attrs()[0].value() : null;
+
+        return root;
+
+        //     console.log("myURI" + myUri);
+        //TODO: request for remote  VS search with name on current?
+        //TODO: xml parse the file => get targets list == childList => request on each child file
+
+    } catch(err){
+        console.log(err);
+    }
+}
+
+owlProcessor.getXMLImports = function(root) {
+    try {
+
+        //Get every tab defined in ontology tab
+        let imports =  root.find('//owl:Ontology//owl:imports', {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#resource"});
+        //   console.log(imports);
+        let results = [];
+        if(imports ) {
+            results = imports.map(function (item) {
+                return item.attr("resource").value();
+            });
+
+        }
+        return results;
+    }
+    catch (err) {
+        throw  err;
+    }
+}
+
+owlProcessor.getUri = function(root){
+
+    let uri = root.find('//owl:Ontology', {owl:'http://www.w3.org/2002/07/owl#'});
+    if(!uri || uri.length < 1){
+        return null;
+    }
+
+    return uri[0].attr("about").value();
+
+}
+
+
+
+/**
+ * A link to the service page is defined in the service owl. this function retrieves it
+ * @root  xml root of the file
+ */
+owlProcessor.getServiceUrl = function(root) {
+
+    let urls  = root.find("//Service:hasUrl", {"Service" :"http://www.theworldavatar.com/Service.owl#"});
+
+    if(!urls || urls.length < 1){
+
+        return null;
+    }
+    console.log("found service url in func: " +urls[0].text().trim())
+
+    return  urls[0].text().trim();
+}
+
+
+/**
+ * Find all children defined in an owl file
+ * @param root
+ * @returns {Array}
+ */
+owlProcessor.getChildren = function(root) {
+    if(!root){
+        return [];
+    }
+    var children = [];
+    var namespaceOb = {};//construct namespaceOb for find in root with nested namespace
+    namespaceOb['owl'] = "http://www.w3.org/2002/07/owl#";
+    namespaceOb['Eco-industrialPark'] = "http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#";
+    namespaceOb['system'] = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#";
+
+    //find all node with hasIRI property
+    var uris = root.find("//Eco-industrialPark:hasIRI", namespaceOb);
+    //  console.log("found node Eco-industrialPark:hasIRI:" + uris.length);
+    for (let curi of uris) {
+        // console.log(curi.name());
+        children.push(curi.text().trim());//push to targets list
+    }
+    //find all node with SYSTEM:hasIRI property
+    let urisS = root.find("//system:hasIRI", namespaceOb);
+    //console.log("found node system:hasIRI:"+urisS.length);
+    for(let curi of urisS){
+        //    console.log(curi.name());
+        children.push(curi.text().trim());//push to targets list
+    }
+    return children;
+}
+
+owlProcessor.getGeoCoord = function(root) {
+    if(!root){
+        return null;
+    }
+    let x =  root.find("//owl:NamedIndividual[contains(@rdf:about, 'ValueOf_x_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
+
+    let y =  root.find("//owl:NamedIndividual[contains(@rdf:about, 'ValueOf_y_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
+
+    if(x.length > 0 && y.length > 0) {
+        // console.log("#########################findcoordis:" + x[0].text().trim());
+        // console.log("converted coordi: " +  util.inspect(convertCoordinate(x[0].text().trim(), y[0].text().trim(), false)));
+        return convertCoordinate(x[0].text().trim(), y[0].text().trim(), false);
+    } else {
+        return null;
+    }
+}
+
+
+module.exports = owlProcessor;

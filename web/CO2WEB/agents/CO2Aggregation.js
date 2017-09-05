@@ -4,7 +4,7 @@
 const $rdf = require('rdflib');
 const config = require('../config')
 const util = require('util')
-const parser = require('../util/rdfParser')({fileUrl:config.landLotNode});
+const parser = require('../util/rdfParserObsolete')({fileUrl:config.landLotNode});
 
 /*SPRAQL Query******************/
 const SPA = `

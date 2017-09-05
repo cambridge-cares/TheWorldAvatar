@@ -13,7 +13,7 @@ var config = {};
 
 
 //configDevelop();
-configDeploy();
+configDevelop();
 config.worldNode = config.root + "/TheWorld.owl";
 config.jurongNode = config.root + "/JurongIsland.owl";
 config.bmsNode = config.root + "/CARES_Lab.owl";
@@ -29,7 +29,7 @@ config.myUrlPath = config.changeUrl+"/" +config.changePath;
 
 
 function configDevelop() {
-    config.root = __dirname + "/TestFile" ; // own folder for testing
+    config.root = __dirname + "/testFiles" ; // own folder for testing
     config.port = 3000;//port for deploy
     config.registerUrl = "http://localhost:2000";
     config.changeUrl = "http://localhost:3000";

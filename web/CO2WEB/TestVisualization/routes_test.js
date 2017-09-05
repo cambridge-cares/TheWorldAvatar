@@ -4,7 +4,7 @@
 /*******IMPORT**********/
 var expect = require("chai").expect;
 var util = require("util");
-var rdfParser = require( "../util/rdfParser.js");
+var rdfParser = require( "../util/rdfParserObsolete.js");
 var request = require("request");
 var path = require("path");
 
@@ -178,3 +178,68 @@ describe('get /bmsplot ', function () {
     })
 });
 
+describe('get /PowerPlantCO2 ', function () {
+    it('returns status 200',function (done) {
+        this.timeout(30000);
+
+        let url = baseURL + "/PowerPlantCO2";
+        console.log("request "+ url);
+
+        request.get({url : url}, function(error, response, body) {
+            if(error){
+                console.log(error);
+                done(error);
+            }
+            expect(response.statusCode).to.equal(200);
+
+
+            done();
+        })
+
+    })
+});
+
+describe('get /listbycountry ', function () {
+    it('returns status 200',function (done) {
+        this.timeout(30000);
+
+        let url = baseURL + "/PowerPlantCO2/listbycountry";
+        console.log("request "+ url);
+
+        request({method:'POST', url : url, headers:{ "content-type": "application/json"},body:JSON.stringify({"country":"Slovakia"})}, function(error, response, body) {
+            if(error){
+                console.log(error);
+                done(error);
+            }
+            console.log(body);
+
+            expect(response.statusCode).to.equal(200);
+
+
+            done();
+        })
+
+    })
+});
+
+describe('get /convertion ', function () {
+    it('returns status 200',function (done) {
+        this.timeout(30000);
+
+        let url = baseURL + "/PowerPlantCO2/convertion";
+        console.log("request "+ url);
+
+        request({method:'POST', url : url, headers:{ "content-type": "application/json"},body:JSON.stringify({"country":"Slovakia", "percent":50})}, function(error, response, body) {
+            if(error){
+                console.log(error);
+                done(error);
+            }
+            console.log(body)
+            expect(response.statusCode).to.equal(200);
+
+
+            done();
+        })
+
+    })
+});

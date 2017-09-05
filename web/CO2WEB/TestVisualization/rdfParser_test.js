@@ -24,7 +24,7 @@ describe('RDFParser: ', function () {
 
         let node = 'http://www.jparksimulator.com/JurongIsland.owl#V_CO2_Jurong';
         let property = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue";
-        let result = rdfParser(opts).search(node, property);
+        let result = new rdfParser.RdfParser(opts).search(node, property);
         console.log(util.inspect(result));
 
         expect(result.value).to.equal('1500.0');
