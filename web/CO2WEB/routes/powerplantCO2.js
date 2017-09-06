@@ -1,0 +1,61 @@
+/**
+ * Created by Shaocong on 8/31/2017.
+ */
+
+var express = require('express');
+var router = express.Router();
+
+
+const CO2PPlantSum = require('../agents/CO2PlantAggregation');
+
+let CO2Dataset;
+if(!CO2Dataset){
+    CO2PPlantSum.getPlantAggregation(function (err, result) {
+        if(err){
+            //next(err);
+            console.log(err);
+            throw(err);
+            return;
+        }
+        CO2Dataset = result;
+        //TODO: init, get results
+        let co2value = CO2Dataset.sum;
+        let countries = CO2Dataset.dataBycountry;
+        // console.log(co2value);
+        // console.log(countries);
+
+    });
+}
+
+
+router.get('/', function (req, res) {
+
+        res.render('PPco2', { co2Value: parseFloat(CO2Dataset.sum).toFixed(4) , countries : CO2Dataset.countryList}); //render the view with this value
+
+});
+
+router.post('/listbycountry', function (req, res, next) {
+
+        if(!req.body) {
+            next(new Error("Can not find req body"));
+        }
+        console.log(req.body);
+    let parsedBody = JSON.parse(req.body)
+
+    console.log(CO2Dataset.getByCountry(parsedBody.country))
+    res.json(CO2Dataset.getByCountry(parsedBody.country)); //render the view with this value
+});
+
+router.post('/convertion', function (req, res,next) {
+
+        if(!req.body) {
+            next(new Error("Can not find req body"));
+        }
+        console.log(req.body);
+        let parsedBody = JSON.parse(req.body)
+
+    console.log(CO2Dataset.convert(parsedBody.country, parsedBody.percent))
+        res.json(CO2Dataset.convert(parsedBody.country, parseFloat(parsedBody.percent))); //render the view with this valu
+
+});
+module.exports = router;
