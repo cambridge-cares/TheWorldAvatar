@@ -127,7 +127,7 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
                     //cal new ns cap
                     //cal new ns emission
                     //sum up
-                    let newCalCap = this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration"] * percentage/100;
+                    let newCalCap = this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration"] * percentage/100 || 0;
                     console.log(this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration"])
                     let newCalEmi = calculateEmission("http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration", newCalCap);
                     console.log(newCalEmi)
@@ -160,13 +160,8 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
                     return;
                 }
                 const root = fileConnection.parseXMLFile(file);
-                var children = fileConnection.getChildren(root);
-                console.log("children length: "+ children.length);
+                var PP = fileConnection.getPPChildren(root);
 
-                //TODO: the type info should be wrapped in getChildren function
-                var PP = children.filter(function (uri) {
-                    return isAPP(uri);
-                });
 
                 console.log("children length: "+ PP.length);
                 callback(null, PP);

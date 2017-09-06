@@ -152,23 +152,23 @@ owlProcessor.readConnections = function(options, callback) {
 
 	   
 		       console.log("------------loopChildRecur--------------------");
-			   var root = parseXMLFile(file);
+			   var root = owlProcessor.parseXMLFile(file);
 
-           var myUri = getUri(root);
+           var myUri = owlProcessor.getUri(root);
 
-           let children = getChildren(root);
+           let children = owlProcessor.getChildren(root);
            //get my links
            let connectionParent = [],geoCoordsParent = [],serviceUrlsParent = [];
            var imports;
 
            //get this geoCoord, push it on result links
-           var coord = getGeoCoord(root);
+           var coord = owlProcessor.getGeoCoord(root);
            if(coord) {
                geoCoordsParent.push({url : myUri, coord: coord});
            }
 
            if(showServiceUrl){
-               let serviceUrltmp = getServiceUrl(root);
+               let serviceUrltmp = owlProcessor.getServiceUrl(root);
                if(serviceUrltmp){
                    console.log("found service url: " +serviceUrltmp)
                    serviceUrlsParent.push({url : myUri, serviceUrl: serviceUrltmp})
@@ -177,7 +177,7 @@ owlProcessor.readConnections = function(options, callback) {
            }
            if (showImport) {
                try {
-                    imports = getXMLImports(root);
+                    imports = owlProcessor.getXMLImports(root);
                    for (let imported of imports) {
                     //   console.log("import iri:" + imported);
                        connectionParent.push({source: myUri, target: imported,level:null})
@@ -402,6 +402,30 @@ owlProcessor.getChildren = function(root) {
         //    console.log(curi.name());
         children.push(curi.text().trim());//push to targets list
     }
+
+    return children;
+}
+
+owlProcessor.getPPChildren = function (root) {
+    if(!root){
+        return [];
+    }
+    var children = [];
+    var namespaceOb = {};//construct namespaceOb for find in root with nested namespace
+    namespaceOb['system'] = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#";
+    namespaceOb['f'] ="http://www.theworldavatar.com/TheWorld.owl#";
+    //find all node with SYSTEM:hasIRI property
+    let uris = root.find("//f:PowerPlant//system:hasIRI", namespaceOb);
+    //console.log("found node system:hasIRI:"+urisS.length);
+
+    console.log("find pp:"+uris.length)
+
+    for(let curi of uris){
+        //    console.log(curi.name());
+       //console.log(JSON.stringify(curi.path()))
+         children.push(curi.text().trim());//push to targets list
+    }
+
     return children;
 }
 
@@ -410,7 +434,6 @@ owlProcessor.getGeoCoord = function(root) {
         return null;
     }
     let x =  root.find("//owl:NamedIndividual[contains(@rdf:about, 'ValueOf_x_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
-
     let y =  root.find("//owl:NamedIndividual[contains(@rdf:about, 'ValueOf_y_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
 
     if(x.length > 0 && y.length > 0) {
