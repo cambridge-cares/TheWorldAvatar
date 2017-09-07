@@ -89,6 +89,7 @@ app.post("/change", function (req, res) {//data change of other nodes will be po
 //TODO: else, post again for initial data(seperate it with register)
 io.on('connection', function(socket){
     if(dataCopy === null){//no cached data copy, this is the first client
+	/**
         registerer.register(registerUrl, myUrl, function (err, initialData) {//register to changing-data node
             if(err){
                 console.log(err);
@@ -100,7 +101,7 @@ io.on('connection', function(socket){
             console.log('a user connected');
 
         })
-
+****/
 
     } else {
          console.log("Saved initial dataCopy: " + dataCopy);
