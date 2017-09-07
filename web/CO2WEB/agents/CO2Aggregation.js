@@ -4,7 +4,7 @@
 const $rdf = require('rdflib');
 const config = require('../config')
 const util = require('util')
-const parser = require('./rdfParserObsolete')({fileUrl:config.landLotNode});
+const parser = require('../util/rdfParser');
 
 /*SPRAQL Query******************/
 const SPA = `
@@ -22,37 +22,31 @@ order by DESC(?ValueOf_CarbonEmissions)
 `;
 /***********************************/
 
-    var CO2Addresult;
 function getCO2Aggregation(callback) {
 //TODO: error handle
 
+	var mparser = new parser.RdfParser({fileUrl: config.landLotNode});
 
-   if(!CO2Addresult){
-    CO2Addresult = 0;
-    parser.graph.query($rdf.SPARQLToQuery(SPA, false, parser.graph), function (data) {//each data point
+    mparser.mquery( SPA, function (err, data) {//each data point
 
-        //      console.log("!!!!!!!!!!!!!!!!!!!!")
-        //console.log(arguments[i])
-       // console.log( data['?ValueOf_CarbonEmissions']['value']);
-        // console.log(counter++)
+  
 
-        CO2Addresult+=parseFloat(data['?ValueOf_CarbonEmissions']['value']);
-
-    }, null, function (err) {//when all is done
        // console.log("@@@@@@@@@@@done")
        // console.log(result)
        if(err){
 		   console.log(err);
 	callback(err);       
 }
+    var CO2Addresult = 0;
+        data.forEach(function(item){
+			CO2Addresult+=		parseFloat(item['?ValueOf_CarbonEmissions']['value']);
+		})
+		
+
         //Now result is ready
         callback(null, CO2Addresult);
     });
-  } else{
-       console.log(CO2Addresult);
-        callback(null, CO2Addresult);
-}
-
+ 
 
 
 

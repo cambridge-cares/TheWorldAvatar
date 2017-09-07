@@ -100,22 +100,7 @@ owlProcessor.readConnections = function(options, callback) {
     }
 
 
-    //convert google GPS coordi to 1984w coordi(the one used in our own)
-    var convertCoordinate = function (GPSLong, GPSLat, google2Owl) {
-//https://github.com/proj4js/proj4js
-        var googleProjection = 'EPSG:4326'; //google
-        var ourProjection = 'EPSG:3857';//our
-//console.log("convert coordis: ["+parseInt(GPSLong)+", "+parseInt(GPSLat)+"] to "+proj4(fromProjection, toProjection, [parseInt(GPSLong),parseInt(GPSLat)]));
 
-        return google2Owl?converted(googleProjection, ourProjection) : converted(ourProjection, googleProjection);
-        function converted(fromProjection, toProjection){
-
-            var result =  proj4(fromProjection, toProjection, [parseFloat(GPSLong),parseFloat(GPSLat)]);
-
-            return {x: result[0], y:result[1]};
-        }
-
-    };
 
     /**
      * return all services defined in the owl, service definition : contains "http://www.theworldavatar.com/Service.owl" in rdf:type
@@ -452,7 +437,22 @@ owlProcessor.getGeoCoord = function(root) {
         return null;
     }
 };
+    //convert google GPS coordi to 1984w coordi(the one used in our own)
+    var convertCoordinate = function (GPSLong, GPSLat, google2Owl) {
+//https://github.com/proj4js/proj4js
+        var googleProjection = 'EPSG:4326'; //google
+        var ourProjection = 'EPSG:3857';//our
+//console.log("convert coordis: ["+parseInt(GPSLong)+", "+parseInt(GPSLat)+"] to "+proj4(fromProjection, toProjection, [parseInt(GPSLong),parseInt(GPSLat)]));
 
+        return google2Owl?converted(googleProjection, ourProjection) : converted(ourProjection, googleProjection);
+        function converted(fromProjection, toProjection){
+
+            var result =  proj4(fromProjection, toProjection, [parseFloat(GPSLong),parseFloat(GPSLat)]);
+
+            return {x: result[0], y:result[1]};
+        }
+
+    };
 
 owlProcessor.getNSList = function (root) {
     //each one in ns, put on nsList
@@ -472,5 +472,4 @@ owlProcessor.uriList2DiskLoc = function (uriArr, diskroot) {
         diskLoc = diskLoc.replace("http://www.jparksimulator.com",diskroot);
         return {uri:item, diskLoc:diskLoc}
     });
-}
-module.exports = owlProcessor;
+}module.exports = owlProcessor;
