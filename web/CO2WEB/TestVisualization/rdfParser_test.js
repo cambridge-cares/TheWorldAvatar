@@ -5,7 +5,7 @@ Testing the rdfParser, which extracts o by providing s and p in a s,p,o triple d
 /*******IMPORT**********/
 var expect = require("chai").expect;
 var util = require("util");
-var rdfParser = require( "../util/rdfParser.js");
+var rdfParser = require( "../agents/rdfParser.js");
 var request = require("request");
 var path = require("path");
 

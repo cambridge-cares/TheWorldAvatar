@@ -9,10 +9,11 @@ let util = require('util');
 var RdfParser ={};
 RdfParser.RdfParser = function (opts) {
     this.store = $rdf.graph();
-    this.fileUrl = opts.fileUrl;
+    this.file = opts.file;
+    this.uri = opts.uri;
     this.mimeType = opts.mimeType || 'application/rdf+xml';
-    if (!this.fileUrl) {
-        throw new Error("file location undefined");//TODO: CHECK ERR HANDLING END POINT
+    if (!this.file || !this.uri) {
+        throw new Error("file and uri undefined");//TODO: CHECK ERR HANDLING END POINT
     }
 
     this.parseBody();
@@ -23,34 +24,9 @@ RdfParser.RdfParser = function (opts) {
 
 RdfParser.RdfParser.prototype =  {
     parseBody: function() {
-        let fileUrl  = {};
-        try {
-            /*---------retrieve base URI------------------*/
-            fileUrl = this.fileUrl;
-            let body = fs.readFileSync(this.fileUrl, {encoding: 'utf8'});
-            let xmlDoc = libxmljs.parseXml(body);
-            let root = xmlDoc.root();
-            myUri = this.myUri = this.getUri(root)||((root.attrs() && root.attrs().length > 0) ? root.attrs()[0].value() : null);//take ontology object defined to be uri
 
-                if (!this.myUri) {//Also not found as ns definiton?
-                    throw err(new Error("base IRI of owl file not defined in owl file:" + fileUrl));
-                }
+            $rdf.parse(this.file, this.store, this.uri, this.mimeType);// parse rdf
 
-            /*-------retrieve base URI END----------------*/
-            $rdf.parse(body, this.store, this.myUri, this.mimeType);// parse rdf
-
-        } catch (err) {
-
-            if(err.errno== -4058){
-                console.log("no such file or directory: "+fileUrl)
-               // console.log(err.message);
-
-            } else{
-                console.log("parse rdf error: " + fileUrl );
-                throw err;
-            }
-
-        }
     },
 
     defineSym  : function (nodeUrl) {
@@ -119,6 +95,45 @@ RdfParser.RdfParser.prototype =  {
 
         return uri[0].attr("about").value();
 
+    },
+    geoCoordsQuery : function (callback) {
+        var qs = `
+    PREFIX j.1: <http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#>
+        PREFIX j.2: <http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+  
+        select distinct ?cVname ?cName ?value
+        where {
+        ?cVname a j.1:CoordinateValue;
+    j.2:isValueOf ?cName.
+
+        ?cVname a j.1:CoordinateValue;
+    j.2:numericalValue ?value.
+}`;
+
+        let coordiArr = {};
+        this.mquery(qs, function (err, data) {
+            if(err){
+                callback(err);
+                return;
+            }
+            //console.log(data)
+            data.forEach(function (item) {
+                let value = item['?value']['value'];
+                let uri = item['?cName']['value']
+
+                let name=getName(uri);
+                coordiArr[name] = coordiArr[name]||{};
+                coordiArr[name][isXorY(uri)] = value;
+            })
+            callback(null, coordiArr);
+        })
+
+        function isXorY(uri) {
+            return uri.includes("#x_coordinate")?"x":"y";
+        }
+        function getName(uri) {
+            return "http://www.jparksimulator.com/"+uri.split('_of_')[1];
+        }
     }
 
 

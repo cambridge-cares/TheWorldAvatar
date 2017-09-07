@@ -5,7 +5,7 @@ Test fileConnection module, which extracts all connections out of current grOWLs
 /*******IMPORT**********/
 var expect = require("chai").expect;
 var util = require("util");
-var rdfParser = require( "../util/rdfParserObsolete.js");
+var rdfParser = require( "../agents/rdfParserObsolete.js");
 var request = require("request");
 var path = require("path");
 var connections = require("../agents/fileConnection.js");

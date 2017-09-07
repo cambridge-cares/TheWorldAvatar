@@ -1145,7 +1145,6 @@ function initMap() {
         , center: jurong
     });
 
-
 }
 
 
@@ -1153,9 +1152,6 @@ let deviceMap = (function initDeviceMap() {
     //TODO: add this to backend
     let deviceMap = new Map();
     $.getJSON("JSON/prototypeDevices.json", function (data) {
-
-
-
         for (let device of Object.keys(data)) {
             console.log("loading device: "+device);
             deviceMap.set(device, data[device]);

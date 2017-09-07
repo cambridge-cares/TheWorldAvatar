@@ -28,34 +28,44 @@ if(!CO2Dataset){
 }
 
 
-router.get('/', function (req, res) {
-
-        res.render('PPco2', { co2Value: parseFloat(CO2Dataset.sum).toFixed(4) , countries : CO2Dataset.countryList}); //render the view with this value
-
+router.get('/', function (req, res, next) {
+        if(CO2Dataset) {
+            res.render('PPco2', {co2Value: parseFloat(CO2Dataset.sum).toFixed(4), countries: CO2Dataset.countryList}); //render the view with this value
+        } else{
+            next(new Error("Server can not provide the data now"))
+        }
 });
 
 router.post('/listbycountry', function (req, res, next) {
-
-        if(!req.body) {
-            next(new Error("Can not find req body"));
-        }
-        console.log(req.body);
-    let parsedBody = JSON.parse(req.body)
-
-    console.log(CO2Dataset.getByCountry(parsedBody.country))
-    res.json(CO2Dataset.getByCountry(parsedBody.country)); //render the view with this value
-});
-
-router.post('/convertion', function (req, res,next) {
-
+    if(CO2Dataset) {
         if(!req.body) {
             next(new Error("Can not find req body"));
         }
         console.log(req.body);
         let parsedBody = JSON.parse(req.body)
 
-    console.log(CO2Dataset.convert(parsedBody.country, parsedBody.percent))
+        console.log(CO2Dataset.getByCountry(parsedBody.country))
+        res.json(CO2Dataset.getByCountry(parsedBody.country)); //render the view with this value
+    } else{
+        next(new Error("Server can not provide the data now"))
+    }
+
+});
+
+router.post('/convertion', function (req, res,next) {
+    if(CO2Dataset) {
+        if(!req.body) {
+            next(new Error("Can not find req body"));
+        }
+        console.log(req.body);
+        let parsedBody = JSON.parse(req.body)
+
+        console.log(CO2Dataset.convert(parsedBody.country, parsedBody.percent))
         res.json(CO2Dataset.convert(parsedBody.country, parseFloat(parsedBody.percent))); //render the view with this valu
+    } else{
+        next(new Error("Server can not provide the data now"))
+    }
+
 
 });
 module.exports = router;

@@ -1,7 +1,7 @@
 /**
  * Created by Shaocong on 8/31/2017.
  */
-const parser = require('./util/rdfParser');
+const parser = require('./agents/rdfParser');
 
 var uri = "http://www.theworldavatar.com/Swanbank_B_Coal_Power_Plant_Australia.owl"
 uri = uri.replace("http://www.theworldavatar.com", __dirname + "/TestFile");

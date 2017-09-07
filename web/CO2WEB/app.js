@@ -21,7 +21,7 @@ var config = require("./config.js");
 var bmsplot= require("./routes/bmsplot.js");
 var bmsTemp = require("./routes/bmsNodeTemp");
 var PPCO2 = require("./routes/powerplantCO2");
-var registerer= require("./util/register2DataChange");
+var registerer= require("./agents/register2DataChange");
 var registerUrl = config.bmsUrlPath;
 var myUrl = config.myUrlPath;
 

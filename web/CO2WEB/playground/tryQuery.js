@@ -2,7 +2,7 @@
  * Created by Shaocong on 7/19/2017.
  */
 let $rdf = require('rdflib');
-let parser = require('../util/rdfParserObsolete')({fileUrl:"../testFile/JParkLandLots.owl"});
+let parser = require('../agents/rdfParserObsolete')({fileUrl:"../testFile/JParkLandLots.owl"});
 
 let util = require('util')
 
