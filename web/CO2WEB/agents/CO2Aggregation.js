@@ -26,6 +26,10 @@ function getCO2Aggregation(callback) {
 //TODO: error handle
 
     fs.readFile(config.landLotNode, function (err, file) {
+		if(err || !file){
+			console.log(err);
+			callback(err);
+		}
         var mparser = new parser.RdfParser({uri: config.landLotNode, file :file});
 
         mparser.mquery( SPA, function (err, data) {//each data point
