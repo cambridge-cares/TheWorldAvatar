@@ -61,7 +61,7 @@ function readPPCoordi(callback) {
     function queryCoord(fileInfo, callback){
 
         getChildFile(fileInfo.diskLoc, function (err, file) {
-            if(err){
+            if(err || !file){
                 callback(err);
                 return;
             }

@@ -25,7 +25,6 @@ RdfParser.RdfParser = function (opts) {
 
 RdfParser.RdfParser.prototype =  {
     parseBody: function() {
-
         try{
             $rdf.parse(this.file, this.store, this.uri, this.mimeType);// parse rdf
         }catch(err){
@@ -51,11 +50,9 @@ RdfParser.RdfParser.prototype =  {
     mquery : function (queryStr, callback) {
         let dataset = [];
 
-        //console.log(this.fileUrl)
-        //console.log("!!!!!!!!!!!!!!!!!!!!!!!")
-
-        //console.log("now query")
-        //console.log(util.inspect(this));
+        if(!this.store){
+            callback(new Error("body not parsed"));
+        }
         this.store.query($rdf.SPARQLToQuery(queryStr, false, this.store), function (data) {//each data point
 
           //  console.log("@@@@@@@@@@@@@@@@@@@@")
