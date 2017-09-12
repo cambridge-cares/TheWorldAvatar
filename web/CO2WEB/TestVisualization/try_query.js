@@ -2,8 +2,10 @@
  * Created by Shaocong on 9/5/2017.
  */
 var uri = "C:/Users/Shaocong/WORK/webJPSGit/irp3-WebJPS-git/CO2WEB/testFiles/powerplants/Collinsville_Coal_Power_Plant_Australia.owl"
-var parser =require('../agents/rdfParser')
-var mparser = new parser.RdfParser({fileUrl: uri})
+var parser =require('../agents/rdfParser'),
+fs = require('fs')
+var file = fs.readFileSync(uri);
+var mparser = new parser.RdfParser({uri: uri, file : file})
 var parserO = require('../agents/rdfParserObsolete')({fileUrl:uri})
 
 var qsTypeCountry = `
@@ -32,7 +34,7 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
          ?x j.2:numericalValue ?Capacity.
              }`;
 
-/**
+
 
 mparser.mquery(qsTypeCountry, function (err, data) {
     if(err){
@@ -47,7 +49,7 @@ console.log(    JSON.stringify(data)
     console.log(data[0]['?Fuel_Type']['value'])
 
 });
-***/
+
 mparser.geoCoordsQuery(function (err, data) {
 
     console.log(data)

@@ -18,7 +18,7 @@ var showCO2 = require("./routes/showCO2.js");
 var config = require("./config.js");
 var bmsplot= require("./routes/bmsplot.js");
 var bmsTemp = require("./routes/bmsNodeTemp");
-//var PPCO2 = require("./routes/powerplantCO2");
+var PPCO2 = require("./routes/powerplantCO2");
 var ppMap = require('./routes/mapPowerPlant')
 var registerer= require("./agents/register2DataChange");
 var setBMSWatcher = require("./agents/setBMSWatcher");
@@ -52,7 +52,7 @@ app.use('/visualizeWorld', visualizeWorld);
 app.use('/visualizeBMS', visualizeBMS);
 app.use('/visualizeSemakau', visualizeSemakau);
 app.use('/visualizeJurong', visualizeJurong);
-//app.use('/PowerPlantCO2',  PPCO2);
+app.use('/PowerPlantCO2',  PPCO2);
 app.use('/ppmap', ppMap);
 
 app.use('/JurongIsland.owl/showCO2', showCO2);

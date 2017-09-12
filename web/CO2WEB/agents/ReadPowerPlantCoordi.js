@@ -67,6 +67,7 @@ function readPPCoordi(callback) {
             }
 
             var mparser = new rdfParser.RdfParser({file: file.toString(), uri:fileInfo.uri});
+
             mparser.geoCoordsQuery(callback);
         })
 

@@ -9,14 +9,15 @@ let util = require('util');
 var RdfParser ={};
 RdfParser.RdfParser = function (opts) {
     this.store = $rdf.graph();
-    this.file = opts.file;
-    this.uri = opts.uri;
-    this.mimeType = opts.mimeType || 'application/rdf+xml';
-    if (!this.file || !this.uri) {
+    if (!opts.file || !opts.uri) {
         throw new Error("file and uri undefined");//TODO: CHECK ERR HANDLING END POINT
     }
+    this.file = typeof opts.file === "string"? opts.file:opts.file.toString();
+    this.uri = opts.uri;
+    this.mimeType = opts.mimeType || 'application/rdf+xml';
 
-    this.parseBody();
+
+   this.parseBody();
 };
 
 
@@ -25,7 +26,11 @@ RdfParser.RdfParser = function (opts) {
 RdfParser.RdfParser.prototype =  {
     parseBody: function() {
 
+        try{
             $rdf.parse(this.file, this.store, this.uri, this.mimeType);// parse rdf
+        }catch(err){
+            console.log(err)
+        }
 
     },
 
