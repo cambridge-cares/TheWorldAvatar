@@ -432,13 +432,13 @@ owlProcessor.getGeoCoord = function(root) {
     if(x.length > 0 && y.length > 0) {
         // console.log("#########################findcoordis:" + x[0].text().trim());
         // console.log("converted coordi: " +  util.inspect(convertCoordinate(x[0].text().trim(), y[0].text().trim(), false)));
-        return convertCoordinate(x[0].text().trim(), y[0].text().trim(), false);
+        return owlProcessor.convertCoordinate(x[0].text().trim(), y[0].text().trim(), false);
     } else {
         return null;
     }
 };
     //convert google GPS coordi to 1984w coordi(the one used in our own)
-    var convertCoordinate = function (GPSLong, GPSLat, google2Owl) {
+   owlProcessor.convertCoordinate = function (GPSLong, GPSLat, google2Owl) {
 //https://github.com/proj4js/proj4js
         var googleProjection = 'EPSG:4326'; //google
         var ourProjection = 'EPSG:3857';//our
@@ -447,7 +447,10 @@ owlProcessor.getGeoCoord = function(root) {
         return google2Owl?converted(googleProjection, ourProjection) : converted(ourProjection, googleProjection);
         function converted(fromProjection, toProjection){
 
-            var result =  proj4(fromProjection, toProjection, [parseFloat(GPSLong),parseFloat(GPSLat)]);
+            GPSLong  = typeof GPSLong === "string"?parseFloat(GPSLong) : GPSLong
+            GPSLat  = typeof GPSLat === "string"?parseFloat(GPSLat) : GPSLat
+
+            var result =  proj4(fromProjection, toProjection, [GPSLong,GPSLat]);
 
             return {x: result[0], y:result[1]};
         }
@@ -472,4 +475,6 @@ owlProcessor.uriList2DiskLoc = function (uriArr, diskroot) {
         diskLoc = diskLoc.replace("http://www.jparksimulator.com",diskroot);
         return {uri:item, diskLoc:diskLoc}
     });
-}module.exports = owlProcessor;
+}
+
+module.exports = owlProcessor;

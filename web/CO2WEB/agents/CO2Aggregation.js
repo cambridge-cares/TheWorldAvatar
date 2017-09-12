@@ -4,7 +4,7 @@
 const $rdf = require('rdflib');
 const config = require('../config')
 const util = require('util')
-const parser = require('../util/rdfParser');
+const parser = require('../agents/rdfParser');
 
 /*SPRAQL Query******************/
 const SPA = `

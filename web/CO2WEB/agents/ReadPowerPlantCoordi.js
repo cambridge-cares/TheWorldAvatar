@@ -6,7 +6,7 @@ const xmlParser = require('./fileConnection'),
       config = require('../config'),
       async = require('async'),
       path = require('path'),
-      fs = require('fs'),
+      fs = require('graceful-fs'),
       worldNode  = config.worldNode;
 
 function readPPCoordi(callback) {
@@ -29,8 +29,23 @@ function readPPCoordi(callback) {
                 callback(err);
                 return;
             }
-                console.log(JSON.stringify(dataset))
-                callback(null, dataset);
+                //console.log(JSON.stringify(dataset))
+                //construct dataset to google coordi format
+                let formatted = [];
+
+                formatted = dataset.map(function (item) {
+                    for(let uri in item){
+                        if(item.hasOwnProperty(uri)){
+                            //let toGoogle = xmlParser.convertCoordinate(item[uri].x, item[uri].y, false);
+                            return {uri: uri, location :{lat: parseFloat(item[uri].y), lng:parseFloat(item[uri].x)}}
+                        }
+                    }
+                })
+
+
+
+
+                callback(null, formatted);
             });
 
 
@@ -64,9 +79,6 @@ function readPPCoordi(callback) {
 
 
 module.exports = readPPCoordi;
-
-
-
 
 
 

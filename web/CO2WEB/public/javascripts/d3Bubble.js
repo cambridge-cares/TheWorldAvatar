@@ -989,6 +989,10 @@ $(window).load(function () {// when web dom ready
 
         console.log("CX:" + x + " Y:" + y + "  R:" + radius);
         //pack x, y into object
+        //pack x, y into object
+        //pack x, y into object
+        //pack x, y into object
+        //pack x, y into object
         resultArr = map.updateByCoord({x, y}, radius);
 
         console.log(resultArr.toString())
@@ -1097,17 +1101,19 @@ $(window).load(function () {// when web dom ready
     let blinkTimer;
     let preTime = Date.now();
     socket.on('update', function (data) {
+        console.log("Socket event!!!!!!!!!!!")
+        console.log(data)
         //check if time less than 1s, if true, do not do anything
-        if (Date.now() - preTime > 1000) {
+       // if (Date.now() - preTime > 1000) {
             preTime = Date.now();
-            let parsedData = JSON.parse(data);
-            let name = parsedData.name;
+          //  let parsedData = JSON.parse(data);
+            let name = data.uri;
             //search name among nodes to grab the correct one
             // console.log($('circle'));
             // console.log($('#FH-01.owl'));
             // console.log($("circle[id='FH-01.owl']"));
 
-            let node = $("circle[id='FH-01.owl']");
+            let node = $("circle[id='"+data.filename+"']");
 
             let oriColor = node.css("fill");
 
@@ -1125,7 +1131,7 @@ $(window).load(function () {// when web dom ready
 
             }, 500);//on 0.5s, back to normal
 
-        }
+       // }
     });
     /*END socket **********************************************************/
 

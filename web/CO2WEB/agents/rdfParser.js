@@ -132,7 +132,7 @@ RdfParser.RdfParser.prototype =  {
             return uri.includes("#x_coordinate")?"x":"y";
         }
         function getName(uri) {
-            return "http://www.jparksimulator.com/"+uri.split('_of_')[1];
+            return "http://www.jparksimulator.com/"+uri.split('_of_')[1]+".owl";
         }
     }
 
