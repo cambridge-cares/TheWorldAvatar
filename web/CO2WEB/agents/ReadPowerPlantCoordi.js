@@ -22,7 +22,7 @@ function readPPCoordi(callback) {
             let root = xmlParser.parseXMLFile(file);
             let PPchildren = xmlParser.getPPChildren(root);
             //now, read each file, parse as rdf, query its geographic information
-            let listUrinLoc = xmlParser.uriList2DiskLoc(PPchildren, path.join(config.root, "powerplants"));
+            let listUrinLoc = xmlParser.uriList2DiskLoc(PPchildren, config.root);
 
             async.concat(listUrinLoc, queryCoord , function (err, dataset) {
             if(err){

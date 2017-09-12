@@ -9,7 +9,7 @@ let util = require('util');
 var RdfParser ={};
 RdfParser.RdfParser = function (opts) {
     this.store = $rdf.graph();
-    this.file = opts.file;
+        this.file = typeof opts.file === "string"? opts.file:opts.file.toString();
     this.uri = opts.uri;
     this.mimeType = opts.mimeType || 'application/rdf+xml';
     if (!this.file || !this.uri) {

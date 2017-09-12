@@ -202,7 +202,7 @@ var FileLinkMap = function (options) {
     }
 
     function setD(link) {
-        console.log(link.source.count);
+       // console.log(link.source.count);
         var nodeNThre = 5
         if (link.source.count > nodeNThre || link.target.count > nodeNThre) {
             return 100;
