@@ -622,7 +622,7 @@ var FileLinkMap = function (options) {
         bubbleMap.defaultOpa();
         /*freeze**/
 
-
+      
         setTimeout(function () {
             console.log("Stop moving!")
 
@@ -633,11 +633,11 @@ var FileLinkMap = function (options) {
                 .nodes(bubbleMap.nodesArr)
                 .on("tick", newTick);
 
-        }, 1000)
+        }, 3000)
         svg.call(d3.zoom()
             .scaleExtent([1 / 2, 8])
             .on("zoom", zoomed));
-
+     
     }
 
 
