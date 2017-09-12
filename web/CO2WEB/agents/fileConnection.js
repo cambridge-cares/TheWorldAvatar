@@ -59,6 +59,7 @@ owlProcessor.readConnections = function(options, callback) {
     }
 
 
+    let nodeMap = new Set();
     //commented out lazy initiation
     // if (connections && connections.length > 0) {
     //      callback(null, connections);
@@ -66,13 +67,11 @@ owlProcessor.readConnections = function(options, callback) {
 
     /*start from a root node recursively read connections from child files*******/
     startFromRoot2GetConns(function (err, connections) {
-
         if (err) {
             callback(err);
             return;
         }
         callback(null, connections);
-
     });
 
     //  }
@@ -91,6 +90,7 @@ owlProcessor.readConnections = function(options, callback) {
                 callback(err);
                 return;
             }
+
 
             /*retreive child info from file and recursively read through children**/
             loopChildrenRecur(file, 0, callback);
@@ -135,7 +135,8 @@ owlProcessor.readConnections = function(options, callback) {
 
        function loopChildrenRecur(file, level, callback) {
 
-	   
+
+
 		       console.log("------------loopChildRecur--------------------");
 			  // console.log(file);
 			   var root = owlProcessor.parseXMLFile(file);
@@ -146,10 +147,12 @@ owlProcessor.readConnections = function(options, callback) {
 			   }
            var myUri = owlProcessor.getUri(root);
 
+           nodeMap.add(myUri);
            let children = owlProcessor.getChildren(root);
            //get my links
            let connectionParent = [],geoCoordsParent = [],serviceUrlsParent = [];
            var imports;
+
 
            //get this geoCoord, push it on result links
            var coord = owlProcessor.getGeoCoord(root);
@@ -173,6 +176,7 @@ owlProcessor.readConnections = function(options, callback) {
                        connectionParent.push({source: myUri, target: imported,level:null})
                       // children.push(imported);
                    }
+                   children.concat(imports)
                    ;
 
                } catch (err) {
@@ -181,6 +185,9 @@ owlProcessor.readConnections = function(options, callback) {
                }
            }
 
+           children = children.filter(function (childUri) {
+               return !(nodeMap.has(childUri));
+           });
            if (children.length < 1) { // no children is found, including devices and services and call callback
              //  console.log(myUri + " is a leaf node return");
                callback(null, {connections: connectionParent, geoCoords: geoCoordsParent, serviceUrls: serviceUrlsParent});
@@ -202,9 +209,8 @@ owlProcessor.readConnections = function(options, callback) {
                        connectionParent.push({source: myUri, target: target, level: level});
                    }
                }
-           if (showImport) {
-               children = children.concat(imports);
-           }
+
+
                //request on each child, execute loopChild on it, then concate the result
                async.concat(children, requestChild, function (err, results) {
                    if (err) {
