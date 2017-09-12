@@ -8,7 +8,7 @@ const xmlParser = require("./fileConnection");
 const parser = require('./rdfParser');
 const $rdf = require('rdflib');
 const async = require('async');
-const fs =require('fs')
+const fs =require('graceful-fs')
 const util = require('util');
 const path = require('path')
 
@@ -174,7 +174,7 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
 
                     if(result.length ===2 && result[0][0] &&result[0][0]['?Fuel_Type'] &&result[0][0]['?Country'] && result[1][0]['?Capacity']){
                         //console.log("Extract: " +  result[0][0]['?Fuel_Type'])
-                        callback(null, {uri: uri, name: result[0][0]['?Power_Plant_Name']['value'],type: result[0][0]['?Fuel_Type']['value'], country: result[0][0]['?Country']['value'], capacity: result[1][0]['?Capacity']['value']});
+                        callback(null, {uri: item.uri, name: result[0][0]['?Power_Plant_Name']['value'],type: result[0][0]['?Fuel_Type']['value'], country: result[0][0]['?Country']['value'], capacity: result[1][0]['?Capacity']['value']});
 
                     } else {
                         // console.log("!!!!!!!!!!!!!!!!!!!!!!query: "+uri)

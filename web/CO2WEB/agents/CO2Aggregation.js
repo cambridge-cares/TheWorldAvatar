@@ -5,7 +5,7 @@ const $rdf = require('rdflib');
 const config = require('../config')
 const util = require('util')
 const parser = require('../agents/rdfParser');
-
+const fs = require('fs')
 /*SPRAQL Query******************/
 const SPA = `
 PREFIX JParkLandLots: <http://www.jparksimulator.com/JParkLandLots#>
@@ -25,33 +25,25 @@ order by DESC(?ValueOf_CarbonEmissions)
 function getCO2Aggregation(callback) {
 //TODO: error handle
 
-	var mparser = new parser.RdfParser({fileUrl: config.landLotNode});
+    fs.readFile(config.landLotNode, function (err, file) {
+        var mparser = new parser.RdfParser({uri: config.landLotNode, file :file});
 
-    mparser.mquery( SPA, function (err, data) {//each data point
+        mparser.mquery( SPA, function (err, data) {//each data point
 
-  
-
-       // console.log("@@@@@@@@@@@done")
-       // console.log(result)
-       if(err){
-		   console.log(err);
-	callback(err);       
-}
-    var CO2Addresult = 0;
-        data.forEach(function(item){
-			CO2Addresult+=		parseFloat(item['?ValueOf_CarbonEmissions']['value']);
-		})
-		
-
-        //Now result is ready
-        callback(null, CO2Addresult);
+            // console.log("@@@@@@@@@@@done")
+            // console.log(result)
+            if(err){
+                console.log(err);
+                callback(err);
+            }
+            var CO2Addresult = 0;
+            data.forEach(function(item){
+                CO2Addresult+=		parseFloat(item['?ValueOf_CarbonEmissions']['value']);
+            })
+            //Now result is ready
+            callback(null, CO2Addresult);
+        });
     });
- 
-
-
-
-
-
 }
 
 
