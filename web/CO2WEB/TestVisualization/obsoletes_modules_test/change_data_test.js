@@ -10,14 +10,14 @@ var expect = require("chai").expect;
 var util = require("util");
 var nock = require("nock");
 
-var registerer = require("../util/register2DataChange");
-var config = require("../config")
+var registerer = require("../../agents/register2DataChange");
+var config = require("../../config")
 
 
 var io = require('socket.io-client')
 var request = require('request')
 
-var app = require('../app')
+var app = require('../../app')
 var fakeReply = {
     fakeData: 1
 };

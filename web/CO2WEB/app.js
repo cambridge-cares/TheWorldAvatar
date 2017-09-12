@@ -13,21 +13,25 @@ var util = require('util');
 var visualizeWorld =require("./routes/visualizeWorld.js");
 var visualizeBMS =require("./routes/visualizeBms.js");
 var visualizeSemakau =require("./routes/visualizeSemakau.js");
-
 var visualizeJurong =require("./routes/visualizeJurong.js");
-
 var showCO2 = require("./routes/showCO2.js");
 var config = require("./config.js");
 var bmsplot= require("./routes/bmsplot.js");
 var bmsTemp = require("./routes/bmsNodeTemp");
-var PPCO2 = require("./routes/powerplantCO2");
-var registerer= require("./util/register2DataChange");
+//var PPCO2 = require("./routes/powerplantCO2");
+var ppMap = require('./routes/mapPowerPlant')
+var registerer= require("./agents/register2DataChange");
+var setBMSWatcher = require("./agents/setBMSWatcher");
 var registerUrl = config.bmsUrlPath;
 var myUrl = config.myUrlPath;
+
 
 var app = express();
 var port = config.port;
 process.env.UV_THREADPOOL_SIZE = 128;
+
+var BMSWatcher = require('./agents/setBMSWatcher');
+
 
 app.set('view engine', 'pug');
 app.use(logger('dev'));
@@ -48,7 +52,8 @@ app.use('/visualizeWorld', visualizeWorld);
 app.use('/visualizeBMS', visualizeBMS);
 app.use('/visualizeSemakau', visualizeSemakau);
 app.use('/visualizeJurong', visualizeJurong);
-app.use('/PowerPlantCO2',  PPCO2);
+//app.use('/PowerPlantCO2',  PPCO2);
+app.use('/ppmap', ppMap);
 
 app.use('/JurongIsland.owl/showCO2', showCO2);
 app.use('/JPS_KB_CARES_Lab_Node/FH-01.owl', bmsTemp);
@@ -67,6 +72,7 @@ var io = require('socket.io')(http);
 
 /*future data change will be post to this route*/
 
+/**
 app.post("/change", function (req, res) {//data change of other nodes will be post to here
     //retreive changed data//do whatever you need to do with this data
     //now we only record it down
@@ -78,18 +84,24 @@ app.post("/change", function (req, res) {//data change of other nodes will be po
 } else {
   console.log("Receive empty data");
           res.status(400).send("empty req body: should contain data");
-
 }
 });
+***/
 
+var ev= BMSWatcher();
 
+ev.on('change', function (data) {
+    io.emit("update", data);
+    dataCopy = data;
+})
 
 /*socket io***/
 //TODO: multiple nodes may post to here, need a map of dataCopy, name as key
 //TODO: else, post again for initial data(seperate it with register)
 io.on('connection', function(socket){
+    /**
     if(dataCopy === null){//no cached data copy, this is the first client
-	/**
+
         registerer.register(registerUrl, myUrl, function (err, initialData) {//register to changing-data node
             if(err){
                 console.log(err);
@@ -101,13 +113,15 @@ io.on('connection', function(socket){
             console.log('a user connected');
 
         })
-****/
 
     } else {
          console.log("Saved initial dataCopy: " + dataCopy);
         socket.emit("initial", dataCopy);
         console.log('a user connected');
     }
+     **/
+    console.log('a user connected');
+
 });
 
 /*err handling*/
@@ -131,7 +145,7 @@ app.use(function(err, req, res, next) {
 /********************/
 
 
-
+/***
 http.on('close', function () {
    //now deregister it
     registerer.deregister(registerUrl, myUrl, function (err, result) {
@@ -145,7 +159,7 @@ http.on('close', function () {
 
 
 });
-
+***/
 http.listen(port, function () {
   console.log('Server listening on port 3000');
 });

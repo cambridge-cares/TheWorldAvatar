@@ -33,8 +33,6 @@ function addPowerPlantInstance() {
          function addcontent() {
              console.log(filenames.length);
 
-               filenames = filenames.slice(0, 10);
-
              for(let ppName of filenames){
                  ws.write(getPPInstance(ppName)+"\n") ;
              }

@@ -4,8 +4,8 @@
 
 const config =  require('../config');
 const worldNode = config.worldNode;
-const fileConnection = require("./fileConnection");
-const parser = require('../util/rdfParser');
+const xmlParser = require("./fileConnection");
+const parser = require('./rdfParser');
 const $rdf = require('rdflib');
 const async = require('async');
 const fs =require('fs')
@@ -48,30 +48,17 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
                 return;
             }
 
-            //console.log(util.inspect(ppraw));
-
             //replace uri with disk location
-            let pp = ppraw.map(function (item) {
-               // console.log("map:"+item)
+            let pp = xmlParser.uriList2DiskLoc(ppraw, ppRoot);
 
-                item = item.replace("http://www.theworldavatar.com",ppRoot);
 
-                item = item.replace("http://www.jparksimulator.com",ppRoot);
-
-                return item
-            })
-
-           // console.log(util.inspect(pp));
+            // console.log(util.inspect(pp));
 
             async.concat(pp, query, function (err, plantData) {
                 //For each point, calculates emission
                 if(err){
                     throw err;
                 }
-               // console.log("final result:!!!!!!!!!!!!!!!!!!!!")
-               // console.log(plantData.length);
-               // console.log(plantData)
-
 
                 var sum = 0;
                 plantData.forEach(function (plantDatum) {
@@ -159,8 +146,8 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
                     callback(err);
                     return;
                 }
-                const root = fileConnection.parseXMLFile(file);
-                var PP = fileConnection.getPPChildren(root);
+                const root = xmlParser.parseXMLFile(file);
+                var PP = xmlParser.getPPChildren(root);
 
 
                 console.log("children length: "+ PP.length);
@@ -168,34 +155,35 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
             })
         }
 
-        //TODO: for each child, read file, query, sum up result
-        function isAPP(url) {
-            let loweUrl = url.toLowerCase();
-            return loweUrl.includes("power_plant") || loweUrl.includes("coal") ||loweUrl.includes("oil") ||loweUrl.includes("gas")||loweUrl.includes("power_station");
-        }
 
 
-        function query(uri, callback) {
-            var mparser = new parser.RdfParser({fileUrl: uri});
-            //console.log(util.inspect(mparser));
-
-            async.map([qsTypeCountry, qsCapacity], mparser.mquery.bind(mparser), function (err, result) {
-                if (err) {
+        function query(item, callback) {
+            fs.readFile(item.diskLoc, function (err, file) {
+                if(err){
                     callback(err);
-                    return;
+                return;
                 }
-                 //console.log(result);
+                var mparser = new parser.RdfParser({file: file, uri:item.uri});
 
-                if(result.length ===2 && result[0][0] &&result[0][0]['?Fuel_Type'] &&result[0][0]['?Country'] && result[1][0]['?Capacity']){
-                    //console.log("Extract: " +  result[0][0]['?Fuel_Type'])
-                    callback(null, {uri: uri, name: result[0][0]['?Power_Plant_Name']['value'],type: result[0][0]['?Fuel_Type']['value'], country: result[0][0]['?Country']['value'], capacity: result[1][0]['?Capacity']['value']});
+                async.map([qsTypeCountry, qsCapacity], mparser.mquery.bind(mparser), function (err, result) {
+                    if (err) {
+                        callback(err);
+                        return;
+                    }
+                    //console.log(result);
 
-                } else {
-                   // console.log("!!!!!!!!!!!!!!!!!!!!!!query: "+uri)
-                   // console.log(result);
-                    callback(null,null)
-                }
+                    if(result.length ===2 && result[0][0] &&result[0][0]['?Fuel_Type'] &&result[0][0]['?Country'] && result[1][0]['?Capacity']){
+                        //console.log("Extract: " +  result[0][0]['?Fuel_Type'])
+                        callback(null, {uri: uri, name: result[0][0]['?Power_Plant_Name']['value'],type: result[0][0]['?Fuel_Type']['value'], country: result[0][0]['?Country']['value'], capacity: result[1][0]['?Capacity']['value']});
+
+                    } else {
+                        // console.log("!!!!!!!!!!!!!!!!!!!!!!query: "+uri)
+                        // console.log(result);
+                        callback(null,null)
+                    }
+                });
             });
+
         }
 
 
@@ -205,7 +193,6 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
                     return capacity * 1000 * 0.8 * 0.001;
                 case "http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#NaturalGasGeneration":
                     return capacity * 750 * 0.5 * 0.001;
-
                 default:
                     console.log("no such type")
 

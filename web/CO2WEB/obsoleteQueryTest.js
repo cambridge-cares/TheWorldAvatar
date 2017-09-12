@@ -1,11 +1,14 @@
 /**
  * Created by Shaocong on 8/31/2017.
  */
-const parser = require('./agents/rdfParser');
+/**
+ * Created by Shaocong on 8/31/2017.
+ */
+const parser = require('./agents/rdfParserObsolete');
 
 var uri = "http://www.theworldavatar.com/Swanbank_B_Coal_Power_Plant_Australia.owl"
 uri = uri.replace("http://www.theworldavatar.com", __dirname + "/TestFile");
-var mparser = new parser.RdfParser({fileUrl: uri});
+var mparser = parser({fileUrl: uri});
 var qsTypeCountry = `
     PREFIX system_realization: <http://www.theworldavatar.com/OntoEIP/system_aspects/system_realization.owl#>
         PREFIX system_v1: <http://www.theworldavatar.com/OntoEIP/upper_level/system_v1.owl#>
@@ -19,7 +22,7 @@ var qsTypeCountry = `
     p9:hasAddress ?x.
         ?x system_v1:hasName ?Country.
 }`;
-mparser.mquery(qsTypeCountry, function (err, result) {
+mparser.query(qsTypeCountry, function (err, result) {
 
     console.log(JSON.stringify(result));
 

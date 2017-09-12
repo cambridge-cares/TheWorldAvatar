@@ -4,7 +4,7 @@
 /*******IMPORT**********/
 var expect = require("chai").expect;
 var util = require("util");
-var rdfParser = require( "../util/rdfParser.js");
+var rdfParser = require( "../agents/rdfParser.js");
 var request = require("request");
 var path = require("path");
 var insertXml = require("../agents/insertXmlContent"),

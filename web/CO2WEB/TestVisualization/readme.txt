@@ -1,3 +1,8 @@
+*Files end with test are test Files.
+*Files start with try_ are makeshift-example files of library usage.
+
+
+
 *change_data_test
  * Test the registerer module: register to data-changing node
  * Test the /change route for data-changing node to post changed data

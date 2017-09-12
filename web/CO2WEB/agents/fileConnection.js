@@ -374,6 +374,8 @@ owlProcessor.getChildren = function(root) {
     }
     var children = [];
     var namespaceOb = {};//construct namespaceOb for find in root with nested namespace
+    //TODO: use getNSList instead
+
     namespaceOb['owl'] = "http://www.w3.org/2002/07/owl#";
     namespaceOb['Eco-industrialPark'] = "http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#";
     namespaceOb['system'] = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#";
@@ -402,10 +404,10 @@ owlProcessor.getPPChildren = function (root) {
     }
     var children = [];
     var namespaceOb = {};//construct namespaceOb for find in root with nested namespace
-    namespaceOb['system'] = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#";
-    namespaceOb['f'] ="http://www.theworldavatar.com/TheWorld.owl#";
+   // namespaceOb['system'] = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#";
+   // namespaceOb['f'] ="http://www.theworldavatar.com/TheWorld.owl#";
     //find all node with SYSTEM:hasIRI property
-    let uris = root.find("//f:PowerPlant//system:hasIRI", namespaceOb);
+    let uris = root.find("//self:PowerPlant//system:hasIRI", owlProcessor.getNSList(root));
     //console.log("found node system:hasIRI:"+urisS.length);
 
     console.log("find pp:"+uris.length)
@@ -419,23 +421,29 @@ owlProcessor.getPPChildren = function (root) {
     return children;
 }
 
+/***
+ * //TODO: This needs to be unified
+ * @param root
+ * @returns {*}
+ */
 owlProcessor.getGeoCoord = function(root) {
     if(!root){
         return null;
     }
+    //TODO: use getNSList instead
     let x =  root.find("//owl:NamedIndividual[contains(@rdf:about, 'ValueOf_x_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
     let y =  root.find("//owl:NamedIndividual[contains(@rdf:about, 'ValueOf_y_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
 
     if(x.length > 0 && y.length > 0) {
         // console.log("#########################findcoordis:" + x[0].text().trim());
         // console.log("converted coordi: " +  util.inspect(convertCoordinate(x[0].text().trim(), y[0].text().trim(), false)));
-        return convertCoordinate(x[0].text().trim(), y[0].text().trim(), false);
+        return owlProcessor.convertCoordinate(x[0].text().trim(), y[0].text().trim(), false);
     } else {
         return null;
     }
-}
+};
     //convert google GPS coordi to 1984w coordi(the one used in our own)
-    var convertCoordinate = function (GPSLong, GPSLat, google2Owl) {
+   owlProcessor.convertCoordinate = function (GPSLong, GPSLat, google2Owl) {
 //https://github.com/proj4js/proj4js
         var googleProjection = 'EPSG:4326'; //google
         var ourProjection = 'EPSG:3857';//our
@@ -444,11 +452,34 @@ owlProcessor.getGeoCoord = function(root) {
         return google2Owl?converted(googleProjection, ourProjection) : converted(ourProjection, googleProjection);
         function converted(fromProjection, toProjection){
 
-            var result =  proj4(fromProjection, toProjection, [parseFloat(GPSLong),parseFloat(GPSLat)]);
+            GPSLong  = typeof GPSLong === "string"?parseFloat(GPSLong) : GPSLong
+            GPSLat  = typeof GPSLat === "string"?parseFloat(GPSLat) : GPSLat
+
+            var result =  proj4(fromProjection, toProjection, [GPSLong,GPSLat]);
 
             return {x: result[0], y:result[1]};
         }
 
     };
+
+owlProcessor.getNSList = function (root) {
+    //each one in ns, put on nsList
+    let ns = root.namespaces();
+    let list = {}
+    ns.forEach(function (item) {
+        list[item.prefix()===null?"self":item.prefix()] = item.href();
+    });
+  console.log(JSON.stringify(list))
+    return list;
+};
+
+owlProcessor.uriList2DiskLoc = function (uriArr, diskroot) {
+    return uriArr.map(function (item) {
+        // console.log("map:"+item)
+        let diskLoc = item.replace("http://www.theworldavatar.com",diskroot);
+        diskLoc = diskLoc.replace("http://www.jparksimulator.com",diskroot);
+        return {uri:item, diskLoc:diskLoc}
+    });
+}
 
 module.exports = owlProcessor;

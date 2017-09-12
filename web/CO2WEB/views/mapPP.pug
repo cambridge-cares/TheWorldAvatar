@@ -1,0 +1,21 @@
+extends header.pug
+block title
+    title  World Power Plants on Google Map
+
+block sheets
+    link(rel="stylesheet" href='/stylesheets/ppMap.css')
+
+block subtitle
+
+    |World Power Plants on Google Map
+
+block description
+
+
+block content
+
+    div#map
+    script(src="https://code.jquery.com/jquery-2.2.0.min.js")
+    script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
+    script(src="/javascripts/PPmap.js")
+    script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnIPTFH_vdwakGsRIXJMwHvAJ3DhiWlvE&callback=initMap")
