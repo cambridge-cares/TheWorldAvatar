@@ -41,7 +41,7 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
 
     function getPlantAggregation(callback) {
         var result = {};
-        const ppRoot = path.join(config.root, "powerplants");
+        const ppRoot =config.root;
         getWorldPPChild(function (err, ppraw) {
             if (err) {
                 callback(err);

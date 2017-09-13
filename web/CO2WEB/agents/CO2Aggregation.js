@@ -5,7 +5,7 @@ const $rdf = require('rdflib');
 const config = require('../config')
 const util = require('util')
 const parser = require('../agents/rdfParser');
-const fs = require('fs')
+const fs = require('graceful-fs')
 /*SPRAQL Query******************/
 const SPA = `
 PREFIX JParkLandLots: <http://www.jparksimulator.com/JParkLandLots#>
@@ -25,11 +25,9 @@ order by DESC(?ValueOf_CarbonEmissions)
 function getCO2Aggregation(callback) {
 //TODO: error handle
 
-    fs.readFile(config.landLotNode, function (err, file) {
-		if(err || !file){
-			console.log(err);
-			callback(err);
-		}
+try{
+	    var file = fs.readFileSync(config.landLotNode);
+	
         var mparser = new parser.RdfParser({uri: config.landLotNode, file :file});
 
         mparser.mquery( SPA, function (err, data) {//each data point
@@ -47,8 +45,15 @@ function getCO2Aggregation(callback) {
             //Now result is ready
             callback(null, CO2Addresult);
         });
-    });
+}catch(err){
+	
+			console.log(err);
+			callback(err);
+		
 }
+ 
+    };
+
 
 
 module.exports = getCO2Aggregation;

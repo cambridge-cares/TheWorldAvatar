@@ -8,7 +8,7 @@ const co2Add = require('../agents/CO2Aggregation');
 
 
 
-router.get('/', function (req, res) {
+router.get('/', function (req, res, next) {
 
 
     co2Add(function (err, result) {
