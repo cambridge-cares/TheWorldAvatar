@@ -34,6 +34,7 @@ function BMSData(nodeloc, callback) {
 //TODO: error handle
    fs.readFile(nodeloc, function (err, file) {
       if(err){
+          logger.debug(err)
           callback(err);
           return;
       }

@@ -17,6 +17,7 @@ describe("Watcher", function () {
      /*main behavior**/
     it('when registers, inform registee when file changes : case : only filenames' , function (done) {
 
+
         this.timeout(300000);
         console.log("Watch over "+bmsFolder);
 
@@ -40,8 +41,9 @@ describe("Watcher", function () {
 
 
         testRegistees.forEach(function (name) {
-            mwatcher.registerAll( name, false);
+            mwatcher.registerAll( name, true);
         })
+
 
     });
 

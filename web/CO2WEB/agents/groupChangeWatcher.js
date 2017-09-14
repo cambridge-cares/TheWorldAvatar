@@ -28,8 +28,8 @@ function groupwatcher(dir, informIndi){
     var watchDogs = new Map(); //map of watchdogs
 
     var watcher = chokidar.watch(dir, { //watch over specific dir
-        //ignored: /^((?!\.owl).)*$/,  //ignore everything does not has .owl in their name
-        ignored :/.*\.txt$/,
+        ignored: /(\.(?!owl))+/,  //ignore everything does not has .owl in their name
+       // ignored :/.*\.txt$/,
         persistent: true
     });
 
@@ -59,39 +59,55 @@ function groupwatcher(dir, informIndi){
 
 
             /*define data to be sent*****/
-            let changedFilenames = {uri:this.uri, filename : this.filename};
+            let changedFilenames,withChangeData;
             //TODO: method to get data:bmsDataReader
            let self = this;
-            let withData = new Promise(function (resolve, reject) {
-                BMSData(self.uri, function (err, data) {
-                     if(err){
-                         reject(err);
-                     }
+            changedFilenames  ={uri:this.uri, filename : this.filename};
+            withChangeData = changedFilenames;
 
-                     //logger.debug(data)
-                     resolve(data);
-                });
+           function getDataP() {
+              return new Promise(function (resolve, reject) {
+                   BMSData(self.uri, function (err, data) {
+                       if(err){
+                           reject(err);
+                       }
+                       //logger.debug(data)
+                       resolve(data);
+                   });
+               });
+           }
 
-            });
+     logger.debug(this.observers);
 
-     logger.debug(this.observers)
+            if(this.hasDataRequestObserver()){
+               let  dataPromise = getDataP();
+                dataPromise.then(function (promisedData) {
+                    withChangeData.data = promisedData;
+                    loopInform();
+                })
+            } else{
+               loopInform();
+            }
 
-            withData.then(function (changeddata) {
-                /*call inform on all observer*****/
-                if(self.observers.size > 0){
-                    logger.debug("Call concat")
-                    async.concat(self.observers, informWithData,//send modified file to each observer
-                        function (err, results) {
-                            if (err) {
-                                logger.debug("Can not read changed data:" + err);
-                                return;
-                            }
-                            logger.debug("finish informing")
-                            if(results){
-                                logger.debug(JSON.stringify(results));
-                            }
-                        });
 
+
+                function loopInform() {
+                    /*call inform on all observer*****/
+                    if(self.observers.size > 0){
+                        logger.debug("Call concat")
+                        async.concat(self.observers, informWithData,//send modified file to each observer
+                            function (err, results) {
+                                if (err) {
+                                    logger.debug("Can not read changed data:" + err);
+                                    return;
+                                }
+                                logger.debug("finish informing")
+                                if(results){
+                                    logger.debug(JSON.stringify(results));
+                                }
+                            });
+
+                    }
                 }
 
                 /*define single inform with data**/
@@ -102,18 +118,25 @@ function groupwatcher(dir, informIndi){
 
                     var data = changedFilenames;
                     if(observer[1].receiveData){
-                        logger.debug("Add actual data")
-                        data.data = changeddata;
+                       data = withChangeData;
                     }
                     informIndi(data, mobserver, callback);
                 }
 
-            }).catch((err)=>{logger.debug(err); });
 
 
         },
-        getObservers : function () {
-            return this.observers
+        hasDataRequestObserver : function () {
+            let hasDRO = false;
+
+            this.observers.forEach(function (observer) {
+               console.log("!!!!!!!!!!!!!!")
+                console.log(observer)
+                if(observer.receiveData){
+                   hasDRO = true;
+                }
+            })
+            return hasDRO;
         }
 
     }
