@@ -12,7 +12,7 @@ logger.level = 'debug';
 
 const util = require('util')
 const parser = require('../agents/rdfParser');
-const fs = require('fs')
+const fs = require('graceful-fs')
 /*SPRAQL Query******************/
 const SPA = `
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -32,31 +32,37 @@ const SPA = `
 function BMSData(nodeloc, callback) {
 
 //TODO: error handle
-  var file = fs.readFileSync(nodeloc);
+   fs.readFile(nodeloc, function (err, file) {
+      if(err){
+          callback(err);
+          return;
+      }
+       var mparser = new parser.RdfParser({uri: nodeloc, file :file});
 
-   var mparser = new parser.RdfParser({uri: nodeloc, file :file});
+       //order by DESC(?ValueOf_CarbonEmissions)
 
-    //order by DESC(?ValueOf_CarbonEmissions)
+       mparser.mquery( SPA, function (err, data) {//each data point
+           if(err){
+               logger.debug(err);
+               callback(err);
+           }
+           //logger.debug(data)
+           //parseFloat(item['?ValueOf_DataPoint']['value']);
+           //parseFloat(item['?DataPoint']['value']);
 
-    mparser.mquery( SPA, function (err, data) {//each data point
-        if(err){
-            logger.debug(err);
-            callback(err);
-        }
-        //logger.debug(data)
-        //parseFloat(item['?ValueOf_DataPoint']['value']);
-        //parseFloat(item['?DataPoint']['value']);
+           var resultArr = data.map(function (item) {
+               let nameStr = item['?x']['value'];
+               let timeStr = nameStr.split('@')[1];
+               let time = timeParser(timeStr);
+               return {time: time, value: parseFloat(item['?ValueOf_DataPoint']['value'])};
+           });
+           resultArr = resultArr.sort(compareTime);
+           logger.debug(resultArr)
+           callback(null, resultArr)
+       });
+  });
 
-        var resultArr = data.map(function (item) {
-            let nameStr = item['?x']['value'];
-            let timeStr = nameStr.split('@')[1];
-            let time = timeParser(timeStr);
-            return {time: time, value: parseFloat(item['?ValueOf_DataPoint']['value'])};
-        });
-        resultArr = resultArr.sort(compareTime);
-        logger.debug(resultArr)
-        callback(null, resultArr)
-    });
+
 
     //09-06-17-19:10:04
     function timeParser(timeStr) {
