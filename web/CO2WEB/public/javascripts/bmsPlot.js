@@ -6,6 +6,7 @@
 /**/
     /*socket io */
     var socket = io();
+socket.emit("join", JSON.stringify(["http://www.theworldavatar.com/VAV-E7-28_DS_sensor1.owl"]));
 
 
 let initialData;
@@ -30,16 +31,15 @@ $(document).ready(function () {
         console.log(JSON.stringify(idata));
         //TODO: check this is indeed updated Data point
 		if(idata){ //check if this data is not null 
-        let parsedData = JSON.parse(idata);
-        let name = parsedData['name'];
-        if(name==="FH-01.owl") {//check the update comes from correct source
-            initialData = parsedData['data'];
-            console.log(initialData);
+        //let parsedData = idata;
+        //let name = parsedData['name'];
+          //  initialData = parsedData['data'];
+            console.log(idata);
             //wrap initial data into data obj
-            dataObj["start"] = initialData[0].time;
-            dataObj["end"] = initialData[initialData.length - 1].time;
-            dataObj["step"] = Math.round((dataObj.end - dataObj.start) / initialData.length);
-            dataObj["values"] = [initialData.map((item) => {
+            dataObj["start"] = idata[0].time;
+            dataObj["end"] = idata[idata.length - 1].time;
+            dataObj["step"] = Math.round((dataObj.end - dataObj.start) / idata.length);
+            dataObj["values"] = [idata.map((item) => {
                 return item.value
             })];
 
@@ -49,9 +49,9 @@ $(document).ready(function () {
             console.log(dataObj["step"]);
             console.log(dataObj["values"]);
             isInitialized = true;
-            newDataObj["start"] = initialData[initialData.length - 1].time;
+            newDataObj["start"] = idata[idata.length - 1].time;
             newDataObj["names"] = ["FH-01"];
-        }
+
 		} else {
 			//TODO: init one without previous data?
 		}
@@ -62,9 +62,9 @@ $(document).ready(function () {
     socket.on('update', function(data){
         //TODO: check this is indeed updated Data point
 
-        let parsedData = JSON.parse(data);
-        let name = parsedData['name'];
-        if(name==="FH-01.owl") {
+        let parsedData = data;
+        let name = parsedData['filename'];
+
             data = parsedData['data'];
             console.log("!!!!!!")
             console.log(data);
@@ -74,7 +74,7 @@ $(document).ready(function () {
 
                 updateGraph(newData);
             }
-        }
+
 
     });
 
@@ -93,10 +93,9 @@ $(document).ready(function () {
         console.log("end:" +  newDataObj["end"] );
         console.log("start:" +  newDataObj["start"] );
 
+        l1.slideData(newDataObj);
         newDataObj["start"]  = newDataObj["end"];
 
-
-        l1.slideData(newDataObj);
 
     }
 });

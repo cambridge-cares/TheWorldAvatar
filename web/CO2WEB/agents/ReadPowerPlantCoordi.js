@@ -1,6 +1,10 @@
 /**
  * Created by Shaocong on 9/7/2017.
  */
+var log4js = require('log4js');
+var logger = log4js.getLogger();
+logger.level = 'debug';
+
 const xmlParser = require('./fileConnection'),
       rdfParser = require('./rdfParser'),
       config = require('../config'),
@@ -29,7 +33,7 @@ function readPPCoordi(callback) {
                 callback(err);
                 return;
             }
-                //console.log(JSON.stringify(dataset))
+                //logger.debug(JSON.stringify(dataset))
                 //construct dataset to google coordi format
                 let formatted = [];
 

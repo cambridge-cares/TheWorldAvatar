@@ -4,13 +4,17 @@
  * currently we host nodes together, so a group watcher is required to watch an entire folder to
  * see waht is changed
  */
+var log4js = require('log4js');
+var logger = log4js.getLogger();
+logger.level = 'debug';
 
 var chokidar = require('chokidar');
-var log = console.log.bind(console);
 var async = require('async')
 var fs = require('fs')
 var path = require('path')
 
+
+var BMSData =require('./GetBmsData');
 
 
 /***
@@ -20,7 +24,7 @@ var path = require('path')
  * @returns {{register: register}}
  */
 function groupwatcher(dir, informIndi){
-    console.log("groupwatcher")
+    logger.debug("groupwatcher")
     var watchDogs = new Map(); //map of watchdogs
 
     var watcher = chokidar.watch(dir, { //watch over specific dir
@@ -42,10 +46,10 @@ function groupwatcher(dir, informIndi){
 
     WatchDog.prototype = {
         register: function (newObserver, receiveData) {//register this observer
-            console.log("dog for " + this.uri+" registers " + newObserver)
+            logger.debug("dog for " + this.uri+" registers " + newObserver)
             this.observers.set(newObserver, {name: newObserver, receiveData: receiveData});
             this.observers.forEach(function (item) {
-                console.log(item)
+                logger.debug(item)
             })
         },
         deregister:function (oldObserver) {
@@ -57,36 +61,56 @@ function groupwatcher(dir, informIndi){
             /*define data to be sent*****/
             let changedFilenames = {uri:this.uri, filename : this.filename};
             //TODO: method to get data:bmsDataReader
-            let withData = {}
-            /*define single inform with data**/
-            function informWithData(observer, callback){
-                console.log("!!!!")
-                console.log(observer)
-                var mobserver = observer[1].name;
+           let self = this;
+            let withData = new Promise(function (resolve, reject) {
+                BMSData(self.uri, function (err, data) {
+                     if(err){
+                         reject(err);
+                     }
 
-                var data = changedFilenames;
-                if(observer.receiveData){
-                    data["data"] = withData;
+                     //logger.debug(data)
+                     resolve(data);
+                });
+
+            });
+
+     logger.debug(this.observers)
+
+            withData.then(function (changeddata) {
+                /*call inform on all observer*****/
+                if(self.observers.size > 0){
+                    logger.debug("Call concat")
+                    async.concat(self.observers, informWithData,//send modified file to each observer
+                        function (err, results) {
+                            if (err) {
+                                logger.debug("Can not read changed data:" + err);
+                                return;
+                            }
+                            logger.debug("finish informing")
+                            if(results){
+                                logger.debug(JSON.stringify(results));
+                            }
+                        });
+
                 }
-                informIndi(data, mobserver, callback);
-            }
 
-            /*call inform on all observer*****/
-            if(this.observers.size > 0){
-                console.log("Call concat")
-                async.concat(this.observers, informWithData,//send modified file to each observer
-                    function (err, results) {
-                        if (err) {
-                            console.log(err);
-                            return;
-                        }
-                        console.log("finish informing")
-                        if(results){
-                            console.log(JSON.stringify(results));
-                        }
-                    });
+                /*define single inform with data**/
+                function informWithData(observer, callback){
+                    logger.debug("!!!!")
+                    logger.debug(observer)
+                    var mobserver = observer[1].name;
 
-            }
+                    var data = changedFilenames;
+                    if(observer[1].receiveData){
+                        logger.debug("Add actual data")
+                        data.data = changeddata;
+                    }
+                    informIndi(data, mobserver, callback);
+                }
+
+            }).catch((err)=>{logger.debug(err); });
+
+
         },
         getObservers : function () {
             return this.observers
@@ -99,7 +123,7 @@ function groupwatcher(dir, informIndi){
 
     //create watchdog for every owl file in dir
     var files = fs.readdirSync(dir);
-    console.log(files);
+    logger.debug(files);
     var owlfiles = files.filter((file)=>{return file.match(/^.*\.owl$/)});
 
     owlfiles.forEach(function (owlfile) {
@@ -110,9 +134,9 @@ function groupwatcher(dir, informIndi){
 
     watcher
         .on('change', function(filepath) {//when dir changed
-            log('File ', filepath, 'has been changed');
+            logger.debug('File '+ filepath+'has been changed');
             if(watchDogs.has(filepath)){ //check if this file is required to be watched
-                console.log("Ask watchdog to inform")
+                logger.debug("Ask watchdog to inform")
                 let watchDog = watchDogs.get(filepath);
                 watchDog.informAll(informIndi);
             }
@@ -125,10 +149,10 @@ function groupwatcher(dir, informIndi){
     }
 
     function registerAll(observerUri, receiveData) {
-        console.log("register all")
+        logger.debug("register all")
         owlfiles.forEach(function (file) {
             let targetPath = path.join(dir, file);
-            console.log("ergister for " + targetPath)
+            logger.debug("ergister for " + targetPath)
             register(targetPath, observerUri, receiveData)
         })
     }

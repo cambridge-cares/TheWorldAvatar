@@ -1,6 +1,10 @@
 /**
  * Created by Shaocong on 8/31/2017.
  */
+var log4js = require('log4js');
+var logger = log4js.getLogger();
+logger.level = 'debug';
+
 let $rdf = require('rdflib');
 let fs = require('fs');
 let libxmljs = require("libxmljs");
@@ -28,7 +32,7 @@ RdfParser.RdfParser.prototype =  {
         try{
             $rdf.parse(this.file, this.store, this.uri, this.mimeType);// parse rdf
         }catch(err){
-            console.log(err)
+            logger.debug(err)
         }
 
     },
@@ -53,19 +57,21 @@ RdfParser.RdfParser.prototype =  {
         if(!this.store){
             callback(new Error("body not parsed"));
         }
-        this.store.query($rdf.SPARQLToQuery(queryStr, false, this.store), function (data) {//each data point
+      //  logger.debug(JSON.stringify(this.store))
+        this.store.query(new $rdf.SPARQLToQuery(queryStr, false, this.store), function (data) {//each data point
 
-          //  console.log("@@@@@@@@@@@@@@@@@@@@")
-           // console.log(data);
+
+          //  logger.debug("@@@@@@@@@@@@@@@@@@@@")
+           // logger.debug(data);
             dataset.push(data)
         }, null, function (err) {//when all is done
             if(err){
-                console.log(err);
+                logger.debug(err);
                 callback(err);
             }
 
-           // console.log("dataset: " )
-           // console.log(dataset);
+           // logger.debug("dataset: " )
+           // logger.debug(dataset);
             callback(null, dataset);
         });
 
@@ -78,10 +84,10 @@ RdfParser.RdfParser.prototype =  {
             let node = this.defineSym(nodeUrl);
 
             let property = propertyUrl ? this.defineSym(propertyUrl) : undefined;
-            console.log("node in search: " + nodeUrl);
-            console.log("node in search: " + node);
+            logger.debug("node in search: " + nodeUrl);
+            logger.debug("node in search: " + node);
 
-            console.log("property: " + property);
+            logger.debug("property: " + property);
             //  return store.statementsMatching(node, property, undefined);
             return (this.store.any(node, property));
         } catch(err){
@@ -118,7 +124,7 @@ RdfParser.RdfParser.prototype =  {
                 callback(err);
                 return;
             }
-            //console.log(data)
+            //logger.debug(data)
             data.forEach(function (item) {
                 let value = item['?value']['value'];
                 let uri = item['?cName']['value']

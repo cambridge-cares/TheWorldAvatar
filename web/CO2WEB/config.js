@@ -13,11 +13,12 @@ var config = {};
 
 
 //configDevelop();
-configDevelop();
+configDeploy();
 config.worldNode = config.root + "/TheWorld.owl";
 config.jurongNode = config.root + "/JurongIsland.owl";
 config.bmsNode = config.root + "/CARES_Lab.owl";
 config.bmsFolder = config.root + "/bms";
+config.bmsplotnode = path.join(config.bmsFolder, "VAV-E7-28_DS_sensor1.owl");
 config.semakauNode = config.root + "/SemakauIsland.owl";
 config.landLotNode=config.root + "/JParkLandLots.owl";
 config.registerPath = "dataObserve";

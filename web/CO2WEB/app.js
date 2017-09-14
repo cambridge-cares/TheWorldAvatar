@@ -2,9 +2,13 @@
  * app main
  * @type {*}
  */
+var log4js = require('log4js');
+var logger = log4js.getLogger();
+logger.level = 'debug';
+
 var express = require('express');
 var path = require('path');
-var logger = require('morgan');
+var httplogger = require('morgan');
 var request =require("request");
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -20,6 +24,7 @@ var bmsplot= require("./routes/bmsplot.js");
 var bmsTemp = require("./routes/bmsNodeTemp");
 //var PPCO2 = require("./routes/powerplantCO2");
 //var ppMap = require('./routes/mapPowerPlant')
+var bmsData = require('./agents/GetBmsData')
 var registerer= require("./agents/register2DataChange");
 var setBMSWatcher = require("./agents/setBMSWatcher");
 var registerUrl = config.bmsUrlPath;
@@ -34,13 +39,13 @@ var BMSWatcher = require('./agents/setBMSWatcher');
 
 
 app.set('view engine', 'pug');
-app.use(logger('dev'));
+app.use(httplogger('dev'));
 
 function setHeader(res, mpath){
-  console.log("path"+ mpath);
+  logger.debug("path"+ mpath);
   res.setHeader("Content-Type","text/xml");
   res.setHeader("Content-Disposition","inline");
-    console.log("SEtting headers");
+    logger.debug("SEtting headers");
 
 
 }app.use(bodyParser.text({ type: 'application/json' }));
@@ -78,11 +83,11 @@ app.post("/change", function (req, res) {//data change of other nodes will be po
     //now we only record it down
     if(req.body) {
     dataCopy = req.body;
-    console.log(req.body);
+    logger.debug(req.body);
     io.emit("update", req.body);
         res.status(200).send("success");
 } else {
-  console.log("Receive empty data");
+  logger.debug("Receive empty data");
           res.status(400).send("empty req body: should contain data");
 }
 });
@@ -90,37 +95,65 @@ app.post("/change", function (req, res) {//data change of other nodes will be po
 
 var ev= BMSWatcher();
 
+//Save a datacopy for initialization
 ev.on('change', function (data) {
-    io.emit("update", data);
-    dataCopy = data;
+//TODO: uri to diskloc
+    logger.debug("update event: "+" on "+data.uri);
+    logger.debug(data)
+    io.to(data.uri).emit("update", data);
+
 })
 
 /*socket io***/
 //TODO: multiple nodes may post to here, need a map of dataCopy, name as key
 //TODO: else, post again for initial data(seperate it with register)
 io.on('connection', function(socket){
-    /**
-    if(dataCopy === null){//no cached data copy, this is the first client
 
-        registerer.register(registerUrl, myUrl, function (err, initialData) {//register to changing-data node
-            if(err){
-                console.log(err);
-                return;//TODO: err handling
-            }
 
+       // registerer.register(registerUrl, myUrl, function (err, initialData) {//register to changing-data node
+       //     if(err){
+         //       logger.debug(err);
+          //      return;//TODO: err handling
+          //  }
+
+/**
+        bmsData(function (err, initialData) {
+            //get initial by db access
             socket.emit("initial",initialData);
-            dataCopy = initialData;
-            console.log('a user connected');
-
         })
+**/
+socket.on('join', function (uriSubscribeList) {
+    //May be do some authorization
+    let sl = JSON.parse(uriSubscribeList);
+    sl.forEach(function (uri2Sub) {
+        let diskLoc = uri2Sub.replace("http://www.theworldavatar.com", config.bmsFolder)
+            .replace("http://www.jparksimulator.com", config.bmsFolder);
 
-    } else {
-         console.log("Saved initial dataCopy: " + dataCopy);
-        socket.emit("initial", dataCopy);
-        console.log('a user connected');
-    }
-     **/
-    console.log('a user connected');
+        diskLoc = path.normalize(diskLoc)
+        logger.debug(socket.id, "joined", diskLoc);
+        socket.join(diskLoc);
+        logger.debug(config.bmsplotnode)
+        logger.debug(socket.rooms)
+        if(diskLoc === config.bmsplotnode){
+            bmsData(config.bmsplotnode, function (err, initialData) {
+                //get initial by db access
+                logger.debug("send initial data");
+                socket.emit("initial",initialData);
+            })
+        }
+
+    })
+
+
+
+});
+    socket.on('leave', function (uriSubscribe) {
+        //May be do some authorization
+        socket.leave(uriSubscribe);
+        logger.debug(socket.id, "left", uriSubscribe);
+    });
+
+    logger.debug('a user connected');
 
 });
 
@@ -151,17 +184,17 @@ http.on('close', function () {
     registerer.deregister(registerUrl, myUrl, function (err, result) {
           //server is close down, no way to put this msg to anyone, just print it out
           if(err){
-              console.log(err);
+              logger.debug(err);
           }
 
-          console.log(result);
+          logger.debug(result);
       })
 
 
 });
 ***/
 http.listen(port, function () {
-  console.log('Server listening on port 3000');
+  logger.debug('Server listening on port 3000');
 });
 
 module.exports = http;

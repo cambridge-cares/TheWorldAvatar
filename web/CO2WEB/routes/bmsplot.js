@@ -12,8 +12,13 @@ router.get("/", function (req, res, next) {
 
     console.log("get /bmsplot");
    // console.log(config.viewRoot+'/bmsPlot.html')
-    //TODO: render initial dat
    // res.sendFile( config.viewRoot+'/bmsPlot.html');
+    //get BMS data
+    //TODO l sent initial data here
+    //todo HOW ? through event=>socket/ through socket directly/initial render
+
+
+
 try{
     res.render('bmsPlot'); //render the view with this value
 

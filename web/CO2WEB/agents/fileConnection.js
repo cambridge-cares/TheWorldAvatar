@@ -18,6 +18,9 @@
  *   Import connections only have level: null
 
  */
+var log4js = require('log4js');
+var logger = log4js.getLogger();
+logger.level = 'debug';
 //import
 var path = require('path');
 var libxmljs = require("libxmljs");
@@ -26,7 +29,7 @@ var proj4 = require('proj4');
 
 var async = require('async');
 var readdirp = require('readdirp');
-var fs = require('fs');
+var fs = require('graceful-fs');
 var util = require('util');
 var config = require('../config.js');
 //var folderLocation = config.root;
@@ -84,18 +87,22 @@ owlProcessor.readConnections = function(options, callback) {
     function startFromRoot2GetConns(callback) {
 
         /*read top node**/
-        fs.readFile(topnodeLocation, function (err, file) {
+      //  fs.readFile(topnodeLocation, function (err, file) {
+
+        var file = fs.readFileSync(topnodeLocation);
+        /*
             if (err) {
-                console.log("errReadingFile");
+                logger.debug("errReadingFile");
                 callback(err);
+                throw err;
                 return;
             }
-
+**/
 
             /*retreive child info from file and recursively read through children**/
             loopChildrenRecur(file, 0, callback);
 
-        })
+       // })
 
     }
 
@@ -121,10 +128,10 @@ owlProcessor.readConnections = function(options, callback) {
         namespaceOb['Eco-industrialPark'] = "http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#";
 
         var uris = root.find("//owl:NamedIndividual[rdf:type[contains(@rdf:resource,'http://www.theworldavatar.com/Service.owl')]]", namespaceOb);
-      //  console.log("found Service node :"+uris.length);
+      //  logger.debug("found Service node :"+uris.length);
 
         for(let curi of uris){
-            //    console.log(curi.name());
+            //    logger.debug(curi.name());
             services.push(curi.text().trim());//push to targets list
         }
         return services;
@@ -137,7 +144,7 @@ owlProcessor.readConnections = function(options, callback) {
 
 
 
-		       console.log("------------loopChildRecur--------------------");
+		       logger.debug("------------loopChildRecur--------------------");
 			   var root = owlProcessor.parseXMLFile(file);
 
            var myUri = owlProcessor.getUri(root);
@@ -158,7 +165,7 @@ owlProcessor.readConnections = function(options, callback) {
            if(showServiceUrl){
                let serviceUrltmp = owlProcessor.getServiceUrl(root);
                if(serviceUrltmp){
-                   console.log("found service url: " +serviceUrltmp)
+                   logger.debug("found service url: " +serviceUrltmp)
                    serviceUrlsParent.push({url : myUri, serviceUrl: serviceUrltmp})
                }
 
@@ -167,7 +174,7 @@ owlProcessor.readConnections = function(options, callback) {
                try {
                     imports = owlProcessor.getXMLImports(root);
                    for (let imported of imports) {
-                    //   console.log("import iri:" + imported);
+                    //   logger.debug("import iri:" + imported);
                        connectionParent.push({source: myUri, target: imported,level:null})
                       // children.push(imported);
                    }
@@ -184,7 +191,7 @@ owlProcessor.readConnections = function(options, callback) {
                return !(nodeMap.has(childUri));
            });
            if (children.length < 1) { // no children is found, including devices and services and call callback
-             //  console.log(myUri + " is a leaf node return");
+             //  logger.debug(myUri + " is a leaf node return");
                callback(null, {connections: connectionParent, geoCoords: geoCoordsParent, serviceUrls: serviceUrlsParent});
                return;
            }//else
@@ -194,13 +201,13 @@ owlProcessor.readConnections = function(options, callback) {
                if(showServiceOnly) { //pack only services into results
                    var services = getServices(root);
                    for (let service of services) {
-                     //  console.log("service iri: " + service);
+                     //  logger.debug("service iri: " + service);
                        connectionParent.push({source: myUri, target: service});
                    }
 
                }  else {
                    for (let target of children) {
-                     //  console.log("child iri: " + target);
+                     //  logger.debug("child iri: " + target);
                        connectionParent.push({source: myUri, target: target, level: level});
                    }
                }
@@ -209,18 +216,18 @@ owlProcessor.readConnections = function(options, callback) {
                //request on each child, execute loopChild on it, then concate the result
                async.concat(children, requestChild, function (err, results) {
                    if (err) {
-                      // console.log("concat err");
-                       console.log(err.message);
+                      // logger.debug("concat err");
+                       logger.debug(err.message);
                        callback(err);
                        return;
                    }
-                   console.log("concat results");
+                   logger.debug("concat results");
 
                    let connectionsAll = connectionParent;
                    let geoCoordsAll = geoCoordsParent;
                    let serviceUrlAll = serviceUrlsParent;
 
-                   //console.log(geoCoordsParent)
+                   //logger.debug(geoCoordsParent)
                    for (let result of results){
                        let connectionChild = result.connections;
                        let geoCoordsChild = result.geoCoords;
@@ -230,11 +237,11 @@ owlProcessor.readConnections = function(options, callback) {
                        geoCoordsAll=   geoCoordsAll.concat(geoCoordsChild);
                        serviceUrlAll = serviceUrlAll.concat(serviceUrlChild);
                    }
-                   //console.log("********************concated");
-                  // console.log(util.inspect(connectionsAll));
-                  // console.log(util.inspect(geoCoordsAll));
-                   console.log("All service urls data:")
-                   console.log(JSON.stringify(serviceUrlAll))
+                   //logger.debug("********************concated");
+                  // logger.debug(util.inspect(connectionsAll));
+                  // logger.debug(util.inspect(geoCoordsAll));
+                   logger.debug("All service urls data:")
+                   logger.debug(JSON.stringify(serviceUrlAll))
 
                    callback(null, {connections:connectionsAll, geoCoords:geoCoordsAll, serviceUrls:serviceUrlAll});
 
@@ -246,20 +253,20 @@ owlProcessor.readConnections = function(options, callback) {
                request.get(iri, {timeout: 2000, agent:false},function (err, response, body) {
 
                    if (err || response.statusCode !== 200) { //request failed
-                       console.log(err);
+                       logger.debug(err);
                        callback(null, null); // return null
                        return;
 
                    }
 
                    if (response.statusCode === 200) {//request success
-                       //console.log("req: " + iri);
+                       //logger.debug("req: " + iri);
 
                        loopChildrenRecur(body, level+1, callback);
                        return;
                    }
 
-                   console.log("why the fuck did anyone get to this point");
+                   logger.debug("why the fuck did anyone get to this point");
                    callback(null, null);
                });
 
@@ -269,15 +276,6 @@ owlProcessor.readConnections = function(options, callback) {
     }
 
 
-    Array.prototype.clean = function(deleteValue) {
-        for (var i = 0; i < this.length; i++) {
-            if (this[i] === deleteValue) {
-                this.splice(i, 1);
-                i--;
-            }
-        }
-        return this;
-    };
 
 
     /***
@@ -304,12 +302,12 @@ owlProcessor.parseXMLFile = function(file) {
 
         return root;
 
-        //     console.log("myURI" + myUri);
+        //     logger.debug("myURI" + myUri);
         //TODO: request for remote  VS search with name on current?
         //TODO: xml parse the file => get targets list == childList => request on each child file
 
     } catch(err){
-        console.log(err);
+        logger.debug(err);
     }
 }
 
@@ -318,7 +316,7 @@ owlProcessor.getXMLImports = function(root) {
 
         //Get every tab defined in ontology tab
         let imports =  root.find('//owl:Ontology//owl:imports', {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#resource"});
-        //   console.log(imports);
+        //   logger.debug(imports);
         let results = [];
         if(imports ) {
             results = imports.map(function (item) {
@@ -358,7 +356,7 @@ owlProcessor.getServiceUrl = function(root) {
 
         return null;
     }
-    console.log("found service url in func: " +urls[0].text().trim())
+    logger.debug("found service url in func: " +urls[0].text().trim())
 
     return  urls[0].text().trim();
 }
@@ -383,16 +381,16 @@ owlProcessor.getChildren = function(root) {
 
     //find all node with hasIRI property
     var uris = root.find("//Eco-industrialPark:hasIRI", namespaceOb);
-    //  console.log("found node Eco-industrialPark:hasIRI:" + uris.length);
+    //  logger.debug("found node Eco-industrialPark:hasIRI:" + uris.length);
     for (let curi of uris) {
-        // console.log(curi.name());
+        // logger.debug(curi.name());
         children.push(curi.text().trim());//push to targets list
     }
     //find all node with SYSTEM:hasIRI property
     let urisS = root.find("//system:hasIRI", namespaceOb);
-    //console.log("found node system:hasIRI:"+urisS.length);
+    //logger.debug("found node system:hasIRI:"+urisS.length);
     for(let curi of urisS){
-        //    console.log(curi.name());
+        //    logger.debug(curi.name());
         children.push(curi.text().trim());//push to targets list
     }
 
@@ -409,13 +407,13 @@ owlProcessor.getPPChildren = function (root) {
    // namespaceOb['f'] ="http://www.theworldavatar.com/TheWorld.owl#";
     //find all node with SYSTEM:hasIRI property
     let uris = root.find("//self:PowerPlant//system:hasIRI", owlProcessor.getNSList(root));
-    //console.log("found node system:hasIRI:"+urisS.length);
+    //logger.debug("found node system:hasIRI:"+urisS.length);
 
-    console.log("find pp:"+uris.length)
+    logger.debug("find pp:"+uris.length)
 
     for(let curi of uris){
-        //    console.log(curi.name());
-       //console.log(JSON.stringify(curi.path()))
+        //    logger.debug(curi.name());
+       //logger.debug(JSON.stringify(curi.path()))
          children.push(curi.text().trim());//push to targets list
     }
 
@@ -436,8 +434,8 @@ owlProcessor.getGeoCoord = function(root) {
     let y =  root.find("//owl:NamedIndividual[contains(@rdf:about, 'ValueOf_y_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
 
     if(x.length > 0 && y.length > 0) {
-        // console.log("#########################findcoordis:" + x[0].text().trim());
-        // console.log("converted coordi: " +  util.inspect(convertCoordinate(x[0].text().trim(), y[0].text().trim(), false)));
+        // logger.debug("#########################findcoordis:" + x[0].text().trim());
+        // logger.debug("converted coordi: " +  util.inspect(convertCoordinate(x[0].text().trim(), y[0].text().trim(), false)));
         return owlProcessor.convertCoordinate(x[0].text().trim(), y[0].text().trim(), false);
     } else {
         return null;
@@ -448,7 +446,7 @@ owlProcessor.getGeoCoord = function(root) {
 //https://github.com/proj4js/proj4js
         var googleProjection = 'EPSG:4326'; //google
         var ourProjection = 'EPSG:3857';//our
-//console.log("convert coordis: ["+parseInt(GPSLong)+", "+parseInt(GPSLat)+"] to "+proj4(fromProjection, toProjection, [parseInt(GPSLong),parseInt(GPSLat)]));
+//logger.debug("convert coordis: ["+parseInt(GPSLong)+", "+parseInt(GPSLat)+"] to "+proj4(fromProjection, toProjection, [parseInt(GPSLong),parseInt(GPSLat)]));
 
         return google2Owl?converted(googleProjection, ourProjection) : converted(ourProjection, googleProjection);
         function converted(fromProjection, toProjection){
@@ -470,13 +468,13 @@ owlProcessor.getNSList = function (root) {
     ns.forEach(function (item) {
         list[item.prefix()===null?"self":item.prefix()] = item.href();
     });
-  console.log(JSON.stringify(list))
+  logger.debug(JSON.stringify(list))
     return list;
 };
 
 owlProcessor.uriList2DiskLoc = function (uriArr, diskroot) {
     return uriArr.map(function (item) {
-        // console.log("map:"+item)
+        // logger.debug("map:"+item)
         let diskLoc = item.replace("http://www.theworldavatar.com",diskroot);
         diskLoc = diskLoc.replace("http://www.jparksimulator.com",diskroot);
         return {uri:item, diskLoc:diskLoc}

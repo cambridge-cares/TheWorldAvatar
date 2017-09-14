@@ -269,6 +269,12 @@ var FileLinkMap = function (options) {
 
     bubbleMap.update = function (links, coords, serviceUrls) {
         bubbleMap.nodesArr = packNodesArr(links, coords, serviceUrls);
+//TODO: find node list, subscribe change event through sockets
+        let subscribeList = bubbleMap.nodesArr.map(function (node) {
+            return node.url;
+        });
+
+        socket.emit("join", JSON.stringify(subscribeList));
 
         //set force simulation
         var simulation = d3.forceSimulation()
@@ -729,6 +735,8 @@ var FileLinkMap = function (options) {
 
 };
 /*END constructor: d3 link graph*********************************************/
+
+
 
 
 

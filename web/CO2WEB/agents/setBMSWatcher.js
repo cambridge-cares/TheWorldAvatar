@@ -3,6 +3,9 @@
  * Set parameters for watcher for bms, including a temporary
  * inform funciton using eventEmitter since they are not set separated.
  */
+var log4js = require('log4js');
+var logger = log4js.getLogger();
+logger.level = 'debug';
 
 const changeWatcher = require('./groupChangeWatcher')
 const EventEmitter = require('events');
@@ -17,7 +20,7 @@ function setBMSWatcher() {
     var watchEvent = new Ev(); //an eventemitter as informer
 
     function informIndi(data, observer, callback) {
-        console.log("inform")
+        logger.debug("inform")
         try{//all nodes are local, we use event emitter to inform file change
             watchEvent.emit('change', data);
 
@@ -32,7 +35,7 @@ function setBMSWatcher() {
 
     bmsWatcher.registerAll("worldnode", false);
     //register a special data for plotting
-    //bmsWatcher.register("","worldnode", true);
+    bmsWatcher.register(config.bmsplotnode,"worldnode", true);
 
 
     return watchEvent;

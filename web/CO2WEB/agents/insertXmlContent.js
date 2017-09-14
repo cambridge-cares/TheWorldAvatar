@@ -7,6 +7,9 @@
  * stream-inserting some content into a certain parent node in xml
  *
  */
+var log4js = require('log4js');
+var logger = log4js.getLogger();
+logger.level = 'debug';
 
 var fs        = require('fs')
     , XmlStream = require('xml-stream')
@@ -28,7 +31,7 @@ function insertXMLer() {
         var called = false;
 
         xmls.on('data', function(node) {
-            console.log("get data")
+            logger.debug("get data")
             outStream.write(node)//copy content to
         });
         xmls.on('endElement:'+parent, function(node) {

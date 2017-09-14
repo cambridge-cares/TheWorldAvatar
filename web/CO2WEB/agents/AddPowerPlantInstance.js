@@ -3,6 +3,10 @@
  * A simple tool to add new Powerplant instance to theworld owlfile
  *
  */
+var log4js = require('log4js');
+var logger = log4js.getLogger();
+logger.level = 'debug';
+
 
 var config = require('../config')
     ,path =require('path')
@@ -31,7 +35,7 @@ function addPowerPlantInstance() {
 
 
          function addcontent() {
-             console.log(filenames.length);
+             logger.debug(filenames.length);
 
              for(let ppName of filenames){
                  ws.write(getPPInstance(ppName)+"\n") ;
@@ -41,7 +45,7 @@ function addPowerPlantInstance() {
              function () {//TODO:err handler
 
              }, function () {//end handler
-                   console.log("done");
+                   logger.debug("done");
              } );
      })
 

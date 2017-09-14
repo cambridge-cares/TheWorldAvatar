@@ -2,6 +2,10 @@
  * Created by Shaocong on 8/31/2017.
  */
 
+var log4js = require('log4js');
+var logger = log4js.getLogger();
+logger.level = 'debug';
+
 const config =  require('../config');
 const worldNode = config.worldNode;
 const xmlParser = require("./fileConnection");
@@ -52,7 +56,7 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
             let pp = xmlParser.uriList2DiskLoc(ppraw, ppRoot);
 
 
-            // console.log(util.inspect(pp));
+            // logger.debug(util.inspect(pp));
 
             async.concat(pp, query, function (err, plantData) {
                 //For each point, calculates emission
@@ -72,7 +76,7 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
                 result.sum = sum;
                 result.getByCountry = function (country) {
                     //TODO: not exist
-                    console.log(this.dataBycountry[country])
+                    logger.debug(this.dataBycountry[country])
                     return this.dataBycountry[country] ;
                 }
                 result.countryList = (function () {
@@ -95,7 +99,7 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
                             for(let fuelType in arrByFuel){
                                 if(arrByFuel.hasOwnProperty(fuelType)){
                                     sum[countrykey][fuelType]=0;
-                                  //  console.log(JSON.stringify(arrByFuel))
+                                  //  logger.debug(JSON.stringify(arrByFuel))
                                  arrByFuel[fuelType].forEach(function (item) {
                                      sum[countrykey][fuelType]+=parseFloat(item["capacity"]);
                                  });
@@ -115,14 +119,14 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
                     //cal new ns emission
                     //sum up
                     let newCalCap = this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration"] * percentage/100 || 0;
-                    console.log(this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration"])
+                    logger.debug(this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration"])
                     let newCalEmi = calculateEmission("http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration", newCalCap);
-                    console.log(newCalEmi)
+                    logger.debug(newCalEmi)
 
                     let newNSCap = this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#NaturalGasGeneration"] * (1-percentage/100);
-                    console.log(newNSCap)
+                    logger.debug(newNSCap)
                     let newNSEmi = calculateEmission("http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#NaturalGasGeneration", newNSCap);
-                    console.log(newNSEmi)
+                    logger.debug(newNSEmi)
                     return  newCalEmi + newNSEmi;
                 }
                 callback(null, result);
@@ -142,7 +146,7 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
             //loop through world node children , compare type to be PP or not
             fs.readFile(worldNode, function (err, file) {
                 if (err) {
-                    console.log("errReadingFile");
+                    logger.debug("errReadingFile");
                     callback(err);
                     return;
                 }
@@ -150,7 +154,7 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
                 var PP = xmlParser.getPPChildren(root);
 
 
-                console.log("children length: "+ PP.length);
+                logger.debug("children length: "+ PP.length);
                 callback(null, PP);
             })
         }
@@ -170,15 +174,15 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
                         callback(err);
                         return;
                     }
-                    //console.log(result);
+                    //logger.debug(result);
 
                     if(result.length ===2 && result[0][0] &&result[0][0]['?Fuel_Type'] &&result[0][0]['?Country'] && result[1][0]['?Capacity']){
-                        //console.log("Extract: " +  result[0][0]['?Fuel_Type'])
+                        //logger.debug("Extract: " +  result[0][0]['?Fuel_Type'])
                         callback(null, {uri: item.uri, name: result[0][0]['?Power_Plant_Name']['value'],type: result[0][0]['?Fuel_Type']['value'], country: result[0][0]['?Country']['value'], capacity: result[1][0]['?Capacity']['value']});
 
                     } else {
-                        // console.log("!!!!!!!!!!!!!!!!!!!!!!query: "+uri)
-                        // console.log(result);
+                        // logger.debug("!!!!!!!!!!!!!!!!!!!!!!query: "+uri)
+                        // logger.debug(result);
                         callback(null,null)
                     }
                 });
@@ -194,7 +198,7 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
                 case "http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#NaturalGasGeneration":
                     return capacity * 750 * 0.5 * 0.001;
                 default:
-                    console.log("no such type")
+                    logger.debug("no such type")
 
             }
         }
