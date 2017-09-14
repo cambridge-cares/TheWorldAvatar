@@ -16,7 +16,7 @@ RdfParser.RdfParser = function (opts) {
     if (!opts.file || !opts.uri) {
         throw new Error("file and uri undefined");//TODO: CHECK ERR HANDLING END POINT
     }
-    this.file = typeof opts.file === "string"? opts.file:opts.file.toString();
+    this.file = (typeof opts.file === "string"? opts.file:opts.file.toString());
     this.uri = opts.uri;
     this.mimeType = opts.mimeType || 'application/rdf+xml';
 

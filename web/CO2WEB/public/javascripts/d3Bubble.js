@@ -202,7 +202,7 @@ var FileLinkMap = function (options) {
     }
 
     function setD(link) {
-        console.log(link.source.count);
+       // console.log(link.source.count);
         var nodeNThre = 5
         if (link.source.count > nodeNThre || link.target.count > nodeNThre) {
             return 100;
@@ -628,7 +628,7 @@ var FileLinkMap = function (options) {
         bubbleMap.defaultOpa();
         /*freeze**/
 
-
+      
         setTimeout(function () {
             console.log("Stop moving!")
 
@@ -639,11 +639,11 @@ var FileLinkMap = function (options) {
                 .nodes(bubbleMap.nodesArr)
                 .on("tick", newTick);
 
-        }, 1000)
+        }, 3000)
         svg.call(d3.zoom()
             .scaleExtent([1 / 2, 8])
             .on("zoom", zoomed));
-
+     
     }
 
 

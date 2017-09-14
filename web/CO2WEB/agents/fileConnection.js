@@ -145,8 +145,13 @@ owlProcessor.readConnections = function(options, callback) {
 
 
 		       logger.debug("------------loopChildRecur--------------------");
+			  // console.log(file);
 			   var root = owlProcessor.parseXMLFile(file);
 
+			   if(!root){
+				   callback(null,null);
+				   return;
+			   }
            var myUri = owlProcessor.getUri(root);
 
            nodeMap.add(myUri);
@@ -261,7 +266,7 @@ owlProcessor.readConnections = function(options, callback) {
 
                    if (response.statusCode === 200) {//request success
                        //logger.debug("req: " + iri);
-
+                        console.log("!!!!!request child:"+iri);
                        loopChildrenRecur(body, level+1, callback);
                        return;
                    }

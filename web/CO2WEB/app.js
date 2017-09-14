@@ -194,7 +194,7 @@ http.on('close', function () {
 });
 ***/
 http.listen(port, function () {
-  logger.debug('Server listening on port 3000');
+  console.log('Server listening on port '+port);
 });
 
 module.exports = http;
