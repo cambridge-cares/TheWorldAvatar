@@ -9,10 +9,12 @@
 socket.emit("join", JSON.stringify(["http://www.theworldavatar.com/BCA_RT_sensor1.owl"]));
 
 
-let initialData;
 var newDataObj ={};
 
 $(document).ready(function () {
+/*select event******************************************/
+
+
 
 
     /*line graph*******************************/

@@ -17,4 +17,8 @@ block content
         script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js')
         script(src='/javascripts/line-graph.js')
         script(src='/javascripts/bmsPlot.js')
+        div#sensor-select-panel.mypanel.container-fluid
+            select#sensor-select.col-lg-2
+                each sensor in sensors
+                    option(value= {sensor}) #{sensor}
         #graph1.aGraph(style='position:relative;width:100%;height:400px')

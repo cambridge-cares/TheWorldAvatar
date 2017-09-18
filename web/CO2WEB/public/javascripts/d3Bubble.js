@@ -271,7 +271,7 @@ var FileLinkMap = function (options) {
         bubbleMap.nodesArr = packNodesArr(links, coords, serviceUrls);
 //TODO: find node list, subscribe change event through sockets
         let subscribeList = bubbleMap.nodesArr.map(function (node) {
-            return node.url;
+            return {uri:node.url, withData:false};
         });
 
         socket.emit("join", JSON.stringify(subscribeList));
