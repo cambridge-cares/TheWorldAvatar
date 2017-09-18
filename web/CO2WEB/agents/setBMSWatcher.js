@@ -38,7 +38,7 @@ function setBMSWatcher() {
     bmsWatcher.register(config.bmsplotnode,"worldnode", true);
 
 
-    return watchEvent;
+    return {watchEvent, bmsWatcher};
 }
 
 module.exports = setBMSWatcher;

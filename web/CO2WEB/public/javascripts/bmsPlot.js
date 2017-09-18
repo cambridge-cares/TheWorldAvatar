@@ -6,13 +6,15 @@
 /**/
     /*socket io */
     var socket = io();
-socket.emit("join", JSON.stringify(["http://www.theworldavatar.com/VAV-E7-28_DS_sensor1.owl"]));
+//socket.emit("join", JSON.stringify(["http://www.theworldavatar.com/VAV-E7-28_DS_sensor1.owl"]));
 
 
-let initialData;
 var newDataObj ={};
 
 $(document).ready(function () {
+/*select event******************************************/
+
+
 
 
     /*line graph*******************************/

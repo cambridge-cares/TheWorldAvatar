@@ -17,7 +17,7 @@ configDevelop();
 config.worldNode = path.join(config.root , "TheWorld.owl");
 config.jurongNode = path.join(config.root ,"JurongIsland.owl");
 config.bmsNode = path.join(config.root , "CARES_Lab.owl");
-config.bmsFolder = path.join(config.root , "bms");
+config.bmsFolder = path.join(config.root , "BMS");
 config.bmsplotnode = path.join(config.bmsFolder, "VAV-E7-28_DS_sensor1.owl");
 config.semakauNode = path.join(config.root , "SemakauIsland.owl");
 config.landLotNode=path.join(config.root , "JParkLandLots.owl");

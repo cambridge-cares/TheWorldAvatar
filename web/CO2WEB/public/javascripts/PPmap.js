@@ -88,7 +88,7 @@ function initMap() {
         })
 
         thead+="</table>";
-        console.log(thead)
+       // console.log(thead)
         return thead;
 
     }

@@ -24,10 +24,9 @@ var bmsplot= require("./routes/bmsplot.js");
 var bmsTemp = require("./routes/bmsNodeTemp");
 var getAttrList =require("./routes/getAttrList");
 //var PPCO2 = require("./routes/powerplantCO2");
-var ppMap = require('./routes/mapPowerPlant')
+//var ppMap = require('./routes/mapPowerPlant')
 var bmsData = require('./agents/GetBmsData')
 var registerer= require("./agents/register2DataChange");
-var setBMSWatcher = require("./agents/setBMSWatcher");
 var registerUrl = config.bmsUrlPath;
 var myUrl = config.myUrlPath;
 
@@ -59,7 +58,7 @@ app.use('/visualizeBMS', visualizeBMS);
 app.use('/visualizeSemakau', visualizeSemakau);
 app.use('/visualizeJurong', visualizeJurong);
 //app.use('/PowerPlantCO2',  PPCO2);
-app.use('/ppmap', ppMap);
+//app.use('/ppmap', ppMap);
 
 app.use('/JurongIsland.owl/showCO2', showCO2);
 app.use('/JPS_KB_CARES_Lab_Node/FH-01.owl', bmsTemp);
@@ -94,16 +93,17 @@ app.post("/change", function (req, res) {//data change of other nodes will be po
 }
 });
 ***/
-
-var ev= BMSWatcher();
+var watcherReturn = BMSWatcher();
+var ev= watcherReturn.watchEvent;
+var bmsWatcher = watcherReturn.bmsWatcher;
 
 //Save a datacopy for initialization
 ev.on('change', function (data) {
 //TODO: uri to diskloc
     logger.debug("update event: "+" on "+data.uri);
     logger.debug(data)
-    io.to(data.uri).emit("update", data);
-
+    io.to(data.uri+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
+    io.to(data.uri+"_data").emit("update", data);
 })
 
 /*socket io***/
@@ -128,26 +128,37 @@ socket.on('join', function (uriSubscribeList) {
     //May be do some authorization
     let sl = JSON.parse(uriSubscribeList);
     sl.forEach(function (uri2Sub) {
-        let diskLoc = uri2Sub.replace("http://www.theworldavatar.com", config.bmsFolder)
-            .replace("http://www.jparksimulator.com", config.bmsFolder);
 
+        //TODO:
+        let diskLoc = uri2Sub.uri.replace("http://www.theworldavatar.com", config.root)
+            .replace("http://www.jparksimulator.com", config.root);
+
+        let affix = uri2Sub.withData? "_data" :"_nodata";
         diskLoc = path.normalize(diskLoc)
-        logger.debug(socket.id, "joined", diskLoc);
-        socket.join(diskLoc);
-        logger.debug(config.bmsplotnode)
-        logger.debug(socket.rooms)
-        if(diskLoc === config.bmsplotnode){
-            bmsData(config.bmsplotnode, function (err, initialData) {
+        logger.debug(socket.id, "joined", diskLoc+affix);
+
+
+        socket.join(diskLoc+affix);
+
+        //TODO:check client legnth first, if 0 ,first join, ask to register for data
+
+
+        if(uri2Sub.withData){
+            console.log(io.sockets.clients(diskLoc+affix).length);
+            if (io.sockets.clients(diskLoc+affix).length < 2 ){//first join for data, register for data now
+                bmsWatcher.register(diskLoc,"worldnode", true);
+            }
+            bmsData(diskLoc, function (err, initialData) {
                 //get initial by db access
                 logger.debug("send initial data");
                 socket.emit("initial",initialData);
             })
         }
-
     })
+    logger.debug("@@@@@@@@@@@@@@@@")
+    let rooms = Object.keys(socket.rooms);
 
-
-
+    logger.debug(socket.rooms)
 });
     socket.on('leave', function (uriSubscribe) {
         //May be do some authorization
