@@ -61,8 +61,8 @@ RdfParser.RdfParser.prototype =  {
         this.store.query(new $rdf.SPARQLToQuery(queryStr, false, this.store), function (data) {//each data point
 
 
-          //  logger.debug("@@@@@@@@@@@@@@@@@@@@")
-           // logger.debug(data);
+         //  logger.debug("@@@@@@@@@@@@@@@@@@@@")
+            //logger.debug(data);
             dataset.push(data)
         }, null, function (err) {//when all is done
             if(err){

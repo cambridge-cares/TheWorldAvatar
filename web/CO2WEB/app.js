@@ -22,8 +22,9 @@ var showCO2 = require("./routes/showCO2.js");
 var config = require("./config.js");
 var bmsplot= require("./routes/bmsplot.js");
 var bmsTemp = require("./routes/bmsNodeTemp");
+var getAttrList =require("./routes/getAttrList");
 //var PPCO2 = require("./routes/powerplantCO2");
-//var ppMap = require('./routes/mapPowerPlant')
+var ppMap = require('./routes/mapPowerPlant')
 var bmsData = require('./agents/GetBmsData')
 var registerer= require("./agents/register2DataChange");
 var setBMSWatcher = require("./agents/setBMSWatcher");
@@ -58,11 +59,12 @@ app.use('/visualizeBMS', visualizeBMS);
 app.use('/visualizeSemakau', visualizeSemakau);
 app.use('/visualizeJurong', visualizeJurong);
 //app.use('/PowerPlantCO2',  PPCO2);
-//app.use('/ppmap', ppMap);
+app.use('/ppmap', ppMap);
 
 app.use('/JurongIsland.owl/showCO2', showCO2);
 app.use('/JPS_KB_CARES_Lab_Node/FH-01.owl', bmsTemp);
 app.use("/bmsplot", bmsplot);
+app.use("/getAttrList", getAttrList)
 app.get('/', function (req, res) {
 	        res.sendFile(path.join(__dirname, 'views/index.html'));
 

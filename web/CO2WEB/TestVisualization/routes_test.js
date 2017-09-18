@@ -243,3 +243,29 @@ describe('get /convertion ', function () {
 
     })
 });
+
+describe('get /getAttrList ', function () {
+    it('returns status 200',function (done) {
+        this.timeout(30000);
+
+        let url = baseURL + "/getAttrList";
+        console.log("request "+ url);
+
+        request({method:'POST', url : url, headers:{ "content-type": "application/json"},body:JSON.stringify({"uri":"http://www.jparksimulator.com/E-301.owl"})}, function(error, response, body) {
+            if(error){
+                console.log(error);
+                done(error);
+            }
+            console.log(body)
+            expect(response.statusCode).to.equal(200);
+            var result = JSON.stringify([ { name: 'ValueOfHeatDutyOfE-301', value: '510.71283' },
+                { name: 'ValueOf_EquipmentCost_E-301', value: '63800.0' },
+                { name: 'ValueOf_x_E-301', value: '1.15414725598235E7' },
+                { name: 'ValueOf_y_E-301', value: '140096.192340398' } ])
+            expect(response.body).to.deep.equal(result);
+
+            done();
+        })
+
+    })
+});
