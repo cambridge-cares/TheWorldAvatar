@@ -46,10 +46,10 @@ function groupwatcher(dir, informIndi){
 
     WatchDog.prototype = {
         register: function (newObserver, receiveData) {//register this observer
-            logger.debug("dog for " + this.uri+" registers " + newObserver)
+           // logger.debug("dog for " + this.uri+" registers " + newObserver)
             this.observers.set(newObserver, {name: newObserver, receiveData: receiveData});
             this.observers.forEach(function (item) {
-                logger.debug(item)
+               // logger.debug(item)
             })
         },
         deregister:function (oldObserver) {
@@ -77,12 +77,13 @@ function groupwatcher(dir, informIndi){
                });
            }
 
-     logger.debug(this.observers);
+    // logger.debug(this.observers);
 
             if(this.hasDataRequestObserver()){
                let  dataPromise = getDataP();
                 dataPromise.then(function (promisedData) {
                     withChangeData.data = promisedData;
+					logger.debug(withChangeData.data);
                     loopInform();
                 })
             } else{
@@ -94,7 +95,7 @@ function groupwatcher(dir, informIndi){
                 function loopInform() {
                     /*call inform on all observer*****/
                     if(self.observers.size > 0){
-                        logger.debug("Call concat")
+                      //  logger.debug("Call concat")
                         async.concat(self.observers, informWithData,//send modified file to each observer
                             function (err, results) {
                                 if (err) {
@@ -103,7 +104,7 @@ function groupwatcher(dir, informIndi){
                                 }
                                 logger.debug("finish informing")
                                 if(results){
-                                    logger.debug(JSON.stringify(results));
+                                    //logger.debug(JSON.stringify(results));
                                 }
                             });
 
@@ -112,8 +113,8 @@ function groupwatcher(dir, informIndi){
 
                 /*define single inform with data**/
                 function informWithData(observer, callback){
-                    logger.debug("!!!!")
-                    logger.debug(observer)
+                   // logger.debug("!!!!")
+                   // logger.debug(observer)
                     var mobserver = observer[1].name;
 
                     var data = changedFilenames;

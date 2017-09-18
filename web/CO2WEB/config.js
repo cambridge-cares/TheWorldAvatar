@@ -13,12 +13,12 @@ var config = {};
 
 
 //configDevelop();
-configDevelop();
+configDeploy();
 config.worldNode = path.join(config.root , "TheWorld.owl");
 config.jurongNode = path.join(config.root ,"JurongIsland.owl");
 config.bmsNode = path.join(config.root , "CARES_Lab.owl");
-config.bmsFolder = path.join(config.root , "bms");
-config.bmsplotnode = path.join(config.bmsFolder, "VAV-E7-28_DS_sensor1.owl");
+config.bmsFolder = path.join(config.root , "BMS");
+config.bmsplotnode = path.join(config.bmsFolder, "BCA_RT_sensor1.owl");
 config.semakauNode = path.join(config.root , "SemakauIsland.owl");
 config.landLotNode=path.join(config.root , "JParkLandLots.owl");
 config.registerPath = "dataObserve";
@@ -41,7 +41,7 @@ function configDevelop() {
 
 function configDeploy() {
     config.root = path.normalize("C:/TOMCAT/webapps/ROOT");
-    config.port = 82;//port for deploy
+    config.port = 3000;//port for deploy
     config.registerUrl = "http://10.25.188.104";
     config.changeUrl = "http://www.theworldavatar.com:82";
 

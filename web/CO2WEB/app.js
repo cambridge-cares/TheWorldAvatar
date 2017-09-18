@@ -100,6 +100,7 @@ ev.on('change', function (data) {
 //TODO: uri to diskloc
     logger.debug("update event: "+" on "+data.uri);
     logger.debug(data)
+	logger.debug(io.sockets.clients(data.uri))
     io.to(data.uri).emit("update", data);
 
 })
@@ -124,16 +125,17 @@ io.on('connection', function(socket){
 **/
 socket.on('join', function (uriSubscribeList) {
     //May be do some authorization
+
+
     let sl = JSON.parse(uriSubscribeList);
     sl.forEach(function (uri2Sub) {
-        let diskLoc = uri2Sub.replace("http://www.theworldavatar.com", config.bmsFolder)
-            .replace("http://www.jparksimulator.com", config.bmsFolder);
+        let diskLoc = uri2Sub.replace("http://www.theworldavatar.com", config.root)
+            .replace("http://www.jparksimulator.com", config.root);
 
         diskLoc = path.normalize(diskLoc)
         logger.debug(socket.id, "joined", diskLoc);
         socket.join(diskLoc);
         logger.debug(config.bmsplotnode)
-        logger.debug(socket.rooms)
         if(diskLoc === config.bmsplotnode){
             bmsData(config.bmsplotnode, function (err, initialData) {
                 //get initial by db access
@@ -144,7 +146,8 @@ socket.on('join', function (uriSubscribeList) {
 
     })
 
-
+	logger.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+	        logger.debug(socket.rooms)
 
 });
     socket.on('leave', function (uriSubscribe) {

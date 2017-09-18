@@ -6,7 +6,7 @@
 /**/
     /*socket io */
     var socket = io();
-socket.emit("join", JSON.stringify(["http://www.theworldavatar.com/VAV-E7-28_DS_sensor1.owl"]));
+socket.emit("join", JSON.stringify(["http://www.theworldavatar.com/BCA_RT_sensor1.owl"]));
 
 
 let initialData;
