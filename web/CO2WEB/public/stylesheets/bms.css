@@ -54,3 +54,8 @@ svg.line-graph .scale-button:not(.selected):hover {
 svg.line-graph .date-label {
     fill: #6E7B8B;
 }
+
+#sensor-select-panel{
+    margin-top: 30px;
+
+}

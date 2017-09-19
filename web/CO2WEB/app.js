@@ -127,6 +127,7 @@ io.on('connection', function(socket){
 socket.on('join', function (uriSubscribeList) {
     //May be do some authorization
     let sl = JSON.parse(uriSubscribeList);
+    logger.debug(sl)
     sl.forEach(function (uri2Sub) {
 
         //TODO:
@@ -139,13 +140,19 @@ socket.on('join', function (uriSubscribeList) {
 
 
         socket.join(diskLoc+affix);
+        console.log(io.sockets.clients());
 
         //TODO:check client legnth first, if 0 ,first join, ask to register for data
 
 
         if(uri2Sub.withData){
-            console.log(io.sockets.clients(diskLoc+affix).length);
-            if (io.sockets.clients(diskLoc+affix).length < 2 ){//first join for data, register for data now
+            var clients = io.sockets.adapter.rooms[diskLoc+affix].sockets;
+
+//to get the number of clients
+            var numClients = (typeof clients !== 'undefined') ? Object.keys(clients).length : 0;
+            logger.debug("number of clients in room: "+numClients);
+            if (numClients < 2 ){//first join for data, register for data now
+                logger.info("first client for this node ,register for data change")
                 bmsWatcher.register(diskLoc,"worldnode", true);
             }
             bmsData(diskLoc, function (err, initialData) {
@@ -160,10 +167,16 @@ socket.on('join', function (uriSubscribeList) {
 
     logger.debug(socket.rooms)
 });
-    socket.on('leave', function (uriSubscribe) {
+    socket.on('leave', function (uriSubscribeList) {
         //May be do some authorization
-        socket.leave(uriSubscribe);
-        logger.debug(socket.id, "left", uriSubscribe);
+        let sl = JSON.parse(uriSubscribeList);
+        sl.forEach(function (uri) {
+            socket.leave(uri+"_data");
+            socket.leave(uri+"_nodata");
+            logger.debug(socket.id, "left", uri);
+
+        })
+
     });
 
     logger.debug('a user connected');

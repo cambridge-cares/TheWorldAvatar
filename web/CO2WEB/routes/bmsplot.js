@@ -8,20 +8,26 @@ var router = express.Router();
 var config = require("../config");
 /* GET home page. */
 
+var getAllSensor = require("../agents/GetAllSensor");
+
+var sensorList;
+
+getAllSensor(function (err, data) {
+
+     sensorList = data;
+})
+
 router.get("/", function (req, res, next) {
 
-    console.log("get /bmsplot");
    // console.log(config.viewRoot+'/bmsPlot.html')
    // res.sendFile( config.viewRoot+'/bmsPlot.html');
     //get BMS data
-    //TODO l sent initial data here
-    //todo HOW ? through event=>socket/ through socket directly/initial render
-
-
-
 try{
-    res.render('bmsPlot'); //render the view with this value
-
+    if(sensorList) {
+        res.render('bmsPlot', {sensorList :sensorList}); //render the view with this value
+    } else{
+        next(new Error("Server has not finished loading data. Please try again."));
+    }
 }catch (err){
     next(err);
 }

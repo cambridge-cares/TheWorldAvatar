@@ -19,6 +19,7 @@ block content
         script(src='/javascripts/bmsPlot.js')
         div#sensor-select-panel.mypanel.container-fluid
             select#sensor-select.col-lg-2
-                each sensor in sensors
-                    option(value= {sensor}) #{sensor}
+                option(value= null)
+                each sensor in sensorList
+                    option(value= sensor) #{sensor}
         #graph1.aGraph(style='position:relative;width:100%;height:400px')
