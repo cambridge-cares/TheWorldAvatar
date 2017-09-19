@@ -4,16 +4,33 @@
 
 
 /**/
-    /*socket io */
-    var socket = io();
+
 socket.emit("join", JSON.stringify(["http://www.theworldavatar.com/BCA_RT_sensor1.owl"]));
 
 
 var newDataObj ={};
 
-$(document).ready(function () {
-/*select event******************************************/
 
+
+$(document).ready(function () {
+    /*socket io */
+    var socket = io();
+/*select event******************************************/
+//TODO: leave previous
+let sensorChosen;
+
+    $("select#sensor-select").on('change', function () {
+        var  sensorSelected = $("select#sensor-select option:checked").val();
+        console.log(sensorSelected);
+        //leave previous chosen sensor subscribing room
+        if(sensorChosen) {
+            console.log("leave old room:" + sensorChosen)
+            socket.emit("leave", JSON.stringify([sensorChosen]));
+        }//join new room join through socket
+        console.log("into new room: " + sensorSelected);
+        socket.emit("join", JSON.stringify([{uri:sensorSelected, withData:true}]));
+        sensorChosen = sensorSelected;
+    });
 
 
 
