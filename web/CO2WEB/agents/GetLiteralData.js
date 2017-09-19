@@ -37,7 +37,7 @@ WHERE { ?s ?p  ?o. }
 function LiteralData(nodeloc, callback) {
 //TODO: error handle
                                                            //todo: delete this poweplant subroute
-    nodeloc = nodeloc.replace("http://www.theworldavatar.com", path.join(config.root,"powerplants")).replace("http://www.jparksimulator.com", path.join(config.root,"powerplants"));
+    nodeloc = nodeloc.replace("http://www.theworldavatar.com", config.root).replace("http://www.jparksimulator.com", config.root);
     console.log(nodeloc)
     fs.readFile(nodeloc, function (err, file) {
         if(err){

@@ -153,7 +153,7 @@ owlProcessor.readConnections = function(options, callback) {
 				   return;
 			   }
            var myUri = owlProcessor.getUri(root);
-
+           logger.debug(myUri)
            nodeMap.add(myUri);
            let children = owlProcessor.getChildren(root);
            //get my links

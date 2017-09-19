@@ -3,7 +3,11 @@
  * @type {*}
  */
 var log4js = require('log4js');
-var logger = log4js.getLogger();
+log4js.configure({
+  appenders: { cheese: { type: 'file', filename: 'cheese.log' } },
+  categories: { default: { appenders: ['cheese'], level: 'debug' } }
+});
+var logger = log4js.getLogger('cheese');
 logger.level = 'debug';
 
 var express = require('express');
@@ -23,8 +27,8 @@ var config = require("./config.js");
 var bmsplot= require("./routes/bmsplot.js");
 var bmsTemp = require("./routes/bmsNodeTemp");
 var getAttrList =require("./routes/getAttrList");
-//var PPCO2 = require("./routes/powerplantCO2");
-//var ppMap = require('./routes/mapPowerPlant')
+var PPCO2 = require("./routes/powerplantCO2");
+var ppMap = require('./routes/mapPowerPlant')
 var bmsData = require('./agents/GetBmsData')
 var registerer= require("./agents/register2DataChange");
 var registerUrl = config.bmsUrlPath;
@@ -57,8 +61,8 @@ app.use('/visualizeWorld', visualizeWorld);
 app.use('/visualizeBMS', visualizeBMS);
 app.use('/visualizeSemakau', visualizeSemakau);
 app.use('/visualizeJurong', visualizeJurong);
-//app.use('/PowerPlantCO2',  PPCO2);
-//app.use('/ppmap', ppMap);
+app.use('/PowerPlantCO2',  PPCO2);
+app.use('/ppmap', ppMap);
 
 app.use('/JurongIsland.owl/showCO2', showCO2);
 app.use('/JPS_KB_CARES_Lab_Node/FH-01.owl', bmsTemp);
@@ -100,10 +104,11 @@ var bmsWatcher = watcherReturn.bmsWatcher;
 //Save a datacopy for initialization
 ev.on('change', function (data) {
 //TODO: uri to diskloc
-    logger.debug("update event: "+" on "+data.uri);
-    logger.debug(data)
-    io.to(data.uri+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
-    io.to(data.uri+"_data").emit("update", data);
+    logger.debug("update event: "+" on "+data.uri+"_nodata");
+	    let rooms = io.sockets.adapter.rooms;
+   //logger.debug(rooms[path.normalize(data.uri)].sockets);
+    io.to(path.normalize(data.uri)+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
+    io.to(path.normalize(data.uri)+"_data").emit("update", data);
 })
 
 /*socket io***/
@@ -130,19 +135,16 @@ socket.on('join', function (uriSubscribeList) {
 
     let sl = JSON.parse(uriSubscribeList);
     sl.forEach(function (uri2Sub) {
-        let diskLoc = uri2Sub.replace("http://www.theworldavatar.com", config.root)
-            .replace("http://www.jparksimulator.com", config.root);
-
-        //TODO:
         let diskLoc = uri2Sub.uri.replace("http://www.theworldavatar.com", config.root)
             .replace("http://www.jparksimulator.com", config.root);
 
+
         let affix = uri2Sub.withData? "_data" :"_nodata";
         diskLoc = path.normalize(diskLoc)
-        logger.debug(socket.id, "joined", diskLoc+affix);
 
 
         socket.join(diskLoc+affix);
+        logger.debug(socket.id, "joined", diskLoc+affix);
 
         //TODO:check client legnth first, if 0 ,first join, ask to register for data
 
@@ -160,9 +162,7 @@ socket.on('join', function (uriSubscribeList) {
         }
     })
     logger.debug("@@@@@@@@@@@@@@@@")
-    let rooms = Object.keys(socket.rooms);
-
-    logger.debug(socket.rooms)
+    logger.debug(io.sockets.adapter.rooms)
 });
     socket.on('leave', function (uriSubscribe) {
         //May be do some authorization

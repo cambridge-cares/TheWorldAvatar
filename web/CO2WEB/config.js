@@ -41,7 +41,7 @@ function configDevelop() {
 
 function configDeploy() {
     config.root = path.normalize("C:/TOMCAT/webapps/ROOT");
-    config.port = 3000;//port for deploy
+    config.port = 82;//port for deploy
     config.registerUrl = "http://10.25.188.104";
     config.changeUrl = "http://www.theworldavatar.com:82";
 
