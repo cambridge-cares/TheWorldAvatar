@@ -7,7 +7,7 @@ block sheets
 
 block subtitle
 
-    | World power Plant CO
+    | World Power Plant CO
     sub 2
     | &nbsp;Emission Meter
 
@@ -29,24 +29,24 @@ block content
                     | &nbsp;Emission:
                 p
                 span#co2Value  #{co2Value}
-                span  tonnes/seconds
+                span  tonnes/h
 
                 p.textsmall
                     | The total CO
                     sub 2
-                    | &nbsp;emission from Jurong Island is estimated
-                    | using
+                    | &nbsp;emission from World Power Plants is estimated using method from Emissions & Generation Resource Integrated Database (eGRID) and data from Global Energy Observatory (GEO)
 
                 p.textsmall
                     |Source for world power plant:
 
             div#country-sum-panel.mypanel.container-fluid
+                p select country:
                 select#country-select.col-lg-2
                     each country in countries
                         option(value= {country}) #{country}
                 div#table-panel.col-lg-7
                 div#country-total-panel.col-lg-3
-                    |Total country's CO2 emission:
+                    |Total country's CO2 emission(tonnes/h):
                     span#country-total-echo
             div#convert-panel.mypanel
                 p.p2 Enter percenteage of existing coal power plant capacity to be converted to natural gas:

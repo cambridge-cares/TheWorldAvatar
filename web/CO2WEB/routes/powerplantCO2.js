@@ -30,7 +30,7 @@ if(!CO2Dataset){
 
 router.get('/', function (req, res, next) {
         if(CO2Dataset) {
-            res.render('PPco2', {co2Value: parseFloat(CO2Dataset.sum).toFixed(4), countries: CO2Dataset.countryList}); //render the view with this value
+            res.render('PPco2', {co2Value: parseFloat(CO2Dataset.sum).toFixed(), countries: CO2Dataset.countryList}); //render the view with this value
         } else{
             next(new Error("Server can not provide the data now"))
         }

@@ -13,7 +13,7 @@ var config = {};
 
 
 //configDevelop();
-configDeploy();
+configDevelop();
 config.worldNode = path.join(config.root , "TheWorld.owl");
 config.jurongNode = path.join(config.root ,"JurongIsland.owl");
 config.bmsFolder = path.join(config.root , "BMS");
@@ -35,8 +35,8 @@ function configDevelop() {
     config.port = 3000;//port for deploy
     config.registerUrl = "http://localhost:2000";
     config.changeUrl = "http://localhost:3000";
-
-    //"http://www.theworldavatar.com:82/change";
+    config.ppFolder = path.join(config.root, "powerplants")
+    //"http://www.thewordavatar.com:82/change";
 }
 
 function configDeploy() {
@@ -44,6 +44,7 @@ function configDeploy() {
     config.port = 82;//port for deploy
     config.registerUrl = "http://10.25.188.104";
     config.changeUrl = "http://www.theworldavatar.com:82";
+    config.ppFolder = config.root
 
 }
 

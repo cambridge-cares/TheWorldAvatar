@@ -23,10 +23,12 @@ const SPA = `
     where {
     ?DataPoint system:hasValue ?x.
     ?x system:numericalValue ?ValueOf_DataPoint.
+    OPTIONAL{?x system:hasUnitOfMeasure ?Unit.}
     }
 `;
 /***********************************/
 //    ?DataPoint rdf:type owl:NamedIndividual;
+
 
 function BMSData(nodeloc, callback) {
 
@@ -46,10 +48,17 @@ function BMSData(nodeloc, callback) {
                logger.debug(err);
                callback(err);
            }
-           //logger.debug(data)
+           logger.debug("raw query data:")
+           logger.debug(data)
            //parseFloat(item['?ValueOf_DataPoint']['value']);
            //parseFloat(item['?DataPoint']['value']);
 
+           let unitUri = data[0]['?Unit']?data[0]['?Unit']['value']:"";
+
+           let unitUriArr = unitUri.split('#');
+           let unit = unitUriArr[unitUriArr.length - 1];
+           unit =unit?unit:"";
+         logger.debug(unit)
            var resultArr = data.map(function (item) {
                let nameStr = item['?x']['value'];
                let timeStr = nameStr.split('@')[1];
@@ -58,7 +67,7 @@ function BMSData(nodeloc, callback) {
            });
            resultArr = resultArr.sort(compareTime);
            logger.debug(resultArr)
-           callback(null, resultArr)
+           callback(null, {data: resultArr, unit:unit})
        });
   });
 

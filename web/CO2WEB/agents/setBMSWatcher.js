@@ -35,7 +35,7 @@ function setBMSWatcher() {
 
     bmsWatcher.registerAll("worldnode", false);
     //register a special data for plotting
-    bmsWatcher.register(config.bmsplotnode,"worldnode", true);
+    //bmsWatcher.register(config.bmsplotnode,"worldnode", true);
 
 
     return {watchEvent, bmsWatcher};
