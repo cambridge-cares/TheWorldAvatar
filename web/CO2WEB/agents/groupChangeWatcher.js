@@ -10,9 +10,8 @@ logger.level = 'debug';
 
 var chokidar = require('chokidar');
 var async = require('async')
-var fs = require('fs')
+var fsre = require('fs-readdir-recursive')
 var path = require('path')
-
 
 var BMSData =require('./GetBmsData');
 
@@ -148,15 +147,25 @@ function groupwatcher(dir, informIndi){
     //TOOK  2
 
     //create watchdog for every owl file in dir
-    var files = fs.readdirSync(dir);
-    logger.debug(files);
-    var owlfiles = files.filter((file)=>{return file.match(/^.*\.owl$/)});
+    //, (file)=>{return file.match(/^.*\.owl$/)}
+    var owlfiles = fsre(dir);
+    logger.debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
+    logger.debug(owlfiles);
     owlfiles.forEach(function (owlfile) {
         let targetPath = path.join(dir, owlfile);
         setWatch(owlfile);
     })
-
+   // var owlfiles = files.filter((file)=>{return file.match(/^.*\.owl$/)});
+  /**
+   var files = fs.readdirSync(dir);
+    logger.debug(files);
+    var owlfiles = files.filter((file)=>{return file.match(/^.*\.owl$/)});
+    owlfiles.forEach(function (owlfile) {
+        let targetPath = path.join(dir, owlfile);
+        setWatch(owlfile);
+    })
+***/
 
     watcher
         .on('change', function(filepath) {//when dir changed
@@ -165,13 +174,17 @@ function groupwatcher(dir, informIndi){
                 logger.debug("Ask watchdog to inform")
                 let watchDog = watchDogs.get(filepath);
                 watchDog.informAll(informIndi);
+            } else{
+
             }
         })
 
-    function setWatch(filename) {
-        let targetPath = path.join(dir, filename)
-        var newdog = new WatchDog(targetPath, filename);
-        watchDogs.set(targetPath, newdog);
+    function setWatch(filepath) {
+       // let targetPath = path.join(dir, filename)
+        //TODO:get filename
+        var newdog = new WatchDog(filepath, filepath);
+        watchDogs.set(filepath, newdog);
+        return newdog;
     }
 
     function registerAll(observerUri, receiveData) {
