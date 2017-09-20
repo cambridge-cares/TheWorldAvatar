@@ -21,8 +21,7 @@ const SPA = `
 
     select distinct ?DataPoint ?ValueOf_DataPoint
     where {
-    ?DataPoint rdf:type owl:NamedIndividual;
-    system:hasValue ?x.
+    ?DataPoint system:hasValue ?x.
     ?x system:numericalValue ?ValueOf_DataPoint.
     }
 `;

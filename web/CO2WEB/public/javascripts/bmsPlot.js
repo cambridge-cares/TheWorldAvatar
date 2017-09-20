@@ -5,7 +5,7 @@
 
 /**/
 
-socket.emit("join", JSON.stringify(["http://www.theworldavatar.com/BCA_RT_sensor1.owl"]));
+//socket.emit("join", JSON.stringify(["http://www.theworldavatar.com/BCA_RT_sensor1.owl"]));
 
 
 var newDataObj ={};
@@ -61,7 +61,8 @@ let sensorChosen;
             dataObj["values"] = [idata.map((item) => {
                 return item.value
             })];
-
+			
+            $("#graph1").empty();
             l1 = new LineGraph({containerId: 'graph1', data: dataObj});//init this graph
             console.log(dataObj["start"]);
             console.log(dataObj["end"]);
