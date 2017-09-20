@@ -10,7 +10,6 @@ const config =  require('../config');
 const worldNode = config.worldNode;
 const xmlParser = require("./fileConnection");
 const parser = require('./rdfParser');
-const $rdf = require('rdflib');
 const async = require('async');
 const fs =require('graceful-fs')
 const util = require('util');
@@ -45,7 +44,7 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
 
     function getPlantAggregation(callback) {
         var result = {};
-        const ppRoot =config.root;
+        const ppRoot =config.ppFolder;
         getWorldPPChild(function (err, ppraw) {
             if (err) {
                 callback(err);

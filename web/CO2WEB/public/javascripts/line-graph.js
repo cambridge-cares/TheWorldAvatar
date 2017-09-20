@@ -49,6 +49,7 @@
  *	 LineGraph:configModification => whenever config is changed
  */
 function LineGraph(argsMap) {
+    console.log(JSON.stringify(argsMap))
     /* *************************************************************** */
     /* public methods */
     /* *************************************************************** */
@@ -260,6 +261,7 @@ function LineGraph(argsMap) {
      */
     var processDataMap = function(dataMap) {
         // assign data values to plot over time
+        console.log(dataMap)
         var dataValues = getRequiredVar(dataMap, 'values', "The data object must contain a 'values' value with a data array.")
         var startTime = new Date(getRequiredVar(dataMap, 'start', "The data object must contain a 'start' value with the start time in milliseconds since epoch."))
         var endTime = new Date(getRequiredVar(dataMap, 'end', "The data object must contain an 'end' value with the end time in milliseconds since epoch."))
@@ -268,7 +270,9 @@ function LineGraph(argsMap) {
         var displayNames = getOptionalVar(dataMap, 'displayNames', names);
         var numAxisLabelsPowerScale = getOptionalVar(dataMap, 'numAxisLabelsPowerScale', 6);
         var numAxisLabelsLinearScale = getOptionalVar(dataMap, 'numAxisLabelsLinearScale', 6);
+        var unit = getOptionalVar(dataMap, 'yunit', '');
 
+        console.log(unit)
         var axis = getOptionalVar(dataMap, 'axis', []);
         // default axis values
         if(axis.length === 0) {
@@ -332,7 +336,8 @@ function LineGraph(argsMap) {
             "maxValues" : maxValues,
             "rounding" : rounding,
             "numAxisLabelsLinearScale": numAxisLabelsLinearScale,
-            "numAxisLabelsPowerScale": numAxisLabelsPowerScale
+            "numAxisLabelsPowerScale": numAxisLabelsPowerScale,
+            "unit":unit
         }
     }
 
@@ -535,10 +540,10 @@ function LineGraph(argsMap) {
 			
 		        var leftlabel = document.getElementsByClassName("y axis left");
         var nodes = leftlabel[0].childNodes;
-
+        console.log(data.unit)
         for(var i = 0; i < nodes.length - 1;i++)
         {
-            nodes[i].childNodes[1].innerHTML = nodes[i].childNodes[1].innerHTML + " cbm/h";
+            nodes[i].childNodes[1].innerHTML = nodes[i].childNodes[1].innerHTML + data.unit;
         }	
 			
 			

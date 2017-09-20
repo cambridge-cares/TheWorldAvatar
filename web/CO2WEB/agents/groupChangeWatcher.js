@@ -82,7 +82,9 @@ function groupwatcher(dir, informIndi){
             if(this.hasDataRequestObserver()){
                let  dataPromise = getDataP();
                 dataPromise.then(function (promisedData) {
-                    withChangeData.data = promisedData;
+                    //TODO: merge instead of explicit declare
+                    withChangeData.data = promisedData.data;
+                    withChangeData.unit = promisedData.unit;
 					logger.debug(withChangeData.data);
                     loopInform();
                 })

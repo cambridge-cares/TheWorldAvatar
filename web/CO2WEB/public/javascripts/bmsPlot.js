@@ -5,7 +5,7 @@
 
 /**/
 
-socket.emit("join", JSON.stringify(["http://www.theworldavatar.com/BCA_RT_sensor1.owl"]));
+//socket.emit("join", JSON.stringify(["http://www.theworldavatar.com/BCA_RT_sensor1.owl"]));
 
 
 var newDataObj ={};
@@ -53,8 +53,11 @@ let sensorChosen;
         //let parsedData = idata;
         //let name = parsedData['name'];
           //  initialData = parsedData['data'];
-            console.log(idata);
+
+            console.log("unit: "+idata.unit);
             //wrap initial data into data obj
+            dataObj["yunit"] = idata.unit;
+            idata = idata.data;
             dataObj["start"] = idata[0].time;
             dataObj["end"] = idata[idata.length - 1].time;
             dataObj["step"] = Math.round((dataObj.end - dataObj.start) / idata.length);
@@ -62,6 +65,7 @@ let sensorChosen;
                 return item.value
             })];
 
+            $("#graph1").empty();
             l1 = new LineGraph({containerId: 'graph1', data: dataObj});//init this graph
             console.log(dataObj["start"]);
             console.log(dataObj["end"]);
