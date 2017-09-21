@@ -27,8 +27,8 @@ var config = require("./config.js");
 var bmsplot= require("./routes/bmsplot.js");
 var bmsTemp = require("./routes/bmsNodeTemp");
 var getAttrList =require("./routes/getAttrList");
-//var PPCO2 = require("./routes/powerplantCO2");
-//var ppMap = require('./routes/mapPowerPlant')
+var PPCO2 = require("./routes/powerplantCO2");
+var ppMap = require('./routes/mapPowerPlant')
 var bmsData = require('./agents/GetBmsData')
 var registerer= require("./agents/register2DataChange");
 var registerUrl = config.bmsUrlPath;
@@ -61,8 +61,8 @@ app.use('/visualizeWorld', visualizeWorld);
 app.use('/visualizeBMS', visualizeBMS);
 app.use('/visualizeSemakau', visualizeSemakau);
 app.use('/visualizeJurong', visualizeJurong);
-//app.use('/PowerPlantCO2',  PPCO2);
-//app.use('/ppmap', ppMap);
+app.use('/PowerPlantCO2',  PPCO2);
+app.use('/ppmap', ppMap);
 
 app.use('/JurongIsland.owl/showCO2', showCO2);
 app.use('/JPS_KB_CARES_Lab_Node/FH-01.owl', bmsTemp);
@@ -174,9 +174,12 @@ socket.on('join', function (uriSubscribeList) {
         //May be do some authorization
         let sl = JSON.parse(uriSubscribeList);
         sl.forEach(function (uri) {
-            socket.leave(uri+"_data");
-            socket.leave(uri+"_nodata");
-            logger.debug(socket.id, "left", uri);
+			        let diskLoc = uri.replace("http://www.theworldavatar.com", config.root)
+            .replace("http://www.jparksimulator.com", config.root);
+			diskLoc = path.normalize(diskLoc)
+            socket.leave(diskLoc+"_data");
+            socket.leave(diskLoc+"_nodata");
+            logger.debug(socket.id, "left", diskLoc);
             //TODO: deregister if a room owns no client?
 
         })

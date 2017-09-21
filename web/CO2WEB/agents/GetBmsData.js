@@ -53,7 +53,7 @@ function BMSData(nodeloc, callback) {
            //parseFloat(item['?ValueOf_DataPoint']['value']);
            //parseFloat(item['?DataPoint']['value']);
 
-           let unitUri = data[0]['?Unit']?data[0]['?Unit']['value']:"";
+           let unitUri = data[0]&&data[0]['?Unit']?data[0]['?Unit']['value']:"";
 
            let unitUriArr = unitUri.split('#');
            let unit = unitUriArr[unitUriArr.length - 1];

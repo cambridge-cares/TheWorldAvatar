@@ -179,10 +179,10 @@ function groupwatcher(dir, informIndi){
             }
         })
 
-    function setWatch(filepath) {
-       // let targetPath = path.join(dir, filename)
+    function setWatch(filename) {
+        let filepath = path.join(dir, filename)
         //TODO:get filename
-        var newdog = new WatchDog(filepath, filepath);
+        var newdog = new WatchDog(filepath, filename);
         watchDogs.set(filepath, newdog);
         return newdog;
     }

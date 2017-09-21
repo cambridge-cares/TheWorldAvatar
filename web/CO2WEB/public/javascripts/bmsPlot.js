@@ -23,6 +23,8 @@ let sensorChosen;
         var  sensorSelected = $("select#sensor-select option:checked").val();
         console.log(sensorSelected);
         //leave previous chosen sensor subscribing room
+		$("#graph1").empty();
+
         if(sensorChosen) {
             console.log("leave old room:" + sensorChosen)
             socket.emit("leave", JSON.stringify([sensorChosen]));
@@ -64,7 +66,7 @@ let sensorChosen;
             dataObj["values"] = [idata.map((item) => {
                 return item.value
             })];
-
+			
             $("#graph1").empty();
             l1 = new LineGraph({containerId: 'graph1', data: dataObj});//init this graph
             console.log(dataObj["start"]);
