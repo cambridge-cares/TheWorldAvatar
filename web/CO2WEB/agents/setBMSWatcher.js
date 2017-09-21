@@ -31,7 +31,7 @@ function setBMSWatcher() {
         callback(null,"success");
     }
 
-    var bmsWatcher =  changeWatcher(bmsFolder, informIndi);//construct a new watcher for us
+    var bmsWatcher =  changeWatcher(config.root, informIndi);//construct a new watcher for us
 
     bmsWatcher.registerAll("worldnode", false);
     //register a special data for plotting

@@ -1120,8 +1120,10 @@ $(window).load(function () {// when web dom ready
             // console.log($('circle'));
             // console.log($('#FH-01.owl'));
             // console.log($("circle[id='FH-01.owl']"));
-
-            let node = $("circle[id='"+data.filename+"']");
+           let simpleNameArr = data.filename.split('\\');
+		   
+		   let  simpleName = simpleNameArr.length>1?simpleNameArr[simpleNameArr.length - 1]:""
+            let node = $("circle[id='"+simpleName+"']");
 
             let oriColor = node.css("fill");
 

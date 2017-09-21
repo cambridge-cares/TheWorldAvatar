@@ -13,7 +13,7 @@ var config = {};
 
 
 //configDevelop();
-configDevelop();
+configDeploy();
 config.worldNode = path.join(config.root , "TheWorld.owl");
 config.jurongNode = path.join(config.root ,"JurongIsland.owl");
 config.bmsFolder = path.join(config.root , "BMS");

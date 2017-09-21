@@ -28,7 +28,7 @@ $(document).ready(function () {
             success: function (data) {
                 //Update display
                 console.log(data);
-                displayConvertResult(data);
+                displayConvertResult(data.toFixed());
             },
             error : function () {
                 displayMsg("Can not connect to server" , "error")
@@ -69,7 +69,7 @@ $(document).ready(function () {
         tableP.append(table);
 
         console.log("total: "+total);
-        displayCountryTotal(total.toFixed(2));
+        displayCountryTotal(total.toFixed());
     }
 
 
