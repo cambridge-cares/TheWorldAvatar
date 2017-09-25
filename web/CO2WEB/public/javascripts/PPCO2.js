@@ -8,17 +8,40 @@ $(document).ready(function () {
 
     let curPath = window.location.href;
     let countrySelected;
+    let lastPercentInput;
     /*Country selector*****************************************/
     /*Percentage-input listener******************/
     $('#input-percentage').on('blur', function (e) {
-        let percent = parseFloat($('#input-percentage').val());
-        disInputPercent(percent);
-        console.log(percent);
+        enterPercentage();
+    });
 
-        if(!validateInputPercantage(percent)){
-            displayMsg("Invalid percentage, please try again.","error")
+    $(document).keypress(function(e) {
+        if(e.which == 13) {
+            enterPercentage();
+
+        }
+    });
+
+
+    function enterPercentage() {
+        let percent = $('#input-percentage').val();
+        cleanMsg();
+        if(percent === "" || percent === lastPercentInput){
+            console.log("have not enter any percentage or same as last, just return")
+            return;//return without doing anything
+        }
+         lastPercentInput = percent;
+         percent = parseFloat(percent);
+        if(!countrySelected){
+            displayMsg("Have not chosen a country.","danger")
             return;
         }
+        if(!validateInputPercantage(percent)){
+            displayMsg("Invalid percentage, please try again.","danger")
+            return;
+        }
+        disInputPercentEcho(percent);
+        console.log(percent);
         //Send request to backend
         $.ajax({
             url: curPath+"/convertion",
@@ -31,11 +54,11 @@ $(document).ready(function () {
                 displayConvertResult(data.toFixed());
             },
             error : function () {
-                displayMsg("Can not connect to server" , "error")
+                displayMsg("Can not connect to server" , "danger")
             }
         });
 
-        
+
         function validateInputPercantage(input) {
             console.log("Check input:" + input)
             if (isNaN(input)){
@@ -46,9 +69,9 @@ $(document).ready(function () {
             }
             return true;
         }
+    }
 
 
-    });
 
     var tableP =         $("#table-panel");
 
@@ -87,7 +110,7 @@ $(document).ready(function () {
         countrySelected = countrySelected["country"];
         console.log(countrySelected)
         disInputCountry(countrySelected);
-
+        cleanMsg();
         $.ajax({
             url: curPath+"/listbycountry",
             method:"POST",
@@ -96,6 +119,11 @@ $(document).ready(function () {
             success: function (list) {
                 //Update display
                 displayListByCountry(list);
+                //clean convert area
+                disInputPercentEcho("");
+                displayConvertResult("");
+                //TODO: clean input field
+                displayInputPercent("");
             },
             error : function () {
                 displayMsg("Can not connect to server" , "error")
@@ -113,15 +141,21 @@ $(document).ready(function () {
         return "<p class='alert alert-" + type + "'>" + msg + "</p>";
     };
 
+    let panel = $("#err-msg-panel");
+
     function displayMsg(msg, type) {
         //TODO: swithc type
-        $("#err-msg-panel").html("");
-        $("#err-msg-panel").append(template(msg, type));
+        cleanMsg();
+        panel.append(template(msg, type));
+
+    }
+    function cleanMsg() {
+        panel.html("");
 
     }
 
     /*Display DOM**********************************************************************/
-    function disInputPercent(percent){
+    function disInputPercentEcho(percent){
         $("#input-percentage-echo").text(percent);
     }
     function disInputCountry(country){
@@ -133,6 +167,8 @@ $(document).ready(function () {
     }
     function  displayCountryTotal(result) {
         $("#country-total-echo").text(result);
-
+    }
+    function displayInputPercent(input) {
+        $('#input-percentage').val(input);
     }
 });

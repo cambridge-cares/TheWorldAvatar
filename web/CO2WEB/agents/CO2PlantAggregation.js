@@ -85,7 +85,7 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
                             list.push(key);
                         }
                     }
-                 return list;
+                 return list.sort();
                 })();
                 
                 result.capBycountrySum = (function () {
@@ -117,16 +117,21 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
                     //cal new ns cap
                     //cal new ns emission
                     //sum up
+                    if(!this.capBycountrySum[country] || !this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration"]){
+                         return 0;
+                    }
+                    let oldEmission = this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration"] + this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#NaturalGasGeneration"];
                     let newCalCap = this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration"] * percentage/100 || 0;
                     logger.debug(this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration"])
                     let newCalEmi = calculateEmission("http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration", newCalCap);
-                    logger.debug(newCalEmi)
+                    logger.debug(newCalEmi);
 
                     let newNSCap = this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#NaturalGasGeneration"] * (1-percentage/100);
-                    logger.debug(newNSCap)
+                    logger.debug(newNSCap);
                     let newNSEmi = calculateEmission("http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#NaturalGasGeneration", newNSCap);
-                    logger.debug(newNSEmi)
-                    return  newCalEmi + newNSEmi;
+                    logger.debug(newNSEmi);
+
+                    return oldEmission - newCalEmi - newNSEmi ;
                 }
                 callback(null, result);
             })

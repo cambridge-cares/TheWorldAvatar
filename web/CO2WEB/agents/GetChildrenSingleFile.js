@@ -25,6 +25,6 @@ function getChildrenSingleFile(uri, callback) {
 
 }
 
-//getChildrenSingleFile("http://www.jparksimulator.com/JurongIsland.owl");
+//getChildrenSingleFile("http://www.theworldavatar.com/BMS/VAV-E7-11.owl", function () {});
 
 module.exports = getChildrenSingleFile;
