@@ -42,7 +42,7 @@ function readPPCoordi(callback) {
                     for(let uri in item){
                         if(item.hasOwnProperty(uri)){
                             //let toGoogle = xmlParser.convertCoordinate(item[uri].x, item[uri].y, false);
-                            return {uri: uri, location :{lat: parseFloat(item[uri].y), lng:parseFloat(item[uri].x)}}
+                            return {uri: uri, location :{lat: parseFloat(item[uri].x), lng:parseFloat(item[uri].y)}}
                         }
                     }
                 })

@@ -21,7 +21,7 @@ function getIdFromNameInResults(name) {
 /*constructor: d3 link graph***********************************************/
 var FileLinkMap = function (options) {
     var width = $(document).width(),
-        height = options.height || 1200,
+        height = options.height || 2000,
         charge = options.charge || -3000,
         distance = options.distance || 100,
         nodeR = options.nodeR || 15,

@@ -13,7 +13,10 @@ var router = express.Router();
 
 var config = require("../config");
 
-var LiteralData = require("../agents/GetLiteralData")
+var LiteralData = require("../agents/GetLiteralData");
+
+
+
 router.post('/', function (req, res, next) {
         if(!req.body) {
             next(new Error("Can not find req body"));

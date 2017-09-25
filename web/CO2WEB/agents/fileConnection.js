@@ -160,11 +160,12 @@ owlProcessor.readConnections = function(options, callback) {
            let connectionParent = [],geoCoordsParent = [],serviceUrlsParent = [];
            var imports;
 
-
-           //get this geoCoord, push it on result links
            var coord = owlProcessor.getGeoCoord(root);
+           //get this geoCoord, push it on result links
            if(coord) {
-               geoCoordsParent.push({url : myUri, coord: coord});
+               let type = owlProcessor.getType(root);
+               console.log("type: "+ type)
+               geoCoordsParent.push({url : myUri, coord: coord, type:type});
            }
 
            if(showServiceUrl){
@@ -446,6 +447,36 @@ owlProcessor.getGeoCoord = function(root) {
         return null;
     }
 };
+
+
+owlProcessor.getType = function (root) {
+    if(!root){
+        return null;
+    }
+    let x =  root.find("//rdf:type[contains(@rdf:resource, 'EN_realization.owl')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
+
+    let type;
+    if(x.length > 0){
+        console.log("typeuri: "+ x[0].attr("resource").value())
+        let uriArr = x[0].attr("resource").value().split('#');
+        if(uriArr.length > 1){
+            type = uriArr[uriArr.length-1];
+        }
+    }
+
+    if(type){
+
+        return type;
+
+    } else {
+        let uri = owlProcessor.getUri(root);
+        let regex = /^.*\/(\w+)[-_]\d+\.owl$/;
+        let match = regex.exec(uri);
+        return match?match[1]:null;
+
+    }
+
+}
     //convert google GPS coordi to 1984w coordi(the one used in our own)
    owlProcessor.convertCoordinate = function (GPSLong, GPSLat, google2Owl) {
 //https://github.com/proj4js/proj4js
@@ -478,6 +509,7 @@ owlProcessor.getNSList = function (root) {
 };
 
 owlProcessor.uriList2DiskLoc = function (uriArr, diskroot) {
+     diskroot = diskroot || config.root;
     return uriArr.map(function (item) {
         // logger.debug("map:"+item)
         let diskLoc = item.replace("http://www.theworldavatar.com",diskroot);

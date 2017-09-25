@@ -269,3 +269,27 @@ describe('get /getAttrList ', function () {
 
     })
 });
+
+
+describe('get /getChildrenSingle ', function () {
+    it('returns status 200',function (done) {
+        this.timeout(30000);
+
+        let url = baseURL + "/getChildrenSingle";
+        console.log("request "+ url);
+
+        request({method:'POST', url : url, headers:{ "content-type": "application/json"},body:JSON.stringify({"uri":"http://www.jparksimulator.com/JurongIsland.owl"})}, function(error, response, body) {
+            if(error){
+                console.log(error);
+                done(error);
+            }
+            console.log(body)
+            expect(response.statusCode).to.equal(200);
+            var result = [];
+            expect(response.body).to.deep.equal(result);
+
+            done();
+        })
+
+    })
+});
