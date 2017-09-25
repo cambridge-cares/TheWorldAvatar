@@ -40,7 +40,7 @@ let sensorChosen;
 
     var dataObj = {};
     /*settings*************/
-    dataObj["names"] = ["Air-Flow rate = "];
+    dataObj["names"] = ["value = "];
     dataObj["colors"] = ["green"];
     dataObj["scale"] = "linear";
 
