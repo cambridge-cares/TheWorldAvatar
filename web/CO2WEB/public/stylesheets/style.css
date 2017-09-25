@@ -61,3 +61,7 @@ tr:nth-child(odd):hover{
     background-color: #4CAF50;
     color: white;
 }
+
+#err-msg-panel {
+    margin:20px
+}

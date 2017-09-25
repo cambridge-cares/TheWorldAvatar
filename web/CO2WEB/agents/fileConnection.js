@@ -390,7 +390,13 @@ owlProcessor.getChildren = function(root) {
     //  logger.debug("found node Eco-industrialPark:hasIRI:" + uris.length);
     for (let curi of uris) {
         // logger.debug(curi.name());
-        children.push(curi.text().trim());//push to targets list
+        if(curi.text().trim()!==""){
+            children.push(curi.text().trim());//push to targets list
+        } else if(curi.attr("resource").value()){
+            children.push(curi.attr("resource").value());//push to targets list
+        }
+
+
     }
     //find all node with SYSTEM:hasIRI property
     let urisS = root.find("//system:hasIRI", namespaceOb);
