@@ -17,7 +17,7 @@ function  getSemakauCoordi(callback) {
     /***
      *
      */
-    xmlProcessor.readConnections({topnode : config.semakauNode}, function (err, results) {
+    xmlProcessor.getChildrenRecur({topnode : config.semakauNode}, function (err, results) {
 
         if(err){
             console.log(err);

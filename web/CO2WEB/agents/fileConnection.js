@@ -49,7 +49,7 @@ var owlProcessor = {};
  * @param options  topnode(topnode address on disk), [showServiceOnly(bool) } showImport(bool)]
  * @param callback  fn(err, results)
  */
-owlProcessor.readConnections = function(options, callback) {
+owlProcessor.getChildrenRecur = function(options, callback) {
 
     /*settings***********************/
     let showServiceOnly = options.showServiceOnly || false;

@@ -35,7 +35,7 @@ function getAllSensors(callback) {
     //request on each to get geo info
 
 
-        xmlParser.readConnections({topnode:bmsNode}, function (err, children) {
+        xmlParser.getChildrenRecur({topnode:bmsNode}, function (err, children) {
             if(err){
                 //TODO: err handle
                 logger.debug(err);
