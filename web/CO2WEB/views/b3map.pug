@@ -1,0 +1,38 @@
+extends header.pug
+block title
+    title  World Power Plants on Google Map
+
+block sheets
+    link(rel="stylesheet" href='/stylesheets/ppMap.css')
+
+block subtitle
+
+    |World Power Plants on Google Map
+
+block description
+    |Only Coal, Natural Gas, Diesel Oil, Nuclear and Wind Powerplants are shown.
+
+block content
+
+    div#map
+    // Modal
+    #err-msg-modal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
+        .modal-dialog(role='document')
+            .modal-content
+                .modal-header
+                    h5#exampleModalLabel.modal-title Message
+                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                        span(aria-hidden='true') ×
+                #err-msg-modal-body.modal-body
+                    |
+                .modal-footer
+                    button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+
+    script(src="https://code.jquery.com/jquery-2.2.0.min.js")
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js')
+    script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
+    script(src = "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity = "sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin = "anonymous")
+    script(src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous")
+    script(src="/javascripts/PopUpmap.js")
+    script(src="/javascripts/b3Map.js")
+    script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnIPTFH_vdwakGsRIXJMwHvAJ3DhiWlvE&callback=initMap")

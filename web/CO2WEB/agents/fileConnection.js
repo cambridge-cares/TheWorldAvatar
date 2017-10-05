@@ -86,23 +86,23 @@ owlProcessor.getChildrenRecur = function(options, callback) {
      */
     function startFromRoot2GetConns(callback) {
 
+        logger.debug("fileConnection: !!!! start reading file:" + topnodeLocation);
         /*read top node**/
-      //  fs.readFile(topnodeLocation, function (err, file) {
+        fs.readFile(topnodeLocation, function (err, file) {
 
-        var file = fs.readFileSync(topnodeLocation);
-        /*
+
             if (err) {
-                logger.debug("errReadingFile");
+                logger.debug("fileConnection: errReadingFile");
                 callback(err);
                 throw err;
                 return;
             }
-**/
+
 
             /*retreive child info from file and recursively read through children**/
             loopChildrenRecur(file, 0, callback);
 
-       // })
+        })
 
     }
 
@@ -442,8 +442,8 @@ owlProcessor.getGeoCoord = function(root) {
         return null;
     }
     //TODO: use getNSList instead
-    let x =  root.find("//owl:NamedIndividual[contains(@rdf:about, '_x_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
-    let y =  root.find("//owl:NamedIndividual[contains(@rdf:about, '_y_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
+    let x =  root.find("//*[contains(@rdf:about, '_x_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
+    let y =  root.find("//*[contains(@rdf:about, '_y_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
 
     if(x.length > 0 && y.length > 0) {
         // logger.debug("#########################findcoordis:" + x[0].text().trim());

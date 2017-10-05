@@ -15,6 +15,7 @@ var path = require('path')
 
 var BMSData =require('./GetBmsData');
 
+var LiteralData =require('./GetLiteralData');
 
 /***
  * Module that watches over an directory/group of files
@@ -47,6 +48,8 @@ function groupwatcher(dir, informIndi){
         register: function (newObserver, receiveData) {//register this observer
            // logger.debug("dog for " + this.uri+" registers " + newObserver)
             this.observers.set(newObserver, {name: newObserver, receiveData: receiveData});
+            logger.debug("register for "+this.uri);
+
             this.observers.forEach(function (item) {
                // logger.debug(item)
             })
@@ -58,21 +61,31 @@ function groupwatcher(dir, informIndi){
 
 
             /*define data to be sent*****/
-            let changedFilenames,withChangeData;
+            let changedFilenames, withChangeData = {};
             //TODO: method to get data:bmsDataReader
            let self = this;
             changedFilenames  ={uri:this.uri, filename : this.filename};
-            withChangeData = changedFilenames;
 
-           function getDataP() {
+           function getDataP() {//TODO: this should be delegate to the user instead of defined here
               return new Promise(function (resolve, reject) {
-                   BMSData(self.uri, function (err, data) {
-                       if(err){
-                           reject(err);
-                       }
-                       //logger.debug(data)
-                       resolve(data);
-                   });
+                  if(self.uri.toLowerCase().includes("bms")){
+                      BMSData(self.uri, function (err, data) {
+                          if(err){
+                              reject(err);
+                          }
+                          //logger.debug(data)
+                          resolve(data);
+                      });
+                  } else {
+                      LiteralData(self.uri, function (err, data) {
+                          if(err){
+                              reject(err);
+                          }
+                          //logger.debug(data)
+                          resolve({data});
+                      });
+                  }
+
                });
            }
 
@@ -82,6 +95,7 @@ function groupwatcher(dir, informIndi){
                let  dataPromise = getDataP();
                 dataPromise.then(function (promisedData) {
                     //TODO: merge instead of explicit declare
+                    Object.assign(withChangeData, changedFilenames, promisedData);
                     withChangeData.data = promisedData.data;
                     withChangeData.unit = promisedData.unit;
 					logger.debug(withChangeData.data);
@@ -191,7 +205,6 @@ function groupwatcher(dir, informIndi){
         logger.debug("register all")
         owlfiles.forEach(function (file) {
             let targetPath = path.join(dir, file);
-            logger.debug("ergister for " + targetPath)
             register(targetPath, observerUri, receiveData)
         })
     }

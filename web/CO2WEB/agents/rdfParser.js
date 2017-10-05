@@ -58,6 +58,16 @@ RdfParser.RdfParser.prototype =  {
             callback(new Error("body not parsed"));
         }
       //  logger.debug(JSON.stringify(this.store))
+
+        if(this.testUnion(queryStr)){
+            this.fakeUnion(queryStr, callback);
+
+        } else if(this.testFilterRegex(queryStr)){
+
+            this.fakeFilterRegex(queryStr, callback);
+        }
+
+
         this.store.query(new $rdf.SPARQLToQuery(queryStr, false, this.store), function (data) {//each data point
 
 
@@ -142,9 +152,45 @@ RdfParser.RdfParser.prototype =  {
         function getName(uri) {
             return "http://www.jparksimulator.com/"+uri.split('_of_')[1]+".owl";
         }
-    }
+    },
+
+    testUnion : function(qstr){
+        return qstr.toLowerCase().includes("union");
+    },
+    testFilterRegex: function(qstr){
+      let lqstr  =  qstr.toLowerCase()
+        return lqstr.includes("filter")&&lqstr.includes("regex");
+    },
+    /***
+     * Because rdflib, for fuck's sake, only support three keywords in sparql, so
+     * a pre-processor function to pre-process => send the queries => process result
+     * Note: rdflib FILTER only supports regex and ><=
+     *
+     */
+    fakeUnion : function (query) {
+        //PREFIX dc10:  <http://purl.org/dc/elements/1.0/>
+        //"SELECT ?title WHERE  { { ?book dc10:title  ?title } UNION { ?book dc11:title  ?title } }"
+        //extract prefix, extract single select, extract single where
+        query = query.toLowerCase();
+        let prefixStr = query.split("where");
+        if(!prefixStr){
+            logger.error("no where defined in clause, can not parse");
+        }
+        prefixStr = prefixStr[0];
+        logger.debug("prefix: ");
+        logger.debug(prefixStr);
+        var regex = /select +(\?[a-zA-Z]+) where/;
+    },
+
+    fakeFilterRegex : function (){
+
+
+    },
+
 
 
 };
+
+
 
 module.exports = RdfParser;

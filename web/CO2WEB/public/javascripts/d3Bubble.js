@@ -276,7 +276,7 @@ var FileLinkMap = function (options) {
 
         socket.emit("join", JSON.stringify(subscribeList));
 
-        //set force simulation
+        //set force simulationf
         var simulation = d3.forceSimulation()
             .force("link", d3.forceLink(links).distance(setD))
             .force("charge", d3.forceManyBody().strength(setBodyS))
@@ -1122,7 +1122,7 @@ $(window).load(function () {// when web dom ready
             // console.log($("circle[id='FH-01.owl']"));
            let simpleNameArr = data.filename.split('\\');
 		   
-		   let  simpleName = simpleNameArr.length>1?simpleNameArr[simpleNameArr.length - 1]:""
+		   let  simpleName = simpleNameArr.length>1?simpleNameArr[simpleNameArr.length - 1]:data.filename;
             let node = $("circle[id='"+simpleName+"']");
 
             let oriColor = node.css("fill");

@@ -18,6 +18,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var util = require('util');
 
+
 var visualizeWorld =require("./routes/visualizeWorld.js");
 var visualizeBMS =require("./routes/visualizeBms.js");
 var visualizeSemakau =require("./routes/visualizeSemakau.js");
@@ -29,13 +30,13 @@ var bmsTemp = require("./routes/bmsNodeTemp");
 var getAttrList =require("./routes/getAttrList");
 var getCS =require("./routes/getChildrenSingle");
 
-var PPCO2 = require("./routes/powerplantCO2");
- var ppMap = require('./routes/mapPowerPlant');
+//var PPCO2 = require("./routes/powerplantCO2");
+ //var ppMap = require('./routes/mapPowerPlant');
 var semakauMap = require("./routes/mapSemakau")
+var b3Map = require("./routes/mapB3")
+
 var bmsData = require('./agents/GetBmsData')
-var registerer= require("./agents/register2DataChange");
-var registerUrl = config.bmsUrlPath;
-var myUrl = config.myUrlPath;
+var literalData = require('./agents/GetLiteralData');
 
 
 var app = express();
@@ -60,13 +61,16 @@ function setHeader(res, mpath){
 /*serve static file***/
 app.use(express.static(path.join(__dirname, 'public')));
 //app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
+app.use('/b3map', b3Map);
+
 app.use('/visualizeWorld', visualizeWorld);
 app.use('/visualizeBMS', visualizeBMS);
 app.use('/visualizeSemakau', visualizeSemakau);
 app.use('/visualizeJurong', visualizeJurong);
-app.use('/PowerPlantCO2',  PPCO2);
-app.use('/ppmap', ppMap);
+//app.use('/PowerPlantCO2',  PPCO2);
+//app.use('/ppmap', ppMap);
 app.use('/semakaumap', semakauMap);
+
 app.use('/JurongIsland.owl/showCO2', showCO2);
 app.use('/JPS_KB_CARES_Lab_Node/FH-01.owl', bmsTemp);
 app.use("/bmsplot", bmsplot);
@@ -79,7 +83,7 @@ app.get('/', function (req, res) {
 });
 
 /*posting to dataObserve to get orginal data & register for future data change*/
-var dataCopy = null;
+
 
 
 var http = require('http').Server(app);
@@ -106,34 +110,20 @@ var watcherReturn = BMSWatcher();
 var ev= watcherReturn.watchEvent;
 var bmsWatcher = watcherReturn.bmsWatcher;
 
-//Save a datacopy for initialization
+//When any change happened to the file system
 ev.on('change', function (data) {
-//TODO: uri to diskloc
     logger.debug("update event: "+" on "+data.uri+"_nodata");
-	    let rooms = io.sockets.adapter.rooms;
+	    //let rooms = io.sockets.adapter.rooms;
    //logger.debug(rooms[path.normalize(data.uri)].sockets);
+    //update direct clients
     io.to(path.normalize(data.uri)+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
     io.to(path.normalize(data.uri)+"_data").emit("update", data);
 })
 
 /*socket io***/
-//TODO: multiple nodes may post to here, need a map of dataCopy, name as key
-//TODO: else, post again for initial data(seperate it with register)
+
 io.on('connection', function(socket){
 
-
-       // registerer.register(registerUrl, myUrl, function (err, initialData) {//register to changing-data node
-       //     if(err){
-         //       logger.debug(err);
-          //      return;//TODO: err handling
-          //  }
-
-/**
-        bmsData(function (err, initialData) {
-            //get initial by db access
-            socket.emit("initial",initialData);
-        })
-**/
 socket.on('join', function (uriSubscribeList) {
     //May be do some authorization
 
@@ -162,14 +152,24 @@ socket.on('join', function (uriSubscribeList) {
             var numClients = (typeof clients !== 'undefined') ? Object.keys(clients).length : 0;
             logger.debug("number of clients in room: "+numClients);
             if (numClients < 2 ){//first join for data, register for data now
-                logger.info("first client for this node ,register for data change")
+                logger.debug("first client for this node ,register for data change")
                 bmsWatcher.register(diskLoc,"worldnode", true);
             }
-            bmsData(diskLoc, function (err, initialData) {
-                //get initial by db access
-                logger.debug("send initial data");
-                socket.emit("initial",initialData);
-            })
+            if(diskLoc.toLowerCase().includes("bms")){//TODO: a more elegeant way than this to determine method for initial data, could just send literal data in all cases, rely on front end to determine what data is it they actually want
+                bmsData(diskLoc, function (err, initialData) {
+                    //get initial by db access
+                    logger.debug("send initial data");
+                    socket.emit("initial",initialData);
+                })
+            } else{
+                console.log(diskLoc);
+                literalData(diskLoc, function (err, initialData) {
+                    //get initial by db access
+                    logger.debug("send initial data");
+                    socket.emit("initial",initialData);
+                });
+            }
+
         }
     })
     logger.debug("@@@@@@@@@@@@@@@@")

@@ -35,6 +35,7 @@ var mapRouterFactory = function (getCoordinatesData, texts, view) {
     router.get('/coordinates', function (req, res, next) {
 
         if(!cData){
+            console.log("server did not load data")
             next(new Error("Server can not provide the data now.Please try again"))
         } else{
             res.json(cData);
@@ -46,6 +47,9 @@ var mapRouterFactory = function (getCoordinatesData, texts, view) {
         return new Promise(function (resolve, reject) {
             getCoordinatesData( function (err, data) {
                 if(err){
+                    console.log(err)
+                    logger.debug(err)
+
                     reject(err);
                 }
                 logger.debug("Coordi:")

@@ -16,6 +16,8 @@ configDevelop();
 //configDeploy();
 config.worldNode = path.join(config.root , "TheWorld.owl");
 config.jurongNode = path.join(config.root ,"JurongIsland.owl");
+config.b3Node = path.join(config.root , "BiodieselPlant3.owl");
+
 config.bmsFolder = path.join(config.root , "BMS");
 config.bmsNode = path.join(config.bmsFolder , "CARES_Lab.owl");
 config.bmsplotnode = path.join(config.bmsFolder, "BCA_RT_sensor1.owl");
