@@ -31,21 +31,25 @@ socket.on('update', function (udata) {
 
     console.log("get update event");
     console.log(udata.data);
-   updateDataMap(udata.data);
-   console.log(dataMap);
+   if(updateDataMap(udata.data)){
+       console.log(dataMap);
+       SendSimulationQuery(dataMap);
+   }
 //TODO: check update event
     //on update event, ajax to simulation service
-SendSimulationQuery(dataMap);
     //when ajax result backs, ajax to endpoint for update
 });
 
 
 function updateDataMap(newData) {
+    let modifiedFlag = false;
     for(let dataP of newData){
-        if(dataP&& dataP.name && dataP.name in dataMap){
+        if(dataP&& dataP.name && dataP.name in dataMap && dataMap[dataP.name]!==dataP.value){
             dataMap[dataP.name] = dataP.value;
+            modifiedFlag = true;
         }
     }
+    return modifiedFlag
 }
 
 
