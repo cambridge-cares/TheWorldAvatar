@@ -1,26 +1,26 @@
 /**
- * Created by Shaocong on 9/20/2017.
+ * Created by Shaocong on 9/29/2017.
+ * This will most likely be rewritten to merge with existing services
+ *
  */
-//first get All child, then request&query each to get coordinates
+/***
+ * A function to get B3 coordinates information
+ * @param callback
+ */
 var log4js = require('log4js');
 var logger = log4js.getLogger();
 logger.level = 'debug';
 const xmlProcessor = require("./fileConnection"),
-config = require("../config")
-
-
-/***
- * A function to get semakau coordinates information
- * @param callback
- */
-function  getSemakauCoordi(callback) {
+    config = require("../config")
+function  getB3Coordi(callback) {
     /***
      *
      */
-    xmlProcessor.getChildrenRecur({topnode : config.semakauNode}, function (err, results) {
+    logger.debug("getB3Coordi")
+    xmlProcessor.getChildrenRecur({topnode : config.b3Node}, function (err, results) {
 
         if(err){
-            console.log(err);
+            logger.debug(err);
             callback(err)
             return;
         }
@@ -42,6 +42,4 @@ function  getSemakauCoordi(callback) {
 
 
 
-module.exports = getSemakauCoordi
-
-
+module.exports = getB3Coordi

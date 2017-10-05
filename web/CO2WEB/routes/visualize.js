@@ -10,7 +10,7 @@ router.get('/', function(req, res, next) {
 
 
 if(!conns){
-  connectionsReader.readConnections({depth : 0}, function (err, results) {
+  connectionsReader.getChildrenRecur({depth : 0}, function (err, results) {
 
     if(err){
       res.status(500).send(err);
@@ -36,7 +36,7 @@ if(!conns){
 router.get('/includeImport', function(req, res, next) {
 
 
-  connectionsReader.readConnections({ showImport : true}, function (err, results) {
+  connectionsReader.getChildrenRecur({ showImport : true}, function (err, results) {
 
     if(err){
 		console.log(err);
@@ -56,7 +56,7 @@ router.get('/includeImport', function(req, res, next) {
 
 router.get('/showServiceOnly', function(req, res, next) {
 
-    connectionsReader.readConnections({ showServiceOnly : true}, function (err, results) {
+    connectionsReader.getChildrenRecur({ showServiceOnly : true}, function (err, results) {
 
         if(err){
             res.status(500).send(err);

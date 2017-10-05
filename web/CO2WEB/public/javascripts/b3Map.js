@@ -1,0 +1,210 @@
+/**
+ * Created by Shaocong on 10/3/2017.
+ */
+var b3map = new PopupMap({useCluster:false,  editable: true});
+
+var socket = io();
+
+socket.emit("join", JSON.stringify([{uri:"http://www.theworldavatar.com/E-301.owl", withData:true}
+    ,{uri:"http://www.theworldavatar.com/R-301.owl", withData:true}
+,{uri:"http://www.theworldavatar.com/P-302.owl", withData:true}]));
+
+var dataMap = {
+"V_molarF_3-1": 0,
+ "V_Temperature_3-1":0,
+"V_molarF_3-4":0,
+"V_Temperature_3-4":0,
+"ValueOfOutletPressureOfP-302":0,
+"V_molarF_Utility_FW-301":0
+};
+//need to keep a copy of initial, data
+socket.on('initial', function (idata) {
+//extract data we need by name
+    console.log(idata);
+    updateDataMap(idata);
+
+    console.log(dataMap);
+
+});
+socket.on('update', function (udata) {
+    //need to corrspond the updated data with kept copy - by name
+
+    console.log("get update event");
+    console.log(udata.data);
+   updateDataMap(udata.data);
+   console.log(dataMap);
+//TODO: check update event
+    //on update event, ajax to simulation service
+SendSimulationQuery(dataMap);
+    //when ajax result backs, ajax to endpoint for update
+});
+
+
+function updateDataMap(newData) {
+    for(let dataP of newData){
+        if(dataP&& dataP.name && dataP.name in dataMap){
+            dataMap[dataP.name] = dataP.value;
+        }
+    }
+}
+
+
+function SendSimulationQuery(variables) {
+
+    var queryString = "?Input=";
+    for (var i = 0; i < variables.length; i++) {
+        if (i == 0) {
+            queryString = queryString + variables[i].value;
+
+        } else {
+            queryString = queryString + "+" + variables[i].value;
+        }
+    }
+
+        $.ajax({
+            url: "http://www.theworldavatar.com/Service_Node_BiodieselPlant3/DoSimulation" + queryString,
+
+            success: function(response) {
+
+                console.log("response from simulation:")
+                console.log(response);
+                /**
+                 *SAMPLE:
+                 ValueOfHeatDutyOfR-301$1.1612685888155425#
+                 V_Angle_LoadPoint_R-301$-0.21495073093196138#
+                 V_ActualVoltage_LoadPoint_R-301$3.3821878615224006#
+                 ValueOfHeatDutyOfR-302$0.43186899431558023#
+                 V_Angle_LoadPoint_R-302$-0.48014259831225964#
+                 V_ActualVoltage_LoadPoint_R-302$2.966610277813966#
+                 */
+                //TODO: process this result and update
+
+                let processed =  processResult(response);
+                outputUpdate(...processed, function (data) {//success handler
+                    //
+                    let uris = processed[0];
+                    uris.forEach((uri)=>{
+                        console.log(uri);
+                        console.log(b3map.getMarker(uri));
+                        let mmarker = b3map.getMarker(uri);
+
+                        if(mmarker){
+                            mmarker.setAnimation(google.maps.Animation.BOUNCE);
+                            setTimeout( ()=>{
+                                mmarker.setAnimation(null);
+                            }, 4000);
+                        }
+
+                    })
+                },function (err) {//err handler
+                    displayMessageModal("Update to server failed.");
+                });
+
+            },
+            error: function(xhr) {
+                //Do Something to handle error
+            }
+        });
+}
+//TODO: A single case, if extended, this should be more general
+var outputMap = {
+    "ValueOfHeatDutyOfR-301":{uri : "http://www.jparksimulator.com/R-301.owl", name:"ValueOfHeatDutyOfR-301"}
+    ,"V_Angle_LoadPoint_R-301":{uri : "http://www.theworldavatar.com/R-301load.owl", name:"V_Angle_LoadPoint_R-602001"}
+    ,"V_ActualVoltage_LoadPoint_R-301":{uri : "http://www.theworldavatar.com/R-301load.owl", name:"V_ActualVoltage_LoadPoint_R-602001"}
+        ,"ValueOfHeatDutyOfR-302":{uri : "http://www.jparksimulator.com/R-302.owl", name:"ValueOfHeatDutyOfR-302"}
+    ,"V_Angle_LoadPoint_R-302":{uri : "http://www.theworldavatar.com/R-302load.owl", name:"V_Angle_LoadPoint_R-602002"}
+    ,"V_ActualVoltage_LoadPoint_R-302":{uri : "http://www.theworldavatar.com/R-302load.owl", name:"V_ActualVoltage_LoadPoint_R-602002"}
+
+};
+
+
+
+
+function processResult(resultStr) {
+    let lines = resultStr.split('#');
+    lines.forEach((line)=>{
+        let nvpair =line.split('$');
+        if (nvpair.length < 2){
+            return;
+        }
+        let name = nvpair[0].trim(), value = nvpair[1];
+        if(name in outputMap){
+            outputMap[name]["value"] = value;
+            outputMap[name]["p"] = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue";
+            outputMap[name]["datatype"] = "float";
+        }
+    })
+    let attrObjs =  Object.values(outputMap).filter((attr)=>{return attr.value!==null||attr.value!==undefined});
+    console.log("updates: ");
+    console.log(attrObjs);
+    let uris =[];
+    attrObjs.forEach((item)=>{uris.push(item.uri, item.uri)});
+    console.log(uris);
+    return [uris,  constructUpdate(null, attrObjs)];
+}
+
+
+/***
+ * construct update query strings for all modification
+ * @param uri
+ * @param modifications
+ */
+
+var constructUpdate = function (uri, modifications) {
+    let spoStrs = [];
+    modifications.forEach((item) => {
+        let muri = uri||item.uri;
+        spoStrs = spoStrs.concat(constructSingleUpdate(muri, item));
+    });
+    console.log(spoStrs);
+    return spoStrs;
+};
+
+/**
+ * construct a single update query
+ * @param uri
+ * @param attrObj
+ * @returns {[*,*]}
+ */
+var constructSingleUpdate = function (uri, attrObj) {
+    var spoDel = "DELETE WHERE {<" + uri + "#" + attrObj.name + "> <" + attrObj.p + "> " + "?o.}";
+//TODO: add " for string
+
+    var spoIns = "INSERT DATA {<" + uri + "#" + attrObj.name + "> <" + attrObj.p + "> " + "\""+attrObj.value + "\"^^<http://www.w3.org/2001/XMLSchema#"+attrObj.datatype+">.}";
+    return [spoDel, spoIns];
+};
+
+
+
+//TODO: merge it with the one in PopUpmap, or think of how to seperately it from Popup map
+function  outputUpdate(uris, updateQs, successCB, errorCB) {
+    console.log(uris)
+    console.log(updateQs)
+    //TODO: construct uris && updateQs
+    var myUrl = 'http://www.theworldavatar.com/Service_Node_BiodieselPlant3/SPARQLEndPoint?uri=' + encodeURIComponent(JSON.stringify(uris)) + '&update=' + encodeURIComponent(JSON.stringify(updateQs)) + '&mode=update';
+
+    $.ajax({
+        url: myUrl,
+        method: "GET",
+        contentType: "application/json; charset=utf-8",
+        success: function (data) {//SUCESS updating
+            //Update display
+            console.log(data);
+            successCB(data);
+
+        },
+        error: function (err) {
+           // displayMsg(errMsgBox, "Can not update to server", "danger")
+            console.log("can not update to server")
+        errorCB(err);
+        }
+    });
+}
+
+function displayMessageModal(msg) {
+    $('#err-msg-modal-body').empty();
+    $('#err-msg-modal-body').append("<div>"+msg+"</div>");
+
+    $('#err-msg-modal').modal('show');
+
+}

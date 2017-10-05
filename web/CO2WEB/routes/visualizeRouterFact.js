@@ -20,7 +20,7 @@ var visualizationRouterFactory = function (topNodeAddress) {
     router.get('/', function(req, res, next) {
 
 
-            connectionsReader.readConnections({topnode : topNodeAddress}, function (err, results) {
+            connectionsReader.getChildrenRecur({topnode : topNodeAddress}, function (err, results) {
 
                 if(err){
                     res.status(500).send(err);
@@ -44,7 +44,7 @@ var visualizationRouterFactory = function (topNodeAddress) {
     router.get('/includeImport', function(req, res, next) {
 
 
-        connectionsReader.readConnections({ showImport : true, topnode : topNodeAddress}, function (err, results) {
+        connectionsReader.getChildrenRecur({ showImport : true, topnode : topNodeAddress}, function (err, results) {
 
             if(err){
                 console.log(err);
@@ -64,7 +64,7 @@ var visualizationRouterFactory = function (topNodeAddress) {
 
     router.get('/showServiceOnly', function(req, res, next) {
 
-        connectionsReader.readConnections({ showServiceOnly : true, showServiceUrl: true, topnode : topNodeAddress}, function (err, results) {
+        connectionsReader.getChildrenRecur({ showServiceOnly : true, showServiceUrl: true, topnode : topNodeAddress}, function (err, results) {
 
             if(err){
                 res.status(500).send(err);

@@ -1,12 +1,13 @@
 /**
  * Created by Shaocong on 9/5/2017.
  */
-var uri = "C:/Users/Shaocong/WORK/webJPSGit/irp3-WebJPS-git/CO2WEB/testFiles/powerplants/Collinsville_Coal_Power_Plant_Australia.owl"
 var parser =require('../agents/rdfParser'),
-fs = require('fs')
-var file = fs.readFileSync(uri);
-var mparser = new parser.RdfParser({uri: uri, file : file})
-var parserO = require('../agents/rdfParserObsolete')({fileUrl:uri})
+fs = require('fs'),
+    resolve = require('path').resolve;
+var uri = resolve("../testFiles/E-301.owl");
+
+
+
 
 var qsTypeCountry = `
     PREFIX system_realization: <http://www.theworldavatar.com/OntoEIP/system_aspects/system_realization.owl#>
@@ -36,24 +37,66 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
 
 
 
-mparser.mquery(qsTypeCountry, function (err, data) {
-    if(err){
-        throw err;
+var qsChildren= `
+PREFIX industrialPark: <http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>
+    PREFIX system: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+    PREFIX Service: <http://www.theworldavatar.com/Service.owl#>
+   select distinct ?X ?myUri
+    where {
+    ?X industrialPark:hasIRI ?myUri.    
     }
-console.log(    JSON.stringify(data)
-)
-    //type/ name / capacity
-    console.log("extract!!!!!!!!!!!!!!!")
-   // console.log(data[0]['?Capacity']['value'])
-    console.log(data[0]['?Country']['value'])
-    console.log(data[0]['?Fuel_Type']['value'])
+`;
+//    ?valueE rdf:type owl:NamedIndividual.
 
-});
 
-mparser.geoCoordsQuery(function (err, data) {
+var qsV = `
+    PREFIX system: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+       PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>
+   select distinct  ?valueE ?value
+    where {
+    ?valueE a owl:NamedIndividual.
+    ?valueE  system:numericalValue ?value.
+    }
+`;
 
-    console.log(data)
-})
+var qsUri = `
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>
+   select distinct  ?valueE 
+    where {
+    ?valueE a owl:Ontology.
+    }
+`;
+
+const qsImport = `
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>
+   select distinct  ?import
+    where {
+         ?x a owl:Ontology.
+        ?x owl:imports ?import.    
+        
+    }
+    `;
+try{
+    var file = fs.readFileSync(uri);
+    var mparser = new parser.RdfParser({uri: uri, file : file})
+    mparser.mquery(qsImport, function (err, data) {
+        if(err){
+            throw err;
+        }
+        console.log(  data)
+
+
+    });
+}catch (err){
+    throw err;
+}
+
+
+
 
 /**
 parserO.query(qsTypeCountry, function (err, data) {

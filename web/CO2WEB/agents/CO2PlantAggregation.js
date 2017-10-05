@@ -42,6 +42,8 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
              }`;
 
 
+//get children, then query on each
+
     function getPlantAggregation(callback) {
         var result = {};
         const ppRoot =config.ppFolder;

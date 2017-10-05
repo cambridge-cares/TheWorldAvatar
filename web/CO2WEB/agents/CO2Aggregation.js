@@ -22,6 +22,8 @@ order by DESC(?ValueOf_CarbonEmissions)
 `;
 /***********************************/
 
+//return aggregation of a single query
+
 function getCO2Aggregation(callback) {
 //TODO: error handle
 
