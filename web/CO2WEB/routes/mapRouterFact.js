@@ -45,7 +45,9 @@ var mapRouterFactory = function (getCoordinatesData, texts, view) {
 
     function  getCDataPromise() {
         return new Promise(function (resolve, reject) {
+            console.log("getting coordi")
             getCoordinatesData( function (err, data) {
+
                 if(err){
                     console.log(err)
                     logger.debug(err)

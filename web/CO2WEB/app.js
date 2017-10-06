@@ -17,6 +17,7 @@ var request =require("request");
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var util = require('util');
+var config = require("./config.js");
 
 
 var visualizeWorld =require("./routes/visualizeWorld.js");
@@ -24,16 +25,19 @@ var visualizeBMS =require("./routes/visualizeBms.js");
 var visualizeSemakau =require("./routes/visualizeSemakau.js");
 var visualizeJurong =require("./routes/visualizeJurong.js");
 var showCO2 = require("./routes/showCO2.js");
-var config = require("./config.js");
 var bmsplot= require("./routes/bmsplot.js");
 var bmsTemp = require("./routes/bmsNodeTemp");
-var getAttrList =require("./routes/getAttrList");
 var getCS =require("./routes/getChildrenSingle");
 
-//var PPCO2 = require("./routes/powerplantCO2");
- //var ppMap = require('./routes/mapPowerPlant');
+var getAttrList =require("./routes/getAttrList");
+
+var PPCO2 = require("./routes/powerplantCO2");
+ var ppMap = require('./routes/mapPowerPlant');
 var semakauMap = require("./routes/mapSemakau")
 var b3Map = require("./routes/mapB3")
+
+var ppalt = require("./routes/mapPPAlt")
+
 
 var bmsData = require('./agents/GetBmsData')
 var literalData = require('./agents/GetLiteralData');
@@ -67,15 +71,17 @@ app.use('/visualizeWorld', visualizeWorld);
 app.use('/visualizeBMS', visualizeBMS);
 app.use('/visualizeSemakau', visualizeSemakau);
 app.use('/visualizeJurong', visualizeJurong);
-//app.use('/PowerPlantCO2',  PPCO2);
-//app.use('/ppmap', ppMap);
+app.use('/PowerPlantCO2',  PPCO2);
+app.use('/ppmap', ppMap);
 app.use('/semakaumap', semakauMap);
 
 app.use('/JurongIsland.owl/showCO2', showCO2);
 app.use('/JPS_KB_CARES_Lab_Node/FH-01.owl', bmsTemp);
 app.use("/bmsplot", bmsplot);
-app.use("/getAttrList", getAttrList)
 app.use('/getChildrenSingle', getCS);
+
+app.use("/getAttrList", getAttrList)
+app.use('/ppalt', ppalt);
 
 app.get('/', function (req, res) {
 	        res.sendFile(path.join(__dirname, 'views/index.html'));

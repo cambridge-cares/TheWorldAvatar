@@ -11,7 +11,7 @@ logger.level = 'debug';
 var config = require('../config')
     ,path =require('path')
     ,fs = require('fs')
-    ,worldNode =config.worldNode
+    ,worldNode = "C:/Users/Shaocong/WORK/webJPSGit/irp3-WebJPS-git/CO2WEB/testFiles/FakeParent.owl"
     ,root = config.root
     ,xmlInsert = require('./insertXmlContent')
 ;
@@ -29,7 +29,7 @@ function addPowerPlantInstance() {
     let ws = fs.createWriteStream(path.join(__dirname, 'out.owl'));
     let parentName = "system:TopLevelSystem";
     let content ='';
-    let ppFileDir  = path.join(config.root, "powerplants");
+    let ppFileDir  = path.join(config.root, "ppAl");
     //get a list of all files to be added
      fs.readdir(ppFileDir, function (err, filenames) {
 
@@ -61,7 +61,7 @@ function addPowerPlantInstance() {
       <PowerPlant rdf:ID="Swanbank_B_Coal_Power_Plant_Australia">
         <system:hasConceptualRepresentation>
           <system:ConceptualModel rdf:ID="Swanbank_B_Coal_Power_Plant_Australia">
-            <system:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/Swanbank_B_Coal_Power_Plant_Australia.owl</system:hasIRI>
+            <system:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ppAl/Swanbank_B_Coal_Power_Plant_Australia.owl</system:hasIRI>
           </system:ConceptualModel>
         </system:hasConceptualRepresentation>
       </PowerPlant>
