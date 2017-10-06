@@ -1106,7 +1106,7 @@ $(window).load(function () {// when web dom ready
 
     /*socket**************************************************************/
     //blink any updated data
-    let blinkTimer;
+    let blinkTimerList = {};
     let preTime = Date.now();
     socket.on('update', function (data) {
         console.log("Socket event!!!!!!!!!!!")
@@ -1130,18 +1130,24 @@ $(window).load(function () {// when web dom ready
             let orSize = node.attr("r");
             //console.log($('circle#FH-01.owl'));
 
+        if(simpleName in blinkTimerList){
+            return;
+        }
+
             node.animate({'r': 20}, 500)
                 .css({'fill': '#FFFC94', 'transition': 'fill 0.5s'})
                 .css({'stroke': '#FFF700', 'transition': 'stroke 0.5s'});
             ;
-            blinkTimer = setTimeout(function () {
+            let mTimer =setTimeout(function () {
                 node.animate({'r': orSize}, 500)
                     .css({'stroke': '#000000', 'transition': 'stroke 0.5s'})
                     .css({'fill': oriColor, 'transition': 'fill 0.5s'});
-
+                delete myObject[simpleName];
             }, 500);//on 0.5s, back to normal
+        blinkTimerList[simpleName]  = mTimer;
 
-       // }
+
+        // }
     });
     /*END socket **********************************************************/
 

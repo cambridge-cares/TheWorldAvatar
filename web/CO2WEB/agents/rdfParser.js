@@ -115,6 +115,7 @@ RdfParser.RdfParser.prototype =  {
 
     },
     geoCoordsQuery : function (callback) {
+        let self = this
         var qs = `
     PREFIX j.1: <http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#>
         PREFIX j.2: <http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#>
@@ -137,11 +138,10 @@ RdfParser.RdfParser.prototype =  {
             //logger.debug(data)
             data.forEach(function (item) {
                 let value = item['?value']['value'];
-                let uri = item['?cName']['value']
-
-                let name=getName(uri);
-                coordiArr[name] = coordiArr[name]||{};
-                coordiArr[name][isXorY(uri)] = value;
+                let name = item['?cName']['value']
+              let uri = self.uri;
+                coordiArr[uri] = coordiArr[uri]||{};
+                coordiArr[uri][isXorY(name)] = value;
             })
             callback(null, coordiArr);
         })

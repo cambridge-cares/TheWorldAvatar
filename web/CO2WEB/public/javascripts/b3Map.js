@@ -93,10 +93,13 @@ function SendSimulationQuery(variables) {
                         let mmarker = b3map.getMarker(uri);
 
                         if(mmarker){
+                            /**
                             mmarker.setAnimation(google.maps.Animation.BOUNCE);
                             setTimeout( ()=>{
                                 mmarker.setAnimation(null);
                             }, 4000);
+                             **/
+                            mmarker.blinkAnimation()
                         }
 
                     })

@@ -209,6 +209,63 @@ PopupMap.prototype = {
                 icon: icon,
                 map: self.googleMap
             });
+
+            marker.changeColor = function(hex){
+
+                let icon = marker.getIcon();
+                icon.fillColor = hex;
+                marker.setIcon(icon);
+            }
+             marker.changeScale = function(scale){
+
+                 let icon = marker.getIcon();
+                 icon.scale = scale;
+                 marker.setIcon(icon);
+             }
+             marker.getColor = function(){
+
+                 let icon = marker.getIcon();
+                 console.log(icon.fillColor)
+                return icon.fillColor ;
+             }
+             marker.getScale = function(){
+
+                 let icon = marker.getIcon();
+                 console.log(icon.scale)
+                 return icon.scale ;
+             }
+
+             function scaleInterp(start, end, factor) {
+                 return (end - start) * factor + start;
+             }
+            marker.blinkAnimation = function () {
+                let startColor = self.hex2rgb(marker.getColor());
+                let endColor = self.hex2rgb("#FFFC94");
+                let mInterpolate = self.interpolateColor.bind({}, startColor, endColor);
+                let startScale = marker.getScale(), endScale = startScale*1.5;
+                let animationTime= 1000;
+                let step = 10, stepCount = 0, factorStep = 1/(step - 1), stepper = 1;
+                if("animationOngoing" in marker){
+                    return;
+                }
+                marker.animationOngoing = true;
+                let colorTimer = window.setInterval(function() {
+                    let color2 = self.rgb2hex(mInterpolate(factorStep * stepCount));
+                    marker.changeColor(color2);
+                    marker.changeScale(scaleInterp(startScale, endScale, factorStep * stepCount));
+                    stepCount+=stepper;
+                    if(stepCount >=step -1){
+                        stepper = -1;
+                    }
+                    console.log(stepCount);
+                    if(stepCount < 0){
+                        console.log("stop animation")
+                        delete marker.animationOngoing;
+                        clearInterval(colorTimer);
+                    }
+
+                }, animationTime/step);
+            };
             /**timer for determine double or single click*/
             marker.timer = 0;
             marker.sgclickPrevent = false;
@@ -235,10 +292,28 @@ PopupMap.prototype = {
             })
             self.markers[muri] = marker;
         });
-        console.log("!!!!!!!!!!!!!!!!!!!!!")
-        console.log(this.markers);
     },
 
+    hex2rgb  : function (hex) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? [
+            parseInt(result[1], 16),
+            parseInt(result[2], 16),
+            parseInt(result[3], 16)
+        ] : null;
+    },
+    
+    rgb2hex : function (rgb) {
+        return "#" + ((1 << 24) + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]).toString(16).slice(1);
+    },
+    interpolateColor : function(color1, color2, factor) {
+        //if (arguments.length < 3) { factor = 0.5; }
+        var result = color1.slice();
+        for (var i=0;i<3;i++) {
+            result[i] = Math.round(result[i] + factor*(color2[i]-color1[i]));
+        }
+        return result;
+    },
     getMarker: function (key) {
       return key in this.markers? this.markers[key] : null ;
     },
@@ -393,7 +468,7 @@ function jq(myid) {
 }
 function ColorMap() {
     this.typecolorMap = new Map();
-    this.colors = ["#FFFF00", "#1CE6FF", "#FF34FF", "#FF4A46", "#008941", "#006FA6", "#A30059",
+    this.colors = [ "#1CE6FF", "#FF34FF", "#FF4A46", "#008941", "#006FA6", "#A30059",
         "#FFDBE5", "#7A4900", "#0000A6", "#63FFAC", "#B79762", "#004D43", "#8FB0FF", "#997D87",
         "#5A0007", "#809693", "#FEFFE6", "#1B4400", "#4FC601", "#3B5DFF", "#4A3B53", "#FF2F80",
         "#61615A", "#BA0900", "#6B7900", "#00C2A0", "#FFAA92", "#FF90C9", "#B903AA", "#D16100",
@@ -404,7 +479,7 @@ function ColorMap() {
         "#34362D", "#B4A8BD", "#00A6AA", "#452C2C", "#636375", "#A3C8C9", "#FF913F", "#938A81",
         "#575329", "#00FECF", "#B05B6F", "#8CD0FF", "#3B9700", "#04F757", "#C8A1A1", "#1E6E00",
         "#7900D7", "#A77500", "#6367A9", "#A05837", "#6B002C", "#772600", "#D790FF", "#9B9700",
-        "#549E79", "#FFF69F", "#201625", "#72418F", "#BC23FF", "#99ADC0", "#3A2465", "#922329",
+        "#549E79", "#201625", "#72418F", "#BC23FF", "#99ADC0", "#3A2465", "#922329",
         "#5B4534", "#FDE8DC", "#404E55", "#0089A3", "#CB7E98", "#A4E804", "#324E72", "#6A3A4C"];
     this.count = 0;
 
