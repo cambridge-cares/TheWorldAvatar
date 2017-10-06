@@ -30,8 +30,8 @@ var bmsTemp = require("./routes/bmsNodeTemp");
 var getAttrList =require("./routes/getAttrList");
 var getCS =require("./routes/getChildrenSingle");
 
-//var PPCO2 = require("./routes/powerplantCO2");
- //var ppMap = require('./routes/mapPowerPlant');
+var PPCO2 = require("./routes/powerplantCO2");
+ var ppMap = require('./routes/mapPowerPlant');
 var semakauMap = require("./routes/mapSemakau")
 var b3Map = require("./routes/mapB3")
 
@@ -67,8 +67,8 @@ app.use('/visualizeWorld', visualizeWorld);
 app.use('/visualizeBMS', visualizeBMS);
 app.use('/visualizeSemakau', visualizeSemakau);
 app.use('/visualizeJurong', visualizeJurong);
-//app.use('/PowerPlantCO2',  PPCO2);
-//app.use('/ppmap', ppMap);
+app.use('/PowerPlantCO2',  PPCO2);
+app.use('/ppmap', ppMap);
 app.use('/semakaumap', semakauMap);
 
 app.use('/JurongIsland.owl/showCO2', showCO2);
