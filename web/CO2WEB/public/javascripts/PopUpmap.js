@@ -33,7 +33,7 @@ function PopupMap(options) {
 
     var deviceMapRaw = {
         "load": {
-            "path": "M 400 150 L 400 150 L 550 300 L 400 450 L 250 300 Z"
+            "path": "M -2 -151 L -2 -151 L 148 -1 L -2 149 L -152 -1 Z"
             ,"scale": 0.3
 
         },
@@ -422,7 +422,9 @@ PopupMap.prototype = {
 
 setCluster: function () {
         this.markerCluster = new MarkerClusterer(this.googleMap, Object.values(this.markers),
-            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
+			,maxZoom:18
+			});
     },
 
     /**
@@ -446,6 +448,7 @@ setCluster: function () {
             //  contentType: "application/json; charset=utf-8",
             success: function (pps) {
                 //Update display
+				console.log(pps);
                 self.setMarkers(pps);
                 if (self.useCluster) {
                     self.setCluster();

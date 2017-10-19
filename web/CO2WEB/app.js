@@ -28,6 +28,7 @@ var showCO2 = require("./routes/showCO2.js");
 var bmsplot= require("./routes/bmsplot.js");
 var bmsTemp = require("./routes/bmsNodeTemp");
 var getCS =require("./routes/getChildrenSingle");
+var getAttrList =require("./routes/getAttrList");
 
 var PPCO2 = require("./routes/powerplantCO2");
  var ppMap = require('./routes/mapPowerPlant');
@@ -74,7 +75,6 @@ app.use('/ppmap', ppMap);
 app.use('/semakaumap', semakauMap);
 
 app.use('/JurongIsland.owl/showCO2', showCO2);
-app.use('/JPS_KB_CARES_Lab_Node/FH-01.owl', bmsTemp);
 app.use("/bmsplot", bmsplot);
 app.use('/getChildrenSingle', getCS);
 
