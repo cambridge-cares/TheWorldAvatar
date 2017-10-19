@@ -41,6 +41,11 @@ socket.on('update', function (udata) {
 });
 
 
+/***
+ * Updated saved copy of data with new data
+ * @param newData newData
+ * @returns {boolean} if the data has any change
+ */
 function updateDataMap(newData) {
     let modifiedFlag = false;
     for(let dataP of newData){
@@ -114,6 +119,8 @@ function SendSimulationQuery(variables) {
         });
 }
 //TODO: A single case, if extended, this should be more general
+
+//Output attr map
 var outputMap = {
     "ValueOfHeatDutyOfR-301":{uri : "http://www.jparksimulator.com/R-301.owl", name:"ValueOfHeatDutyOfR-301"}
     ,"V_Angle_LoadPoint_R-301":{uri : "http://www.theworldavatar.com/R-301load.owl", name:"V_Angle_LoadPoint_R-602001"}
@@ -125,8 +132,11 @@ var outputMap = {
 };
 
 
-
-
+/***
+ * Process result str of simulation into update query strs
+ * @param resultStr
+ * @returns {[*,*]}
+ */
 function processResult(resultStr) {
     let lines = resultStr.split('#');
     lines.forEach((line)=>{
@@ -184,6 +194,13 @@ var constructSingleUpdate = function (uri, attrObj) {
 
 
 //TODO: merge it with the one in PopUpmap, or think of how to seperately it from Popup map
+/***
+ * Send output update queries
+ * @param uris        array of uris to change, corresponding to updateQs
+ * @param updateQs    array of SPARQL update strings
+ * @param successCB   callback when success
+ * @param errorCB      callback when err
+ */
 function  outputUpdate(uris, updateQs, successCB, errorCB) {
     console.log(uris)
     console.log(updateQs)

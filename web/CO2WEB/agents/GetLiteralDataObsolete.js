@@ -1,12 +1,4 @@
 /**
- * Created by Shaocong on 10/11/2017.
- * A rewritten getLiteral module that also accmodates bms data(Or any other time series data under this format)
- * bms data will be packed under one name, while value field contains an array
- */
-
-
-
-/**
  * Created by Shaocong on 9/13/2017.
  * This module takes all owl data that has an literal
  */
@@ -19,8 +11,8 @@ logger.level = 'debug';
 const util = require('util')
 const parser = require('../agents/rdfParser');
 const fs = require('graceful-fs'),
-    path = require('path'),
-    config = require('../config')
+path = require('path'),
+config = require('../config')
 /*SPRAQL Query******************/
 
 /**
@@ -28,11 +20,11 @@ const fs = require('graceful-fs'),
  * use custom filter literal for now
  * use this query when switched to unified endpoint
  *
- const SPA = `
- SELECT ?literal
- WHERE { ?s ?p  ?literal.
+const SPA = `
+SELECT ?literal
+WHERE { ?s ?p  ?literal. 
 FILTER isLiteral(?literal)}
- `;
+`;
  ***/
 /***********************************/
 //    ?DataPoint rdf:type owl:NamedIndividual;
@@ -51,14 +43,8 @@ WHERE {
 `;
 
 
-function LiteralData(nodeloc, opts, callback) {
+function LiteralData(nodeloc, callback) {
 //TODO: error handle
-
-    if(typeof  opts === "function"){
-        console.log("mssing opts args, the second arg is likely callback, reassigning args")
-        callback = opts;
-        opts = null;
-    }
 
     queryLiteralSingle(nodeloc, function (err, result) {
         if(err){
@@ -67,13 +53,8 @@ function LiteralData(nodeloc, opts, callback) {
             return;
         }
         if(!result.eq){
-            let resultsB = packTimeseriesDataIfAny(result.nvpairs);
-            if(opts.specificNames instanceof  Array && opts.specificNames.length >0){
-                console.log("names specified")
-                resultsB = filterVNames(resultsB, opts.specificNames);
-            }
-            callback(null, resultsB);
-            return;
+             callback(null, result.nvpairs);
+             return;
         }
         queryLiteralSingle(result.eq, function (err,resultEq) {
             if(err){
@@ -84,87 +65,11 @@ function LiteralData(nodeloc, opts, callback) {
             console.log(result.nvpairs)
             console.log(resultEq.nvpairs)
 
-            let results = packTimeseriesDataIfAny(result.nvpairs.concat(resultEq.nvpairs));
-          console.log(opts.specificNames)
-            if(opts.specificNames instanceof  Array && opts.specificNames.length >0){
-                console.log("names specified")
-                results = filterVNames(results, opts.specificNames);
-            }
-            callback(null,results )
+            callback(null, result.nvpairs.concat(resultEq.nvpairs))
         })
     });
 
 
-
-    function filterVNames(results, namelist){
-
-       return namelist.map((name)=>{
-
-           let found = results.filter((datum)=>{
-              return datum.name === name;
-          });
-            return found.length>0?found[0]:null;
-
-       });
-
-    }
-
-
-    function packTimeseriesDataIfAny(allData) {
-        logger.debug("literal data all before parsing timeseries data")
-        let timeSeriesData = {}, normalData = []
-
-        allData.forEach((datum)=>{
-            if(datum.name.includes('@')){
-
-                let seriesName = datum.name.split('@')[0];
-                timeSeriesData[seriesName] = timeSeriesData[seriesName]?timeSeriesData[seriesName]:{
-                    name: seriesName,
-                    value:[],
-                    datatype: datum.datatype,
-                    p:datum.p,
-                    unit:datum.unit,
-                    seriestype: true
-                };//init this series if no exists
-
-                let timeStr = datum.name.split('@')[1];
-                let time = timeParser(timeStr);
-
-                timeSeriesData[seriesName].value.push({value: datum.value, time:time});
-
-            } else{
-                normalData.push(datum);
-            }
-        })
-        if(Object.keys(timeSeriesData).length < 1){//no time series data
-            return allData;//return inital
-        } else {
-            //sort all value field
-            timeSeriesDataVs = Object.values(timeSeriesData);
-
-            timeSeriesDataVs.forEach((data) =>{
-                data.value = data.value.sort(compareTime);
-            })
-
-            logger.debug("get literal data after parsing timeseries data");
-            logger.debug(timeSeriesDataVs.concat(normalData));
-            return timeSeriesDataVs.concat(normalData);
-        }
-        //pack timeSeriesData
-    }
-
-    //09-06-17-19:10:04
-    function timeParser(timeStr) {
-        var timeParts = timeStr.match(/(\d{2})-(\d{2})-(\d{2})-(\d{2}):(\d{2}):(\d{2})/);
-        if(timeParts.length !==7 ){
-            throw(new Error("Wrong time format!"));
-        }
-        var date = new Date("20"+timeParts[3], parseInt(timeParts[1])-1, timeParts[2], timeParts[4],timeParts[5],timeParts[6]);
-        return date.getTime();
-    }
-    var compareTime = function(ta, tb) {
-        return ta.time-tb.time;
-    }
 
     function queryLiteralSingle(nodeloc, callback) {
         //todo: delete this poweplant subroute
@@ -219,10 +124,10 @@ function LiteralData(nodeloc, opts, callback) {
             return strArr[0];
         }
         return null;
-    }
+        }
 
     function filterNconstruct(spos){
-        //  logger.debug(spos)
+      //  logger.debug(spos)
         return spos.filter(function (spo) {
             //logger.debug(spo)
             return spo['?o']['termType'] === "Literal";

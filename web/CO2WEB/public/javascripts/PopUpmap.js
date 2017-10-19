@@ -33,7 +33,7 @@ function PopupMap(options) {
 
     var deviceMapRaw = {
         "load": {
-            "path": "M 400 150 L 400 150 L 550 300 L 400 450 L 250 300 Z"
+            "path": "M -2 -151 L -2 -151 L 148 -1 L -2 149 L -152 -1 Z"
             ,"scale": 0.1
 
         },
@@ -204,6 +204,7 @@ PopupMap.prototype = {
             let icon = self.getIconByType(pp.type);
 
             console.log("drawing type: " + icon)
+             console.log("Drawing for "+muri+" at N"+pp.location.lat)
             let marker = new google.maps.Marker({
                 position: {lat: pp.location.lat, lng: pp.location.lng},
                 icon: icon,

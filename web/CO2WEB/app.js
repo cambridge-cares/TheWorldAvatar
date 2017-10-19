@@ -19,29 +19,31 @@ var bodyParser = require('body-parser');
 var util = require('util');
 var config = require("./config.js");
 
-
+/**
 var visualizeWorld =require("./routes/visualizeWorld.js");
 var visualizeBMS =require("./routes/visualizeBms.js");
 var visualizeSemakau =require("./routes/visualizeSemakau.js");
 var visualizeJurong =require("./routes/visualizeJurong.js");
 var showCO2 = require("./routes/showCO2.js");
-var bmsplot= require("./routes/bmsplot.js");
-var bmsTemp = require("./routes/bmsNodeTemp");
+***/
+ var bmsplot= require("./routes/bmsplot.js");
 var getCS =require("./routes/getChildrenSingle");
 
 var getAttrList =require("./routes/getAttrList");
+var getSpecAttr =require("./routes/getSpecificLiteralAttr");
+var MAU = require("./routes/runMAU")
 
-var PPCO2 = require("./routes/powerplantCO2");
- var ppMap = require('./routes/mapPowerPlant');
+
+//var PPCO2 = require("./routes/powerplantCO2");
+// var ppMap = require('./routes/mapPowerPlant');
 var semakauMap = require("./routes/mapSemakau")
-var b3Map = require("./routes/mapB3")
+//var b3Map = require("./routes/mapB3")
 
-var ppalt = require("./routes/mapPPAlt")
+//var ppalt = require("./routes/mapPPAlt")
 
 
-var bmsData = require('./agents/GetBmsData')
+
 var literalData = require('./agents/GetLiteralData');
-
 
 var app = express();
 var port = config.port;
@@ -65,23 +67,25 @@ function setHeader(res, mpath){
 /*serve static file***/
 app.use(express.static(path.join(__dirname, 'public')));
 //app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
-app.use('/b3map', b3Map);
 
-app.use('/visualizeWorld', visualizeWorld);
-app.use('/visualizeBMS', visualizeBMS);
-app.use('/visualizeSemakau', visualizeSemakau);
-app.use('/visualizeJurong', visualizeJurong);
-app.use('/PowerPlantCO2',  PPCO2);
-app.use('/ppmap', ppMap);
+// app.use('/b3map', b3Map);
+
+ //app.use('/visualizeWorld', visualizeWorld);
+//app.use('/visualizeBMS', visualizeBMS);
+//app.use('/visualizeSemakau', visualizeSemakau);
+//app.use('/visualizeJurong', visualizeJurong);
+//app.use('/PowerPlantCO2',  PPCO2);
+//app.use('/ppmap', ppMap);
 app.use('/semakaumap', semakauMap);
+//app.use('/ppalt', ppalt);
+//app.use('/JurongIsland.owl/showCO2', showCO2);
 
-app.use('/JurongIsland.owl/showCO2', showCO2);
-app.use('/JPS_KB_CARES_Lab_Node/FH-01.owl', bmsTemp);
-app.use("/bmsplot", bmsplot);
+//app.use("/bmsplot", bmsplot);
+app.use("/MAU", MAU);
+
 app.use('/getChildrenSingle', getCS);
-
 app.use("/getAttrList", getAttrList)
-app.use('/ppalt', ppalt);
+app.use("/getSpecAttr", getSpecAttr)
 
 app.get('/', function (req, res) {
 	        res.sendFile(path.join(__dirname, 'views/index.html'));
@@ -161,20 +165,15 @@ socket.on('join', function (uriSubscribeList) {
                 logger.debug("first client for this node ,register for data change")
                 bmsWatcher.register(diskLoc,"worldnode", true);
             }
-            if(diskLoc.toLowerCase().includes("bms")){//TODO: a more elegeant way than this to determine method for initial data, could just send literal data in all cases, rely on front end to determine what data is it they actually want
-                bmsData(diskLoc, function (err, initialData) {
-                    //get initial by db access
-                    logger.debug("send initial data");
-                    socket.emit("initial",initialData);
-                })
-            } else{
+
+
                 console.log(diskLoc);
                 literalData(diskLoc, function (err, initialData) {
                     //get initial by db access
                     logger.debug("send initial data");
                     socket.emit("initial",initialData);
                 });
-            }
+
 
         }
     })
