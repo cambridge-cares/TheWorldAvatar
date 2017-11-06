@@ -78,7 +78,7 @@ $(document).ready(function () {
 
     function displayListByCountry(list) {
         tableP.empty();
-        let table = "<table><tr><td>Name of Power Plant</td><td>Capacity</td><td>Type</td><td>Co2 Emission(tonnes/h)</td></tr>";
+        let table = "<table><tr><td>Name of Power Plant</td><td>Capacity</td><td>Type</td><td>CO<sub>2</sub> Emission(tonnes/h)</td></tr>";
         let total  = 0;
 
         list.forEach(function (item) {

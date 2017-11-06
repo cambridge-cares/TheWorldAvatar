@@ -7,7 +7,7 @@ block sheets
 
 block subtitle
 
-    | World Power Plant CO
+    | World Natural Gas and Coal Power Plant CO
     sub 2
     | &nbsp;Emission Meter
 
@@ -16,7 +16,7 @@ block description
     sub 2
     | &nbsp;emission meter estimating the total CO
     sub 2
-    | &nbsp;emission from World's Power Plant.
+    | &nbsp;emission from World's Natural Gas and Coal Power Plant.
 
 block content
 
@@ -24,7 +24,7 @@ block content
         div#container
             div#co2-sum-panel
                 p
-                    | World Power Plant CO
+                    | World Natural Gas and Coal Power Plant CO
                     sub 2
                     | &nbsp;Emission:
                 p
@@ -34,10 +34,10 @@ block content
                 p.textsmall
                     | The total CO
                     sub 2
-                    | &nbsp;emission from World Power Plants is estimated using method from Emissions & Generation Resource Integrated Database (eGRID) and data from Global Energy Observatory (GEO)
+                    | &nbsp;emission from World Natural Gas and Coal Power Plants is estimated using method from Emissions & Generation Resource Integrated Database (eGRID) and data from Global Energy Observatory (GEO)
 
                 p.textsmall
-                    |Source for world power plant:
+                    |Source for world power plant: http://globalenergyobservatory.org
 
             div#country-sum-panel.mypanel.container-fluid
                 p select country:
@@ -46,7 +46,9 @@ block content
                         option(value= {country}) #{country}
                 div#table-panel.col-lg-7
                 div#country-total-panel.col-lg-3
-                    |Total country's CO2 emission(tonnes/h):
+                    |Total country's CO
+                    sub 2
+                    | &nbsp;emission(tonnes/h):
                     span#country-total-echo
             div#err-msg-panel
             div#convert-panel.mypanel
@@ -54,12 +56,15 @@ block content
                     input#input-percentage(type="text")
                     span %
 
-                p.p2 Total CO2 Emission reduction by converting&nbsp;
+                p.p2 Total CO
+                    sub 2 
+                    |&nbsp;Emission reduction by converting&nbsp;
                     span#input-percentage-echo
                     | % of coal power plant capacity to natural gas in&nbsp;
                     span#select-country-echo
                     | :&nbsp;
                     span#convert-result-echo
+                    |&nbsp;tonnes/h
 
 
 
