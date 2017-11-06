@@ -1,6 +1,4 @@
-/**
- * Created by Shaocong on 10/5/2017.
- */
+
 var express = require('express');
 var router = express.Router();
 var MAU = require("../agents/RunMAU");

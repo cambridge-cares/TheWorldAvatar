@@ -1,5 +1,4 @@
 /**
- * Created by Shaocong on 10/13/2017.
  * Rewrriten with separated plot module
  */
 

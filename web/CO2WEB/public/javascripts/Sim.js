@@ -1,6 +1,9 @@
 /**
- * Created by Shaocong on 10/10/2017.
  * The module that runs simulation through API*/
+
+console.log(async)
+
+
 function Sim(args){
     this.setOption(args);
     this.getOutputInfo((err)=>{
@@ -16,46 +19,70 @@ function Sim(args){
 Sim.prototype = {
     
     setOption: function (opts) {
-        if(!opts.inputvalues || !opts.subscribes || !opts.socket || !opts.simPath ){
+        if(!opts.inputMap || !opts.subscribes || !opts.socket || !opts.simPath ){
             throw new Error("Import paras(sim inputvalues | subscribing endpoints | socket |simulation API path) not specified");
         }
-        this.inputvalues = opts.inputvalues;//this is the map of only value
-        this.inputsAll = [];//this keeps all original objects
+        this.inputMap = opts.inputMap;//this is the map of only value
 
         this.subscribes = opts.subscribes;
         this.socket = opts.socket;
         this.simPath = opts.simPath;
 
-        this.initDisplayFn = opts.initDisplayFn || null;
+        this.displayInputInit = opts.displayInputInit || null;
+        this.displayInputUpdate = opts.displayInputUpdate || null;
+        this.displayOutputInit = opts.displayOutputInit || null;
+
         this.disSimResB4DBUpdateFn = opts.disSimResB4DBUpdateFn || null;
         this.outputUpdateSuccessCBFn = opts.outputUpdateSuccessCBFn || null;
         this.updateOutput2DBFlag = opts.updateOutput2DBFlag || false;
         this.outputMap = opts.outputMap || null;
-        this.errorCB = opts.errorCB || null;
+        this.errorCB = opts.errorCB || function (err) {
+                console.log(err)
+            };
         this.initInputCounter = 0;
     },
     setSubscribe: function () {
-        let socket = this.socket;
-        socket.emit("join", JSON.stringify(this.subscribes));
+        let msocket = this.socket;
+        console.log(msocket)
+        msocket.emit("join", JSON.stringify(this.subscribes));
 
-        socket.on('initial', function (idata) {
+
+        msocket.on('initial',  (idata)=>{
             console.log(idata);
+            this.initInputCounter++;
             this.updateInputs(idata);
-            console.log(this.inputvalues);
-            this.inputsAll.push(idata)
     //        this.initInputCounter++;
-            if(this.inputAll.length === this.inputvalues.length){
-                if(this.initDisplayFn){
-                    console.log("now init display")
-                    this.initDisplayFn(this.inputAll);
+
+            if(this.initInputCounter === this.subscribes.length){//get all inputs
+                console.log("got all inputs")
+                if(this.displayInputInit){
+                    console.log("now init input display")
+                    this.displayInputInit(this.inputMap);
+                }
+                if(this.displayOutputInit){
+                    console.log("now init output display")
+
+                    this.sendSimulation(this.valueMap2variableArr(this.inputMap), (result)=>{
+                        let time = this.extractTime()
+                        console.log(time)
+                        this.updateOutputMapValue(result, time);
+                        this.displayOutputInit(this.outputMap);
+                    }, this.errorCB);//=>great!sent the inputvalues to simulation API
+
+
                 }
             }
         });
-        socket.on('update', function (udata) {
+        msocket.on('update', function (udata) {
             //need to corrspond the updated data with kept copy - by name
             console.log("get update event");
             console.log(udata.data);
+
             if(this.updateInputs(udata.data)){//input data truly has been updated?
+
+                if(this.displayInputUpdate) {
+                    this.displayInputUpdate(udata);
+                }
                 console.log(dataMap);
                 this.sendSimulation(dataMap, this.simulationResultCB, this.errorCB);//=>great!sent the inputvalues to simulation API
             }
@@ -64,6 +91,10 @@ Sim.prototype = {
 
     getInputMap : function () {
       return this.inputs;
+    },
+    extractTime : function () {
+        let timeSeriesD = Object.values(this.inputMap).find((datum)=>{return datum.seriestype === true });
+       return timeSeriesD.value.map((datum)=>{return datum.time})
     },
     /**
      * map output map to a list of uri and coressponding attrs to be sent to server
@@ -81,31 +112,73 @@ Sim.prototype = {
         return arr;
     }
     ,
+
+    //TODO: maybe we need to match by time
+    valueMap2variableArr : function (valueMapObj) {
+
+        let values = Object.values(valueMapObj);
+        let groups= [];
+        let first = true, minlen;
+        //check length first
+        //if only have length one - fix point, otherwise use smallest length
+        values.forEach(function (item) {
+            let value = item.value;
+            if(value instanceof Array ){
+                if(first){
+                    minlen = value.length;
+                } else if(value.length < minlen)
+                {
+                    minlen = value.length;
+                }
+
+            }
+        })
+
+        for(let idx = 0 ;idx < minlen; idx++){
+
+            let vArr =[];
+            values.forEach((item)=>{
+                let value = item.value;
+                if(value instanceof  Array){
+                    vArr.push(parseFloat(value[idx].value));
+                } else {
+                    vArr.push(parseFloat(value))
+                }
+            })
+
+            groups.push(vArr);
+        }
+        console.log("packed variables")
+        console.log(groups)
+        return groups
+    },
     /***
      * If it is update to me I'd prefer POST, but now for convinience, better keep same format of API, with GET and input as params
      * @param variables
      * @constructor
      */
     sendSimulation: function (variables, successCB, errCB) {
-        var queryString = "?Input=";
+        var queryString = "?input=";
         for (var i = 0; i < variables.length; i++) {
             if (i == 0) {
-                queryString = queryString + variables[i].value;
+                queryString = queryString + JSON.stringify(variables[i]);
 
             } else {
-                queryString = queryString + "+" + variables[i].value;
+                queryString = queryString + "+" + JSON.stringify(variables[i]);
             }
         }
 
+        console.log(variables)
+        console.log(queryString)
         $.ajax({
-            url: "http://www.theworldavatar.com/" +this.simPath + queryString,
+            url: "http://localhost:3000/" +this.simPath + queryString,
 
             success: (response)=>{
                 successCB(response);
             },
             error: (err)=>{
                 //Do Something to handle error
-                errCB(err);
+                this.errorCB(err);
             }
         });
     },
@@ -121,13 +194,16 @@ Sim.prototype = {
     /***
      * separately retreive information about output : datatype, p, unit...
      */
-    getSingleOutputInfo : function (CB) {
-        $.ajax({
-            url: "localhost:3000/getSpecAttr"  ,
+    getSingleOutputInfo : function (item, CB) {
+        $.ajax({//TODO:　CHANGE THIS IN FUTURE
+            url: "http://localhost:3000/getSpecAttr"  ,
+method:"POST",
 //TODO:　modifythis?
-            data: JSON.stringify({uri: muri}),
+            data: JSON.stringify(item),
             contentType: "application/json; charset=utf-8",
             success: (response)=>{
+                console.log("@@@@@@@@@@@@")
+                console.log(response)
                 CB(null, response);
             },
             error: (err)=>{
@@ -139,13 +215,18 @@ Sim.prototype = {
 
     getOutputInfo : function (cb) {
      let packed = this.packOutputVSameUrl();
-    async.map(packed, this.getSingleOutputInfo, function (err, result) {
+
+    async.map(packed, this.getSingleOutputInfo,  (err, result)=>{
         if(err){
             console.log("Err get Output info");
             cb(err);
             return;
         }
+
+        //TODO: did not get  value here bug
+        console.log("update output map after get inital output Info")
         //update result to outputmap
+        console.log("@@@@@@@@@@@@")
         this.updateOutputMap(result);
         cb();
     });
@@ -155,22 +236,48 @@ Sim.prototype = {
      * update ajax result to outputmap, specifically adding info about p, datatype and unit, or anything defined in the API getSpecAttr
      * @param result
      */
-    updateOutputMap : function (result) {
-    result.forEach((datum)=>{
-        if(datum.name in this.outputMap){
-            Object.assign(this.outputMap[datum.name], datum);//merge two
+    updateOutputMapValue : function (result, times) {
+        console.log(this.outputMap)
+        console.log("simulation result: ")
+        console.log(result.length)
+        if(result.length > times.length ){
+            throw new Error("Input output legnth does not match");
         }
+        for(let name in this.outputMap) {
+            this.outputMap[name].value = null;
+        }
+        let idxRes = 0;
+            result.forEach((datum)=>{
+            let idxOutput = 0;
+        for(let name in this.outputMap){
+            this.outputMap[name].value =  this.outputMap[name].value?this.outputMap[name].value:[];
+            this.outputMap[name].value.push({value:datum[idxOutput], time: times[idxRes]});
+            idxOutput++;
+        }
+                idxRes++;
     })
 
         console.log(this.outputMap)
 
     },
 
+    updateOutputMap:function (result) {
+      console.log(this.outputMap);
+        result[0].forEach((datum)=>{
+          if(datum.name in this.outputMap){
+              Object.assign(this.outputMap[datum.name], datum);
+          }
+        })
+        console.log(this.outputMap)
+
+    },
+
     updateInputs : function (newData) {
+        let dataMap = this.inputMap;
         let modifiedFlag = false;
         for(let dataP of newData){
-            if(dataP&& dataP.name && dataP.name in dataMap && dataMap[dataP.name]!==dataP.value){
-                dataMap[dataP.name] = dataP.value;
+            if(dataP&& dataP.name && dataP.name in dataMap && dataMap[dataP.name].value!==dataP.value){
+                dataMap[dataP.name] = dataP;
                 modifiedFlag = true;
             }
         }

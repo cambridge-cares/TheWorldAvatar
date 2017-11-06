@@ -1,6 +1,4 @@
-/**
- * Created by Shaocong on 10/16/2017.
- */
+
 var log4js = require('log4js');
 var logger = log4js.getLogger();
 logger.level = 'debug';
@@ -19,26 +17,31 @@ router.use(function(req, res, next) {
 });
 
 router.post('/', function (req, res, next) {
+    logger.debug("rounter getSpecName");
     if(!req.body) {
         next(new Error("Can not find req body"));
     }
     console.log(req.body);
     let parsedBody = JSON.parse(req.body);
-    console.log(parsedBody);
+    logger.debug(parsedBody);
 
     let uri = parsedBody.uri;
 
     let names = parsedBody.names;
+    logger.debug("look for spec name: "+names+"Fron uri:"+uri);
+
     if(!uri || !names){
-        console.log("Can not find uri or namelist")
+        logger.debug("Can not find uri or namelist")
         next(new Error("Can not find uri or namelist in req body"))
         return;
     }
+
     LiteralData(uri, {specificNames:names},function (err, result) {
         if(err){
             next(err);
             return;
         }
+        logger.debug(result);
         res.json(result); //render the view with this value
 
     })

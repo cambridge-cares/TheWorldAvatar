@@ -1,6 +1,4 @@
-/**
- * Created by Shaocong on 10/5/2017.
- */
+
 var socket = io();
 //join the inputvalues
 

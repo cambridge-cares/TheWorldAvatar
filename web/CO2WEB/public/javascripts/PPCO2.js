@@ -1,6 +1,4 @@
-/**
- * Created by Shaocong on 8/31/2017.
- */
+
 //TODO: listen to input:change, modify span accordingly
 
 

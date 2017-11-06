@@ -3,7 +3,7 @@ block title
     title MAU Simulation
 
 block sheets
-    link(rel='stylesheet', href='/stylesheets/bms.css', type='text/css')
+    link(rel='stylesheet', href='/stylesheets/mpage.css', type='text/css')
 
 block subtitle
     |BMS Sensor Data Plot
@@ -15,7 +15,22 @@ block content
     script(src='http://d3js.org/d3.v2.js')
     script(src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js')
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js')
+    script(src='/javascripts/async.js')
+
     script(src='/javascripts/line-graph.js')
+    script(src='/javascripts/Plot.js')
+    script(src='/javascripts/Sim.js')
     script(src='/javascripts/MauSimPlot.js')
+    h1 Inputs
     div#input-plot-panel
-    dib#output-plot-panel
+    h1 Set point inputs
+    div#input-plot-set-panel
+        table
+            tr
+                td name
+                td value
+
+    h1 Outputs
+    div#output-plot-panel
+    div#loading-sign-panel
+        img#loading-sign(src="/images/loading.gif")
