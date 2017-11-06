@@ -256,7 +256,7 @@ owlProcessor.getChildrenRecur = function(options, callback) {
 
 
            function requestChild(iri, callback) {//http request  to get child file
-               request.get(iri, {timeout: 2000, agent:false},function (err, response, body) {
+               request.get(iri, {timeout: 100000, agent:false},function (err, response, body) {
 
                    if (err || response.statusCode !== 200) { //request failed
                        logger.debug(err);

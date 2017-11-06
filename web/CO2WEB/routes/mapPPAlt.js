@@ -5,6 +5,6 @@ const routerFact = require("./mapRouterFact");
 var getAltPPcoordi = require('../agents/ReadAltPPCoordi');
 
 console.log(getAltPPcoordi)
-var router = routerFact(getAltPPcoordi, {title:"Powerplant Map", subtitle:"Powerplant Map"}, "mapPP");
+var router = routerFact(getAltPPcoordi, {title:"Powerplant Map", subtitle:"Powerplant Map"}, "mapNuclear");
 
 module.exports = router;

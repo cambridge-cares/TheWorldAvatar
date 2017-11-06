@@ -39,42 +39,42 @@ function PopupMap(options) {
         },
         "solarcellfarm": {
             "path": "M 250 150 L 400 150 L 550 150 L 550 250 L 400 250 L 400 150 L 250 150 L 250 250 L 400 250 L 400 350 L 550 350 L 550 250 L 400 250 L 250 250 L 250 350 L 400 350 "
-            ,"scale": 0.1
+            ,"scale": 0.3
 
         },
         "battery": {
             "path": "M 250 150 L 400 150 Q 450 150 450 200 L 450 250 Q 450 300 400 300 L 250 300 Q 200 300 200 250 L 200 200 Q 200 150 250 150 "
-            ,"scale": 0.1
+            ,"scale": 0.3
 
         },
         "dieselgenerators": {
             "path": "M 250 200 L 450 200 L 500 350 L 200 350 L 250 200 "
-            ,"scale": 0.1
+            ,"scale": 0.3
 
         },
         "marineturbinegenerators": {
             "path": "M 400 300 Q 350 200 400 100 L 400 100 Q 450 200 400 300 Q 500 250 600 300 Q 500 350 400 300 Q 450 400 400 500 Q 350 400 400 300 Q 300 350 200 300 Q 300 250 400 300 "
-            ,"scale": 0.1
+            ,"scale": 0.3
 
         },
         "windturbinegenerators": {
             "path": "M 400 300 Q 450 150 400 50 Q 350 150 400 300 Q 250 350 200 450 Q 350 400 400 300 Q 550 350 600 450 Q 450 400 400 300 "
-            ,"scale": 0.1
+            ,"scale": 0.3
 
         },
         "rectifier": {
             "path": "M 400 150 L 250 300 L 400 450 L 550 300 L 400 150 L 400 450 L 250 300 L 550 300 "
-            ,"scale": 0.1
+            ,"scale": 0.3
 
         },
         "powerinverter": {
             "path": "M 300 150 L 250 200 L 300 250 L 350 200 L 300 150 L 350 200 L 400 150 L 450 200 L 400 250 L 350 200 L 400 250 L 450 300 L 400 350 L 350 300 L 400 250 L 350 300 L 300 350 L 250 300 L 300 250 L 350 300 "
-            ,"scale": 0.1
+            ,"scale": 0.3
 
         },
         "transformer": {
             "path": "M 100 300 L 100 50 L 200 50 L 200 300 L 300 500 L 0 500 L 100 300 L 250 400 L 0 500 L 300 500 L 50 400 L 200 300 L 100 300 L 200 200 L 200 300 L 100 200 L 200 100 L 200 200 L 100 100 L 200 50 L 200 100 L 100 50 L 50 100 L 100 100 L 250 100 L 200 50 L 250 100 L 200 100 L 250 150 L 50 150 L 100 100 "
-            ,"scale": 0.1
+            ,"scale": 0.3
         },
         "c": {
             "path": "M 1,44 45,1 69,22 40,78 1,44Z",
@@ -423,7 +423,9 @@ PopupMap.prototype = {
 
 setCluster: function () {
         this.markerCluster = new MarkerClusterer(this.googleMap, Object.values(this.markers),
-            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
+			,maxZoom:18
+			});
     },
 
     /**
@@ -447,6 +449,7 @@ setCluster: function () {
             //  contentType: "application/json; charset=utf-8",
             success: function (pps) {
                 //Update display
+				console.log(pps);
                 self.setMarkers(pps);
                 if (self.useCluster) {
                     self.setCluster();
