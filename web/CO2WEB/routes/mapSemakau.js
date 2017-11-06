@@ -1,11 +1,10 @@
-/**
- * Created by Shaocong on 9/21/2017.
- */
+
 const routerFact = require("./mapRouterFact"),
       getSemakauCoordi = require("../agents/GetSemakauCoordi");
+var express= require('express')
+var router = express.Router()
 
-
-    var router = routerFact(getSemakauCoordi, {title:"Semakau Map", subtitle:"Semakau Map"}, "semakauMap");
+    var router = routerFact(router, getSemakauCoordi, {title:"Semakau Map", subtitle:"Semakau Map"}, "semakauMap");
 
     module.exports = router;
 

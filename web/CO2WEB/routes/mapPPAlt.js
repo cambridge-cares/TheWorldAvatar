@@ -1,10 +1,9 @@
-/**
- * Created by Shaocong on 10/6/2017.
- */
+
 const routerFact = require("./mapRouterFact");
 var getAltPPcoordi = require('../agents/ReadAltPPCoordi');
-
+var express= require('express')
+var router = express.Router()
 console.log(getAltPPcoordi)
-var router = routerFact(getAltPPcoordi, {title:"Powerplant Map", subtitle:"Powerplant Map"}, "mapNuclear");
+ router = routerFact(router, getAltPPcoordi, {title:"Powerplant Map", subtitle:"Powerplant Map"}, "mapPP");
 
 module.exports = router;

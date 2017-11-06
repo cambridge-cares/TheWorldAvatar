@@ -1,9 +1,3 @@
-/**
- * Created by Shaocong on 9/25/2017.
- */
-/**
- * Created by Shaocong on 9/15/2017.
- */
 
 var log4js = require('log4js');
 var logger = log4js.getLogger();

@@ -122,13 +122,16 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
                     if(!this.capBycountrySum[country] || !this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration"]){
                          return 0;
                     }
-                    let oldEmission = this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration"] + this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#NaturalGasGeneration"];
-                    let newCalCap = this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration"] * percentage/100 || 0;
-                    logger.debug(this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration"])
+
+                    let oldCalCap = this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration"];
+                    let newCalCap = this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration"] * (1-percentage/100) || 0;
+                    let oldNSCap = this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#NaturalGasGeneration"];
+                    let oldEmission = calculateEmission("http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration", oldCalCap)+calculateEmission("http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#NaturalGasGeneration", oldNSCap);
+
                     let newCalEmi = calculateEmission("http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration", newCalCap);
                     logger.debug(newCalEmi);
 
-                    let newNSCap = this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#NaturalGasGeneration"] * (1-percentage/100);
+                    let newNSCap = oldNSCap+ newCalCap - oldCalCap;
                     logger.debug(newNSCap);
                     let newNSEmi = calculateEmission("http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#NaturalGasGeneration", newNSCap);
                     logger.debug(newNSEmi);

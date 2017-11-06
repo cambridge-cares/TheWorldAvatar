@@ -1,6 +1,4 @@
-/**
- * Created by Shaocong on 10/3/2017.
- */
+
 var b3map = new PopupMap({useCluster:true,  editable: true});
 
 var socket = io();

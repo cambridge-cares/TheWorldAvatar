@@ -1,5 +1,4 @@
 /**
- * Created by Shaocong on 10/10/2017.
  * Module that calls sparql update API.
  */
 

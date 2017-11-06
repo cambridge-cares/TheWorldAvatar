@@ -5,7 +5,7 @@
 var log4js = require('log4js');
 log4js.configure({
   appenders: { cheese: { type: 'file', filename: 'cheese.log' } },
-  categories: { default: { appenders: ['cheese'], level: 'debug' } }
+  categories: { default: { appenders: ['cheese'], level: 'error' } }
 });
 var logger = log4js.getLogger('cheese');
 logger.level = 'debug';
@@ -19,26 +19,27 @@ var bodyParser = require('body-parser');
 var util = require('util');
 var config = require("./config.js");
 
-/**
+
 var visualizeWorld =require("./routes/visualizeWorld.js");
 var visualizeBMS =require("./routes/visualizeBms.js");
 var visualizeSemakau =require("./routes/visualizeSemakau.js");
 var visualizeJurong =require("./routes/visualizeJurong.js");
 var showCO2 = require("./routes/showCO2.js");
-***/
- var bmsplot= require("./routes/bmsplot.js");
+
+ var bmsplot= require("./routes/plotBMS.js");
 var getCS =require("./routes/getChildrenSingle");
 var getAttrList =require("./routes/getAttrList");
 var getSpecAttr =require("./routes/getSpecificLiteralAttr");
 var MAU = require("./routes/runMAU")
+var MAUPlot = require("./routes/plotMAU")
+var HW =require("./routes/runHeatWasteNetworkMap")
+var PPCO2 = require("./routes/powerplantCO2");
 
-
-//var PPCO2 = require("./routes/powerplantCO2");
-// var ppMap = require('./routes/mapPowerPlant');
+ var ppMap = require('./routes/mapPowerPlant');
 var semakauMap = require("./routes/mapSemakau")
-//var b3Map = require("./routes/mapB3")
+var b3Map = require("./routes/mapB3")
 
-//var ppalt = require("./routes/mapPPAlt")
+var ppalt = require("./routes/mapPPAlt")
 
 
 
@@ -65,26 +66,28 @@ function setHeader(res, mpath){
 
 /*serve static file***/
 app.use(express.static(path.join(__dirname, 'public')));
-//app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
+app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
 
-// app.use('/b3map', b3Map);
+ app.use('/b3map', b3Map);
 
- //app.use('/visualizeWorld', visualizeWorld);
-//app.use('/visualizeBMS', visualizeBMS);
-//app.use('/visualizeSemakau', visualizeSemakau);
-//app.use('/visualizeJurong', visualizeJurong);
-//app.use('/PowerPlantCO2',  PPCO2);
-//app.use('/ppmap', ppMap);
+ app.use('/visualizeWorld', visualizeWorld);
+app.use('/visualizeBMS', visualizeBMS);
+app.use('/visualizeSemakau', visualizeSemakau);
+app.use('/visualizeJurong', visualizeJurong);
+app.use('/PowerPlantCO2',  PPCO2);
+app.use('/ppmap', ppMap);
 app.use('/semakaumap', semakauMap);
-//app.use('/ppalt', ppalt);
-//app.use('/JurongIsland.owl/showCO2', showCO2);
+app.use('/ppalt', ppalt);
+app.use('/JurongIsland.owl/showCO2', showCO2);
 
-//app.use("/bmsplot", bmsplot);
-app.use("/MAU", MAU);
-
+app.use("/bmsplot", bmsplot);
+app.use("/hw", HW)
+app.use("/mauplot", MAUPlot)
 app.use('/getChildrenSingle', getCS);
 app.use("/getAttrList", getAttrList)
 app.use("/getSpecAttr", getSpecAttr)
+app.use("/MAU", MAU);
+
 
 app.get('/', function (req, res) {
 	        res.sendFile(path.join(__dirname, 'views/index.html'));

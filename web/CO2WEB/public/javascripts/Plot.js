@@ -1,8 +1,7 @@
-/**
- * Created by Shaocong on 10/13/2017.
- */
+
 
 function Plot(opts) {
+    console.log(opts)
     this.mergeOptions(opts);
 };
 
@@ -23,6 +22,7 @@ Plot.prototype = {
         })();
 
         this.settings.scale = opts.scale || "linear";
+        this.settings.showTitle = opts.showTitle || true;
         this.settings.names = opts.names instanceof Array && opts.names.length === opts.lineNum?opts.names : (() => {
                 let arr = [];
                 for (let i = 0; i < this.lineNum; i++) {
@@ -71,9 +71,19 @@ Plot.prototype = {
         console.log(this.newDataObj["start"]);
 
     },
+    
+    insertTitle : function (parentel, name) {
+        let id = "title-"+name;
+        parentel.append("<h2 class='plot-title' id='"+id+"'>"+name+"</h2>");
+    },
     initSinglePlot : function (parentel,name, dataObj) {
         let id = "plot-"+name;
+
+        if(this.settings.showTitle){
+            this.insertTitle(parentel, name);
+        }
         parentel.append("<div id='"+id+"'></div>");
+        
         let el = $("#"+this.jqSelParse(id));
         console.log(el);
         el.css({
@@ -105,6 +115,7 @@ MultiPlots.prototype = {
         let settings = {};
         this.length = opts.length || 1;
         settings.parentEl = Array(this.length).fill(this.parentEl);
+        console.log(settings.parentEl)
         settings.lineNums = opts.lineNums ||Array(this.length).fill(1);
         settings.colors = opts.colors && this.nestArrayLengthCheck(opts.colors, this.lineNums)?opts.colors : "green";//fine bc fall back, so dont worry;>
         settings.scale = opts.scale instanceof Array && opts.scales.length === this.length?opts.scale : "linear";
@@ -121,9 +132,7 @@ MultiPlots.prototype = {
     },
     setSinglePlot : function (name,setting) {
         //pack settings
-        let aPlot = new Plot({
-              setting
-        });
+        let aPlot = new Plot(setting);
         this.plotMap[name] = aPlot;
         console.log("updated plot map:")
         console.log(this.plotMap)
@@ -137,6 +146,7 @@ MultiPlots.prototype = {
     initPlots : function (datas) {
         for(let i = 0; i < datas.length; i++){
             let datum = datas[i];
+            console.log(datum)
             let plot = this.setSinglePlot(datum.name, this.settingMap[i]);
             plot.initPlot(datum);
         }
