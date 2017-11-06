@@ -13,7 +13,7 @@ var async = require('async')
 var fsre = require('fs-readdir-recursive')
 var path = require('path')
 
-var BMSData =require('./GetBmsData');
+var BMSData =require('./GetBmsDataObsolete');
 
 var LiteralData =require('./GetLiteralData');
 
@@ -68,23 +68,15 @@ function groupwatcher(dir, informIndi){
 
            function getDataP() {//TODO: this should be delegate to the user instead of defined here
               return new Promise(function (resolve, reject) {
-                  if(self.uri.toLowerCase().includes("bms")){
-                      BMSData(self.uri, function (err, data) {
-                          if(err){
-                              reject(err);
-                          }
-                          //logger.debug(data)
-                          resolve(data);
-                      });
-                  } else {
+
                       LiteralData(self.uri, function (err, data) {
                           if(err){
                               reject(err);
                           }
-                          //logger.debug(data)
+                          logger.debug(data)
                           resolve({data});
                       });
-                  }
+
 
                });
            }
@@ -96,9 +88,8 @@ function groupwatcher(dir, informIndi){
                 dataPromise.then(function (promisedData) {
                     //TODO: merge instead of explicit declare
                     Object.assign(withChangeData, changedFilenames, promisedData);
-                    withChangeData.data = promisedData.data;
-                    withChangeData.unit = promisedData.unit;
-					logger.debug(withChangeData.data);
+                    console.log("groupChangeWatcher: sent update data: ")
+                    console.log(withChangeData.data);
                     loopInform();
                 })
             } else{

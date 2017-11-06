@@ -1,0 +1,51 @@
+<html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<div>
+    <button onclick="clickAction('http://www.theworldavatar.com/BMS/OLA_RT_sensor3.owl')">
+        POP
+    </button>
+
+</div>
+
+
+
+
+
+
+
+<script>
+    function clickAction(muri) {
+
+        var sampleUpdate ='PREFIX dc: <http://purl.org/dc/elements/1.1/>  DELETE WHERE  {<http://example/book3> dc:title	?o.}'
+
+        sampleUpdate = [sampleUpdate];
+
+        var uri = ["http://www.theworldavatar.com/test.owl"]
+
+        console.log(encodeURIComponent(JSON.stringify(uri)))
+        console.log(encodeURIComponent(JSON.stringify(sampleUpdate)))
+
+        var myUrl = 'http://www.theworldavatar.com/Service_Node_BiodieselPlant3/SPARQLEndPoint?uri=' + encodeURIComponent(JSON.stringify(uri)) + '&update=' + encodeURIComponent(JSON.stringify(sampleUpdate)) + '&mode=update'
+        var request = $.ajax({
+
+
+            url: myUrl,
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8'
+        });
+
+        request.done(function(data) {
+            console.log(data)
+        });
+
+        request.fail(function(jqXHR, textStatus) {
+            console.log("fail")
+            // your failure code here
+        });
+    }
+
+</script>
+
+
+</html>

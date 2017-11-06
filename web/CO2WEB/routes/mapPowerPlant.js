@@ -31,13 +31,12 @@ router.get('/coordinates', function (req, res, next) {
 module.exports = router;
 ***/
 
-/**
- * Created by Shaocong on 9/21/2017.
- */
+
 const routerFact = require("./mapRouterFact");
 var getPPcoordi = require('../agents/ReadPowerPlantCoordi');
 
-
-var router = routerFact(getPPcoordi, {title:"Powerplant Map", subtitle:"Powerplant Map"}, "mapPP");
+var express= require('express')
+var router = express.Router()
+router = routerFact(router, getPPcoordi, {title:"Powerplant Map", subtitle:"Powerplant Map"}, "mapPP");
 
 module.exports = router;

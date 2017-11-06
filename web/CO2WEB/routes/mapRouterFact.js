@@ -1,6 +1,4 @@
-/**
- * Created by Shaocong on 9/21/2017.
- */
+
 var log4js = require('log4js');
 var logger = log4js.getLogger();
 logger.level = 'debug';
@@ -9,8 +7,7 @@ var express = require('express');
 
 
 
-var mapRouterFactory = function (getCoordinatesData, texts, view) {
-    var router = express.Router();
+var mapRouterFactory = function (router, getCoordinatesData, texts, view) {
     var cdataPromise = getCDataPromise();
     var cData;
 

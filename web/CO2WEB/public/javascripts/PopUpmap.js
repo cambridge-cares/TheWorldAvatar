@@ -1,5 +1,4 @@
 /**
- * Created by Shaocong on 9/7/2017.
  * Module for map visualization, make cluster an option
  */
 
@@ -137,8 +136,7 @@ PopupMap.prototype = {
      * @param options
      */
     mergeOptions: function (options) {
-        this.useCluster = options.useCluster || false;
-        this.editable = options.editable || false;
+        Object.assign(this, options)
 
     },
     /**
@@ -204,6 +202,7 @@ PopupMap.prototype = {
             let icon = self.getIconByType(pp.type);
 
             console.log("drawing type: " + icon)
+             console.log("Drawing for "+muri+" at N"+pp.location.lat)
             let marker = new google.maps.Marker({
                 position: {lat: pp.location.lat, lng: pp.location.lng},
                 icon: icon,
@@ -448,11 +447,16 @@ setCluster: function () {
             //  contentType: "application/json; charset=utf-8",
             success: function (pps) {
                 //Update display
+                self.coordinates = pps;
 				console.log(pps);
                 self.setMarkers(pps);
                 if (self.useCluster) {
                     self.setCluster();
                 }
+               // if(self.animatedLines){
+              //      console.log(self.animatedLines)
+              //      self.drawAnimatedLines(self.animatedLines);
+              //  }
             },
             error: function () {
                 console.log("Can not get location")
@@ -460,6 +464,70 @@ setCluster: function () {
         });
     },
 
+    drawAnimatedLines : function (list) {
+         list.forEach((line)=>{
+
+             console.log(line[1])
+             console.log(line[2])
+            console.log("Draw line: "+hwMap.coordinates[line[1]])
+            hwMap.drawAnimatedLine([hwMap.coordinates[line[1]-1]["location"], hwMap.coordinates[line[2]-1].location]);
+
+        });
+    },
+
+    drawAnimatedLine : function (vertexs) {
+        var lineSymbol = {
+            path: "M 0 0 L 0 0 L 0 50 "	,
+            scale: 0.1,
+            strokeColor: '#cc0015',
+            strokeWeight: 10
+        };
+
+        var line = new google.maps.Polyline({
+            path: vertexs,
+            icons: [{
+                icon: lineSymbol,
+                offset: '100%'
+            },
+                {
+                    icon: lineSymbol,
+                    offset: '100%'
+                },
+                {
+                    icon: lineSymbol,
+                    offset: '100%'
+                },
+                {
+                    icon: lineSymbol,
+                    offset: '100%'
+                },{
+                    icon: lineSymbol,
+                    offset: '100%'
+                }
+
+                ],
+            map: this.googleMap
+        });
+        this.animateLine(line)
+    },
+    animateLine : function (line) {
+        var count = 0, step = 20;
+        window.setInterval(function() {
+            count = (count + 1) % 100;
+
+            var icons = line.get('icons');
+             let iconId = 0;
+
+             for(let iconId = 0; iconId < icons.length; iconId++){
+                 icons[iconId].offset = (count+step*iconId)%100 + '%';
+
+             }
+
+
+
+            line.set('icons', icons);
+        }, 40);
+    }
 
 };
 
