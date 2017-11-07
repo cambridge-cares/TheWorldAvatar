@@ -85,7 +85,7 @@ function LiteralData(nodeloc, opts, callback) {
             console.log(resultEq.nvpairs)
 
             let results = packTimeseriesDataIfAny(result.nvpairs.concat(resultEq.nvpairs));
-            if(opts.specificNames instanceof  Array && opts.specificNames.length >0){
+            if(opts&&opts.specificNames instanceof  Array && opts.specificNames.length >0){
                 console.log("names specified")
                 results = filterVNames(results, opts.specificNames);
             }

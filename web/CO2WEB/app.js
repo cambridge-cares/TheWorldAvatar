@@ -26,7 +26,7 @@ var visualizeSemakau =require("./routes/visualizeSemakau.js");
 var visualizeJurong =require("./routes/visualizeJurong.js");
 var showCO2 = require("./routes/showCO2.js");
 
- var bmsplot= require("./routes/plotBMS.js");
+var bmsplot= require("./routes/plotBMS.js");
 var getCS =require("./routes/getChildrenSingle");
 var getAttrList =require("./routes/getAttrList");
 var getSpecAttr =require("./routes/getSpecificLiteralAttr");
@@ -35,7 +35,7 @@ var MAUPlot = require("./routes/plotMAU")
 var HW =require("./routes/runHeatWasteNetworkMap")
 var PPCO2 = require("./routes/powerplantCO2");
 
- var ppMap = require('./routes/mapPowerPlant');
+var ppMap = require('./routes/mapPowerPlant');
 var semakauMap = require("./routes/mapSemakau")
 var b3Map = require("./routes/mapB3")
 

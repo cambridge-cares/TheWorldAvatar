@@ -24,7 +24,7 @@ dir = os.path.dirname(__file__)
 # In[27]:
 
 g = Graph()
-g.parse("C:/Users/Shaocong/WORK/webJPSGit/irp3-WebJPS-git/CO2WEB/testFiles/wasteheatnetwork.owl", format="xml")
+g.parse("C:/irp3-WebJPS-git/CO2WEB/testFiles/wasteheatnetwork.owl", format="xml")
 
 ResultJSON = {}
 def add2Results (name, value):

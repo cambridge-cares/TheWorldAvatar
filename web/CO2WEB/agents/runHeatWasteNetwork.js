@@ -6,7 +6,7 @@ function runHeatWasteNetwork(cb) {
 
 //run the code, get results
 
-    const heatWasteNetworkPy = "C:/Users/Shaocong/WORK/webJPSGit/irp3-WebJPS-git/CO2WEB/agents/WHR_network_optimization_trim.py";
+    const heatWasteNetworkPy = "C:/irp3-WebJPS-git/CO2WEB/agents/WHR_network_optimization_trim.py";
 
     runPy(heatWasteNetworkPy, null, (err, result)=>{
 
