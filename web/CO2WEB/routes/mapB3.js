@@ -1,6 +1,6 @@
 var express = require('express');
 
-const routerFact = require("./mapRouterFact"),
+const routerFact = require("./routerFact/mapRouterFact"),
     getB3Coordi = require("../agents/GetB3Coordi");
 let router = express.Router();
 

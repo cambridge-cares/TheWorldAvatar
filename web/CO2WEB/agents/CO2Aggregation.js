@@ -1,5 +1,5 @@
 /**
- * Created by Shaocong on 7/19/2017.
+ * Aggregates CO2 emission extracted from landlort owl files
  */
 const $rdf = require('rdflib');
 const config = require('../config')
@@ -23,7 +23,7 @@ order by DESC(?ValueOf_CarbonEmissions)
 /***********************************/
 
 //return aggregation of a single query
-
+//TODO: add cache
 function getCO2Aggregation(callback) {
 //TODO: error handle
 

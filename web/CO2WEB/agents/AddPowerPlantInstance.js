@@ -1,7 +1,7 @@
 /**
  * Created by Shaocong on 9/4/2017.
  * A simple tool to add new Powerplant instance to theworld owlfile
- *
+ * This is for own use and not published online
  */
 var log4js = require('log4js');
 var logger = log4js.getLogger();

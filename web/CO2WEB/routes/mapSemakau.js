@@ -1,5 +1,5 @@
 
-const routerFact = require("./mapRouterFact"),
+const routerFact = require("./routerFact/mapRouterFact"),
       getSemakauCoordi = require("../agents/GetSemakauCoordi");
 var express= require('express')
 var router = express.Router()

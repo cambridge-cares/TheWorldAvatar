@@ -20,9 +20,7 @@ router.post('/', function (req, res, next) {
         if(!req.body) {
             next(new Error("Can not find req body"));
         }
-        console.log(req.body);
         let parsedBody = JSON.parse(req.body);
-    console.log(parsedBody);
 
     let uri = parsedBody.uri;
 

@@ -1,5 +1,5 @@
 
 var topNode = require("../config").semakauNode;
-var router = require("./visualizeRouterFact")(topNode);
+var router = require("./routerFact/visualizeRouterFact")(topNode);
 
 module.exports = router;
