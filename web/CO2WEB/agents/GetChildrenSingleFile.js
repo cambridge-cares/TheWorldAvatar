@@ -1,5 +1,5 @@
 /**
- * Created by Shaocong on 9/25/2017.
+get children list of a single file
  */
 const xmlProcessor = require("./fileConnection")
     ,fs = require('fs')

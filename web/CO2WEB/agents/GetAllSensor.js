@@ -1,6 +1,5 @@
 /**
- * Created by Shaocong on 9/18/2017.
- * Construct a list of sensors
+ * Construct a list of all sensors
  */
 var log4js = require('log4js');
 var logger = log4js.getLogger();
@@ -42,8 +41,8 @@ function getAllSensors(callback) {
                 callback(err)
                 return;
             }
-            //logger.debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-           // logger.debug(children);
+            logger.debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            logger.debug(children);
 
             children = children['connections'].map((conn)=>{return conn.target});
             let sschildren = children.filter((uri)=>{return uri.toLowerCase().includes("sensor")});

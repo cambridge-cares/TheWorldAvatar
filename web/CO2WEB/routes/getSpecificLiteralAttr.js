@@ -1,4 +1,9 @@
-
+/**
+ *  * Router
+ *corresponds to agent: GetLiteralData(with name params)
+ * TODO:: this most likely should be unified under getAttrList path
+ * @type {log4js}
+ */
 var log4js = require('log4js');
 var logger = log4js.getLogger();
 logger.level = 'debug';
@@ -36,7 +41,7 @@ router.post('/', function (req, res, next) {
         return;
     }
 
-    LiteralData(uri, {specificNames:names},function (err, result) {
+    LiteralData(function (err, result) {
         if(err){
             next(err);
             return;
@@ -44,7 +49,7 @@ router.post('/', function (req, res, next) {
         logger.debug(result);
         res.json(result); //render the view with this value
 
-    })
+    },uri, {specificNames:names})
 });
 
 module.exports = router;

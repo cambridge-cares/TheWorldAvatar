@@ -8,12 +8,12 @@ var logger = log4js.getLogger();
 logger.level = 'debug';
 
 
-var config = require('../config')
+var config = require('../../config')
     ,path =require('path')
     ,fs = require('fs')
     ,worldNode = "C:/Users/Shaocong/WORK/webJPSGit/irp3-WebJPS-git/CO2WEB/testFiles/FakeParent.owl"
     ,root = config.root
-    ,xmlInsert = require('./insertXmlContent')
+    ,xmlInsert = require('../insertXmlContent')
 ;
 
 //might need to stream this though

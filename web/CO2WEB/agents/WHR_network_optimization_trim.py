@@ -20,12 +20,18 @@ import json
 
 import os
 dir = os.path.dirname(__file__)
+import sys
+
+for arg in sys.argv:
+    print (arg)
+
+print (sys.argv[1])
 
 # In[27]:
 
 g = Graph()
-g.parse("C:/irp3-WebJPS-git/CO2WEB/testFiles/wasteheatnetwork.owl", format="xml")
-
+g.parse(sys.argv[1], format="xml")
+#C:/irp3-WebJPS-git/CO2WEB/testFiles/wasteheatnetwork.owl
 ResultJSON = {}
 def add2Results (name, value):
     ResultJSON[name] = value

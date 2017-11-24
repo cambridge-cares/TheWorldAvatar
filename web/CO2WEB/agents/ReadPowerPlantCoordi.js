@@ -1,5 +1,5 @@
 /**
- * Created by Shaocong on 9/7/2017.
+A module that reads all coordinates from all powerplant files.
  */
 var log4js = require('log4js');
 var logger = log4js.getLogger();

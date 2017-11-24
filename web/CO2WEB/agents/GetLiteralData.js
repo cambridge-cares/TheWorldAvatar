@@ -1,5 +1,5 @@
 /**
- * Created by Shaocong on 10/11/2017.
+ * Get all literal data defined in a file
  * A rewritten getLiteral module that also accmodates bms data(Or any other time series data under this format)
  * bms data will be packed under one name, while value field contains an array
  */
@@ -51,14 +51,8 @@ WHERE {
 `;
 
 
-function LiteralData(nodeloc, opts, callback) {
+function LiteralData(callback, nodeloc, opts) {
 //TODO: error handle
-
-    if(typeof  opts === "function"){
-        console.log("mssing opts args, the second arg is likely callback, reassigning args")
-        callback = opts;
-        opts = null;
-    }
 
     queryLiteralSingle(nodeloc, function (err, result) {
         if(err){
@@ -70,7 +64,10 @@ function LiteralData(nodeloc, opts, callback) {
             let resultsB = packTimeseriesDataIfAny(result.nvpairs);
             if(opts&&opts.specificNames instanceof  Array && opts.specificNames.length >0){
                 console.log("names specified")
+                console.log(resultsB)
                 resultsB = filterVNames(resultsB, opts.specificNames);
+                console.log(resultsB)
+                console.log(opts.specificNames)
             }
             callback(null, resultsB);
             return;
@@ -78,7 +75,7 @@ function LiteralData(nodeloc, opts, callback) {
         queryLiteralSingle(result.eq, function (err,resultEq) {
             if(err){
                 logger.debug(err)
-                callback(err);
+                callback(null, resultsB);
                 return;
             }
             console.log(result.nvpairs)

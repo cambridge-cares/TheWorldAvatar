@@ -1,15 +1,7 @@
-var words = ["spray", "limit", "elite", "exuberant", "destruction", "present"];
+'use strict'
 
-var nums = [1,4,8,13]
-
-function  test( a, ...args) {
-    console.log(a)
-    console.log(args)
+function a() {
+    return arguments
 }
 
-let a = [null];
-
-test(...a)
-
-test(1)
-
+console.log(a(1,2,3))

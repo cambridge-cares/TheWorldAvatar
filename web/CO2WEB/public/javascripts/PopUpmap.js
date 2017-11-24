@@ -1,7 +1,7 @@
 /**
  * Module for map visualization, make cluster an option
  */
-
+/*Map with Popup markers**/
 function PopupMap(options) {
     //var googleMap;//the map entity
 
@@ -9,27 +9,11 @@ function PopupMap(options) {
     console.log("curpath: " + this.curPath);
     this.mergeOptions(options);
 
+
     /**
-    this.deviceMap = (function initDeviceMap() {
-        //TODO: add this to backend
-        let deviceMap = new Map();
-        $.getJSON("JSON/DevicePathMap.json", function (data) {
-            for (let device of Object.keys(data)) {
-                console.log("loading device: " + device);
-                deviceMap.set(device, data[device]);
-            }
-
-        });
-
-        return deviceMap;
-
-    })();
-    this.colorMap = new ColorMap();
-    //bind initmap to global
-    window.initMap = this.initMap.bind(this);
-}
-***/
-
+     * A raw device map of name - SVG Path
+     * @type {{load: {path: string, scale: number}, solarcellfarm: {path: string, scale: number}, battery: {path: string, scale: number}, dieselgenerators: {path: string, scale: number}, marineturbinegenerators: {path: string, scale: number}, windturbinegenerators: {path: string, scale: number}, rectifier: {path: string, scale: number}, powerinverter: {path: string, scale: number}, transformer: {path: string, scale: number}, c: {path: string, scale: number}, v: {path: string, scale: number}, p: {path: string, scale: number}, va: {path: string, scale: number}, r: {path: string, scale: number}, e: {path: string, scale: number}, t: {path: string, scale: number}, s: {path: string, scale: number}, m: {path: string, scale: number}}}
+     */
     var deviceMapRaw = {
         "load": {
             "path": "M -2 -151 L -2 -151 L 148 -1 L -2 149 L -152 -1 Z"
@@ -127,8 +111,6 @@ function PopupMap(options) {
     //bind initmap to global
     window.initMap = this.initMap.bind(this);
 }
-
-
 PopupMap.prototype = {
     /**
      * Merge options
@@ -139,6 +121,46 @@ PopupMap.prototype = {
         Object.assign(this, options)
 
     },
+    /*main func: initMap*/
+    /**
+     * init Google map
+     */
+    initMap: function () {
+        var self = this;
+        console.log("init map:" + self.curPath)
+        //initiate map, set center on Jurong
+        var jurong = {lat: 1.276, lng: 103.677};
+        this.googleMap = new google.maps.Map(document.getElementById('map'), {
+            zoom: 14
+            , center: jurong
+        });
+
+        console.log("request to " + self.curPath + "/coordinates")
+        //Send ajax request to backend to retreive data
+        $.ajax({
+            url: self.curPath + "/coordinates",
+            method: "GET",
+            //  contentType: "application/json; charset=utf-8",
+            success: function (pps) {
+                //Update display
+                self.coordinates = pps;
+                console.log(pps);
+                self.setMarkers(pps);
+                if (self.useCluster) {
+                    self.setCluster();
+                }
+                // if(self.animatedLines){
+                //      console.log(self.animatedLines)
+                //      self.drawAnimatedLines(self.animatedLines);
+                //  }
+            },
+            error: function () {
+                console.log("Can not get location")
+            }
+        });
+    },
+
+    /*marker with popup**/
     /**
      * test type string for its device type
      * @param datum
@@ -273,7 +295,7 @@ PopupMap.prototype = {
 
                 marker.timer = setTimeout(function () {
                     if (!marker.sglclickPrevent) {
-                        self.clickAction(muri, marker);
+                        self.openEditablePopup(muri, marker);
                     }
                     marker.sglclickPrevent = false;
                 }, 200);
@@ -292,7 +314,112 @@ PopupMap.prototype = {
             self.markers[muri] = marker;
         });
     },
+    getMarker: function (key) {
+        return key in this.markers? this.markers[key] : null ;
+    },
+    /**
+     *  when a marker is clicked, open a popup
+     * @param muri
+     * @param marker
+     */
+    openEditablePopup: function(muri, marker) {
+        var self = this;
+        $.ajax({
+            url: window.location.origin + "/getAttrList",
+            method: "POST",
+            data: JSON.stringify({uri: muri}),
+            contentType: "application/json; charset=utf-8",
+            success: function (attrPairs) {
+                var infowindow = new google.maps.InfoWindow({
+                    content: self.formatContent(attrPairs, muri)
+                });
+                if (self.editable) {//only define click handler when this map is editable
+                    google.maps.event.addListener(infowindow, 'domready', function () {
+                        let submitId = "#" + jq("btn" + muri);
+                        let errMsgBox = $("#" + jq("err-msg-panel-" + muri));
 
+                        let modifications = {};
+
+                        $(document).on('input', 'input', function () {//when user makes input
+                            console.log("input changed");
+                            self.cleanMsg(errMsgBox);
+                            let el = $(this), value = el.val();
+                            if (value === "") {
+                                return;
+                            }
+                            //validate this value
+                            let attrid = el.attr("id");
+                            let nameArr = attrid.split('#');
+                            let name = nameArr[nameArr.length - 1];
+                            console.log("attr " + attrid + " " + value);
+
+                            let copyed = getAttrPairFromName(name);
+                            if (validateInput(value, copyed.datatype)) {
+                                //=>Add this value to modificaition list
+                                copyed['oldvalue'] = copyed['value'];
+                                copyed['value'] = value;
+                                modifications[name] = copyed;
+                            } else {//=>opps, type err, inform user
+                                self.displayMsg(errMsgBox, "Wrong datatype.", "warning");
+                            }
+                        });
+                        $(document).on('click', submitId, function () {
+                            if(Object.keys(modifications).length < 1){//do nothing if no modific
+                                return;
+                            }
+                            console.log(modifications);
+                            console.log("submit btn clicked")
+                            let updateQs = constructUpdate(muri, Object.values(modifications));
+                            //send ajax to update
+                            let uris = [];
+                            for (let i = 0; i < updateQs.length; i++) {
+                                uris.push(muri);
+                            }
+                            console.log("sent updates: ");console.log(updateQs);console.log(uris);
+                            outputUpdate(uris, updateQs, function (data) {//success callback
+                                infowindow.close();
+                            }, function () {//err callback
+                                self.displayMsg(errMsgBox, "Can not update to server", "danger")
+
+                            });
+                        });
+                    });
+                }
+
+                infowindow.open(self.googleMap, marker);
+
+                function getAttrPairFromName(name) {
+                    let searched = attrPairs.filter((item) => {
+                        return item.name === name;
+                    });
+                    return searched.length > 0 ? searched[0] : null;
+                }
+                function validateInput(newValue, type) {
+                    switch (type) {
+                        case "string":
+                            return typeof  newValue === "string";
+                        case "decimal":
+                        case "float":
+                        case "integer":
+                            return !isNaN(parseFloat(newValue)) && isFinite(newValue);
+                        default:
+                            console.log("type " + type + " is unknown");
+                    }
+                }
+
+            }
+        });
+    },
+
+    /*marker Cluster**/
+    setCluster: function () {
+        this.markerCluster = new MarkerClusterer(this.googleMap, Object.values(this.markers),
+            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
+                ,maxZoom:18
+            });
+    },
+
+    /*Color interpolating animation**/
     hex2rgb  : function (hex) {
         var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return result ? [
@@ -301,7 +428,6 @@ PopupMap.prototype = {
             parseInt(result[3], 16)
         ] : null;
     },
-    
     rgb2hex : function (rgb) {
         return "#" + ((1 << 24) + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]).toString(16).slice(1);
     },
@@ -313,157 +439,12 @@ PopupMap.prototype = {
         }
         return result;
     },
-    getMarker: function (key) {
-      return key in this.markers? this.markers[key] : null ;
-    },
-    clickAction: function(muri, marker) {
-        var self = this;
-        $.ajax({
-        url: window.location.origin + "/getAttrList",
-        method: "POST",
-        data: JSON.stringify({uri: muri}),
-        contentType: "application/json; charset=utf-8",
-        success: function (attrPairs) {
-            var infowindow = new google.maps.InfoWindow({
-                content: self.formatContent(attrPairs, muri)
-            });
-            if (self.editable) {//only define click handler when this map is editable
-                google.maps.event.addListener(infowindow, 'domready', function () {
-                    let submitId = "#" + jq("btn" + muri);
-                    let errMsgBox = $("#" + jq("err-msg-panel-" + muri));
 
-                    let modifications = {};
-
-                    $(document).on('input', 'input', function () {//when user makes input
-                        console.log("input changed");
-                        self.cleanMsg(errMsgBox);
-                        let el = $(this), value = el.val();
-                        if (value === "") {
-                            return;
-                        }
-                        //validate this value
-                        let attrid = el.attr("id");
-                        let nameArr = attrid.split('#');
-                        let name = nameArr[nameArr.length - 1];
-                        console.log("attr " + attrid + " " + value);
-
-                        let copyed = getAttrPairFromName(name);
-                        if (validateInput(value, copyed.datatype)) {
-                            //=>Add this value to modificaition list
-                            copyed['oldvalue'] = copyed['value'];
-                            copyed['value'] = value;
-                            modifications[name] = copyed;
-                        } else {//=>opps, type err, inform user
-                            self.displayMsg(errMsgBox, "Wrong datatype.", "warning");
-                        }
-                    });
-                    $(document).on('click', submitId, function () {
-                        if(Object.keys(modifications).length < 1){//do nothing if no modific
-                            return;
-                        }
-                        console.log(modifications);
-                        console.log("submit btn clicked")
-                        let updateQs = constructUpdate(muri, Object.values(modifications));
-                        //send ajax to update
-                        let uris = [];
-                        for (let i = 0; i < updateQs.length; i++) {
-                            uris.push(muri);
-                        }
-                        console.log("sent updates: ");console.log(updateQs);console.log(uris);
-                        outputUpdate(uris, updateQs, function (data) {//success callback
-                            infowindow.close();
-                        }, function () {//err callback
-                            self.displayMsg(errMsgBox, "Can not update to server", "danger")
-
-                        });
-                    });
-                });
-            }
-
-            infowindow.open(self.googleMap, marker);
-
-            function getAttrPairFromName(name) {
-                let searched = attrPairs.filter((item) => {
-                    return item.name === name;
-                });
-                return searched.length > 0 ? searched[0] : null;
-            }
-            function validateInput(newValue, type) {
-                switch (type) {
-                    case "string":
-                        return typeof  newValue === "string";
-                    case "decimal":
-                    case "float":
-                    case "integer":
-                        return !isNaN(parseFloat(newValue)) && isFinite(newValue);
-                    default:
-                        console.log("type " + type + " is unknown");
-                }
-            }
-
-        }
-    });
-},
-
-    msgtemplate : function (msg, type) {
-        return "<p class='alert alert-" + type + "'>" + msg + "</p>";
-    },
-    displayMsg: function(panel, msg, type) {
-    //TODO: swithc type
-    this.cleanMsg(panel);
-    panel.append(this.msgtemplate(msg, type));
-
-},
-    cleanMsg: function(panel) {
-    panel.html("");
-},
-
-
-setCluster: function () {
-        this.markerCluster = new MarkerClusterer(this.googleMap, Object.values(this.markers),
-            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
-			,maxZoom:18
-			});
-    },
-
+    /*Trans line animation****/
     /**
-     * init Google map
+     * take in a list of coordinates, draw animated lines between them
+     * @param list
      */
-    initMap: function () {
-        var self = this;
-        console.log("init map:" + self.curPath)
-        //initiate map, set center on Jurong
-        var jurong = {lat: 1.276, lng: 103.677};
-        this.googleMap = new google.maps.Map(document.getElementById('map'), {
-            zoom: 14
-            , center: jurong
-        });
-
-        console.log("request to " + self.curPath + "/coordinates")
-        //Send ajax request to backend to retreive data
-        $.ajax({
-            url: self.curPath + "/coordinates",
-            method: "GET",
-            //  contentType: "application/json; charset=utf-8",
-            success: function (pps) {
-                //Update display
-                self.coordinates = pps;
-				console.log(pps);
-                self.setMarkers(pps);
-                if (self.useCluster) {
-                    self.setCluster();
-                }
-               // if(self.animatedLines){
-              //      console.log(self.animatedLines)
-              //      self.drawAnimatedLines(self.animatedLines);
-              //  }
-            },
-            error: function () {
-                console.log("Can not get location")
-            }
-        });
-    },
-
     drawAnimatedLines : function (list) {
          list.forEach((line)=>{
 
@@ -474,7 +455,10 @@ setCluster: function () {
 
         });
     },
-
+    /**
+     * Draw a single animated line
+     * @param vertexs
+     */
     drawAnimatedLine : function (vertexs) {
         var lineSymbol = {
             path: "M 0 0 L 0 0 L 0 50 "	,
@@ -527,16 +511,23 @@ setCluster: function () {
 
             line.set('icons', icons);
         }, 40);
+    },
+
+    /*Msg***/
+    msgTemplate : function (msg, type) {
+        return "<p class='alert alert-" + type + "'>" + msg + "</p>";
+    },
+    displayMsg: function(panel, msg, type) {
+        //TODO: swithc type
+        this.cleanMsg(panel);
+        panel.append(this.msgTemplate(msg, type));
+
+    },
+    cleanMsg: function(panel) {
+        panel.html("");
     }
-
 };
-
-
-function jq(myid) {
-    console.log(myid)
-    return myid.replace(/(:|\.|\[|\]|,|=|@|\/)/g, "\\$1");
-
-}
+/*Color map****/
 function ColorMap() {
     this.typecolorMap = new Map();
     this.colors = [ "#1CE6FF", "#FF34FF", "#FF4A46", "#008941", "#006FA6", "#A30059",
@@ -555,7 +546,6 @@ function ColorMap() {
     this.count = 0;
 
 }
-
 ColorMap.prototype.returnColor = function (type) {
     if (this.typecolorMap.has(type)) {
         return this.typecolorMap.get(type);
@@ -566,7 +556,17 @@ ColorMap.prototype.returnColor = function (type) {
     }
 
 }
+/*Utility**/
+/**
+ * Jquery encoder, underscore chars not accepted by jquery selector
+ * @param myid
+ * @returns {void|XML|string|*}
+ */
+function jq(myid) {
+    console.log(myid)
+    return myid.replace(/(:|\.|\[|\]|,|=|@|\/)/g, "\\$1");
 
+}
 
 
 

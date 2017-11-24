@@ -1,4 +1,8 @@
-
+/***
+ * Router
+ *corresponds to agent: GetLiteralData
+ * @type {log4js}
+ */
 var log4js = require('log4js');
 var logger = log4js.getLogger();
 logger.level = 'debug';
@@ -29,14 +33,14 @@ router.post('/', function (req, res, next) {
             next(new Error("Can not find uri in req body"))
          return;
          }
-        LiteralData(uri, function (err, result) {
+        LiteralData( function (err, result) {
         if(err){
             next(err);
             return;
         }
             res.json(result); //render the view with this value
 
-        })
+        },uri)
 });
 
 module.exports = router;

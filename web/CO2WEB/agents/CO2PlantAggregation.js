@@ -1,5 +1,6 @@
 /**
- * Created by Shaocong on 8/31/2017.
+Aggregate plant emission by type and country
+
  */
 
 var log4js = require('log4js');
@@ -42,7 +43,6 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
              }`;
 
 
-//get children, then query on each
 
     function getPlantAggregation(callback) {
         var result = {};
@@ -52,12 +52,8 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
                 callback(err);
                 return;
             }
-
             //replace uri with disk location
             let pp = xmlParser.uriList2DiskLoc(ppraw, ppRoot);
-
-
-            // logger.debug(util.inspect(pp));
 
             async.concat(pp, query, function (err, plantData) {
                 //For each point, calculates emission

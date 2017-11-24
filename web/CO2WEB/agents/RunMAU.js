@@ -1,5 +1,6 @@
 /**
- * Created by Shaocong on 10/5/2017.
+This modules runs MAU, which is a jar.
+ There should be a future unifed module that wraps around the java module and eases the use of runing any jar file.
  */
 //use npm java module to run the function
 var path = require('path')

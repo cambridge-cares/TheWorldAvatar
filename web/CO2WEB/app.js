@@ -14,7 +14,6 @@ var express = require('express');
 var path = require('path');
 var httplogger = require('morgan');
 var request =require("request");
-var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var util = require('util');
 var config = require("./config.js");
@@ -24,32 +23,29 @@ var visualizeWorld =require("./routes/visualizeWorld.js");
 var visualizeBMS =require("./routes/visualizeBms.js");
 var visualizeSemakau =require("./routes/visualizeSemakau.js");
 var visualizeJurong =require("./routes/visualizeJurong.js");
-var showCO2 = require("./routes/showCO2.js");
 
-var bmsplot= require("./routes/plotBMS.js");
+ var showCO2 = require("./routes/showCO2Cached");
+var bmsplot= require("./routes/plotBMSCached.js");
 var getCS =require("./routes/getChildrenSingle");
-var getAttrList =require("./routes/getAttrList");
-var getSpecAttr =require("./routes/getSpecificLiteralAttr");
+var getAttrList =require("./routes/getAttrListCached");
+var getSpecAttr =require("./routes/getSpecificLiteralAttrCached");
 var MAU = require("./routes/runMAU")
 var MAUPlot = require("./routes/plotMAU")
 var HW =require("./routes/runHeatWasteNetworkMap")
-var PPCO2 = require("./routes/powerplantCO2");
+var PPCO2 = require("./routes/powerplantCO2Cached");
 
 var ppMap = require('./routes/mapPowerPlant');
 var semakauMap = require("./routes/mapSemakau")
 var b3Map = require("./routes/mapB3")
-
+var b2Map = require("./routes/mapB2")
 var ppalt = require("./routes/mapPPAlt")
 
-
-
 var literalData = require('./agents/GetLiteralData');
+var BMSWatcher = require('./agents/setBMSWatcher');
 
 var app = express();
 var port = config.port;
 process.env.UV_THREADPOOL_SIZE = 128;
-
-var BMSWatcher = require('./agents/setBMSWatcher');
 
 
 app.set('view engine', 'pug');
@@ -60,9 +56,9 @@ function setHeader(res, mpath){
   res.setHeader("Content-Type","text/xml");
   res.setHeader("Content-Disposition","inline");
     logger.debug("SEtting headers");
-
-
-}app.use(bodyParser.text({ type: 'application/json' }));
+}
+/*body parser*/
+app.use(bodyParser.text({ type: 'application/json' }));
 
 /*serve static file***/
 app.use(express.static(path.join(__dirname, 'public')));
@@ -79,20 +75,16 @@ app.use('/ppmap', ppMap);
 app.use('/semakaumap', semakauMap);
 app.use('/ppalt', ppalt);
 app.use('/JurongIsland.owl/showCO2', showCO2);
-
+app.use('/b2map', b2Map)
 app.use("/bmsplot", bmsplot);
-app.use("/hw", HW)
-app.use("/mauplot", MAUPlot)
+app.use("/hw", HW);
+app.use("/mauplot", MAUPlot);
 app.use('/getChildrenSingle', getCS);
-app.use("/getAttrList", getAttrList)
-app.use("/getSpecAttr", getSpecAttr)
+app.use("/getAttrList", getAttrList);
+app.use("/getSpecAttr", getSpecAttr);
 app.use("/MAU", MAU);
 
 
-app.get('/', function (req, res) {
-	        res.sendFile(path.join(__dirname, 'views/index.html'));
-
-});
 
 /*posting to dataObserve to get orginal data & register for future data change*/
 
@@ -170,11 +162,11 @@ socket.on('join', function (uriSubscribeList) {
 
 
                 console.log(diskLoc);
-                literalData(diskLoc, function (err, initialData) {
+                literalData( function (err, initialData) {
                     //get initial by db access
                     logger.debug("send initial data");
                     socket.emit("initial",initialData);
-                });
+                }, diskLoc);
 
 
         }

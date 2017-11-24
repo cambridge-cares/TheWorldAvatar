@@ -1,5 +1,6 @@
 /**
- * Created by Shaocong on 9/13/2017.
+  This module is obsoleted and has been replaced by the new GetLiteral that also accomodates bms data.
+
  * This module takes all owl data that has an literal
  */
 //design a SPARQL query to retrieve all literal data

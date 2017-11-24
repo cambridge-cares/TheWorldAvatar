@@ -1,4 +1,6 @@
 /**
+ * This is a common module for running python script.
+ * It is yet quite primitive and might needs future calibration.
  */
 //TODO:
 function runPython(filename, args, cb) {
@@ -29,7 +31,7 @@ function runPython(filename, args, cb) {
         console.log(data.toString());
         let jsonReg = /JSON({.*})/;
         let matches = jsonReg.exec(data.toString())
-        if(matches.length>0) {
+        if(matches && matches.length>0) {
             console.log(matches);
             dataStr += matches[1];
             console.log("TRIMED Datastr:")

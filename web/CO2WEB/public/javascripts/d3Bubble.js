@@ -50,7 +50,7 @@ var FileLinkMap = function (options) {
     bubbleMap.nodesArr = [];
 
     function packNodesArr(links, coords, serviceUrls) {
-        console.log("@@@@@@@@@@@@@@@@@@@"+JSON.stringify(serviceUrls))
+        console.log(links)
         var nodes = {};
         var nodesArr = [];
 
@@ -730,6 +730,8 @@ var FileLinkMap = function (options) {
     var links = data.connections;
     var coords = data.geoCoords;
     var serviceUrls = data.serviceUrls;
+
+    console.log(links)
     bubbleMap.update(links, coords, serviceUrls);
     return bubbleMap;
 
