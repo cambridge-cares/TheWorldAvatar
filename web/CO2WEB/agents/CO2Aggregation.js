@@ -1,5 +1,5 @@
 /**
- * Created by Shaocong on 7/19/2017.
+ * Aggregates CO2 emission extracted from landlort owl files
  */
 const $rdf = require('rdflib');
 const config = require('../config')
@@ -23,11 +23,12 @@ order by DESC(?ValueOf_CarbonEmissions)
 /***********************************/
 
 //return aggregation of a single query
-
+//TODO: add cache
 function getCO2Aggregation(callback) {
 //TODO: error handle
 
 try{
+    console.log("inside co2agge")
 	    var file = fs.readFileSync(config.landLotNode);
 	
         var mparser = new parser.RdfParser({uri: config.landLotNode, file :file});
@@ -45,6 +46,10 @@ try{
                 CO2Addresult+=		parseFloat(item['?ValueOf_CarbonEmissions']['value']);
             })
             //Now result is ready
+
+            CO2Addresult = parseFloat(CO2Addresult)/(365*24*60*60);
+
+            CO2Addresult = CO2Addresult.toFixed(4);//format result into float like 1.00
             callback(null, CO2Addresult);
         });
 }catch(err){

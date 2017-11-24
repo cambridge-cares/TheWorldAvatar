@@ -1,5 +1,5 @@
 /***
- * rdfParser
+This module is obsoleted and have been replaced. Only kept here for reference and backup purpose.
  */
 /***import modules**/
 let $rdf = require('rdflib');

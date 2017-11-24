@@ -1,5 +1,5 @@
 /**
- * Created by Shaocong on 8/31/2017.
+A wrapper on rdflib module to simplify the usage.
  */
 var log4js = require('log4js');
 var logger = log4js.getLogger();

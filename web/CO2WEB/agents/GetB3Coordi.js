@@ -1,10 +1,9 @@
 /**
- * Created by Shaocong on 9/29/2017.
  * This will most likely be rewritten to merge with existing services
  *
  */
 /***
- * A function to get B3 coordinates information
+ * A function to get Biodiesel plant 3 coordinates information
  * @param callback
  */
 var log4js = require('log4js');

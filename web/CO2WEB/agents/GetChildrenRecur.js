@@ -1,5 +1,5 @@
 /**
- * Created by Shaocong on 9/26/2017.
+  This module is unfinished, and is aimed to replace the current fileConnection module in a more elegant way.
  * Rewrite FileConnection function in endpooint query style
  * Provides all sorts of function for retrieve and process specific data
  */

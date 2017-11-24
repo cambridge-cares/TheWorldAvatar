@@ -10,7 +10,7 @@ var expect = require("chai").expect;
 var util = require("util");
 var nock = require("nock");
 
-var registerer = require("../../agents/register2DataChange");
+var registerer = require("../../agents/register2DataChangeObsolete");
 var config = require("../../config")
 
 

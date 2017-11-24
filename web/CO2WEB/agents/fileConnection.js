@@ -197,7 +197,7 @@ owlProcessor.getChildrenRecur = function(options, callback) {
                return !(nodeMap.has(childUri));
            });
            if (children.length < 1) { // no children is found, including devices and services and call callback
-             //  logger.debug(myUri + " is a leaf node return");
+               logger.debug(myUri + " is a leaf node return");
                callback(null, {connections: connectionParent, geoCoords: geoCoordsParent, serviceUrls: serviceUrlsParent});
                return;
            }//else

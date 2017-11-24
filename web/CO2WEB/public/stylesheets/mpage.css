@@ -395,7 +395,7 @@ th {
     opacity: 0.5;
     z-index: 100;
     position: fixed;
-    width: 200px;
+    width: 250px;
 }
 
 .overlay-panel-wrapper:hover{
@@ -403,7 +403,7 @@ th {
 }
 
 #overlay-setting-panel {
-    height:500px
+    height:auto;
 }
 
 .plot-title {

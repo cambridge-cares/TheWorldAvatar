@@ -12,17 +12,23 @@ var config = {};
 
 
 
-//configDevelop();
-configDeploy();
+configDevelop();
+//configDeploy();
 config.worldNode = path.join(config.root , "TheWorld.owl");
 config.jurongNode = path.join(config.root ,"JurongIsland.owl");
 config.b3Node = path.join(config.root , "BiodieselPlant3.owl");
 
+config.b2Node = path.join(config.root , "BiodieselPlant2.owl");
 config.bmsFolder = path.join(config.root , "BMS");
 config.bmsNode = path.join(config.bmsFolder , "CARES_Lab.owl");
 config.bmsplotnode = path.join(config.bmsFolder, "BCA_RT_sensor1.owl");
 config.semakauNode = path.join(config.root , "SemakauIsland.owl");
 config.landLotNode=path.join(config.root , "JParkLandLots.owl");
+//TODO: this later should be wrapped in owl file
+config.heatWasteScript = path.join(__dirname, "agents/WHR_network_optimization_trim.py")
+config.heatWasteNode = path.join(config.root, "wasteheatnetwork.owl")
+
+
 config.registerPath = "dataObserve";
 config.changePath = "change";
 config.viewRoot = path.join(__dirname , "views");

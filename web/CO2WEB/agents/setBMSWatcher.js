@@ -1,5 +1,5 @@
 /**
- * Created by Shaocong on 9/8/2017.
+ * This module utlizes the common chageWatcher module that sets some specific params in our use case.
  * Set parameters for watcher for bms, including a temporary
  * inform funciton using eventEmitter since they are not set separated.
  */

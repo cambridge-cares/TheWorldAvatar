@@ -1,8 +1,15 @@
 /**
- * Created by Shaocong on 9/8/2017.
- * By principle one node only own one data file and its own service, but
+Module that watches over an directory/group of file, and will inform anyone who has registered for any of the file with the modified(the modification can come from any sources, independent of this module) data.
+
+ This module abstracts the change-inform  logic from any other services, with this module, this procedure needs not to be hard-coded in every module that induces a change in the owl file, but rather, the change will be detected with the file by this module, and sending out the message to any other module that should be aware.
+
+ *Note: By principle one node only own one data file and its own service, but
  * currently we host nodes together, so a group watcher is required to watch an entire folder to
- * see waht is changed
+ * see what is changed
+ *
+ * Note: currently the data each time informed are uri, filename, and all the literal data, the latter is retrieve by the GetLiteral module, this in the future should probably be changed. One possible way is to delegate it to user, so user can specify which module they want to use for retrieving data.
+ *
+ * Note: deregister logic is not yet implemented.
  */
 var log4js = require('log4js');
 var logger = log4js.getLogger();
@@ -69,13 +76,13 @@ function groupwatcher(dir, informIndi){
            function getDataP() {//TODO: this should be delegate to the user instead of defined here
               return new Promise(function (resolve, reject) {
 
-                      LiteralData(self.uri, function (err, data) {
+                      LiteralData(function (err, data) {
                           if(err){
                               reject(err);
                           }
                           logger.debug(data)
                           resolve({data});
-                      });
+                      }, self.uri);
 
 
                });

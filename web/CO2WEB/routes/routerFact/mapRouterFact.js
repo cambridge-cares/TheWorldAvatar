@@ -1,4 +1,7 @@
-
+/**
+ * A factory to produce router for map agent page
+ * @type {log4js}
+ */
 var log4js = require('log4js');
 var logger = log4js.getLogger();
 logger.level = 'debug';
@@ -11,6 +14,9 @@ var mapRouterFactory = function (router, getCoordinatesData, texts, view) {
     var cdataPromise = getCDataPromise();
     var cData;
 
+    //TODO:　render accordingly so no need of separate view file
+    //TODO: 1. Unify view file(some has extra bits and pieces)
+    //TODO: 2. supply specific js import, and txts as params
     var textsOb   = {
         title:texts.title || "Map",
         subtitle:texts.subtitle || "Map",

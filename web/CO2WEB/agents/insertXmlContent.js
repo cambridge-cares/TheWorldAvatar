@@ -1,9 +1,5 @@
 /**
- * Created by Shaocong on 9/4/2017.
- */
-/**
- * Created by Shaocong on 9/4/2017.
- * Utility function:
+ * Utility function, not published on map:
  * stream-inserting some content into a certain parent node in xml
  *
  */

@@ -1,5 +1,6 @@
 /**
- * This is a obsolete module that registeres for changes happen in other physically separated nodes
+ * This is a obsolete module that have been replaced by the new changewatcher.
+ * The module registeres for changes happen in other physically separated nodes
 Register/deregister to subscribe to a data changing node, basically is a request with specific data format:
  {
  url:  string, my url+path,

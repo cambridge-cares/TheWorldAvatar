@@ -1,5 +1,6 @@
 /**
- * Created by Shaocong on 10/6/2017.
+Utility funciton, not published on web.
+ Modfied all coordinates at once in b3 owl file.
  */
 const getB3C = require('./GetB3Coordi')
 const fileC = require('./fileConnection')

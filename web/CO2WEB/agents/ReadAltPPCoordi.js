@@ -1,5 +1,6 @@
 /**
  * For Alvind's power plants display, ripped off directly from readPowerPlantCoordi
+ * Most likely should be unified into one module in the future.
  */
 var log4js = require('log4js');
 var logger = log4js.getLogger();

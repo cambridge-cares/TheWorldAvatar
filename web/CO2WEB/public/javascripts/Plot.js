@@ -1,5 +1,15 @@
+/**
+ * Module that makes a page of plots that updating through socket events
+ * @param opts
+ * @constructor
+ */
 
 
+/**
+ * A xy plot
+ * @param opts
+ * @constructor
+ */
 function Plot(opts) {
     console.log(opts)
     this.mergeOptions(opts);
@@ -71,7 +81,11 @@ Plot.prototype = {
         console.log(this.newDataObj["start"]);
 
     },
-    
+    /**
+     * Add a text title before plot
+     * @param parentel
+     * @param name
+     */
     insertTitle : function (parentel, name) {
         let id = "title-"+name;
         parentel.append("<h2 class='plot-title' id='"+id+"'>"+name+"</h2>");
@@ -94,7 +108,11 @@ Plot.prototype = {
         console.log("finish initing new plot")
         return l1;
     },
-
+    /**
+     * Utility: underscore unaccepted chars for jquery selector
+     * @param myid
+     * @returns {void|XML|string|*}
+     */
     jqSelParse: function(myid) {
     console.log(myid)
     return myid.replace(/(:|\.|\[|\]|,|=|@|\/)/g, "\\$1");
@@ -103,6 +121,11 @@ Plot.prototype = {
 
 }
 
+/**
+ * A group of xy plots that could be updated together
+ * @param opts
+ * @constructor
+ */
 function MultiPlots(opts) {
     this.mergeOptions(opts);
     this.plotMap = {};

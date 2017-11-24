@@ -1,6 +1,7 @@
 /**
- * Created by Shaocong on 9/13/2017.
- * This module specifically require data from bms
+ * This module is obsoleted, and has been unified with GetLiteralData module.
+ *
+ * specifically require data from bms
  * In future it will be done through http request when bms is hosted sepaly
  * but now we do disk loc search
  */

@@ -1,26 +1,29 @@
 
-//TODO: listen to input:change, modify span accordingly
-
-
 $(document).ready(function () {
 
     let curPath = window.location.href;
     let countrySelected;
     let lastPercentInput;
-    /*Country selector*****************************************/
+
+    let tableP = $("#table-panel");//table that displays pp list in a country
+    let panel = $("#err-msg-panel");
+
     /*Percentage-input listener******************/
-    $('#input-percentage').on('blur', function (e) {
-        enterPercentage();
+    $('#input-percentage').on('blur', function (e) {//user moves out of input field
+        enterPercentage();//=>percentage is entered, handle it!
     });
 
     $(document).keypress(function(e) {
-        if(e.which == 13) {
-            enterPercentage();
+        if(e.which == 13) {//if press enter!
+            enterPercentage();//=>percentage is entered, handle it!
 
         }
     });
 
 
+    /**
+     * Handler when new percentage is entered
+     */
     function enterPercentage() {
         let percent = $('#input-percentage').val();
         cleanMsg();
@@ -70,10 +73,10 @@ $(document).ready(function () {
     }
 
 
-
-    var tableP =         $("#table-panel");
-
-
+    /***
+     * Write table dom to display a pp list by country
+     * @param list
+     */
     function displayListByCountry(list) {
         tableP.empty();
         let table = "<table><tr><td>Name of Power Plant</td><td>Capacity</td><td>Type</td><td>CO<sub>2</sub> Emission(tonnes/h)</td></tr>";
@@ -101,8 +104,9 @@ $(document).ready(function () {
     function getsimpleType(typeuri){
         return typeuri.split('#')[1];
     }
-    
-    $("select#country-select").on('change', function () {
+
+    /*Country selector*****************************************/
+    $("select#country-select").on('change', function () {//when a new country is selected
         countrySelected = $("select#country-select option:checked").val();
         countrySelected = JSON.parse(countrySelected);
         countrySelected = countrySelected["country"];
@@ -115,6 +119,7 @@ $(document).ready(function () {
             data:JSON.stringify({country: countrySelected}),
             contentType: "application/json; charset=utf-8",
             success: function (list) {
+                console.log(list)
                 //Update display
                 displayListByCountry(list);
                 //clean convert area
@@ -139,7 +144,6 @@ $(document).ready(function () {
         return "<p class='alert alert-" + type + "'>" + msg + "</p>";
     };
 
-    let panel = $("#err-msg-panel");
 
     function displayMsg(msg, type) {
         //TODO: swithc type

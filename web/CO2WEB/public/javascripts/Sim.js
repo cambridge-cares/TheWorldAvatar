@@ -73,17 +73,18 @@ Sim.prototype = {
                 }
             }
         });
-        msocket.on('update', function (udata) {
+        msocket.on('update',  (udata)=>{
             //need to corrspond the updated data with kept copy - by name
             console.log("get update event");
             console.log(udata.data);
 
             if(this.updateInputs(udata.data)){//input data truly has been updated?
 
-                if(this.displayInputUpdate) {
+                if(this.displayInputUpdate) {//okay to fire this immedietly
                     this.displayInputUpdate(udata);
                 }
                 console.log(dataMap);
+                //TODO: however, this
                 this.sendSimulation(dataMap, this.simulationResultCB, this.errorCB);//=>great!sent the inputvalues to simulation API
             }
         });

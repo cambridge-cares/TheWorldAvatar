@@ -1,4 +1,3 @@
-
 $( window ).on( "load", function() {
     console.log( "window loaded" );
 //ajax to get co2 value from server

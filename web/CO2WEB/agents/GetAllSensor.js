@@ -1,6 +1,5 @@
 /**
- * Created by Shaocong on 9/18/2017.
- * Construct a list of sensors
+ * Construct a list of all sensors
  */
 var log4js = require('log4js');
 var logger = log4js.getLogger();

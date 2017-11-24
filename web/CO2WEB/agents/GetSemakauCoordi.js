@@ -1,5 +1,6 @@
 /**
- * Created by Shaocong on 9/20/2017.
+Get all coordinates defined on Semakau,
+ This module should be rewritten in future to unite with others, but currently different plant owl files have different way of defining coordinates and has made this task impossible.
  */
 //first get All child, then request&query each to get coordinates
 var log4js = require('log4js');

@@ -15,11 +15,6 @@ if(!CO2Dataset){
             return;
         }
         CO2Dataset = result;
-        //TODO: init, get results
-        let co2value = CO2Dataset.sum;
-        let countries = CO2Dataset.dataBycountry;
-        // console.log(co2value);
-        // console.log(countries);
 
     });
 }
