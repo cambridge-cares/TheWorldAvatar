@@ -42,8 +42,8 @@ function getAllSensors(callback) {
                 callback(err)
                 return;
             }
-            //logger.debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-           // logger.debug(children);
+            logger.debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            logger.debug(children);
 
             children = children['connections'].map((conn)=>{return conn.target});
             let sschildren = children.filter((uri)=>{return uri.toLowerCase().includes("sensor")});

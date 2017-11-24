@@ -78,7 +78,7 @@ function LiteralData(nodeloc, opts, callback) {
         queryLiteralSingle(result.eq, function (err,resultEq) {
             if(err){
                 logger.debug(err)
-                callback(err);
+                callback(null, resultsB);
                 return;
             }
             console.log(result.nvpairs)
