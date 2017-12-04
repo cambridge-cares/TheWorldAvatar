@@ -2,19 +2,20 @@
 Utility funciton, not published on web.
  Modfied all coordinates at once in b3 owl file.
  */
-const getB3C = require('./GetB3Coordi')
+const getB3C = require('./GetCoordi')
 const fileC = require('./fileConnection')
 const request = require('request')
 const async = require('async')
 const convertC = fileC.convertCoordinate;
+const config = require("../config")
 
-getB3C(function (err, result) {
+getB3C(config.jurongNode, function (err, result) {
     if(err){
         throw err;
     }
 
     console.log(result);
-    let dx = 18.070053359493613, dy = 14.979029614682076;
+    let dx = 20.789951, dy = 6.984999;
 
     function getSample(uri, lng, lat) {
         let name = uri.split('/');

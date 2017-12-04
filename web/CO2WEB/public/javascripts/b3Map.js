@@ -30,8 +30,8 @@ socket.on('update', function (udata) {
     console.log("get update event");
     console.log(udata.data);
    if(updateDataMap(udata.data)){
-       console.log(dataMap);
-       SendSimulationQuery(dataMap);
+       console.log(Object.values(dataMap));
+       SendSimulationQuery(Object.values(dataMap));
    }
 //TODO: check update event
     //on update event, ajax to simulation service
@@ -61,10 +61,10 @@ function SendSimulationQuery(variables) {
     var queryString = "?Input=";
     for (var i = 0; i < variables.length; i++) {
         if (i == 0) {
-            queryString = queryString + variables[i].value;
+            queryString = queryString + variables[i];
 
         } else {
-            queryString = queryString + "+" + variables[i].value;
+            queryString = queryString + "+" + variables[i];
         }
     }
 

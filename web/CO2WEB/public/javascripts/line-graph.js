@@ -234,7 +234,7 @@ function LineGraph(argsMap) {
         // do this after processing margins and executing processDataMap above
         initDimensions();
 
-        createGraph()
+        createGraph(data)
         //debug("Initialization successful for container: " + containerId)
 
         // window resize listener
@@ -509,7 +509,7 @@ function LineGraph(argsMap) {
      *
      * Expects to be called once during instance initialization.
      */
-    var createGraph = function() {
+    var createGraph = function(data) {
 
         // Add an SVG element with the desired dimensions and margin.
         graph = d3.select("#" + containerId).append("svg:svg")

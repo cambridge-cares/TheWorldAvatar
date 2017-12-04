@@ -264,6 +264,9 @@ method:"POST",
 
     updateOutputMap:function (result) {
       console.log(this.outputMap);
+	  if(!result[0]|| result[0].constructor !== "array"){
+		  return;
+	  }
         result[0].forEach((datum)=>{
           if(datum.name in this.outputMap){
               Object.assign(this.outputMap[datum.name], datum);

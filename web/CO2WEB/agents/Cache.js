@@ -60,12 +60,13 @@ function CacheRouter(router) {
             }
             let name = args2Key( path, getDataFn.name, keys);
 
+
             //TODO: redis only takes string/hash, so we have an extra stringify step here, be careful as it migth cause complexities
             if(typeof  result+"" !== "string"){
                 result = JSON.stringify(result)
             }
             console.log(result)
-            console.log("name:" + name)
+            console.log("SET CACHE key:" + name)
             client.setex(name, time, result);
 
             cb(null, result)
@@ -78,6 +79,7 @@ function CacheRouter(router) {
      */
     function getCache(path, fnname, cb, ...args) {
         let key = args2Key( path, fnname,args)
+        console.log("use key to get cache:")
         console.log(key)
         client.get(key, cb);
     }
@@ -114,12 +116,14 @@ function CacheRouter(router) {
             getData(resultCB, ...args);
              function resultCB(err, result) {
                 if(err){
+                    console.log(err)
                     next(err)
                     return;
                 }
                 if(result!= null){
                     sendResult(result, res);
                 }else{//proceed to cache
+                    console.log("not found")
                     next();
                 }
             }
@@ -142,7 +146,7 @@ function CacheRouter(router) {
         let time = mOpts.expiredTime;
 
         let normalHandler = HandlerFact(mOpts.req2args, mOpts.sendResult, getDataSetCache.bind(null,path, dataFn, time));
-        let cacheHandler = HandlerFact(mOpts.req2args, mOpts.sendResult, getCache.bind(null, dataFn.name,path))
+        let cacheHandler = HandlerFact(mOpts.req2args, mOpts.sendResult, getCache.bind(null, path, dataFn.name))
         router.post(path, cacheHandler,normalHandler )
         return router
     }
@@ -163,7 +167,7 @@ function CacheRouter(router) {
         let time = mOpts.expiredTime;
 
         let normalHandler = HandlerFact(mOpts.req2args, mOpts.sendResult, getDataSetCache.bind(null,path, dataFn, time));
-        let cacheHandler = HandlerFact(mOpts.req2args, mOpts.sendResult, getCache.bind(null, dataFn.name, path))
+        let cacheHandler = HandlerFact(mOpts.req2args, mOpts.sendResult, getCache.bind(null, path, dataFn.name))
         router.get(path,cacheHandler, normalHandler )
         return router
     }
