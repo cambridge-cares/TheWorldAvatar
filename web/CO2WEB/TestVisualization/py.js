@@ -1,7 +1,12 @@
-'use strict'
+var runHeatWasteNetwork = require("../agents/RunHeatWasteNetwork")
 
-function a() {
-    return arguments
-}
+runHeatWasteNetwork((err, result)=>{
+    if(err) {
+        console.log(err)
+        next(err)
+        return;
+    }
+    console.log(result)
 
-console.log(a(1,2,3))
+    res.json(result);
+})

@@ -29,8 +29,8 @@ print (sys.argv[1])
 
 # In[27]:
 
-g = Graph()
-g.parse(sys.argv[1], format="xml")
+#g = Graph()
+#g.parse(sys.argv[1], format="xml")
 #C:/irp3-WebJPS-git/CO2WEB/testFiles/wasteheatnetwork.owl
 ResultJSON = {}
 def add2Results (name, value):
@@ -39,7 +39,7 @@ def add2Results (name, value):
 # In[28]:
 
 #print ("Ontology parsing begins, we find there are %s total tuples in your ontology" %(len(g)))
-add2Results("tupleNumber", len(g))
+#add2Results("tupleNumber", len(g))
 
 # In[29]:
 
@@ -52,65 +52,42 @@ A = np.zeros((5,2))
 B = np.zeros((5,2))
 
 
-# In[99]:
+#SourcePlantQualities
+A[0,0] = float(sys.argv[1])
+A[1,0] = float(sys.argv[2])
+A[2,0] = float(sys.argv[3])
+A[3,0] = float(sys.argv[4])
+A[4,0] = float(sys.argv[5])
 
-SourcePlant1Quality = URIRef("http://www.jparksimulator.com#SourcePlant1Quality")
-SourcePlant2Quality = URIRef("http://www.jparksimulator.com#SourcePlant2Quality")
-SourcePlant3Quality = URIRef("http://www.jparksimulator.com#SourcePlant3Quality")
-SourcePlant4Quality = URIRef("http://www.jparksimulator.com#SourcePlant4Quality")
-SourcePlant5Quality = URIRef("http://www.jparksimulator.com#SourcePlant5Quality")
-
-SinkPlant1Quality = URIRef("http://www.jparksimulator.com#SinkPlant1Quality")
-SinkPlant2Quality = URIRef("http://www.jparksimulator.com#SinkPlant2Quality")
-SinkPlant3Quality = URIRef("http://www.jparksimulator.com#SinkPlant3Quality")
-SinkPlant4Quality = URIRef("http://www.jparksimulator.com#SinkPlant4Quality")
-SinkPlant5Quality = URIRef("http://www.jparksimulator.com#SinkPlant5Quality")
-
-topDataProperty = URIRef(u'http://www.w3.org/2002/07/owl#topDataProperty')
-
-A[0,0] = float(g.value( SourcePlant1Quality, topDataProperty))
-A[1,0] = float(g.value( SourcePlant2Quality, topDataProperty))
-A[2,0] = float(g.value( SourcePlant3Quality, topDataProperty))
-A[3,0] = float(g.value( SourcePlant4Quality, topDataProperty))
-A[4,0] = float(g.value( SourcePlant5Quality, topDataProperty))
-
-A[0,1] = float(g.value( SinkPlant1Quality, topDataProperty))
-A[1,1] = float(g.value( SinkPlant2Quality, topDataProperty))
-A[2,1] = float(g.value( SinkPlant3Quality, topDataProperty))
-A[3,1] = float(g.value( SinkPlant4Quality, topDataProperty))
-A[4,1] = float(g.value( SinkPlant5Quality, topDataProperty))
+#SinkPlantQualities
+A[0,1] = float(sys.argv[6])
+A[1,1] = float(sys.argv[7])
+A[2,1] = float(sys.argv[8])
+A[3,1] = float(sys.argv[9])
+A[4,1] = float(sys.argv[10])
 
 
-# In[100]:
 
-SourcePlant1Quantity = URIRef("http://www.jparksimulator.com#SourcePlant1Quantity")
-SourcePlant2Quantity = URIRef("http://www.jparksimulator.com#SourcePlant2Quantity")
-SourcePlant3Quantity = URIRef("http://www.jparksimulator.com#SourcePlant3Quantity")
-SourcePlant4Quantity = URIRef("http://www.jparksimulator.com#SourcePlant4Quantity")
-SourcePlant5Quantity = URIRef("http://www.jparksimulator.com#SourcePlant5Quantity")
+B[0,0] = float(sys.argv[11])
+B[1,0] = float(sys.argv[12])
+B[2,0] = float(sys.argv[13])
+B[3,0] = float(sys.argv[14])
+B[4,0] = float(sys.argv[15])
 
-SinkPlant1Quantity = URIRef("http://www.jparksimulator.com#SinkPlant1Quantity")
-SinkPlant2Quantity = URIRef("http://www.jparksimulator.com#SinkPlant2Quantity")
-SinkPlant3Quantity = URIRef("http://www.jparksimulator.com#SinkPlant3Quantity")
-SinkPlant4Quantity = URIRef("http://www.jparksimulator.com#SinkPlant4Quantity")
-SinkPlant5Quantity = URIRef("http://www.jparksimulator.com#SinkPlant5Quantity")
-
-topDataProperty = URIRef(u'http://www.w3.org/2002/07/owl#topDataProperty')
-
-B[0,0] = float(g.value( SourcePlant1Quantity, topDataProperty))
-B[1,0] = float(g.value( SourcePlant2Quantity, topDataProperty))
-B[2,0] = float(g.value( SourcePlant3Quantity, topDataProperty))
-B[3,0] = float(g.value( SourcePlant4Quantity, topDataProperty))
-B[4,0] = float(g.value( SourcePlant5Quantity, topDataProperty))
-
-B[0,1] = float(g.value( SinkPlant1Quantity, topDataProperty))
-B[1,1] = float(g.value( SinkPlant2Quantity, topDataProperty))
-B[2,1] = float(g.value( SinkPlant3Quantity, topDataProperty))
-B[3,1] = float(g.value( SinkPlant4Quantity, topDataProperty))
-B[4,1] = float(g.value( SinkPlant5Quantity, topDataProperty))
+B[0,1] = float(sys.argv[16])
+B[1,1] = float(sys.argv[17])
+B[2,1] = float(sys.argv[18])
+B[3,1] = float(sys.argv[19])
+B[4,1] = float(sys.argv[20])
 
 
-# In[101]:
+SourcePlantQuantities = [B[0,0],B[1,0],B[2,0],B[3,0],B[4,0]]
+
+SinkPlantQuantities = [B[0,1],B[1,1],B[2,1],B[3,1],B[4,1]]
+SourcePlantQualities = [A[0,0],A[1,0],A[2,0],A[3,0],A[4,0]]
+
+SinkPlantQualities = [A[0,1],A[1,1],A[2,1],A[3,1],A[4,1]]
+
 
 #print ("Ontology parsing has successfully finished.")
 
@@ -192,7 +169,7 @@ def optimization (x, y):
     modifyList = []
     for i in range(count):
       if i < len(res.x) and res.x[i] != 0:
-         modifyList.append([res.x[i],M[i,2],M[i,3]])
+         modifyList.append([M[i,2],M[i,3],res.x[i]])
          #print ("%s kW waste heat from plant %s to plant %s" %(res.x[i],M[i,2],M[i,3])) \
     add2Results("modifyList", modifyList)
 

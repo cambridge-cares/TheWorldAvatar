@@ -137,7 +137,7 @@ let sensorChosen;
 
     function initSinglePlot(parentel,name, dataObj) {
         let id = "plot-"+name;
-        parentel.append("<div id='"+id+"'></div>");
+        parentel.append("<p id='"+id+"'></p>");
         let el = $("#"+jqSelParse(id));
         console.log(el);
         el.css({

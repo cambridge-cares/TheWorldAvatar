@@ -183,7 +183,7 @@ function LineGraph(argsMap) {
     /* *************************************************************** */
     /* private variables */
     /* *************************************************************** */
-    // the div we insert the graph into
+    // the p we insert the graph into
     var containerId;
     var container;
 

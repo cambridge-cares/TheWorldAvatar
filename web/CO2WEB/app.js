@@ -36,7 +36,7 @@ var PPCO2 = require("./routes/powerplantCO2Cached");
 
 var ppMap = require('./routes/mapPowerPlant');
 var semakauMap = require("./routes/mapSemakau")
-var b3Map = require("./routes/mapB3")
+//var b3Map = require("./routes/mapB3")
 var b2Map = require("./routes/mapB2")
 var ppalt = require("./routes/mapPPAlt")
 
@@ -64,20 +64,23 @@ app.use(bodyParser.text({ type: 'application/json' }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
 
- app.use('/b3map', b3Map);
 
  app.use('/visualizeWorld', visualizeWorld);
 app.use('/visualizeBMS', visualizeBMS);
 app.use('/visualizeSemakau', visualizeSemakau);
 app.use('/visualizeJurong', visualizeJurong);
 app.use('/PowerPlantCO2',  PPCO2);
-app.use('/ppmap', ppMap);
 app.use('/semakaumap', semakauMap);
 app.use('/ppalt', ppalt);
 app.use('/JurongIsland.owl/showCO2', showCO2);
-app.use('/b2map', b2Map)
+
 app.use("/bmsplot", bmsplot);
-app.use("/hw", HW);
+
+app.use('/ppmap', ppMap);
+
+app.use('/b2map', b2Map)
+ app.use("/hw", HW);
+
 app.use("/mauplot", MAUPlot);
 app.use('/getChildrenSingle', getCS);
 app.use("/getAttrList", getAttrList);

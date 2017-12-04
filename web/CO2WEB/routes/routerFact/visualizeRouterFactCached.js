@@ -33,7 +33,7 @@ var visualizationRouterFactory = function (topNodeAddress) {
     }
 
 
-    const expiredTime = 36000000;
+    const expiredTime = 36;
 
     router = cacheRouter(router).get('/', getNormal, { sendResult:sendRender,expiredTime});
 

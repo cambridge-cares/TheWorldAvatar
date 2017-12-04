@@ -22,7 +22,9 @@ var convertCoordinate = function (GPSLong, GPSLat, google2Owl) {
     }
 
 };
+//1.258856, 103.678836
 
 
-console.log(convertCoordinate(	11552729.218,		134558.447, false ))
+
+console.log(convertCoordinate(	103.678836,		1.258856, true ))
 console.log(convertCoordinate(	11552746.986,	134561.583, false ))

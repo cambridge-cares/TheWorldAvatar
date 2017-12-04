@@ -3,6 +3,8 @@
     /**
 const data = {"tupleNumber": 120, "flowNumber": "10", "flowList": [[1.0, 2.0], [1.0, 3.0], [1.0, 5.0], [3.0, 2.0], [4.0, 1.0], [4.0, 2.0], [4.0, 3.0], [4.0, 5.0], [5.0, 2.0], [5.0, 3.0]], "modifyList": [[895.0, 1.0, 2.0], [1512.0, 1.0, 5.0], [638.0, 4.0, 1.0]], "saveNumber": 3045.0};
      **/
+
+   var plants = ["Zeon", "Exxonmobil","Singapore refining","Lanxess BTR Plant", "Chang Chun"]
 var hwMap = new PopupMap({useCluster:false});
 
     var FileLinkMap = function (data, options) {
@@ -127,24 +129,15 @@ var hwMap = new PopupMap({useCluster:false});
             // Compute the distinct nodes from the links.
             links.forEach(function (link) {
 
-                if (nodes[link.source] != null) {
-                    nodes[link.source].count = nodes[link.source].count + 1;
-                    console.log("++");
-                }
-                if (nodes[link.target] != null) {
-                    nodes[link.target].count = nodes[link.target].count + 1;
-                    console.log("++");
 
-                }
 
                 link.source = nodes[link.source] || (nodes[link.source] = {
                         url: link.source,
 
-                        name: getSimpleName(link.source),
-                        domain: getDomain(link.source),
+                        name: link.source,
+                        domain: link.source,
                         count: 0,
-                        coord: getCoord(link.source),
-                        serviceUrl:getServiceUrl(link.source)
+
 
                     });
 
@@ -153,13 +146,11 @@ var hwMap = new PopupMap({useCluster:false});
                 }
                 link.target = nodes[link.target] || (nodes[link.target] = {
                         url: link.target,
-                        name: getSimpleName(link.target),
-                        domain: getDomain(link.target),
+                        name: link.target,
+                        domain: link.target,
                         count: 0
-                        , level: parseInt(link.level) + 1
-                        ,                //add to node attri: geo coordinates
-                        coord: getCoord(link.target),
-                        serviceUrl:getServiceUrl(link.target)
+                                  //add to node attri: geo coordinates
+
 
                     });
 
@@ -196,14 +187,7 @@ var hwMap = new PopupMap({useCluster:false});
             //return charge;
         }
 
-        function setD(link) {
-            // console.log(link.source.count);
-            var nodeNThre = 5
-            if (link.source.count > nodeNThre || link.target.count > nodeNThre) {
-                return 100;
-            }
-            return 1;
-        }
+
 
         /**
          * Allocate color for nodes of each domain
@@ -218,14 +202,14 @@ var hwMap = new PopupMap({useCluster:false});
                 return colorList2[d.level];
             }
 
-            colorMap[d.domain] = colorMap[d.domain] || (colorList[mapSize++]);
+            colorMap[d.url] = colorMap[d.url] || (colorList[mapSize++]);
 
             if (mapSize >= mapSize.length) {
                 mapSize = 0;
                 console.log("WARNING: DOMAIN NUMBER EXISTS COLOR MAP NUMBER!");
             }
 
-            return colorMap[d.domain];
+            return colorMap[d.url];
         }
 
         function sortOrder(d, i) {
@@ -266,6 +250,8 @@ var hwMap = new PopupMap({useCluster:false});
             bubbleMap.nodesArr = packNodesArr(links, coords, serviceUrls);
 
 
+            console.log(links)
+            console.log(bubbleMap.nodesArr)
             //set force simulationf
             var simulation = d3.forceSimulation()
                 .force("link", d3.forceLink(links).distance(100))
@@ -281,10 +267,14 @@ var hwMap = new PopupMap({useCluster:false});
 
 
             path.enter().append("line")
-                .attr("class", function (d) {
-                    console.log("@@@@@@@@@@@@draw link : " + d.source.name + '--------' + d.target.name);
 
-                    return "link " + "licensing";
+                .attr("stroke-width" ,function (d) {
+                    console.log(Math.sqrt(d.value))
+                    return d.value/100
+
+                })
+                .attr("stroke", function () {
+                    return "#666"
                 })
 
             ;
@@ -389,6 +379,23 @@ var hwMap = new PopupMap({useCluster:false});
                 });
             text = gT.selectAll("text.nodeTag");
 
+
+            var textL = gT.selectAll("text.lineTag")  //node tags
+                .data(links, function (d) {
+                    return  d.source.name + d.target.name ;
+                });
+            textL.exit().remove();
+
+
+            textL.enter().append("text")
+                .attr("class", "lineTag")
+                .attr("x", textSize)
+                .attr("y", "0.31em")
+                .text(function (d) {
+                    return d.value;
+                });
+            textL = gT.selectAll("text.lineTag");
+
             simulation
                 .nodes(bubbleMap.nodesArr)
                 .on("tick", ticked);
@@ -467,6 +474,19 @@ var hwMap = new PopupMap({useCluster:false});
                             return 0;
                         }
                         return d.y;
+                    });
+                textL
+                    .attr("x", function (d) {
+                        if (d === undefined) {
+                            return 0;
+                        }
+                        return (d.source.x + d.target.x)/2;
+                    })
+                    .attr("y", function (d) {
+                        if (d === undefined) {
+                            return 0;
+                        }
+                        return (d.source.y + d.target.y)/2;
                     });
 
             }
@@ -552,6 +572,23 @@ var hwMap = new PopupMap({useCluster:false});
                         d.fy = d.y;
 
                         return d.y;
+                    });
+
+                textL
+                    .attr("x", function (d) {
+                        if (d === undefined) {
+                            return 0;
+                        }
+                        d.fx = (d.source.x + d.target.x)/2;
+                        return (d.source.x + d.target.x)/2;
+                    })
+                    .attr("y", function (d) {
+                        if (d === undefined) {
+                            return 0;
+                        }
+                        d.fy = (d.source.y + d.target.y)/2;
+
+                        return (d.source.y + d.target.y)/2;
                     });
 
             }
@@ -721,6 +758,7 @@ var hwMap = new PopupMap({useCluster:false});
 
     //when button clicked, run simulation
 $(document).ready(function () {
+    InitialInputs();
     $("#run-btn").click(function () {
         console.log("Start sim")
          HWSimulation();
@@ -730,25 +768,14 @@ $(document).ready(function () {
 
 
 
-function HWSimulation() {
-    //todo:need refresh map?
-    //first, ajax
-
+function InitialInputs(){
     $.ajax({
-        url: window.location.href + "/simulation",
+        url: window.location.href + "/initial",
         method: "GET",
         //  contentType: "application/json; charset=utf-8",
         success: function (data) {
-            console.log("success!")
-     console.log(data)
-            hwMap.drawAnimatedLines(data.modifyList);
-     let packed = packList(data.flowList);
-     console.log(data.flowList)
-     console.log("packed list!")
-     console.log(packed)
-
-            addTextDisplay(data)
-     var linkmap   = FileLinkMap({connections : packed}, {width: 250, height:500});
+            console.log(data)
+            addInitialInputsDisplay(data);
         },
         error: function () {
             console.log("Can not get location")
@@ -758,34 +785,191 @@ function HWSimulation() {
 }
 
 
+    const textPanel = $("#text-panel")
+    const rePanel = $("#result-panel")
+    const drawPanel = $("#draw-panel")
+
+function HWSimulation() {
+    //todo:need refresh map?
+    //first, ajax
+    rePanel.empty()
+    drawPanel.empty()
+    let data = getInputs();
+    console.log("inputs:")
+    console.log(data)
+    $.ajax({
+        url: window.location.href + "/simulation",
+        method: "POST",
+          contentType: "application/json; charset=utf-8",
+        data:JSON.stringify({plantData: data}),
+        success: function (data) {
+            console.log("success!")
+            console.log(data)
+            hwMap.clearAnimatedLines()
+            hwMap.drawAnimatedLines(data.modifyList);
+     let packed = packList(data.modifyList);
+             console.log(data.flowList)
+              console.log("packed list!")
+             console.log(packed)
+
+            addTextDisplay(data);
+     var linkmap   = FileLinkMap({connections : packed}, {width: 500, height:500});
+        },
+        error: function () {
+            console.log("Can not get location")
+        }
+    });
+
+}
+
+
+function getInputs() {
+
+
+    let sourceQuan = [], sinkQuan = [], sourceQual = [], sinkQual = [];
+    $("table#quantity tr").each(function () {
+        var row = $(this);
+        let cols = row.find("input");
+        console.log(cols)
+        if(cols.length<1){
+            return;
+        }
+        sourceQuan.push($(cols[0]).val())
+        sinkQuan.push($(cols[1]).val())
+
+    })
+
+    $("table#quality tr").each(function () {
+        var row = $(this);
+        let cols = row.find("input");
+        console.log(cols)
+        if(cols.length<1){
+            return;
+        }
+        sourceQual.push($(cols[0]).val())
+        sinkQual.push($(cols[1]).val())
+
+    })
+
+    return sourceQual.concat(sinkQual.concat(sourceQuan.concat(sinkQuan)));
+}
+
 function  packList(list) {
-    return list.map((item)=>{return {source:item[0], target:item[1]}})
+
+    return list.map((item)=>{
+        console.log(plants[item[0]-1])
+        return {source:plants[item[0]-1], target:plants[item[1]-1], value:item[2]}})
 }
 //TODO:input window
   //TODO: check networkx, maybe could just use directed graph for the graph
 
 
-const textPanel = $("#text-panel")
+
+
+
 
 function addTextDisplay(data){
-    console.log(div(textTupleNum(data.tupleNumber)))
-textPanel.append(div(textTupleNum(data.tupleNumber)))
-textPanel.append(div(textFlowNum(data.flowNumber)))
+    //console.log(p(textTupleNum(data.tupleNumber)))
 
+    rePanel.append(p(textFlowNum(data.flowNumber)))
+    rePanel.append(p(textFlowList(data.flowList)))
+    rePanel.append(p(textOpHeading()))
+
+    rePanel.append(p(textFlowList(data.modifyList)))
 }
 
-function div(text) {
+function addInitialInputsDisplay(data){
+    textPanel.append(p(textHeading()))
+    textPanel.append(table(tableContentPQuan(data.SourcePlantQuantities, data.SinkPlantQuantities), "quantity"))
+    textPanel.append(table(tableContentQual(data.SourcePlantQualities, data.SinkPlantQualities), "quality"))
+}
+function p(text) {
     return `<p>${text}</p>`;
 }
 
-function textTupleNum(tuple){
-    return `Ontology parsing begins, we find there are ${tuple} total tuples in your ontology`
+function textHeading(){
+    return 'After parsing the waste heat recovery network owl file, we find that the waste heat quantity(kW) and quality( °C) are:'
 }
+
+function textOpHeading() {
+    return "After network optimization, we find that the optimal waste heat recovery network is:"
+}
+
 
 function textFlowNum(flow) {
     return `After transportation network modelling, we find that:\n There are ${flow} total possible waste heat recovery energy flows in the network`;
 }
+    function li(content) {
+        return `<li>${content}</li>`;
+    }
+    function ul(content){
+        return `<ul>${content}</ul>`;
+    }
 
+
+function textFlowList(list){
+function template(plant1name, plant2name,value) {
+    let T =  `from plant ${plant1name} to ${plant2name}`;
+    let valueT = value?`${value} kW waste heat `:"";
+    return valueT+T;
+}
+
+
+return ul(list.map((item)=>li(template(getPlantName(item[0] - 1), getPlantName(item[1]-1), item.length>2?item[2]:null))).join(''))
+
+}
+
+function getPlantName(id) {
+    return plants[id];
+
+}
+
+function tableContentPQuan(p1quantities, p2quantities){
+
+    return [["Plant 1 waste heat quantity","Plant 2 waste heat quantity"]]
+        .concat(p1quantities.map((value, i)=> [value, p2quantities[i]]));
+}
+
+function tableContentQual(p1qualities, p2qualities){
+    return [["Plant 1 waste heat quality","Plant 2 waste heat quality"]]
+        .concat(p1qualities.map((value, i)=> [value, p2qualities[i]]));
+}
+
+function table(lists, id){
+    let tableStr = "<table id='"+id+"'>";
+    let headerRowD = lists.splice(0,1)[0];
+    let headerRow = "";
+    console.log(headerRowD)
+    headerRowD.forEach((cell => {headerRow+=th(cell)}));
+
+    tableStr+=tr(headerRow)
+
+    lists.forEach((row)=>{
+        let rowStr ="";
+        row.forEach((cell => {rowStr+=td(txtinput(cell))}));
+        tableStr+=tr(rowStr)
+    })
+
+    tableStr+="</table>";
+    console.log(tableStr)
+    return tableStr;
+    function tr(content){
+        return `<tr>${content}</tr>`;
+
+    }
+    function td(content){
+        return `<td>${content}</td>`;
+    }
+
+    function th(content){
+        return `<th>${content}</th>`;
+    }
+    function txtinput(content, id){
+        return `<input id='${id}' type='text' value='${content}'>`;
+    }
+
+
+}
 
 
 
