@@ -109,6 +109,7 @@ function PopupMap(options) {
     })();
     this.colorMap = new ColorMap();
     //bind initmap to global
+    this.animatedLines = [];
     window.initMap = this.initMap.bind(this);
 }
 PopupMap.prototype = {
@@ -204,7 +205,7 @@ PopupMap.prototype = {
         if (this.editable) {//add a submit button and a msg box
             let id = "btn" + uri;
             thead += "<button id='" + id + "' class='btn btn-default'>Submit</button>";
-            thead += "<div id='err-msg-panel-" + uri + "'></div>";
+            thead += "<p id='err-msg-panel-" + uri + "'></p>";
         }
 
         // console.log(thead)
@@ -448,10 +449,10 @@ PopupMap.prototype = {
     drawAnimatedLines : function (list) {
          list.forEach((line)=>{
 
+             console.log(line[0])
              console.log(line[1])
-             console.log(line[2])
-            console.log("Draw line: "+hwMap.coordinates[line[1]])
-            hwMap.drawAnimatedLine([hwMap.coordinates[line[1]-1]["location"], hwMap.coordinates[line[2]-1].location]);
+            console.log("Draw line: "+hwMap.coordinates[line[0]])
+            hwMap.drawAnimatedLine([hwMap.coordinates[line[0]-1]["location"], hwMap.coordinates[line[1]-1].location]);
 
         });
     },
@@ -492,7 +493,18 @@ PopupMap.prototype = {
                 ],
             map: this.googleMap
         });
+        this.animatedLines = this.animatedLines?this.animatedLines:[];
+        this.animatedLines.push(line);
         this.animateLine(line)
+    },
+
+    clearAnimatedLines: function () {
+      this.animatedLines.forEach((line)=>
+      {
+          line.setMap(null);
+      })
+
+        this.animatedLines = []
     },
     animateLine : function (line) {
         var count = 0, step = 20;

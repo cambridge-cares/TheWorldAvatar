@@ -1,21 +1,21 @@
 /**
 Utility funciton, not published on web.
- Modfied all coordinates at once in b3 owl file.
+ Modfied all coordinates at once in b3 owl file. Operate remotely thru endpoint hosted on server
  */
-const getB3C = require('./GetCoordi')
-const fileC = require('./fileConnection')
+const getB3C = require('../GetCoordi')
+const fileC = require('../fileConnection')
 const request = require('request')
 const async = require('async')
 const convertC = fileC.convertCoordinate;
-const config = require("../config")
+const config = require("../../config")
 
-getB3C(config.jurongNode, function (err, result) {
+getB3C(config.b2Node, function (err, result) {
     if(err){
         throw err;
     }
 
     console.log(result);
-    let dx = 20.789951, dy = 6.984999;
+    let dx = -7.261053249239922, dy = 7.3429537942574825;
 
     function getSample(uri, lng, lat) {
         let name = uri.split('/');
@@ -32,8 +32,8 @@ getB3C(config.jurongNode, function (err, result) {
 
 
 
-        let newX = convertedC.x + 2*dx;
-        let newY = convertedC.y + 2*dy;
+        let newX = convertedC.x + dx;
+        let newY = convertedC.y + dy;
         let deleteStrx = "DELETE WHERE {<"+uri+"#ValueOf_x_"+sname+"> <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue> ?o.}";
 
 

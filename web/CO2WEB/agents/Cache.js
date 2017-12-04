@@ -36,7 +36,7 @@ function CacheRouter(router) {
 
     /*default options for post/get function*****/
    const defaultOpts = {//default options
-        expiredTime : 36000000,
+        expiredTime : 36,
         req2args : (req)=>{return []},
         sendResult : (result, res)=>{res.json(JSON.parse(result))}
     };

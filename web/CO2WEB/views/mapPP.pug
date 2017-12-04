@@ -1,4 +1,5 @@
 extends header.pug
+
 block title
     title  World Power Plants on Google Map
 
@@ -16,10 +17,20 @@ block description
     |Source for world power plant: http://globalenergyobservatory.org
 
 block content
+div#wrapper
+    div.overlay-panel-wrapper
+        div#overlay-setting-panel.panel.panel-default
+            div.panel-heading Run
+            div.panel-body.container-fluid
+                div#setting-panel-body
+                    div#text-panel
+
 
     div#map
+
     script(src="https://code.jquery.com/jquery-2.2.0.min.js")
     script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
     script(src="/javascripts/PopUpmap.js")
     script(src="/javascripts/PPMap.js")
-    script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnIPTFH_vdwakGsRIXJMwHvAJ3DhiWlvE&callback=initMap")
+    script(async defer src="https://maps.googleapis.com/maps/api/js?k" +
+    "ey=AIzaSyDnIPTFH_vdwakGsRIXJMwHvAJ3DhiWlvE&callback=initMap")

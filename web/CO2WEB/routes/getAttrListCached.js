@@ -20,7 +20,7 @@ router.use(function(req, res, next) {
     next();
 });
 
-router = cacheRouter(router).post('/', LiteralData, {req2args, expiredTime:36000000});
+router = cacheRouter(router).post('/', LiteralData, {req2args, expiredTime:36});
 
 function req2args(req) {
 

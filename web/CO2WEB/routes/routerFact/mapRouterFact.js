@@ -10,7 +10,7 @@ var express = require('express');
 
 
 
-var mapRouterFactory = function (router, getCoordinatesData, texts, view) {
+var mapRouterFactory = function (router, getCoordinatesData, texts, view, extraData) {
     var cdataPromise = getCDataPromise();
     var cData;
 
@@ -31,8 +31,13 @@ var mapRouterFactory = function (router, getCoordinatesData, texts, view) {
     });//TODO: onReject
 
     router.get('/', function(req, res, next) {
-        res.render(view);//TODO: render with provided texts
-        //send a file
+        if(extraData){
+            res.render(view, extraData);//TODO: render with provided texts
+
+        } else {
+            res.render(view);//TODO: render with provided texts
+            //send a file
+        }
     });
 
     router.get('/coordinates', function (req, res, next) {

@@ -394,8 +394,9 @@ th {
 .overlay-panel-wrapper {
     opacity: 0.5;
     z-index: 100;
-    position: fixed;
-    width: 250px;
+    position: absolute;
+    width: 500px;
+    top: 0;
 }
 
 .overlay-panel-wrapper:hover{

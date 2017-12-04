@@ -225,7 +225,7 @@ function  outputUpdate(uris, updateQs, successCB, errorCB) {
 
 function displayMessageModal(msg) {
     $('#err-msg-modal-body').empty();
-    $('#err-msg-modal-body').append("<div>"+msg+"</div>");
+    $('#err-msg-modal-body').append("<p>"+msg+"</p>");
 
     $('#err-msg-modal').modal('show');
 

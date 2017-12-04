@@ -6,19 +6,24 @@
  */
 
 
-const runPy = require('./runPython')
+const runPy = require('./RunPython')
 const config = require('../config')
 
-function runHeatWasteNetwork(cb) {
+function runHeatWasteNetwork(plantData, cb) {
 
 
 //run the code, get results
+//TODO:　CHECK LENGTH and type of plantData
+
+
 
     const heatWasteNetworkPy = config.heatWasteScript;
     const heatWasteNode = config.heatWasteNode;
     console.log(heatWasteNode)
-    
-    runPy(heatWasteNetworkPy, [heatWasteNode], (err, result)=>{
+    //get groups of data from heatwaste network, and send it
+
+
+    runPy(heatWasteNetworkPy, plantData, (err, result)=>{
 
         if(err) {
             console.log(err)
@@ -28,15 +33,15 @@ function runHeatWasteNetwork(cb) {
         console.log( result)
 
         cb(null, result)
-    });
+
+
+    })
 
 
 
-}
 
+
+
+
+};
 module.exports = runHeatWasteNetwork
-
-
-
-
-

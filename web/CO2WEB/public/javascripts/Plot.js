@@ -96,7 +96,7 @@ Plot.prototype = {
         if(this.settings.showTitle){
             this.insertTitle(parentel, name);
         }
-        parentel.append("<div id='"+id+"'></div>");
+        parentel.append("<p id='"+id+"'></p>");
         
         let el = $("#"+this.jqSelParse(id));
         console.log(el);
