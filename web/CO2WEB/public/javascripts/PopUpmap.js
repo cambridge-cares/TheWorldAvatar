@@ -191,6 +191,7 @@ PopupMap.prototype = {
      * @returns {string}
      */
     formatContent: function (attrPairs, uri) {
+
         let thead = "<table class='table-attr'>";
         attrPairs.forEach((pair) => {
             if (this.editable) {
@@ -355,14 +356,14 @@ PopupMap.prototype = {
                             console.log("attr " + attrid + " " + value);
 
                             let copyed = getAttrPairFromName(name);
-                            if (validateInput(value, copyed.datatype)) {
+                           // if (copyed.datatype && validateInput(value, copyed.datatype)) {
                                 //=>Add this value to modificaition list
                                 copyed['oldvalue'] = copyed['value'];
                                 copyed['value'] = value;
                                 modifications[name] = copyed;
-                            } else {//=>opps, type err, inform user
-                                self.displayMsg(errMsgBox, "Wrong datatype.", "warning");
-                            }
+                            //} else {//=>opps, type err, inform user
+                            //    self.displayMsg(errMsgBox, "Wrong datatype.", "warning");
+                           // }
                         });
                         $(document).on('click', submitId, function () {
                             if(Object.keys(modifications).length < 1){//do nothing if no modific
@@ -377,7 +378,7 @@ PopupMap.prototype = {
                                 uris.push(muri);
                             }
                             console.log("sent updates: ");console.log(updateQs);console.log(uris);
-                            outputUpdate(uris, updateQs, function (data) {//success callback
+                            outputUpdate([uris, updateQs], function (data) {//success callback
                                 infowindow.close();
                             }, function () {//err callback
                                 self.displayMsg(errMsgBox, "Can not update to server", "danger")

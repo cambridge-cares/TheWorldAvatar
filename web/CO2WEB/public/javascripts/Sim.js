@@ -172,7 +172,7 @@ Sim.prototype = {
         console.log(variables)
         console.log(queryString)
         $.ajax({
-            url: "http://localhost:3000/" +this.simPath + queryString,
+            url: "http://www.theworldavatar.com:82/" +this.simPath + queryString,
 
             success: (response)=>{
                 successCB(response);
@@ -197,7 +197,7 @@ Sim.prototype = {
      */
     getSingleOutputInfo : function (item, CB) {
         $.ajax({//TODO:　CHANGE THIS IN FUTURE
-            url: "http://localhost:3000/getSpecAttr"  ,
+            url: "http://www.theworldavatar.com:82/getSpecAttr"  ,
 method:"POST",
 //TODO:　modifythis?
             data: JSON.stringify(item),
@@ -264,6 +264,9 @@ method:"POST",
 
     updateOutputMap:function (result) {
       console.log(this.outputMap);
+	  if(!result[0]|| result[0].constructor !== "array"){
+		  return;
+	  }
         result[0].forEach((datum)=>{
           if(datum.name in this.outputMap){
               Object.assign(this.outputMap[datum.name], datum);

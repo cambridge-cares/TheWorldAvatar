@@ -1144,7 +1144,7 @@ $(window).load(function () {// when web dom ready
                 node.animate({'r': orSize}, 500)
                     .css({'stroke': '#000000', 'transition': 'stroke 0.5s'})
                     .css({'fill': oriColor, 'transition': 'fill 0.5s'});
-                delete myObject[simpleName];
+                delete blinkTimerList[simpleName];
             }, 500);//on 0.5s, back to normal
         blinkTimerList[simpleName]  = mTimer;
 

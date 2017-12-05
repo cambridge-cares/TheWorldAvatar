@@ -53,7 +53,7 @@ var socket = io();
         mausimplot.displayInputInit = function(initData) {
             //TODO: add titles for plots
             console.log("initial inputs:!!!!!!!!!!")
-            console.log(initData)
+            console.log(Object.values(initData))
             //TODO: how to display fix point data? should be a sentence
             //TODO: first, determine if it is fixed=point or time-series data
 
