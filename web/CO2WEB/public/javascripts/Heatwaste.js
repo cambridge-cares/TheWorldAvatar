@@ -926,12 +926,12 @@ function getPlantName(id) {
 
 function tableContentPQuan(p1quantities, p2quantities){
 
-    return [["Plant 1 waste heat quantity","Plant 2 waste heat quantity"]]
+    return [["","Source quantity(kw)","Sink quantity(kw)"]]
         .concat(p1quantities.map((value, i)=> [value, p2quantities[i]]));
 }
 
 function tableContentQual(p1qualities, p2qualities){
-    return [["Plant 1 waste heat quality","Plant 2 waste heat quality"]]
+    return [["","Source quality(°C)","Sink quality(°C)"]]
         .concat(p1qualities.map((value, i)=> [value, p2qualities[i]]));
 }
 
@@ -944,8 +944,9 @@ function table(lists, id){
 
     tableStr+=tr(headerRow)
 
-    lists.forEach((row)=>{
+    lists.forEach((row, idx)=>{
         let rowStr ="";
+        rowStr+= td(plants[idx]);
         row.forEach((cell => {rowStr+=td(txtinput(cell))}));
         tableStr+=tr(rowStr)
     })
