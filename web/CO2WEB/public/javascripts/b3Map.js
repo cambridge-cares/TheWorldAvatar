@@ -5,16 +5,29 @@ var socket = io();
 
 socket.emit("join", JSON.stringify([{uri:"http://www.theworldavatar.com/E-301.owl", withData:true}
     ,{uri:"http://www.theworldavatar.com/R-301.owl", withData:true}
-,{uri:"http://www.theworldavatar.com/P-302.owl", withData:true}]));
+,{uri:"http://www.theworldavatar.com/P-302.owl", withData:true}
+    ,{uri:"http://www.theworldavatar.com/E-601008.owl", withData:true}
 
-var dataMap = {
-"V_molarF_3-1": 0,
- "V_Temperature_3-1":0,
-"V_molarF_3-4":0,
-"V_Temperature_3-4":0,
-"ValueOfOutletPressureOfP-302":0,
-"V_molarF_Utility_FW-301":0
-};
+
+]));
+
+var dataMaps = [
+    { url:"http://www.theworldavatar.com/Service_Node_BiodieselPlant3/DoSimulation"
+        ,dataMap:   {
+        "V_molarF_3-1": 0,
+        "V_Temperature_3-1":0,
+        "V_molarF_3-4":0,
+        "V_Temperature_3-4":0,
+        "ValueOfOutletPressureOfP-302":0,
+        "V_molarF_Utility_FW-301":0
+    }},
+
+    { url:"http://www.theworldavatar.com/Service_Node_BiodieselPlant3/DoSimulation2"
+        ,dataMap:   {
+        "V_molarF_601001":0,
+        "V_Temperature_601001":0
+    }},
+];
 //need to keep a copy of initial, data
 socket.on('initial', function (idata) {
 //extract data we need by name
@@ -29,9 +42,12 @@ socket.on('update', function (udata) {
 
     console.log("get update event");
     console.log(udata.data);
-   if(updateDataMap(udata.data)){
-       console.log(dataMap);
-       SendSimulationQuery(dataMap);
+
+    let modifs = updateDataMap(udata.data);
+   if(Object.keys(modifs).length > 0){
+       Object.keys(modifs).forEach(url=>{
+           SendSimulationQuery(url, modifs[url]);
+       });
    }
 //TODO: check update event
     //on update event, ajax to simulation service
@@ -45,18 +61,23 @@ socket.on('update', function (udata) {
  * @returns {boolean} if the data has any change
  */
 function updateDataMap(newData) {
-    let modifiedFlag = false;
+    let modifiedFlag = {};
     for(let dataP of newData){
-        if(dataP&& dataP.name && dataP.name in dataMap && dataMap[dataP.name]!==dataP.value){
-            dataMap[dataP.name] = dataP.value;
-            modifiedFlag = true;
+
+        for(let sim of dataMaps){
+            let dataMap = sim.dataMap;
+            if(dataP&& dataP.name && dataP.name in dataMap && dataMap[dataP.name]!==dataP.value){
+                dataMap[dataP.name] = dataP.value;
+                modifiedFlag[dataMap.url] = dataMap;
+            }
         }
+
     }
     return modifiedFlag
 }
 
-
-function SendSimulationQuery(variables) {
+//"http://www.theworldavatar.com/Service_Node_BiodieselPlant3/DoSimulation"
+function SendSimulationQuery(url, variables) {
 
     var queryString = "?Input=";
     for (var i = 0; i < variables.length; i++) {
@@ -69,7 +90,7 @@ function SendSimulationQuery(variables) {
     }
 
         $.ajax({
-            url: "http://www.theworldavatar.com/Service_Node_BiodieselPlant3/DoSimulation" + queryString,
+            url:   url + queryString,
 
             success: function(response) {
 
@@ -126,7 +147,11 @@ var outputMap = {
         ,"ValueOfHeatDutyOfR-302":{uri : "http://www.jparksimulator.com/R-302.owl", name:"ValueOfHeatDutyOfR-302"}
     ,"V_Angle_LoadPoint_R-302":{uri : "http://www.theworldavatar.com/R-302load.owl", name:"V_Angle_LoadPoint_R-602002"}
     ,"V_ActualVoltage_LoadPoint_R-302":{uri : "http://www.theworldavatar.com/R-302load.owl", name:"V_ActualVoltage_LoadPoint_R-602002"}
-
+    ,"V_molarF_601039":{uri : "http://www.theworldavatar.com/T-102.owl", name:"V_molarF_601039"}
+    ,"ValueOfHeatDutyOfE-601001":{uri : "http://www.theworldavatar.com/E-601001.owl", name:"ValueOfHeatDutyOfE-601001"}
+    ,"ValueOfHeatDutyOfE-601002":{uri : "http://www.theworldavatar.com/E-601002.owl", name:"ValueOfHeatDutyOfE-601002"}
+    ,"ValueOfHeatDutyOfE-601003":{uri : "http://www.theworldavatar.com/E-601003.owl", name:"ValueOfHeatDutyOfE-601003"}
+    ,"ValueOfHeatDutyOfE-601004":{uri : "http://www.theworldavatar.com/E-601004.owl", name:"ValueOfHeatDutyOfE-601004"}
 };
 
 
