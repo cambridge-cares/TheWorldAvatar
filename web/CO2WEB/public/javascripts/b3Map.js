@@ -7,6 +7,7 @@ socket.emit("join", JSON.stringify([{uri:"http://www.theworldavatar.com/E-301.ow
     ,{uri:"http://www.theworldavatar.com/R-301.owl", withData:true}
 ,{uri:"http://www.theworldavatar.com/T-601002.owl", withData:true}
 ,{uri:"http://www.theworldavatar.com/R-302.owl", withData:true}
+,{uri:"http://www.theworldavatar.com/P-302.owl", withData:true}
 
     ,{uri:"http://www.theworldavatar.com/E-601008.owl", withData:true}
     ,{uri:"http://www.theworldavatar.com/E-601001.owl", withData:true}
@@ -17,23 +18,32 @@ socket.emit("join", JSON.stringify([{uri:"http://www.theworldavatar.com/E-301.ow
 
 ]));
 
+let b3dm  = [
+        ["V_molarF_3-1", 0],
+        ["V_Temperature_3-1",0],
+        ["V_molarF_3-4",0],
+        ["V_Temperature_3-4",0],
+        ["ValueOfOutletPressureOfP-302",0],
+        ["V_molarF_Utility_FW-301",0]
+    ]
+
+
+let b2dm  =[
+        ["V_molarF_601001",0],
+        ["V_Temperature_601001",0]
+]     
+
 var dataMaps = [
     { url:"http://www.theworldavatar.com/Service_Node_BiodieselPlant3/DoSimulation"
-        ,dataMap:   {
-        "V_molarF_3-1": 0,
-        "V_Temperature_3-1":0,
-        "V_molarF_3-4":0,
-        "V_Temperature_3-4":0,
-        "ValueOfOutletPressureOfP-302":0,
-        "V_molarF_Utility_FW-301":0
-    }},
+        ,dataMap:   new Map(b3dm)}
 
-    { url:"http://www.theworldavatar.com/Service_Node_BiodieselPlant3/DoSimulation2"
-        ,dataMap:   {
+    ,{ url:"http://www.theworldavatar.com/Service_Node_BiodieselPlant3/DoSimulation2"
+        ,dataMap:  new Map(b2dm) }
+];
+/**
         "V_molarF_601001":0,
         "V_Temperature_601001":0
-    }},
-];
+        **/
 //need to keep a copy of initial, data
 socket.on('initial', function (idata) {
 //extract data we need by name
@@ -66,9 +76,11 @@ socket.on('update', function (udata) {
                     })
 
     let modifs = updateDataMap(udata.data);
+    console.log(modifs)   
    if(Object.keys(modifs).length > 0){
        Object.keys(modifs).forEach(url=>{
-           SendSimulationQuery(url, modifs[url]);
+		   console.log(modifs[url])
+           SendSimulationQuery(url, Array.from(modifs[url].values()));
        });
    }
 //TODO: check update event
@@ -88,8 +100,8 @@ function updateDataMap(newData) {
 
         for(let sim of dataMaps){
             let dataMap = sim.dataMap;
-            if(dataP&& dataP.name && dataP.name in dataMap && dataMap[dataP.name]!==dataP.value){
-                dataMap[dataP.name] = dataP.value;
+            if(dataP&& dataP.name  && dataMap.has(dataP.name) && dataMap.get(dataP.name)!==dataP.value){
+                dataMap.set(dataP.name, dataP.value);
                 modifiedFlag[sim.url] = dataMap;
             }
         }
@@ -101,6 +113,7 @@ function updateDataMap(newData) {
 //"http://www.theworldavatar.com/Service_Node_BiodieselPlant3/DoSimulation"
 function SendSimulationQuery(murl, variables) {
 
+
     var queryString = "?Input=";
     for (var i = 0; i < variables.length; i++) {
         if (i == 0) {
@@ -111,6 +124,7 @@ function SendSimulationQuery(murl, variables) {
         }
     }
 
+	console.log(queryString);
         $.ajax({
             url:   murl + queryString,
 
@@ -187,19 +201,24 @@ var outputMap = {
  */
 function processResult(resultStr) {
     let lines = resultStr.split('#');
+                let attrObjs = [] 
+
     lines.forEach((line)=>{
         let nvpair =line.split('$');
         if (nvpair.length < 2){
             return;
         }
+
         let name = nvpair[0].trim(), value = nvpair[1];
         if(name in outputMap){
             outputMap[name]["value"] = value;
             outputMap[name]["p"] = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue";
             outputMap[name]["datatype"] = "float";
+         attrObjs.push(outputMap[name])
         }
     })
-    let attrObjs =  Object.values(outputMap).filter((attr)=>{return attr.value!==null||attr.value!==undefined});
+
+    //Object.values(outputMap).filter((attr)=>{return attr.value!==null||attr.value!==undefined});
     console.log("updates: ");
     console.log(attrObjs);
     let uris =[];
