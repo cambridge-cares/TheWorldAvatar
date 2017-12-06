@@ -60,8 +60,9 @@ function LiteralData(callback, nodeloc, opts) {
             callback(err);
             return;
         }
+        let resultsB
         if(!result.eq){
-            let resultsB = packTimeseriesDataIfAny(result.nvpairs);
+            resultsB = packTimeseriesDataIfAny(result.nvpairs);
             if(opts&&opts.specificNames instanceof  Array && opts.specificNames.length >0){
                 console.log("names specified")
                 console.log(resultsB)

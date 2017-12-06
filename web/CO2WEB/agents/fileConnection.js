@@ -193,6 +193,8 @@ owlProcessor.getChildrenRecur = function(options, callback) {
                }
            }
 
+           logger.debug("current node map: ")
+           logger.debug(nodeMap)
            children = children.filter(function (childUri) {
                return !(nodeMap.has(childUri));
            });
@@ -267,7 +269,7 @@ owlProcessor.getChildrenRecur = function(options, callback) {
 
                    if (response.statusCode === 200) {//request success
                        //logger.debug("req: " + iri);
-                        console.log("!!!!!request child:"+iri);
+                       logger.debug("!!!!!request child:"+iri);
                        loopChildrenRecur(body, level+1, callback);
                        return;
                    }

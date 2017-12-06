@@ -65,7 +65,7 @@ socket.on('update', function (udata) {
 
                     [uri1, uri2].forEach((uri)=>{
                         console.log(uri);
-                        console.log(b3map.getMarker(uri));
+                        //console.log(b3map.getMarker(uri));
                         let mmarker = b3map.getMarker(uri);
 
                         if(mmarker){

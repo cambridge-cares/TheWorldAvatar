@@ -44,6 +44,7 @@ var ppalt = require("./routes/mapPPAlt")
 
 var literalData = require('./agents/GetLiteralData');
 var BMSWatcher = require('./agents/setBMSWatcher');
+var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
 
 var app = express();
 var port = config.port;
