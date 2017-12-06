@@ -55,7 +55,7 @@ socket.on('update', function (udata) {
 
                     [uri1, uri2].forEach((uri)=>{
                         console.log(uri);
-                        console.log(b3map.getMarker(uri));
+                        //console.log(b3map.getMarker(uri));
                         let mmarker = b3map.getMarker(uri);
 
                         if(mmarker){
@@ -66,8 +66,10 @@ socket.on('update', function (udata) {
                     })
 
     let modifs = updateDataMap(udata.data);
+     console.log(modifs)
    if(Object.keys(modifs).length > 0){
        Object.keys(modifs).forEach(url=>{
+           console.log(modifs[url])
            SendSimulationQuery(url, modifs[url]);
        });
    }

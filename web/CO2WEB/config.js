@@ -12,11 +12,12 @@ var config = {};
 
 
 
-//configDevelop();
-configDeploy();
+configDevelop();
+//configDeploy();
 config.worldNode = path.join(config.root , "TheWorld.owl");
 config.jurongNode = path.join(config.root ,"JurongIsland.owl");
 config.b3Node = path.join(config.root , "BiodieselPlant3.owl");
+config.ontoENNode = path.join(config.root, "OntoEN/ElectricalNetwork.owl");
 
 //config.b2Node = path.join(config.root , "BiodieselPlant2.owl");
 config.bmsFolder = path.join(config.root , "BMS");

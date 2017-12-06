@@ -15,6 +15,11 @@ function PopupMap(options) {
      * @type {{load: {path: string, scale: number}, solarcellfarm: {path: string, scale: number}, battery: {path: string, scale: number}, dieselgenerators: {path: string, scale: number}, marineturbinegenerators: {path: string, scale: number}, windturbinegenerators: {path: string, scale: number}, rectifier: {path: string, scale: number}, powerinverter: {path: string, scale: number}, transformer: {path: string, scale: number}, c: {path: string, scale: number}, v: {path: string, scale: number}, p: {path: string, scale: number}, va: {path: string, scale: number}, r: {path: string, scale: number}, e: {path: string, scale: number}, t: {path: string, scale: number}, s: {path: string, scale: number}, m: {path: string, scale: number}}}
      */
     var deviceMapRaw = {
+
+        "nuclear": {url:"/images/radiation.png",
+        scale: 0.3
+        },
+
         "load": {
             "path": "M -2 -151 L -2 -151 L 148 -1 L -2 149 L -152 -1 Z"
             ,"scale": 0.3
@@ -142,14 +147,10 @@ PopupMap.prototype = {
             url: self.curPath + "/coordinates",
             method: "GET",
             //  contentType: "application/json; charset=utf-8",
+            //pps:[{id, type, location.lat/lng}]
             success: function (pps) {
-                //Update display
-                self.coordinates = pps;
-                console.log(pps);
-                self.setMarkers(pps);
-                if (self.useCluster) {
-                    self.setCluster();
-                }
+
+                self.updateMarkers(pps)
                 // if(self.animatedLines){
                 //      console.log(self.animatedLines)
                 //      self.drawAnimatedLines(self.animatedLines);
@@ -160,6 +161,20 @@ PopupMap.prototype = {
             }
         });
     },
+
+
+    updateMarkers : function (pps, definedPopUpAttrPair) {
+        var self = this;
+        self.clearMarkers();
+        //Update display
+        self.coordinates = pps;
+        console.log(pps);
+        self.setMarkers(pps, definedPopUpAttrPair);
+        if (self.useCluster) {
+            self.setCluster();
+        }
+    },
+
 
     /*marker with popup**/
     /**
@@ -217,9 +232,12 @@ PopupMap.prototype = {
      * Set markers and bind event for each marker
      * @param pps
      */
-    setMarkers: function (pps) {
+    setMarkers: function (pps, attrPairs) {
         var self = this;
         self.markers = {};
+        if(!pps || pps.constructor!== Array){
+            return;
+        }
          pps.forEach(function (pp) {
             let muri = pp.uri;
             //check type to determine what icon to use
@@ -227,7 +245,9 @@ PopupMap.prototype = {
 
             console.log("drawing type: " + icon)
              console.log("Drawing for "+muri+" at N"+pp.location.lat)
-            let marker = new google.maps.Marker({
+             console.log("Drawing for "+muri+" at E"+pp.location.lng)
+
+             let marker = new google.maps.Marker({
                 position: {lat: pp.location.lat, lng: pp.location.lng},
                 icon: icon,
                 map: self.googleMap
@@ -280,7 +300,6 @@ PopupMap.prototype = {
                     if(stepCount >=step -1){
                         stepper = -1;
                     }
-                    console.log(stepCount);
                     if(stepCount < 0){
                         console.log("stop animation")
                         delete marker.animationOngoing;
@@ -297,7 +316,11 @@ PopupMap.prototype = {
 
                 marker.timer = setTimeout(function () {
                     if (!marker.sglclickPrevent) {
-                        self.openEditablePopup(muri, marker);
+                        if(attrPairs){
+                            self.formatPopup(attrPairs[muri], muri, marker)
+                        } else {
+                            self.openEditablePopupNet(muri, marker);
+                        }
                     }
                     marker.sglclickPrevent = false;
                 }, 200);
@@ -316,6 +339,17 @@ PopupMap.prototype = {
             self.markers[muri] = marker;
         });
     },
+
+    clearMarkers : function () {
+        if(!self.markers || Object.keys(self.markers).length < 1){
+            return;
+        }
+        for(marker in Object.values(self.markers)){
+            marker.setMap(null)
+        }
+        self.markers = {}
+
+    },
     getMarker: function (key) {
         return key in this.markers? this.markers[key] : null ;
     },
@@ -324,7 +358,7 @@ PopupMap.prototype = {
      * @param muri
      * @param marker
      */
-    openEditablePopup: function(muri, marker) {
+    openEditablePopupNet: function(muri, marker) {
         var self = this;
         $.ajax({
             url: window.location.origin + "/getAttrList",
@@ -332,85 +366,90 @@ PopupMap.prototype = {
             data: JSON.stringify({uri: muri}),
             contentType: "application/json; charset=utf-8",
             success: function (attrPairs) {
-                var infowindow = new google.maps.InfoWindow({
-                    content: self.formatContent(attrPairs, muri)
-                });
-                if (self.editable) {//only define click handler when this map is editable
-                    google.maps.event.addListener(infowindow, 'domready', function () {
-                        let submitId = "#" + jq("btn" + muri);
-                        let errMsgBox = $("#" + jq("err-msg-panel-" + muri));
-
-                        let modifications = {};
-
-                        $(document).on('input', 'input', function () {//when user makes input
-                            console.log("input changed");
-                            self.cleanMsg(errMsgBox);
-                            let el = $(this), value = el.val();
-                            if (value === "") {
-                                return;
-                            }
-                            //validate this value
-                            let attrid = el.attr("id");
-                            let nameArr = attrid.split('#');
-                            let name = nameArr[nameArr.length - 1];
-                            console.log("attr " + attrid + " " + value);
-
-                            let copyed = getAttrPairFromName(name);
-                           // if (copyed.datatype && validateInput(value, copyed.datatype)) {
-                                //=>Add this value to modificaition list
-                                copyed['oldvalue'] = copyed['value'];
-                                copyed['value'] = value;
-                                modifications[name] = copyed;
-                            //} else {//=>opps, type err, inform user
-                            //    self.displayMsg(errMsgBox, "Wrong datatype.", "warning");
-                           // }
-                        });
-                        $(document).on('click', submitId, function () {
-                            if(Object.keys(modifications).length < 1){//do nothing if no modific
-                                return;
-                            }
-                            console.log(modifications);
-                            console.log("submit btn clicked")
-                            let updateQs = constructUpdate(muri, Object.values(modifications));
-                            //send ajax to update
-                            let uris = [];
-                            for (let i = 0; i < updateQs.length; i++) {
-                                uris.push(muri);
-                            }
-                            console.log("sent updates: ");console.log(updateQs);console.log(uris);
-                            outputUpdate([uris, updateQs], function (data) {//success callback
-                                infowindow.close();
-                            }, function () {//err callback
-                                self.displayMsg(errMsgBox, "Can not update to server", "danger")
-
-                            });
-                        });
-                    });
-                }
-
-                infowindow.open(self.googleMap, marker);
-
-                function getAttrPairFromName(name) {
-                    let searched = attrPairs.filter((item) => {
-                        return item.name === name;
-                    });
-                    return searched.length > 0 ? searched[0] : null;
-                }
-                function validateInput(newValue, type) {
-                    switch (type) {
-                        case "string":
-                            return typeof  newValue === "string";
-                        case "decimal":
-                        case "float":
-                        case "integer":
-                            return !isNaN(parseFloat(newValue)) && isFinite(newValue);
-                        default:
-                            console.log("type " + type + " is unknown");
-                    }
-                }
-
+                self.formatPopup(attrPairs, muri, marker);
             }
         });
+    },
+
+
+    formatPopup : function (attrPairs, muri, marker) {
+        const self = this;
+        var infowindow = new google.maps.InfoWindow({
+            content: self.formatContent(attrPairs, muri)
+        });
+        if (self.editable) {//only define click handler when this map is editable
+            google.maps.event.addListener(infowindow, 'domready', function () {
+                let submitId = "#" + jq("btn" + muri);
+                let errMsgBox = $("#" + jq("err-msg-panel-" + muri));
+
+                let modifications = {};
+
+                $(document).on('input', 'input', function () {//when user makes input
+                    console.log("input changed");
+                    self.cleanMsg(errMsgBox);
+                    let el = $(this), value = el.val();
+                    if (value === "") {
+                        return;
+                    }
+                    //validate this value
+                    let attrid = el.attr("id");
+                    let nameArr = attrid.split('#');
+                    let name = nameArr[nameArr.length - 1];
+                    console.log("attr " + attrid + " " + value);
+
+                    let copyed = getAttrPairFromName(name);
+                    // if (copyed.datatype && validateInput(value, copyed.datatype)) {
+                    //=>Add this value to modificaition list
+                    copyed['oldvalue'] = copyed['value'];
+                    copyed['value'] = value;
+                    modifications[name] = copyed;
+                    //} else {//=>opps, type err, inform user
+                    //    self.displayMsg(errMsgBox, "Wrong datatype.", "warning");
+                    // }
+                });
+                $(document).on('click', submitId, function () {
+                    if(Object.keys(modifications).length < 1){//do nothing if no modific
+                        return;
+                    }
+                    console.log(modifications);
+                    console.log("submit btn clicked")
+                    let updateQs = constructUpdate(muri, Object.values(modifications));
+                    //send ajax to update
+                    let uris = [];
+                    for (let i = 0; i < updateQs.length; i++) {
+                        uris.push(muri);
+                    }
+                    console.log("sent updates: ");console.log(updateQs);console.log(uris);
+                    outputUpdate([uris, updateQs], function (data) {//success callback
+                        infowindow.close();
+                    }, function () {//err callback
+                        self.displayMsg(errMsgBox, "Can not update to server", "danger")
+
+                    });
+                });
+            });
+        }
+
+        infowindow.open(self.googleMap, marker);
+
+        function getAttrPairFromName(name) {
+            let searched = attrPairs.filter((item) => {
+                return item.name === name;
+            });
+            return searched.length > 0 ? searched[0] : null;
+        }
+        function validateInput(newValue, type) {
+            switch (type) {
+                case "string":
+                    return typeof  newValue === "string";
+                case "decimal":
+                case "float":
+                case "integer":
+                    return !isNaN(parseFloat(newValue)) && isFinite(newValue);
+                default:
+                    console.log("type " + type + " is unknown");
+            }
+        }
     },
 
     /*marker Cluster**/

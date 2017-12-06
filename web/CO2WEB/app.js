@@ -42,6 +42,7 @@ var ppalt = require("./routes/mapPPAlt")
 
 var literalData = require('./agents/GetLiteralData');
 var BMSWatcher = require('./agents/setBMSWatcher');
+var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
 
 var app = express();
 var port = config.port;
@@ -73,6 +74,7 @@ app.use('/PowerPlantCO2',  PPCO2);
 app.use('/semakaumap', semakauMap);
 app.use('/ppalt', ppalt);
 app.use('/JurongIsland.owl/showCO2', showCO2);
+app.use('/visualizeOntoEN',visualizeOntoEN);
 
 app.use("/bmsplot", bmsplot);
 

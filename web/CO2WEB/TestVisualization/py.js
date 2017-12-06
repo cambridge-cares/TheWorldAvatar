@@ -1,12 +1,12 @@
-var runHeatWasteNetwork = require("../agents/RunHeatWasteNetwork")
+let A = new Set()
 
-runHeatWasteNetwork((err, result)=>{
-    if(err) {
-        console.log(err)
-        next(err)
-        return;
-    }
-    console.log(result)
+console.log(A)
 
-    res.json(result);
-})
+A.add(null)
+
+console.log(A)
+
+
+A.add(null)
+
+console.log(A.has(null))
