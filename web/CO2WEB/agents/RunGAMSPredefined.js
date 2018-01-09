@@ -13,6 +13,14 @@ console.log("id: "+id)
        case 0:
            filename = "./agents/results.csv"
            break;
+		   
+	   case 1:
+           filename = "./agents/results2.csv"
+           break;   
+
+     case 2:
+          filename =   "./agents/results3.csv" 
+           break;		  
        default:
            throw new Error("non-existing predefined resultset id");
    }
