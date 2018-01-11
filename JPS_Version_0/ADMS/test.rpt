@@ -1,0 +1,153 @@
+ ____________________________________________________________________________
+ ____________________________________________________________________________
+ ______________________________ ADMS 5.2 (5.2) ______________________________
+ _________________ Atmospheric Dispersion Modelling System __________________
+ ____________________________________________________________________________
+ ___ Copyright (C) 2016 Cambridge Environmental Research Consultants Ltd. ___
+ ____________________________________________________________________________
+ _______________ This run was made at 14:08 on the 17/11/2017 _______________
+ ____________________________________________________________________________
+ _______________________________ Report File ________________________________
+ ____________________________________________________________________________
+ 
+ 
+ 1. SETUP INFORMATION:
+ 
+ Site name   :  Test11100
+ Project name:  Project110
+ 
+ Input file pathname            : test.APL
+ Command-line options           : /e2 /ADMS
+ 
+ Model information:
+  - Pathname C:\Program Files (x86)\CERC\ADMS 5\ADMSModel.exe
+  - Version 5.2.0.0
+  - Build number 2675
+  - Release date November 2016
+ 
+ 
+ 2. MODEL OPTIONS:
+ 
+ Wet deposition
+  - Sources emitting CO2 will be modelled with pH-limited wet deposition
+  - All other source / pollutant combinations will be modelled using a standard washout coefficient
+ 
+ 
+ 3. SOURCE OPTIONS:
+ 
+ Your run includes the following sources:
+ 
+ 7 point sources
+  - 'Source001'
+  - 'Source002'
+  - 'Source003'
+  - 'Source004'
+  - 'Source005'
+  - 'Source006'
+  - 'Source007'
+ 
+ POINT SOURCE GEOMETRY:
+ 
+          Source name, Height(m),                 Location, Diameter(m),
+            Source001,     60.00,     (358243.6, 141548.0),        2.50,
+            Source002,     60.00,     (358376.9, 141418.9),        2.50,
+            Source003,     60.00,     (358537.8, 141260.2),        2.50,
+            Source004,     50.00,     (355675.1, 138654.7),        2.50,
+            Source005,     40.00,     (352534.0, 141669.9),        2.50,
+            Source006,     40.00,     (358065.5, 142002.3),        2.50,
+            Source007,     40.00,     (358084.7, 141938.8),        2.50,
+ 
+ SOURCE CHARACTERISTICS:
+ 
+          Source name, Exit velocity(m/s),  Temp(degC), Actual/NTP, Mol. mass(g), Cp(J/degC/Kg),
+            Source001,             12.000,     140.000,     Actual,       28.966,       1012.00,
+            Source002,             12.000,     140.000,     Actual,       28.966,       1012.00,
+            Source003,             12.000,     140.000,     Actual,       28.966,       1012.00,
+            Source004,             12.000,     140.000,     Actual,       28.966,       1012.00,
+            Source005,             12.000,     140.000,     Actual,       28.966,       1012.00,
+            Source006,             12.000,     140.000,     Actual,       28.966,       1012.00,
+            Source007,             12.000,     140.000,     Actual,       28.966,       1012.00,
+ 
+ EMISSION DATA:
+ 
+          Source name,     Units,        CO2,
+            Source001,       g/s,  37163.422,
+            Source002,       g/s,  53866.199,
+            Source003,       g/s,  80914.711,
+            Source004,       g/s, 109805.492,
+            Source005,       g/s, 121287.047,
+            Source006,       g/s,  23843.340,
+            Source007,       g/s,  43843.230,
+ 
+ SUMMARY OF OUTPUT GROUP CONTENTS:
+ 
+           Group name,          Source name,
+        <All sources>,            Source001,
+                     ,            Source002,
+                     ,            Source003,
+                     ,            Source004,
+                     ,            Source005,
+                     ,            Source006,
+                     ,            Source007,
+             Group001,            Source001,
+                     ,            Source002,
+                     ,            Source003,
+                     ,            Source004,
+                     ,            Source005,
+                     ,            Source006,
+                     ,            Source007,
+ 
+ 
+ 4. METEOROLOGY:
+ 
+ Site data:
+  - Latitude (degrees)                        =      1.00
+  - Dispersion site:
+     > Surface roughness (m)                  =       .500
+        ~ Using model default Minimum Monin-Obukhov length (m)
+        ~ Surface albedo                      =       .230 (Model default)
+        ~ Priestley-Taylor parameter          =      1.000 (Model default)
+        ~ Precipitation at dispersion site same as at met site
+  - Meteorological measurement site:
+     > Surface roughness same as dispersion site
+        ~ Minimum Monin-Obukhov length same as at dispersion site
+        ~ Surface albedo same as at dispersion site
+        ~ Priestley-Taylor parameter same as at dispersion site
+ 
+ Meteorological data:
+  - From file C:\TOMCAT\webapps\ROOT\ADMSTEST\test.met
+  - Non-sequential met data
+  - Height of recorded wind (m)               =     10.0
+  - Met lines with wind speed at 10m less than .75m/s are not modelled
+ 
+ 
+ 5. BACKGROUND DATA:
+ 
+ 
+ 
+ 6. GRID OPTIONS:
+ 
+ Cartesian co-ordinate system
+ Gridded output
+  - Regular spacing
+  - 201x134
+  - South-West corner at (348000.0, 134000.0)
+  - North-East corner at (375000.0, 151955.0)
+  - Number of heights                         =      1
+  - Minimum height(m)                         =    100.0
+  - Maximum height(m)                         =    100.0
+ 
+ 
+ 7. OUTPUT OPTIONS:
+ 
+ Groups modelled
+  - '<All sources>'
+  - 'Group001'
+ 
+ POLLUTANT OUTPUT DATA:
+ 
+            Pollutant,                                  Statistic, Condition, Percentiles, Exceedences,
+                  CO2,    Short-term 1-hourly non-rolling (ug/m3),      None,         ---,         ---,
+ 
+ 
+ ____________________________ End of Report File ____________________________

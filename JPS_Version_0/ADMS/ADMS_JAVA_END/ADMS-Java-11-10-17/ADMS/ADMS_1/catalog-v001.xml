@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <group id="Folder Repository, directory=, recursive=true, Auto-Update=true, version=2" prefer="public" xml:base="">
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://protege.stanford.edu/plugins/owl/OWLProfiles.owl" uri="Protege%20library/edu.stanford.smi.protegex.owl/OWLProfiles.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://protege.stanford.edu/plugins/owl/doap.rdf" uri="Protege%20library/edu.stanford.smi.protegex.owl/doap.rdf"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://protege.stanford.edu/plugins/owl/protege" uri="Protege%20library/edu.stanford.smi.protegex.owl/protege.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl" uri="Protege%20library/edu.stanford.smi.protegex.owl/sqwrl.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://swrl.stanford.edu/ontologies/3.3/swrla.owl" uri="Protege%20library/edu.stanford.smi.protegex.owl/swrla.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl" uri="Protege%20library/edu.stanford.smi.protegex.owl/abox.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://swrl.stanford.edu/ontologies/built-ins/3.3/query.owl" uri="Protege%20library/edu.stanford.smi.protegex.owl/query.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://swrl.stanford.edu/ontologies/built-ins/3.3/swrlx.owl" uri="Protege%20library/edu.stanford.smi.protegex.owl/swrlx.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl" uri="Protege%20library/edu.stanford.smi.protegex.owl/tbox.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl" uri="Protege%20library/edu.stanford.smi.protegex.owl/temporal.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://swrl.stanford.edu/ontologies/built-ins/3.4/ddm.owl" uri="Protege%20library/edu.stanford.smi.protegex.owl/ddm.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://swrl.stanford.edu/ontologies/built-ins/3.4/rdfb.owl" uri="Protege%20library/edu.stanford.smi.protegex.owl/rdfb.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://swrl.stanford.edu/ontologies/built-ins/3.4/ss.owl" uri="Protege%20library/edu.stanford.smi.protegex.owl/ss.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://swrl.stanford.edu/ontologies/built-ins/3.4/swrli.owl" uri="Protege%20library/edu.stanford.smi.protegex.owl/swrli.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://swrl.stanford.edu/ontologies/built-ins/3.4/swrlm.owl" uri="Protege%20library/edu.stanford.smi.protegex.owl/swrlm.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://swrl.stanford.edu/ontologies/built-ins/3.4/swrlxml.owl" uri="Protege%20library/edu.stanford.smi.protegex.owl/SWRLXML.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://www.owl-ontologies.com/2005/08/07/xsp.owl" uri="Protege%20library/edu.stanford.smi.protegex.owl/xsp.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://www.owl-ontologies.com/assert.owl" uri="Protege%20library/edu.stanford.smi.protegex.owl/assert.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://www.owl-ontologies.com/forms/absolute.owl" uri="Protege%20library/edu.stanford.smi.protegex.owl/absolute.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://www.owl-ontologies.com/forms/forms.owl" uri="Protege%20library/edu.stanford.smi.protegex.owl/forms.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://www.owl-ontologies.com/forms/protege.owl" uri="Protege%20library/edu.stanford.smi.protegex.owl/protegeForms.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://www.theworldavatar.com/OntoADM2.owl#" uri="OntoADM2_KB.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://www.w3.org/2003/11/swrl" uri="Protege%20library/edu.stanford.smi.protegex.owl/swrl.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1502767550749" name="http://www.w3.org/2003/11/swrlb" uri="Protege%20library/edu.stanford.smi.protegex.owl/swrlb.owl"/>
+    </group>
+</catalog>
