@@ -1,0 +1,1300 @@
+{"Devices":
+  [
+
+    {
+      "type": "OuterWall",
+      "name":"OuterWall001",
+      "dimensions":[260.5,20,2],
+      "positions":[18,-0.5,95.2]
+    },
+    {
+      "type": "OuterWall",
+      "name":"OuterWall002",
+      "dimensions":[1,20,78.1],
+      "positions":[18,-0.5,18]
+    },
+
+
+    {
+      "type": "OuterWall",
+      "name":"OuterWall003",
+      "dimensions":[1,20,58.9],
+      "positions":[298,-0.5,41]
+    },
+    {
+      "type": "OuterWall",
+      "name":"OuterWall004",
+      "dimensions":[20,20,2],
+      "positions":[279,-0.5,99.2]
+    },
+    {
+      "type": "OuterWall",
+      "name":"OuterWall005",
+      "dimensions":[1,20,5],
+      "positions":[278,-0.5,96.2]
+    },
+
+    {
+      "type": "OuterWall",
+      "name":"OuterWall006",
+      "dimensions":[1,20,55],
+      "positions":[279,-0.5,18.8]
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall001",
+      "dimensions":[25.3,10,0.1],
+      "positions":[18,-0.5,32.4]
+    },
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall002",
+      "dimensions":[25.3,10,0.1],
+      "positions":[18,-0.5,47.4]
+    },
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall003",
+      "dimensions":[25.3,10,0.1],
+      "positions":[18,-0.5,59.6]
+    },
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall004",
+      "dimensions":[25.3,10,0.1],
+      "positions":[18,-0.5,73.8]
+    },
+
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall005",
+      "dimensions":[25.3,10,0.1],
+      "positions":[18,-0.5,18]
+    },
+
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall006",
+      "dimensions":[0.1,10,9],
+      "positions":[43.3,-0.5,18]
+    },
+
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall007",
+      "dimensions":[0.1,10,5],
+      "positions":[43.3,-0.5,32.4]
+    },
+
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall008",
+      "dimensions":[0.1,10,5],
+      "positions":[43.3,-0.5,47.4]
+    },
+
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall009",
+      "dimensions":[0.1,10,5],
+      "positions":[43.3,-0.5,59.6]
+    },
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall010",
+      "dimensions":[0.1,10,26.3],
+      "positions":[173.9,-0.5,18.8]
+    },
+
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall011",
+      "dimensions":[0.1,10,77.4],
+      "positions":[185,-0.5,18.8]
+    },
+
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall012",
+      "dimensions":[11.2,10,0.1],
+      "positions":[173.9,-0.5,45.1]
+    },
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall013",
+      "dimensions":[0.1,10,29.3],
+      "positions":[199,-0.5,18.8]
+    },
+
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall014",
+      "dimensions":[55.7,10,0.1],
+      "positions":[199,-0.5,48.1]
+    },
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall015",
+      "dimensions":[11.3,10,0.1],
+      "positions":[173.9,-0.5,45.1]
+    },
+
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall016",
+      "dimensions":[15,10,0.1],
+      "positions":[185,-0.5,48.1]
+    },
+
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall017",
+      "dimensions":[15.7,10,0.1],
+      "positions":[265,-0.5,48.1]
+    },
+
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall018",
+      "dimensions":[50,10,0.1],
+      "positions":[135,-0.5,76.6]
+    },
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall019",
+      "dimensions":[15.7,10,0.1],
+      "positions":[265,-0.5,60.1]
+    },
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall020",
+      "dimensions":[15.7,10,0.1],
+      "positions":[265,-0.5,74.1]
+    },
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall021",
+      "dimensions":[0.1,10,8],
+      "positions":[265,-0.5,48.1]
+    },
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall022",
+      "dimensions":[0.1,10,8],
+      "positions":[265,-0.5,66.5]
+    },
+
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall023",
+      "dimensions":[0.1,10,12],
+      "positions":[43.3,-0.5,82.6]
+    },
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall024",
+      "dimensions":[0.1,10,3.8],
+      "positions":[43.3,-0.5,70]
+    },
+
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall025",
+      "dimensions":[0.1,10,5],
+      "positions":[43.3,-0.5,42.4]
+    },
+
+
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall026",
+      "dimensions":[0.1,10,3.8],
+      "positions":[43.3,-0.5,56]
+    },
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall027",
+      "dimensions":[0.1,10,36.3],
+      "positions":[160.5,-0.5,40.3]
+    },
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall028",
+      "dimensions":[0.1,10,33.4],
+      "positions":[202,-0.5,48]
+    },
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall029",
+      "dimensions":[7.8,10,0.1],
+      "positions":[185,-0.5,34.1]
+    },
+
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall029",
+      "dimensions":[2,10,0.1],
+      "positions":[197,-0.5,34.1]
+    },
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall030",
+      "dimensions":[4,10,0.1],
+      "positions":[170,-0.5,40.5]
+    },
+
+    {
+      "type": "InnerWall",
+      "name":"InnerWall030",
+      "dimensions":[4,10,0.1],
+      "positions":[170,-0.5,45]
+    },
+
+
+
+
+
+
+
+
+
+    {
+      "type": "Device",
+      "name":"VAV-S7-05",
+      "dimensions":[3,2,2],
+      "positions":[23,-0.5,24.3],
+      "color": "blue"
+    },
+
+    {
+      "type": "Device",
+      "name":"FCU-C7-4",
+      "dimensions":[3,2,2],
+      "positions":[23,-0.5,18.3],
+      "color": "blue"
+    },
+
+
+    {
+      "type": "Device",
+      "name":"VAV-E7-06",
+      "dimensions":[3,2,2],
+      "positions":[32,-0.5,18.3],
+      "color": "blue"
+    },
+
+    {
+      "type": "Device",
+      "name":"VAV-S7-04",
+      "dimensions":[3,2,2],
+      "positions":[32,-0.5,35.3],
+      "color": "blue"
+    }
+
+  ,
+
+    {
+      "type": "Device",
+      "name":"VAV-E7-05",
+      "dimensions":[3,2,2],
+      "positions":[32,-0.5,44],
+      "color": "blue"
+    }
+
+    ,{
+      "type": "Device",
+      "name":"FCU-C7-3",
+      "dimensions":[3,2,2],
+      "positions":[23,-0.5,35.3],
+      "color": "blue"
+    }
+
+
+  ,{
+    "type": "Device",
+    "name":"VAV-S7-03",
+    "dimensions":[3,2,2],
+    "positions":[23,-0.5,55.3],
+    "color": "blue"
+  }
+
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-04",
+    "dimensions":[3,2,2],
+    "positions":[32,-0.5,55.3],
+    "color": "blue"
+  }
+
+
+
+  ,{
+    "type": "Device",
+    "name":"VAV-S7-02",
+    "dimensions":[3,2,2],
+    "positions":[32,-0.5,70.3],
+    "color": "blue"
+  }
+
+
+  ,{
+    "type": "Device",
+    "name":"VAV-S7-09",
+    "dimensions":[3,2,2],
+    "positions":[23,-0.5,70.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-03",
+    "dimensions":[3,2,2],
+    "positions":[23,-0.5,64.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-02",
+    "dimensions":[3,2,2],
+    "positions":[23,-0.5, 78.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-01",
+    "dimensions":[3,2,2],
+    "positions":[32,-0.5, 78.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-S7-01",
+    "dimensions":[3,2,2],
+    "positions":[23,-0.5, 85.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"FCU-C7-2",
+    "dimensions":[3,2,2],
+    "positions":[32,-0.5, 85.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-S7-06",
+    "dimensions":[3,2,2],
+    "positions":[58,-0.5, 85.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-S7-07",
+    "dimensions":[3,2,2],
+    "positions":[89,-0.5, 85.3],
+    "color": "blue"
+  }
+
+
+  ,{
+    "type": "Device",
+    "name":"MAU-C7-1",
+    "dimensions":[3,2,2],
+    "positions":[50,-0.5, 85.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-07",
+    "dimensions":[3,2,2],
+    "positions":[60,-0.5, 70.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-08",
+    "dimensions":[3,2,2],
+    "positions":[60,-0.5, 63.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-09",
+    "dimensions":[3,2,2],
+    "positions":[70.5,-0.5, 57.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-10",
+    "dimensions":[3,2,2],
+    "positions":[78.5,-0.5, 57.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-11",
+    "dimensions":[3,2,2],
+    "positions":[86.5,-0.5, 57.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-12",
+    "dimensions":[3,2,2],
+    "positions":[94.5,-0.5, 57.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"CAV-E7-02",
+    "dimensions":[3,2,2],
+    "positions":[62.5,-0.5, 50.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"CAV-E7-03",
+    "dimensions":[3,2,2],
+    "positions":[74,-0.5, 50.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"CAV-E7-04",
+    "dimensions":[3,2,2],
+    "positions":[85.5,-0.5, 50.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"CAV-E7-05",
+    "dimensions":[3,2,2],
+    "positions":[97,-0.5, 50.3],
+    "color": "blue"
+  }
+
+
+  ,{
+    "type": "Device",
+    "name":"CAV-E7-06",
+    "dimensions":[3,2,2],
+    "positions":[62.5,-0.5, 25.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"CAV-E7-07",
+    "dimensions":[3,2,2],
+    "positions":[74,-0.5, 25.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"CAV-E7-08",
+    "dimensions":[3,2,2],
+    "positions":[85.5,-0.5, 25.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"CAV-E7-09",
+    "dimensions":[3,2,2],
+    "positions":[97,-0.5, 25.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-S7-11",
+    "dimensions":[3,2,2],
+    "positions":[58.5,-0.5, 28.3],
+    "color": "blue"
+  }
+
+
+  ,{
+    "type": "Device",
+    "name":"VAV-S7-12",
+    "dimensions":[3,2,2],
+    "positions":[100,-0.5, 30.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-S7-13",
+    "dimensions":[3,2,2],
+    "positions":[105,-0.5, 30.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"CAV-E7-10",
+    "dimensions":[3,2,2],
+    "positions":[113,-0.5, 30.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-14",
+    "dimensions":[3,2,2],
+    "positions":[113,-0.5, 25.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"CAV-E7-10",
+    "dimensions":[3,2,2],
+    "positions":[113,-0.5, 30.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"EAF-B9-1",
+    "dimensions":[3,2,2],
+    "positions":[128,-0.5, 50.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-18",
+    "dimensions":[3,2,2],
+    "positions":[128,-0.5, 60.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-16",
+    "dimensions":[3,2,2],
+    "positions":[139,-0.5, 50.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-13",
+    "dimensions":[3,2,2],
+    "positions":[145,-0.5, 50.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-15",
+    "dimensions":[3,2,2],
+    "positions":[139,-0.5, 30.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-14",
+    "dimensions":[3,2,2],
+    "positions":[145,-0.5, 30.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-41",
+    "dimensions":[3,2,2],
+    "positions":[155,-0.5, 55.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-17",
+    "dimensions":[3,2,2],
+    "positions":[145,-0.5, 70.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-S7-08",
+    "dimensions":[3,2,2],
+    "positions":[139,-0.5, 70.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"FCU-C7-5",
+    "dimensions":[3,2,2],
+    "positions":[139,-0.5, 85.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-S7-15",
+    "dimensions":[3,2,2],
+    "positions":[150,-0.5, 80.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"ERS-10-1",
+    "dimensions":[3,2,2],
+    "positions":[160,-0.5, 88.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-18A",
+    "dimensions":[3,2,2],
+    "positions":[160,-0.5, 80.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-23",
+    "dimensions":[3,2,2],
+    "positions":[170,-0.5, 88.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-S7-16",
+    "dimensions":[3,2,2],
+    "positions":[165,-0.5, 73.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"ERS-10-2",
+    "dimensions":[3,2,2],
+    "positions":[165,-0.5, 63.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-20",
+    "dimensions":[3,2,2],
+    "positions":[175,-0.5, 73.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-21",
+    "dimensions":[3,2,2],
+    "positions":[175,-0.5, 63.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-19",
+    "dimensions":[3,2,2],
+    "positions":[175,-0.5, 50.3],
+    "color": "blue"
+  }
+
+
+  ,{
+    "type": "Device",
+    "name":"CAV-E7-11",
+    "dimensions":[3,2,2],
+    "positions":[165,-0.5, 50.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-22",
+    "dimensions":[3,2,2],
+    "positions":[165,-0.5, 35.3],
+    "color": "blue"
+  }
+
+
+
+  ,{
+    "type": "Device",
+    "name":"VAV-S7-17",
+    "dimensions":[3,2,2],
+    "positions":[178,-0.5, 35.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-S7-18",
+    "dimensions":[3,2,2],
+    "positions":[198,-0.5, 75.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-17A",
+    "dimensions":[3,2,2],
+    "positions":[198,-0.5, 55.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-24",
+    "dimensions":[3,2,2],
+    "positions":[190,-0.5, 55.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"EAF-B9-2",
+    "dimensions":[3,2,2],
+    "positions":[198,-0.5, 50.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-30",
+    "dimensions":[3,2,2],
+    "positions":[225,-0.5, 85.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-31",
+    "dimensions":[3,2,2],
+    "positions":[230,-0.5, 85.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-32",
+    "dimensions":[3,2,2],
+    "positions":[235,-0.5, 85.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-33",
+    "dimensions":[3,2,2],
+    "positions":[240,-0.5, 85.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-34",
+    "dimensions":[3,2,2],
+    "positions":[245,-0.5, 85.3],
+    "color": "blue"
+  }
+
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-35",
+    "dimensions":[3,2,2],
+    "positions":[250,-0.5, 85.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-37",
+    "dimensions":[3,2,2],
+    "positions":[220,-0.5, 55.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-38",
+    "dimensions":[3,2,2],
+    "positions":[228.5,-0.5, 55.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-39",
+    "dimensions":[3,2,2],
+    "positions":[237,-0.5, 55.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-40",
+    "dimensions":[3,2,2],
+    "positions":[245.5,-0.5, 55.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-36",
+    "dimensions":[3,2,2],
+    "positions":[237,-0.5, 65.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-S7-20",
+    "dimensions":[3,2,2],
+    "positions":[237,-0.5, 70.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"MAU-C7-2",
+    "dimensions":[3,2,2],
+    "positions":[245,-0.5, 75.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-S7-21",
+    "dimensions":[3,2,2],
+    "positions":[270,-0.5, 63.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-S7-22",
+    "dimensions":[3,2,2],
+    "positions":[270,-0.5, 50.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"FCU-C7-7",
+    "dimensions":[3,2,2],
+    "positions":[260,-0.5, 85.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-S7-19",
+    "dimensions":[3,2,2],
+    "positions":[280,-0.5, 85.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-25",
+    "dimensions":[3,2,2],
+    "positions":[190,-0.5, 40.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"FCU-C7-6",
+    "dimensions":[3,2,2],
+    "positions":[190,-0.5, 25.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-29",
+    "dimensions":[3,2,2],
+    "positions":[203,-0.5, 40.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-26",
+    "dimensions":[3,2,2],
+    "positions":[211.5,-0.5, 40.3],
+    "color": "blue"
+  }
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-27",
+    "dimensions":[3,2,2],
+    "positions":[220,-0.5, 40.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-28",
+    "dimensions":[3,2,2],
+    "positions":[228.5,-0.5, 40.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-24",
+    "dimensions":[3,2,2],
+    "positions":[254.5,-0.5, 45.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-25",
+    "dimensions":[3,2,2],
+    "positions":[254.5,-0.5, 40.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-R7-01",
+    "dimensions":[3,2,2],
+    "positions":[254.5,-0.5, 28.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-R7-02",
+    "dimensions":[3,2,2],
+    "positions":[254.5,-0.5, 24.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"RAHU-7-1",
+    "dimensions":[3,2,2],
+    "positions":[270.5,-0.5, 24.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Device",
+    "name":"VAV-E7-25",
+    "dimensions":[3,2,2],
+    "positions":[270.5,-0.5, 40.3],
+    "color": "blue"
+  }
+
+
+  ,{
+    "type": "Sensor",
+    "name":"PR_RT_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[24,0, 90.3],
+    "color": "yellow"
+  }
+
+  ,{
+    "type": "Sensor",
+    "name":"PR_RDP_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[32,0, 90.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Sensor",
+    "name":"CR_RT_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[32,0, 65.3],
+    "color": "yellow"
+  }
+
+
+  ,{
+    "type": "Sensor",
+    "name":"CR_RDP_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[40,0, 65.3],
+    "color": "blue"
+  }
+
+
+  ,{
+    "type": "Sensor",
+    "name":"GM-2_RT_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[28,0, 50.3],
+    "color": "yellow"
+  }
+
+
+  ,{
+    "type": "Sensor",
+    "name":"GM-2_RDP_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[36,0, 50.3],
+    "color": "blue"
+  }
+
+
+  ,{
+    "type": "Sensor",
+    "name":"TGAR_RT_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[28,0, 35.3],
+    "color": "yellow"
+  }
+
+
+  ,{
+    "type": "Sensor",
+    "name":"TGAR_RDP_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[36,0, 35.3],
+    "color": "blue"
+  }
+
+
+  ,{
+    "type": "Sensor",
+    "name":"RMR_RT_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[28,0, 28.3],
+    "color": "yellow"
+  }
+
+
+  ,{
+    "type": "Sensor",
+    "name":"RMR_RDP_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[36,0, 28.3],
+    "color": "blue"
+  }
+
+
+
+
+
+  ,{
+    "type": "Sensor",
+    "name":"PPR_RT_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[140,0, 90.3],
+    "color": "yellow"
+  }
+
+  ,{
+    "type": "Sensor",
+    "name":"PPR_RDP_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[150,0, 90.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Sensor",
+    "name":"ODR_RT_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[170,0, 70.3],
+    "color": "yellow"
+  }
+
+  ,{
+    "type": "Sensor",
+    "name":"ODR_RDP_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[180,0, 70.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Sensor",
+    "name":"GM-1_RT_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[180,0, 30.3],
+    "color": "yellow"
+  }
+
+  ,{
+    "type": "Sensor",
+    "name":"GM-1_RDP_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[180,0, 20.3],
+    "color": "blue"
+  }
+
+
+  ,{
+    "type": "Sensor",
+    "name":"AFMRR_RT_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[270,0, 70.3],
+    "color": "yellow"
+  }
+
+  ,{
+    "type": "Sensor",
+    "name":"AFMRR_RDP_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[275,0, 70.3],
+    "color": "blue"
+  }
+
+
+  ,{
+    "type": "Sensor",
+    "name":"FR_RT_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[270,0, 55.3],
+    "color": "yellow"
+  }
+
+  ,{
+    "type": "Sensor",
+    "name":"FR_RDP_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[275,0, 55.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Sensor",
+    "name":"BCA_RT_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[190,0, 70.3],
+    "color": "yellow"
+  }
+
+  ,{
+    "type": "Sensor",
+    "name":"BCA_RDP_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[195,0, 70.3],
+    "color": "blue"
+  }
+
+
+  ,{
+    "type": "Sensor",
+    "name":"EAA_RT_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[220,0, 70.3],
+    "color": "yellow"
+  }
+
+  ,{
+    "type": "Sensor",
+    "name":"EAA_RDP_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[230,0, 70.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Sensor",
+    "name":"DLA_RT_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[265,0, 35.3],
+    "color": "yellow"
+  }
+
+  ,{
+    "type": "Sensor",
+    "name":"DLA_RDP_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[275,0, 35.3],
+    "color": "blue"
+  }
+
+
+
+  ,{
+    "type": "Sensor",
+    "name":"OLA_RT_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[58,0, 55.3],
+    "color": "yellow"
+  }
+
+
+  ,{
+    "type": "Sensor",
+    "name":"OLA_RDP_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[66,0, 55.3],
+    "color": "blue"
+  }
+
+  ,{
+    "type": "Sensor",
+    "name":"CRR_RT_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[220,0, 30.3],
+    "color": "yellow"
+  }
+
+  ,{
+    "type": "Sensor",
+    "name":"CRR_RDP_sensor1",
+    "dimensions":[0,0,0],
+    "positions":[235,0, 30.3],
+    "color": "blue"
+  }
+
+  ]
+}
