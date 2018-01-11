@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<!-- created by GmapGIS.com -->
+<Document>
+<name>MynameKML file polygon </name>
+<description>Some descrition</description>
+
+	<Style id="polyStyID_0">
+	<LineStyle>
+	<color>FF0000FF</color>
+	<width>5</width>
+	</LineStyle>
+
+	<PolyStyle>
+	<color>660088ff</color>
+	</PolyStyle> 
+	</Style>
+
+<Placemark>
+<name>Polygon 1</name>
+<description><![CDATA[]]></description>
+<styleUrl>#polyStyID_0</styleUrl>
+	<Polygon>
+		<tessellate>1</tessellate>
+		<altitudeMode>clampToGround</altitudeMode>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>
+				103.67552,1.26887,0.0
+				103.67546,1.26881,0.0
+				103.67552,1.26875,0.0
+				103.67558,1.26881,0.0
+				</coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+	</Polygon>
+</Placemark>
+
+
+<Placemark>
+        <name>EBus</name>
+        <description><![CDATA[This is the description]]></description>
+        <styleUrl>#polyStyID_0</styleUrl>
+                <Polygon>
+                        <tessellate>1</tessellate>
+                        <altitudeMode>clampToGround</altitudeMode>
+                        <outerBoundaryIs>
+                                <LinearRing>
+                                        <coordinates>
+                                        103.723517,1.274663,0.0
+103.723487,1.274633,0.0
+103.723517,1.274603,0.0
+103.723547,1.274633,0.0
+
+                                        </coordinates>
+                                </LinearRing>
+                        </outerBoundaryIs>
+                </Polygon>
+        </Placemark>
+
+
+<Placemark>
+<name>Rectangle 1</name>
+<description><![CDATA[]]></description>
+<styleUrl>#polyStyID_0</styleUrl>
+	<Polygon>
+	<tessellate>1</tessellate>
+	<altitudeMode>clampToGround</altitudeMode>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>
+				103.67525,1.26875,0.0
+				103.67525,1.26869,0.0
+				103.67519,1.26869,0.0
+				103.67519,1.26875,0.0
+				</coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+	</Polygon>
+</Placemark>
+
+
+</Document>
+</kml>
