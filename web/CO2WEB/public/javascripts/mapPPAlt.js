@@ -47,6 +47,16 @@
                 riskFactor.val(0.5)
                 excessFactor.val(0.15)
                 break;
+            case 1:
+                costFactor.val(0)
+                riskFactor.val(1)
+                excessFactor.val(0.1)
+                break; 
+                        case 2:
+                costFactor.val(0.5)
+                riskFactor.val(0.5)
+                excessFactor.val(0.25)
+                break;                 
 
         }
     }

@@ -23,6 +23,8 @@ var visualizeWorld =require("./routes/visualizeWorld.js");
 var visualizeBMS =require("./routes/visualizeBms.js");
 var visualizeSemakau =require("./routes/visualizeSemakau.js");
 var visualizeJurong =require("./routes/visualizeJurong.js");
+var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
+
 
  var showCO2 = require("./routes/showCO2Cached");
 var bmsplot= require("./routes/plotBMSCached.js");
@@ -75,6 +77,7 @@ app.use('/semakaumap', semakauMap);
 app.use('/ppalt', ppalt);
 app.use('/JurongIsland.owl/showCO2', showCO2);
 app.use('/visualizeOntoEN',visualizeOntoEN);
+
 
 app.use("/bmsplot", bmsplot);
 

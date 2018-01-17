@@ -341,10 +341,11 @@ PopupMap.prototype = {
     },
 
     clearMarkers : function () {
+        let self = this;
         if(!self.markers || Object.keys(self.markers).length < 1){
             return;
         }
-        for(marker in Object.values(self.markers)){
+        for(marker of Object.values(self.markers)){
             marker.setMap(null)
         }
         self.markers = {}

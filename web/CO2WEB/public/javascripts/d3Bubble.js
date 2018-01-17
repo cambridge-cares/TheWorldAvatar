@@ -21,11 +21,12 @@ function getIdFromNameInResults(name) {
 /*constructor: d3 link graph***********************************************/
 var FileLinkMap = function (options) {
     var width = $(document).width(),
-        height = options.height || 2000,
+        height = $(document).height() > 2000?$(document).height():2000,
         charge = options.charge || -3000,
         distance = options.distance || 100,
         nodeR = options.nodeR || 15,
         textSize = options.textSize || 5;
+
 
     var colorList = ["#FFFF00", "#1CE6FF", "#FF34FF", "#FF4A46", "#008941", "#006FA6", "#A30059",
         "#FFDBE5", "#7A4900", "#0000A6", "#63FFAC", "#B79762", "#004D43", "#8FB0FF", "#997D87",
@@ -153,7 +154,7 @@ var FileLinkMap = function (options) {
 
                 });
 
-            if (nodes[link.target]) {
+            if (nodes[link.target]) {//if we have a target, then increase level by
                 nodes[link.target].level = parseInt(link.level) + 1;
             }
             link.target = nodes[link.target] || (nodes[link.target] = {
@@ -223,14 +224,14 @@ var FileLinkMap = function (options) {
             return colorList2[d.level];
         }
 
-        colorMap[d.domain] = colorMap[d.domain] || (colorList[mapSize++]);
+       // colorMap[d.domain] = colorMap[d.domain] || (colorList[mapSize++]);
 
         if (mapSize >= mapSize.length) {
             mapSize = 0;
             console.log("WARNING: DOMAIN NUMBER EXISTS COLOR MAP NUMBER!");
         }
 
-        return colorMap[d.domain];
+        return colorMap[0];
     }
 
     function sortOrder(d, i) {
@@ -240,7 +241,7 @@ var FileLinkMap = function (options) {
             return d.level * 1000 + i;
         }
 
-        return 100000 + i;
+        return 0;
     }
 
     function defineLegend(d) {
@@ -249,7 +250,7 @@ var FileLinkMap = function (options) {
             return d.level;
         }
 
-        return d.domain;
+        return 0;
     }
 
     var svg = d3.select("#draw-panel").append("svg")
