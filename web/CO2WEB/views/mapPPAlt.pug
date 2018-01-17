@@ -1,0 +1,56 @@
+extends header.pug
+
+block title
+    title  Nuclear Power Plant
+
+block sheets
+    link(rel="stylesheet" href='/stylesheets/mpage.css')
+
+block subtitle
+
+    |Nuclear Power Plant
+
+block description
+
+
+block content
+    div#wrapper
+        div.overlay-panel-wrapper
+            div#overlay-setting-panel.panel.panel-default
+                div.panel-heading Run
+                div.panel-body.container-fluid
+                    div#setting-panel-body
+
+
+                        div#text-panel
+                            select#predefined-select
+                                option(value='1') 1
+                                option(value='2') 2
+                                option(value='3') 3
+                            table
+                                tr
+                                    td risk factor
+                                    td
+                                        input(type='text' id='riskF' contenteditable='false')
+                                tr
+                                    td cost factor
+                                    td
+                                        input(type='text' id='costF' contenteditable='false')
+                                tr
+                                    td excess factor(%)
+                                    td
+                                        input(type='text' id='excessF' contenteditable='false')
+                        br
+                        button#run-btn.btn.btn-primary Run Simulation
+                        div#result-panel
+                        div#draw-panel
+
+
+    div#map
+
+    script(src="https://code.jquery.com/jquery-2.2.0.min.js")
+    script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
+    script(src="/javascripts/PopUpmap.js")
+    script(src="/javascripts/mapPPAlt.js")
+    script(async defer src="https://maps.googleapis.com/maps/api/js?k" +
+    "ey=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA&callback=initMap")
