@@ -21,6 +21,7 @@
     "proj4": "^2.4.3",
     "pug": "^2.0.0-beta11",
     "rdflib": "^0.15.0",
+    "rdfstore": "^0.9.17",
     "readdirp": "^2.1.0",
     "request": "^2.81.0",
     "serve-favicon": "~2.3.2",

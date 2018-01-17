@@ -1,0 +1,103 @@
+/**
+ * A simple module constructs SPARQL Query strs
+ * Test to be added
+ */
+
+
+    var SPARQLStr  = {
+        numericalP : "<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue>",
+        constructNUpdates : function (attrs) {
+        let list = []
+        for(let attr of attrs){
+            list.push(SPARQLStr.construct('insertdata', this.chevron(attr.uri), 'numerical', {value:attr.value, type: attr.type}))
+        }
+        return list;
+    },
+    constructNDeletes : function (attrs) {
+        let list = []
+        for(let attr of attrs){
+            list.push(SPARQLStr.construct('delete', attr.uri, 'numerical'))
+        }
+        return list;
+    },
+        //TODO: where clause
+        construct(actionType, s, p, o, prefix, template){
+            //valid inputs
+            this.actionType = actionType.toString().toLowerCase()
+            this.s =s;
+            this.p = ((p=p.toString())&&p==="numerical")?this.numericalP:p;
+            this.o = o?this.constructO(o):'?o';
+            this.template = template?this.brace(template):'';
+            this.prefix = prefix?this.constructPrefix(prefix):''
+            return this.combine()
+        },
+        
+        chevron(str) {
+            return `<${str}>`
+        },
+        
+        quote(str){
+            return `\"${str}\"`
+        },
+        
+        brace(str){
+            return `\{${str}\}`
+            
+        },
+        
+        
+        combine(){
+            return this.prefix+this.actionStr()+this.template+this.where+this.brace(this.s+' '+this.p+' '+this.o+'.')
+        },
+        
+        constructO : function (o) {
+            if(!o){
+                return;
+            }
+            return typeof o ==="string"?o:this.literalO(o)
+            
+        },
+        constructPrefix(prefixMap){
+            let str = '';
+            for(let ns in prefixMap){
+                str+=`PREFIX ${ns}: <${prefixMap[ns]}>\n`
+            }
+            return str;
+        },
+        literalO({value, type}){
+            //oObj{value, type}
+            if(!value && !type){
+                throw new Error("SPARQLStr: o does not contain value and type")
+            }
+            //TODO:checktype
+            return `\"${value}\"^^<http://www.w3.org/2001/XMLSchema#${type}>`
+            
+        },
+        
+        actionStr(){
+            let action = this.actionType;
+            switch(action){
+                case "delete":
+                    this.where = ' WHERE '
+                    return "DELETE "
+                case "insert":
+                    this.where = ' WHERE '
+                    return "INSERT "
+                case "insertdata":
+                    this.where = ''
+    
+                    return "INSERT DATA "
+                case "deletedata":
+                    this.where = ''
+                    return "DELETE DATA "
+
+                default:
+                    throw new Error("Non-existing action type for SPARQL")
+            }
+        }
+
+    }
+    
+
+
+module.exports = SPARQLStr

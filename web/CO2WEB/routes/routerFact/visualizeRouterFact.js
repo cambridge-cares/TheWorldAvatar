@@ -33,8 +33,8 @@ var visualizationRouterFactory = function (topNodeAddress) {
                 //res.setHeader('Content-Type', 'application/json');
                 //res.json(results);//for testing
                 conns = results;
+                results.topnode = topNodeAddress;
                 res.render('visual', { result: JSON.stringify(results) }); //render the view with this value
-
 
             });
 

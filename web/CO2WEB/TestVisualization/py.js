@@ -1,12 +1,5 @@
-let A = new Set()
+fs = require('fs')
 
-console.log(A)
-
-A.add(null)
-
-console.log(A)
-
-
-A.add(null)
-
-console.log(A.has(null))
+fs.readdir('../testFiles', function (err, files) {
+    console.log(files)
+})

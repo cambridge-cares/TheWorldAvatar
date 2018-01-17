@@ -180,7 +180,7 @@ function groupwatcher(dir, informIndi){
 ***/
 
     watcher
-        .on('change', function(filepath) {//when dir changed
+        .on('change', (filepath)=>{//when dir changed
             logger.debug('File '+ filepath+'has been changed');
             if(watchDogs.has(filepath)){ //check if this file is required to be watched
                 logger.debug("Ask watchdog to inform")
@@ -190,6 +190,11 @@ function groupwatcher(dir, informIndi){
 
             }
         })
+        .on('add', ()=>{//new file added
+        })
+        .on('unlink', ()=>{//new file removed
+        })
+    
 
     function setWatch(filename) {
         let filepath = path.join(dir, filename)

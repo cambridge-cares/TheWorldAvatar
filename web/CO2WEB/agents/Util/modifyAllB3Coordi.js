@@ -34,7 +34,7 @@ getB3C(config.b2Node, function (err, result) {
 
         let newX = convertedC.x + dx;
         let newY = convertedC.y + dy;
-        let deleteStrx = "DELETE WHERE {<"+uri+"#ValueOf_x_"+sname+"> <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue> ?o.}";
+        let deleteStrx = "DELETE WHERE {<"+uari+"#ValueOf_x_"+sname+"> <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue> ?o.}";
 
 
         let insertStrx = "INSERT DATA {<"+uri+"#ValueOf_x_"+sname+"> <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue> \""+ newX +"\"^^<http://www.w3.org/2001/XMLSchema#decimal>.}";

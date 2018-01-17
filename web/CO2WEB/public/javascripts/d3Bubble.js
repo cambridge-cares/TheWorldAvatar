@@ -1147,6 +1147,16 @@ $(window).load(function () {// when web dom ready
                 delete blinkTimerList[simpleName];
             }, 500);//on 0.5s, back to normal
         blinkTimerList[simpleName]  = mTimer;
+        
+        //TODO:check if topnode, if so, refresh
+        var data = JSON.parse($("#data").val());//extract link data from web page
+        var topNodeName = data.topnode;
+        console.log(name)
+        console.log(topNodeName)
+        
+        if(name === topNodeName){
+            location.reload(true);
+        }
 
 
         // }

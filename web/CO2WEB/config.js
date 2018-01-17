@@ -10,7 +10,7 @@
 var path = require('path')
 var config = {};
 
-
+config.baseUri = "http://www.theworldavatar.com"
 
 configDevelop();
 //configDeploy();
