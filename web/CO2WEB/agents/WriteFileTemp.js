@@ -23,6 +23,11 @@ var WriteFileTemp = {
      createFile:function({temp, path, attrs}, cb){
 //construct update string according to attrs
          //pack attr list
+         console.log(`temp: ${temp}`)
+                  console.log(`mypath: ${path}`)
+                           console.log(`attr length: ${attrs.length}`)
+
+
         copyTemp(temp, path, ()=>{
              //TODO, delete old one
             // todo:SPARQLStr.constructOwlDef()
