@@ -25,13 +25,19 @@ var WriteFileTemp = {
          //pack attr list
         copyTemp(temp, path, ()=>{
              //TODO, delete old one
-             let QList = attrs.map(({s,p,o})=>{
-                 return   SPARQLStr.construct('insertdata', s, p,o);
-             })
-             let baseUri   = config.baseUri+path
-             let uriList = Array(QList.length()).fill(baseUri)
-    
-    
+            // todo:SPARQLStr.constructOwlDef()
+            let url = config.baseUri+"/"+path
+            
+            let QList = SPARQLStr.constructOwlDef({url, imports:attrs.imports||[]})
+            if(attrs.x &&  attrs.y) {
+                QList.concat(SPARQLStr.constructCoordinate({name: path, url, x: attrs.x, y: attrs.y}))
+            }
+            
+            if(attrs.capacity) {
+                QList.concat(SPARQLStr.constructCapacity({name: path, url, value: attrs.capacity}))
+            }
+            //todo, rest of the attrs
+            
              SPARQLEpReq.call(uriList, QList, (err)=>{
                  if (err)
                  cb(err)

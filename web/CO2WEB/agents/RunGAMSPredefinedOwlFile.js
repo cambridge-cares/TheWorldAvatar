@@ -109,12 +109,13 @@ function runGAMSPredefined(id, cb){
     
                     let packed = csvresult.map((item)=>{
                         let childuri = baseUri+"/"+item.uri + '.owl';
-                        let path = config.root + "/"+item.uri+'.owl'
+                        let path = item.uri+'.owl'
                         let attrs = []
                         //capacity, xcoord, ycoord
-                        attrs.push({s:childuri+'/v_capa_'+item.uri, p:'numerical', o:{value:item.capacity, type:'decimal'}})
-                        attrs.push({s:childuri+'/v_ycoordinate_of_'+item.uri, p:'numerical', o:{value:item.location.lat, type:'decimal'}})
-                        attrs.push({s:childuri+'/v_xcoordinate_of_'+item.uri, p:'numerical', o:{value:item.location.lng, type:'decimal'}})
+                        attrs['x'] = item.location.lng
+                        attrs['y'] = item.location.lat
+                        attrs['capacity'] = item.capacity
+                        attrs['imports'] = ["http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl","http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl"]
                         //TODO: here
                         
                         return {temp: tempLoc, path:path, attrs:attrs }
@@ -122,12 +123,13 @@ function runGAMSPredefined(id, cb){
                     })
     
     
+                    /**
     
                     async.each(packed, writefromTemp.createFile,(err)=>{
                         console.log(err)
                         cb(err)
                     } )
-                
+                **/
            
     
                 })

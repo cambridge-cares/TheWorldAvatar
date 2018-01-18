@@ -9,6 +9,7 @@ const request = require('request'),
     
     call: function (uris, updateQs, errCB) {
       let url = this.constructUrl(uris, updateQs)
+        console.log("requesting SPARQL ENDPOINT")
         request
             .get(url)
             .on('error', function(err) {
