@@ -140,14 +140,15 @@
                "owl" :"http://www.w3.org/2002/07/owl#"
            }
            let list = [];
-           list.push(this.construct("insertdata", this.chevron(url), 'a', "owl:Ontology", prefix ));
+           list.push(this.construct("delete", this.chevron("http://www.jparksimulator.com/ppAl/j1.owl"), "?p", "?o"))
+           list.push(this.construct("insertdata", this.chevron(uri), 'a', "owl:Ontology", prefix ));
            imports.forEach((importee)=>{
-               list.push(this.construct("insertdata", this.chevron(url), 'owl:imports', this.chevron(importee), prefix ));
+               list.push(this.construct("insertdata", this.chevron(uri), 'owl:imports', this.chevron(importee), prefix ));
     
            })
     
     
-        return uri;
+        return list;
        }
 
     

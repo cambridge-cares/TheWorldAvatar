@@ -119,19 +119,20 @@ function runGAMSPredefined(id, cb){
                         attrs['capacity'] = item.capacity
                         attrs['imports'] = ["http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl","http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl"]
                         //TODO: here
-                        
+                        console.log(attrs)
+
                         return {temp: tempLoc, path:path, attrs:attrs }
                         
                     })
     
     
-                    /**
+                    
     
                     async.each(packed, writefromTemp.createFile,(err)=>{
                         console.log(err)
                         cb(err)
                     } )
-                **/
+                
            
     
                 })

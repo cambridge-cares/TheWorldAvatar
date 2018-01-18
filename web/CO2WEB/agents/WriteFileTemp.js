@@ -23,26 +23,36 @@ var WriteFileTemp = {
      createFile:function({temp, path, attrs}, cb){
 //construct update string according to attrs
          //pack attr list
+                    let loc = config.root+"/"+path
+
          console.log(`temp: ${temp}`)
-                  console.log(`mypath: ${path}`)
-                           console.log(`attr length: ${attrs.length}`)
+                  console.log(`mypath: ${loc}`)
+                           console.log(`attr: ${attrs}`)
 
 
-        copyTemp(temp, path, ()=>{
+
+        copyTemp(temp, loc, ()=>{
              //TODO, delete old one
             // todo:SPARQLStr.constructOwlDef()
             let url = config.baseUri+"/"+path
             
             let QList = SPARQLStr.constructOwlDef({url, imports:attrs.imports||[]})
+
+            //TODO:url most be modified in a file kind of way, because new uri did not exist yet
+
+
+            
             if(attrs.x &&  attrs.y) {
-                QList.concat(SPARQLStr.constructCoordinate({name: path, url, x: attrs.x, y: attrs.y}))
+               QList= QList.concat(SPARQLStr.constructCoordinate({name: path, url, x: attrs.x, y: attrs.y}))
             }
             
             if(attrs.capacity) {
-                QList.concat(SPARQLStr.constructCapacity({name: path, url, value: attrs.capacity}))
+                QList = QList.concat(SPARQLStr.constructCapacity({name: path, url, value: attrs.capacity}))
             }
             //todo, rest of the attrs
             
+            let uriList = Array(QList.length).fill(url)
+
              SPARQLEpReq.call(uriList, QList, (err)=>{
                  if (err)
                  cb(err)
