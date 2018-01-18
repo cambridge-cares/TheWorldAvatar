@@ -23,13 +23,18 @@ var WriteFileTemp = {
      createFile:function({temp, path, attrs}, cb){
 //construct update string according to attrs
          //pack attr list
+         console.log(`temp: ${temp}`)
+                  console.log(`mypath: ${path}`)
+                           console.log(`attr length: ${attrs.length}`)
+
+
         copyTemp(temp, path, ()=>{
              //TODO, delete old one
              let QList = attrs.map(({s,p,o})=>{
                  return   SPARQLStr.construct('insertdata', s, p,o);
              })
              let baseUri   = config.baseUri+path
-             let uriList = Array(QList.length()).fill(baseUri)
+             let uriList = Array(QList.length).fill(baseUri)
     
     
              SPARQLEpReq.call(uriList, QList, (err)=>{

@@ -85,6 +85,8 @@ function runGAMSPredefined(id, cb){
                         let childuri = baseUri+"/"+item.uri+'.owl';
                         let updateStr=  SPARQLStr.construct('insertdata', '<http://www.w3.org/2002/07/owl#NamedIndividual>','<http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#hasIRI>',{value:childuri, type:"string"});
                         QList.push(updateStr)
+                        console.log(updateStr)
+
                     })
     
                     for(let i = 0; i < QList.length;i++){
@@ -103,7 +105,7 @@ function runGAMSPredefined(id, cb){
     
     
     
-                    let tempLoc = path.join(config.root, 'powerplantTemp');
+                    let tempLoc = path.join(config.root, 'powerplantTemp.owl');
                     //{temp, name, attrs[{s,p,o}]}
                     //TODO:　pack into above format
     

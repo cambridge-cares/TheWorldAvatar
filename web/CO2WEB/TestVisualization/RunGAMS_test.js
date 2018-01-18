@@ -9,9 +9,9 @@ var runGams = require('../agents/RunGAMSPredefinedOwlFile')
 
 
 
-describe('runGAMS', function () {
+describe('runGAMS', function (done) {
     it('delete old files', function (done) {
-        
+        this.timeout(5000)
         runGams(0, function (err, result) {
             console.log(result)
             
