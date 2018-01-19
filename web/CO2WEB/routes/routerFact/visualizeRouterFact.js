@@ -34,13 +34,38 @@ var visualizationRouterFactory = function (topNodeAddress) {
                 //res.json(results);//for testing
                 conns = results;
                 results.topnode = topNodeAddress;
+                
+                
                 res.render('visual', { result: JSON.stringify(results) }); //render the view with this value
 
             });
 
     });
-
-
+    
+    router.get('/links', function(req, res, next) {
+        
+        
+        connectionsReader.getChildrenRecur({topnode : topNodeAddress}, function (err, results) {
+            
+            if(err){
+                res.status(500).send(err);
+                console.log(err);
+                return;
+            }
+            
+            console.log("read connections");
+            
+            //res.setHeader('Content-Type', 'application/json');
+            //res.json(results);//for testing
+            conns = results;
+            results.topnode = topNodeAddress;
+    
+    
+            res.json(results); //render the view with this value
+            
+        });
+        
+    });
     router.get('/includeImport', function(req, res, next) {
 
 

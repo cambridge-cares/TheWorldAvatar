@@ -51,7 +51,6 @@ var FileLinkMap = function (options) {
     bubbleMap.nodesArr = [];
 
     function packNodesArr(links, coords, serviceUrls) {
-        console.log(links)
         var nodes = {};
         var nodesArr = [];
 
@@ -66,7 +65,6 @@ var FileLinkMap = function (options) {
             var arr = str.split("/");
 
 
-            console.log(arr);
             let domain = "";
             if (arr.length < 3) {
                 domain += arr[2];
@@ -112,7 +110,7 @@ var FileLinkMap = function (options) {
          * search for serivceUrl in service array by uri
          */
         function  getServiceUrl(uri) {
-            console.log("search service url for "+uri)
+         //   console.log("search service url for "+uri)
 
             if(!serviceUrls||serviceUrls.length < 1){
                 console.log("Did not find any service urls")
@@ -120,9 +118,9 @@ var FileLinkMap = function (options) {
             }
             for (let i = 0; i < serviceUrls.length; i++) {
                 let serviceUrl = serviceUrls[i];
-                console.log("comparing :"+ serviceUrl.url)
+                //console.log("comparing :"+ serviceUrl.url)
                 if (serviceUrl&& serviceUrl.url == uri) {
-                    console.log("!!!!!!!!!! found service Url node for "+serviceUrl )
+                 //   console.log("!!!!!!!!!! found service Url node for "+serviceUrl )
                     return serviceUrl.serviceUrl;
                 }
             }
@@ -132,23 +130,23 @@ var FileLinkMap = function (options) {
 
         // Compute the distinct nodes from the links.
         links.forEach(function (link) {
-
+/**
             if (nodes[link.source] != null) {
                 nodes[link.source].count = nodes[link.source].count + 1;
-                console.log("++");
+              //  console.log("++");
             }
             if (nodes[link.target] != null) {
                 nodes[link.target].count = nodes[link.target].count + 1;
-                console.log("++");
+             //   console.log("++");
 
             }
-
+**/
             link.source = nodes[link.source] || (nodes[link.source] = {
                     url: link.source,
 
                     name: getSimpleName(link.source),
                     domain: getDomain(link.source),
-                    count: 0,
+                   // count: 0,
                     coord: getCoord(link.source),
                     serviceUrl:getServiceUrl(link.source)
 
@@ -161,8 +159,8 @@ var FileLinkMap = function (options) {
                     url: link.target,
                     name: getSimpleName(link.target),
                     domain: getDomain(link.target),
-                    count: 0
-                    , level: parseInt(link.level) + 1
+                   // count: 0,
+                     level: parseInt(link.level) + 1
                     ,                //add to node attri: geo coordinates
                     coord: getCoord(link.target),
                     serviceUrl:getServiceUrl(link.target)
@@ -173,10 +171,10 @@ var FileLinkMap = function (options) {
         });
 
         let index = 0;
-        console.log("@@@@@@@@@@@@@@@@@@@@@@");
+     //   console.log("@@@@@@@@@@@@@@@@@@@@@@");
         for (let link of links) {
 
-            console.log(index + "  :" + JSON.stringify(link));
+         //   console.log(index + "  :" + JSON.stringify(link));
             index++;
         }
         //packs object :nodes into array
@@ -189,7 +187,7 @@ var FileLinkMap = function (options) {
                 }
 
                 nodesArr.push(nodes[URI]);
-                console.log("packed node: " + JSON.stringify(nodes[URI]))
+               // console.log("packed node: " + JSON.stringify(nodes[URI]))
                 //console.log("count" + nodes[attr].count);
             }
         }
@@ -197,7 +195,7 @@ var FileLinkMap = function (options) {
     }
 
     function setBodyS(node) {
-        return -150;
+        return -300;
 
         //return charge;
     }
@@ -268,56 +266,98 @@ var FileLinkMap = function (options) {
         g.selectAll("text").data([]).exit().remove();
     }
 
-    bubbleMap.update = function (links, coords, serviceUrls) {
-        bubbleMap.nodesArr = packNodesArr(links, coords, serviceUrls);
+    var simulation;
+    var circle = gN.selectAll("a.cir");
+    var path = gP.selectAll("line")
+    var text =gT.selectAll("text.nodeTag")
+    var circleDraw
+    var newPath, newCircle, newText
+    bubbleMap.nodesArr = []
+    bubbleMap.links = []
+    bubbleMap.update = function (links, coords, serviceUrls, retainSim) {
+        coords = coords ||[]
+        serviceUrls = serviceUrls || []
+    
+
+        
+        let newNodes = packNodesArr(links, [], []);
+    
+        for(let link of links){
+            if(!includeLink(bubbleMap.links,link)){
+                bubbleMap.links.push(link)
+            }
+        }
+   
+        for(let node of newNodes){
+            if (!includeobj(bubbleMap.nodesArr,node, ['url'])){
+                bubbleMap.nodesArr.push(node)
+            }
+        }
+        
+        console.log(bubbleMap.nodesArr)
+    
+        function includeLink (arr, obj) {
+        for(let item of arr){
+            if(obj.source.url === item.source.url && obj.target.url === item.target.url){
+                return true
+            }
+        }
+            return false
+        }
+        
+        function includeobj(arr, obj, idnames) {
+            for(let item of arr){
+                let allTrue = idnames.length, aggregateTrue = 0
+                for(let attrname of idnames){
+                    aggregateTrue+=(item[attrname] === obj[attrname])
+                }
+                if(aggregateTrue === allTrue){
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        console.log(bubbleMap.links)
+        
 //TODO: find node list, subscribe change event through sockets
+        /*subscribe**********/
         let subscribeList = bubbleMap.nodesArr.map(function (node) {
             return {uri:node.url, withData:false};
         });
 
         socket.emit("join", JSON.stringify(subscribeList));
+        /******************/
+        
 
-        //set force simulationf
-        var simulation = d3.forceSimulation()
-            .force("link", d3.forceLink(links).distance(setD))
-            .force("charge", d3.forceManyBody().strength(setBodyS))
-            .force("center", d3.forceCenter(width / 2, height / 2));
-
-        var path = gP.selectAll("line") //linking lines
-            .data(links, function (d) {
-                return d.source.domain + d.source.name + d.target.domain + d.target.name;
-            });
-
-        path.exit().remove();
-
-
-        path.enter().append("line")
-            .attr("class", function (d) {
-                console.log("@@@@@@@@@@@@draw link : " + d.source.name + '--------' + d.target.name);
-
-                return "link " + "licensing";
-            })
-
-        ;
-        // path.exit().remove();
-        path = gP.selectAll("line");
-
+            //set force simulationf
+          if(!retainSim) {
+              console.log("not retaining previous sim")
+              
+              simulation = d3.forceSimulation()
+                  .force("link", d3.forceLink().distance(setD).id(function(d) {
+                  return d.id;}))
+                  .force("charge", d3.forceManyBody().strength(setBodyS))
+                  .force("center", d3.forceCenter(width / 2, height / 2))
+                  .on("tick", ticked);
+          }
+    
+    
         console.log(JSON.stringify(bubbleMap.nodesArr))
-        var circle = gN.selectAll("a.cir") //node bubbles
-            .data(bubbleMap.nodesArr, function (d) {
-                return d.url;
-            })
-
-        circle.exit().remove();
-        console.log(circle.enter());
-
+    //node bubbles
+    
         let timer = 0;
         let sglclickPrevent = false;
-        circle.enter().append("a")
+        
+           let circleUp =  circle.data(bubbleMap.nodesArr)
+
+        circleUp.exit().remove();
+    
+        newCircle = circle = circleUp.enter().append("a")
             .attr('class', 'cir')
             //.append("a")
             .attr("xlink:href", function (d) {
-                console.log("@@@@@@@@@@@@draw node: " + d.name);
+             //   console.log("@@@@@@@@@@@@draw node: " + d.name);
                 return d.url;
             })
             .on("click", function (d) {//update this infor in
@@ -334,11 +374,11 @@ var FileLinkMap = function (options) {
 
                 function clickAction() {
                     if(d.serviceUrl && d.serviceUrl!==""){
-                        console.log(d.serviceUrl);
+                    //    console.log(d.serviceUrl);
                         window.open(d.serviceUrl);
                     }
 
-                    console.log(d3.select(this));
+                  //  console.log(d3.select(this));
                     let d3node = d3.select(this)
                     unHighLightAll();
                     hightLightResult(d.name, d3node);
@@ -354,12 +394,14 @@ var FileLinkMap = function (options) {
                 d3.event.stopPropagation()
                 window.open(d.url);
 
-            })
-
-            .append("circle")
+            });
+        
+        
+    
+            circle.append("circle")
             .attr("id", function (d) {
-                console.log("!!!!!!!!!!!!!!")
-                console.log(d);
+             //   console.log("!!!!!!!!!!!!!!")
+            //    console.log(d);
                 return d.name;
             })
             .attr("r", nodeR)
@@ -370,7 +412,7 @@ var FileLinkMap = function (options) {
             .on("mouseover", function (d) {
                 handleMouseOver(d3.select(this), d);
             })         //highlight all links when mouse over
-            .on("mouseout", function (d) {
+            .on("mouseout", function (d) {302
                 handleMouseOut(d3.select(this), d);
 
             })
@@ -379,34 +421,59 @@ var FileLinkMap = function (options) {
                 .on("drag", dragged)
                 .on("end", dragended)
             );
-
-
-        circle = gN.selectAll("a.cir");
-        var circleDraw = gN.selectAll("a.cir").select("circle.nodes");
-
-        var text = gT.selectAll("text.nodeTag")  //node tags
+        
+        
+          circle = circle.merge(circleUp)
+    
+        circleDraw = circle.select("circle")
+        
+        path =path //linking lines
+            .data(bubbleMap.links
+                //function (d) {
+                //return d.source.domain + d.source.name + d.target.domain + d.target.name;}
+            );
+    
+        path.exit().remove();
+    
+    
+       newPath  = path.enter().append("line")
+            .attr("class", function (d) {
+               // console.log("@@@@@@@@@@@@draw link : " + d.source.name + '--------' + d.target.name);
+                return "link " + "licensing";
+            })
+            path =  newPath.merge(path);
+        // path.exit().remove();
+   ;
+     //   console.log(newPath)
+        
+        
+        text = text //node tags
             .data(bubbleMap.nodesArr, function (d) {
                 return d.domain + d.name;
             });
         text.exit().remove();
 
 
-        text.enter().append("text")
+        newText = text.enter().append("text")
             .attr("class", "nodeTag")
             .attr("x", textSize)
             .attr("y", "0.31em")
             .text(function (d) {
                 return d.name;
-            });
-        text = gT.selectAll("text.nodeTag");
+            })
+            text = newText.merge(text)
 
-        simulation
-            .nodes(bubbleMap.nodesArr)
-            .on("tick", ticked);
-
-        simulation.force("link")
-            .links(links);
-
+    
+            simulation
+                .nodes(bubbleMap.nodesArr)
+        
+    
+            simulation.force("link").links(bubbleMap.links)
+    
+    
+    
+    
+        // simulation.alphaTarget(0.3).restart();
 
         var preLengend = svg.selectAll("g.legend").remove();
 
@@ -415,10 +482,13 @@ var FileLinkMap = function (options) {
             .attr("transform", "translate(50,30)")
             .style("font-size", "12px")
             .call(d3.legend);
-
-
+    
+    
+        
+        
         function ticked() {
 
+    
             path
                 .attr("x1", function (d, i) {
                     if (d === undefined) {
@@ -465,6 +535,7 @@ var FileLinkMap = function (options) {
                     if (d === undefined) {
                         return 0;
                     }
+                    let el =d3.select(this.parentNode)
                     return d.x;
                 })
                 .attr("cy", function (d) {
@@ -585,14 +656,13 @@ var FileLinkMap = function (options) {
             d.fx = d3.event.x;
             d.fy = d3.event.y;
 
-            d.x = d3.event.x;
-            d.y = d3.event.y;
+
         }
 
         function dragended(d) {
             if (!d3.event.active) simulation.alphaTarget(0);
-            //d.fx = null;
-            //d.fy = null;
+            d.fx = null;
+            d.fy = null;
         }
 
         function handleMouseOver(nodeCircle, dCircle) {
@@ -628,25 +698,32 @@ var FileLinkMap = function (options) {
 
         bubbleMap.defaultOpa();
         /*freeze**/
+        
+    
+            setTimeout(function () {
+               // console.log("Stop moving!")
+        
+                //simulation.stop();
+                
+                //simulation
+                  //  .nodes(bubbleMap.nodesArr)
+                    //.on("tick", newTick);
+        
+            }, 3000)
+  
 
-      
-        setTimeout(function () {
-            console.log("Stop moving!")
-
-            simulation.stop();
-
-
-            simulation
-                .nodes(bubbleMap.nodesArr)
-                .on("tick", newTick);
-
-        }, 3000)
+        
+        
         svg.call(d3.zoom()
             .scaleExtent([1 / 2, 8])
             .on("zoom", zoomed));
      
     }
 
+    bubbleMap.addnew = function (newlinks) {
+        bubbleMap.update(newlinks, [], [], true)
+        
+    }
 
     function zoomed() {
         container.attr("transform", d3.event.transform);
@@ -660,14 +737,14 @@ var FileLinkMap = function (options) {
         var resultArr = [];
         gN.selectAll("a.cir").select('circle.nodes').attr("opacity", function (d) {
             if (d.coord) {
-                console.log("@@@@@@@@@@@in d3 node dta: " + JSON.stringify(d.coord))
+            //    console.log("@@@@@@@@@@@in d3 node dta: " + JSON.stringify(d.coord))
                 let dx = d.coord.x - center.x;
                 let dy = d.coord.y - center.y;
                 let eps = Number.EPSILON;
                 //console.log(radius * radius - dx * dx - dy * dy);
                 if (radius * radius - dx * dx - dy * dy > eps) {
                     resultArr.push({name: d.name, x: d.coord.x, y: d.coord.y});
-                    console.log("!!!!!!!!!!" + d.name)
+               //     console.log("!!!!!!!!!!" + d.name)
                     return 1;
                 } else {
                     return 0.25;
@@ -684,11 +761,11 @@ var FileLinkMap = function (options) {
         // deal with label
         gT.selectAll("text.nodeTag").attr("visibility", function (d) {
             if (d.coord) {
-                console.log("@@@@@@@@@@@in d3 node dta: " + JSON.stringify(d.coord))
+                //console.log("@@@@@@@@@@@in d3 node dta: " + JSON.stringify(d.coord))
                 let dx = d.coord.x - center.x;
                 let dy = d.coord.y - center.y;
                 let eps = Number.EPSILON;
-                console.log(radius * radius - dx * dx - dy * dy);
+                //console.log(radius * radius - dx * dx - dy * dy);
                 return (radius * radius - dx * dx - dy * dy > eps) ? "visible" : "hidden";
             } else {//This node does not have coordinates
                 // console.log(" node: "+d.url+" does not have coordinates");
@@ -741,9 +818,30 @@ var FileLinkMap = function (options) {
 
 
 
-
-
-/*DOM LOGIC**************************************************************/
+socket.on('update', function (data) {
+    
+    $.ajax({
+        url: url + '/links',
+        type: 'GET',
+        
+        statusCode: {
+            200: function (data) {
+                let links = data.connections;
+             map.update(links, [], [], true)
+                
+            }
+        },
+        error: function (err) {
+            console.log(err);
+            
+            
+        }
+    });
+    
+});
+    
+    
+    /*DOM LOGIC**************************************************************/
 
 var map;
 
@@ -866,8 +964,17 @@ $(window).load(function () {// when web dom ready
     $("#checkdefault").change(function () {
         if ($('#checkdefault').prop('checked')) {
 
-            window.location.href = defaultLocation; //return to default
+         window.location.href = defaultLocation; //return to default
 
+            //TODO: use this for a test
+           //var data = JSON.parse($("#data").val());
+           // var newlinks = data.connections;
+    
+           // newlinks.push({source:"http://www.theworldavatar.com/EBus-203.owl", target:"http://www.theworldavatar.com/test"})
+    
+          //  newlinks.push({source:"Myriel", target:"test"})
+          //  map.update(newlinks, [], [], true)
+            
         }
     });
     /*check box back to default when unload*/
