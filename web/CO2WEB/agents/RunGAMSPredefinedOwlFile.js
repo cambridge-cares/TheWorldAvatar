@@ -67,6 +67,7 @@ function runGAMSPredefined(id, cb){
                 
                 console.log(oldPPfiles)
                 oldPPfiles = oldPPfiles.map( name=> path.join(config.root, name))
+                
                 //delete them all natively
                 async.each(oldPPfiles, fs.unlink, (err)=>{
                     

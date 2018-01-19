@@ -34,24 +34,29 @@ var WriteFileTemp = {
         copyTemp(temp, loc, ()=>{
              //TODO, delete old one
             // todo:SPARQLStr.constructOwlDef()
+            console.log("now modify it")
+
             let url = config.baseUri+"/"+path
-            
-            let QList = SPARQLStr.constructOwlDef({url, imports:attrs.imports||[]})
+            console.log(url)
 
-            //TODO:url most be modified in a file kind of way, because new uri did not exist yet
+            let QList = SPARQLStr.constructOwlDef({uri:url, imports:attrs.imports||[]})
 
 
-            
+                  console.log(attrs)
+
             if(attrs.x &&  attrs.y) {
-               QList= QList.concat(SPARQLStr.constructCoordinate({name: path, url, x: attrs.x, y: attrs.y}))
+               QList= QList.concat(SPARQLStr.constructCoordinate({name: path, url:url, x: attrs.x, y: attrs.y}))
             }
             
             if(attrs.capacity) {
-                QList = QList.concat(SPARQLStr.constructCapacity({name: path, url, value: attrs.capacity}))
+                //QList = QList.concat(SPARQLStr.constructCapacity({name: path, url:url, value: attrs.capacity}))
             }
             //todo, rest of the attrs
             
             let uriList = Array(QList.length).fill(url)
+
+            console.log(QList)
+
 
              SPARQLEpReq.call(uriList, QList, (err)=>{
                  if (err)
