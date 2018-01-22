@@ -284,6 +284,7 @@ var FileLinkMap = function (options) {
     
         for(let link of links){
             if(!includeLink(bubbleMap.links,link)){
+                console.log("!!!!!new link!!!: " + link)
                 bubbleMap.links.push(link)
             }
         }
@@ -815,33 +816,6 @@ var FileLinkMap = function (options) {
 };
 /*END constructor: d3 link graph*********************************************/
 
-
-//TODO: checking condition!!!
-//TODO: handling nodes removal!!//now only adding
-//TODO: add frequency check!!!
-//when recieving update event, call bubble map update
-socket.on('update', function (data) {
-        let url = window.location.href;     // Returns full URL
-
-    $.ajax({
-        url: url + '/links',
-        type: 'GET',
-        
-        statusCode: {
-            200: function (data) {
-                let links = data.connections;
-             map.update(links, [], [], true)
-                
-            }
-        },
-        error: function (err) {
-            console.log(err);
-            
-            
-        }
-    });
-    
-});
     
     
     /*DOM LOGIC**************************************************************/
@@ -1221,6 +1195,7 @@ $(window).load(function () {// when web dom ready
     //blink any updated data
     let blinkTimerList = {};
     let preTime = Date.now();
+    let rerequestTimer, allowRe = true;
     socket.on('update', function (data) {
         console.log("Socket event!!!!!!!!!!!")
         console.log(data)
@@ -1265,6 +1240,41 @@ $(window).load(function () {// when web dom ready
         console.log(name)
         console.log(topNodeName)
         
+   
+         //TODO: check frequency
+         //TODO: this will fire for every update!!!!!! What if the update is rather frequent and is related to 
+    let url = window.location.href;     // Returns full URL
+
+   if(allowRe){ // if allowing rerequest
+    console.log("request links again")
+        $.ajax({ //ajax to get links again
+        url: url + '/links',
+        type: 'GET',
+        
+        statusCode: {
+            200: function (data) {
+                let links = data.connections;
+            
+             map.update(links, [], [], true)
+                
+            }
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+   allowRe = false // disallow re 
+   if(!rerequestTimer){//don't regenerate if existing timer
+rerequestTimer = setTimeout(function(){
+     allowRe = true
+         rerequestTimer = null
+      }, 2000);//time allowed for a rerequest call
+   }
+         
+   } else{
+console.log("Rereequest not allowed for now. Too frequent")
+   }
+
    
 
 
