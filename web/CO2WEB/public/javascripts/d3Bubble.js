@@ -294,7 +294,7 @@ var FileLinkMap = function (options) {
             }
         }
         
-        console.log(bubbleMap.nodesArr)
+        //console.log(bubbleMap.nodesArr)
     
         function includeLink (arr, obj) {
         for(let item of arr){
@@ -318,7 +318,7 @@ var FileLinkMap = function (options) {
             return false;
         }
 
-        console.log(bubbleMap.links)
+        //console.log(bubbleMap.links)
         
 //TODO: find node list, subscribe change event through sockets
         /*subscribe**********/
@@ -343,7 +343,6 @@ var FileLinkMap = function (options) {
           }
     
     
-        console.log(JSON.stringify(bubbleMap.nodesArr))
     //node bubbles
     
         let timer = 0;
@@ -817,9 +816,13 @@ var FileLinkMap = function (options) {
 /*END constructor: d3 link graph*********************************************/
 
 
-
+//TODO: checking condition!!!
+//TODO: handling nodes removal!!//now only adding
+//TODO: add frequency check!!!
+//when recieving update event, call bubble map update
 socket.on('update', function (data) {
-    
+        let url = window.location.href;     // Returns full URL
+
     $.ajax({
         url: url + '/links',
         type: 'GET',
@@ -1262,9 +1265,7 @@ $(window).load(function () {// when web dom ready
         console.log(name)
         console.log(topNodeName)
         
-        if(name === topNodeName){
-            location.reload(true);
-        }
+   
 
 
         // }

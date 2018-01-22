@@ -193,8 +193,8 @@ owlProcessor.getChildrenRecur = function(options, callback) {
                }
            }
 
-           logger.debug("current node map: ")
-           logger.debug(nodeMap)
+          // logger.debug("current node map: ")
+          // logger.debug(nodeMap)
            children = children.filter(function (childUri) {
                return !(nodeMap.has(childUri));
            });
@@ -248,8 +248,8 @@ owlProcessor.getChildrenRecur = function(options, callback) {
                    //logger.debug("********************concated");
                   // logger.debug(util.inspect(connectionsAll));
                   // logger.debug(util.inspect(geoCoordsAll));
-                   logger.debug("All service urls data:")
-                   logger.debug(JSON.stringify(serviceUrlAll))
+                 //  logger.debug("All service urls data:")
+                 //  logger.debug(JSON.stringify(serviceUrlAll))
 
                    callback(null, {connections:connectionsAll, geoCoords:geoCoordsAll, serviceUrls:serviceUrlAll});
 
@@ -364,7 +364,7 @@ owlProcessor.getServiceUrl = function(root) {
 
         return null;
     }
-    logger.debug("found service url in func: " +urls[0].text().trim())
+   // logger.debug("found service url in func: " +urls[0].text().trim())
 
     return  urls[0].text().trim();
 }
@@ -423,7 +423,7 @@ owlProcessor.getPPChildren = function (root) {
     let uris = root.find("//self:PowerPlant//system:hasIRI", owlProcessor.getNSList(root));
     //logger.debug("found node system:hasIRI:"+urisS.length);
 
-    logger.debug("find pp:"+uris.length)
+   // logger.debug("find pp:"+uris.length)
 
     for(let curi of uris){
         //    logger.debug(curi.name());
@@ -512,7 +512,7 @@ owlProcessor.getNSList = function (root) {
     ns.forEach(function (item) {
         list[item.prefix()===null?"self":item.prefix()] = item.href();
     });
-  logger.debug(JSON.stringify(list))
+ // logger.debug(JSON.stringify(list))
     return list;
 };
 

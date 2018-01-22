@@ -37,7 +37,12 @@ function groupwatcher(dir, informIndi){
     var watcher = chokidar.watch(dir, { //watch over specific dir
         ignored: /(\.(?!owl))+/,  //ignore everything does not has .owl in their name
        // ignored :/.*\.txt$/,
-        persistent: true
+        persistent: true,
+        awaitWriteFinish: true,
+        ignoreInitial : true,
+        alwaysStat:true,
+        followSymlinks: false,
+        usePolling: true
     });
 
     /**
@@ -163,6 +168,7 @@ function groupwatcher(dir, informIndi){
     var owlfiles = fsre(dir);
     logger.debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
+    owlfiles = owlfiles.filter((name)=>{return name.match(/^.*\.owl$/)})
     logger.debug(owlfiles);
     owlfiles.forEach(function (owlfile) {
         let targetPath = path.join(dir, owlfile);
@@ -180,8 +186,9 @@ function groupwatcher(dir, informIndi){
 ***/
 
     watcher
-        .on('change', (filepath)=>{//when dir changed
+        .on('change', (filepath, stats)=>{//when dir changed
             logger.debug('File '+ filepath+'has been changed');
+            //logger.debug(stats)
             if(watchDogs.has(filepath)){ //check if this file is required to be watched
                 logger.debug("Ask watchdog to inform")
                 let watchDog = watchDogs.get(filepath);
@@ -190,10 +197,12 @@ function groupwatcher(dir, informIndi){
 
             }
         })
-        .on('add', ()=>{//new file added
+        .on('raw', (event, file, details)=>{
+          logger.debug(event)
+          logger.debug(file)
+
         })
-        .on('unlink', ()=>{//new file removed
-        })
+ 
     
 
     function setWatch(filename) {

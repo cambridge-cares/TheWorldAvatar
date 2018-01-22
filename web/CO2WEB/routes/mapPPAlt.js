@@ -3,7 +3,7 @@ const routerFact = require("./routerFact/mapRouterFactCached");
 var getAltPPcoordi = require('../agents/ReadAltPPCoordi');
 var express= require('express')
 var router = express.Router()
-let RunGAMS = require('../agents/RunGAMSPredefined')
+let RunGAMS = require('../agents/RunGAMSPredefinedOwlFile')
  router = routerFact(router, (cb)=> cb(null, {})
  , {title:"Powerplant Map", subtitle:"Powerplant Map"}, "mapPPAlt");
 

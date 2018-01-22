@@ -49,6 +49,7 @@ var WriteFileTemp = {
             }
             
             if(attrs.capacity) {
+                //TODO: a bug here , probably too many requests at one time, probably this is wrong
                 //QList = QList.concat(SPARQLStr.constructCapacity({name: path, url:url, value: attrs.capacity}))
             }
             //todo, rest of the attrs
