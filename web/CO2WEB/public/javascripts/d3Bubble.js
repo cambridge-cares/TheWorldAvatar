@@ -22,8 +22,8 @@ function getIdFromNameInResults(name) {
 var FileLinkMap = function (options) {
     var width = $(document).width(),
         height = $(document).height() > 2000?$(document).height():2000,
-        charge = options.charge || -3000,
-        distance = options.distance || 100,
+        charge = options.charge || -300,
+        distance = options.distance || 30,
         nodeR = options.nodeR || 15,
         textSize = options.textSize || 5;
 
@@ -274,6 +274,7 @@ var FileLinkMap = function (options) {
     var newPath, newCircle, newText
     bubbleMap.nodesArr = []
     bubbleMap.links = []
+    //TODO: handling node removal
     bubbleMap.update = function (links, coords, serviceUrls, retainSim) {
         coords = coords ||[]
         serviceUrls = serviceUrls || []
@@ -281,21 +282,74 @@ var FileLinkMap = function (options) {
 
         
         let newNodes = packNodesArr(links, [], []);
+        console.log(links)
     
+    //todo: everything !in links, but in bubbleMap.links, delete them
         for(let link of links){
             if(!includeLink(bubbleMap.links,link)){
-                console.log("!!!!!new link!!!: " + link)
+                console.log("new links: ")
+                console.log( link)
+                let existTarget = searchNodes(link.target.url)
+                let existSource = searchNodes(link.source.url)
+                link["target"] = existTarget?existTarget : link["target"]//if target node exists, replace it with existingone 
+                link["source"] = existSource?existSource : link["source"]
                 bubbleMap.links.push(link)
             }
         }
+
+       function searchNodes(url){
+          for(let node of bubbleMap.nodesArr){
+            if (node.url === url){
+                return node
+            }
+          }
+
+          return null
+       }
+
+
+      function deleteFromArr(arr, idx2Del){
+        idx2Del = idx2Del.sort().reverse()
+     for(let idx of idx2Del){
+       arr.splice(idx, 1)
+      }
+      }
+
+        let idx2Del = []
+        for(let idx = 0; idx< bubbleMap.links.length; idx++){
+         let oriLink = bubbleMap.links[idx];
+         if(!includeLink(links, oriLink)){
+            //note down this idx
+             idx2Del.push(idx)
+         }
+        }
+
+        deleteFromArr(bubbleMap.links, idx2Del)
+        
+
+
+
    
+   //todo: everything !in newNodes but in node, delete it 
         for(let node of newNodes){
             if (!includeobj(bubbleMap.nodesArr,node, ['url'])){
                 bubbleMap.nodesArr.push(node)
             }
         }
         
-        //console.log(bubbleMap.nodesArr)
+        let idx2DelNodes = []
+        for(let idx = 0; idx< bubbleMap.nodesArr.length; idx++){
+         let oriNode = bubbleMap.nodesArr[idx];
+         if(!includeobj(newNodes,oriNode, ['url'])){
+            //note down this idx
+             idx2DelNodes.push(idx)
+         }
+        }
+
+        console.log(idx2DelNodes)
+        deleteFromArr(bubbleMap.nodesArr, idx2DelNodes)
+
+        console.log(bubbleMap.nodesArr)
     
         function includeLink (arr, obj) {
         for(let item of arr){
@@ -351,8 +405,11 @@ var FileLinkMap = function (options) {
         
            let circleUp =  circle.data(bubbleMap.nodesArr)
 
+
+         console.log(circleUp.exit().select("circle"))
+        circleUp.exit().selectAll("circle").remove();//REMOVE CHILDREN
         circleUp.exit().remove();
-    
+
         newCircle = circle = circleUp.enter().append("a")
             .attr('class', 'cir')
             //.append("a")
@@ -442,8 +499,7 @@ var FileLinkMap = function (options) {
                 return "link " + "licensing";
             })
             path =  newPath.merge(path);
-        // path.exit().remove();
-   ;
+   
      //   console.log(newPath)
         
         
@@ -473,7 +529,7 @@ var FileLinkMap = function (options) {
     
     
     
-        // simulation.alphaTarget(0.3).restart();
+         simulation.alphaTarget(0.3).restart();
 
         var preLengend = svg.selectAll("g.legend").remove();
 
@@ -1196,6 +1252,7 @@ $(window).load(function () {// when web dom ready
     let blinkTimerList = {};
     let preTime = Date.now();
     let rerequestTimer, allowRe = true;
+    //todo: discerning update with node addition!
     socket.on('update', function (data) {
         console.log("Socket event!!!!!!!!!!!")
         console.log(data)
@@ -1204,6 +1261,7 @@ $(window).load(function () {// when web dom ready
             preTime = Date.now();
           //  let parsedData = JSON.parse(data);
             let name = data.uri;
+            console.log(name)
             //search name among nodes to grab the correct one
             // console.log($('circle'));
             // console.log($('#FH-01.owl'));
@@ -1217,6 +1275,7 @@ $(window).load(function () {// when web dom ready
 
             let orSize = node.attr("r");
             //console.log($('circle#FH-01.owl'));
+            console.log(data.filename)
 
         if(simpleName in blinkTimerList){
             return;
@@ -1234,26 +1293,22 @@ $(window).load(function () {// when web dom ready
             }, 500);//on 0.5s, back to normal
         blinkTimerList[simpleName]  = mTimer;
         
-        //TODO:check if topnode, if so, refresh
-        var data = JSON.parse($("#data").val());//extract link data from web page
-        var topNodeName = data.topnode;
-        console.log(name)
-        console.log(topNodeName)
-        
+ 
    
          //TODO: check frequency
          //TODO: this will fire for every update!!!!!! What if the update is rather frequent and is related to 
     let url = window.location.href;     // Returns full URL
 
-   if(allowRe){ // if allowing rerequest
+    console.log(data)
+   if(allowRe && data.filename == "NuclearPlants\.owl"){ // if allowing rerequest
     console.log("request links again")
         $.ajax({ //ajax to get links again
         url: url + '/links',
         type: 'GET',
         
         statusCode: {
-            200: function (data) {
-                let links = data.connections;
+            200: function (redata) {
+                let links = redata.connections;
             
              map.update(links, [], [], true)
                 

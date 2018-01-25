@@ -52,7 +52,7 @@
                 riskFactor.val(1)
                 excessFactor.val(0.1)
                 break; 
-                        case 2:
+            case 2:
                 costFactor.val(0.5)
                 riskFactor.val(0.5)
                 excessFactor.val(0.25)

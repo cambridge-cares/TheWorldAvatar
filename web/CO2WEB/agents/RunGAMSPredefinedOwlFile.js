@@ -17,12 +17,20 @@ function runGAMSPredefined(id, cb){
     //params is predefined id
     let filename;
     switch(id){
-        case 0:
-            filename = "./agents/results.csv"
-            break;
-        default:
-            throw new Error("non-existing predefined resultset id");
-    }
+       case 0:
+           filename = "./agents/results.csv"
+           break;
+           
+       case 1:
+           filename = "./agents/results2.csv"
+           break;   
+
+     case 2:
+          filename =   "./agents/results3.csv" 
+           break;         
+       default:
+           throw new Error("non-existing predefined resultset id");
+   }
     console.log(filename)
 
     if(!filename){
@@ -53,6 +61,9 @@ function runGAMSPredefined(id, cb){
             })
 
             console.log(csvresult)
+             //return result before wrting back to files
+            cb(null, csvresult)
+
 
             //[{tempLoc, attrList, newFileName}]
             
@@ -100,7 +111,6 @@ function runGAMSPredefined(id, cb){
                         if (err)
                         throw err;
                         
-                        cb(null, csvresult)
                     })
     
     
@@ -129,9 +139,10 @@ function runGAMSPredefined(id, cb){
     
                     
     
+                    //werite new files
                     async.each(packed, writefromTemp.createFile,(err)=>{
                         console.log(err)
-                        cb(err)
+                       // cb(err)
                     } )
                 
            

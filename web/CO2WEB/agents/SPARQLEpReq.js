@@ -1,19 +1,48 @@
 /**
  */
 const request = require('request'),
-    SPARQLStr = require('./SPARQLStr')
+    SPARQLStr = require('./SPARQLStr'),
+    async = require('async'),
+    MAX_REUQESTS_ONETIME = 20
     
     
     
     var SPARQLEqReq =  {
     
-    call: function (uris, updateQs, errCB) {
+    call : function(uris, updateQs, errCB){
+        //first divide
+        this.uris = uris
+        this.updateQs = updateQs
+        this.divide()
+        async.each(this.Queue, this.singleCall.bind(this), errCB)
+
+    },
+
+    divide : function(){
+     this.Queue = [];
+      while(this.uris.length >= MAX_REUQESTS_ONETIME){
+       let uris = this.uris.splice(0, MAX_REUQESTS_ONETIME)
+       let updateQs = this.updateQs.splice(0, MAX_REUQESTS_ONETIME)
+      this.Queue.push({uris, updateQs})
+      }
+      if(this.uris.length){
+    let uris = this.uris.splice(0)
+    let updateQs = this.updateQs.splice(0)
+    this.Queue.push({uris, updateQs})
+      }
+
+     
+    },
+    singleCall: function ({uris, updateQs}, merrCB) {
+        console.log(uris)
+        console.log(updateQs)
+
       let url = this.constructUrl(uris, updateQs)
         console.log("requesting SPARQL ENDPOINT")
         request
             .get(url)
             .on('error', function(err) {
-                errCB(err)
+                merrCB(err)
             })
     },
     
