@@ -753,7 +753,7 @@
       "question": [
         {
           "language": "en",
-          "string": "Which states border Illinois?",
+          "string": "Which state borders Illinois?",
           "keywords": "state, border, Illinois"
         }
       ],
@@ -27127,8 +27127,8 @@
       "question": [
         {
           "language": "en",
-          "string": "How short is the shortest active NBA player?",
-          "keywords": "How short, shortest active player, NBA"
+          "string": "How short is the shortest NBA player?",
+          "keywords": "How short, shortest player, NBA"
         }
       ],
       "query": {
@@ -28016,7 +28016,7 @@
       "question": [
         {
           "language": "en",
-          "string": "Who was Vincent van Gogh inspired by?",
+          "string": "Who was Pablo Picasso inspired by?",
           "keywords": "person, inspiring, Vincent van Gogh"
         }
       ],
