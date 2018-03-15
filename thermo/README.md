@@ -5,7 +5,9 @@
 Repository Name: thermochemistry
 
 Origin: \\vienna\comocommon\Archive\Projects\Preprints\c4e\c4e-179-pb556-DetailedMethodology\Repositories\java-Git
+
 Mantis: File bugs under applicable parent project (e.g. Thermochemistry))
+
 Authors: Philipp Buerger <<pb556@cam.ac.uk>
 
 ### How do I get set up? ###
