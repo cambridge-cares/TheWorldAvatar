@@ -20,7 +20,8 @@
         <dependency>
             <groupId>JOpenBabel</groupId>
             <artifactId>JOpenBabel</artifactId>
-            <version>2.3.1</version>
+            <!-- new version added: 04th-April-2018. from v. 2.3.1 to v. 2.4.1 -->
+            <version>2.4.1</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -37,13 +38,25 @@
             <artifactId>CoMoOpenBabel</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
-            <groupId>org.com.cmclinnovations</groupId>
+            <!--removed org: 04th-April-2018-->
+            <!--<groupId>org.com.cmclinnovations</groupId> -->
+            
+            <groupId>com.cmclinnovations</groupId>
+            
             <artifactId>CMCLIO</artifactId>
-            <version>0.0.1</version>
+            
+            <!-- old version commented: 04th-April2018-->
+            <!--<version>0.0.1</version>-->
+            
+            <!-- new version added: 04th-April2018-->
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <repositories>
+    
+        
         <repository>
             <id>maven.ch</id>
             <name>ch.cam.ac.uk Maven2</name>
@@ -52,6 +65,7 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        
         <repository>
             <id>com.hp.hpl.jena</id>
             <url>http://openjena.org/repo</url>
