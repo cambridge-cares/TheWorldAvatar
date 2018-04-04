@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+  <display-name>JPS</display-name>
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+  </welcome-file-list>
+  <servlet>
+    <servlet-name>ADMSWrapper</servlet-name>
+    <servlet-class>uk.ac.cam.cares.jps.adms.ADMSWrapper</servlet-class>
+  </servlet>
+  
+    <servlet>
+    <servlet-name>ADMSStarter</servlet-name>
+    <servlet-class>uk.ac.cam.cares.jps.adms.ADMSStarter</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>ADMSWrapper</servlet-name>
+    <url-pattern>/ADMS/ADMSWrapper</url-pattern>
+  </servlet-mapping>
+  
+  
+  
+    <servlet-mapping>
+    <servlet-name>ADMSStarter</servlet-name>
+    <url-pattern>/ADMS/ADMSStarter</url-pattern>
+  </servlet-mapping>
+  
+  
+  
+  
+</web-app>

@@ -1,0 +1,5 @@
+Date,Temperature (C),Wind direction (deg),Wind speed (m/s),Humidity (%),Pressure (hPa),UV Index,Cloud Cover (%),Ceiling (m),Dew Point (C),Visibility (m)
+27 Mar 2018 09:03:40 GMT,26,0.0,0.77,83.0,1010.0,3,50.0,9144.0,23.0,6000.0
+27 Mar 2018 09:16:26 GMT,26,0.0,0.77,83.0,1010.0,3,50.0,9144.0,23.0,6000.0
+27 Mar 2018 09:17:45 GMT,26,0.0,0.77,83.0,1010.0,3,50.0,9144.0,23.0,6000.0
+27 Mar 2018 09:25:46 GMT,26,0.0,0.77,83.0,1010.0,3,50.0,9144.0,23.0,6000.0
