@@ -17,21 +17,60 @@
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
         </dependency>
-        <dependency>
+        
+        <!--
+        -author: nk510
+        -old version comment added: 04th-April-2018.
+        -->
+        
+        <!--<dependency>
             <groupId>JOpenBabel</groupId>
             <artifactId>JOpenBabel</artifactId>
             <version>2.3.1</version>
+        </dependency>-->
+        
+        <!--
+         - author: nk510
+         - new dependency added 04th-April, 2018. 
+        -->
+        
+        <dependency>
+        <groupId>JOpenBabel</groupId>
+        <artifactId>JOpenBabel</artifactId>
+        <version>2.4.1</version>
         </dependency>
+        
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
         </dependency>
+        
+       <!--
+       -author: nk510
+       -older version of java3d comment added: 04th-April-2018.
+       -->
+       <!--
         <dependency>
             <groupId>java3d</groupId>
             <artifactId>vecmath</artifactId>
             <version>1.5.2</version>
         </dependency>
+       -->
+       
+       <!--
+       - author: nk510
+       - newer version of java3d added.
+       - this artifact was moved to: javax.vecmath
+       -->
+       <!-- https://mvnrepository.com/artifact/javax.vecmath/vecmath -->
+       <dependency>
+       <groupId>javax.vecmath</groupId>
+       <artifactId>vecmath</artifactId>
+       <version>1.5.2</version>
+       </dependency>
+
+ 
         <dependency>
             <!-- Required by FreeMarkerWriter -->
             <groupId>org.freemarker</groupId>
@@ -64,30 +103,76 @@
             <artifactId>CoMoEnthalpyEstimation</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
+       <!--
+       - author: nk510
+       - comment added on 04th-April-2018.
+       - Project "CoMoMolecularDescriptors" not found in BitBucket repository
+       - In Java project CoMoThermodynamics: Implementation of TorsionalBondIdentifier class is commented because there is no project CoMoMolecularDescriptors in Bitbucket. 
+         This class is used in project CoMoIOChemistry, and invoked in class SimilarTopIdentification, but the class usage is commented by Philip.
+       -->
+       
+       <!--        
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>CoMoMolecularDescriptors</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency> 
+        -->
+        
         <dependency>
-            <groupId>org.com.cmclinnovations</groupId>
+            <groupId>com.cmclinnovations</groupId>
             <artifactId>CMCLIO</artifactId>
-            <version>0.0.1</version>
+            
+            <!--
+            - author: nk510 
+            - comment added: 04th-April-2018
+            -->
+            <!--<version>0.0.1</version> -->
+            
+            <!-- 
+            - author: nk510
+            - new version added: 04th-April-2018
+            -->
+            <version>0.0.1-SNAPSHOT</version>
+            
         </dependency>
+        
     </dependencies>
     <repositories>
-        <repository>
+    
+        <!-- 
+         - author: nk510.
+         - Service Unavailable : https://maven.ch.cam.ac.uk/m2repo 
+         - comment added: 04th-April-2018. 
+        -->
+        <!--<repository>
             <id>maven.ch</id>
             <name>ch.cam.ac.uk Maven2</name>
             <url>https://maven.ch.cam.ac.uk/m2repo</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
-        </repository>
+        </repository> -->
+        
         <repository>
             <id>com.hp.hpl.jena</id>
             <url>http://openjena.org/repo</url>
         </repository>
+        
+        <repository>
+        <!--
+        - author: nk510 
+        - glpk repository required XypronRelease. Added 04th-April-2018.
+        - instructions given at: http://glpk-java.sourceforge.net/
+        -->
+            <id>XypronRelease</id>
+            <name>Xypron Release</name>
+            <url>https://www.xypron.de/repository</url>
+            <layout>default</layout>
+        </repository>
+        
+        
     </repositories>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
