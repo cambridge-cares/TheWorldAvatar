@@ -111,6 +111,15 @@ public class AgentLocator {
 		String relativePath = getProperty(keyForRelativePath);
 		return getJPSRootDirectory() + "/" + relativePath;
 	}
+	
+	/**
+	 * @param pythonScriptName (including the .py extension)
+	 * @return
+	 */
+	public static String getPathToPythonScript(String pythonScriptName) {
+		String relativePath = getProperty("reldir.python");
+		return getJPSRootDirectory() + "/" + relativePath + "/" + pythonScriptName;
+	}
 
 	/**
 	 * If there is a test property file with the key then its value is returned.
