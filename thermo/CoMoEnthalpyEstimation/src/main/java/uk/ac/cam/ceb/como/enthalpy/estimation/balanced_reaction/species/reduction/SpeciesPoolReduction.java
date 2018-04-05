@@ -20,7 +20,7 @@ public class SpeciesPoolReduction {
     
 	/*
 	 * Constructors of this class are added by using ObjectPoolCalculator's calculator as an argument, 
-	 * because it is used in class SystematicPoolReductionAlgorithm constructor that extends SpeciesPoolReduction constructor.
+	 * because it is used in class SystematicPoolReductionAlgorithm that extends SpeciesPoolReduction class.
 	 */
 	/**
 	 * @author nk510
