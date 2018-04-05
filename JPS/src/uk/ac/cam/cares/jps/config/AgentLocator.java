@@ -43,12 +43,12 @@ public class AgentLocator {
 			index = path.lastIndexOf("\\JPS");
 		}
 		if (index == -1) {
-			throw new RuntimeException("The root directory for JSP was not found, path = " + path);
+			throw new RuntimeException("The root directory for JPS was not found, path = " + path);
 		}
 		
 		jpsRootDirectory = path.substring(0, index + 4);
 		// TODO-AE log
-		System.out.println("jspRootDirectory = " + jpsRootDirectory);
+		System.out.println("jpsRootDirectory = " + jpsRootDirectory);
 		
 //		String current;
 //		try {
