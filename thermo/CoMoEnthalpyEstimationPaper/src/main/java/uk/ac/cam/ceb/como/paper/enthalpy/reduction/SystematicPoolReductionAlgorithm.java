@@ -90,7 +90,7 @@ public class SystematicPoolReductionAlgorithm extends SpeciesPoolReduction {
     /*
      * (non-Javadoc)
      * @see uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.reduction.SpeciesPoolReduction#getReducedObjectPool()
-     * Fixed pool.getValidatedObjects() by providing declaration of pool in upper class.
+     * Fixed pool.getValidatedObjects() and pool.invalidate(s) by providing declaration of pool in upper class.
      */
     @Override
     public void reduce() throws Exception {
