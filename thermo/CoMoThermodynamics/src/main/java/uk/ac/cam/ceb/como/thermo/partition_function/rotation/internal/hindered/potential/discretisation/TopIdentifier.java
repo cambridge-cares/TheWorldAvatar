@@ -10,7 +10,13 @@ import org.apache.log4j.Logger;
 import uk.ac.cam.ceb.como.thermo.calculator.rotation.internal.util.IRUtils;
 import org.xmlcml.cml.element.CMLBond;
 import org.xmlcml.cml.element.CMLMolecule;
-import uk.ac.cam.ceb.como.descriptor.molecular.CompoundDescriptionBuilderIntf;
+
+/**
+ * @author nk510
+ */
+/* added as comment 04th-April-2018.
+ * import uk.ac.cam.ceb.como.descriptor.molecular.CompoundDescriptionBuilderIntf; 
+ */
 
 /**
  *
@@ -21,14 +27,25 @@ public class TopIdentifier {
     protected CMLMolecule mol = null;
     protected Top top = null;
     protected String topDescr = null;
-    protected CompoundDescriptionBuilderIntf builder = null;
+ 
+    /**
+     * @author nk510
+     */
+ /* comment added 04th-April-2018.
+  *    protected CompoundDescriptionBuilderIntf builder = null;
+  */
     
     private Logger logger = Logger.getLogger(getClass().getName());
     
-    public TopIdentifier(CompoundDescriptionBuilderIntf builder) {
+    /**
+     *@author nk510 
+     */
+ /* comment added 04th-April-2018. 
+  *  public TopIdentifier(CompoundDescriptionBuilderIntf builder) {
         this.builder = builder;
     }
     
+  
     public TopIdentifier(CompoundDescriptionBuilderIntf builder, Top top) throws Exception {
         this.builder = builder;
         if (top != null && builder != null) {
@@ -56,7 +73,7 @@ public class TopIdentifier {
         topDescr = topDescription;
         this.mol = mol;
     }
-    
+  */  
     public CMLMolecule getCMLMolecule() {
         return mol;
     }
@@ -69,26 +86,43 @@ public class TopIdentifier {
         return topDescr;
     }
     
-    public CompoundDescriptionBuilderIntf getCompoundDescriptionBuilder() {
+    /**
+     * 
+     * @author nk510
+     */
+ /* comment added: 04th-April-2018.
+  * 
+  *    public CompoundDescriptionBuilderIntf getCompoundDescriptionBuilder() {
         return builder;
     }
-    
+ */   
     public void setCMLMolecule(CMLMolecule mol) {
         this.mol = mol;
     }
     
-    public void setTop(Top top) throws Exception {
+/**
+ * @author nk510    
+ */
+/* comment added: 04th-April-2018.
+ *    public void setTop(Top top) throws Exception {
         if (top != null && builder != null) {
             this.top = top;
             topDescr = builder.build(this.top.asCMLMolecule());
         }
     }
+*/    
     
     public void setTopDescription(String topDescription) {
         topDescr = topDescription;
     }
 
-    public void set(CMLMolecule mol, Top top) throws Exception {
+    /**
+     * @author nk510
+     * 
+     * 
+     */
+/* comment added: 04th-April-2018. 
+ *   public void set(CMLMolecule mol, Top top) throws Exception {
         setCMLMolecule(mol);
         setTop(top);
     }
@@ -111,15 +145,17 @@ public class TopIdentifier {
     public Collection<Top> identify(Top top) throws Exception {
         return identify(getCMLMolecule(), top);
     }
-    
+ */   
     public Collection<Top> identify(String topDescription) throws Exception {
         return identify(getCMLMolecule(), topDescription);
     }
-    
-    public Collection<Top> identify(CMLMolecule mol, Top top) throws Exception {
+   /**
+    *@author nk510   
+    */
+ /*   public Collection<Top> identify(CMLMolecule mol, Top top) throws Exception {
         return identify(mol, getCompoundDescriptionBuilder().build(top.asCMLMolecule()));
     }
-    
+ */   
     public Collection<Top> identify(CMLMolecule mol, String topDescription) throws Exception {
         Collection<Top> identifiedTops = new ArrayList<Top>();
         String refTop = topDescription;
@@ -136,11 +172,26 @@ public class TopIdentifier {
                         continue;
                     }
                     if (cmlTop.getBondArray().size() > 0 && cmlTop.getAtomArray().size() > 1) {
-                        String cmp = getCompoundDescriptionBuilder().build(cmlTop).trim();
-                        //System.out.println(cmp);
-                        if (refTop.trim().equalsIgnoreCase(cmp)) {
+                    	
+                   /**
+                    * @author nk510
+                    */
+                    	
+                    /* added: 04th-April-2018  
+                     *  String cmp = getCompoundDescriptionBuilder().build(cmlTop).trim();
+                     */
+                       
+                    	//System.out.println(cmp);
+                
+                    	
+                /**
+                  * @author nk510       
+                  */
+                /* added: 04th-April-2018.
+                 *    	if (refTop.trim().equalsIgnoreCase(cmp)) {
                             identifiedTops.add(tops[i]);
                         }
+                 */
                     }
                 }
             } catch (Exception ex) {
