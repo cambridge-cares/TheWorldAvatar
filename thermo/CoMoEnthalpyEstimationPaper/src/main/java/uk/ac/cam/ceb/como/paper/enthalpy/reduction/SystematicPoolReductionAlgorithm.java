@@ -42,7 +42,10 @@ public class SystematicPoolReductionAlgorithm extends SpeciesPoolReduction {
    /**
     * @author nk510
     */
-   // Missing default constructor of upper class SpeciesPoolReduction is constructed . 
+   /*
+    * Missing default constructor of upper class SpeciesPoolReduction is constructed 
+    */
+   
      public SystematicPoolReductionAlgorithm() {
     
      }
@@ -84,6 +87,11 @@ public class SystematicPoolReductionAlgorithm extends SpeciesPoolReduction {
         this.maxIteration = maxIteration;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.reduction.SpeciesPoolReduction#getReducedObjectPool()
+     * Fixed pool.getValidatedObjects() by providing declaration of pool in upper class.
+     */
     @Override
     public void reduce() throws Exception {
         for (int i = 0; i < maxIteration; i++) {
@@ -103,7 +111,11 @@ public class SystematicPoolReductionAlgorithm extends SpeciesPoolReduction {
             }
         }
     }
-    
+    /*
+     * (non-Javadoc)
+     * @see uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.reduction.SpeciesPoolReduction#getReducedObjectPool()
+     * Fixed pool.getValidatedObjects() by providing declaration of pool in upper class.
+     */
     protected Set<Species> filterForUnusedSpecies(Map<Species, Map<Reaction, Boolean>> results) {
         Set<Species> used = new HashSet<>();
         Set<Species> unused = new HashSet<>();
@@ -231,6 +243,11 @@ public class SystematicPoolReductionAlgorithm extends SpeciesPoolReduction {
         return extendedResults;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.reduction.SpeciesPoolReduction#getReducedObjectPool()
+     * Fixed pool.getValidatedObjects() by providing declaration of pool in upper class.
+     */
     protected Map<Species, Collection<ReactionList>> leaveOneOutCrossValidation() {
         Map<Species, Collection<ReactionList>> results = new HashMap<>();
         int ctr = 1;
@@ -267,6 +284,11 @@ public class SystematicPoolReductionAlgorithm extends SpeciesPoolReduction {
         return results;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.reduction.SpeciesPoolReduction#getReducedObjectPool()
+     * Fixed pool.getValidatedObjects() by providing declaration of pool in upper class.
+     */
     @Override
     public ObjectPool<Species> getReducedObjectPool() {
         return getPool(pool.getValidatedObjects(), true);
