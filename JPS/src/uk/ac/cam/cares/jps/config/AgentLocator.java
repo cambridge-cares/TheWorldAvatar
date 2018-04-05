@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.config;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -13,8 +14,8 @@ import org.apache.http.util.EntityUtils;
 public class AgentLocator {
 
 	private static AgentLocator instance = null;
-	private static String PROPERTIES_PATH = "uk/ac/cam/cares/jps/config/";
 	
+	private String jpsRootDirectory = null;
 	private Properties jpsProps = null;
 	private Properties jpsTestProps = null;
 	private String url = null;
@@ -32,6 +33,32 @@ public class AgentLocator {
 	}
 
 	private void init() {
+		
+		String path = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+		int index = path.lastIndexOf("/JPS");
+		if (index == -1) {
+			index = path.lastIndexOf("\\JPS");
+		}
+		if (index == -1) {
+			throw new RuntimeException("The root directory for JSP was not found, path = " + path);
+		}
+		
+		jpsRootDirectory = path.substring(0, index + 4);
+		// TODO-AE log
+		System.out.println("jspRootDirectory = " + jpsRootDirectory);
+		
+//		String current;
+//		try {
+//			current = new File( "." ).getCanonicalPath();
+//			System.out.println("Current dir:"+current);
+//	        String currentDir = System.getProperty("user.dir");
+//	        System.out.println("Current dir using System:" +currentDir);
+//		} catch (IOException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+		
+		
 		jpsProps = loadProperties("jps.properties");
 		if (jpsProps == null) {
 			// TODO-AE Fatal error, stop application
@@ -49,29 +76,16 @@ public class AgentLocator {
 	}
 	
 	private Properties loadProperties(String fileName) {
-		// String rootPath =
-		// Thread.currentThread().getContextClassLoader().getResource("").getPath();
-		
-
-		
-//		String current;
-//		try {
-//			current = new File( "." ).getCanonicalPath();
-//			System.out.println("Current dir:"+current);
-//	        String currentDir = System.getProperty("user.dir");
-//	        System.out.println("Current dir using System:" +currentDir);
-//		} catch (IOException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
 	      
 		//TODO-AE putting the properties file to java package is not that nice
-		String configPath = PROPERTIES_PATH + fileName;
+		String configPath = getJPSRootDirectory() + "/conf/" + fileName;
 		System.out.println("Loading " + configPath);
 		
 		try {
+			FileInputStream inputStream = new FileInputStream(configPath);
 			Properties props = new Properties();
-			props.load(getClass().getClassLoader().getResourceAsStream(configPath));
+			//props.load(getClass().getClassLoader().getResourceAsStream(configPath));
+			props.load(inputStream);
 			return props;
 		} catch (IOException e1) {
 			// TODO-AE log
@@ -87,6 +101,15 @@ public class AgentLocator {
 //		}
 
 		return null;
+	}
+	
+	private static String getJPSRootDirectory() {
+		return getSingleton().jpsRootDirectory;
+	}
+	
+	public static String getAbsolutePath(String keyForRelativePath) {
+		String relativePath = getProperty(keyForRelativePath);
+		return getJPSRootDirectory() + "/" + relativePath;
 	}
 
 	/**
