@@ -35,6 +35,9 @@ public class AgentLocator {
 	private void init() {
 		
 		String path = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+		if ((path.indexOf("/") == 0) || (path.indexOf("\\") == 0)) {
+			path = path.substring(1);
+		}
 		int index = path.lastIndexOf("/JPS");
 		if (index == -1) {
 			index = path.lastIndexOf("\\JPS");
@@ -110,6 +113,15 @@ public class AgentLocator {
 	public static String getAbsolutePath(String keyForRelativePath) {
 		String relativePath = getProperty(keyForRelativePath);
 		return getJPSRootDirectory() + "/" + relativePath;
+	}
+	
+	/**
+	 * @param pythonScriptName (including package name followed by script name and .py extension, e.g. caresjpsadmsinputs/ADMSGeoJsonGetter.py)
+	 * @return
+	 */
+	public static String getPathToPythonScript(String pythonScriptName) {
+		String relativePath = getProperty("reldir.python");
+		return getJPSRootDirectory() + "/" + relativePath + "/" + pythonScriptName;
 	}
 
 	/**

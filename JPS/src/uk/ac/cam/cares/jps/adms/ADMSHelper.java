@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 
 import uk.ac.cam.cares.jps.config.AgentLocator;
+import uk.ac.cam.cares.jps.util.PythonHelper;
 
 /**
  * Servlet implementation class ADMSHelper
@@ -43,18 +44,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
 		// -- Convert from String to Array of Strings -- //
 		// String[] stringArray = g.fromJson(jsonString, String[].class);
 		
-
-		
-		String[] cmd = {
-			"python",
-			"C:\\Users\\WE\\Desktop\\JPS\\JParkSimulator-git\\JPS\\python\\caresjpsadmsinputs\\ADMSGeoJsonGetter.py",
-			g.toJson(jsonString)
-		};
-		
-		Process p = Runtime.getRuntime().exec(cmd);
-		
-		BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-		String result = stdInput.readLine();
+		String result = PythonHelper.callPython("caresjpsadmsinputs/ADMSGeoJsonGetter.py", g.toJson(jsonString));
 		
 //		String s = "";
 //		String result = "";
