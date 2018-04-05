@@ -39,21 +39,46 @@ public class SystematicPoolReductionAlgorithm extends SpeciesPoolReduction {
     protected int maxIteration = 1;
     protected boolean excludeUnusedSpecies = false;
 
-    public SystematicPoolReductionAlgorithm() {
-    }
-
+   /**
+    * @author nk510
+    */
+   // Missing default constructor of upper class SpeciesPoolReduction is constructed . 
+     public SystematicPoolReductionAlgorithm() {
+    
+     }
+   
+    /**
+     * @author nk510
+     * @param calculator
+     */
     public SystematicPoolReductionAlgorithm(ObjectPoolCalculator calculator) {
         super(calculator);
     }
+    
+    /**
+     * @author nk510
+     * @param listCalculator
+     */
     
     public void set(ListCalculator<Double> listCalculator) {
         this.listCalculator = listCalculator;
     }
     
+    /**
+     * @author nk510
+     * @param enthalpyThreshold
+     * @param contributionThreshold
+     */
+    
     public void set(double enthalpyThreshold, double contributionThreshold) {
         this.contributionThreshold = contributionThreshold;
         this.threshold = enthalpyThreshold;
     }
+    
+    /**
+     * @author nk510
+     * @param maxIteration
+     */
 
     public void set(int maxIteration) {
         this.maxIteration = maxIteration;
