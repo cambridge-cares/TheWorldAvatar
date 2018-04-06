@@ -407,7 +407,8 @@ owlProcessor.getChildren = function(root) {
         //    logger.debug(curi.name());
         children.push(curi.text().trim());//push to targets list
     }
-    
+
+       
     //delete # (location part)
     children = children.map((uri)=>{
         return uri.split("#")[0]

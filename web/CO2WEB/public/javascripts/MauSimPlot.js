@@ -24,6 +24,7 @@ var socket = io();
         ,"V_TotalLatentCoolingDutyOfMAU-C7-1":{uri : "http://www.theworldavatar.com/BMS/MAU-C7-1.owl", name:"V_TotalLatentCoolingDutyOfMAU-C7-1"}
         ,"V_CalcVolumetricF_CHW-001":{uri : "http://www.theworldavatar.com/BMS/MAU-C7-1.owl", name:"V_CalcVolumetricF_CHW-001"}
 
+
     };
 
 
@@ -85,12 +86,10 @@ var socket = io();
         }
         mausimplot.displaySingleSetInput = function (singleSetIn) {
 
-            console.log(singleSetIn)
             let value = singleSetIn.value;
             let name = singleSetIn.name;
-            let unit = singleSetIn.unit;
-    
-    
+			            let unit = singleSetIn.unit;
+
             let  template =`<tr><td>${name}</td><td>${value}</td><td>${unit}</td></tr>`;
             console.log(template)
             inputSetTable.after(template);

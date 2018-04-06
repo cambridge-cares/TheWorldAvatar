@@ -207,7 +207,7 @@ PopupMap.prototype = {
      */
     formatContent: function (attrPairs, uri) {
 
-        let thead = "<table class='table-attr'>";
+        let thead = "<table id='table"+uri+"' class='table-attr'>";
         attrPairs.forEach((pair) => {
             if (this.editable) {
                 thead += "<tr><td>" + pair.name + "</td><td><input id='" + uri + "#" + pair.name + "' type='text' value='" + pair.value + "'>" + "</td><td>" + pair.unit + "</td></tr>";
@@ -375,18 +375,25 @@ PopupMap.prototype = {
 
     formatPopup : function (attrPairs, muri, marker) {
         const self = this;
+
         var infowindow = new google.maps.InfoWindow({
             content: self.formatContent(attrPairs, muri)
         });
         if (self.editable) {//only define click handler when this map is editable
-            google.maps.event.addListener(infowindow, 'domready', function () {
+            google.maps.event.addListener(infowindow, 'domready',  function (){
                 let submitId = "#" + jq("btn" + muri);
                 let errMsgBox = $("#" + jq("err-msg-panel-" + muri));
-
+				let infobox = $("#"+jq("table"+muri))
+                let mattrs = attrPairs
                 let modifications = {};
 
-                $(document).on('input', 'input', function () {//when user makes input
+				 console.log(muri)
+				 console.log(infobox)
+				 console.log(mattrs)
+
+                infobox.on('input', 'input',  function(){//when user makes input
                     console.log("input changed");
+
                     self.cleanMsg(errMsgBox);
                     let el = $(this), value = el.val();
                     if (value === "") {
@@ -399,10 +406,10 @@ PopupMap.prototype = {
                     console.log("attr " + attrid + " " + value);
 
                     let copyed = getAttrPairFromName(name);
-                    console.log(copyed)
                     // if (copyed.datatype && validateInput(value, copyed.datatype)) {
                     //=>Add this value to modificaition list
-                    //copyed['oldvalue'] = copyed['value'];
+					console.log(copyed)
+                    copyed['oldvalue'] = copyed['value'];
                     copyed['value'] = value;
                     modifications[name] = copyed;
                     //} else {//=>opps, type err, inform user
@@ -411,6 +418,7 @@ PopupMap.prototype = {
                 });
                 $(document).on('click', submitId, function () {
                     if(Object.keys(modifications).length < 1){//do nothing if no modific
+					console.log('no change')
                         return;
                     }
                     console.log(modifications);
@@ -429,17 +437,19 @@ PopupMap.prototype = {
 
                     });
                 });
+				
+				        function getAttrPairFromName(name) {
+            let searched = mattrs.filter((item) => {
+                return item.name === name;
+            });
+            return searched.length > 0 ? searched[0] : null;
+        }
             });
         }
 
         infowindow.open(self.googleMap, marker);
 
-        function getAttrPairFromName(name) {
-            let searched = attrPairs.filter((item) => {
-                return item.name === name;
-            });
-            return searched.length > 0 ? searched[0] : null;
-        }
+
         function validateInput(newValue, type) {
             switch (type) {
                 case "string":

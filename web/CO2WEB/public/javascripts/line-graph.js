@@ -309,7 +309,7 @@ function LineGraph(argsMap) {
         if(rounding.length == 0) {
             displayNames.forEach(function (v, i) {
                 // set the default to 0 decimals
-                rounding[i] = 0;
+                rounding[i] = 3;
             })
         }
 
@@ -538,13 +538,11 @@ function LineGraph(argsMap) {
             .call(yAxisLeft);
 
 			
-		        var nodes = graph.selectAll("g.y.axis.left > g").select('text')[0];
-
-        for(let mnode of nodes)
-        {
-            //console.log(nodes[i].innerHTML)
-            mnode.innerHTML = mnode.innerHTML + data.unit;
-        }	
+          var nodes = graph.selectAll("g.y.axis.left > g").select("text")[0];
+		  for (let node of nodes){
+			  node.innerHTML = node.innerHTML + data.unit;
+			  
+		  }
 			
 			
 			
@@ -940,7 +938,6 @@ function LineGraph(argsMap) {
         graph.selectAll("text.legend.value")
             .text(function(d, i) {
                 var valuesForX = getValueForPositionXFromData(xPosition, i);
-                console.log(valuesForX)
                 dateToShow = valuesForX.date;
                 return valuesForX.value;
             })
