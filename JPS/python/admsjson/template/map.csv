@@ -1,0 +1,8 @@
+cp,Cp_MaterialInWasteStream-001
+molmass,ChemSpecies_Combined_MolecularMass
+density,Density_MaterialInWasteStream-001
+temperature,Temperature_MaterialInWasteStream-001
+massflux,massF_WasteStream-001
+massH2O,SourceMassH2Oratio
+pollutants,ChemSpecies_%_EmissionRate,Mixture_1,system:hasProperty,http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate
+pressure,Pressure_MaterialInWasteStream-001
