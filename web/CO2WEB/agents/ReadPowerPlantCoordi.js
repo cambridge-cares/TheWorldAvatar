@@ -31,7 +31,8 @@ function readPPCoordi(callback) {
 
             async.concat(listUrinLoc, queryCoord , function (err, dataset) {
             if(err){
-                callback(err);
+				console.log(err);
+               // callback(err);
                 return;
             }
                 //logger.debug(JSON.stringify(dataset))

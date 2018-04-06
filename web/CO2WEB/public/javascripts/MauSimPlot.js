@@ -23,7 +23,7 @@ var socket = io();
         ,"V_TotalSensibleCoolingDutyOfMAU-C7-1":{uri : "http://www.theworldavatar.com/BMS/MAU-C7-1.owl", name:"V_TotalSensibleCoolingDutyOfMAU-C7-1"}
         ,"V_TotalLatentCoolingDutyOfMAU-C7-1":{uri : "http://www.theworldavatar.com/BMS/MAU-C7-1.owl", name:"V_TotalLatentCoolingDutyOfMAU-C7-1"}
         ,"V_CalcVolumetricF_CHW-001":{uri : "http://www.theworldavatar.com/BMS/MAU-C7-1.owl", name:"V_CalcVolumetricF_CHW-001"}
-        ,"V_HeatDutyOfMAU-HE-C7-1_3":{uri : "http://www.theworldavatar.com/BMS/MAU-C7-1.owl", name:"V_HeatDutyOfMAU-HE-C7-1_3"}
+
 
     };
 
@@ -88,7 +88,9 @@ var socket = io();
 
             let value = singleSetIn.value;
             let name = singleSetIn.name;
-            let  template =`<tr><td>${name}</td><td>${value}</td></tr>`;
+			            let unit = singleSetIn.unit;
+
+            let  template =`<tr><td>${name}</td><td>${value}</td><td>${unit}</td></tr>`;
             console.log(template)
             inputSetTable.after(template);
 

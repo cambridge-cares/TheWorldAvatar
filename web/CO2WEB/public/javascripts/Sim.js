@@ -264,7 +264,8 @@ method:"POST",
 
     updateOutputMap:function (result) {
       console.log(this.outputMap);
-	  if(!result[0]|| result[0].constructor !== "array"){
+	  result[0] = JSON.parse(result[0])
+	  if(!result[0]|| result[0].constructor !== Array){
 		  return;
 	  }
         result[0].forEach((datum)=>{

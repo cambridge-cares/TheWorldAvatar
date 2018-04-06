@@ -309,7 +309,7 @@ function LineGraph(argsMap) {
         if(rounding.length == 0) {
             displayNames.forEach(function (v, i) {
                 // set the default to 0 decimals
-                rounding[i] = 0;
+                rounding[i] = 3;
             })
         }
 
@@ -538,13 +538,11 @@ function LineGraph(argsMap) {
             .call(yAxisLeft);
 
 			
-		        var leftlabel = document.getElementsByClassName("y axis left");
-        var nodes = leftlabel[0].childNodes;
-        console.log(data.unit)
-        for(var i = 0; i < nodes.length - 1;i++)
-        {
-            nodes[i].childNodes[1].innerHTML = nodes[i].childNodes[1].innerHTML + data.unit;
-        }	
+          var nodes = graph.selectAll("g.y.axis.left > g").select("text")[0];
+		  for (let node of nodes){
+			  node.innerHTML = node.innerHTML + data.unit;
+			  
+		  }
 			
 			
 			

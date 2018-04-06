@@ -408,7 +408,12 @@ owlProcessor.getChildren = function(root) {
         children.push(curi.text().trim());//push to targets list
     }
 
-    return children;
+       
+    //delete # (location part)
+    children = children.map((uri)=>{
+        return uri.split("#")[0]
+    })
+    return Array.from(new Set(children));
 }
 
 owlProcessor.getPPChildren = function (root) {

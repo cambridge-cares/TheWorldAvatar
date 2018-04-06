@@ -53,7 +53,9 @@ function runGAMSPredefined(id, cb){
             data.splice(0,1)
             let csvresult = data.map((item) =>{
                 return {
-                    uri:'nuc'+item[0],
+                    name:'nuc'+item[0],
+					uri:'http://www.theworldavatar.com/nuc'+item[0]+'.owl',
+
                     capacity:item[1],
                     location:{lat:parseFloat(item[2]), lng:parseFloat(item[3])},
                     type: "nuclear"
@@ -94,7 +96,7 @@ function runGAMSPredefined(id, cb){
                     console.log(deleteStr)
                     QList.push(deleteStr)
                     csvresult.forEach((item) =>{
-                        let childuri = baseUri+"/"+item.uri+'.owl';
+                        let childuri = baseUri+"/"+item.name+'.owl';
                         let updateStr=  SPARQLStr.construct('insertdata', '<http://www.w3.org/2002/07/owl#NamedIndividual>','<http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#hasIRI>',{value:childuri, type:"string"});
                         QList.push(updateStr)
                         console.log(updateStr)
@@ -121,8 +123,8 @@ function runGAMSPredefined(id, cb){
                     //TODO:　pack into above format
     
                     let packed = csvresult.map((item)=>{
-                        let childuri = baseUri+"/"+item.uri + '.owl';
-                        let path = item.uri+'.owl'
+                        let childuri = baseUri+"/"+item.name + '.owl';
+                        let path = item.name+'.owl'
                         let attrs = []
                         //capacity, xcoord, ycoord
                         attrs['x'] = item.location.lng
