@@ -538,12 +538,12 @@ function LineGraph(argsMap) {
             .call(yAxisLeft);
 
 			
-		        var leftlabel = document.getElementsByClassName("y axis left");
-        var nodes = leftlabel[0].childNodes;
-        console.log(data.unit)
-        for(var i = 0; i < nodes.length - 1;i++)
+		        var nodes = graph.selectAll("g.y.axis.left > g").select('text')[0];
+
+        for(let mnode of nodes)
         {
-            nodes[i].childNodes[1].innerHTML = nodes[i].childNodes[1].innerHTML + data.unit;
+            //console.log(nodes[i].innerHTML)
+            mnode.innerHTML = mnode.innerHTML + data.unit;
         }	
 			
 			
@@ -940,6 +940,7 @@ function LineGraph(argsMap) {
         graph.selectAll("text.legend.value")
             .text(function(d, i) {
                 var valuesForX = getValueForPositionXFromData(xPosition, i);
+                console.log(valuesForX)
                 dateToShow = valuesForX.date;
                 return valuesForX.value;
             })

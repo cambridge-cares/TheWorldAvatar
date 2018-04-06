@@ -59,9 +59,9 @@ let inputvalues = [23, 60,25000,80,30];
 
 MAU.runSimulation(inputvalues)
 }
-
-test()
 **/
+
+
 module.exports = RunMAU;
 
 

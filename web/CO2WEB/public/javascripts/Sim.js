@@ -228,6 +228,7 @@ method:"POST",
         console.log("update output map after get inital output Info")
         //update result to outputmap
         console.log("@@@@@@@@@@@@")
+        console.log(result)
         this.updateOutputMap(result);
         cb();
     });
@@ -264,14 +265,18 @@ method:"POST",
 
     updateOutputMap:function (result) {
       console.log(this.outputMap);
-	  if(!result[0]|| result[0].constructor !== "array"){
-		  return;
+      result[0] = JSON.parse(result[0])
+        console.log(result[0].constructor)
+	  if(!result[0]|| result[0].constructor !== Array){
+		  console.log("output info comes in wrong format")
+          return;
 	  }
         result[0].forEach((datum)=>{
           if(datum.name in this.outputMap){
               Object.assign(this.outputMap[datum.name], datum);
           }
         })
+        console.log("initialize output map")
         console.log(this.outputMap)
 
     },

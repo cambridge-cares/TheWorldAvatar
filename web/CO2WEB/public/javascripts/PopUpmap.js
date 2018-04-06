@@ -399,9 +399,10 @@ PopupMap.prototype = {
                     console.log("attr " + attrid + " " + value);
 
                     let copyed = getAttrPairFromName(name);
+                    console.log(copyed)
                     // if (copyed.datatype && validateInput(value, copyed.datatype)) {
                     //=>Add this value to modificaition list
-                    copyed['oldvalue'] = copyed['value'];
+                    //copyed['oldvalue'] = copyed['value'];
                     copyed['value'] = value;
                     modifications[name] = copyed;
                     //} else {//=>opps, type err, inform user
