@@ -16,7 +16,7 @@ import org.apache.catalina.tribes.util.Arrays;
 /**
  * Servlet implementation class AMDSStarter
  */
-@WebServlet("/AMDSStarter")
+@WebServlet("/ADMSStarter")
 public class ADMSStarter extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        

@@ -1,0 +1,170 @@
+"@context":
+
+ontologies:
+
+
+## power_plant
+
+  - id: power_plant
+    preferredPrefix: power_plant
+    title: Power_plant Ontology
+    uri: http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl
+    description: "powerplant"
+    homepage: http://www.theworldavatar.com
+    mailing_list: efo-users@lists.sourceforge.net
+    definition_property:
+      - http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl
+    synonym_property:
+      - http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl
+    hierarchical_property:
+      - http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl
+    hidden_property:
+      - http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl
+    base_uri:
+      - http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#
+    reasoner: OWL2
+    oboSlims: false
+    ontology_purl : http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl
+
+## Building
+  - id: Building
+    preferredPrefix: Building
+    title: Building Ontology
+    uri: http://www.theworldavatar.com/BuildingsLayer.owl
+    description: "BuildingsLayer"
+    homepage: http://www.theworldavatar.com
+    mailing_list: efo-users@lists.sourceforge.net
+    definition_property:
+      - http://www.theworldavatar.com/BuildingsLayer.owl
+    synonym_property:
+      - http://www.theworldavatar.com/BuildingsLayer.owl
+    hierarchical_property:
+      - http://www.theworldavatar.com/BuildingsLayer.owl
+    hidden_property:
+      - http://www.theworldavatar.com/BuildingsLayer.owl
+    base_uri:
+      - http://www.theworldavatar.com/BuildingsLayer.owl#
+    reasoner: OWL2
+    oboSlims: false
+    ontology_purl : http://www.theworldavatar.com/BuildingsLayer.owl
+
+## BMS
+
+  - id: BMS
+    preferredPrefix: BMS
+    title: bms Ontology
+    uri: http://www.theworldavatar.com/BMS4.owl
+    description: "BMS"
+    homepage: http://www.theworldavatar.com
+    mailing_list: efo-users@lists.sourceforge.net
+    definition_property:
+      - http://www.theworldavatar.com/BMS4.owl
+    synonym_property:
+      - http://www.theworldavatar.com/BMS4.owl
+    hierarchical_property:
+      - http://www.theworldavatar.com/BMS4.owl
+    hidden_property:
+      - http://www.theworldavatar.com/BMS4.owl
+    base_uri:
+      - http://www.theworldavatar.com/BMS4.owl#
+    reasoner: OWL2
+    oboSlims: false
+    ontology_purl : http://www.theworldavatar.com/BMS4.owl
+
+## EIP
+
+  - id: EIP
+    preferredPrefix: EIP
+    title: EIP Ontology
+    uri: http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#ChemicalPlant
+    description: "EIP"
+    homepage: http://www.theworldavatar.com
+    mailing_list: efo-users@lists.sourceforge.net
+    definition_property:
+      - http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#ChemicalPlant
+    synonym_property:
+      - http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#ChemicalPlant
+    hierarchical_property:
+      - http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#ChemicalPlant
+    hidden_property:
+      - http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#ChemicalPlant
+    base_uri:
+      - http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#ChemicalPlant#
+    reasoner: OWL2
+    oboSlims: false
+    ontology_purl : http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#ChemicalPlant
+
+
+
+## sensor
+
+  - id: sensor
+    preferredPrefix: sensor
+    title: sensor Ontology
+    uri: http://www.theworldavatar.com/sensor.owl
+    description: "sensor"
+    homepage: http://www.theworldavatar.com
+    mailing_list: efo-users@lists.sourceforge.net
+    definition_property:
+      - http://www.theworldavatar.com/sensor.owl
+    synonym_property:
+      - http://www.theworldavatar.com/sensor.owl
+    hierarchical_property:
+      - http://www.theworldavatar.com/sensor.owl
+    hidden_property:
+      - http://www.theworldavatar.com/sensor.owl
+    base_uri:
+      - http://www.theworldavatar.com/sensor.owl#
+    reasoner: OWL2
+    oboSlims: false
+    ontology_purl : http://www.theworldavatar.com/sensor.owl
+
+
+
+## OntoElectricalNet
+
+  - id: OntoElectricalNet
+    preferredPrefix: OntoElectricalNet
+    title: OntoElectricalNet Ontology
+    uri: http://www.theworldavatar.com/OntoElectricalNet/EN_realization.owl
+    description: "sensor"
+    homepage: http://www.theworldavatar.com
+    mailing_list: efo-users@lists.sourceforge.net
+    definition_property:
+      - http://www.theworldavatar.com/OntoElectricalNet/EN_realization.owl
+    synonym_property:
+      - http://www.theworldavatar.com/OntoElectricalNet/EN_realization.owl
+    hierarchical_property:
+      - http://www.theworldavatar.com/OntoElectricalNet/EN_realization.owl
+    hidden_property:
+      - http://www.theworldavatar.com/OntoElectricalNet/EN_realization.owl
+    base_uri:
+      - http://www.theworldavatar.com/OntoElectricalNet/EN_realization.owl#
+    reasoner: OWL2
+    oboSlims: false
+    ontology_purl : http://www.theworldavatar.com/OntoElectricalNet/EN_realization.owl
+
+
+
+## System
+
+  - id: system
+    preferredPrefix: system
+    title: system Ontology
+    uri: http://www.theworldavatar.com/system.owl
+    description: "system"
+    homepage: http://www.theworldavatar.com
+    mailing_list: efo-users@lists.sourceforge.net
+    definition_property:
+      - http://www.theworldavatar.com/system.owl
+    synonym_property:
+      - http://www.theworldavatar.com/system.owl
+    hierarchical_property:
+      - http://www.theworldavatar.com/system.owl
+    hidden_property:
+      - http://www.theworldavatar.com/system.owl
+    base_uri:
+      - http://www.theworldavatar.com/system.owl#
+    reasoner: OWL2
+    oboSlims: false
+    ontology_purl : http://www.theworldavatar.com/system.owl
