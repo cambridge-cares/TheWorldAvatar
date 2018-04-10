@@ -20,7 +20,7 @@ class admsInputDataRetriever(object):
     BDN = namedtuple('BDN', ['BldNumBuildings','BldName','BldType','BldX','BldY','BldHeight', 'BldLength', 'BldWidth', 'BldAngle'])
     OPT = namedtuple('OPT', ['OptNumOutputs','OptPolName','OptInclude','OptShortOrLong', 'OptSamplingTime','OptSamplingTimeUnits','OptCondition','OptNumPercentiles','OptNumExceedences','OptPercentiles','OptExceedences','OptUnits','OptGroupsOrSource','OptAllSources','OptNumGroups','OptIncludedGroups','OptIncludedSource','OptCreateComprehensiveFile'])
 
-    def __init__(self, topnode, bdnnode=None, range=None, pollutants =['so2'], srcLimit = 5, bdnLimit = 25, filterSrc = False):
+    def __init__(self, topnode, bdnnode=None, range=None, pollutants =['Cl2'], srcLimit = 5, bdnLimit = 25, filterSrc = False):
         '''constructor
         inputs:
         range - user input range {'xmin', 'xmax', 'ymin', 'ymax'}, actual range is the min(user range, region envelope(e.g. jurongisland))
@@ -173,11 +173,11 @@ class admsInputDataRetriever(object):
         returns: data object 
         '''        
         filtered = None
-        if not self.filterSrc:
+        if self.filterSrc:
             filtered =  self.filterSource() 
 
         else: 
-            filtered = self.topnode
+            filtered = (self.topnode,)
         
         s = set()#make a set of substance to query later
         result = []
@@ -185,75 +185,146 @@ class admsInputDataRetriever(object):
             print("connecting: {:s}".format(uri))
             self.connectDB(uri)
             qdata = self.query(
-            """
-            PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
-            PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-            PREFIX plant:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#>
-            PREFIX topology:<http://www.theworldavatar.com/OntoCAPE/meta_model/topology/topology.owl#>
-            PREFIX behavior: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#>
-            PREFIX chemical_process_system:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#>
-            PREFIX phase_system:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#>
-            PREFIX material: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/material.owl#>
+                """
+                PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+                PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+                PREFIX plant:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#>
+                PREFIX topology:<http://www.theworldavatar.com/OntoCAPE/meta_model/topology/topology.owl#>
+                PREFIX behavior: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#>
+                PREFIX chemical_process_system:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#>
+                PREFIX phase_system:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#>
+                PREFIX material: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/material.owl#>
+                PREFIX substance:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#>
 
-            SELECT  ?o ?height ?diameter ?content ?x ?y ?velocity ?massflow ?temp
-            WHERE {{
-            ?o plant:hasHeight ?he.
-            ?he sys:numericalValue ?height .
+                SELECT ?o ?height ?diameter ?content ?x ?y ?velocity ?massflow ?temp ?moleweight ?heatcapa ?density
+                WHERE {{
+                ?o plant:hasHeight ?he.
+                ?he sys:numericalValue ?height .
 
-            ?o plant:hasInsideDiameter ?de .
-            ?de sys:numericalValue ?diameter.
+                 ?o sys:hasSubsystem ?chm.
+                ?chm plant:hasInsideDiameter ?de . #?dev  sys:hasValue ?de.
+                ?de sys:numericalValue ?diameter.
 
-            ?o sys:hasContent ?contentE .
-            ?contentE material:intrinsicCharacteristics ?chemsp.
-            ?chemsp sys:containsDirectly ?content.
-            ?contentE material:thermodynamicBehavior ?phase.
-            ?phase phase_system:has_temperature  ?tempE.
-            ?tempE sys:hasValue ?vte.
-            ?vte sys:numericalValue ?temp .
+                ?phase phase_system:has_temperature  ?tempE.
+                ?tempE sys:hasValue ?vte.
+                ?vte sys:numericalValue ?temp .
 
-            ?o space_and_time_extended:hasGISCoordinateSystem ?coe .
-            ?coe space_and_time_extended:hasProjectedCoordinate_x ?xe.
-             ?xe sys:hasValue ?xv.
-              ?xv sys:numericalValue ?x.
+                ?o space_and_time_extended:hasGISCoordinateSystem ?coe .
+                ?coe space_and_time_extended:hasProjectedCoordinate_x ?xe.
+                 ?xe sys:hasValue ?xv.
+                  ?xv sys:numericalValue ?x.
 
-               ?coe space_and_time_extended:hasProjectedCoordinate_y ?ye.
-             ?ye sys:hasValue ?yv.
-              ?yv sys:numericalValue ?y.
+                   ?coe space_and_time_extended:hasProjectedCoordinate_y ?ye.
+                 ?ye sys:hasValue ?yv.
+                  ?yv sys:numericalValue ?y.
 
-              ?stream topology:leaves ?o.
-              ?stream chemical_process_system:refersToGeneralizedAmount ?ga.
-              ?ga sys:hasSubsystem ?ma.
-              
-              ?ma sys:hasProperty ?ve.
-              ?ve a behavior:Velocity .
-              ?ve sys:hasValue ?vv.
-              ?vv sys:numericalValue ?velocity.
-              
-              ?ma sys:hasProperty ?me.
-              ?me a behavior:ConvectiveMassFlowrate .
-              ?me sys:hasValue ?mv.
-              ?mv sys:numericalValue ?massflow.
-            }}
-            LIMIT 1 
+                  ?stream topology:leaves ?o.
+                  ?stream chemical_process_system:refersToGeneralizedAmount ?ga.
+                  ?ga sys:hasSubsystem ?ma.
+                  
+                  ?ma sys:hasProperty ?ve.
+                  ?ve a behavior:Velocity .
+                  ?ve sys:hasValue ?vv.
+                  ?vv sys:numericalValue ?velocity.
+                  
+                  ?ma sys:hasProperty ?me.
+                  ?me a behavior:ConvectiveMassFlowrate .
+                  ?me sys:hasValue ?mv.
+                  ?mv sys:numericalValue ?massflow.
+    
+                 ?mw a substance:MolecularWeight.
+                 ?mw sys:hasValue ?mwv.
+                 ?mwv  sys:numericalValue ?moleweight.
+    
+                 ?cp a phase_system:ThermodynamicStateProperty.
+                                     ?cp sys:hasValue ?cpv.
+                 ?cpv  sys:numericalValue ?heatcapa.
+    
+                 ?den a phase_system:Density.
+                  ?den sys:hasValue ?denv.
+                 ?denv  sys:numericalValue ?density.
+    
+                }}
+                LIMIT 1 
             """)
 
-            for row in qdata:
-                s.add(row['content'].toPython())
-                result.append(row.asdict())
+
+            
+
+            aresult, = [row.asdict() for row in qdata]
+
+            
+
+
+            
+            qdataC = self.query("""
+                    PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+           PREFIX substance:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#>
+
+            SELECT DISTINCT  ?content
+            WHERE {{
+            ?mix a substance:Mixture.
+            ?mix sys:containsDirectly  ?content. 
+            }}
+            """)
+
+            contents = [row['content'].toPython() for row in qdataC]
+
+            s = s.union(contents)
+            aresult['content'] = contents
+            
+
+            qdataERate = self.query("""
+                    PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+           PREFIX substance:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#>
+           PREFIX behavior:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#>
+
+            SELECT DISTINCT  ?er ?v
+            WHERE {{
+            ?mix a substance:Mixture.
+            ?mix sys:hasProperty  ?er.
+            ?er  a behavior:ConvectiveMassFlowrate.
+                         ?er sys:hasValue ?erv.
+             ?erv sys:numericalValue ?v
+            }}
+            """)
+
+            emissionrates = {row['er'].toPython():row['v'].toPython() for row in qdataERate}
+            #todo: sort emissionrates to order of substances
+
+            sorteder =  []
+            for content in contents:
+                name = content.split('#')[1]
+                for ername, v in emissionrates.items():
+                    if name in ername:
+                        sorteder.append(v)
+
+            print(sorteder)
+            aresult['emissionrates'] = sorteder
+
+            result.append(aresult)
+
+
+
+
+
+            
 
         
         print("FILTERED :")
         print(result)
 
+
+
         
-   
+        '''   
         #use this if need query substance separately
         #query substance for substance related data
         cMap = {}
 
         
         #hard coding for now before I get a better solusion
-        self.connectDB("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl")
+        self.connectDB("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl", connectType = 'parse')
 
         template = """
             PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
@@ -282,18 +353,35 @@ class admsInputDataRetriever(object):
         for sub in s:
             print (sub)
             print (template.format(sub))
-            sdata = self.query(template.format(sub))
-            for row in sdata:
-                cMap[sub] = row
-                break
+            cMap[sub], = self.query(template.format(sub))
+
                
      
+        
+        #todo:construct an array of contents, and corresponding content data
+        
+
+            subData = {}
+            subData['mw'] = [cMap[content]['mw'] for content in src['content'] ]
+            subData['d'] = [cMap[content]['d'] for content in src['content'] ]
+            subData['hc'] = [cMap[content]['hc'] for content in src['content'] ]
+            pollutantnames = [self.polIRI2Name(content) for content in src['content'] ]
+            print(subData)
+            print('!!!!!!!!!!!')
+            print(src['y'].datatype)
+            print(src['y'].value)
+            print(type(src['y'].value))
+
+            print(src['y'].toPython)
+            print(float(src['y']))
+
+        '''
         packed = []
         for src in result:
-            subData = cMap[src['content'].toPython()].asdict()
+            SrcNumPollutants = len(src['content'])
+            pollutantnames = [self.polIRI2Name(content) for content in src['content'] ]
 
-
-            newSrc = admsSrc(SrcName = src['o'].toPython(), SrcHeight = src['height'].toPython(), SrcDiameter = src['diameter'].toPython(),SrcVertVeloc = src['velocity'].toPython(), SrcPolEmissionRate = src['massflow'].toPython(), SrcPollutants = self.polIRI2Name(src['content'].toPython()),SrcTemperature = src['temp'].toPython(), SrcX1 = src['x'].toPython(), SrcY1 = src['y'].toPython(), SrcMolWeight = subData['mw'].toPython(), SrcDensity = subData['d'].toPython(), SrcSpecHeatCap = subData['hc'].toPython())
+            newSrc = admsSrc(SrcName = src['o'].toPython(), SrcHeight = src['height'].toPython(), SrcDiameter = src['diameter'].toPython(),SrcVertVeloc = src['velocity'].toPython(), SrcPolEmissionRate = src['emissionrates'], SrcPollutants = pollutantnames,SrcTemperature = src['temp'].toPython(), SrcX1 = src['x'].toPython(), SrcY1 = src['y'].toPython(), SrcMolWeight = src['moleweight'].toPython(), SrcDensity = src['density'].toPython(), SrcSpecHeatCap = src['heatcapa'].toPython(), SrcNumPollutants=SrcNumPollutants)
             packed.append(newSrc)
 
 
@@ -308,7 +396,7 @@ class admsInputDataRetriever(object):
         if len(bdns) is 0: #range is smaller than any envelope, 
         #then we have to filter indi buildings
             #todo: in this case, should we filter by calculated cnetroid, or a crude one with ground x,y? i'd go with x, y first。。。
-            bdns = self.filterBdns(bdns)
+            bdns = self.filterBdns()
             if len(bdns) is 0:    
                 raise Exception('no bdn within range')
 
@@ -364,7 +452,7 @@ class admsInputDataRetriever(object):
         return tuple(row['bdn'] for row in qb)
 
     #todo
-    def filterBdns(self, bdns):
+    def filterBdns(self):
         '''
         filter individual building to see if they are within range
         get all uris where every x and y in its ground is within range(maybe count ?)
@@ -568,6 +656,9 @@ class admsInputDataRetriever(object):
                 
 
                 #print('bdn x: ' +str( self.rawBdn.BldX[i]))
+                print(type(self.rawBdn.BldX[i]))
+                print(type(src.SrcX1))
+
                 dx, dy = self.rawBdn.BldX[i] - src.SrcX1, self.rawBdn.BldY[i] - src.SrcY1 
 
                 d = dx * dx + dy * dy
@@ -591,14 +682,21 @@ class admsInputDataRetriever(object):
         return self.OPT(numPol,PolNames, [1]*numPol,[0]*numPol,[1]*numPol,[3]*numPol,[0]*numPol,[0]*numPol,[0]*numPol,[0]*80,[0]*80,['ug/m3']*4,1,0,1,"Grouptank001",SrcNames,0)
 
     def polIRI2Name(self, polIRI):
-        substances = {'http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#chlorine':'Cl2'}
+        substances = {'http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#chlorine':'Cl2',
+        'http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#NitrogenDioxide':'NO2',
+        'http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#CarbonMonoxide':'CO',
+        'http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#CarbonDioxide':'CO2'
+        ,'http://www.theworldavatar.com/Plant-001.owl#NitrogenOxides':'NOx'
+
+        }
 
         if polIRI in substances.keys():
             print('Found: '+ substances[polIRI])
             return substances[polIRI]
         else:
-            print ('Not found !!!!')
-            raise Exception('This substance is not defined!!!!')
+            print (polIRI + 'Not found !!!!')
+            #raise Exception('This substance is not defined!!!!')
+            return None
   
     def getWeather(self):
         '''
@@ -645,16 +743,32 @@ class admsInputDataRetriever(object):
 
 
     def queryEndpoint(self, str):
+        def literal2TLit(sparqlres):
+
+            if 'results' not in sparqlres:
+                return
+            for row in sparqlres['results']['bindings']:
+                for name,value in row.items():
+                    if value['type'] == 'literal' and 'datatype' in value:
+                        value['type'] = 'typed-literal'
+
         print('requesting @ '+self.address+" with query:")
         #print(str)
         resp = requests.get(self.address, params = {'query':str}, timeout = 1500, headers = {'user-agent': 'my-app/0.0.1'})
-        
-        print(resp.json())
-        qres = jsresult.JSONResult(resp.json())#json decoded
+        print('raw resp:')
 
+        print(resp.json())
+        result = resp.json()
+        literal2TLit(result)
+        print('literal to typed-literal')
+        print(result)
+        qres = jsresult.JSONResult(result)#json decoded
+        print('after parse:')
         print(qres)
         return qres
 
+
+    
     def queryLocalGraph(self, str): 
         qres = self.g.query(str)
         return qres
@@ -675,7 +789,7 @@ class admsInputDataRetriever(object):
             func(self, address)
         return functionWrapper    
     
-    def connectDB(self, address, connectType = 'parse'):
+    def connectDB(self, address, connectType = 'endpoint'):
         '''connect to db anyhow (we use rdflib graph parse now)
         '''
         def connectDBActual( address):
