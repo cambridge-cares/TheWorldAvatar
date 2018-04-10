@@ -15,7 +15,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.*;
 
-
+import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 /**
  * Servlet implementation class ADMSWrapper
  */
@@ -47,14 +53,14 @@ public class ADMSWrapper extends HttpServlet {
 		
 		Boolean filterSource = (request.getParameter("filterSource").equals("true"));
 		
-		
-		System.out.println("buildingLimit" + buildingLimit);
-		System.out.println("selectedSource" + selectedSource);
-		System.out.println("buildingTopNode" + buildingTopNode);
-		System.out.println("coordinates" + coordinates);
-		System.out.println("substances" + Arrays.toString(substances));
-		System.out.println("filterSource" + filterSource);
-		
+//		
+//		System.out.println("buildingLimit" + buildingLimit);
+//		System.out.println("selectedSource" + selectedSource);
+//		System.out.println("buildingTopNode" + buildingTopNode);
+//		System.out.println("coordinates" + coordinates);
+//		System.out.println("substances" + Arrays.toString(substances));
+//		System.out.println("filterSource" + filterSource);
+//		
 		ArrayList<String> args  = new ArrayList<String>();
 		//  [selectedSource, buildingTopNode,coordinates, substances, builingLimit,filterSource];
 		args.add(selectedSource.toString());
@@ -86,19 +92,12 @@ public class ADMSWrapper extends HttpServlet {
 		// String fullPath = context.getRealPath("/WEB-INF/admsInput/admsMain.py");// Such path is in the folder where your tomcat for this project is installed 
 		
 		String fullPath = "/eclipse-workspace/JPS/python/caresjpsadmsinputs"; // Hardcoded
-		
-		
-		
 		String[] cmd = new String[2 + args.size()];
-
 		cmd[0] = "python3";// Hardcoded
-		
-		
 		cmd[1] = fullPath;
 		for(int i = 0; i < args.size(); i++) {
 		cmd[i+2] = args.get(i);
 		}
-		 
 		// create runtime to execute external command
 		Runtime rt = Runtime.getRuntime();
 		Process pr = null;
@@ -127,14 +126,33 @@ public class ADMSWrapper extends HttpServlet {
 		
  		
 		
+
+		
+		String url = "http://www.theworldavatar.com/JPS/ADMS/ADMSStarter";
+		
+		HttpUriRequest request = new HttpGet(url);
+		HttpResponse httpResponse = null;
 		try {
-			response.getWriter().append(line) ;
+			httpResponse = HttpClientBuilder.create().build().execute(request);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		String responseString = null;
+		try {
+			responseString = EntityUtils.toString(httpResponse.getEntity());
+		} catch (ParseException | IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		System.out.println(responseString);
+
+		try {
+			response.getWriter().append(responseString) ;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-
-		
+		}		
 	}
 	
 

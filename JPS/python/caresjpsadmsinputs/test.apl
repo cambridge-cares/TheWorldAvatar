@@ -58,7 +58,7 @@
     &ADMS_PARAMETERS_MET
     MetLatitude               = 1.09e+0
     MetDataSource             = 1
-    MetDataFileWellFormedPath = "C:\Users\Shaocong\WORK\admsInput\test.met"
+    MetDataFileWellFormedPath = "/home/zhouxiaochi/Documents/JPS/JParkSimulator-git/JPS/python/caresjpsadmsinputs/test.met"
     MetWindHeight             = 1.0e+1
     MetWindInSectors          = 0
     MetWindSectorSizeDegrees  = 1.0e+1
@@ -125,15 +125,15 @@
     /
 
 &ADMS_PARAMETERS_BLD
-BldAngle=145.85590312049192   146.25741189083308   54.71897802386505   147.08129675586056   147.08129675586056
-BldHeight=15662216.17976596   15662223.149057355   15662201.128723793   15662228.389575442   15662228.389575442
-BldLength=30.122461370311427   12.555408675023168   149.28039095557455   16.268507265040654   16.268507265040654
-BldName="Building012"   "Building032"   "Building003"   "Building025"   "Building033"
-BldNumBuildings=  5
-BldType=0   0   0   0   0
-BldWidth=21.319223954020483   3.787896912078192   88.94027525993828   3.346669218816244   3.346669218816244
-BldX=-3972173.144071371   -3972291.7388090347   -3971923.0105011724   -3974227.182857416   -3974227.182857416
-BldY=10911360.166618004   10911412.644709103   10911331.653029596   10911865.50303726   10911865.50303726
+BldAngle=145.85590312049192   146.25741189083308
+BldHeight=15662216.17976596   15662223.149057355
+BldLength=30.122461370311427   12.555408675023168
+BldName="BuildingGUID_2C309B8E-A55D-4437-91E4-F379BE5FC5BA"   "BuildingGUID_999_1170"
+BldNumBuildings=  2
+BldType=0   0
+BldWidth=21.319223954020483   3.787896912078192
+BldX=-3972173.144071371   -3972291.7388090347
+BldY=10911360.166618004   10911412.644709103
 /
 
     &ADMS_PARAMETERS_HIL
@@ -218,7 +218,7 @@ OptNumGroups=  1
 OptNumOutputs=  1
 OptNumPercentiles=0
 OptPercentiles=0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-OptPolName="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#CarbonDioxide"
+OptPolName="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#chlorine"
 OptSamplingTime=1
 OptSamplingTimeUnits=3
 OptShortOrLong=0

@@ -2,7 +2,7 @@ from admsInputDataRetriever import admsInputDataRetriever
 from admsAplWriter import admsAplWriter
 #sampleBuilding past:"C://Users/Shaocong/WORK/admsInput/samplebuildingkb.owl"
 #sampleBuilding new:"C://Users/Shaocong/WORK/admsInput/107_buildings.owl"
-
+from pyproj import Proj, transform
 import json
 import sys
 import config
@@ -28,7 +28,20 @@ if __name__ == "__main__":
     print('top:')
     print(config.bldTopnode)
     print(sys.argv[2])
-    test = admsInputDataRetriever(str(sys.argv[1]), bldTopnode = config.bldTopnode, json.loads(sys.argv[2]), ["http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#CarbonDioxide"], bdnLimit = config.bdnLimit, filterSrc = False  )
+    admsCRS = Proj(init='epsg:28992')
+    osmCRS = Proj(init='epsg:4326')
+    coordinates = json.loads(sys.argv[2])
+
+    xmin, ymin = transform(osmCRS,admsCRS , float(coordinates['xmin']), float(coordinates['ymin']))
+    xmax, ymax = transform( osmCRS,admsCRS float(coordinates['xmax']), float(coordinates['ymax']))
+
+    coordinates['xmin'] = xmin
+    coordinates['xmax'] = xmax
+    coordinates['ymin'] = ymin
+    coordinates['ymax'] = ymax
+    
+
+    test = admsInputDataRetriever(str(sys.argv[1]), bldTopnode = config.bldTopnode, coordinates), ["http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#CarbonDioxide"], bdnLimit = config.bdnLimit, filterSrc = False  )
     result = test.get()
 
 
