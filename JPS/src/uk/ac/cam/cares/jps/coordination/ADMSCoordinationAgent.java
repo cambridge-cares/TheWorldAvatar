@@ -34,7 +34,7 @@ public class ADMSCoordinationAgent extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		String iri = request.getParameter("IRI");
-		String powerPlantStartUrl = "http://www.theworldavatar.com/JPS/PowerPlant/PowerPlantStarter?IRI=" + iri;
+		String powerPlantStartUrl = "http://localhost:8080/JPS/PowerPlantWrapperAgent?IRI=" + iri;
 		HttpUriRequest request1 = new HttpGet(powerPlantStartUrl);
 		HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request1);
 		String responseString = EntityUtils.toString(httpResponse.getEntity());
