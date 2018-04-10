@@ -32,13 +32,23 @@ class admsSrc(object):
         self.SrcNumVertices = SrcNumVertices
         self.SrcTraNumTrafficFlows = SrcTraNumTrafficFlows
         self.SrcNumPollutants = SrcNumPollutants
-        self.SrcNumPollutants = SrcNumPollutants
         self.SrcPollutants = SrcPollutants
         self.SrcPolEmissionRate = SrcPolEmissionRate
         self.SrcPolTotalemission = SrcPolTotalemission
         self.SrcPolStartTime = SrcPolStartTime
         self.SrcPolDuration = SrcPolDuration
         self.SrcNumIsotopes = SrcNumIsotopes
+        if self.SrcNumPollutants > 1:
+            self.SrcPolTotalemission = [SrcPolTotalemission]*SrcNumPollutants
+            self.SrcPolStartTime = [SrcPolStartTime]*SrcNumPollutants            
+            self.SrcPolDuration = [SrcPolDuration]*SrcNumPollutants            
+
+
+    def __repr__(self):
+        attrs = self.__dict__.items()
+
+        return '<admsSrc {}>'.format(['{} {}'.format(attr, value) for (attr, value) in attrs])
+
 
 
 
