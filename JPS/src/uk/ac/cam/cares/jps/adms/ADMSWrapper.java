@@ -123,14 +123,9 @@ public class ADMSWrapper extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
- 		
-		
-
-		
-		String url = "http://www.theworldavatar.com/JPS/ADMS/ADMSStarter";
-		
-		HttpUriRequest request = new HttpGet(url);
+		 
+		String startADMSRequets = "http://localhost:8080/JPS/ADMSStarter";
+		HttpUriRequest request = new HttpGet(startADMSRequets);
 		HttpResponse httpResponse = null;
 		try {
 			httpResponse = HttpClientBuilder.create().build().execute(request);
@@ -138,29 +133,12 @@ public class ADMSWrapper extends HttpServlet {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		String responseString = null;
- 
-			try {
-				responseString = EntityUtils.toString(httpResponse.getEntity());
-			} catch (ParseException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-	 
-			// TODO Auto-generated catch block
-	 
-		 
-		System.out.println(responseString);
-
-		try {
-			response.getWriter().append(responseString) ;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
+		
+		
+		
+		
+		
+	
 	}
 	
 
