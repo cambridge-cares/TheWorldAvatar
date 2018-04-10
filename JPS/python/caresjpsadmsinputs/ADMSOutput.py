@@ -17,6 +17,7 @@ def getADMSOutput():
 
 
     # iterate through ADMS output file to find grid point closest to clicked coordinates
+    # todo: switch to variable path
     with open(r'C:\Users\WE\Dropbox (Cambridge CARES)\IRP3 CAPRICORN shared folder\WENG\buildingontokinlevels.gst') as f:
         reader = csv.reader(f, delimiter=',')
 
