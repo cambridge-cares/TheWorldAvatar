@@ -9,21 +9,4 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
-  <servlet>
-    <servlet-name>ADMSWrapper</servlet-name>
-    <servlet-class>uk.ac.cam.cares.jps.adms.ADMSWrapper</servlet-class>
-  </servlet>
-    <servlet>
-    <servlet-name>ADMSStarter</servlet-name>
-    <servlet-class>uk.ac.cam.cares.jps.adms.ADMSStarter</servlet-class>
-  </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>ADMSWrapper</servlet-name>
-    <url-pattern>/ADMS/ADMSWrapper</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>ADMSStarter</servlet-name>
-    <url-pattern>/ADMS/ADMSStarter</url-pattern>
-  </servlet-mapping>
 </web-app>

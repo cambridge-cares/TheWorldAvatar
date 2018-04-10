@@ -139,12 +139,20 @@ public class ADMSWrapper extends HttpServlet {
 			e1.printStackTrace();
 		}
 		String responseString = null;
-		try {
-			responseString = EntityUtils.toString(httpResponse.getEntity());
-		} catch (ParseException | IOException e1) {
+ 
+			try {
+				responseString = EntityUtils.toString(httpResponse.getEntity());
+			} catch (ParseException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+	 
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+	 
+		 
 		System.out.println(responseString);
 
 		try {

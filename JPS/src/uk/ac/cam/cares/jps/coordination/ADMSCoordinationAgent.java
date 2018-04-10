@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.coordination;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -33,19 +35,37 @@ public class ADMSCoordinationAgent extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String iri = request.getParameter("IRI");
-		String powerPlantStartUrl = "http://localhost:8080/JPS/PowerPlantWrapperAgent?IRI=" + iri;
+		String coordinates = request.getParameter("coordinates");
+		String powerPlantStartUrl = "http://localhost:8080/JPS/PowerPlantWrapperAgent";
 		HttpUriRequest request1 = new HttpGet(powerPlantStartUrl);
 		HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request1);
 		String responseString = EntityUtils.toString(httpResponse.getEntity());
-		System.out.println(responseString);
 
-		try {
-			response.getWriter().append(responseString) ;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
+
+		
+		String requestToADMSWrapper = "http://localhost:8080/JPS/ADMSWrapper?selectedSource=" + URLEncoder.encode("http://www.theworldavatar.com/Plant-001.owl", "UTF-8") 
+																		  + "&buildingTopNode=" 
+																		  + "&coordinates="   + URLEncoder.encode(coordinates, "UTF-8") 
+																		  + "&substances=" + URLEncoder.encode("[\"http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#CarbonDioxide\"]", "UTF-8")
+																		  + "&buildingLimit=2"
+																		  + "&filterSource=false";
+		
+		HttpUriRequest request2 = new HttpGet(requestToADMSWrapper);
+		HttpResponse httpResponse2 = HttpClientBuilder.create().build().execute(request2);
+		String responseString2 = EntityUtils.toString(httpResponse2.getEntity());
+		
+		
+		
+		/*
+		 * 'http://localhost:8080/JPS/ADMS/ADMSWrapper?selectedSource=' + encodeURIComponent('http://www.theworldavatar.com/Plant-001.owl') + '&buildingTopNode=' + null + '&coordinates=' + encodeURIComponent(JSON.stringify(coordinate))
++ '&substances=' + encodeURIComponent(substances) + '&buildingLimit=' + encodeURIComponent(buildingLimit) + '&filterSource=' + encodeURIComponent(sourceFilter)
+		 */
+
+		
+		
+		
+		
+		
 	}
 
 	/**
