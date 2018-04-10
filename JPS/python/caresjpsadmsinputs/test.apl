@@ -212,7 +212,7 @@ OptExceedences=0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
 OptGroupsOrSource=  1
 OptInclude=1
 OptIncludedGroups=  "Grouptank001"
-OptIncludedSource=
+OptIncludedSource="http://www.theworldavatar.com/Plant-001.owl#Plant-001"
 OptNumExceedences=0
 OptNumGroups=  1
 OptNumOutputs=  1
@@ -699,3 +699,42 @@ ProjectedEPSG = 32648
     /
 
 
+&ADMS_SOURCE_DETAILS
+SrcAngle1=  0
+SrcAngle2=  0
+SrcBuoyancyType=  0
+SrcDensity=  1.23456789e+123
+SrcDiameter=  1.0
+SrcEffluxType=  0
+SrcFb=  1
+SrcFm=  1
+SrcGroup=  "Grouptank001"
+SrcHeight=  5
+SrcL1=  1
+SrcL2=  1
+SrcMainBuilding=  "BuildingGUID_2C309B8E-A55D-4437-91E4-F379BE5FC5BA"
+SrcMassFlux=  1
+SrcMassH2O=  0
+SrcMolWeight=  1.23456789e+123
+SrcName=  "http://www.theworldavatar.com/Plant-001.owl#Plant-001"
+SrcNumGroups=  1
+SrcNumIsotopes=  0
+SrcNumPollutants=  5
+SrcNumVertices=  0
+SrcPercentNOxAsNO2=  5
+SrcPolDuration=0   0   0   0   0
+SrcPolEmissionRate=
+SrcPolStartTime=0   0   0   0   0
+SrcPolTotalemission=1   1   1   1   1
+SrcPollutants="NOx"   "Cl2"   "CO"   "NO2"   "CO2"
+SrcReleaseAtNTP=  0
+SrcSourceType=  0
+SrcSpecHeatCap=  1.23456789e+123
+SrcTemperature=  1.23456789e+123
+SrcTraNumTrafficFlows=  0
+SrcUseVARFile=  1
+SrcVertVeloc=  0.0
+SrcVolFlowRate=  0
+SrcX1=  355307.317310181
+SrcY1=  139433.033476481
+/

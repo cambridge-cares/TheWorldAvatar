@@ -71,7 +71,20 @@ public class ADMSWrapper extends HttpServlet {
 		args.add(filterSource.toString());
 		
 		System.out.println(args);
-		runPython(args, response);
+		runPython("admsMain.py", args, response);
+		String startADMSRequets = "http://localhost:8080/JPS/ADMSStarter";
+		HttpUriRequest request1 = new HttpGet(startADMSRequets);
+		HttpResponse httpResponse = null;
+		try {
+			httpResponse = HttpClientBuilder.create().build().execute(request1);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+
+		
+	 
 		
 		
 		
@@ -85,13 +98,17 @@ public class ADMSWrapper extends HttpServlet {
 		doGet(request, response);
 	}
 	
-	public void runPython(ArrayList<String> args, HttpServletResponse response) 
+	
+	
+	
+	
+	public String runPython(String filename , ArrayList<String> args, HttpServletResponse response) 
 	{ //need to call myscript.py and also pass arg1 as its arguments.
 	  //and also myscript.py path is in C:\Demo\myscript.py
 		// ServletContext context = getServletContext();
 		// String fullPath = context.getRealPath("/WEB-INF/admsInput/admsMain.py");// Such path is in the folder where your tomcat for this project is installed 
 		
-		String fullPath = "/eclipse-workspace/JPS/python/caresjpsadmsinputs"; // Hardcoded
+		String fullPath = "/eclipse-workspace/JPS/python/caresjpsadmsinputs/" + filename ; // Hardcoded
 		String[] cmd = new String[2 + args.size()];
 		cmd[0] = "python3";// Hardcoded
 		cmd[1] = fullPath;
@@ -114,30 +131,23 @@ public class ADMSWrapper extends HttpServlet {
 		// retrieve output from python script
 		BufferedReader bfr = new BufferedReader(new InputStreamReader(pr.getInputStream()));
 		String line = "";
+		String resultString = "";
 		try {
 			while((line = bfr.readLine()) != null) {
 			// display each output line form python script
-			System.out.println(line);
+			resultString += line;
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		return resultString;
+		
 		 
-		String startADMSRequets = "http://localhost:8080/JPS/ADMSStarter";
-		HttpUriRequest request = new HttpGet(startADMSRequets);
-		HttpResponse httpResponse = null;
-		try {
-			httpResponse = HttpClientBuilder.create().build().execute(request);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+			
 		
-		
-		
-		
-		
+		 
 	
 	}
 	

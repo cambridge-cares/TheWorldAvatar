@@ -183,7 +183,7 @@ class admsInputDataRetriever(object):
         result = []
         for uri in filtered:
             print("connecting: {:s}".format(uri))
-            self.connectDB(uri)
+            self.connectDB(uri, connectType = 'parse')
             qdata = self.query(
                 """
                 PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
@@ -508,7 +508,6 @@ class admsInputDataRetriever(object):
             }} 
             LIMIT {0}   #limit of building num
         '''.format(self.bdnLimit, *yRange, *xRange)
-
 
         qre = self.query(qstr)
         return tuple(row['bdn'] for row in qre)
