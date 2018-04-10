@@ -152,7 +152,7 @@ def getGeoJSON(listBuildingCoordinates, listBuildingHeights):
                 'properties': {
                     'height': listBuildingHeights[idx],
                     'minHeight': 0,
-                    'color': 'red',
+                    'color': 'white',
                     'roofColor': 'red'
                 },
                 'geometry': {
@@ -170,6 +170,7 @@ def getGeoJSON(listBuildingCoordinates, listBuildingHeights):
 def return_buildings():
     
     graph = rdflib.Graph()
+    # todo: switch to variable path
     graph.parse(r'C:\Users\WE\Dropbox (Cambridge CARES)\IRP3 CAPRICORN shared folder\WENG\107_buildings.owl')
 
     try:

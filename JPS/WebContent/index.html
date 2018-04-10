@@ -161,6 +161,7 @@
         rotation: 0.6,
         tilt: 45.0,
         // position: { latitude:1.304270, longitude:103.774396 },
+        // change to variable latitude and longitude
         position: { latitude: 52.039479093801496, longitude: 4.357006480574263 }, // around den Haag
         // position: { latitude:1.3042168, longitude:103.7745893 }, // around NUS
         state: true, // stores map position/rotation in url
@@ -235,7 +236,7 @@
         "http://www.theworldavatar.com/107_buildings.owl#Building032",
         "http://www.theworldavatar.com/107_buildings.owl#Building033"
     ]
-
+	// change to variable url path
     $.getJSON('http://localhost:8080' + '/JPS/ADMSHelper',
         {
             listOfIRIs: JSON.stringify(list)
@@ -269,52 +270,57 @@
         // related to the tilt timers
         clearInterval(decreaseTiltTimer);
         clearInterval(increaseTiltTimer);
+        
+        var output = document.getElementById("output");
+        
+        if (output.style.display !== "none") {
 
-        var id = osmb.getTarget(e.detail.x, e.detail.y, function(id) {
-
-            var coordinates = osmb.unproject(e.detail.x, e.detail.y);
-
-            var longitude = coordinates["longitude"].toFixed(5);
-            var latitude = coordinates["latitude"].toFixed(5);
-
-            document.getElementById("longitude").innerHTML = longitude;
-            document.getElementById("latitude").innerHTML = latitude;
-
-            var coordinatesArray = []
-
-            if (!isNaN(latitude)) {
-              coordinatesArray.push(latitude);
-            }
-
-            if (!isNaN(longitude)) {
-              coordinatesArray.push(longitude);
-            }
-
-            if (coordinatesArray.length > 0) {
-
-              $.getJSON('http://localhost:8080' + '/JPS/ADMSOutput',
-                  {
-                      coordinatesLonLat: JSON.stringify(coordinatesArray)
-                  },
-                  function(data) {
-                      // console.log(data);
-                      var concentrations = data;
-
-                      document.getElementById("concentration0").innerHTML = concentrations[2];
-                      document.getElementById("concentration10").innerHTML = concentrations[3];
-                      document.getElementById("concentration20").innerHTML = concentrations[4];
-                      document.getElementById("concentration30").innerHTML = concentrations[5];
-
-                  });
-            }
-
-            // if(id == 'w420847275')
-            // {
-            //     // alert('clicked')
-            //     window.location.assign("http://www.theworldavatar.com/BMSIndoor")
-            //
-            // }
-        });
+	        var id = osmb.getTarget(e.detail.x, e.detail.y, function(id) {
+	
+	            var coordinates = osmb.unproject(e.detail.x, e.detail.y);
+	
+	            var longitude = coordinates["longitude"].toFixed(5);
+	            var latitude = coordinates["latitude"].toFixed(5);
+	
+	            document.getElementById("longitude").innerHTML = longitude;
+	            document.getElementById("latitude").innerHTML = latitude;
+	
+	            var coordinatesArray = []
+	
+	            if (!isNaN(latitude)) {
+	              coordinatesArray.push(latitude);
+	            }
+	
+	            if (!isNaN(longitude)) {
+	              coordinatesArray.push(longitude);
+	            }
+	
+	            if (coordinatesArray.length > 0) {
+					// todo: change to variable URL path
+	              $.getJSON('http://localhost:8080' + '/JPS/ADMSOutput',
+	                  {
+	                      coordinatesLonLat: JSON.stringify(coordinatesArray)
+	                  },
+	                  function(data) {
+	                      // console.log(data);
+	                      var concentrations = data;
+	
+	                      document.getElementById("concentration0").innerHTML = concentrations[2];
+	                      document.getElementById("concentration10").innerHTML = concentrations[3];
+	                      document.getElementById("concentration20").innerHTML = concentrations[4];
+	                      document.getElementById("concentration30").innerHTML = concentrations[5];
+	
+	                  });
+	            }
+	
+	            // if(id == 'w420847275')
+	            // {
+	            //     // alert('clicked')
+	            //     window.location.assign("http://www.theworldavatar.com/BMSIndoor")
+	            //
+	            // }
+	        });
+        }
     });
     //61.0089718,132.8325304
 
@@ -384,6 +390,10 @@
 
                 document.getElementById("longitude").innerHTML = "";
                 document.getElementById("latitude").innerHTML = "";
+                document.getElementById("concentration0").innerHTML = "";
+                document.getElementById("concentration10").innerHTML = "";
+                document.getElementById("concentration20").innerHTML = "";
+                document.getElementById("concentration30").innerHTML = "";                
             }
         }
     };
