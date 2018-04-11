@@ -49,9 +49,9 @@ public class ADMSStarter extends HttpServlet {
 	public String startADMS()
 	{
 		// ServletContext context = getServletContext();
-		String fullPath ="/eclipse-workspace/JPS/python/caresjpsadmsinputs";// Such path is in the folder where your tomcat for this project is installed 
+		String fullPath ="C:\\TOMCAT\\webapps\\JPS\\workingdir\\ADMS";// Such path is in the folder where your tomcat for this project is installed 
 		System.out.println("full path" + fullPath);
-		String[] cmd = {fullPath + "/startADMS.sh"}; //// Hardcoded 
+		String[] cmd = {fullPath + "/startADMS.bat"}; //// Hardcoded 
 		Runtime rt = Runtime.getRuntime();
 		Process pr = null;
 		System.out.println("cmd : " + Arrays.toString(cmd));
