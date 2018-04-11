@@ -91,7 +91,7 @@ var initadms3dmap  = function (list) {
     ]
     **/
     // change to variable url path
-    $.getJSON('http://localhost:8080' + '/JPS/ADMSHelper',
+    $.getJSON('/ADMSHelper',
         {
             listOfIRIs: JSON.stringify(list)
         },
