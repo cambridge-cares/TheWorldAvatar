@@ -63,6 +63,10 @@ public class ADMSCoordinationAgent extends HttpServlet {
 
 		
 		
+		String buildingsIRI = "http://localhost:8080/JPS/ADMSGetBuildingsIRI";
+		HttpUriRequest request3 = new HttpGet(buildingsIRI);
+		HttpResponse httpResponse3 = HttpClientBuilder.create().build().execute(request3);
+		String responseString3 = EntityUtils.toString(httpResponse2.getEntity());
 		
 		
 		

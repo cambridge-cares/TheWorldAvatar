@@ -8,7 +8,7 @@ import time
 
 start = time.time()
 
-test = admsInputDataRetriever("http://www.theworldavatar.com/Plant-001.owl", "http://www.theworldavatar.com/damecoolquestion/buildings/query", {'xmin':84400, 'xmax':84600, 'ymin':451000, 'ymax':451300}, ["http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#chlorine"], bdnLimit = 2, filterSrc = False)
+test = admsInputDataRetriever("http://www.theworldavatar.com/Plant-001.owl", "http://www.theworldavatar.com/damecoolquestion/buildingsLite/sparql", {'xmin':79480, 'xmax':79490, 'ymin':454670, 'ymax':454680}, ["http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#chlorine"], bdnLimit = 2, filterSrc = False)
 
 
 result = test.get()
