@@ -1,2 +1,2 @@
-bldTopnode = "http://www.theworldavatar.com/damecoolquestion/buildings/query"
+bldTopnode = "http://www.theworldavatar.com/damecoolquestion/buildingsLite/sparql"
 bdnLimit = 25

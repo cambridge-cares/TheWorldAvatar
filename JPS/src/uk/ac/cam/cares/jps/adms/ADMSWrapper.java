@@ -82,10 +82,7 @@ public class ADMSWrapper extends HttpServlet {
 			e1.printStackTrace();
 		}
 		
-
-		
-	 
-		
+ 
 		
 		
 	}
@@ -143,9 +140,6 @@ public class ADMSWrapper extends HttpServlet {
 		}
 		
 		return resultString;
-		
-		 
-			
 		
 		 
 	
