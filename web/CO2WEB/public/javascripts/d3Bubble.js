@@ -287,8 +287,8 @@ var FileLinkMap = function (options) {
     //todo: everything !in links, but in bubbleMap.links, delete them
         for(let link of links){
             if(!includeLink(bubbleMap.links,link)){
-                console.log("new links: ")
-                console.log( link)
+                //console.log("new links: ")
+                //console.log( link)
                 let existTarget = searchNodes(link.target.url)
                 let existSource = searchNodes(link.source.url)
                 link["target"] = existTarget?existTarget : link["target"]//if target node exists, replace it with existingone 
@@ -933,7 +933,7 @@ $(window).load(function () {// when web dom ready
                                 }
 
                             }
-                            map.update(links, coords);
+                            map.update(links, coords, [], true);
 
 
                         }
