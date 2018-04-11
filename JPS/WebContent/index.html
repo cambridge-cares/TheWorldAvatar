@@ -1,70 +1,106 @@
-<!DOCTYPE html>
-<html lang="en">
+
+<html>
+
+
+
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/index.css">
+    <link rel="stylesheet" type="text/css" href="/css/adms3dmap.css">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <style>
+    <script src="/javascripts/start.js"></script>
 
-        .thumbcontainer {
-            position: relative;
-        }
+    <title>J-Park Simulator</title>
+    <link rel="stylesheet" href="/css/OSMBuildings.css">
 
-        .image {
-            opacity: 0;
-            transition: .9s ease;
-        }
-
-        .middle {
-            transition: .5s ease;
-            opacity: 1;
-            position: absolute;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -40%);
-            -ms-transform: translate(-50%, -40%);
-            text-align: center;
-            backface-visibility: hidden;
-
-        }
-
-        .thumbcontainer:hover .image {
-            opacity: 0.9;
-        }
-
-        .thumbcontainer:hover .middle {
-            opacity: 0.3;
-        }
-
-        .text {
-            color: black;
-            font-size: 20px;
-            font-weight: bold;
-            font-family: "Century Gothic";
-        }
-
-
-    </style>
 </head>
 <body>
+<div class="jumbotron text-center" id="topBanner">
 
-<div class="container">
-<div class="row">
-    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 thumbcontainer">
-        <a href="#" class="thumbnail">
-            <div class="middle">
-            <div class="text">Visualization</div>
+
+    <a href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
+        <img  src="cam_lang_negativ1%20NEW_0.png">
+    </a>
+
+
+</div>
+
+<div>
+
+    <select id="reaction-select">
+        <option value="">
+        </option>
+        <option value="marinov">
+            marinov
+        </option>
+    </select>
+
+
+
+    <h1 id="head1"></h1>
+    <p id="description"></p>
+
+    <label for="xlower">X lower:</label>
+
+    <input id="xlower" type="text"/>
+    <label for="xupper">X upper:</label>
+    <input id="xupper" type="text"/>
+
+
+    <label for="ylower">Y lower:</label>
+
+    <input id="ylower" type="text"/>
+    <label for="yupper">Y upper:</label>
+    <input id="yupper" type="text"/>
+
+
+    <button id="start">Start simulation</button>
+    <ul id="reaction-list">
+
+
+    </ul>
+</div>
+<div id="map">
+    <div id="fieldsetCheckbox">
+        <fieldset id="twoDimCheckbox">
+            <legend>Select Orientation</legend>
+            <div id="twoDim">
+                <input type="checkbox" id="2d" name="dimension" value="2d">
+                <label for="2d">2D</label>
             </div>
-            <img class="image" src="/images/visual.jpg" alt="">
-
-
-        </a>
+        </fieldset>
+        <div id="output">
+            <p id="lat">lat: <span id="latitude"></span></p>
+            <p id="lon">lon: <span id="longitude"></span></p>
+            <p id="conc0">concentration (0m): <span id="concentration0"></span></p>
+            <p id="conc10">concentration (10m): <span id="concentration10"></span></p>
+            <p id="conc20">concentration (20m): <span id="concentration20"></span></p>
+            <p id="conc30">concentration (30m): <span id="concentration30"></span></p>
+        </div>
     </div>
 </div>
+
+<div class="control tilt">
+    <button class="dec">&#8601;</button>
+    <button class="inc">&#8599;</button>
 </div>
+
+<div class="control rotation">
+    <button class="inc">&#8630;</button>
+    <button class="dec">&#8631;</button>
+</div>
+
+<div class="control zoom">
+    <button class="dec">-</button>
+    <button class="inc">+</button>
+</div>
+
+<script src="/javascripts/OSMBuildings.js"></script>
+<script src="/javascripts/admstthreeDmap.js"></script>
+<script src="/javascripts/start.js"></script>
 </body>
 </html>
