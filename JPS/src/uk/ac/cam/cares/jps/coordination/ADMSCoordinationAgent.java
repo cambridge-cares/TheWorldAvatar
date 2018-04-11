@@ -36,14 +36,14 @@ public class ADMSCoordinationAgent extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		String coordinates = request.getParameter("coordinates");
-		String powerPlantStartUrl = "http://localhost:8080/JPS/PowerPlantWrapperAgent";
+		String powerPlantStartUrl = "http://localhost/JPS/PowerPlantWrapperAgent";
 		HttpUriRequest request1 = new HttpGet(powerPlantStartUrl);
 		HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request1);
 		String responseString = EntityUtils.toString(httpResponse.getEntity());
 
 
 		
-		String requestToADMSWrapper = "http://localhost:8080/JPS/ADMSWrapper?selectedSource=" + URLEncoder.encode("http://www.theworldavatar.com/Plant-001.owl", "UTF-8") 
+		String requestToADMSWrapper = "http://localhost/JPS/ADMSWrapper?selectedSource=" + URLEncoder.encode("http://www.theworldavatar.com/Plant-001.owl", "UTF-8") 
 																		  + "&buildingTopNode=" 
 																		  + "&coordinates="   + URLEncoder.encode(coordinates, "UTF-8") 
 																		  + "&substances=" + URLEncoder.encode("[\"http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#CarbonDioxide\"]", "UTF-8")
@@ -63,6 +63,10 @@ public class ADMSCoordinationAgent extends HttpServlet {
 
 		
 		
+		String buildingsIRI = "http://localhost/JPS/ADMSGetBuildingsIRI";
+		HttpUriRequest request3 = new HttpGet(buildingsIRI);
+		HttpResponse httpResponse3 = HttpClientBuilder.create().build().execute(request3);
+		String responseString3 = EntityUtils.toString(httpResponse2.getEntity());
 		
 		
 		

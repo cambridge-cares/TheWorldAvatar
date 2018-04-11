@@ -72,7 +72,7 @@ public class ADMSWrapper extends HttpServlet {
 		
 		System.out.println(args);
 		runPython("admsMain.py", args, response);
-		String startADMSRequets = "http://localhost:8080/JPS/ADMSStarter";
+		String startADMSRequets = "http://localhost/JPS/ADMSStarter";
 		HttpUriRequest request1 = new HttpGet(startADMSRequets);
 		HttpResponse httpResponse = null;
 		try {
@@ -82,10 +82,7 @@ public class ADMSWrapper extends HttpServlet {
 			e1.printStackTrace();
 		}
 		
-
-		
-	 
-		
+ 
 		
 		
 	}
@@ -108,7 +105,7 @@ public class ADMSWrapper extends HttpServlet {
 		// ServletContext context = getServletContext();
 		// String fullPath = context.getRealPath("/WEB-INF/admsInput/admsMain.py");// Such path is in the folder where your tomcat for this project is installed 
 		
-		String fullPath = "/eclipse-workspace/JPS/python/caresjpsadmsinputs/" + filename ; // Hardcoded
+		String fullPath = "C:\\TOMCAT\\webapps\\JPS\\workingdir\\ADMS\\caresjpsadmsinputs\\" + filename ; // Hardcoded
 		String[] cmd = new String[2 + args.size()];
 		cmd[0] = "python3";// Hardcoded
 		cmd[1] = fullPath;
@@ -143,9 +140,6 @@ public class ADMSWrapper extends HttpServlet {
 		}
 		
 		return resultString;
-		
-		 
-			
 		
 		 
 	

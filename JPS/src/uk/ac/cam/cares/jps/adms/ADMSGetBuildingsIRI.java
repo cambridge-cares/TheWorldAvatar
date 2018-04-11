@@ -3,27 +3,25 @@ package uk.ac.cam.cares.jps.adms;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.catalina.tribes.util.Arrays;
-
 /**
- * Servlet implementation class AMDSStarter
+ * Servlet implementation class ADMSGetBuildingsIRI
  */
-@WebServlet("/ADMSStarter")
-public class ADMSStarter extends HttpServlet {
+@WebServlet("/ADMSGetBuildingsIRI")
+public class ADMSGetBuildingsIRI extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ADMSStarter() {
+    public ADMSGetBuildingsIRI() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -33,8 +31,15 @@ public class ADMSStarter extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String res = startADMS();
-		response.getWriter().write(res);
+
+		String coordinates  = request.getParameter("coordinates");
+		// String coordinates = " {'xmin':79480, 'xmax':79490, 'ymin':454670, 'ymax':454680}";
+		ArrayList<String> args  = new ArrayList<String>();
+		args.add(coordinates);
+		String rawResult = runPython("buildingIRI.py", args, response);
+	    String result = rawResult.split("*###")[1];
+	    response.getWriter().write(result);
+	
 	}
 
 	/**
@@ -44,17 +49,27 @@ public class ADMSStarter extends HttpServlet {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
+
 	
 	
-	public String startADMS()
-	{
+	public String runPython(String filename , ArrayList<String> args, HttpServletResponse response) 
+	{ //need to call myscript.py and also pass arg1 as its arguments.
+	  //and also myscript.py path is in C:\Demo\myscript.py
 		// ServletContext context = getServletContext();
-		String fullPath ="C:\\TOMCAT\\webapps\\JPS\\workingdir\\ADMS";// Such path is in the folder where your tomcat for this project is installed 
-		System.out.println("full path" + fullPath);
-		String[] cmd = {fullPath + "/startADMS.bat"}; //// Hardcoded 
+		// String fullPath = context.getRealPath("/WEB-INF/admsInput/admsMain.py");// Such path is in the folder where your tomcat for this project is installed 
+		
+		String fullPath = "C:\\TOMCAT\\webapps\\JPS\\workingdir\\ADMS\\caresjpsadmsinputs\\" + filename ; // Hardcoded
+		String[] cmd = new String[2 + args.size()];
+		cmd[0] = "python3";// Hardcoded
+		cmd[1] = fullPath;
+		for(int i = 0; i < args.size(); i++) {
+		cmd[i+2] = args.get(i);
+		}
+		// create runtime to execute external command
 		Runtime rt = Runtime.getRuntime();
 		Process pr = null;
-		System.out.println("cmd : " + Arrays.toString(cmd));
+		
+		System.out.println("cmd : " + cmd);
 		try {
 			pr = rt.exec(cmd);
 			System.out.print("Executing");
@@ -62,23 +77,25 @@ public class ADMSStarter extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		 
 		// retrieve output from python script
 		BufferedReader bfr = new BufferedReader(new InputStreamReader(pr.getInputStream()));
 		String line = "";
-
+		String resultString = "";
 		try {
 			while((line = bfr.readLine()) != null) {
 			// display each output line form python script
-			System.out.println(line);
+			resultString += line;
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		return line;
+		return resultString;
+		
+		 
+	
 	}
-	 
-
+	
 }
