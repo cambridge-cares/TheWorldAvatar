@@ -511,7 +511,7 @@ class admsInputDataRetriever(object):
 
         qre = self.query(qstr)
 
-        bdnlist = tuple(row['bdn'].toPython() for row in qre)
+        bdnlist = list(row['bdn'].toPython() for row in qre)
 
         return bdnlist
 
