@@ -587,7 +587,7 @@ class admsInputDataRetriever(object):
         #float(row['min'].toPython()), float(row['max'].toPython())
 
 
-        zlimit = tuple( Bdn2ADMSCoordC(float(row['min'].toPython()), float(row['max'].toPython()))   for row in qHeight  )[0]
+        zlimit = tuple( (float(row['min'].toPython()), float(row['max'].toPython()))   for row in qHeight  )[0]
 
         return (   list(Bdn2ADMSCoordC(float(row['x'].toPython()), float(row['y'].toPython())) for row in qData),        zlimit)
 
