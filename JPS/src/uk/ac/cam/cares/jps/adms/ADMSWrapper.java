@@ -51,6 +51,11 @@ public class ADMSWrapper extends HttpServlet {
 			buildingLimit = Integer.parseInt(request.getParameter("buildingLimit"));
 		}
 		
+		Integer buildingNumber = 25;
+		if (request.getParameter("buildingLimit")!=null) {
+			buildingNumber = Integer.parseInt(request.getParameter("buildingLimit"));
+		}
+		
 		Boolean filterSource = (request.getParameter("filterSource").equals("true"));
 		
 //		
@@ -64,14 +69,15 @@ public class ADMSWrapper extends HttpServlet {
 		ArrayList<String> args  = new ArrayList<String>();
 		//  [selectedSource, buildingTopNode,coordinates, substances, builingLimit,filterSource];
 		args.add(selectedSource.toString());
-		args.add(buildingTopNode.toString());
-		args.add(coordinates.toString());
-		args.add(Arrays.toString(substances));
-		args.add(buildingLimit.toString());
-		args.add(filterSource.toString());
+		//args.add(buildingTopNode.toString());
+		args.add(coordinates.toString().replaceAll(",", "#"));
+		//args.add(Arrays.toString(substances));
+		//args.add(buildingLimit.toString());
+		//args.add(buildingNumber.toString());
+		//args.add(filterSource.toString());
 		
 		System.out.println(args);
-		runPython("admsMain.py", args, response);
+		runPython("startADMSMain.bat", args, response);
 		String startADMSRequets = "http://localhost/JPS/ADMSStarter";
 		HttpUriRequest request1 = new HttpGet(startADMSRequets);
 		HttpResponse httpResponse = null;
@@ -104,13 +110,20 @@ public class ADMSWrapper extends HttpServlet {
 	  //and also myscript.py path is in C:\Demo\myscript.py
 		// ServletContext context = getServletContext();
 		// String fullPath = context.getRealPath("/WEB-INF/admsInput/admsMain.py");// Such path is in the folder where your tomcat for this project is installed 
-		
-		String fullPath = "C:\\TOMCAT\\webapps\\JPS\\workingdir\\ADMS\\caresjpsadmsinputs\\" + filename ; // Hardcoded
-		String[] cmd = new String[2 + args.size()];
-		cmd[0] = "python3";// Hardcoded
-		cmd[1] = fullPath;
+				
+		ServletContext context = getServletContext();
+		String fullPath =  context.getRealPath("/workingdir/ADMS/caresjpsadmsinputs/") + filename ; // Hardcoded
+
+
+		String[] cmd = new String[1 + args.size()];
+		//cmd[0] = "start";
+		cmd[0] = "\"" + fullPath + "\"" ;// Hardcoded
+		System.out.println("=============================================================");
+		System.out.println(cmd[0]);
+		System.out.println("=============================================================");
+		// cmd[3] = fullPath;
 		for(int i = 0; i < args.size(); i++) {
-		cmd[i+2] = args.get(i);
+		cmd[i+1] = args.get(i);
 		}
 		// create runtime to execute external command
 		Runtime rt = Runtime.getRuntime();
