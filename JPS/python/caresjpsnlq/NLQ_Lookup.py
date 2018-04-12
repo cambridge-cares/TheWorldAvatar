@@ -82,11 +82,11 @@ class LookUpService:
         # print('LookUpService.fake_lookup_in_ols(term)', term, LookUpService.fake_lookup_in_ols(term))
         # return LookUpService.fake_lookup_in_ols(term)
 
-        base_url = 'http://localhost:8080/api/search?q='
-        term_to_look = quote('{' + '+'.join([word for word in term.split(' ') if word != 'the']) + '}')
-        print('{' + '+'.join(term.split(' ')) + '}')
+        base_url = 'http://47.74.244.61:8080/api/search?q='
+        term_to_look = quote(' '.join([word for word in term.split(' ') if word != 'the']))
 
-        url = base_url + term_to_look
+
+        url = base_url + term_to_look + '&groupField=iri&start=0'
         headers = {}
         headers['Accept'] = 'application/json'
         request = urllib.request.Request(url, headers=headers)
