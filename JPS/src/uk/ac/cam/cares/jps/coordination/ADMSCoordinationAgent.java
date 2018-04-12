@@ -48,6 +48,7 @@ public class ADMSCoordinationAgent extends HttpServlet {
 																		  + "&coordinates="   + URLEncoder.encode(coordinates, "UTF-8") 
 																		  + "&substances=" + URLEncoder.encode("[\"http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#CarbonDioxide\"]", "UTF-8")
 																		  + "&buildingLimit=2"
+																		  + "&bldNumber=25"
 																		  + "&filterSource=false";
 		
 		HttpUriRequest request2 = new HttpGet(requestToADMSWrapper);
@@ -63,12 +64,13 @@ public class ADMSCoordinationAgent extends HttpServlet {
 
 		
 		
-		String buildingsIRI = "http://localhost/JPS/ADMSGetBuildingsIRI";
+		String buildingsIRI = "http://localhost/JPS/ADMSGetBuildingsIRI?coordinates=" +  URLEncoder.encode(coordinates, "UTF-8") ;
+		System.out.println(buildingsIRI);
 		HttpUriRequest request3 = new HttpGet(buildingsIRI);
 		HttpResponse httpResponse3 = HttpClientBuilder.create().build().execute(request3);
-		String responseString3 = EntityUtils.toString(httpResponse2.getEntity());
+		String responseString3 = EntityUtils.toString(httpResponse3.getEntity());
 		
-		
+		response.getWriter().write(responseString3);
 		
 	}
 
