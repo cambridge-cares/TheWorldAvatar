@@ -17,8 +17,6 @@ public class PythonHelper {
 	 */
 	public static String callPython(String pythonScriptName, String parameter) throws IOException {
 		String path = AgentLocator.getPathToPythonScript(pythonScriptName);
-		
-		System.out.println(path);
 
 		String[] cmd = { "python", path, parameter };
 
@@ -31,11 +29,7 @@ public class PythonHelper {
 	public static String callPython(String pythonScriptName, String ADMSOutputFileName, String parameter) throws IOException {
 		String pathPythonScript = AgentLocator.getPathToPythonScript(pythonScriptName);
 		
-		System.out.println(pathPythonScript);
-		
 		String pathADMSOutput = AgentLocator.getPathToADMSOutputFile(ADMSOutputFileName);
-		
-		System.out.println(pathADMSOutput);
 		
 		String[] cmd = { "python", pathPythonScript, pathADMSOutput, parameter };
 		

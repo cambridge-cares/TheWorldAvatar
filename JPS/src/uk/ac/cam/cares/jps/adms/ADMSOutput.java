@@ -39,8 +39,6 @@ public class ADMSOutput extends HttpServlet {
 		
 		String result = PythonHelper.callPython("caresjpsadmsinputs/ADMSOutput.py", "ADMS/caresjpsadmsinputs/buildingontokindenhaagplantlevels.gst" ,g.toJson(jsonString));
 		
-		System.out.println(result);
-		
 		response.setContentType("application/json");
 		response.getWriter().write(result);
 	}

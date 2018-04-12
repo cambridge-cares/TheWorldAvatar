@@ -126,7 +126,6 @@ public class AgentLocator {
 	
 	public static String getPathToADMSOutputFile(String ADMSOutputFileName) {
 		String relativePath = getProperty("reldir.workingdir");
-		System.out.println(relativePath);
 		return getJPSRootDirectory() + "/" + relativePath + "/" + ADMSOutputFileName;
 	}
 
