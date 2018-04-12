@@ -25,4 +25,17 @@ public class PythonHelper {
 		BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		return stdInput.readLine();
 	}
+	
+	public static String callPython(String pythonScriptName, String ADMSOutputFileName, String parameter) throws IOException {
+		String pathPythonScript = AgentLocator.getPathToPythonScript(pythonScriptName);
+		
+		String pathADMSOutput = AgentLocator.getPathToADMSOutputFile(ADMSOutputFileName);
+		
+		String[] cmd = { "python", pathPythonScript, pathADMSOutput, parameter };
+		
+		Process p = Runtime.getRuntime().exec(cmd);
+		
+		BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		return stdInput.readLine();
+	}
 }
