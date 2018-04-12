@@ -452,7 +452,7 @@ class admsInputDataRetriever(object):
         return tuple(row['bdn'] for row in qb)
 
     #todo
-    def filterBdns(self):
+    def filterBdns(self, topython = False):
         '''
         filter individual building to see if they are within range
         get all uris where every x and y in its ground is within range(maybe count ?)
@@ -510,7 +510,10 @@ class admsInputDataRetriever(object):
         '''.format(self.bdnLimit, *yRange, *xRange)
 
         qre = self.query(qstr)
-        return tuple(row['bdn'] for row in qre)
+
+        bdnlist = tuple(row['bdn'].toPython() for row in qre)
+
+        return bdnlist
 
 
     def getBdnVertices(self, nodeuri):
@@ -616,9 +619,9 @@ class admsInputDataRetriever(object):
             #todo pack return result
             #('BldName','BldType','BldX','BldY','BldHeight', 'BldLength', 'BldWidth', 'BldAngle')
 
-        print ((nodeuri.toPython(), base.type, base.centroid[0], base.centroid[1], base.height, base.length, base.width, base.angle)   )
+        print ((nodeuri, base.type, base.centroid[0], base.centroid[1], base.height, base.length, base.width, base.angle)   )
         #todo: coordinate coversion for centroid!!!
-        return (uri2name(nodeuri.toPython()), base.type, base.centroid[0], base.centroid[1], base.height, base.length, base.width, base.angle)    
+        return (uri2name(nodeuri), base.type, base.centroid[0], base.centroid[1], base.height, base.length, base.width, base.angle)    
 
 
 
