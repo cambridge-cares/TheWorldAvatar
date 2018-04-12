@@ -41,7 +41,7 @@ if __name__ == "__main__":
     coordinates['ymax'] = ymax
     
 
-    test = admsInputDataRetriever(str(sys.argv[1]), bldTopnode = config.bldTopnode, coordinates), ["http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#CarbonDioxide"], bdnLimit = config.bdnLimit, filterSrc = False  )
+    test = admsInputDataRetriever(str(sys.argv[1]), bldTopnode = config.bldTopnode, coordinates), ["CO2"], bdnLimit = config.bdnLimit, filterSrc = False  )
     result = test.get()
 
 

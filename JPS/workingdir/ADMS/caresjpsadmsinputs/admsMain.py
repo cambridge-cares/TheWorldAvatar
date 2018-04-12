@@ -27,24 +27,21 @@ writer.write()
 if __name__ == "__main__":
     print('top:')
     print(config.bldTopnode)
-    print('=====', sys.argv[2], '=======')
+    print(sys.argv[2])
+    admsCRS = Proj(init='epsg:28992')
+    osmCRS = Proj(init='epsg:4326')
+    coordinates = json.loads(sys.argv[2])
 
-    #admsCRS = Proj(init='epsg:28992')
-    #osmCRS = Proj(init='epsg:4326')
-    coordinates = str(sys.argv[2]).replace('#',",").replace("'", "\"").strip()
+    xmin, ymin = transform(osmCRS,admsCRS , float(coordinates['xmin']), float(coordinates['ymin']))
+    xmax, ymax = transform( osmCRS,admsCRS float(coordinates['xmax']), float(coordinates['ymax']))
 
-    coordinates = json.loads(coordinates)
-
-    #xmin, ymin = transform(osmCRS,admsCRS , float(coordinates['xmin']), float(coordinates['ymin']))
-    #xmax, ymax = transform( osmCRS,admsCRS float(coordinates['xmax']), float(coordinates['ymax']))
-
-    #coordinates['xmin'] = xmin
-    # coordinates['xmax'] = xmax
-    #coordinates['ymin'] = ymin
-    #coordinates['ymax'] = ymax
+    coordinates['xmin'] = xmin
+    coordinates['xmax'] = xmax
+    coordinates['ymin'] = ymin
+    coordinates['ymax'] = ymax
     
 
-    test = admsInputDataRetriever(str(sys.argv[1]),config.bldTopnode,coordinates, ["http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#CarbonDioxide"],2,config.bdnLimit,False  )
+    test = admsInputDataRetriever(str(sys.argv[1]), bldTopnode = config.bldTopnode, coordinates), ["CO"], bdnLimit = config.bdnLimit, filterSrc = False  )
     result = test.get()
 
 
