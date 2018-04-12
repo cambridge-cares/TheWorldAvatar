@@ -123,6 +123,12 @@ public class AgentLocator {
 		String relativePath = getProperty("reldir.python");
 		return getJPSRootDirectory() + "/" + relativePath + "/" + pythonScriptName;
 	}
+	
+	public static String getPathToADMSOutputFile(String ADMSOutputFileName) {
+		String relativePath = getProperty("reldir.workingdir");
+		System.out.println(relativePath);
+		return getJPSRootDirectory() + "/" + relativePath + "/" + ADMSOutputFileName;
+	}
 
 	/**
 	 * If there is a test property file with the key then its value is returned.

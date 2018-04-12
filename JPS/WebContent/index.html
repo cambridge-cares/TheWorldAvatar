@@ -162,7 +162,8 @@
         tilt: 45.0,
         // position: { latitude:1.304270, longitude:103.774396 },
         // change to variable latitude and longitude
-        position: { latitude: 52.039479093801496, longitude: 4.357006480574263 }, // around den Haag
+        // position: { latitude: 52.039479093801496, longitude: 4.357006480574263 }, // around den Haag
+        position: { latitude: 52.075714761022375, longitude: 4.2849966130945685 },
         // position: { latitude:1.3042168, longitude:103.7745893 }, // around NUS
         state: true, // stores map position/rotation in url
         effects: [], // effects: ['shadows']
@@ -201,48 +202,63 @@
     // --- Rendering 3D building models --- //
     // var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 
+    // var list = [
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building001",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building002",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building003",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building004",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building005",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building006",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building007",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building008",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building009",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building010",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building011",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building012",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building013",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building014",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building015",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building016",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building017",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building018",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building019",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building020",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building021",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building022",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building023",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building024",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building025",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building026",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building027",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building028",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building029",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building030",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building031",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building032",
+    //     "http://www.theworldavatar.com/107_buildings.owl#Building033"
+    // ]
+
     var list = [
-        "http://www.theworldavatar.com/107_buildings.owl#Building001",
-        "http://www.theworldavatar.com/107_buildings.owl#Building002",
-        "http://www.theworldavatar.com/107_buildings.owl#Building003",
-        "http://www.theworldavatar.com/107_buildings.owl#Building004",
-        "http://www.theworldavatar.com/107_buildings.owl#Building005",
-        "http://www.theworldavatar.com/107_buildings.owl#Building006",
-        "http://www.theworldavatar.com/107_buildings.owl#Building007",
-        "http://www.theworldavatar.com/107_buildings.owl#Building008",
-        "http://www.theworldavatar.com/107_buildings.owl#Building009",
-        "http://www.theworldavatar.com/107_buildings.owl#Building010",
-        "http://www.theworldavatar.com/107_buildings.owl#Building011",
-        "http://www.theworldavatar.com/107_buildings.owl#Building012",
-        "http://www.theworldavatar.com/107_buildings.owl#Building013",
-        "http://www.theworldavatar.com/107_buildings.owl#Building014",
-        "http://www.theworldavatar.com/107_buildings.owl#Building015",
-        "http://www.theworldavatar.com/107_buildings.owl#Building016",
-        "http://www.theworldavatar.com/107_buildings.owl#Building017",
-        "http://www.theworldavatar.com/107_buildings.owl#Building018",
-        "http://www.theworldavatar.com/107_buildings.owl#Building019",
-        "http://www.theworldavatar.com/107_buildings.owl#Building020",
-        "http://www.theworldavatar.com/107_buildings.owl#Building021",
-        "http://www.theworldavatar.com/107_buildings.owl#Building022",
-        "http://www.theworldavatar.com/107_buildings.owl#Building023",
-        "http://www.theworldavatar.com/107_buildings.owl#Building024",
-        "http://www.theworldavatar.com/107_buildings.owl#Building025",
-        "http://www.theworldavatar.com/107_buildings.owl#Building026",
-        "http://www.theworldavatar.com/107_buildings.owl#Building027",
-        "http://www.theworldavatar.com/107_buildings.owl#Building028",
-        "http://www.theworldavatar.com/107_buildings.owl#Building029",
-        "http://www.theworldavatar.com/107_buildings.owl#Building030",
-        "http://www.theworldavatar.com/107_buildings.owl#Building031",
-        "http://www.theworldavatar.com/107_buildings.owl#Building032",
-        "http://www.theworldavatar.com/107_buildings.owl#Building033"
+      "http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_83EFA0E4-FC06-46B3-8482-E38C8CF602BC",
+      "http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_E77C9F0F-554A-4986-8332-75EDFF2DCF07",
+      "http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_E5F7DC6A-59FE-4DC2-A826-0CABEEB70451",
+      "http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_94405F3C-FB53-4EC8-93A1-5F95FEC74CBD",
+      "http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_8D251403-40CD-463F-AE65-AC8951A1B2FD",
+      "http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_24834678-6E28-47A3-8535-7276348DF078",
+      "http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_885FA69C-CA8B-46CC-8D34-D38FD14B52C8",
+      "http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_00075B44-10B6-4E22-8AC1-1E212EAB803E",
+      "http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_55E12A29-6A2E-4032-BEF0-FA55038D04CB",
+      "http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_0C6D00D2-8473-4801-9787-3ECEE3720B71",
+      "http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_21FFA968-1D0D-46F1-9C6A-DEB511EDE8EC"
     ]
+
 	// change to variable url path
     $.getJSON('http://localhost:8080' + '/JPS/ADMSHelper',
         {
             listOfIRIs: JSON.stringify(list)
         },
         function(data) {
-			      // console.log(data);
+			      console.log(JSON.stringify(data, null, 4));
             var geojson = data;
             var arrayLength = geojson.length;
 
@@ -250,6 +266,8 @@
 
                 try {
                     osmb.addGeoJSON(geojson[i]);
+                    console.log("SUCCESS");
+                    console.log(JSON.stringify(geojson[i], null, 4));
                 }
                 catch(err) {
                     console.log(err.name)
@@ -270,31 +288,31 @@
         // related to the tilt timers
         clearInterval(decreaseTiltTimer);
         clearInterval(increaseTiltTimer);
-        
+
         var output = document.getElementById("output");
-        
+
         if (output.style.display !== "none") {
 
 	        var id = osmb.getTarget(e.detail.x, e.detail.y, function(id) {
-	
+
 	            var coordinates = osmb.unproject(e.detail.x, e.detail.y);
-	
+
 	            var longitude = coordinates["longitude"].toFixed(5);
 	            var latitude = coordinates["latitude"].toFixed(5);
-	
+
 	            document.getElementById("longitude").innerHTML = longitude;
 	            document.getElementById("latitude").innerHTML = latitude;
-	
+
 	            var coordinatesArray = []
-	
+
 	            if (!isNaN(latitude)) {
 	              coordinatesArray.push(latitude);
 	            }
-	
+
 	            if (!isNaN(longitude)) {
 	              coordinatesArray.push(longitude);
 	            }
-	
+
 	            if (coordinatesArray.length > 0) {
 					// todo: change to variable URL path
 	              $.getJSON('http://localhost:8080' + '/JPS/ADMSOutput',
@@ -304,15 +322,15 @@
 	                  function(data) {
 	                      // console.log(data);
 	                      var concentrations = data;
-	
+
 	                      document.getElementById("concentration0").innerHTML = concentrations[2];
 	                      document.getElementById("concentration10").innerHTML = concentrations[3];
 	                      document.getElementById("concentration20").innerHTML = concentrations[4];
 	                      document.getElementById("concentration30").innerHTML = concentrations[5];
-	
+
 	                  });
 	            }
-	
+
 	            // if(id == 'w420847275')
 	            // {
 	            //     // alert('clicked')
@@ -393,7 +411,7 @@
                 document.getElementById("concentration0").innerHTML = "";
                 document.getElementById("concentration10").innerHTML = "";
                 document.getElementById("concentration20").innerHTML = "";
-                document.getElementById("concentration30").innerHTML = "";                
+                document.getElementById("concentration30").innerHTML = "";
             }
         }
     };
