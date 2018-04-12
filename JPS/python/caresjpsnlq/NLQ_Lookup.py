@@ -86,7 +86,7 @@ class LookUpService:
         term_to_look = quote('{' + '+'.join([word for word in term.split(' ') if word != 'the']) + '}')
         print('{' + '+'.join(term.split(' ')) + '}')
 
-        url = base_url + term_to_look
+        url = base_url + term_to_look + '&groupField=iri&start=0'
         headers = {}
         headers['Accept'] = 'application/json'
         request = urllib.request.Request(url, headers=headers)
