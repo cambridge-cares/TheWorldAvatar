@@ -28,7 +28,7 @@ $(function(){
 
         
         
-        $.ajax('http://www.theworldavatar.com/ADMSCoordinationAgent?coordinates='+encodeURIComponent(JSON.stringify({xmin:xmin,xmax:xmax, ymin:ymin, ymax:ymax}))).done(function (bdnlist) {
+        $.ajax('http://www.theworldavatar.com/JPS/ADMSCoordinationAgent?coordinates='+encodeURIComponent(JSON.stringify({xmin:xmin,xmax:xmax, ymin:ymin, ymax:ymax}))).done(function (bdnlist) {
             //todo: init building
             console.log(JSON.parse(bdnlist))
             initadms3dmap(JSON.parse(bdnlist))
