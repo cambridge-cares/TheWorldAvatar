@@ -15,28 +15,6 @@ author:
 
 ontologies:
 
-# Basic Formal Ontology (BFO)
-- browsers:
-    - {label: BioPortal, title: BioPortal Browser, url: 'http://bioportal.bioontology.org/ontologies/BFO?p=classes'}
-  contact: {email: phismith@buffalo.edu, label: Barry Smith}
-  depicted_by: https://avatars2.githubusercontent.com/u/12972134?v=3&s=200
-  description: The upper level ontology upon which OBO Foundry ontologies are built.
-  domain: upper
-  homepage: http://ifomis.org/bfo/
-  id: bfo
-  layout: ontology_detail
-  license: {label: CC-BY, logo: 'http://mirrors.creativecommons.org/presskit/buttons/80x15/png/by.png',
-    url: 'http://creativecommons.org/licenses/by/3.0/'}
-  mailing_list: https://groups.google.com/forum/#!forum/bfo-discuss
-  ontology_purl: http://purl.obolibrary.org/obo/bfo.owl
-  products:
-    - {id: bfo.owl, ontology_purl: 'http://purl.obolibrary.org/obo/bfo.owl'}
-    - {id: bfo.obo, ontology_purl: 'http://purl.obolibrary.org/obo/bfo.obo'}
-  title: Basic Formal Ontology
-  tracker: https://github.com/BFO-ontology/BFO/issues
-
-ontologies:
-
 # PP
 - browsers:
     - {label: BioPortal, title: BioPortal Browser, url: 'http://bioportal.bioontology.org/ontologies/BFO?p=classes'}
