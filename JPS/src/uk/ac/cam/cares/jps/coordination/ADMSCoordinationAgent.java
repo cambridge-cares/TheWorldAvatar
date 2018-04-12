@@ -70,7 +70,7 @@ public class ADMSCoordinationAgent extends HttpServlet {
 		HttpResponse httpResponse3 = HttpClientBuilder.create().build().execute(request3);
 		String responseString3 = EntityUtils.toString(httpResponse3.getEntity());
 		
-		response.getWriter().write(responseString3);
+		response.getWriter().write(responseString3.replace("'","\""));
 		
 	}
 
