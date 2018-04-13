@@ -63,7 +63,7 @@ public class ADMSCoordinationAgent extends HttpServlet {
 		 */
 
 		
-		
+		coordinates = coordinates.replaceAll(",", "#");
 		String buildingsIRI = "http://localhost/JPS/ADMSGetBuildingsIRI?coordinates=" +  URLEncoder.encode(coordinates, "UTF-8") ;
 		System.out.println(buildingsIRI);
 		HttpUriRequest request3 = new HttpGet(buildingsIRI);
