@@ -681,7 +681,7 @@ class admsInputDataRetriever(object):
 
     def getOpt(self, PolNames, SrcNames):
         numPol = len(PolNames)
-        return self.OPT(numPol,PolNames, [1]*numPol,[0]*numPol,[1]*numPol,[3]*numPol,[0]*numPol,[0]*numPol,[0]*numPol,[0]*80,[0]*80,['ug/m3']*4,1,0,1,"Grouptank001",SrcNames,0)
+        return self.OPT(numPol,PolNames, [1]*numPol,[0]*numPol,[1]*numPol,[3]*numPol,[0]*numPol,[0]*numPol,[0]*numPol,[0]*80,[0]*80,['ug/m3']*numPol,1,0,1,"Grouptank001",SrcNames,0)
 
     def polIRI2Name(self, polIRI):
         substances = {'http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#chlorine':'Cl2',
