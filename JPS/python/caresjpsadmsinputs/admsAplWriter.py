@@ -717,7 +717,7 @@ POLD = '''
     PolWetWashout      = 1.0e-4
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 4.43e-1
+    PolConvFactor      = 5.47e-1
     PolBkgLevel        = 0.0e+0
     PolBkgUnits        = "ppb"
     /

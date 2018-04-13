@@ -15,7 +15,7 @@ var initadms3dmap  = function (list) {
         tilt: 45.0,
         // position: { latitude:1.304270, longitude:103.774396 },
         // change to variable latitude and longitude
-        position: { latitude: 52.039479093801496, longitude: 4.357006480574263 }, // around den Haag
+        position: { latitude: 52.039479093801496, longitude: 4.357006480574263 }, // around The Hague
         // position: { latitude:1.3042168, longitude:103.7745893 }, // around NUS
         state: true, // stores map position/rotation in url
         effects: [], // effects: ['shadows']
@@ -52,51 +52,13 @@ var initadms3dmap  = function (list) {
     divMap.appendChild(fieldset);
     
     // --- Rendering 3D building models --- //
-    // var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-    /*
-    var list = [
-        "http://www.theworldavatar.com/107_buildings.owl#Building001",
-        "http://www.theworldavatar.com/107_buildings.owl#Building002",
-        "http://www.theworldavatar.com/107_buildings.owl#Building003",
-        "http://www.theworldavatar.com/107_buildings.owl#Building004",
-        "http://www.theworldavatar.com/107_buildings.owl#Building005",
-        "http://www.theworldavatar.com/107_buildings.owl#Building006",
-        "http://www.theworldavatar.com/107_buildings.owl#Building007",
-        "http://www.theworldavatar.com/107_buildings.owl#Building008",
-        "http://www.theworldavatar.com/107_buildings.owl#Building009",
-        "http://www.theworldavatar.com/107_buildings.owl#Building010",
-        "http://www.theworldavatar.com/107_buildings.owl#Building011",
-        "http://www.theworldavatar.com/107_buildings.owl#Building012",
-        "http://www.theworldavatar.com/107_buildings.owl#Building013",
-        "http://www.theworldavatar.com/107_buildings.owl#Building014",
-        "http://www.theworldavatar.com/107_buildings.owl#Building015",
-        "http://www.theworldavatar.com/107_buildings.owl#Building016",
-        "http://www.theworldavatar.com/107_buildings.owl#Building017",
-        "http://www.theworldavatar.com/107_buildings.owl#Building018",
-        "http://www.theworldavatar.com/107_buildings.owl#Building019",
-        "http://www.theworldavatar.com/107_buildings.owl#Building020",
-        "http://www.theworldavatar.com/107_buildings.owl#Building021",
-        "http://www.theworldavatar.com/107_buildings.owl#Building022",
-        "http://www.theworldavatar.com/107_buildings.owl#Building023",
-        "http://www.theworldavatar.com/107_buildings.owl#Building024",
-        "http://www.theworldavatar.com/107_buildings.owl#Building025",
-        "http://www.theworldavatar.com/107_buildings.owl#Building026",
-        "http://www.theworldavatar.com/107_buildings.owl#Building027",
-        "http://www.theworldavatar.com/107_buildings.owl#Building028",
-        "http://www.theworldavatar.com/107_buildings.owl#Building029",
-        "http://www.theworldavatar.com/107_buildings.owl#Building030",
-        "http://www.theworldavatar.com/107_buildings.owl#Building031",
-        "http://www.theworldavatar.com/107_buildings.owl#Building032",
-        "http://www.theworldavatar.com/107_buildings.owl#Building033"
-    ]
-    **/
+
     // change to variable url path
     $.getJSON('/JPS/ADMSHelper',
         {
             listOfIRIs: JSON.stringify(list)
         },
         function(data) {
-            // console.log(data);
             var geojson = data;
             var arrayLength = geojson.length;
             
@@ -151,7 +113,7 @@ var initadms3dmap  = function (list) {
                 
                 if (coordinatesArray.length > 0) {
                     // todo: change to variable URL path
-                    $.getJSON('http://localhost:8080' + '/JPS/ADMSOutput',
+                    $.getJSON('/JPS/ADMSOutput',
                         {
                             coordinatesLonLat: JSON.stringify(coordinatesArray)
                         },

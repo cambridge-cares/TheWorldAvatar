@@ -32,14 +32,16 @@ if __name__ == "__main__":
     osmCRS = Proj(init='epsg:4326')
     coordinates = json.loads(sys.argv[2])
 
-    xmin, ymin = transform(osmCRS,admsCRS , float(coordinates['xmin']), float(coordinates['ymin']))
-    xmax, ymax = transform( osmCRS,admsCRS float(coordinates['xmax']), float(coordinates['ymax']))
-
-    coordinates['xmin'] = xmin
-    coordinates['xmax'] = xmax
-    coordinates['ymin'] = ymin
-    coordinates['ymax'] = ymax
+#     xmin, ymin = transform(osmCRS,admsCRS , float(coordinates['xmin']), float(coordinates['ymin']))
+#     xmax, ymax = transform( osmCRS,admsCRS, float(coordinates['xmax']), float(coordinates['ymax']))
+# 
+#     coordinates['xmin'] = xmin
+#     coordinates['xmax'] = xmax
+#     coordinates['ymin'] = ymin
+#     coordinates['ymax'] = ymax
     
+    coordinates = str(coordinates).replace("'", "\"");
+    coordinates = json.loads(coordinates)
 
     test = admsInputDataRetriever(str(sys.argv[1]), bldTopnode = config.bldTopnode, coordinates,  ["CO2"   ,"CO" ,  "NO2" ,  "Cl2" ,  "NOx"], bdnLimit = config.bdnLimit, filterSrc = False  )
     result = test.get()

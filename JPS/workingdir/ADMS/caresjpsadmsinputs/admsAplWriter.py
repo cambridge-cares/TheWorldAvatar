@@ -129,7 +129,7 @@ MET = '''
 HIL  = r'''
     &ADMS_PARAMETERS_HIL
     HilGridSize          = 2
-    HilUseTerFile        = 1
+    HilUseTerFile        = 0
     HilUseRoughFile      = 0
     HilTerrainPath       = "C:\Users\kevin\Downloads\A48\terrain accurate\singaporeterrain.ter"
     HilRoughPath         = " "

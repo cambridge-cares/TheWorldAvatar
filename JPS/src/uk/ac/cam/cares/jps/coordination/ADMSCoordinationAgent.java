@@ -46,7 +46,7 @@ public class ADMSCoordinationAgent extends HttpServlet {
 		String requestToADMSWrapper = "http://localhost/JPS/ADMSWrapper?selectedSource=" + URLEncoder.encode("http://www.theworldavatar.com/Plant-001.owl", "UTF-8") 
 																		  + "&buildingTopNode=" 
 																		  + "&coordinates="   + URLEncoder.encode(coordinates, "UTF-8") 
-																		  + "&substances=" + URLEncoder.encode("CO", "UTF-8")
+																		  + "&substances=" + URLEncoder.encode("CO2", "UTF-8")
 																		  + "&buildingLimit=2"
 																		  + "&bldNumber=25"
 																		  + "&filterSource=false";
@@ -63,7 +63,7 @@ public class ADMSCoordinationAgent extends HttpServlet {
 		 */
 
 		
-		
+		coordinates = coordinates.replaceAll(",", "#");
 		String buildingsIRI = "http://localhost/JPS/ADMSGetBuildingsIRI?coordinates=" +  URLEncoder.encode(coordinates, "UTF-8") ;
 		System.out.println(buildingsIRI);
 		HttpUriRequest request3 = new HttpGet(buildingsIRI);

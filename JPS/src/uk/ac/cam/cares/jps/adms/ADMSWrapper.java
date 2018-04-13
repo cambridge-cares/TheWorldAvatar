@@ -78,7 +78,7 @@ public class ADMSWrapper extends HttpServlet {
 		
 		System.out.println(args);
 		runPython("startADMSMain.bat", args, response);
-
+		response.getWriter().write("Success");
 		
  
 		
