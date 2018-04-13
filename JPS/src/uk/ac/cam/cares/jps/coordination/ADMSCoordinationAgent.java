@@ -46,7 +46,7 @@ public class ADMSCoordinationAgent extends HttpServlet {
 		String requestToADMSWrapper = "http://localhost/JPS/ADMSWrapper?selectedSource=" + URLEncoder.encode("http://www.theworldavatar.com/Plant-001.owl", "UTF-8") 
 																		  + "&buildingTopNode=" 
 																		  + "&coordinates="   + URLEncoder.encode(coordinates, "UTF-8") 
-																		  + "&substances=" + URLEncoder.encode("[\"http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#CarbonDioxide\"]", "UTF-8")
+																		  + "&substances=" + URLEncoder.encode("CO2", "UTF-8")
 																		  + "&buildingLimit=2"
 																		  + "&bldNumber=25"
 																		  + "&filterSource=false";
@@ -63,14 +63,24 @@ public class ADMSCoordinationAgent extends HttpServlet {
 		 */
 
 		
-		
+		coordinates = coordinates.replaceAll(",", "#");
 		String buildingsIRI = "http://localhost/JPS/ADMSGetBuildingsIRI?coordinates=" +  URLEncoder.encode(coordinates, "UTF-8") ;
 		System.out.println(buildingsIRI);
 		HttpUriRequest request3 = new HttpGet(buildingsIRI);
 		HttpResponse httpResponse3 = HttpClientBuilder.create().build().execute(request3);
 		String responseString3 = EntityUtils.toString(httpResponse3.getEntity());
 		
-		response.getWriter().write(responseString3);
+		response.getWriter().write(responseString3.replace("'","\""));
+		
+		String startADMSRequets = "http://localhost/JPS/ADMSStarter";
+		HttpUriRequest request4 = new HttpGet(startADMSRequets);
+		HttpResponse httpResponse4 = null;
+		try {
+			httpResponse4 = HttpClientBuilder.create().build().execute(request4);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 	}
 

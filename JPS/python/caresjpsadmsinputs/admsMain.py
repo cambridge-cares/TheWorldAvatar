@@ -32,16 +32,18 @@ if __name__ == "__main__":
     osmCRS = Proj(init='epsg:4326')
     coordinates = json.loads(sys.argv[2])
 
-    xmin, ymin = transform(osmCRS,admsCRS , float(coordinates['xmin']), float(coordinates['ymin']))
-    xmax, ymax = transform( osmCRS,admsCRS float(coordinates['xmax']), float(coordinates['ymax']))
-
-    coordinates['xmin'] = xmin
-    coordinates['xmax'] = xmax
-    coordinates['ymin'] = ymin
-    coordinates['ymax'] = ymax
+#     xmin, ymin = transform(osmCRS,admsCRS , float(coordinates['xmin']), float(coordinates['ymin']))
+#     xmax, ymax = transform( osmCRS,admsCRS, float(coordinates['xmax']), float(coordinates['ymax']))
+# 
+#     coordinates['xmin'] = xmin
+#     coordinates['xmax'] = xmax
+#     coordinates['ymin'] = ymin
+#     coordinates['ymax'] = ymax
     
+    coordinates = str(coordinates).replace("'", "\"");
+    coordinates = json.loads(coordinates)
 
-    test = admsInputDataRetriever(str(sys.argv[1]), bldTopnode = config.bldTopnode, coordinates), ["http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#CarbonDioxide"], bdnLimit = config.bdnLimit, filterSrc = False  )
+    test = admsInputDataRetriever(str(sys.argv[1]), config.bldTopnode, coordinates, ["CO"],config.bdnLimit,False  )
     result = test.get()
 
 

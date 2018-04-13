@@ -78,15 +78,7 @@ public class ADMSWrapper extends HttpServlet {
 		
 		System.out.println(args);
 		runPython("startADMSMain.bat", args, response);
-		String startADMSRequets = "http://localhost/JPS/ADMSStarter";
-		HttpUriRequest request1 = new HttpGet(startADMSRequets);
-		HttpResponse httpResponse = null;
-		try {
-			httpResponse = HttpClientBuilder.create().build().execute(request1);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		response.getWriter().write("Success");
 		
  
 		
