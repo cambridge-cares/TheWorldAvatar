@@ -17,7 +17,7 @@ SUP = '''
     SupAddInputPath                = " "
     SupReleaseType                 = 0
     SupModelBuildings              = 1
-    SupModelComplexTerrain         = 1
+    SupModelComplexTerrain         = 0
     SupModelCoastline              = 0
     SupPufType                     = 0
     SupCalcChm                     = 0
@@ -217,6 +217,35 @@ MAP = '''
     /
 '''
 POLD = '''
+    &ADMS_POLLUTANT_DETAILS
+    PolName                  = "CO2"
+    PolPollutantType         = 0
+    PolGasDepVelocityKnown   = 1
+    PolGasDepositionVelocity = 0.0e+0
+    PolGasType               = 1
+    PolParDepVelocityKnown   = 1
+    PolParTermVelocityKnown  = 1
+    PolParNumDepositionData  = 1
+    PolParDepositionVelocity =
+      0.0e+0
+    PolParTerminalVelocity =
+      0.0e+0
+    PolParDiameter =
+      1.0e-6
+    PolParDensity =
+      1.000e+3
+    PolParMassFraction =
+      1.0e+0
+    PolWetWashoutKnown = 1
+    PolWetWashout      = 0.0e+0
+    PolWetWashoutA     = 1.0e-4
+    PolWetWashoutB     = 6.4e-1
+    PolConvFactor      = 5.2e-1
+    PolBkgLevel        = 0.0e+0
+    PolBkgUnits        = "ppb"
+    /
+
+
     &ADMS_POLLUTANT_DETAILS
     PolName                  = "NOx"
     PolPollutantType         = 0
@@ -665,6 +694,33 @@ POLD = '''
     PolBkgUnits        = "ppb"
     /
 
+    &ADMS_POLLUTANT_DETAILS
+    PolName                  = "CO2"
+    PolPollutantType         = 0
+    PolGasDepVelocityKnown   = 0
+    PolGasDepositionVelocity = 0.0e+0
+    PolGasType               = 0
+    PolParDepVelocityKnown   = 1
+    PolParTermVelocityKnown  = 1
+    PolParNumDepositionData  = 1
+    PolParDepositionVelocity =
+      0.0e+0
+    PolParTerminalVelocity =
+      0.0e+0
+    PolParDiameter =
+      1.0e-6
+    PolParDensity =
+      1.000e+3
+    PolParMassFraction =
+      1.0e+0
+    PolWetWashoutKnown = 1
+    PolWetWashout      = 1.0e-4
+    PolWetWashoutA     = 1.0e-4
+    PolWetWashoutB     = 6.4e-1
+    PolConvFactor      = 5.47e-1
+    PolBkgLevel        = 0.0e+0
+    PolBkgUnits        = "ppb"
+    /
 '''
 
 class admsAplWriter(object):
@@ -745,7 +801,7 @@ class admsAplWriter(object):
         file.write("/\n")
 
     def writeCoordSys(self, file, csys = 32648):
-        self.writeTemp(file, '&ADMS_COORDINATESYSTEM\nProjectedEPSG = {0}\n', [32648] )
+        self.writeTemp(file, '&ADMS_COORDINATESYSTEM\nProjectedEPSG = {0}\n', [28992] )
         file.write("/\n")
        
     def writeStr(self, file, ori):

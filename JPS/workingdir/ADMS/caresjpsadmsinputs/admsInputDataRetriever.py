@@ -583,13 +583,13 @@ class admsInputDataRetriever(object):
         """.format(nodeuri))
 
         # define coordi convert function :  building kb   --->   adms
-        Bdn2ADMSCoordC = defineCoordConvert('epsg:28992','epsg:32648')
+        #Bdn2ADMSCoordC = defineCoordConvert('epsg:28992','epsg:32648')
         #float(row['min'].toPython()), float(row['max'].toPython())
 
 
         zlimit = tuple( (float(row['min'].toPython()), float(row['max'].toPython()))   for row in qHeight  )[0]
 
-        return (   list(Bdn2ADMSCoordC(float(row['x'].toPython()), float(row['y'].toPython())) for row in qData),        zlimit)
+        return (   list( (float(row['x'].toPython()), float(row['y'].toPython())) for row in qData),        zlimit)
 
     def getMetrics(self, nodeuri):
         base = None
