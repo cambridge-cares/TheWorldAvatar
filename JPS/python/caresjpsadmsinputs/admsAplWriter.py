@@ -158,19 +158,20 @@ FLC = '''
     FlcNumPDF            = 0
     /
 '''
+#todo:should retreive it from kb
 GRD = '''
     &ADMS_PARAMETERS_GRD
     GrdType                = 0
     GrdCoordSysType        = 0
     GrdSpacingType         = 0
     GrdRegularMin          = 
-      3.46000e+5 1.36500e+5 1.00e+2
+      7.9173323e+4 4.54193456e+5 0.00e+0
       1.0e+1 0.0e+0 0.0e+0
     GrdRegularMax          = 
-      3.85500e+5 1.61700e+5 1.00e+2
+      8.0199621e+4 4.55030337e+5 3.00e+1
       1.000e+3 3.30e+2 0.0e+0
     GrdRegularNumPoints    = 
-      80 80 1
+      80 80 4
       10 12 1
     GrdVarSpaceNumPointsX  = 0
     GrdVarSpaceNumPointsY  = 0
