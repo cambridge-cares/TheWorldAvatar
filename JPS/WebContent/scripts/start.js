@@ -15,14 +15,14 @@ $(function(){
         })
     })
     $('#start').click(function(){
-        console.log("start simulation")
+//        console.log("start simulation")
         //$('#start').attr("disabled", true);
         
         var xmax = $('#xupper').val();
         var xmin = $('#xlower').val();
         var ymax = $('#yupper').val();
         var ymin = $('#ylower').val();
-        console.log(xmin +" "+xmax + " " + ymin + " " + ymax)
+//        console.log(xmin +" "+xmax + " " + ymin + " " + ymax)
         
         
 
@@ -30,7 +30,7 @@ $(function(){
         
         $.ajax('http://www.theworldavatar.com/JPS/ADMSCoordinationAgent?coordinates='+encodeURIComponent(JSON.stringify({xmin:xmin,xmax:xmax, ymin:ymin, ymax:ymax}))).done(function (bdnlist) {
             //todo: init building
-            console.log(JSON.parse(bdnlist))
+//            console.log(JSON.parse(bdnlist))
             initadms3dmap(JSON.parse(bdnlist))
             
         }).fail(function () {

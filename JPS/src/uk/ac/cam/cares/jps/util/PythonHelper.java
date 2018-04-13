@@ -17,8 +17,6 @@ public class PythonHelper {
 	 */
 	public static String callPython(String pythonScriptName, String parameter) throws IOException {
 		String path = AgentLocator.getPathToPythonScript(pythonScriptName);
-		
-		System.out.println("call python = " + path);
 
 		String[] cmd = { "python", path, parameter };
 
