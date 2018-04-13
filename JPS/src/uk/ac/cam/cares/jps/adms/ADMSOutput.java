@@ -35,6 +35,8 @@ public class ADMSOutput extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		String jsonString = request.getParameter("coordinatesLonLat");
 		
+//		System.out.println("jsonString in Java Servlet "+ jsonString);
+		
 		Gson g = new Gson();
 		
 		String result = PythonHelper.callPython("caresjpsadmsinputs/ADMSOutput.py", "ADMS/caresjpsadmsinputs/test.gst" ,g.toJson(jsonString));
