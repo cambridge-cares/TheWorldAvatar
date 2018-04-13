@@ -113,7 +113,7 @@ var initadms3dmap  = function (list) {
                 
                 if (coordinatesArray.length > 0) {
                     // todo: change to variable URL path
-                    $.getJSON('http://localhost:8080' + '/JPS/ADMSOutput',
+                    $.getJSON('/JPS/ADMSOutput',
                         {
                             coordinatesLonLat: JSON.stringify(coordinatesArray)
                         },
