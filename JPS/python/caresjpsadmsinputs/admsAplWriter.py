@@ -772,7 +772,7 @@ class admsAplWriter(object):
         file.write("/\n")
 
     def writeCoordSys(self, file, csys = 32648):
-        self.writeTemp(file, '&ADMS_COORDINATESYSTEM\nProjectedEPSG = {0}\n', [32648] )
+        self.writeTemp(file, '&ADMS_COORDINATESYSTEM\nProjectedEPSG = {0}\n', [28992] )
         file.write("/\n")
        
     def writeStr(self, file, ori):
