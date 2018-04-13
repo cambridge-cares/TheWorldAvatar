@@ -589,7 +589,7 @@ class admsInputDataRetriever(object):
 
         zlimit = tuple( (float(row['min'].toPython()), float(row['max'].toPython()))   for row in qHeight  )[0]
 
-        return (   list(float(row['x'].toPython()), float(row['y'].toPython()) for row in qData),        zlimit)
+        return (   list( (float(row['x'].toPython()), float(row['y'].toPython())) for row in qData),        zlimit)
 
     def getMetrics(self, nodeuri):
         base = None
