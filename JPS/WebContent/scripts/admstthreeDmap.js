@@ -15,7 +15,7 @@ var initadms3dmap  = function (list) {
         tilt: 45.0,
         // position: { latitude:1.304270, longitude:103.774396 },
         // change to variable latitude and longitude
-        position: { latitude: 52.039479093801496, longitude: 4.357006480574263 }, // around The Hague
+        position: { latitude: 52.07690, longitude: 4.29089 }, // around The Hague
         // position: { latitude:1.3042168, longitude:103.7745893 }, // around NUS
         state: true, // stores map position/rotation in url
         effects: [], // effects: ['shadows']
