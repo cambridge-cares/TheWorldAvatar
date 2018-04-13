@@ -72,6 +72,16 @@ public class ADMSCoordinationAgent extends HttpServlet {
 		
 		response.getWriter().write(responseString3.replace("'","\""));
 		
+		String startADMSRequets = "http://localhost/JPS/ADMSStarter";
+		HttpUriRequest request4 = new HttpGet(startADMSRequets);
+		HttpResponse httpResponse4 = null;
+		try {
+			httpResponse4 = HttpClientBuilder.create().build().execute(request4);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 	}
 
 	/**
