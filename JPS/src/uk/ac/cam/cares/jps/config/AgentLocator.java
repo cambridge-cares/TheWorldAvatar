@@ -124,6 +124,10 @@ public class AgentLocator {
 		return getJPSRootDirectory() + "/" + relativePath + "/" + pythonScriptName;
 	}
 	
+	/**
+	 * @param ADMSOutputFileName (including package name followed by filename and .gst extension, e.g. ADMS/caresjpsadmsinputs/test.levels.gst)
+	 * @return
+	 */	
 	public static String getPathToADMSOutputFile(String ADMSOutputFileName) {
 		String relativePath = getProperty("reldir.workingdir");
 		return getJPSRootDirectory() + "/" + relativePath + "/" + ADMSOutputFileName;

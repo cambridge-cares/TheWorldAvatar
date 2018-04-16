@@ -27,13 +27,8 @@ public class PythonHelper {
 	}
 	
 	public static String callPython(String pythonScriptName, String ADMSOutputFileName, String parameter) throws IOException {
-		String pathPythonScript = AgentLocator.getPathToPythonScript(pythonScriptName);
-		
-//		System.out.println("pathPythonScript " + pathPythonScript);
-		
+		String pathPythonScript = AgentLocator.getPathToPythonScript(pythonScriptName);		
 		String pathADMSOutput = AgentLocator.getPathToADMSOutputFile(ADMSOutputFileName);
-		
-//		System.out.println("pathADMSOutput " + pathADMSOutput);
 		
 		String[] cmd = { "python", pathPythonScript, pathADMSOutput, parameter };
 		

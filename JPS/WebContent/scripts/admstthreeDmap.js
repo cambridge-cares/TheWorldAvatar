@@ -1,10 +1,4 @@
-var initadms3dmap  = function (list) {
-    
-    //var loc = window.location.pathname;
-    //var dir = loc.substring(0, loc.lastIndexOf('/'));
-    //console.log(dir)
-    
-    
+var initadms3dmap  = function (list) { 
     
     var osmb = new OSMBuildings({
         baseURL: './OSMBuildings',
@@ -13,10 +7,8 @@ var initadms3dmap  = function (list) {
         maxZoom: 25,
         rotation: 0.6,
         tilt: 45.0,
-        // position: { latitude:1.304270, longitude:103.774396 },
         // change to variable latitude and longitude
         position: { latitude: 52.07690, longitude: 4.29089 }, // around The Hague
-        // position: { latitude:1.3042168, longitude:103.7745893 }, // around NUS
         state: true, // stores map position/rotation in url
         effects: [], // effects: ['shadows']
         attribution: '� 3D <a href="https://osmbuildings.org/copyright/">OSM Buildings</a>'
@@ -29,23 +21,6 @@ var initadms3dmap  = function (list) {
         }
     );
     
-    // function fillPopup()
-    // {
-    //     var muri = "http://www.theworldavatar.com/BMS/06_buildings.owl";
-    //
-    //     $.ajax({
-    //         url: "http://www.theworldavatar.com:82/getAttrList",
-    //         method: "POST",
-    //         data: JSON.stringify({uri: muri}),
-    //         contentType: "application/json; charset=utf-8",
-    //         success: function (attrPairs) {}
-    //         });
-    // }
-    
-    // console.log(fillPopup());
-    
-    //osmb.addGeoJSONTiles('https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
-    
     var fieldset = document.getElementById("fieldsetCheckbox");
     var divMap = document.getElementById("map");
     divMap.removeChild(divMap.childNodes[0]);
@@ -53,7 +28,6 @@ var initadms3dmap  = function (list) {
     
     // --- Rendering 3D building models --- //
 
-    // change to variable url path
     $.getJSON('/JPS/ADMSHelper',
         {
             listOfIRIs: JSON.stringify(list)
@@ -112,13 +86,11 @@ var initadms3dmap  = function (list) {
                 }
                 
                 if (coordinatesArray.length > 0) {
-                    // todo: change to variable URL path
                     $.getJSON('/JPS/ADMSOutput',
                         {
                             coordinatesLonLat: JSON.stringify(coordinatesArray)
                         },
                         function(data) {
-                            // console.log(data);
                             var concentrations = data;
                             
                             document.getElementById("concentration0").innerHTML = concentrations[2];
@@ -128,19 +100,9 @@ var initadms3dmap  = function (list) {
                             
                         });
                 }
-                
-                // if(id == 'w420847275')
-                // {
-                //     // alert('clicked')
-                //     window.location.assign("http://www.theworldavatar.com/BMSIndoor")
-                //
-                // }
             });
         }
     });
-    //61.0089718,132.8325304
-    
-    // osmb.addOBJ('002.obj', { latitude: 61.0089718, longitude: 132.8325304}, { id: "my_object_1"});
     
     osmb.on('pointermove', function(e) {
         osmb.getTarget(e.detail.x, e.detail.y, function(id) {

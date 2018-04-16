@@ -24,18 +24,14 @@ public class ADMSOutput extends HttpServlet {
      */
     public ADMSOutput() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		request.setCharacterEncoding("UTF-8");
 		String jsonString = request.getParameter("coordinatesLonLat");
-		
-//		System.out.println("jsonString in Java Servlet "+ jsonString);
 		
 		Gson g = new Gson();
 		
