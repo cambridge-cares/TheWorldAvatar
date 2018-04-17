@@ -109,15 +109,11 @@ public class AgentLocator {
 		return getJPSRootDirectory() + "/" + relativePath + "/" + pythonScriptName;
 	}
 	
-	/**
-	 * @param ADMSOutputFileName (including package name followed by filename and .gst extension, e.g. ADMS/caresjpsadmsinputs/test.levels.gst)
-	 * @return
-	 */	
-	public static String getPathToADMSOutputFile(String ADMSOutputFileName) {
+	public static String getPathToWorkingDir() {
 		String relativePath = getProperty("reldir.workingdir");
-		return getJPSRootDirectory() + "/" + relativePath + "/" + ADMSOutputFileName;
+		return getJPSRootDirectory() + "/" + relativePath;
 	}
-
+	
 	/**
 	 * If there is a test property file with the key then its value is returned.
 	 * Otherwise the value specified in the application property file or null is
