@@ -22,8 +22,9 @@ import junit.framework.TestCase;
 public class TestLogging extends TestCase {
 	
 	// Use the class as parameter to be able to change the log level in the log4j2 configuration file 
-	// for certain packages or projects in a fine-grained manner
-	// If you use e.g ...getLogger("") instead you can only configure the root logger
+	// for certain packages or projects in a fine-grained manner and to log the class name in the log file
+	// If you use e.g ...getLogger("") instead you can only configure the root logger and will have no information
+	// about the logging class
 	private Logger logger = LoggerFactory.getLogger(TestLogging.class);
 
 	public void testLogLevelsWithSlf4j() {
@@ -90,6 +91,8 @@ public class TestLogging extends TestCase {
 					+ "which consists of a lot of values, "
 					+ "e.g. list = " + list;
 			logger.debug(message);
-		}		
+		} else {
+			logger.info("Nothing was logged");
+		}
 	}
 }

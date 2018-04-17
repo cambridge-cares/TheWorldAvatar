@@ -9,9 +9,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @WebServlet(urlPatterns = {"/Configtest/AgentTwo/*"})
 public class AgentTwo extends HttpServlet {
 
+	Logger logger = LoggerFactory.getLogger(AgentTwo.class);
+	
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -19,6 +24,8 @@ public class AgentTwo extends HttpServlet {
 		response.setContentType("text/plain");
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter out = response.getWriter();
-		out.print("and I am AgentTwo");
+		String message = "and I am AgentTwo";
+		out.print(message);
+		logger.info(message);
 	}
 }

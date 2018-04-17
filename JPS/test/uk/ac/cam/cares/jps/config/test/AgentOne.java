@@ -27,17 +27,15 @@ public class AgentOne extends HttpServlet {
 		response.setCharacterEncoding("UTF-8");
 
 		PrintWriter out = response.getWriter();
-		out.print(getAgentText());
-		logger.info(getAgentText());
+		String message = getAgentText();
+		out.print(message);
+		logger.info(message);
 		
-		// https://stackoverflow.com/questions/3035656/communication-between-remote-servlets/
-
-		// Class Not Found Exception --> copy libraries of Apache HC to lib directory
-		// of tomcat under Eclipse: double click server and see server path
 		String responseAgentTwo = AgentLocator.callAgent("agent.test.agenttwo");
 		out.print(responseAgentTwo);
-		logger.info(responseAgentTwo);
 		
+		//TODO-AE
+		// https://stackoverflow.com/questions/3035656/communication-between-remote-servlets/
 		
 		// request.getRequestDispatcher("/secondServletURL").include(request, response);
 
