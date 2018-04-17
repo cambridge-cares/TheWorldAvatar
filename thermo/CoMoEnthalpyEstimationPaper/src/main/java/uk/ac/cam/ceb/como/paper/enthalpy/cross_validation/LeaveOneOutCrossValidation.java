@@ -2,6 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package uk.ac.cam.ceb.como.paper.enthalpy.cross_validation;
 
 import com.cmclinnovations.data.collections.ObjectPool;
@@ -19,6 +20,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter.RadicalsFilter;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesPoolParser;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesPoolWriter;
@@ -37,44 +39,78 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singleco
 import uk.ac.cam.ceb.como.paper.enthalpy.threading.EnthalpyEstimationThread;
 import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
 
-/**
+ /**
  *
  * @author pb556
  */
+
 public class LeaveOneOutCrossValidation {
 
     public static void main(String[] args) throws Exception {
 
-        String srcRefPool = "C:\\Users\\pb556\\workspace\\methodology\\results\\thermal_scaled_kJperMol.csv";
+    	//Java code from previous version that is commented
+    	
+        /* String srcRefPool = "C:\\Users\\pb556\\workspace\\methodology\\results\\thermal_scaled_kJperMol.csv";
         String destRList = "C:\\Users\\pb556\\workspace\\methodology\\results\\leave-one-out-x-validation\\hco\\";
-        
+        */
+       
+    	/**
+    	 * @author nk510
+    	 */
+    	
+    	/*Testing main method by using recovered file:  thermal_scaled_kJperMol.csv (date stamp: date stamp 19/03/16. @19.48) and new file path*/
+    	
+    	String srcRefPool = "D:\\LeaveOneOutCrossValidation_results\\thermal_scaled_kJperMol.csv";
+        String destRList = "D:\\LeaveOneOutCrossValidation_results\\leave-one-out-x-validation\\hco\\";
+           
         SpeciesPoolParser refParser = new SpeciesPoolParser(new File(srcRefPool));
+        
         refParser.parse();
-        List<Species> refSpecies = new ArrayList<>(refParser.getRefSpecies());  
+        
+        List<Species> refSpecies = new ArrayList<>(refParser.getRefSpecies());
         
         LPSolver solver = new TerminalGLPKSolver(15000, true, true);
-        solver.setDirectory(new File("C:\\Users\\pb556\\temp2\\"));
+      
+        /*Java code from previous version that is commented.*/
+        /* solver.setDirectory(new File("C:\\Users\\pb556\\temp2\\")); */
+
+        /**
+         * @author nk510
+         */
+        
+        /*testing main method by using recovered file:  thermal_scaled_kJperMol.csv and new file path */
+        
+        solver.setDirectory(new File("D:\\LeaveOneOutCrossValidation_temp2\\"));
 
         int[] ctrRuns = new int[]{1};
         int[] ctrRes = new int[]{25}; // 1, 5, 15, 25
         int[] ctrRadicals = new int[]{100, 0, 1, 2}; // 0, 1, 2, 3, 4, 5
 
         for (int z = 0; z < ctrRadicals.length; z++) {
-            int maxRadical = ctrRadicals[z];
+            
+        	int maxRadical = ctrRadicals[z];
+            
             int timeout = 600;
+            
             RadicalsFilter filter = new RadicalsFilter(0, maxRadical);
 
             for (int i = 0; i < ctrRuns.length; i++) {
-                for (int k = 0; k < ctrRes.length; k++) {
-                    String config = "isd_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_" + timeout + "s";
+                
+            	for (int k = 0; k < ctrRes.length; k++) {
+                    
+                	String config = "isd_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_" + timeout + "s";
+                    
                     System.out.println("Process configuration " + config);
                     
                     if (new File(destRList + "\\" + config + ".txt").exists()) {
                         System.out.println("Skipping " + destRList + "\\" + config);
                         continue;
                     }
+
                     Collections.shuffle(refSpecies);
+                    
                     int ctr = 1;
+                    
                     for (Species target : refSpecies) {
 
                         Map<Species, Collection<ReactionList>> results = new HashMap<>();
