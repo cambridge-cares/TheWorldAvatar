@@ -17,6 +17,7 @@
     <title>J-Park Simulator</title>
     <link rel="stylesheet" href="css/OSMBuildings.css">
     <script src="scripts/OSMBuildings.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.4.4/proj4.js"></script>
 	<script src="scripts/admstthreeDmap.js"></script>
 	<script src="scripts/start.js"></script>
 
@@ -77,8 +78,8 @@
             </div>
         </fieldset>
         <div id="output">
-            <p id="lat">lat: <span id="latitude"></span></p>
-            <p id="lon">lon: <span id="longitude"></span></p>
+            <p id="lat">x: <span id="latitude"></span></p>
+            <p id="lon">y: <span id="longitude"></span></p>
             <p id="conc0">concentration (0m) in &mu;g/m<sup>3</sup>: <br><span id="concentration0"></span></p>
             <p id="conc10">concentration (10m) in &mu;g/m<sup>3</sup>: <br><span id="concentration10"></span></p>
             <p id="conc20">concentration (20m) in &mu;g/m<sup>3</sup>: <br><span id="concentration20"></span></p>
