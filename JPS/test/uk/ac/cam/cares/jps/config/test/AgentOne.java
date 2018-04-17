@@ -9,10 +9,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import uk.ac.cam.cares.jps.config.AgentLocator;
 
 @WebServlet(urlPatterns = {"/Configtest/AgentOne/*"})
 public class AgentOne extends HttpServlet {
+	
+	Logger logger = LoggerFactory.getLogger(AgentOne.class);
 
 	private static final long serialVersionUID = 1L;
 
@@ -23,14 +28,17 @@ public class AgentOne extends HttpServlet {
 
 		PrintWriter out = response.getWriter();
 		out.print(getAgentText());
-
+		logger.info(getAgentText());
+		
 		// https://stackoverflow.com/questions/3035656/communication-between-remote-servlets/
 
 		// Class Not Found Exception --> copy libraries of Apache HC to lib directory
 		// of tomcat under Eclipse: double click server and see server path
 		String responseAgentTwo = AgentLocator.callAgent("agent.test.agenttwo");
 		out.print(responseAgentTwo);
-
+		logger.info(responseAgentTwo);
+		
+		
 		// request.getRequestDispatcher("/secondServletURL").include(request, response);
 
 		// response.sendRedirect(request.getContextPath() +

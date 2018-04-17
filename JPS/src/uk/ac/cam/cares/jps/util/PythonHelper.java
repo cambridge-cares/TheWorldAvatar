@@ -26,11 +26,10 @@ public class PythonHelper {
 		return stdInput.readLine();
 	}
 	
-	public static String callPython(String pythonScriptName, String ADMSOutputFileName, String parameter) throws IOException {
+	public static String callPython(String pythonScriptName, String parameter1, String parameter2) throws IOException {
 		String pathPythonScript = AgentLocator.getPathToPythonScript(pythonScriptName);		
-		String pathADMSOutput = AgentLocator.getPathToADMSOutputFile(ADMSOutputFileName);
 		
-		String[] cmd = { "python", pathPythonScript, pathADMSOutput, parameter };
+		String[] cmd = { "python", pathPythonScript, parameter1, parameter2 };
 		
 		Process p = Runtime.getRuntime().exec(cmd);
 		

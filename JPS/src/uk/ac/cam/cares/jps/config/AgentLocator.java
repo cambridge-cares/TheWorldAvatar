@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.config;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.http.HttpResponse;
@@ -10,11 +11,14 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AgentLocator {
 
 	private static AgentLocator instance = null;
 	
+	private Logger logger = LoggerFactory.getLogger(AgentLocator.class);
 	private String jpsRootDirectory = null;
 	private Properties jpsProps = null;
 	private Properties jpsTestProps = null;
@@ -23,8 +27,7 @@ public class AgentLocator {
 	private AgentLocator() {
 	}
 
-	// TODO-AE check Singleton Pattern and multi threading --> synchronize
-	public static AgentLocator getSingleton() {
+	public static synchronized AgentLocator getSingleton() {
 		if (instance == null) {
 			instance = new AgentLocator();
 			instance.init();
@@ -43,67 +46,49 @@ public class AgentLocator {
 			index = path.lastIndexOf("\\JPS");
 		}
 		if (index == -1) {
-			throw new RuntimeException("The root directory for JPS was not found, path = " + path);
+			String message = "The root directory for JPS was not found, path = " + path;
+			logger.error(message);
+			throw new RuntimeException(message);
 		}
 		
 		jpsRootDirectory = path.substring(0, index + 4);
-		// TODO-AE log
-		System.out.println("jpsRootDirectory = " + jpsRootDirectory);
-		
-//		String current;
-//		try {
-//			current = new File( "." ).getCanonicalPath();
-//			System.out.println("Current dir:"+current);
-//	        String currentDir = System.getProperty("user.dir");
-//	        System.out.println("Current dir using System:" +currentDir);
-//		} catch (IOException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
-		
-		
-		jpsProps = loadProperties("jps.properties");
-		if (jpsProps == null) {
-			// TODO-AE Fatal error, stop application
-			throw new RuntimeException("jps.properties not found");
-		}
-
-		// TODO-AE log all properties of jps and jpstest to log file
-
-		jpsTestProps = loadProperties("jpstest.properties");
-		if (jpsTestProps == null) {
-			// TODO-AE its no error, just log it
-		}
-
-		url = getProperty("host") + ":" + getProperty("port");
-	}
-	
-	private Properties loadProperties(String fileName) {
-	      
-		//TODO-AE putting the properties file to java package is not that nice
-		String configPath = getJPSRootDirectory() + "/conf/" + fileName;
-		System.out.println("Loading " + configPath);
+		logger.info("jpsRootDirectory = " + jpsRootDirectory);
 		
 		try {
-			FileInputStream inputStream = new FileInputStream(configPath);
-			Properties props = new Properties();
-			//props.load(getClass().getClassLoader().getResourceAsStream(configPath));
-			props.load(inputStream);
-			return props;
-		} catch (IOException e1) {
-			// TODO-AE log
-			e1.printStackTrace();
-		}		
+			jpsProps = loadProperties("jps.properties");
+			logProperties(jpsProps);
+		} catch (IOException exc) {
+			logger.error(exc.getMessage(), exc);
+		}
+		
+		try {
+			jpsTestProps = loadProperties("jpstest.properties");
+			logProperties(jpsTestProps);
+		} catch (IOException exc) {
+			// this is no error. jpstest.properties should not be available on production system.
+			logger.info("jpstest.properties not found");
+		}			
 
-//		try {
-//			Properties props = new Properties();
-//			props.load(new FileInputStream(configPath));
-//			return props;
-//		} catch (IOException e) {
-//			// TODO-AE log
-//		}
-
-		return null;
+		url = getProperty("host") + ":" + getProperty("port");
+		logger.info("created url from properties: " + url);
+	}
+	
+	private Properties loadProperties(String fileName) throws IOException {
+	      
+		String configPath = getJPSRootDirectory() + "/conf/" + fileName;
+		logger.info("loading " + configPath);
+		
+		FileInputStream inputStream = new FileInputStream(configPath);
+		Properties props = new Properties();
+		props.load(inputStream);
+		
+		return props;
+	}
+	
+	private void logProperties(Properties properties) {
+		for (Entry<Object, Object> current : properties.entrySet()) {
+			logger.info(current.toString());
+		}
 	}
 	
 	private static String getJPSRootDirectory() {
@@ -124,15 +109,11 @@ public class AgentLocator {
 		return getJPSRootDirectory() + "/" + relativePath + "/" + pythonScriptName;
 	}
 	
-	/**
-	 * @param ADMSOutputFileName (including package name followed by filename and .gst extension, e.g. ADMS/caresjpsadmsinputs/test.levels.gst)
-	 * @return
-	 */	
-	public static String getPathToADMSOutputFile(String ADMSOutputFileName) {
+	public static String getPathToWorkingDir() {
 		String relativePath = getProperty("reldir.workingdir");
-		return getJPSRootDirectory() + "/" + relativePath + "/" + ADMSOutputFileName;
+		return getJPSRootDirectory() + "/" + relativePath;
 	}
-
+	
 	/**
 	 * If there is a test property file with the key then its value is returned.
 	 * Otherwise the value specified in the application property file or null is
@@ -156,14 +137,15 @@ public class AgentLocator {
 	}
 
 	public static String callAgent(String agentKey) throws ClientProtocolException, IOException {
-		String url = getSingleton().url + AgentLocator.getProperty(agentKey);
-		// TODO-AE logging
-		System.out.println("calling agent " + url);
-		HttpUriRequest request = new HttpGet(url);
+		return getSingleton().callAgentInternally(agentKey);
+	}
+	
+	private String callAgentInternally(String agentKey)  throws ClientProtocolException, IOException {
+		String combinedUrl = url + AgentLocator.getProperty(agentKey);
+		logger.info("calling agent " + url);
+		HttpUriRequest request = new HttpGet(combinedUrl);
 		HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 		String response = EntityUtils.toString(httpResponse.getEntity());
-
 		return response;
 	}
-
 }
