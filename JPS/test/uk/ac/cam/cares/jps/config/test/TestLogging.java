@@ -35,12 +35,12 @@ public class TestLogging extends TestCase {
 		logger.debug("This is a DEBUG message");
 		
 		// INFO: highlight the progress of the application at coarse-grained level 
-		// This log level is the usual the configured log level on production system
-		// INFO messages help you to get a glue what the application has been done (e.g. before an error occured)
-		// there is always a trade-off: 
-		// a) if you log too much on INFO log level then you will overlook important messages 
-		//	  that help you understanding an occured error and the log files become very large
-		// b) if you log too less on INFO log level then it is hard to understand the context of an occured error
+		// The configured log level on production system is usually INFO
+		// INFO messages help you to get a glue what the application has been done (e.g. just before an error occurred)
+		// there are always trade-offs: 
+		// a) if you log too much on INFO log level then the log files become very large and you might overlook important messages 
+		//    in the log file  that help you understanding an occurred error
+		// b) if you log too little on INFO log level then it is hard to understand the context of an occurred error
 		logger.info("This is a INFO message");
 		
 		// WARN: designates potentially harmful situations
