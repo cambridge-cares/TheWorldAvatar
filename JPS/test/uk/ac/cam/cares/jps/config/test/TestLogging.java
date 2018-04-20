@@ -62,7 +62,7 @@ public class TestLogging extends TestCase {
 		} catch (Exception exc) {
 			// logging without stack trace; usually not recommended
 			// But if your code manages the one or other caught exception very well, 
-			// then sometimes logging on INFO level is enough
+			// then sometimes logging on INFO level without stack trace is enough
 			// e.g. if the user is asked for entering a file name and the file is existing,
 			// then the user is notified and asked to enter the file name again. 
 			logger.error(exc.getMessage() + " and no stack trace is logged");
