@@ -313,7 +313,7 @@ public class LeaveOneOutCrossValidation {
                          * @version 1.0
                          * @since 2018-04-20
                          *  
-                         * Maximum search depth set to 66. For more information about maximum search depth, please see Figure 6.8 on page 146 [1].
+                         * Maximum search depth set to 50. For more information about maximum search depth, please see Figure 6.8 on page 146 [1].
                          *                          
                          */
                         poolModCalc.setMaximumSearchDepth(50);
