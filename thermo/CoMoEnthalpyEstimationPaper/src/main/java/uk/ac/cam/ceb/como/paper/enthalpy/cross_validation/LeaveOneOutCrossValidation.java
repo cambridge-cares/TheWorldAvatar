@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -135,7 +136,7 @@ public class LeaveOneOutCrossValidation {
          * @since 2018-04-20
          * 
          * refSpecies:
-         * Creates reference species list. See 'Overview of the method used to estimate the enthalpy of formation' in Figure 6.7, page 144 [1])  
+         * Creates reference species list. See 'Overview of the method used to estimate the enthalpy of formation' in Figure 6.7, page 144 [1].  
          * Creates Java data structure ArrayList of object variables of Species class by using the object variable 'refParser' of SpeciesPoolParser class. 
          *  
          */
@@ -161,6 +162,7 @@ public class LeaveOneOutCrossValidation {
          * @version 1.0
          * @since 2018-04-20
          */
+        
         /*
          * Commented Java code from previous version.
          * solver.setDirectory(new File("C:\\Users\\pb556\\temp2\\")); 
@@ -335,7 +337,8 @@ public class LeaveOneOutCrossValidation {
                          * @version 1.0
                          * @since 2018-04-20
                          *  
-                         * Object variable {@link EnthalpyEstimationThread#t} implements <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Callable.html">Callable</a> interface by using 
+                         * Object variable {@link EnthalpyEstimationThread#t} of EnthalpyEstimationThread class is created. 
+                         * EnthalpyEstimationThread implements <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Callable.html">Callable</a> interface by using 
                          * Species and collection of ReactionList object variables. Implemented {@link Callable#call()} method returns results or may throw an exception.                         
                          */
                         EnthalpyEstimationThread t = new EnthalpyEstimationThread(c, target, getPool(filter.filter(refPool), true));
