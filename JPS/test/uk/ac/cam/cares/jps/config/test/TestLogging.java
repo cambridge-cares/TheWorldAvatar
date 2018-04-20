@@ -22,8 +22,9 @@ import junit.framework.TestCase;
 public class TestLogging extends TestCase {
 	
 	// Use the class as parameter to be able to change the log level in the log4j2 configuration file 
-	// for certain packages or projects in a fine-grained manner
-	// If you use e.g ...getLogger("") instead you can only configure the root logger
+	// for certain packages or projects in a fine-grained manner and to log the class name in the log file
+	// If you use e.g ...getLogger("") instead you can only configure the root logger and will have no information
+	// about the logging class
 	private Logger logger = LoggerFactory.getLogger(TestLogging.class);
 
 	public void testLogLevelsWithSlf4j() {
@@ -34,12 +35,12 @@ public class TestLogging extends TestCase {
 		logger.debug("This is a DEBUG message");
 		
 		// INFO: highlight the progress of the application at coarse-grained level 
-		// This log level is the usual the configured log level on production system
-		// INFO messages help you to get a glue what the application has been done (e.g. before an error occured)
-		// there is always a trade-off: 
-		// a) if you log too much on INFO log level then you will overlook important messages 
-		//	  that help you understanding an occured error and the log files become very large
-		// b) if you log too less on INFO log level then it is hard to understand the context of an occured error
+		// The configured log level on production system is usually INFO
+		// INFO messages help you to get a glue what the application has been done (e.g. just before an error occurred)
+		// there are always trade-offs: 
+		// a) if you log too much on INFO log level then the log files become very large and you might overlook important messages 
+		//    in the log file  that help you understanding an occurred error
+		// b) if you log too little on INFO log level then it is hard to understand the context of an occurred error
 		logger.info("This is a INFO message");
 		
 		// WARN: designates potentially harmful situations
@@ -61,7 +62,7 @@ public class TestLogging extends TestCase {
 		} catch (Exception exc) {
 			// logging without stack trace; usually not recommended
 			// But if your code manages the one or other caught exception very well, 
-			// then sometimes logging on INFO level is enough
+			// then sometimes logging on INFO level without stack trace is enough
 			// e.g. if the user is asked for entering a file name and the file is existing,
 			// then the user is notified and asked to enter the file name again. 
 			logger.error(exc.getMessage() + " and no stack trace is logged");
@@ -90,6 +91,8 @@ public class TestLogging extends TestCase {
 					+ "which consists of a lot of values, "
 					+ "e.g. list = " + list;
 			logger.debug(message);
-		}		
+		} else {
+			logger.info("Nothing was logged");
+		}
 	}
 }
