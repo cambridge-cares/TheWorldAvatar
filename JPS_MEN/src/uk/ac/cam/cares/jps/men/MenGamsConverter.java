@@ -27,7 +27,7 @@ public class MenGamsConverter {
 	
 	//TODO-AE GAMS produces new files for each optimization. Old files must be deleted. Maybe move the workingDir to another place
 	// to use is also from ADMS and to have a general strategy for deleting old files. Move also location log files there
-	final private String WORKING_DIR_GAMS = "C:\\Users\\Andreas\\TMP\\JPS_workingdir\\JPS_MEN_GAMS";
+	final private String WORKING_DIR_GAMS = "C:\\Users\\kevin\\TEMP\\JPS_workingdir\\JPS_MEN_GAMS";
 	
 	public MenResult calculate(List<Source> sources, List<Sink> sinks, List<FeasibleConnection> feasibleConnections, List<Transportation> transportations, Parameters parameters) {
 	
