@@ -2,18 +2,15 @@ package citygmlkb;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
+
 import java.io.InputStreamReader;
-import java.io.LineNumberReader;
+
 import java.io.Reader;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
-import java.util.Scanner;
+
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -25,20 +22,19 @@ import org.w3c.dom.NodeList;
 
 import com.hp.hpl.jena.util.FileUtils;
 
-import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
+
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
-import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+
 
 //some times this code creates an owl file that can't be opened because there is a tag exist which is "<owl:Axiom/>"
-public class citygmlkb {
+public class Citygmlkb {
 	
 	
 	public static double[] centroid(ArrayList<String> xvalueground,ArrayList<String> yvalueground)
@@ -209,20 +205,21 @@ public class citygmlkb {
 	static RDFIndividual wallins;
 	static RDFIndividual roofins;
 	static RDFIndividual compositesurface;
+	
+	public static void declaration()
+	{
+		
+	}
 
 	
 	public static void functionmain() throws Exception {
 	
-		int[] notpartial= {/*110,109,107,70,36,81,49,111,62,06,117,116,19,99,106,22,67,85,94,20,93,73,*/80/*,5*/}; //71a and 5 some exception
-		int number=notpartial.length;
+		//int[] notpartial= {/*110,109,107,70,36,81,49,111,62,06,117,116,19,99,106,22,67,85,94,20,93,73,*/80/*,5*/}; //71a and 5 some exception
+		//int number=notpartial.length;
 		for (int jumlah=0;jumlah<=3;jumlah++) //end 121
 		{
-			String jumlahn=String.format("%02d", jumlah);	
-		 //String source ="D:/citygmllearn/denhaaggml/"+jumlahn+"_buildings.xml";
+			//String jumlahn=String.format("%02d", jumlah);	
 		 String source ="D:/citygmllearn/denhaaggml/"+12+"_buildings1"+jumlah+".xml";
-		//static String source ="D:/gmlSplit/01_buildings0.xml";
-		//static String source ="D:/citygmllearn/b1_lod2_s.gml";
-		//static String source ="D:/citygmllearn/denhaaggml/a_01_10_Lod2.gml";
 		 String kbname =source.split("/")[3].split(".xml")[0]+".owl";
 		
 	/** load your knowledge base from an owl file; additionally */
@@ -310,8 +307,7 @@ public class citygmlkb {
 	OWLDatatypeProperty name = jenaOwlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/CityGMLOntology.owl#name");
 	
 	  RDFSDatatype xsdDouble = jenaOwlModel.getRDFSDatatypeByName("xsd:double");
-	    //OWLDatatypeProperty dblProperty = jenaOwlModel.createOWLDatatypeProperty("dblProperty", xsdDouble);
-
+	    
 	   try {
 
 			File fXmlFile = new File(source);
@@ -319,29 +315,23 @@ public class citygmlkb {
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);
 
-			//optional, but recommended
-			//read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+			
 			doc.getDocumentElement().normalize();
 
 			System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
 
 			NodeList nListbuilding = doc.getElementsByTagName("bldg:Building");
-			NodeList envelopetag = doc.getElementsByTagName("gml:Envelope");
+			
 			//NodeList nListroof = doc.getElementsByTagName("bldg:RoofSurface");
 			
-			
-			 /* NodeList nodeList=doc.getElementsByTagName("*");
-			    for (int i=0; i<nodeList.getLength(); i++) 
-			    {
-			        // Get element
-			        Element element = (Element)nodeList.item(i);
-			        System.out.println(element.getNodeName());
-			    }*/
 
-			//System.out.println("----------------------------");
 			RDFIndividual citymodel = citymodelclass.createRDFIndividual("http://www.theworldavatar.com/Building/"+kbname+"#CityModel001");
-			RDFIndividual envelope = envelopeclass.createRDFIndividual("http://www.theworldavatar.com/Building/"+kbname+"#Envelope001");
 			citymodel.addPropertyValue(name, doc.getElementsByTagName("gml:name").item(0).getTextContent());
+			
+			
+			NodeList envelopetag = doc.getElementsByTagName("gml:Envelope");
+			RDFIndividual envelope = envelopeclass.createRDFIndividual("http://www.theworldavatar.com/Building/"+kbname+"#Envelope001");
+			
 			
 			
 			
@@ -351,7 +341,7 @@ public class citygmlkb {
 
 				Node nNode = envelopetag.item(temp);
 
-				//System.out.println("\nCurrent Element :" + nNode.getNodeName());
+
 
 				if (nNode.getNodeType() == Node.ELEMENT_NODE)
 				{
@@ -451,53 +441,6 @@ public class citygmlkb {
 			{
 				i=String.format("%03d", tempcount);
 				Node nNode2 = nListbuilding.item(tempcount-1);
-				
-			/* RDFIndividual building = buildingclass.createRDFIndividual("http://www.theworldavatar.com/Building/"+kbname+"#Building"+i);
-				 citymodel.addPropertyValue(cityobjectmember, building);
-				 System.out.println("building"+i);
-							 
-				 RDFIndividual buildingcoordinate = coordinatesystemclass.createRDFIndividual("http://www.theworldavatar.com/Building/"+kbname+"#Building_"+i+"_Coordinates");
-					RDFIndividual xpointcentre = coordinateclass.createRDFIndividual("http://www.theworldavatar.com/Building/"+kbname+"#x_Building_"+i);
-					RDFIndividual ypointcentre = coordinateclass.createRDFIndividual("http://www.theworldavatar.com/Building/"+kbname+"#y_Building_"+i);
-					RDFIndividual height = lengthclass.createRDFIndividual("http://www.theworldavatar.com/Building/"+kbname+"#EstimatedHeight_Building_"+i);
-					RDFIndividual length = lengthclass.createRDFIndividual("http://www.theworldavatar.com/Building/"+kbname+"#EstimatedLength_Building_"+i);
-					RDFIndividual width = lengthclass.createRDFIndividual("http://www.theworldavatar.com/Building/"+kbname+"#EstimatedWidth_Building_"+i);
-					RDFIndividual angle = angleclass.createRDFIndividual("http://www.theworldavatar.com/Building/"+kbname+"#EstimatedAngle_Building_"+i);
-					RDFIndividual xvalcentre = valueclass.createRDFIndividual("http://www.theworldavatar.com/Building/"+kbname+"#V_x_Building_"+i);
-					RDFIndividual yvalcentre = valueclass.createRDFIndividual("http://www.theworldavatar.com/Building/"+kbname+"#V_y_Building_"+i);
-					RDFIndividual heightval = scalarvalueclass.createRDFIndividual("http://www.theworldavatar.com/Building/"+kbname+"#V_EstimatedHeight_Building_"+i);
-					RDFIndividual lengthval = scalarvalueclass.createRDFIndividual("http://www.theworldavatar.com/Building/"+kbname+"#V_EstimatedLength_Building_"+i);
-					RDFIndividual widthval = scalarvalueclass.createRDFIndividual("http://www.theworldavatar.com/Building/"+kbname+"#V_EstimatedWidth_Building_"+i);
-					RDFIndividual angleval = scalarvalueclass.createRDFIndividual("http://www.theworldavatar.com/Building/"+kbname+"#V_EstimatedAngle_Building_"+i);
-						
-					building.addPropertyValue(measuredHeight, height);
-					building.addPropertyValue(haslength, length);
-					building.addPropertyValue(haslength, width);
-					building.addPropertyValue(hasangle, angle);
-				 building.addPropertyValue(hascoordinatesystem, buildingcoordinate);
-			 
-				 buildingcoordinate.addPropertyValue(hasx, xpointcentre);
-				 buildingcoordinate.addPropertyValue(hasy, ypointcentre);
-				 
-				 length.setPropertyValue(hasvalue, lengthval);
-				 width.setPropertyValue(hasvalue, widthval);
-				 angle.setPropertyValue(hasvalue, angleval);
-					
-				 xpointcentre.setPropertyValue(hasvalue, xvalcentre);
-				 ypointcentre.setPropertyValue(hasvalue, yvalcentre);
-					height.setPropertyValue(hasvalue, heightval);
-					
-					
-					
-					xvalcentre.setPropertyValue(hasunit, m);
-					yvalcentre.setPropertyValue(hasunit, m);
-					heightval.setPropertyValue(hasunit, m);
-					lengthval.setPropertyValue(hasunit, m);
-					widthval.setPropertyValue(hasunit, m);*/
-					
-				 
-				
-				
 				if (nNode2.getNodeType() == Node.ELEMENT_NODE) 
 					{
 					Element eElementspec = (Element) nNode2;
@@ -1975,7 +1918,7 @@ else
 						{
 							RDFIndividual georectangle = Rectangleclass.createRDFIndividual("http://www.theworldavatar.com/Building/"+kbname+"#Shape_Building"+eElementspec.getAttribute("gml:id")+"Part_"+eElementspec2.getAttribute("gml:id"));
 							buildingpart.addPropertyValue(hassurfacegeometry, georectangle);
-							Double lengthside= perimax(xgroundspec,ygroundspec)[1];
+							Double lengthside= perimax(xgroundspec,ygroundspec)[1]; // get the maximum length
 							Double orientation= angle(perimax(xgroundspec,ygroundspec)[1],perimax(xgroundspec,ygroundspec)[2],perimax(xgroundspec,ygroundspec)[3],perimax(xgroundspec,ygroundspec)[4],perimax(xgroundspec,ygroundspec)[5]);
 							Double widthside= Math.abs(centroid(xgroundspec,ygroundspec)[2])/lengthside;
 							System.out.println("it is square with length= "+lengthside+" and width= "+widthside);
@@ -2429,7 +2372,7 @@ else
 							//find the max length
 							 maxlength = overalllength.get(0);
 							
-								System.out.println("sizeofroof= "+overalllength.size());
+								System.out.println("sizeofvertices= "+overalllength.size());
 								for (int b = 1; b < overalllength.size(); b++) 
 								{
 								    if (overalllength.get(b) > maxlength)
@@ -2622,45 +2565,7 @@ else
 					}
 					
 			}
-			
-				/*if(nListbuilding.getLength()<=10)
-				{
-					if(tempcount==nListbuilding.getLength())
-					{	
-						Collection errors = new ArrayList();
-						jenaOwlModel.save(new URI("file:////" + filePath2.replace("\\", "/")), FileUtils.langXMLAbbrev, errors, jenaOwlModel.getOntModel());
-						System.out.println("File saved with " + errors.size() + " errors.");  	
-					}
-				}
-				
-				else 
-					{
-					if (tempcount%10==0) //20,30,40,.....
-						{
-						int numindex= tempcount/10;
-						String kbname =source.split("/")[3].split(".xml")[0]+"_"+numindex+".owl";
-						String filePath3 = baseURL + kbname;
-						
-						Collection errors = new ArrayList();
-						jenaOwlModel.save(new URI("file:////" + filePath3.replace("\\", "/")), FileUtils.langXMLAbbrev, errors, jenaOwlModel.getOntModel());
-						System.out.println("File saved with " + errors.size() + " errors.");
-						jenaOwlModel.resetJenaModel();
-						}
-					else if (tempcount==nListbuilding.getLength()&&tempcount%10!=0)
-					{
-						 	int numindex= tempcount/10+1;
-						String kbname =source.split("/")[3].split(".xml")[0]+"_"+numindex+".owl";
-						String filePath3 = baseURL + kbname;
-						//jenaOwlModel.dispose();
-						Collection errors = new ArrayList();
-						jenaOwlModel.save(new URI("file:////" + filePath3.replace("\\", "/")), FileUtils.langXMLAbbrev, errors, jenaOwlModel.getOntModel());
-						System.out.println("File saved with " + errors.size() + " errors."); 	
-					}
-				
-				
-				
-				
-					}*/
+	
 			}
 			
 			xvaluelinestring.clear();
@@ -2672,21 +2577,12 @@ else
 	   		{
 				e.printStackTrace();
 		    }
-		  
-	
-	   System.out.println("xvalueroof="+xvalueroof.size());
-	   System.out.println("xvaluewall="+xvaluewall.size());
-	   System.out.println("xvalueground="+xvalueground.size());
-	   
-	 
+		  	 
 	 /**save the updated model file*/
 		Collection errors = new ArrayList();
 		jenaOwlModel.save(new URI("file:////" + filePath2.replace("\\", "/")), FileUtils.langXMLAbbrev, errors, jenaOwlModel.getOntModel());
 		System.out.println("File saved with " + errors.size() + " errors.");  
-		System.out.println("HELLO, IT'S FINISHED ALREADY");
-		System.out.println("HELLO, IT'S FINISHED ALREADY");
-		System.out.println("HELLO, IT'S FINISHED ALREADY");
-		System.out.println("HELLO, IT'S FINISHED ALREADY");
+		
 		
 		xvalueroof.clear();
 		   xvaluewall.clear();
@@ -2704,7 +2600,7 @@ else
 		  
 	
 	} 
-
+	
 	public static void main(String[] args) throws Exception {
 		System.out.println("Starting Process");
 		functionmain();
