@@ -1,11 +1,11 @@
-from pyproj import Proj, transform
+# from pyproj import Proj, transform
 import json
 import sys
 import csv
 import math
 
-admsCRS = Proj(init='epsg:28992')
-osmCRS = Proj(init='epsg:4326')
+# admsCRS = Proj(init='epsg:28992')
+# osmCRS = Proj(init='epsg:4326')
 
 def getADMSOutput():
 
@@ -18,7 +18,7 @@ def getADMSOutput():
 
 
     # iterate through ADMS output file to find grid point closest to clicked coordinates
-    # converts each row of coordinates in gst file to osmCRS (epsg:4326) from admsCRS (epsg:28992)
+    # precondition: input coordinates must be in the format of admsCRS (epsg:28992)
     with open(filePath) as f:
         reader = csv.reader(f, delimiter=',')
 
@@ -27,7 +27,8 @@ def getADMSOutput():
 
         # First entry
         firstEntry = next(reader, None)
-        firstLon, firstLat = transform(admsCRS, osmCRS, float(firstEntry[4]), float(firstEntry[5]))
+        firstLat = float(firstEntry[4])
+        firstLon =  float(firstEntry[5])
 
         shortestDistance = math.sqrt(math.pow((inputLon - firstLon), 2) + math.pow((inputLat - firstLat), 2))
 
@@ -36,7 +37,9 @@ def getADMSOutput():
                                  float(firstEntry[9]), float(firstEntry[10])]
 
         for row in reader:
-            lon, lat = transform(admsCRS, osmCRS, float(row[4]), float(row[5]))
+            lat = float(row[4])
+            lon = float(row[5])
+            # lon, lat = transform(admsCRS, osmCRS, float(row[4]), float(row[5]))
 
             distance = math.sqrt(math.pow((inputLon - lon), 2) + math.pow((inputLat - lat), 2))
 

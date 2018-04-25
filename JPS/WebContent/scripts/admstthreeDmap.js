@@ -77,10 +77,11 @@ var initadms3dmap  = function (list) {
                 var coordinatesArray = []
 
                 if (!isNaN(latitude) && !isNaN(longitude)) {
-                    coordinatesArray.push(latitude);
-										coordinatesArray.push(longitude);
 
 										var convertedCoordinates = proj4('EPSG:28992', [parseFloat(longitude), parseFloat(latitude)]);
+
+										coordinatesArray.push(convertedCoordinates[0]); // latitude
+										coordinatesArray.push(convertedCoordinates[1]); // longitude
 
 										document.getElementById("longitude").innerHTML = convertedCoordinates[1];
 										document.getElementById("latitude").innerHTML = convertedCoordinates[0];
