@@ -4,6 +4,11 @@ import rdflib
 import json
 import sys
 
+import os
+caresjpsutilPath = os.path.abspath(os.path.join(os.getcwd(), '../caresjpsutil'))
+sys.path.insert(0, caresjpsutilPath)
+from javaConnector import returnExceptionToJava, returnResultsToJava
+
 owlCRS = Proj(init='epsg:28992')
 osmCRS = Proj(init='epsg:4326')
 
@@ -182,31 +187,34 @@ def getGeoJSON(listBuildingCoordinates, listBuildingHeights):
 
 def return_buildings():
     
-    try:
-        listOfIRIs = json.loads(sys.argv[1])       
+    listOfIRIs = json.loads(sys.argv[1])
 
-        # --Obtain list of building heights-- #
-        # --Obtain list of building coordinates-- #
-        
-        listBuildingHeights = []
-        listBuildingCoordinates = []
+    if listOfIRIs == []:
+        raise ValueError("INVALID QUERY")
 
-        for building in listOfIRIs:
+    # --Obtain list of building heights-- #
+    # --Obtain list of building coordinates-- #
 
-            buildingHeight = sparqlBuildingHeights(building)["results"]["bindings"]
-            height = getBuildingHeights(buildingHeight)
-            listBuildingHeights.append(height)
+    listBuildingHeights = []
+    listBuildingCoordinates = []
 
-            buildingCoordinates = sparqlBuildingCoordinates(building)["results"]["bindings"]
-            coordinates = getBuildingCoordinates(buildingCoordinates)
-            listBuildingCoordinates.append(coordinates)
+    for building in listOfIRIs:
 
-    except:
-        print("INVALID QUERY")
+        buildingHeight = sparqlBuildingHeights(building)["results"]["bindings"]
+        height = getBuildingHeights(buildingHeight)
+        listBuildingHeights.append(height)
+
+        buildingCoordinates = sparqlBuildingCoordinates(building)["results"]["bindings"]
+        coordinates = getBuildingCoordinates(buildingCoordinates)
+        listBuildingCoordinates.append(coordinates)
+
 
     listBuildingsToTransfer = getGeoJSON(listBuildingCoordinates, listBuildingHeights)
 
     return json.dumps(listBuildingsToTransfer)
 
 if __name__ == "__main__":
-    print(return_buildings())
+    try:
+        returnResultsToJava(return_buildings())
+    except Exception as e:
+        returnExceptionToJava(e)
