@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
+import uk.ac.cam.cares.jps.util.PythonException;
 import uk.ac.cam.cares.jps.util.PythonHelper;
 
 /**

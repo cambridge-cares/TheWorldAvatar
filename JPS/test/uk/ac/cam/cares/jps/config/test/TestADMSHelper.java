@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import com.google.gson.Gson;
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.adms.PythonException;
+import uk.ac.cam.cares.jps.util.PythonException;
 import uk.ac.cam.cares.jps.util.PythonHelper;
 
 public class TestADMSHelper extends TestCase {

@@ -5,8 +5,8 @@ import json
 import sys
 
 import os
-caresjpsutilPath = os.path.abspath(os.path.join(os.getcwd(), '../caresjpsutil'))
-sys.path.insert(0, caresjpsutilPath)
+# caresjpsutilPath = os.path.abspath(os.path.join(os.getcwd(), '../caresjpsutil'))
+# sys.path.insert(0, caresjpsutilPath)
 from javaConnector import returnExceptionToJava, returnResultsToJava
 
 owlCRS = Proj(init='epsg:28992')
@@ -218,4 +218,3 @@ if __name__ == "__main__":
         returnResultsToJava(return_buildings())
     except Exception as e:
         returnExceptionToJava(e)
-        print(sys.path)
