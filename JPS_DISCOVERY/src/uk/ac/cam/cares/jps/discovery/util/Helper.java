@@ -15,7 +15,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 public class Helper {
-
+	
 	public static String executeGet(String path, String key, String value)
 			throws ParseException, IOException, URISyntaxException {
 		// TODO-AE change localhost

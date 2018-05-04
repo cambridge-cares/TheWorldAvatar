@@ -8,13 +8,13 @@ import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
 import uk.ac.cam.cares.jps.discovery.api.IMatcher;
 import uk.ac.cam.cares.jps.discovery.api.IType;
 import uk.ac.cam.cares.jps.discovery.api.Parameter;
-import uk.ac.cam.cares.jps.discovery.registry.SimpleAgentRegistry;
+import uk.ac.cam.cares.jps.discovery.registry.IRegistry;
 
 public class ExactMatcher implements IMatcher{
 
-	private SimpleAgentRegistry registry = null;
+	private IRegistry registry = null;
 	
-	public ExactMatcher(SimpleAgentRegistry registry) {
+	public ExactMatcher(IRegistry registry) {
 		this.registry = registry;
 	}
 	

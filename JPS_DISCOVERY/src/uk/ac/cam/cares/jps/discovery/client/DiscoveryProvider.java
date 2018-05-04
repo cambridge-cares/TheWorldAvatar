@@ -17,14 +17,14 @@ import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
 import uk.ac.cam.cares.jps.discovery.api.AgentResponse;
 import uk.ac.cam.cares.jps.discovery.api.IAgentCommunication;
 import uk.ac.cam.cares.jps.discovery.api.TypeIRI;
+import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.util.Helper;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;
-import uk.ac.cam.cares.jps.discovery.util.SerializerFactory;
 
 public class DiscoveryProvider implements IAgentCommunication {
 
 	
-	private ISerializer serializer = SerializerFactory.createSerializer();
+	private ISerializer serializer = DiscoveryFactory.getSerializer();
 	
 	@Override
 	public List<TypeIRI> searchAgents(AgentRequest searchDescr) {

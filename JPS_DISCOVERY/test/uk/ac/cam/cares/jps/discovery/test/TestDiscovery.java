@@ -23,13 +23,12 @@ import uk.ac.cam.cares.jps.discovery.api.Parameter;
 import uk.ac.cam.cares.jps.discovery.api.TypeIRI;
 import uk.ac.cam.cares.jps.discovery.client.DiscoveryProvider;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;
-import uk.ac.cam.cares.jps.discovery.util.SerializerFactory;
+import uk.ac.cam.cares.jps.discovery.util.JavaSerializer;
+import uk.ac.cam.cares.jps.discovery.util.OWLSerializer;
 
 public class TestDiscovery extends TestCase {
 	
-	private ISerializer serializer = SerializerFactory.createSerializer();
-	
-	public void testSerializeAgentDescription() {
+	public void testSerializeAgentDescriptionWithJavaSerializer() {
 		
 		String general = "domain,weather,address,IRIagentOne";
 		String input = "city,null";
@@ -37,6 +36,7 @@ public class TestDiscovery extends TestCase {
 	
 		AgentDescription descr = DescriptionFactory.createAgentDescription(general, input, output);
 		
+		ISerializer serializer = new JavaSerializer();
 		String s = serializer.convertToString(descr);
 		
 		System.out.println("serialized = " + s);
@@ -57,6 +57,38 @@ public class TestDiscovery extends TestCase {
 		pActual = actual.getOutputParameters().get(0);
 		assertEquals(pDescr.getKey(), pActual.getKey());
 		assertEquals(pDescr.getValue(), pActual.getValue());
+	}
+	
+	public void testSerializeAgentDescriptionWithOWLSerializer() {
+		
+		String general = "domain,weather,address,IRIagentOne";
+		String input = "city,null";
+		String output = "IRItemperature,null";
+	
+		AgentDescription descr = DescriptionFactory.createAgentDescription(general, input, output);
+		
+		String s = OWLSerializer.getInstance().convertToString(descr);
+		
+		System.out.println("serialized = " + s);
+		
+		//TODO-AE complete the test case
+		
+//		AgentDescription actual = serializer.<AgentDescription>convertFrom(s).get();
+//		
+//		// the objects itself are different
+//		assertNotEquals(descr, actual);
+//		
+//		// but their attributes are the same
+//		assertEquals(descr.getDomain(), actual.getDomain());
+//		assertEquals(descr.getAddress(), actual.getAddress());
+//		Parameter pDescr = descr.getInputParameters().get(0);
+//		Parameter pActual = actual.getInputParameters().get(0);
+//		assertEquals(pDescr.getKey(), pActual.getKey());
+//		assertEquals(pDescr.getValue(), pActual.getValue());
+//		pDescr = descr.getOutputParameters().get(0);
+//		pActual = actual.getOutputParameters().get(0);
+//		assertEquals(pDescr.getKey(), pActual.getKey());
+//		assertEquals(pDescr.getValue(), pActual.getValue());
 	}
 	
 	private String getUrlForDiscovery() {

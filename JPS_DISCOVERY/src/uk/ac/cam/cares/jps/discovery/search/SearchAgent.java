@@ -19,13 +19,13 @@ import uk.ac.cam.cares.jps.discovery.api.AgentDescription;
 import uk.ac.cam.cares.jps.discovery.api.AgentResponse;
 import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
 import uk.ac.cam.cares.jps.discovery.api.TypeIRI;
+import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.matching.exact.ExactMatcher;
-import uk.ac.cam.cares.jps.discovery.registry.SimpleAgentRegistry;
+import uk.ac.cam.cares.jps.discovery.registry.SimpleInMemoryRegistry;
 import uk.ac.cam.cares.jps.discovery.util.Helper;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;
 import uk.ac.cam.cares.jps.discovery.util.JPSBaseServlet;
 import uk.ac.cam.cares.jps.discovery.util.JavaSerializer;
-import uk.ac.cam.cares.jps.discovery.util.SerializerFactory;
 
 @WebServlet(urlPatterns = {"/search", "/call"})
 public class SearchAgent extends JPSBaseServlet {
@@ -33,7 +33,7 @@ public class SearchAgent extends JPSBaseServlet {
 	private static final long serialVersionUID = 5462239838527386746L;
 	
 	Logger logger = LoggerFactory.getLogger(SearchAgent.class);
-	private ISerializer serializer = SerializerFactory.createSerializer();
+	private ISerializer serializer = DiscoveryFactory.getSerializer();
 	
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
@@ -59,7 +59,7 @@ public class SearchAgent extends JPSBaseServlet {
 		
 		List<TypeIRI> result = new ArrayList<TypeIRI>();
 		
-		ExactMatcher matcher = new ExactMatcher(SimpleAgentRegistry.getInstance());
+		ExactMatcher matcher = new ExactMatcher(DiscoveryFactory.getRegistry());
 		List<AgentDescription> list = matcher.getMatches(agentRequest);
 		for (AgentDescription current : list) {
 			result.add(current.getAddress());

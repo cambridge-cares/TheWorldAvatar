@@ -18,17 +18,70 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
+import uk.ac.cam.cares.jps.config.AgentLocator;
+import uk.ac.cam.cares.jps.discovery.api.AgentDescription;
+import uk.ac.cam.cares.jps.discovery.api.Parameter;
+import uk.ac.cam.cares.jps.discovery.api.TypeString;
+
 public class OWLSerializer implements ISerializer {
+	
+	private static OWLSerializer instance = null;
 	
 	private OntModel ontology = null;
 	private String ontBaseIRI = null;
 	private OntModel knowledgeBase = null;
 	private String kbBaseIRI = null;
 	private int counter = 0;
+	
+	private OWLSerializer() {
 
+		// TODO-AE migrate to new version of JENA !!!
+		
+	
+	}
+	
+	public static synchronized OWLSerializer getInstance() {
+		if (instance == null) {
+			instance = new OWLSerializer();
+			instance.init();
+		}
+		return instance;
+	}
+	
+	private void init( ) {
+		//TODO-AE make a singleton of this class in conjunction with SerializerFactory
+		if (ontology == null) {
+			ontology = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+
+			// add an ontology stored in a file to the ontology model change the file name to your own
+			String path = AgentLocator.getPathToJpsDataKnowledgeBaseDir() + "/OntoAgent/OntoAgent.owl";
+			File file = new File(path);
+			ontology.read(file.toURI().toString());
+		}
+		
+		//TODO-AE adapt the IRI in the owl file to OntoAgent ...
+		ontBaseIRI = "http://www.theworldavatar.com/Agent#";
+	}
+	
 	@Override
 	public String convertToString(Serializable object) {
-		init();
+		//TODO-AE we have to synchronize this as long there are properties such knoweldgeBase ...
+		
+		// create an new model for the instances (otherwise the agent classes
+		// will stored in the agent description file and thus be doubled)
+		knowledgeBase = ModelFactory.createOntologyModel();
+		UUID uuid = Helper.createUUID();	
+		//TODO-AE adapt the IRI in the owl file to OntoAgent ...
+		kbBaseIRI = "http://www.theworldavatar.com/Agent/Agent" + uuid + "#";
+		knowledgeBase.setNsPrefix("jpsago", ontBaseIRI);
+		knowledgeBase.setNsPrefix("jpsagkb", kbBaseIRI);
+		
+		//TODO-AE if then for AgentDesription, Request, Response ...
+		//TODO-AE check that there is a list one output parameter (and domain, name...)
+		createAgentWithAgentDescription((AgentDescription) object, uuid);
+		
+		knowledgeBase.write(System.out);
+		
 		return null;
 	}
 
@@ -38,89 +91,64 @@ public class OWLSerializer implements ISerializer {
 		return null;
 	}
 	
-	private void init( ) {
-		//TODO-AE make a Singleton of this class in conjunction with SerializerFactory
-		if (ontology == null) {
-			ontology = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
-
-			// add an ontology stored in a file to the ontology model change the file name to your own
-			File file = new File("C:/Users/Andreas/my/agentdiscovery/AgentOntology.owl");
-			ontology.read(file.toURI().toString());
-		}
-			
-		ontBaseIRI = "http://www.theworldavatar.com/Agent#";
-		
-		UUID uuid = Helper.createUUID();
-		
-		kbBaseIRI = "http://www.theworldavatar.com/Agent/Agent" + uuid + "#";
-		
-		
-		// create an new model for the instances (otherwise the agent classes
-		// will stored in the agent description file and thus be doubled)
-		
-		knowledgeBase = ModelFactory.createOntologyModel();
-		knowledgeBase.setNsPrefix("jpsago", ontBaseIRI);
-		knowledgeBase.setNsPrefix("jpsagkb", kbBaseIRI);
-	}
-	
-	private void createAgentWithAgentDescription() {
+	private void createAgentWithAgentDescription(AgentDescription description, UUID uuid) {
 		
 		OntClass agentClass = ontology.getOntClass(ontBaseIRI + "Agent");
-		System.out.println("MY class=" + agentClass);
-		Individual agentInd = knowledgeBase.createIndividual(kbBaseIRI, agentClass);
-		Individual descrInd = createAgentDescription();
+		//TODO-AE better agent IRI with Agent ... # ...? Kevin: Agent ... . owl (like the owl file name)
+		Individual agentInd = knowledgeBase.createIndividual(kbBaseIRI + "Agent" + uuid, agentClass);
+		
+		
+		Individual descrInd = createAgentDescription(description);
 		createTripleWithObjectProperty(agentInd, "hasAgentServiceDescription", descrInd);
 	}
 	
-	public Individual createAgentDescription() {
+	private Individual createAgentDescription(AgentDescription description) {
 		//https://stackoverflow.com/questions/43719469/create-individuals-using-jena
 		
-		Individual result = null;
+		Individual result = createIndividual("AgentServiceDescription");
 		
-
-		//TODO-AE own method
-		OntClass descrClass = ontology.getOntClass(ontBaseIRI + "AgentServiceDescription");
-		result = knowledgeBase.createIndividual(kbBaseIRI, descrClass);
+		List<Parameter> params = new ArrayList<Parameter>();
+		//TODO-AE use iri domain here, add address parameter
+		//TODO-AE change AgentDescription: make domain etc. to Parameter List
+		Parameter domain = new Parameter(new TypeString("domain"), description.getDomain());
+		params.add(domain);
 		
+		List<Individual> allParameters = createIndividualList(params, "Property");
 		
-		String params = "k1,v1,k2,v2,k3,v3";
-		List<Individual> individuals = createIndividualList(params, "InputParameter");
+		params = description.getInputParameters();
+		allParameters.addAll(createIndividualList(params, "InputParameter"));
 		
-		if (individuals.size() > 0) {
-			Individual listInd = createTripleWithObjectProperty(result, "hasKeyValueList", "List");
-			createTripleWithObjectProperty(listInd, "hasFirstListElement", individuals.get(0));
+		params = description.getOutputParameters();
+		allParameters.addAll(createIndividualList(params, "OutputParameter"));
+		
+		// create OWL List from all Parameters
+		Individual listInd = createTripleWithObjectProperty(result, "hasKeyValueList", "List");
+		createTripleWithObjectProperty(listInd, "hasFirstListElement", allParameters.get(0));
+		for (int i=0; i<allParameters.size()-1 ; i++) {
+			createTripleWithObjectProperty(allParameters.get(i), "followedBy", allParameters.get(i+1));
 		}
-		
-		knowledgeBase.write(System.out);
 		
 		return result;
 	}
 	
-
+	private Individual createIndividual(String classForIndividual) {
+		OntClass descrClass = ontology.getOntClass(ontBaseIRI + classForIndividual);
+		return knowledgeBase.createIndividual(kbBaseIRI + classForIndividual + inc(), descrClass);
+	}
 	
-	
-	private List<Individual> createIndividualList(String params, String classForIndividualsinList) {
+	private List<Individual> createIndividualList(List<Parameter> params, String classForIndividualsinList) {
 		List<Individual> result = new ArrayList<Individual>();
 		
 		OntClass co = ontology.getOntClass(ontBaseIRI + classForIndividualsinList);
 		System.out.println("co="+co);
-		
-		StringTokenizer tokenizer = new StringTokenizer(params, ",");
-		while (tokenizer.hasMoreTokens()) {
-			String key = tokenizer.nextToken();
-			String value = tokenizer.nextToken();
+
+		for (Parameter current : params) {	
 			
 			Individual io = knowledgeBase.createIndividual(kbBaseIRI + classForIndividualsinList + inc(), co);
 			
-			createTripleWithDatatypeProperty(io, "hasKey", key);
-			if (!"null".equals(value)) {
-				createTripleWithDatatypeProperty(io, "hasValue", value);
-			}
-			
-			// combine the new list element with the last one if there is already a last one
-			if (result.size() > 0) {
-				Individual last = result.get(result.size()-1);
-				createTripleWithObjectProperty(last, "followedBy", io);
+			createTripleWithDatatypeProperty(io, "hasKey", current.getKey().getValue());
+			if ((current.getValue() != null) && (!"null".equals(current.getValue().getValue()))) {
+				createTripleWithDatatypeProperty(io, "hasValue", current.getValue().getValue());
 			}
 			
 			result.add(io);

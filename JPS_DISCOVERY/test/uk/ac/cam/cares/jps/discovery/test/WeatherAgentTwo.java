@@ -16,9 +16,9 @@ import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
 import uk.ac.cam.cares.jps.discovery.api.AgentResponse;
 import uk.ac.cam.cares.jps.discovery.api.Parameter;
 import uk.ac.cam.cares.jps.discovery.api.TypeString;
+import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;
 import uk.ac.cam.cares.jps.discovery.util.JPSBaseServlet;
-import uk.ac.cam.cares.jps.discovery.util.SerializerFactory;
 
 @WebServlet(urlPatterns = {"/DiscoveryTest/AgentTwo"})
 public class WeatherAgentTwo extends JPSBaseServlet {
@@ -26,7 +26,7 @@ public class WeatherAgentTwo extends JPSBaseServlet {
 	private static final long serialVersionUID = -4199209974912271432L;
 	
 	Logger logger = LoggerFactory.getLogger(WeatherAgentTwo.class);
-	private ISerializer serializer = SerializerFactory.createSerializer();
+	private ISerializer serializer = DiscoveryFactory.getSerializer();
 	
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {

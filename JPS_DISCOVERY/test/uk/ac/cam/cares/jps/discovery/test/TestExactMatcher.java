@@ -5,15 +5,18 @@ import java.util.List;
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.discovery.api.AgentDescription;
 import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
+import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.matching.exact.ExactMatcher;
-import uk.ac.cam.cares.jps.discovery.registry.SimpleAgentRegistry;
+import uk.ac.cam.cares.jps.discovery.registry.IRegistry;
+import uk.ac.cam.cares.jps.discovery.registry.SimpleInMemoryRegistry;
 
 public class TestExactMatcher extends TestCase {
 	
 	private ExactMatcher createMatcherWithOneAgent() {
 		
-		SimpleAgentRegistry registry = SimpleAgentRegistry.getInstance();
-		registry.clear();
+		IRegistry registry = DiscoveryFactory.getRegistry();
+		// TODO-AE make clear part of IRegistry? 
+		((SimpleInMemoryRegistry) registry).clear();
 		
 		String general = "domain,weather,address,IRIagentOne";
 		String input = "city,null";
@@ -27,8 +30,9 @@ public class TestExactMatcher extends TestCase {
 	
 	private ExactMatcher createMatcherWithFiveAgents() {
 		
-		SimpleAgentRegistry registry = SimpleAgentRegistry.getInstance();
-		registry.clear();
+		IRegistry registry = DiscoveryFactory.getRegistry();
+		// TODO-AE make clear part of IRegistry? 
+		((SimpleInMemoryRegistry) registry).clear();
 		
 		// agent 1
 		String general = "domain,weather,address,IRIagentOne";

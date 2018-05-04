@@ -114,6 +114,10 @@ public class AgentLocator {
 		return getJPSRootDirectory() + "/" + relativePath;
 	}
 	
+	public static String getPathToJpsDataKnowledgeBaseDir() {
+		return getProperty("absdir.jpsdata.knowledgebase");
+	}
+	
 	/**
 	 * If there is a test property file with the key then its value is returned.
 	 * Otherwise the value specified in the application property file or null is
