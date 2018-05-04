@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import uk.ac.cam.cares.jps.adms.PythonException;
 import uk.ac.cam.cares.jps.config.AgentLocator;
 
 public class PythonHelper {
@@ -23,7 +24,16 @@ public class PythonHelper {
 		Process p = Runtime.getRuntime().exec(cmd);
 
 		BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-		return stdInput.readLine();
+		String returnValue = stdInput.readLine();
+		
+		int index = returnValue.lastIndexOf("{exception:");
+		if (index >= 0) {
+			int lastIndex = returnValue.length() - 1;
+			String message = returnValue.substring(index+11, lastIndex);
+			throw (new PythonException(message));
+		} else {
+			return returnValue;
+		}
 	}
 	
 	public static String callPython(String pythonScriptName, String parameter1, String parameter2) throws IOException {

@@ -36,10 +36,14 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
 		
 		Gson g = new Gson();
 		
-		String result = PythonHelper.callPython("caresjpsadmsinputs/ADMSGeoJsonGetter.py", g.toJson(jsonString));
-		
-		response.setContentType("application/json");
-		response.getWriter().write(result);
+		String result;
+		try {
+			result = PythonHelper.callPython("caresjpsadmsinputs/ADMSGeoJsonGetter.py", g.toJson(jsonString));
+			response.setContentType("application/json");
+			response.getWriter().write(result);
+		} catch (PythonException e) {
+			e.printStackTrace();
+		}	
 	}
 
 }
