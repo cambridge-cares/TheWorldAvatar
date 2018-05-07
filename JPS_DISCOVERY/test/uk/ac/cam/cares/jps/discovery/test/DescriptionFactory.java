@@ -70,7 +70,7 @@ public class DescriptionFactory {
 		}
 	}
 	
-	static AgentDescription createAgentDescription(String general, String input, String output) {
+	public static AgentDescription createAgentDescription(String general, String input, String output) {
 		AgentDescription result = new AgentDescription();
 		fill(result, general, input, output);
 		return result;
