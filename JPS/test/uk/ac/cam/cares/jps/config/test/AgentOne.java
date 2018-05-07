@@ -34,11 +34,9 @@ public class AgentOne extends HttpServlet {
 		String responseAgentTwo = AgentLocator.callAgent("agent.test.agenttwo");
 		out.print(responseAgentTwo);
 		
-		//TODO-AE
+		// alternative way to call
 		// https://stackoverflow.com/questions/3035656/communication-between-remote-servlets/
-		
 		// request.getRequestDispatcher("/secondServletURL").include(request, response);
-
 		// response.sendRedirect(request.getContextPath() +
 		// "/ExamplesTomCat/myservlets/AgentTwo");
 	}

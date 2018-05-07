@@ -27,7 +27,7 @@ public class AgentLocator {
 	private AgentLocator() {
 	}
 
-	public static synchronized AgentLocator getSingleton() {
+	private static synchronized AgentLocator getSingleton() {
 		if (instance == null) {
 			instance = new AgentLocator();
 			instance.init();

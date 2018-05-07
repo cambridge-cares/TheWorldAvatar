@@ -33,7 +33,7 @@ public class RegistryAgent extends JPSBaseServlet {
 		logger.info("RegistryAgent is called, path = " + path);
 
 		if ("/register".equals(path)) {
-			String serializedDescr = req.getParameter("agentdescription");
+			String serializedDescr = req.getParameter("agent");
 			// TODO-AE here we still use the Java binary serializer instead of OWL
 			// reason: Tests use register method and do not run as there is no deserialization
 			// from OWL to Java class AgentDescription yet!
@@ -42,14 +42,14 @@ public class RegistryAgent extends JPSBaseServlet {
 			Agent description = new JavaSerializer().<Agent>convertFrom(serializedDescr).get();
 			DiscoveryFactory.getRegistry().register(description);
 		} else if ("/deregister".equals(path)) {
-			String agentAddress = req.getParameter("agentaddress");
+			String agentAddress = req.getParameter("agentname");
 			DiscoveryFactory.getRegistry().deregister(agentAddress);
 		} else if ("/agents".equals(path)) {
-			print(resp, getNamesOfAllAgents());
+			print(resp, getAllAgentNames());
 		}
 	}	
 	
-	private List<TypeIRI> getNamesOfAllAgents() throws IOException {
+	private List<TypeIRI> getAllAgentNames() throws IOException {
 		
 		List<TypeIRI> result = new ArrayList<TypeIRI>();
 		

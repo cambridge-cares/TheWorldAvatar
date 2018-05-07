@@ -40,8 +40,7 @@ public class SearchAgent extends JPSBaseServlet {
 		logger.info("SearchAgent is called, path = " + path);
 
 		if ("/search".equals(path)) {
-			//TODO-AE replace searchdescripton by agentrequest in then entire code
-			String serializedSearchDescr = req.getParameter("searchdescription");
+			String serializedSearchDescr = req.getParameter("agentrequest");
 			AgentRequest agentRequest = serializer.<AgentRequest>convertFrom(serializedSearchDescr).get();
 			List<TypeIRI> list = search(agentRequest);
 			print(resp, list);
@@ -85,7 +84,6 @@ public class SearchAgent extends JPSBaseServlet {
 			try {
 				String serializedAgentResponse = Helper.executeGet(path, "agentrequest", serializedAgentRequest);
 				result = serializer.<AgentResponse>convertFrom(serializedAgentResponse).get();
-				result.setAgentFound(true);
 			} catch (URISyntaxException e) {
 				// TODO-AE Auto-generated catch block
 				e.printStackTrace();
@@ -94,7 +92,6 @@ public class SearchAgent extends JPSBaseServlet {
 			result = new AgentResponse();
 			// copy original parameters from the search request
 			AbstractAgentServiceDescription.copyParameters(agentRequest, result);
-			result.setAgentFound(false);
 		}
 		
 		return result;
