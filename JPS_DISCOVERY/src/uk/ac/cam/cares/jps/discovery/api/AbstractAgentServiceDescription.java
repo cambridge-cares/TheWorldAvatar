@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public abstract class AbstractAgentDescription implements Serializable {
+public abstract class AbstractAgentServiceDescription implements Serializable {
 
 	private static final long serialVersionUID = 2482265137462822690L;
 	private List<Parameter> properties = new ArrayList<Parameter>();
@@ -46,7 +46,7 @@ public abstract class AbstractAgentDescription implements Serializable {
 		outputParameters.add(param);
 	}
 	
-	public static void copyParameters(AbstractAgentDescription source, AbstractAgentDescription dest) {
+	public static void copyParameters(AbstractAgentServiceDescription source, AbstractAgentServiceDescription dest) {
 		dest.setProperties(copy(source.getProperties()));
 		dest.setInputParameters(copy(source.getInputParameters()));
 		dest.setOutputParameters(copy(source.getOutputParameters()));

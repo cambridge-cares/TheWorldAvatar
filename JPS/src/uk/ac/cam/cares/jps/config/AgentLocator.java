@@ -114,11 +114,11 @@ public class AgentLocator {
 		return getJPSRootDirectory() + "/" + relativePath;
 	}
 	
-	public static String getPathToJpsDataKnowledgeBaseDir() {
+	public static String getPathToJpsDataKnowledgeDir() {
 		return getProperty("absdir.jpsdata.knowledgebase");
 	}
 	
-	public static String getPathToJpsDataOntologyBaseDir() {
+	public static String getPathToJpsDataOntologyDir() {
 		return getProperty("absdir.jpsdata.ontology");
 	}
 	

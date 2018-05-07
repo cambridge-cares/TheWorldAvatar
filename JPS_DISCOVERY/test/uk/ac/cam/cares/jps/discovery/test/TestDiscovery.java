@@ -17,7 +17,7 @@ import org.apache.http.util.EntityUtils;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.discovery.api.Agent;
-import uk.ac.cam.cares.jps.discovery.api.AgentDescription;
+import uk.ac.cam.cares.jps.discovery.api.AgentServiceDescription;
 import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
 import uk.ac.cam.cares.jps.discovery.api.AgentResponse;
 import uk.ac.cam.cares.jps.discovery.api.Parameter;
@@ -29,20 +29,20 @@ import uk.ac.cam.cares.jps.discovery.util.JavaSerializer;
 
 public class TestDiscovery extends TestCase {
 	
-	public void testSerializeAgentDescriptionWithJavaSerializer() {
+	public void testSerializeAgentServiceDescriptionWithJavaSerializer() {
 		
 		String general = "domain,weather";
 		String input = "city,null";
 		String output = "IRItemperature,null";
 	
-		AgentDescription descr = DescriptionFactory.createAgentDescription(general, input, output);
+		AgentServiceDescription descr = DescriptionFactory.createAgentServiceDescription(general, input, output);
 		
 		ISerializer serializer = new JavaSerializer();
 		String s = serializer.convertToString(descr);
 		
 		System.out.println("serialized = " + s);
 		
-		AgentDescription actual = serializer.<AgentDescription>convertFrom(s).get();
+		AgentServiceDescription actual = serializer.<AgentServiceDescription>convertFrom(s).get();
 		
 		// the objects itself are different
 		assertNotEquals(descr, actual);
@@ -62,13 +62,13 @@ public class TestDiscovery extends TestCase {
 		assertEquals(pDescr.getValue(), pActual.getValue());
 	}
 	
-	public void testSerializeAgentDescriptionWithOWLSerializer() {
+	public void testSerializeAgentServiceDescriptionWithOWLSerializer() {
 		
 		String general = "domain,weather";
 		String input = "city,null";
 		String output = "IRItemperature,null";
 	
-		AgentDescription descr = DescriptionFactory.createAgentDescription(general, input, output);
+		AgentServiceDescription descr = DescriptionFactory.createAgentServiceDescription(general, input, output);
 		
 		String s = OWLSerializer.getInstance().convertToString(descr);
 		
@@ -108,9 +108,20 @@ public class TestDiscovery extends TestCase {
 		//TODO-AE complete the test case
 	}
 	
-	
+	public void testWriteAgentToOwlFile() throws IOException {
+		
+		String general = "domain,weather";
+		String input = "city,null";
+		String output = "IRItemperature,null";
+		
+		Agent agent = DescriptionFactory.createAgent("IRIsomeAgent", general, input, output);
+		OWLSerializer.getInstance().writeAsOwlFile(agent);
+		
+		//TODO-AE complete the test case
+	}
 	
 	private String getUrlForDiscovery() {
+		// TODO-AE use test properties here
 		return "http://localhost:8080/JPS_DISCOVERY";
 	}
 	

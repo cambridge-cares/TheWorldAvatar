@@ -14,7 +14,7 @@ import org.apache.http.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.discovery.api.AbstractAgentDescription;
+import uk.ac.cam.cares.jps.discovery.api.AbstractAgentServiceDescription;
 import uk.ac.cam.cares.jps.discovery.api.Agent;
 import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
 import uk.ac.cam.cares.jps.discovery.api.AgentResponse;
@@ -93,7 +93,7 @@ public class SearchAgent extends JPSBaseServlet {
 		} else {
 			result = new AgentResponse();
 			// copy original parameters from the search request
-			AbstractAgentDescription.copyParameters(agentRequest, result);
+			AbstractAgentServiceDescription.copyParameters(agentRequest, result);
 			result.setAgentFound(false);
 		}
 		

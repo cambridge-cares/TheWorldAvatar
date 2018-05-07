@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.ObjectProperty;
@@ -22,9 +25,9 @@ import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 import uk.ac.cam.cares.jps.config.AgentLocator;
-import uk.ac.cam.cares.jps.discovery.api.AbstractAgentDescription;
+import uk.ac.cam.cares.jps.discovery.api.AbstractAgentServiceDescription;
 import uk.ac.cam.cares.jps.discovery.api.Agent;
-import uk.ac.cam.cares.jps.discovery.api.AgentDescription;
+import uk.ac.cam.cares.jps.discovery.api.AgentServiceDescription;
 import uk.ac.cam.cares.jps.discovery.api.Parameter;
 import uk.ac.cam.cares.jps.discovery.util.Helper;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;
@@ -32,8 +35,9 @@ import uk.ac.cam.cares.jps.discovery.util.ISerializer;
 public class OWLSerializer implements ISerializer {
 	
 	private static OWLSerializer instance = null;
+	private static final String ONTOAGENT = "http://www.theworldavatar.com/OntoAgent";
 	
-	private static final String ONTOAGENT_BASE = "http://www.theworldavatar.com/OntoAgent";
+	Logger logger = LoggerFactory.getLogger(OWLSerializer.class);
 	private OntModel ontology = null;
 	private String ontBaseIRI = null;
 	private OntModel knowledgeBase = null;
@@ -43,8 +47,9 @@ public class OWLSerializer implements ISerializer {
 	private OWLSerializer() {
 
 		// TODO-AE migrate to new version of JENA !!!
-		// TODO-AE URGENT import statement missing in JENA report, but required when reading agent.owl in Protege
+		// TODO-AE URGENT import statement missing in JENA report, but required when reading agentxxxx.owl in Protege
 		// TODO-AE introduce special IRI for Properties/Keys such as domain and also for its possible values
+		// TODO-AE URGENT commit the agent ontology OWL file --> discuss directory convention, maybe own project only for ontology OWL files?
 	}
 	
 	public static synchronized OWLSerializer getInstance() {
@@ -56,58 +61,64 @@ public class OWLSerializer implements ISerializer {
 	}
 	
 	private void init( ) {
-		if (ontology == null) {
-			// read the ontology once for the singleton
-			ontology = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
-			String path = AgentLocator.getPathToJpsDataOntologyBaseDir() + "/OntoAgent/OntoAgent.owl";
-			File file = new File(path);
-			ontology.read(file.toURI().toString());
-		}
-		
-		//TODO-AE adapt the IRI in the owl file to OntoAgent ...
-		ontBaseIRI = ONTOAGENT_BASE + "/OntoAgent.owl#";
+		// this class is a singleton. It is enough to read the ontology only once
+		ontology = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+		String path = AgentLocator.getPathToJpsDataOntologyDir() + "/OntoAgent/OntoAgent.owl";
+		File file = new File(path);
+		ontology.read(file.toURI().toString());
+		ontBaseIRI = ONTOAGENT + "/OntoAgent.owl#";
 	}
 	
 	@Override
 	public synchronized String convertToString(Serializable object) {
 		// OWLSerializer is a singleton. Because it has java attributes such as knowledgeBase 
-		// the convert methods have to be synchronized for parallel access
-
-		// create a new model (knowledgeBase) for the instances that are created from the input parameter Serializable object 
-		// in addition to the model (ontology) for the classes
-		// If both are stored in the same mode, the instances would be stored together with the doubled class definitions 
+		// all public convert methods have to be synchronized for parallel access
+		
+		UUID uuid = Helper.createUUID();	
+		ByteArrayOutputStream stream = convertToString(object, uuid);
+		String s = stream.toString();
+		try {
+			stream.close();
+		} catch (IOException e) {
+			logger.error(e.getMessage(), e);
+		}
+		return s;
+	}
+	
+	private ByteArrayOutputStream convertToString(Serializable object, UUID uuid) {
+		
+		counter = 0;
+		
+		// Create a new model (knowledgeBase) for the instances that will be generated from the input parameter "object" 
+		// This model is created in addition to the model (ontology) for the classes
+		// If both instances and classes are stored in the same model, the class definition would be duplicated 
 		// when writing the instances to RDF/XML
 		knowledgeBase = ModelFactory.createOntologyModel();
 		knowledgeBase.setNsPrefix("jpsago", ontBaseIRI);
 		
-		if (object instanceof Agent) {
-			UUID uuid = Helper.createUUID();	
-			//TODO-AE adapt the IRI in the owl file to OntoAgent ...
-			kbBaseIRI = ONTOAGENT_BASE + "/Agent" + uuid + ".owl#";
+		if (object instanceof Agent) {	
+			kbBaseIRI = ONTOAGENT + "/Agent" + uuid + ".owl#";
 			knowledgeBase.setNsPrefix("jpsagkb", kbBaseIRI);
 			
 			//TODO-AE if then for AgentDesription, Request, Response ...
-			//TODO-AE check that there is a least one output parameter (and domain, name...)
 			createAgent((Agent) object, uuid);
-		} else if (object instanceof AgentDescription) {
-			UUID uuid = Helper.createUUID();	
-			//TODO-AE adapt the IRI in the owl file to OntoAgent ...
+		} else if (object instanceof AgentServiceDescription) {
 			//TODO-AE Class in OntoAgent.owl is AgentServiceDescription --> rename java Code
 			//TODO-AE AgentMessage --> AgentServiceRequest, AgentServiceResponse
-			kbBaseIRI = ONTOAGENT_BASE + "/AgentMessage#";
+			kbBaseIRI = ONTOAGENT + "/AgentMessage#";
 			knowledgeBase.setNsPrefix("jpsagkb", kbBaseIRI);
 			//TODO-AE check that there is a least one output parameter (and domain, name...)
-			createAgentDescription((AbstractAgentDescription) object);
+			createAgentDescription((AbstractAgentServiceDescription) object);
 		} else {
 			throw new RuntimeException("can't serialize the object of type = " + object.getClass().getName());
 		}
 		
 		//knowledgeBase.write(System.out);
 		
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		knowledgeBase.write(output, "RDF/XML");
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		knowledgeBase.write(stream, "RDF/XML");
 		
-		return output.toString();
+		return stream;
 	}
 
 	@Override
@@ -126,17 +137,22 @@ public class OWLSerializer implements ISerializer {
 		
 		OntClass agentClass = ontology.getOntClass(ontBaseIRI + "Agent");
 		// TODO-AE why do we need .owl in the IRI
-		Individual agentInd = knowledgeBase.createIndividual(ONTOAGENT_BASE + "/Agent" + uuid + ".owl#Agent", agentClass);
+		Individual agentInd = knowledgeBase.createIndividual(ONTOAGENT + "/Agent" + uuid + ".owl#Agent", agentClass);
 		
 		createTripleWithDatatypeProperty(agentInd, "hasName", agent.getName().getValue());
 		
-		for (AgentDescription current : agent.getDescriptions()) {
+		for (AgentServiceDescription current : agent.getDescriptions()) {
 			Individual descrInd = createAgentDescription(current);
 			createTripleWithObjectProperty(agentInd, "hasAgentServiceDescription", descrInd);
 		}
 	}
 	
-	private Individual createAgentDescription(AbstractAgentDescription description) {
+	private Individual createAgentDescription(AbstractAgentServiceDescription description) {
+		
+		if (description.getProperties().isEmpty()) {
+			// TODO-AE create new JPS Runtime Exception in JPS_BASE
+			throw new RuntimeException("empty property list of agent description");
+		}
 		
 		Individual result = createIndividual("AgentServiceDescription");
 		
@@ -203,16 +219,20 @@ public class OWLSerializer implements ISerializer {
 		subject.addProperty(prop, datatype);
 	}
 	
-	private void write(OntModel model) throws IOException {
-		// TODO-AE remove this method
+	public void writeAsOwlFile(Agent agent) throws IOException {
 		
-		File file = new File("C:/Users/Andreas/my/agentdiscovery/test/AgentKB.owl");
+		UUID uuid = Helper.createUUID();
+		ByteArrayOutputStream bytestream = convertToString(agent, uuid);
+		
+		String path = AgentLocator.getPathToJpsDataKnowledgeDir() + "/OntoAgent/Agent" + uuid + ".owl";
+		File file = new File(path);
 		if (!file.exists()) {
 			file.createNewFile();
 		}
-				
-		FileOutputStream outputstream = new FileOutputStream(file);
-			
-		model.write(outputstream, "RDF/XML");
+		
+		FileOutputStream filestream = new FileOutputStream(file);
+		bytestream.writeTo(filestream);
+		bytestream.close();
+		filestream.close();
 	}
 }

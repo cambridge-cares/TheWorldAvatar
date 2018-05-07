@@ -30,7 +30,7 @@ public class SimpleOwlBasedRegistry implements IRegistry {
 	}
 	
 	private void init() {
-		String kbPath = AgentLocator.getPathToJpsDataKnowledgeBaseDir() + "/OntoAgent";
+		String kbPath = AgentLocator.getPathToJpsDataKnowledgeDir() + "/OntoAgent";
 		
 		
 		// TODO-AE READ all agent description files (besides the class ontology OWL file OntoAgent.owl)

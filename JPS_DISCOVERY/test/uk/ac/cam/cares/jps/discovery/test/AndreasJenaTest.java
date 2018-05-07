@@ -28,6 +28,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 import junit.framework.TestCase;
 
+//TODO-AE Delete this test class
 public class AndreasJenaTest extends TestCase {
 	
 	public static ResultSet sparql (String fileLocat, String Qstring) {

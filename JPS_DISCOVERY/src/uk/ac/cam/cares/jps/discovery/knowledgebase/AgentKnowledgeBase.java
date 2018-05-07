@@ -7,7 +7,7 @@ import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 
-import uk.ac.cam.cares.jps.discovery.api.AgentDescription;
+import uk.ac.cam.cares.jps.discovery.api.AgentServiceDescription;
 import uk.ac.cam.cares.jps.discovery.util.Helper;
 
 public class AgentKnowledgeBase {
@@ -36,7 +36,7 @@ public class AgentKnowledgeBase {
 		model = RDFHelper.loadModel(filepath);
 	}
 	
-	public void add(AgentDescription descr) {
+	public void add(AgentServiceDescription descr) {
 		
 		OntClass agentDescrClass = model.getOntClass(NAME_SPACE + "AgentDescription");
 		

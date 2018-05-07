@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import uk.ac.cam.cares.jps.discovery.api.AbstractAgentDescription;
+import uk.ac.cam.cares.jps.discovery.api.AbstractAgentServiceDescription;
 import uk.ac.cam.cares.jps.discovery.api.Agent;
-import uk.ac.cam.cares.jps.discovery.api.AgentDescription;
+import uk.ac.cam.cares.jps.discovery.api.AgentServiceDescription;
 import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
 import uk.ac.cam.cares.jps.discovery.api.IType;
 import uk.ac.cam.cares.jps.discovery.api.Parameter;
@@ -40,7 +40,7 @@ public class DescriptionFactory {
 		return result;
 	}
 	
-	private static void fill(AbstractAgentDescription descr, String general, String input, String output) {
+	private static void fill(AbstractAgentServiceDescription descr, String general, String input, String output) {
 		
 		List<Parameter> inputParameters = createParameters(input);
 		descr.setInputParameters(inputParameters);
@@ -55,7 +55,7 @@ public class DescriptionFactory {
 			boolean attributeFound = true;
 			if ("domain".equals(key)) {
 				descr.setDomain(value);
-			} else if (descr instanceof AgentDescription) {
+			} else if (descr instanceof AgentServiceDescription) {
 				attributeFound = false;
 			} else {
 				attributeFound = false;
@@ -70,13 +70,13 @@ public class DescriptionFactory {
 	public static Agent createAgent(String name, String general, String input, String output) {
 		Agent result = new Agent();
 		result.setName(new TypeIRI(name));
-		AgentDescription descr = createAgentDescription(general, input, output);
+		AgentServiceDescription descr = createAgentServiceDescription(general, input, output);
 		result.addDescription(descr);	
 		return result;
 	}
 	
-	public static AgentDescription createAgentDescription(String general, String input, String output) {
-		AgentDescription result = new AgentDescription();
+	public static AgentServiceDescription createAgentServiceDescription(String general, String input, String output) {
+		AgentServiceDescription result = new AgentServiceDescription();
 		fill(result, general, input, output);
 		return result;
 	}

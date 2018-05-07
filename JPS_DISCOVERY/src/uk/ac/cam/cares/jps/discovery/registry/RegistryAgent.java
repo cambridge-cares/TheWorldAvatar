@@ -14,10 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.discovery.api.Agent;
-import uk.ac.cam.cares.jps.discovery.api.AgentDescription;
 import uk.ac.cam.cares.jps.discovery.api.TypeIRI;
 import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
-import uk.ac.cam.cares.jps.discovery.util.ISerializer;
 import uk.ac.cam.cares.jps.discovery.util.JPSBaseServlet;
 import uk.ac.cam.cares.jps.discovery.util.JavaSerializer;
 
@@ -27,7 +25,6 @@ public class RegistryAgent extends JPSBaseServlet {
 	private static final long serialVersionUID = -1084832972879292460L;
 
 	Logger logger = LoggerFactory.getLogger(RegistryAgent.class);
-	private ISerializer serializer = DiscoveryFactory.getSerializer();
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
