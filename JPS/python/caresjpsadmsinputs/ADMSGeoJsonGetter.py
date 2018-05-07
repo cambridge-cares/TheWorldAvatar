@@ -190,7 +190,7 @@ def return_buildings():
     listOfIRIs = json.loads(sys.argv[1])
 
     if listOfIRIs == []:
-        raise ValueError("INVALID QUERY")
+        raise ValueError("EMPTY ARRAY")
 
     # --Obtain list of building heights-- #
     # --Obtain list of building coordinates-- #
