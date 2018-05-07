@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface IMatcher {
 
-	public List<AgentDescription> getMatches(AgentRequest agentRequest);
+	public List<Agent> getMatches(AgentRequest agentRequest);
 }

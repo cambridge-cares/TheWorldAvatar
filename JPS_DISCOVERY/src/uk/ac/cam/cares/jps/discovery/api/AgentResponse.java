@@ -9,6 +9,7 @@ public class AgentResponse extends AbstractAgentDescription {
 		return agentFound;
 	}
 
+	//TODO-AE do we still need this? It is missing the OWL file so far
 	public void setAgentFound(boolean agentFound) {
 		this.agentFound = agentFound;
 	}

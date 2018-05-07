@@ -2,16 +2,16 @@ package uk.ac.cam.cares.jps.discovery.registry;
 
 import java.util.Collection;
 
-import uk.ac.cam.cares.jps.discovery.api.AgentDescription;
+import uk.ac.cam.cares.jps.discovery.api.Agent;
 
 public interface IRegistry {
 
-	Collection<AgentDescription> getAllAgentDescriptions();
+	Collection<Agent> getAllAgents();
 
-	void register(AgentDescription description);
+	void register(Agent description);
 
-	AgentDescription get(String agentAddress);
+	Agent get(String agentName);
 
-	void deregister(String agentAddress);
+	void deregister(String agentName);
 
 }

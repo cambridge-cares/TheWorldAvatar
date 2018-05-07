@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.discovery.matching.exact;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.ac.cam.cares.jps.discovery.api.Agent;
 import uk.ac.cam.cares.jps.discovery.api.AgentDescription;
 import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
 import uk.ac.cam.cares.jps.discovery.api.IMatcher;
@@ -19,14 +20,25 @@ public class ExactMatcher implements IMatcher{
 	}
 	
 	@Override
-	public List<AgentDescription> getMatches(AgentRequest agentRequest) {
+	public List<Agent> getMatches(AgentRequest agentRequest) {
 		
-		List<AgentDescription> result = new ArrayList<AgentDescription>();
+		List<Agent> result = new ArrayList<Agent>();
 		
-		for (AgentDescription current : registry.getAllAgentDescriptions()) {
+		for (Agent currentAgent : registry.getAllAgents()) {
 			
-			if (match(agentRequest, current)) {
-				result.add(current);
+			Agent agent = null;
+		
+			for (AgentDescription currentDescr : currentAgent.getDescriptions()) {
+			
+				if (match(agentRequest, currentDescr)) {
+					
+					if (agent == null) {
+						agent = new Agent();
+						agent.setName(currentAgent.getName());
+						result.add(agent);
+					}
+					agent.addDescription(currentDescr);
+				}
 			}
 		}
 		
@@ -80,7 +92,7 @@ public class ExactMatcher implements IMatcher{
 
 	private boolean match(AgentRequest agentRequest, AgentDescription descr) {
 		
-		if (!matchTypes(agentRequest.getDomain(), descr.getDomain())) {
+		if (!matchParameters(agentRequest.getProperties(), descr.getProperties())) {
 			return false;
 		}
 		

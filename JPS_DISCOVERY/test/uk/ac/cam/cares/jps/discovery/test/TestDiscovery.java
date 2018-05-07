@@ -16,21 +16,22 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.discovery.api.Agent;
 import uk.ac.cam.cares.jps.discovery.api.AgentDescription;
 import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
 import uk.ac.cam.cares.jps.discovery.api.AgentResponse;
 import uk.ac.cam.cares.jps.discovery.api.Parameter;
 import uk.ac.cam.cares.jps.discovery.api.TypeIRI;
 import uk.ac.cam.cares.jps.discovery.client.DiscoveryProvider;
+import uk.ac.cam.cares.jps.discovery.knowledgebase.OWLSerializer;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;
 import uk.ac.cam.cares.jps.discovery.util.JavaSerializer;
-import uk.ac.cam.cares.jps.discovery.util.OWLSerializer;
 
 public class TestDiscovery extends TestCase {
 	
 	public void testSerializeAgentDescriptionWithJavaSerializer() {
 		
-		String general = "domain,weather,address,IRIagentOne";
+		String general = "domain,weather";
 		String input = "city,null";
 		String output = "IRItemperature,null";
 	
@@ -47,10 +48,12 @@ public class TestDiscovery extends TestCase {
 		assertNotEquals(descr, actual);
 		
 		// but their attributes are the same
-		assertEquals(descr.getDomain(), actual.getDomain());
-		assertEquals(descr.getAddress(), actual.getAddress());
-		Parameter pDescr = descr.getInputParameters().get(0);
-		Parameter pActual = actual.getInputParameters().get(0);
+		Parameter pDescr = descr.getProperties().get(0);
+		Parameter pActual = actual.getProperties().get(0);
+		assertEquals(pDescr.getKey(), pActual.getKey());
+		assertEquals(pDescr.getValue(), pActual.getValue());
+		pDescr = descr.getInputParameters().get(0);
+		pActual = actual.getInputParameters().get(0);
 		assertEquals(pDescr.getKey(), pActual.getKey());
 		assertEquals(pDescr.getValue(), pActual.getValue());
 		pDescr = descr.getOutputParameters().get(0);
@@ -61,7 +64,7 @@ public class TestDiscovery extends TestCase {
 	
 	public void testSerializeAgentDescriptionWithOWLSerializer() {
 		
-		String general = "domain,weather,address,IRIagentOne";
+		String general = "domain,weather";
 		String input = "city,null";
 		String output = "IRItemperature,null";
 	
@@ -69,7 +72,7 @@ public class TestDiscovery extends TestCase {
 		
 		String s = OWLSerializer.getInstance().convertToString(descr);
 		
-		System.out.println("serialized = " + s);
+		System.out.println("\n\nserialized = \n" + s);
 		
 		//TODO-AE complete the test case
 		
@@ -80,7 +83,6 @@ public class TestDiscovery extends TestCase {
 //		
 //		// but their attributes are the same
 //		assertEquals(descr.getDomain(), actual.getDomain());
-//		assertEquals(descr.getAddress(), actual.getAddress());
 //		Parameter pDescr = descr.getInputParameters().get(0);
 //		Parameter pActual = actual.getInputParameters().get(0);
 //		assertEquals(pDescr.getKey(), pActual.getKey());
@@ -90,6 +92,23 @@ public class TestDiscovery extends TestCase {
 //		assertEquals(pDescr.getKey(), pActual.getKey());
 //		assertEquals(pDescr.getValue(), pActual.getValue());
 	}
+	
+	public void testSerializeAgentWithOWLSerializer() {
+		
+		String general = "domain,weather";
+		String input = "city,null";
+		String output = "IRItemperature,null";
+	
+		Agent agent = DescriptionFactory.createAgent("IRIsomeAgent", general, input, output);
+		
+		String s = OWLSerializer.getInstance().convertToString(agent);
+		
+		System.out.println("\n\nserialized = \n" + s);
+		
+		//TODO-AE complete the test case
+	}
+	
+	
 	
 	private String getUrlForDiscovery() {
 		return "http://localhost:8080/JPS_DISCOVERY";
@@ -119,26 +138,26 @@ public class TestDiscovery extends TestCase {
 
 	private void deregisterAllAgents() throws ClientProtocolException, IOException {	
 		for (String current : getAgents()) {
-			TypeIRI address = new TypeIRI(current);
-			new DiscoveryProvider().deregisterAgent(address);
+			TypeIRI name = new TypeIRI(current);
+			new DiscoveryProvider().deregisterAgent(name);
 		}
 	}
 	
-	private void register(AgentDescription description) throws IOException {
-		new DiscoveryProvider().registerAgent(description);
+	private void register(Agent agent) throws IOException {
+		new DiscoveryProvider().registerAgent(agent);
 	}
 	
 	public void testRegisterOneAgentTwice() throws IOException {
 		
 		deregisterAllAgents();
 		
-		AgentDescription descr = new WeatherAgentOne().getAgentDescription();
+		Agent agent = new WeatherAgentOne().getAgent();
 		
-		register(descr);	
-		register(descr);	
+		register(agent);	
+		register(agent);	
 		List<String> actual = getAgents();
 		assertEquals(1, actual.size());
-		assertEquals(descr.getAddress().getValue(), actual.get(0));
+		assertEquals(agent.getName().getValue(), actual.get(0));
 	}
 	
 	private void registerFiveAgents() throws IOException {
@@ -147,9 +166,8 @@ public class TestDiscovery extends TestCase {
 		String output = "IRINumberOfBuildings,null";
 		
 		for (int i=1; i<6; i++) {
-			AgentDescription descr = DescriptionFactory.createAgentDescription(general, input, output);
-			descr.setAddress(new TypeIRI("IRIagent"+i));
-			register(descr);
+			Agent agent = DescriptionFactory.createAgent("IRIagent"+i, general, input, output);
+			register(agent);
 		}
 	}
 	
@@ -173,10 +191,10 @@ public class TestDiscovery extends TestCase {
 		deregisterAllAgents();
 		
 		registerFiveAgents();
-		AgentDescription descrOne = new WeatherAgentOne().getAgentDescription();
-		register(descrOne);
-		AgentDescription descrTwo = new WeatherAgentTwo().getAgentDescription();
-		register(descrTwo);	
+		Agent agentOne = new WeatherAgentOne().getAgent();
+		register(agentOne);
+		Agent agentTwo = new WeatherAgentTwo().getAgent();
+		register(agentTwo);	
 		
 		List<String> actual = getAgents();
 		assertEquals(7, actual.size());
@@ -191,18 +209,18 @@ public class TestDiscovery extends TestCase {
 		
 		String actv0 = actualSearch.get(0).getValue();
 		String actv1 = actualSearch.get(1).getValue();
-		String expvOne = descrOne.getAddress().getValue();
-		String expvTwo = descrTwo.getAddress().getValue();
+		String expvOne = agentOne.getName().getValue();
+		String expvTwo = agentTwo.getName().getValue();
 		boolean b = (actv0.equals(expvOne) && actv1.equals(expvTwo)) 
 				|| (actv0.equals(expvTwo) && actv1.equals(expvOne));
 		assertTrue(b);
 		
-		String address = actv0;
-		if (address.endsWith("AgentTwo")) {
-			address = actv1;
+		String name = actv0;
+		if (name.endsWith("AgentTwo")) {
+			name = actv1;
 		}
 		
-		String messageFromAgentOne = callAgent(address);
+		String messageFromAgentOne = callAgent(name);
 		assertEquals("I'm weather agent one", messageFromAgentOne);
 	}
 	
@@ -211,8 +229,8 @@ public class TestDiscovery extends TestCase {
 		
 		deregisterAllAgents();
 		
-		AgentDescription descrTwo = new WeatherAgentTwo().getAgentDescription();
-		register(descrTwo);	
+		Agent agentTwo = new WeatherAgentTwo().getAgent();
+		register(agentTwo);	
 		
 		String general = "domain,weather";
 		String input = "city,berlin";
