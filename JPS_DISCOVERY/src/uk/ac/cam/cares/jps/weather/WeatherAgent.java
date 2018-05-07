@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.discovery.api.AbstractAgentDescription;
+import uk.ac.cam.cares.jps.discovery.api.Agent;
 import uk.ac.cam.cares.jps.discovery.api.AgentDescription;
 import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
 import uk.ac.cam.cares.jps.discovery.api.AgentResponse;
@@ -82,7 +83,7 @@ public class WeatherAgent extends JPSBaseServlet {
         logger.info("cloud cover= "+cloudcover);
         
 		//copy from the request stream of input and output parameter into the response stream
-		AbstractAgentDescription.copy(agentRequest, agentResponse);
+		AbstractAgentDescription.copyParameters(agentRequest, agentResponse);
 		
 		//later put the value to be taken from the website of weather and put to the knowledge base of the weather
 		Parameter param = agentResponse.getOutputParameters().get(0);
@@ -109,11 +110,11 @@ public class WeatherAgent extends JPSBaseServlet {
 		logger.info("WeatherAgent exit");
 	}
 	
-	public AgentDescription getAgentDescription() {
-		String general = "domain,weather,address,http://localhost:8080/JPS_DISCOVERY/DiscoveryTest/WeatherAgent";
+	public Agent getAgent() {
+		String general = "domain,weather";
 		String input = "city,null";
 		String output = "temperature,null,cloudcover,null,windspeed,null,winddirection,null";
 		
-		return DescriptionFactory.createAgentDescription(general, input, output);
+		return DescriptionFactory.createAgent("http://localhost:8080/JPS_DISCOVERY/DiscoveryTest/WeatherAgent", general, input, output);
 	}
 }
