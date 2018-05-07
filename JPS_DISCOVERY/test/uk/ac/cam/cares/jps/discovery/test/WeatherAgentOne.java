@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.discovery.api.AgentDescription;
+import uk.ac.cam.cares.jps.discovery.api.Agent;
 import uk.ac.cam.cares.jps.discovery.util.JPSBaseServlet;
 
 @WebServlet(urlPatterns = {"/DiscoveryTest/AgentOne"})
@@ -34,11 +34,11 @@ public class WeatherAgentOne extends JPSBaseServlet {
 		logger.info(message);
 	}
 	
-	public AgentDescription getAgentDescription() {
-		String general = "domain,weather,address,http://localhost:8080/JPS_DISCOVERY/DiscoveryTest/AgentOne";
+	public Agent getAgent() {
+		String general = "domain,weather";
 		String input = "city,null";
 		String output = "IRItemperature,null";
 		
-		return DescriptionFactory.createAgentDescription(general, input, output);
+		return DescriptionFactory.createAgent("http://localhost:8080/JPS_DISCOVERY/DiscoveryTest/AgentOne", general, input, output);
 	}
 }

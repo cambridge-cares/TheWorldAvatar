@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.discovery.api.AbstractAgentDescription;
-import uk.ac.cam.cares.jps.discovery.api.AgentDescription;
+import uk.ac.cam.cares.jps.discovery.api.Agent;
 import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
 import uk.ac.cam.cares.jps.discovery.api.AgentResponse;
 import uk.ac.cam.cares.jps.discovery.api.Parameter;
@@ -36,7 +36,7 @@ public class WeatherAgentTwo extends JPSBaseServlet {
 		String serializedAgentRequest = req.getParameter("agentrequest");
 		AgentRequest agentRequest = serializer.<AgentRequest>convertFrom(serializedAgentRequest).get();
 		AgentResponse agentResponse = new AgentResponse();
-		AbstractAgentDescription.copy(agentRequest, agentResponse);
+		AbstractAgentDescription.copyParameters(agentRequest, agentResponse);
 		
 		Parameter param = agentResponse.getOutputParameters().get(0);
 		param.setValue(new TypeString("30.3"));
@@ -49,11 +49,11 @@ public class WeatherAgentTwo extends JPSBaseServlet {
 		logger.info("WeatherAgentTwo exit");
 	}
 	
-	public AgentDescription getAgentDescription() {
-		String general = "domain,weather,address,http://localhost:8080/JPS_DISCOVERY/DiscoveryTest/AgentTwo";
+	public Agent getAgent() {
+		String general = "domain,weather";
 		String input = "city,null";
 		String output = "IRItemperature,null";
 		
-		return DescriptionFactory.createAgentDescription(general, input, output);
+		return DescriptionFactory.createAgent("http://localhost:8080/JPS_DISCOVERY/DiscoveryTest/AgentTwo", general, input, output);
 	}
 }

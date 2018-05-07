@@ -15,17 +15,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.discovery.api.AbstractAgentDescription;
-import uk.ac.cam.cares.jps.discovery.api.AgentDescription;
-import uk.ac.cam.cares.jps.discovery.api.AgentResponse;
+import uk.ac.cam.cares.jps.discovery.api.Agent;
 import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
+import uk.ac.cam.cares.jps.discovery.api.AgentResponse;
 import uk.ac.cam.cares.jps.discovery.api.TypeIRI;
 import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.matching.exact.ExactMatcher;
-import uk.ac.cam.cares.jps.discovery.registry.SimpleInMemoryRegistry;
 import uk.ac.cam.cares.jps.discovery.util.Helper;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;
 import uk.ac.cam.cares.jps.discovery.util.JPSBaseServlet;
-import uk.ac.cam.cares.jps.discovery.util.JavaSerializer;
 
 @WebServlet(urlPatterns = {"/search", "/call"})
 public class SearchAgent extends JPSBaseServlet {
@@ -60,9 +58,9 @@ public class SearchAgent extends JPSBaseServlet {
 		List<TypeIRI> result = new ArrayList<TypeIRI>();
 		
 		ExactMatcher matcher = new ExactMatcher(DiscoveryFactory.getRegistry());
-		List<AgentDescription> list = matcher.getMatches(agentRequest);
-		for (AgentDescription current : list) {
-			result.add(current.getAddress());
+		List<Agent> list = matcher.getMatches(agentRequest);
+		for (Agent current : list) {
+			result.add(current.getName());
 		}
 		
 		return result;
@@ -95,7 +93,7 @@ public class SearchAgent extends JPSBaseServlet {
 		} else {
 			result = new AgentResponse();
 			// copy original parameters from the search request
-			AbstractAgentDescription.copy(agentRequest, result);
+			AbstractAgentDescription.copyParameters(agentRequest, result);
 			result.setAgentFound(false);
 		}
 		

@@ -118,6 +118,10 @@ public class AgentLocator {
 		return getProperty("absdir.jpsdata.knowledgebase");
 	}
 	
+	public static String getPathToJpsDataOntologyBaseDir() {
+		return getProperty("absdir.jpsdata.ontology");
+	}
+	
 	/**
 	 * If there is a test property file with the key then its value is returned.
 	 * Otherwise the value specified in the application property file or null is

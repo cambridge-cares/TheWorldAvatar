@@ -13,11 +13,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.discovery.api.Agent;
 import uk.ac.cam.cares.jps.discovery.api.AgentDescription;
 import uk.ac.cam.cares.jps.discovery.api.TypeIRI;
 import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;
 import uk.ac.cam.cares.jps.discovery.util.JPSBaseServlet;
+import uk.ac.cam.cares.jps.discovery.util.JavaSerializer;
 
 @WebServlet(urlPatterns = {"/register", "/deregister", "/agents"})
 public class RegistryAgent extends JPSBaseServlet {
@@ -35,23 +37,28 @@ public class RegistryAgent extends JPSBaseServlet {
 
 		if ("/register".equals(path)) {
 			String serializedDescr = req.getParameter("agentdescription");
-			AgentDescription description = serializer.<AgentDescription>convertFrom(serializedDescr).get();
+			// TODO-AE here we still use the Java binary serializer instead of OWL
+			// reason: Tests use register method and do not run as there is no deserialization
+			// from OWL to Java class AgentDescription yet!
+			//String serialized = serializer.convertToString(description);	
+			//AgentDescription description = serializer.<AgentDescription>convertFrom(serializedDescr).get();
+			Agent description = new JavaSerializer().<Agent>convertFrom(serializedDescr).get();
 			DiscoveryFactory.getRegistry().register(description);
 		} else if ("/deregister".equals(path)) {
 			String agentAddress = req.getParameter("agentaddress");
 			DiscoveryFactory.getRegistry().deregister(agentAddress);
 		} else if ("/agents".equals(path)) {
-			print(resp, getAddressesOfAllAgents());
+			print(resp, getNamesOfAllAgents());
 		}
 	}	
 	
-	private List<TypeIRI> getAddressesOfAllAgents() throws IOException {
+	private List<TypeIRI> getNamesOfAllAgents() throws IOException {
 		
 		List<TypeIRI> result = new ArrayList<TypeIRI>();
 		
-		Collection<AgentDescription> list = DiscoveryFactory.getRegistry().getAllAgentDescriptions();
-		for (AgentDescription current : list) {
-			result.add(current.getAddress());
+		Collection<Agent> list = DiscoveryFactory.getRegistry().getAllAgents();
+		for (Agent current : list) {
+			result.add(current.getName());
 		}
 		
 		return result;

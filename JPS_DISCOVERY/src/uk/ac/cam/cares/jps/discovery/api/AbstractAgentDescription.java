@@ -8,16 +8,21 @@ import java.util.List;
 public abstract class AbstractAgentDescription implements Serializable {
 
 	private static final long serialVersionUID = 2482265137462822690L;
-	private IType domain = null;
+	private List<Parameter> properties = new ArrayList<Parameter>();
 	protected List<Parameter> inputParameters = new ArrayList<Parameter>();
 	private List<Parameter> outputParameters = new ArrayList<Parameter>();
-	
-	public IType getDomain() {
-		return domain;
+
+	public List<Parameter> getProperties() {
+		return properties;
 	}
 
+	public void setProperties(List<Parameter> properties) {
+		this.properties = properties;
+	}
+	
 	public void setDomain(IType domain) {
-		this.domain = domain;
+		Parameter param = new Parameter(new TypeString("domain"), domain);
+		properties.add(param);
 	}
 
 	public List<Parameter> getInputParameters() {
@@ -32,20 +37,41 @@ public abstract class AbstractAgentDescription implements Serializable {
 		return outputParameters;
 	}
 
-	public void addOutputParameter(TypeIRI key) {
-		Parameter param = new Parameter(key, null);
-		outputParameters.add(param);
-	}
-
 	public void setOutputParameters(List<Parameter> outputParameters) {
 		this.outputParameters = outputParameters;
 	}
 	
-	public static void copy(AbstractAgentDescription source, AbstractAgentDescription dest) {
-		//TODO-AE URGENT. This is not a deep copy!!! If a output value is set in a copied response
-		// it is also set in the request
-		dest.setDomain(source.getDomain());
-		dest.setInputParameters(source.getInputParameters());
-		dest.setOutputParameters(source.getOutputParameters());
+	public void addOutputParameter(TypeIRI key) {
+		Parameter param = new Parameter(key, null);
+		outputParameters.add(param);
+	}
+	
+	public static void copyParameters(AbstractAgentDescription source, AbstractAgentDescription dest) {
+		dest.setProperties(copy(source.getProperties()));
+		dest.setInputParameters(copy(source.getInputParameters()));
+		dest.setOutputParameters(copy(source.getOutputParameters()));
+	}
+	
+	private static List<Parameter> copy(List<Parameter> params) {
+		List<Parameter> result = new ArrayList<Parameter>();
+		
+		for (Parameter current : params) {
+			Parameter copiedParam = new Parameter(copy(current.getKey()), copy(current.getValue()));
+			result.add(copiedParam);
+		}
+		
+		return result;
+	}
+	
+	private static IType copy(IType type) {
+		
+		if ((type == null)) {
+			return null;
+		}
+		
+		if (type instanceof TypeIRI) {
+			return new TypeIRI(type.getValue());
+		}
+		return new TypeString(type.getValue());
 	}
 }

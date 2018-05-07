@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import uk.ac.cam.cares.jps.discovery.api.AbstractAgentDescription;
+import uk.ac.cam.cares.jps.discovery.api.Agent;
 import uk.ac.cam.cares.jps.discovery.api.AgentDescription;
 import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
 import uk.ac.cam.cares.jps.discovery.api.IType;
@@ -55,19 +56,23 @@ public class DescriptionFactory {
 			if ("domain".equals(key)) {
 				descr.setDomain(value);
 			} else if (descr instanceof AgentDescription) {
-				if ("address".equals(key)) {
-					((AgentDescription) descr).setAddress((TypeIRI) value);
-				} else {
-					attributeFound = false;
-				}
+				attributeFound = false;
 			} else {
 				attributeFound = false;
 			}
 				
 			if (!attributeFound) {
-				System.out.println("Attribute was not find for agent description, key=" + key + ", value=" + value);
+				System.out.println("Attribute was not found for agent description, key=" + key + ", value=" + value);
 			}
 		}
+	}
+	
+	static Agent createAgent(String name, String general, String input, String output) {
+		Agent result = new Agent();
+		result.setName(new TypeIRI(name));
+		AgentDescription descr = createAgentDescription(general, input, output);
+		result.addDescription(descr);	
+		return result;
 	}
 	
 	static AgentDescription createAgentDescription(String general, String input, String output) {

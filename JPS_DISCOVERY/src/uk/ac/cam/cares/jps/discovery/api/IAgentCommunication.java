@@ -9,7 +9,7 @@ public interface IAgentCommunication {
 	
 	AgentResponse callAgent(AgentRequest agentRequest);
 	
-	void registerAgent(AgentDescription description) throws IOException;
+	void registerAgent(Agent agent) throws IOException;
 	
 	void deregisterAgent(TypeIRI agentAddress) throws IOException;
 }

@@ -3,7 +3,7 @@ package uk.ac.cam.cares.jps.discovery.test;
 import java.util.List;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.discovery.api.AgentDescription;
+import uk.ac.cam.cares.jps.discovery.api.Agent;
 import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
 import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.matching.exact.ExactMatcher;
@@ -18,12 +18,12 @@ public class TestExactMatcher extends TestCase {
 		// TODO-AE make clear part of IRegistry? 
 		((SimpleInMemoryRegistry) registry).clear();
 		
-		String general = "domain,weather,address,IRIagentOne";
+		String general = "domain,weather";
 		String input = "city,null";
 		String output = "IRItemperature,null";
 	
-		AgentDescription description = DescriptionFactory.createAgentDescription(general, input, output);
-		registry.register(description);
+		Agent agent = DescriptionFactory.createAgent("IRIagentOne", general, input, output);
+		registry.register(agent);
 		
 		return new ExactMatcher(registry);
 	}
@@ -35,39 +35,39 @@ public class TestExactMatcher extends TestCase {
 		((SimpleInMemoryRegistry) registry).clear();
 		
 		// agent 1
-		String general = "domain,weather,address,IRIagentOne";
+		String general = "domain,weather";
 		String input = "city,null";
 		String output = "IRItemperature,null";
-		AgentDescription description = DescriptionFactory.createAgentDescription(general, input, output);
-		registry.register(description);
+		Agent agent = DescriptionFactory.createAgent("IRIagentOne", general, input, output);
+		registry.register(agent);
 		
 		// agent 2 (same description as agent 1)
-		general = "domain,weather,address,IRIagentTwo";
+		general = "domain,weather";
 		input = "city,null";
 		output = "IRItemperature,null";
-		description = DescriptionFactory.createAgentDescription(general, input, output);
-		registry.register(description);
+		agent = DescriptionFactory.createAgent("IRIagentTwo", general, input, output);
+		registry.register(agent);
 		
 		// agent 3
-		general = "domain,weather,address,IRIagentThree";
+		general = "domain,weather";
 		input = "city,null,region,null";
 		output = "IRItemperature,null";
-		description = DescriptionFactory.createAgentDescription(general, input, output);
-		registry.register(description);
+		agent = DescriptionFactory.createAgent("IRIagentThree", general, input, output);
+		registry.register(agent);
 		
 		// agent 4
-		general = "domain,weather,address,IRIagentFour";
+		general = "domain,weather";
 		input = "city,null";
 		output = "temperature,null";
-		description = DescriptionFactory.createAgentDescription(general, input, output);
-		registry.register(description);
+		agent = DescriptionFactory.createAgent("IRIagentFour", general, input, output);
+		registry.register(agent);
 		
 		// agent 5
-		general = "address,IRIagentFive";
+		general = "";
 		input = "city,null";
 		output = "IRItemperature,null";
-		description = DescriptionFactory.createAgentDescription(general, input, output);
-		registry.register(description);
+		agent = DescriptionFactory.createAgent("IRIagentFive", general, input, output);
+		registry.register(agent);
 		
 		return new ExactMatcher(registry);
 	}
@@ -81,9 +81,10 @@ public class TestExactMatcher extends TestCase {
 		String output = "IRItemperature,30";
 		AgentRequest message = DescriptionFactory.createDiscoveryMessage(general, input, output);
 		
-		List<AgentDescription> result = matcher.getMatches(message);
+		List<Agent> result = matcher.getMatches(message);
 		
 		assertEquals(1, result.size());
+		assertEquals(1, result.get(0).getDescriptions().size());
 	}
 	
 	public void testNoMatchForRegistryWithOneAgent1() {
@@ -95,7 +96,7 @@ public class TestExactMatcher extends TestCase {
 		String output = "IRIwind,30";
 		AgentRequest message = DescriptionFactory.createDiscoveryMessage(general, input, output);
 		
-		List<AgentDescription> result = matcher.getMatches(message);
+		List<Agent> result = matcher.getMatches(message);
 		
 		assertEquals(0, result.size());
 	}
@@ -109,7 +110,7 @@ public class TestExactMatcher extends TestCase {
 		String output = "IRIwind,30";
 		AgentRequest message = DescriptionFactory.createDiscoveryMessage(general, input, output);
 		
-		List<AgentDescription> result = matcher.getMatches(message);
+		List<Agent> result = matcher.getMatches(message);
 		
 		assertEquals(0, result.size());
 	}
@@ -123,7 +124,7 @@ public class TestExactMatcher extends TestCase {
 		String output = "IRIwind,30";
 		AgentRequest message = DescriptionFactory.createDiscoveryMessage(general, input, output);
 		
-		List<AgentDescription> result = matcher.getMatches(message);
+		List<Agent> result = matcher.getMatches(message);
 		
 		assertEquals(0, result.size());
 	}
@@ -137,9 +138,11 @@ public class TestExactMatcher extends TestCase {
 		String output = "IRItemperature,null";
 		AgentRequest message = DescriptionFactory.createDiscoveryMessage(general, input, output);
 		
-		List<AgentDescription> result = matcher.getMatches(message);
+		List<Agent> result = matcher.getMatches(message);
 		
 		assertEquals(2, result.size());
+		assertEquals(1, result.get(0).getDescriptions().size());
+		assertEquals(1, result.get(1).getDescriptions().size());
 	}
 	
 	public void testNoMatchesForRegistryWithFiveAgents() {
@@ -151,7 +154,7 @@ public class TestExactMatcher extends TestCase {
 		String output = "";
 		AgentRequest message = DescriptionFactory.createDiscoveryMessage(general, input, output);
 		
-		List<AgentDescription> result = matcher.getMatches(message);
+		List<Agent> result = matcher.getMatches(message);
 		
 		assertEquals(0, result.size());
 	}
