@@ -138,7 +138,7 @@ public class OWLSerializer implements ISerializer {
 		OntClass agentClass = ontology.getOntClass(ontBaseIRI + "Agent");
 		// TODO-AE why do we need .owl in the IRI
 		Individual agentInd = knowledgeBase.createIndividual(ONTOAGENT + "/Agent" + uuid + ".owl#Agent", agentClass);
-		
+		createTripleWithDatatypeProperty(agentInd, "hasId", uuid.toString());
 		createTripleWithDatatypeProperty(agentInd, "hasName", agent.getName().getValue());
 		
 		for (AgentServiceDescription current : agent.getDescriptions()) {
@@ -158,20 +158,17 @@ public class OWLSerializer implements ISerializer {
 		
 		// create individuals for all parameters
 		List<Parameter> params = description.getProperties();
-		//TODO-AE use iri domain here
+		//TODO-AE extend to domain iris here, e.g. for weather
 		List<Individual> allParameters = createIndividualList(params, "Property");
 		params = description.getInputParameters();
 		allParameters.addAll(createIndividualList(params, "InputParameter"));
 		params = description.getOutputParameters();
 		allParameters.addAll(createIndividualList(params, "OutputParameter"));
 		
-		// create OWL List from all Parameters
-		Individual listInd = createTripleWithObjectProperty(result, "hasKeyValueList", "List");
-		createTripleWithObjectProperty(listInd, "hasFirstListElement", allParameters.get(0));
-		for (int i=0; i<allParameters.size()-1 ; i++) {
-			createTripleWithObjectProperty(allParameters.get(i), "followedBy", allParameters.get(i+1));
+		for (Individual current : allParameters) {
+			createTripleWithObjectProperty(result, "hasKeyValuePair", current);
 		}
-		
+				
 		return result;
 	}
 	
@@ -185,7 +182,9 @@ public class OWLSerializer implements ISerializer {
 		
 		OntClass cl = ontology.getOntClass(ontBaseIRI + classForIndividualsinList);
 		for (Parameter current : params) {	
-			Individual ind = knowledgeBase.createIndividual(kbBaseIRI + classForIndividualsinList + inc(), cl);
+			int index = inc();
+			Individual ind = knowledgeBase.createIndividual(kbBaseIRI + classForIndividualsinList + index, cl);
+			createTripleWithDatatypeProperty(ind, "hasIndex", "" + index);
 			createTripleWithDatatypeProperty(ind, "hasKey", current.getKey().getValue());
 			if ((current.getValue() != null) && (!"null".equals(current.getValue().getValue()))) {
 				createTripleWithDatatypeProperty(ind, "hasValue", current.getValue().getValue());
