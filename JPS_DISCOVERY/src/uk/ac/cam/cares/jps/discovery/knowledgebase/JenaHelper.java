@@ -3,6 +3,9 @@ package uk.ac.cam.cares.jps.discovery.knowledgebase;
 import java.io.File;
 import java.io.FileInputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.Query;
@@ -15,8 +18,48 @@ import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
-public class RDFHelper {
-
+public class JenaHelper {
+	
+	private static Logger logger = LoggerFactory.getLogger(JenaHelper.class);
+	
+	/**
+	 * If <code>path</code> denotes one OWL file, the file is imported to the model. If <code>path</code> denote a directory, 
+	 * all OWL files of this directory are imported to the model.
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public static OntModel createModel(String path) {
+		// this class is a singleton. It is enough to read the ontology only once
+		OntModel result = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+		File file = new File(path);
+		if (file.isFile()) {
+			//logger.debug("Jena Model is importing file = " + file.getAbsolutePath());
+			result.read(file.toURI().toString());
+		} else {
+			for (File current : file.listFiles()) {
+				//logger.debug("Jena Model is importing file = " + file.getAbsolutePath());
+				result.read(current.toURI().toString());
+			}
+		}
+		return result;
+	}
+	
+	// TODO-AE delete
+//	public static OntModel loadModel(String filepath) {
+//		OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+//
+//		try {
+//		    File file = new File(filepath);
+//		    FileInputStream reader = new FileInputStream(file);
+//		    model.read(reader,null);     
+//		} catch (Exception e) {
+//			//TODO-AE
+//		    e.printStackTrace();
+//		}
+//		
+//		return model;
+//	}
 	
 	public static ResultSet sparql (String filepath, String query) {
 		
@@ -41,18 +84,4 @@ public class RDFHelper {
 		return results;
 	}
 	
-	public static OntModel loadModel(String filepath) {
-		OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
-
-		try {
-		    File file = new File(filepath);
-		    FileInputStream reader = new FileInputStream(file);
-		    model.read(reader,null);     
-		} catch (Exception e) {
-			//TODO-AE
-		    e.printStackTrace();
-		}
-		
-		return model;
-	}
 }

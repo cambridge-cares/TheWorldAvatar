@@ -87,7 +87,7 @@ public class TestDiscovery extends TestCase {
 		System.out.println("\n\nserialized = \n" + s);
 	}
 	
-	public void xxxtestWriteAgentToOwlFile() throws IOException {
+	public void testWriteAgentToOwlFile() throws IOException {
 		
 		String general = "domain,weather";
 		String input = "city,null";
