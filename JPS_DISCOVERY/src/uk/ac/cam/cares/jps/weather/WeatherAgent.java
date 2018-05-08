@@ -73,6 +73,7 @@ public class WeatherAgent extends JPSBaseServlet {
        
         String tempvalue= selected.split("<span class=\"large-temp\">")[1].split(";</span>")[0].split("&")[0];
         String cloudcover=selected2.split("</strong></li>")[4].split("<li>")[1].split("<strong>")[1].split("%")[0];
+        String cloudcovercalculate = String.valueOf(Math.round(Float.valueOf(cloudcover)/100*8));
         String windvalue= selected2.split("<li class=\"wind\"><strong>")[1].split("</strong></li>")[0].split(" ")[0];
         String direction=selected2.split("<li class=\\\"wind\">")[1].split("</li>")[0].split(" ")[3];
        
@@ -80,7 +81,7 @@ public class WeatherAgent extends JPSBaseServlet {
         logger.info("temperature value= "+tempvalue);
         logger.info("wind value= "+windvalue);
         logger.info("wind direction from= "+direction);
-        logger.info("cloud cover= "+cloudcover);
+        logger.info("cloud cover= "+cloudcovercalculate);
         
 		//copy from the request stream of input and output parameter into the response stream
 		AbstractAgentDescription.copyParameters(agentRequest, agentResponse);
