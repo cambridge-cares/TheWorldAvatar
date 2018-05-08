@@ -16,16 +16,27 @@ import org.apache.http.util.EntityUtils;
 
 public class Helper {
 	
-	public static String executeGet(String path, String key, String value)
+	public static String executeGet(String path)
 			throws ParseException, IOException, URISyntaxException {
 		// TODO-AE change localhost
-
+		URIBuilder builder = new URIBuilder().setScheme("http").setHost("localhost:8080")
+				.setPath(path);
+		return executeGet(builder);
+	}
+	
+	public static String executeGet(String path, String key, String value)
+			throws ParseException, IOException, URISyntaxException {
+		// TODO-AE change localhost, maybe use directly class java.net.URI, maybe move this class to JPS_BASE
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost("localhost:8080")
 				.setPath(path)
 				.setParameter(key, value);
-
+		return executeGet(builder);
+	}	
+		
+	private static String executeGet(URIBuilder builder)
+			throws ParseException, IOException, URISyntaxException {
+		
 		HttpGet request = new HttpGet(builder.build());
-
 		HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 		return EntityUtils.toString(httpResponse.getEntity());
 	}

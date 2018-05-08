@@ -12,4 +12,12 @@ public interface IAgentCommunication {
 	void registerAgent(Agent agent) throws IOException;
 	
 	void deregisterAgent(TypeIRI agentAddress) throws IOException;
+	
+	/**
+	 * This method returns the names of all agents registered in JPS.
+	 * Only use this method for test purposes!
+	 *  
+	 * @return
+	 */
+	List<TypeIRI> getAllAgentNames();
 }

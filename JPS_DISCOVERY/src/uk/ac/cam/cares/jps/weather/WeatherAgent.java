@@ -15,9 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.discovery.api.AbstractAgentDescription;
+import uk.ac.cam.cares.jps.discovery.api.AbstractAgentServiceDescription;
 import uk.ac.cam.cares.jps.discovery.api.Agent;
-import uk.ac.cam.cares.jps.discovery.api.AgentDescription;
+import uk.ac.cam.cares.jps.discovery.api.AgentServiceDescription;
 import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
 import uk.ac.cam.cares.jps.discovery.api.AgentResponse;
 import uk.ac.cam.cares.jps.discovery.api.Parameter;
@@ -84,7 +84,7 @@ public class WeatherAgent extends JPSBaseServlet {
         logger.info("cloud cover= "+cloudcovercalculate);
         
 		//copy from the request stream of input and output parameter into the response stream
-		AbstractAgentDescription.copyParameters(agentRequest, agentResponse);
+		AbstractAgentServiceDescription.copyParameters(agentRequest, agentResponse);
 		
 		//later put the value to be taken from the website of weather and put to the knowledge base of the weather
 		Parameter param = agentResponse.getOutputParameters().get(0);

@@ -6,14 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.HttpClientBuilder;
 
 import uk.ac.cam.cares.jps.discovery.api.Agent;
-import uk.ac.cam.cares.jps.discovery.api.AgentDescription;
 import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
 import uk.ac.cam.cares.jps.discovery.api.AgentResponse;
 import uk.ac.cam.cares.jps.discovery.api.IAgentCommunication;
@@ -35,7 +30,7 @@ public class DiscoveryProvider implements IAgentCommunication {
 		
 		String serialized = serializer.convertToString(searchDescr);
 		try {
-			String response = Helper.executeGet("/JPS_DISCOVERY/search", "searchdescription", serialized);
+			String response = Helper.executeGet("/JPS_DISCOVERY/search", "agentrequest", serialized);
 			
 			//TODO-AE choose another separator
 			StringTokenizer tokenizer = new StringTokenizer(response, " ");
@@ -84,7 +79,7 @@ public class DiscoveryProvider implements IAgentCommunication {
 		//String serialized = serializer.convertToString(description);
 		String serialized = new JavaSerializer().convertToString(agent);
 		try {
-			Helper.executeGet("/JPS_DISCOVERY/register", "agentdescription", serialized);
+			Helper.executeGet("/JPS_DISCOVERY/register", "agent", serialized);
 		} catch (ParseException | IOException | URISyntaxException e) {
 			// TODO-AE throws further?
 			e.printStackTrace();
@@ -94,11 +89,39 @@ public class DiscoveryProvider implements IAgentCommunication {
 	@Override
 	public void deregisterAgent(TypeIRI agentAddress) throws IOException {
 		try {
-			// TODO-AE change parameter into agentname
-			Helper.executeGet("/JPS_DISCOVERY/deregister", "agentaddress", agentAddress.getValue());
+			Helper.executeGet("/JPS_DISCOVERY/deregister", "agentname", agentAddress.getValue());
 		} catch (ParseException | IOException | URISyntaxException e) {
 			// TODO-AE throws further?
 			e.printStackTrace();
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.ac.cam.cares.jps.discovery.api.IAgentCommunication#getAllAgentNames()
+	 * 
+	 * Only use this method for test purposes !!!
+	 */
+	@Override
+	public List<TypeIRI> getAllAgentNames() {
+		
+		List<TypeIRI> result = new ArrayList<TypeIRI>();
+		
+		try {
+			String response = Helper.executeGet("/JPS_DISCOVERY/agents");
+			
+			System.out.println("GETALLAGENTNAMES");
+			System.out.println(response);
+			
+			StringTokenizer tokenizer = new StringTokenizer(response, " ");
+			while (tokenizer.hasMoreTokens()) {	
+				String token = tokenizer.nextToken();
+				result.add(new TypeIRI(token));
+			}
+		} catch (ParseException | IOException | URISyntaxException e) {
+			// TODO-AE throws further?
+			e.printStackTrace();
+		}
+		
+		return result;
 	}
 }
