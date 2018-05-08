@@ -183,7 +183,7 @@ def conversion_cost(hysys):
     
     return total/consumption['MeOH']['value']
   
-def look_for_munnies(SimAddress, prices):
+def look_for_munnies(SimAddress, prices, dates):
     
     # This function performs puts together all the data and looks for the most profitable arbitrage opportunity using a brute force approach (i.e. checking all possible combintations subject to chronological order constraint).
 
@@ -302,7 +302,7 @@ prices['MeOH'][1] = 'Prior Settlement (USD per tonne)'
 prices = transport_costs(prices)
 
 # Search through the arbitrage opportunities
-look_for_munnies(SimAddress,prices)
+look_for_munnies(SimAddress,prices, dates)
 
 # Define titles and labels to plot the futures prices data and plot the data
 labels = {'NG':{'title':'Natural gas futures prices from Chicago Mercantile Exchange', 'label':'Price (USD per mmBTU)'},'MeOH':{'title':'Methanol futures prices from Zhengzhou Commodity Exchange', 'label':'Price (USD per tonne)'}, 'x':{'title':'Delivery date (-)', 'label':dates['NG']}}

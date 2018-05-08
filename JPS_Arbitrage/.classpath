@@ -50,5 +50,5 @@
 	<classpathentry kind="lib" path="C:/Users/Janusz/Desktop/JParkSimulator-git/JPS_Arbitrage/WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Janusz/Desktop/JParkSimulator-git/JPS_Arbitrage/WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/xml-apis.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/JPS"/>
-	<classpathentry kind="output" path="build/classes"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -17,8 +17,12 @@ public class PythonHelper {
 	 * @throws IOException
 	 */
 	public static String callPython(String pythonScriptName, String parameter) throws IOException {
-		String path = AgentLocator.getPathToPythonScript(pythonScriptName);
-
+		return callPython(pythonScriptName, parameter, new Object());
+	}
+	
+	public static String callPython(String pythonScriptName, String parameter, Object thisObject) throws IOException {
+		String path = AgentLocator.getNewPathToPythonScript(pythonScriptName, thisObject);
+		System.out.println(path); 
 		String[] cmd = { "python", path, parameter };
 
 		Process p = Runtime.getRuntime().exec(cmd);
