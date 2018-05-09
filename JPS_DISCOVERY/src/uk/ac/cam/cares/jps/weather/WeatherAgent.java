@@ -25,6 +25,7 @@ import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.test.DescriptionFactory;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;
 import uk.ac.cam.cares.jps.discovery.util.JPSBaseServlet;
+import uk.ac.cam.cares.jps.util.PythonHelper;
 
 @WebServlet(urlPatterns = {"/DiscoveryTest/WeatherAgent"})
 public class WeatherAgent extends JPSBaseServlet {
@@ -48,6 +49,8 @@ public class WeatherAgent extends JPSBaseServlet {
 		
 		AgentResponse agentResponse = new AgentResponse();
 		
+		//if need to take the value using the python code
+		//PythonHelper.callPython("JPS/python/caresjpsadmsinputs/cobbling.py", "main");
 		
 		String key1="nl"; //country
 		String key2="the-hague"; //specific-area
@@ -66,6 +69,7 @@ public class WeatherAgent extends JPSBaseServlet {
         	    	     	 s+=line;
            
         }
+        
         String selected=s.split("<span class=\"cond\">")[5];
         String selected2=s.split("<span class=\"cond\">")[6];
        
@@ -81,7 +85,8 @@ public class WeatherAgent extends JPSBaseServlet {
         logger.info("wind value= "+windvalue);
         logger.info("wind direction from= "+direction);
         logger.info("cloud cover= "+cloudcovercalculate);
-        
+       
+		
 		//copy from the request stream of input and output parameter into the response stream
 		AbstractAgentServiceDescription.copyParameters(agentRequest, agentResponse);
 		
@@ -91,14 +96,12 @@ public class WeatherAgent extends JPSBaseServlet {
 		Parameter param2 = agentResponse.getOutputParameters().get(1);
 		param2.setValue(new TypeString("5"));
 		Parameter param3 = agentResponse.getOutputParameters().get(2);
-		param3.setValue(new TypeString(windvalue));
+		param3.setValue(new TypeString("15"));
 		Parameter param4 = agentResponse.getOutputParameters().get(3);
-		param4.setValue(new TypeString(direction));
+		param4.setValue(new TypeString("50"));
 		
 		//convert from the serialized object to string for the response
 		String serializedAgentResponse = serializer.convertToString(agentResponse);
-		
-
 		
 		print(resp, serializedAgentResponse);
 		
@@ -120,6 +123,7 @@ public class WeatherAgent extends JPSBaseServlet {
 		}
 		return direction;
 	}
+	
 	
 	public Agent getAgent() {
 		String general = "domain,weather";
