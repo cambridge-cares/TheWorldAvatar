@@ -32,10 +32,11 @@ def exchange_rates(file_address):
 		rates.append(str(exchange_rate))
 		headers.append(currencies[1]+'_to_'+currencies[0])
 		string1 = string1 + currencies[1]+'_to_'+currencies[0]+ ","
-		string2=string2+str(exchange_rate)+ ","
+		string2 = string2 + str(exchange_rate)+ ","
 	
-	print(string1)
-	print(string2)
+	
+	string2 = string2[:-1]
+	print(string1 + string2)
 	
 	try:
 		WCSV(file_address, rates, headers)

@@ -6,24 +6,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URI;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 
 import com.hp.hpl.jena.util.FileUtils;
-import com.ibm.icu.util.Calendar;
-import com.ibm.icu.util.GregorianCalendar;
 
 import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
@@ -35,215 +24,23 @@ import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
-import uk.ac.cam.cares.jps.config.AgentLocator;
 import uk.ac.cam.cares.jps.util.PythonHelper;
 
 
 
 public class arbitrage {
 	
-	public static String Formatting_date(String date) throws Exception {
-		
-		/** this function takes a string of "dd MMM yyyy HH:mm:ss zz" and
-        processes it into a string digestable by ADMS i.e. "yyyy, DDD, HH" */ 
-		Calendar cal1 = new GregorianCalendar();
-		Calendar cal2 = new GregorianCalendar();	
-		
-		/** create a string with a 0th date of the current year to calculate the number of days in the year*/
-		String beginning = "00 Jan "+date.split(" ")[2]+" 00:00:00 GMT";
 
-		
-		/** define the date format and parse*/
-		SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss zz");
-		cal1.setTime(sdf.parse(date));
-		cal2.setTime(sdf.parse(beginning));
-		
-		/** calculate the number of days in the year*/
-		long days = (cal1.getTimeInMillis() - cal2.getTimeInMillis())/(1000*3600*24);
-		
-		/** put together a string to be added to the MET file require for ADMS*/
-		String result = ", "+date.split(" ")[2]+", "+Float.toString(days)+", "+Float.toString(Calendar.HOUR);
-
-		return result;
-	}
-	
-	
-	public static void Running() throws Exception {
-		
-		/** ontology addresses*/
-		String ontoPath = "http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl";
-		String ontoPath2 = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13";
-
-		
-		/** mapping weather data headers (as defined in the python file) to ontology instances and data properties **/
-		Map<String, String[]> map = new HashMap<String, String[]>();
-		map.put("U",new String[] {ontoPath+"#"+"WindSpeed_SG_Value",ontoPath2+"#"+"numericalValue",""});
-		map.put("PHI",new String[] {ontoPath+"#"+"WindDirection_SG_Value",ontoPath2+"#"+"numericalValue",""});
-		map.put("T0C",new String[] {ontoPath+"#"+"Temperature_SG_Value",ontoPath2+"#"+"numericalValue",""});
-		map.put("CL",new String[] {ontoPath+"#"+"CloudCover_SG_Value",ontoPath2+"#"+"numericalValue",""});
-		map.put("Date",new String[] {ontoPath+"#"+"Time_SG_Value",ontoPath2+"#"+"numericalValue",""});
-
-
-		   /**get model from an owl file*/
-		   String filePath = "C:/Users/Janusz/Desktop/Commodity_prices/Ontology/OntoArbitrage_Market_KB.owl";
-		   OWLModel owlModel = null;
-		   
-		   try {
-		      owlModel = ProtegeOWL.createJenaOWLModelFromURI("file:/"+filePath);
-		     } catch (OntologyLoadException e1) {
-		      e1.printStackTrace();
-		     }
-
-		   /** this loop creates instances of OWL individuals to get the weather data**/
-		   for (Map.Entry<String, String[]> entry : map.entrySet()){
-//			   System.out.println(entry.getValue()[0]);
-//			   System.out.println(entry.getValue()[1]);
-			   OWLIndividual M = owlModel.getOWLIndividual(entry.getValue()[0]);
-		       String name = M.getPropertyValueLiteral(owlModel.getOWLProperty(entry.getValue()[1])).getString();
-		       entry.getValue()[2] = name;
-//			   System.out.println(name);
-		   }
-		   
-		   /** define headers required by ADMS in its MET file and then write it in the format: storage entry per row and the corresponding data in the final row */ 
-		   String[] storage = {"VARIABLES:", "9", "STATION DCNN", "YEAR", "TDAY", "THOUR", "T0C", "U", "PHI", "P", "CL", "DATA:"};
-		   String temp = "4238.0";		   // the final line starts with the number of weather station
-		   for (int i = 0; i <storage.length; i++){
-			   if (map.get(storage[i]) == null && storage[i] != "YEAR") {
-				continue;   
-			   }
-			   
-			   if (storage[i] == "YEAR") {
-			   temp += Formatting_date(map.get("Date")[2]); // formats the date appropriately for ADMS
-		   }
-		   else {
-			   temp += ", "+map.get(storage[i])[2];
-		   }
-		   }
-		   System.out.println(temp);
-		 
-		  		  
-		   /** addresses of, respectively, input, meteorological and output files*/
-		   String filePath_apl = "C:/Users/Janusz/Desktop/ADMS/test.apl";
-		   String filePath_met = "C:/Users/Janusz/Desktop/ADMS/test.met";
-		   String filePath_gst = "C:/Users/Janusz/Desktop/ADMS/test.gst";
-
-		   /** write the met file*/		   
-		   try {
-	            // Assume default encoding.
-	            // Always wrap FileWriter in BufferedWriter.
-			   FileWriter fileWriter = new FileWriter(filePath_met, false);
-	           BufferedWriter bufferedwriter = new BufferedWriter(fileWriter);
-			   for (String entry : storage){
-				   bufferedwriter.write(entry);
-				   bufferedwriter.newLine();
-			   }
-			   bufferedwriter.write(temp);
-			   bufferedwriter.close();
-		   }
-		   catch (IOException e){
-			   System.out.println(e.getMessage());
-		   }
-	
-		   /** read the apl file and store all the lines; replace one with the address of the met file*/		
-	        String line = null;
-	        ArrayList<String> apl = new ArrayList<String>();
-
-		   try {
-	            // FileReader reads text files in the default encoding.
-	            FileReader fileReader = 
-	                new FileReader(filePath_apl);
-
-	            // Always wrap FileReader in BufferedReader.
-	            BufferedReader bufferedReader = 
-	                new BufferedReader(fileReader);
-
-	            while((line = bufferedReader.readLine()) != null) {
-	            	
-	            	if (line.contains("MetDataFileWellFormedPath")) {
-	            		apl.add("MetDataFileWellFormedPath = "+ filePath_met);
-	            		continue;
-	            	}
-	            	apl.add(line);
-	            }   
-	            
-	            // Always close files.
-	            bufferedReader.close();         
-	        }
-	        catch(FileNotFoundException ex) {
-	            System.out.println("Unable to open file");                
-	        }
-		   catch (IOException e){
-			   System.out.println(e.getMessage());
-		   }
-		   
-		   /** write the apl file*/		
-		   try {
-			   
-	            // Assume default encoding.
-	            // Always wrap FileWriter in BufferedWriter.
-			   FileWriter fileWriter = new FileWriter(filePath_apl, false);
-	           BufferedWriter bufferedwriter = new BufferedWriter(fileWriter);
-			   for (int i = 0; i <apl.size(); i++){
-				   bufferedwriter.write(apl.get(i));
-				   bufferedwriter.newLine();
-			   }
-			   bufferedwriter.close();
-		   }
-		   catch (IOException e){
-			   System.out.println(e.getMessage());
-		   }
-		   
-		   
-		   
-		   /**run the python script executing ADMS
-		   Runtime rt = Runtime.getRuntime();
-		   String[] commands = {"C:\\Program Files (x86)\\CERC\\ADMS 5\\ADMSModel.exe", "/e2", "ADMS", "test.APL"};
-		   Process proc = rt.exec(commands);
-		   proc.waitFor();  
-		   */
-		   
-		   /**get model from an owl file*/
-		   FileInputStream inFile= new FileInputStream(filePath);
-		   Reader in = new InputStreamReader(inFile,"UTF-8");
-		   JenaOWLModel jenaOwlModel = ProtegeOWL.createJenaOWLModelFromReader(in);		   
-
-		   /** store the addresses of the newly created files in the ontology */
-		   try{
-			    jenaOwlModel.getOWLIndividual(ontoPath+"#ADMS_SG_APL_Input").setPropertyValue(jenaOwlModel.getOWLDatatypeProperty(ontoPath2+"#numericalValue"), filePath_apl);	   
-			    jenaOwlModel.getOWLIndividual(ontoPath+"#ADMS_SG_MET_Input").setPropertyValue(jenaOwlModel.getOWLDatatypeProperty(ontoPath2+"#numericalValue"), filePath_met);	   
-			    jenaOwlModel.getOWLIndividual(ontoPath+"#ADMS_SG_GST_Output").setPropertyValue(jenaOwlModel.getOWLDatatypeProperty(ontoPath2+"#numericalValue"), filePath_gst);	   
-			   }
-		   catch (Exception e1) {
-			      e1.printStackTrace();
-			     }
-
-		   /**save the model to another owl file*/
-		   Collection errors = new ArrayList();
-		   jenaOwlModel.save(new URI("file:/"+filePath), FileUtils.langXMLAbbrev, errors, jenaOwlModel.getOntModel());
-		   System.out.println("File saved with " + errors.size() + " errors.");  
-		   }
-		   
 	public static void Running_analysis_Aspen() throws Exception {
 		
 		/** this function executes 4 Python scripts which download market data and stores it in separate CSV files */ 
 		
-		String CPO_download = new String("C:\\Users\\Janusz\\Desktop\\Commodity_prices\\CPO_to_FAME.py"); 
+		String CPO_to_FAME_analysis = new String("caresjpsarbitrage/CPO_to_FAME.py"); 
 		
-		String market_data_plot = new String("C:\\Users\\Janusz\\Desktop\\Commodity_prices\\Market_data\\arbitrage_CPO.png"); 
+		String market_data_plot = new String("C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\workingdir\\arbitrage_CPO.png"); 
 
-		String[][] commands = {{"python", CPO_download, market_data_plot},
-				};
-
-		/**Python scripts are run via cmd one by one*/
-		Runtime rt = Runtime.getRuntime();
-		for (int i = 0; i <commands.length; i++){
-			Process proc = rt.exec(commands[i]);
-			proc.waitFor();
-			if (i == commands.length-1){
-				proc.destroy();
-				}
-		}
-		   
+		String result = PythonHelper.callPython(CPO_to_FAME_analysis, market_data_plot, new arbitrage());
+		System.out.println(result);
 		   
 		   
 	}
@@ -259,37 +56,17 @@ public class arbitrage {
 	    for (int i = 0; i <data.size(); i++){ 
 	    	result += "," + data.get(i).toString();
 	    }
-		
-	    
-		
+
 		/** this function executes 4 Python scripts which download market data and stores it in separate CSV files  */
 		
-		String CPO_download = new String("C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\python\\caresjpsarbitrage\\CPO_to_FAME_MoDS.py"); 
+		String CPO_to_FAME_analysis = new String("caresjpsarbitrage/CPO_to_FAME_MoDS.py"); 
 		
 		String market_data_plot = new String("C:\\Users\\Janusz\\Desktop\\Commodity_prices\\Market_data\\arbitrage_CPO_MoDS.png"); 
+	
+		String result1 = PythonHelper.callPython(CPO_to_FAME_analysis, market_data_plot, result, new arbitrage());
+		System.out.println(result1);
 
-		String[][] commands = {{"python", CPO_download, market_data_plot, result},
-				};
-
-		/**Python scripts are run via cmd one by one*/
-		Runtime rt = Runtime.getRuntime();
-		for (int i = 0; i <commands.length; i++){
-			Process proc = rt.exec(commands[i]);
-			proc.waitFor();
-			BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-			String returnValue = stdInput.readLine();
-			System.out.println(returnValue);
-			if (i == commands.length-1){
-				proc.destroy();
-				}
-		}
-		   
-		   
-		   
 	}
-	
-	
-	
 	
 	public static void Downloading_market_data() throws Exception {
 		
@@ -304,8 +81,6 @@ public class arbitrage {
 		String FAME_data = new String("C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\workingdir\\FAME_data.csv");
 		String ZCE_data = new String("C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\workingdir\\ZCE_data.csv"); 
 		String HNG_data = new String("C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\workingdir\\HNG_data.csv"); 
-
-		//String result = PythonHelper.callPython(CPO_download, AgentLocator.getPathToWorkingDir()+"CPO_data.csv", "0");
 		
 		String[][] commands = {{CPO_download, CPO_data},
 				{FAME_download, FAME_data},
@@ -314,29 +89,19 @@ public class arbitrage {
 				};
 		
 		for (int i = 0; i <commands.length; i++){
-			System.out.println(commands[i][0] + commands[i][1]);
 			String result = PythonHelper.callPython(commands[i][0], commands[i][1], new arbitrage());
-			System.out.println(result);
+			System.out.println(commands[i][0]+" "+result);
 		}
-		/**Python scripts are run via cmd one by one
-		Runtime rt = Runtime.getRuntime();
-		for (int i = 0; i <commands.length; i++){
-			Process proc = rt.exec(commands[i]);
-			proc.waitFor();
-			if (i == commands.length-1){
-				proc.destroy();
-				}
-		}
-*/
+
 		
-		/** URIs of ontologies used to define KBs in which market data will be stored
+		/** URIs of ontologies used to define KBs in which market data will be stored*/
 		String ontoPath = "http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl";
 		String ontoPath2 = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13";
 
-		*/ 
+		 
 		
 		/** knowledge base from an owl file in a jenaOWL model; URIs of relevant individuals and their properties are defined and
-		 * locations of the CSV files with the market data are stored in KB one by one 
+		 * locations of the CSV files with the market data are stored in KB one by one */
 		String filePath = "C:/Users/Janusz/Desktop/Commodity_prices/Ontology/OntoArbitrage_Market_KB.owl";
 		FileInputStream inFile= new FileInputStream(filePath);
 		Reader in = new InputStreamReader(inFile,"UTF-8");
@@ -354,14 +119,14 @@ public class arbitrage {
 			RDFIndividual individual = jenaOwlModel.getRDFIndividual(addresses[i][1]);
 			individual.setPropertyValue(property, commands[i][1]);
 		}
-				*/
+				
 
 		   
-		/**save the updated model file; also, any error messages are collected and printed
+		/**save the updated model file; also, any error messages are collected and printed */
 		Collection errors = new ArrayList();
 		jenaOwlModel.save(new URI("file:/"+filePath), FileUtils.langXMLAbbrev, errors, jenaOwlModel.getOntModel());
 		System.out.println("File saved with " + errors.size() + " errors.");  
-		   */
+		  
 		   
 		   
 	}
@@ -372,27 +137,25 @@ public class arbitrage {
 		 * the currencies are defined within the script; the rates are printed to the console by the script thus allowing to store them
 		 * in KB */ 
 
-		String currency_download = new String("C:\\Users\\Janusz\\Desktop\\Commodity_prices\\Market_data\\exchange_rates.pyw"); 
+		String currency_download = new String("caresjpsarbitrage/exchange_rates.pyw"); 
 
-		String currency_data = new String("C:\\Users\\Janusz\\Desktop\\Commodity_prices\\Market_data\\exchange_rates.csv"); 
+		String currency_data = new String("C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\workingdir\\exchange_rates.csv"); 
 
-		String[] commands = {"python", currency_download, currency_data};
 
-		/**run the Python script downloading the data into a csv file and capture its console output*/
-		Runtime rt = Runtime.getRuntime();
-		Process proc = rt.exec(commands);
-		proc.waitFor();
-		BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-		proc.destroy();
+		String result = PythonHelper.callPython(currency_download, currency_data, new arbitrage());
+		System.out.println(result);
 
 		/** split the console output into headers and exchange rates*/
-		String[] headers = stdInput.readLine().split(",");
-		String[] data = stdInput.readLine().split(",");
+		int results_size =result.split(",").length;
+		String[] headers = Arrays.copyOfRange(result.split(","), 0, results_size/2);
+		String[] rates = Arrays.copyOfRange(result.split(","), results_size/2,results_size);
+
 		
-		/** URIs of ontologies used to define KBs in which market data will be stored*/ 
+		
+		/** URIs of ontologies used to define KBs in which market data will be stored*/
 		String ontoPath = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15"; //KB
 		String ontoPath2 = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl";
-		
+		 
 		/** URIs of relevant individuals and their properties are defined */
 		String[][] addresses = new String[headers.length][];
 		for (int i = 0; i <addresses.length; i++){
@@ -411,7 +174,7 @@ public class arbitrage {
 		for (int i = 0; i <addresses.length; i++){
 			RDFProperty property = jenaOwlModel.getRDFProperty(addresses[i][0]);
 			RDFIndividual individual = jenaOwlModel.getRDFIndividual(addresses[i][1]);
-			individual.setPropertyValue(property, data[i]);
+			individual.setPropertyValue(property, rates[i]);
 		}
 				
 
@@ -424,39 +187,41 @@ public class arbitrage {
 		   
 	}
 	
-	
 	public static void Storing_Aspen_data() throws Exception {
 		
 		/** this function executes a Python script which prints input and output headers and data from an Aspen model;
 		 *  information to be sourced from the model and printed is defined in the script;
 		 *  data is stored in the relevant KB*/ 
 		
-		String Aspen_data = new String("C:\\Users\\Janusz\\Desktop\\Commodity_prices\\print_Aspen_data.pyw");
-
-		String[] commands = {"python", Aspen_data};
-
-		/**run the Python script printing the Aspen data and capture the console output*/
-		Runtime rt = Runtime.getRuntime();
-		Process proc = rt.exec(commands);
-		proc.waitFor();
-		BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-		proc.destroy();
-
-		/** split the console output into headers and exchange rates*/
-		String[] headers = stdInput.readLine().split(",");
-		String[] data = stdInput.readLine().split(",");
+		String Aspen_data = new String("caresjpsarbitrage/print_Aspen_data.pyw");
 		
-		/** URIs of ontologies used to define KBs in which market data will be stored*/ 
+		String result = PythonHelper.callPython(Aspen_data, "1", new arbitrage());
+		System.out.println(result);
+		
+		/** split the console output into headers and exchange rates*/
+		int results_size =result.split(",").length;
+		String[] headers = Arrays.copyOfRange(result.split(","), 0, results_size/2);
+		String[] data = Arrays.copyOfRange(result.split(","), results_size/2,results_size);
+		
+		/**
+		for (int i = 0; i <headers.length; i++){
+			System.out.println(headers[i]);
+			System.out.println(rates[i]);
+		}
+		*/
+
+		
+		/** URIs of ontologies used to define KBs in which market data will be stored */
 		String ontoPath = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15"; //KB
 		String ontoPath2 = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl";
 		
-		/** URIs of relevant individuals and their properties are defined */
+		/** URIs of relevant individuals and their properties are defined*/
 		String[][] addresses = new String[headers.length][];
 
 		for (int i = 0; i <addresses.length; i++){
 			addresses[i] = new String[] {ontoPath2+"#"+"numericalValue", ontoPath+"#"+"V_"+headers[i]};
 		}
-		
+		 
 		
 		
 		/** knowledge base from an owl file in a jenaOWL model; rates are stored in KB one by one */
@@ -487,25 +252,17 @@ public class arbitrage {
 		 *  information to be sourced from the model and printed is defined in the script;
 		 *  data is stored in the relevant KB*/ 
 		
-		String print = new String("C:\\Users\\Janusz\\Desktop\\Commodity_prices\\print_headers.pyw");
-
-		String[] commands = {"python", print};
-
-		/**run the Python script printing the Aspen data and capture the console output*/
-		Runtime rt = Runtime.getRuntime();
-		Process proc = rt.exec(commands);
-		proc.waitFor();
-		BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-		proc.destroy();
-
+		String print = new String("caresjpsarbitrage/print_headers.pyw");
+		
+		String result = PythonHelper.callPython(print, "1", new arbitrage());
+		System.out.println(result);
+		
 		/** split the console output into headers and exchange rates*/
-		String[] headers = stdInput.readLine().split(",");
+		String[] headers = result.split(",");
 		
 		/** URIs of ontologies used to define KBs in which market data will be stored*/ 
 		String ontoPath = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15"; //KB
 		String ontoPath2 = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl";
-		
-		
 		
 		
 		/** ontology addresses*/
@@ -568,7 +325,6 @@ public class arbitrage {
 		   
 	}
 	
-
 	public static List<Double> MoDS(final Double[] args, final String[] args1) { //final String[] args
 		final String simDir = args1[0];
 	    final String surrogateAlgName = args1[1];
@@ -586,12 +342,11 @@ public class arbitrage {
 	
 	
 	public static void main(String[] args) throws Exception {
-		Downloading_market_data();
+		//Downloading_market_data();
 		//Downloading_currencies();
 		//Storing_Aspen_data();
 		//Reading_data();
 		//Running_analysis_Aspen();
-		//Running_analysis_MoDS();
-		//Running();
+		Running_analysis_MoDS();
 	}
 }
