@@ -2,23 +2,26 @@
 <Configuration monitorInterval="60" status="WARN">
 
 	<Appenders>
+		<Http name="JPSHTTPLOGSERVER" url="www.theworldavatar.com/JPS_BASE/LogServer"  method="POST">
+			<PatternLayout pattern="%d %p [%t] %C{1} %m%n"/>
+			<!--Property name="X-Java-Runtime" value="$${java:runtime}" /--> 
+			<!--JsonLayout properties="true"/-->	
+			<!--SSL>
+				<KeyStore location="log4j2-keystore.jks" passwordEnvironmentVariable="KEYSTORE_PASSWORD"/>				
+				<TrustStore location="truststore.jks" passwordFile="${sys:user.home}/truststore.pwd"/>
+			</SSL--> 
+		</Http>
+	
 		<Console name="STDOUT">
 			<PatternLayout pattern="%m%n"/>
 		</Console>
 		
-		<RollingFile name="JPSROLLING" fileName="logs/jps.log" filePattern="logs/rolling/jps-%i.log">
-			<PatternLayout pattern="%d %p [%t] %C{1} %m%n"/>
-			<Policies>
-				<SizeBasedTriggeringPolicy size="10MB"/>
-			</Policies>
-			<DefaultRolloverStrategy max="10"/>
-		</RollingFile>
 	</Appenders>
 	
 	<Loggers>
 		<Root level="info">
 			<AppenderRef ref="STDOUT"/>
-			<AppenderRef ref="JPSROLLING"/>
+			<AppenderRef ref="JPSHTTPLOGSERVER"/>
 		</Root>
 	</Loggers>
 	

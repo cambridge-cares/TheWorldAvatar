@@ -4,14 +4,14 @@ import java.io.IOException;
 
 import com.google.gson.Gson;
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.util.PythonException;
 import uk.ac.cam.cares.jps.util.PythonHelper;
+import uk.ac.cam.cares.jps.util.PythonException;
 
 public class TestADMSHelper extends TestCase {
 	
 	public void testPythonException() throws IOException {
 		
-		String jsonString = "";
+		String jsonString = "1";
 		
 		Gson g = new Gson();
 		

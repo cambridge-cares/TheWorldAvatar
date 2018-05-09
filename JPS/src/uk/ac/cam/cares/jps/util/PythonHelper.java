@@ -4,11 +4,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import uk.ac.cam.cares.jps.config.AgentLocator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import uk.ac.cam.cares.jps.util.PythonException;
+import uk.ac.cam.cares.jps.config.AgentLocator;
 
 public class PythonHelper {
 
+	private static Logger logger = LoggerFactory.getLogger(PythonHelper.class);
 	/**
 	 * @param pythonScriptName
 	 *            (including package name followed by script name and .py extension,
@@ -17,6 +21,9 @@ public class PythonHelper {
 	 * @throws IOException
 	 */
 	public static String callPython(String pythonScriptName, String parameter) throws IOException {
+		
+		logger.info(pythonScriptName + " " + parameter);
+		
 		String path = AgentLocator.getPathToPythonScript(pythonScriptName);
 
 		String[] cmd = { "python", path, parameter };
@@ -37,6 +44,9 @@ public class PythonHelper {
 	}
 	
 	public static String callPython(String pythonScriptName, String parameter1, String parameter2) throws IOException {
+		
+		logger.info(pythonScriptName + " " + parameter1 + " " + parameter2);
+		
 		String pathPythonScript = AgentLocator.getPathToPythonScript(pythonScriptName);		
 		
 		String[] cmd = { "python", pathPythonScript, parameter1, parameter2 };
