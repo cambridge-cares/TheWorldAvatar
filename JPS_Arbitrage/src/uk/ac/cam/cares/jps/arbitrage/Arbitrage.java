@@ -1,34 +1,29 @@
 package uk.ac.cam.cares.jps.arbitrage;
 
 
-import com.cmclinnovations.mods.api.MoDSAPI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
+import com.cmclinnovations.mods.api.MoDSAPI;
 import com.hp.hpl.jena.util.FileUtils;
 
 import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
-import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import uk.ac.cam.cares.jps.util.PythonHelper;
 
 
 
-public class arbitrage {
+public class Arbitrage {
 	
 
 	public static void Running_analysis_Aspen() throws Exception {
@@ -39,7 +34,7 @@ public class arbitrage {
 		
 		String market_data_plot = new String("C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\workingdir\\arbitrage_CPO.png"); 
 
-		String result = PythonHelper.callPython(CPO_to_FAME_analysis, market_data_plot, new arbitrage());
+		String result = PythonHelper.callPython(CPO_to_FAME_analysis, market_data_plot, new Arbitrage());
 		System.out.println(result);
 		   
 		   
@@ -64,7 +59,7 @@ public class arbitrage {
 		
 		String market_data_plot = new String("C:\\Users\\Janusz\\Desktop\\Commodity_prices\\Market_data\\arbitrage_CPO_MoDS.png"); 
 	
-		String result1 = PythonHelper.callPython(CPO_to_FAME_analysis, market_data_plot, result, new arbitrage());
+		String result1 = PythonHelper.callPython(CPO_to_FAME_analysis, market_data_plot, result, new Arbitrage());
 		System.out.println(result1);
 		
 		return result1;
@@ -92,7 +87,7 @@ public class arbitrage {
 				};
 		
 		for (int i = 0; i <commands.length; i++){
-			String result = PythonHelper.callPython(commands[i][0], commands[i][1], new arbitrage());
+			String result = PythonHelper.callPython(commands[i][0], commands[i][1], new Arbitrage());
 			System.out.println(commands[i][0]+" "+result);
 		}
 
@@ -145,7 +140,7 @@ public class arbitrage {
 		String currency_data = new String("C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\workingdir\\exchange_rates.csv"); 
 
 
-		String result = PythonHelper.callPython(currency_download, currency_data, new arbitrage());
+		String result = PythonHelper.callPython(currency_download, currency_data, new Arbitrage());
 		System.out.println(result);
 
 		/** split the console output into headers and exchange rates*/
@@ -198,7 +193,7 @@ public class arbitrage {
 		
 		String Aspen_data = new String("caresjpsarbitrage/print_Aspen_data.pyw");
 		
-		String result = PythonHelper.callPython(Aspen_data, "1", new arbitrage());
+		String result = PythonHelper.callPython(Aspen_data, "1", new Arbitrage());
 		System.out.println(result);
 		
 		/** split the console output into headers and exchange rates*/
@@ -257,7 +252,7 @@ public class arbitrage {
 		
 		String print = new String("caresjpsarbitrage/print_headers.pyw");
 		
-		String result = PythonHelper.callPython(print, "1", new arbitrage());
+		String result = PythonHelper.callPython(print, "1", new Arbitrage());
 		System.out.println(result);
 		
 		/** split the console output into headers and exchange rates*/
@@ -344,12 +339,12 @@ public class arbitrage {
 	}	  	   
 	
 	
-	public static void main(String[] args) throws Exception {
+	public static void main(String args) throws Exception {
 		//Downloading_market_data();
 		//Downloading_currencies();
 		//Storing_Aspen_data();
 		//Reading_data();
 		//Running_analysis_Aspen();
-		//Running_analysis_MoDS();
+		//Running_analysis_MoDS(args);
 	}
 }
