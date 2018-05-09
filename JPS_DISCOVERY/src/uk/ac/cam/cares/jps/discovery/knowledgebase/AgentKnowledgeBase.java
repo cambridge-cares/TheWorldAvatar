@@ -9,6 +9,9 @@ import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFactory;
+import com.hp.hpl.jena.query.ResultSetFormatter;
+import com.hp.hpl.jena.query.ResultSetRewindable;
 
 import uk.ac.cam.cares.jps.config.AgentLocator;
 
@@ -27,8 +30,15 @@ public class AgentKnowledgeBase {
 	
 	public static synchronized AgentKnowledgeBase getInstance() {
 		if (instance == null) {
+			return getInstance(null);
+		}
+		return instance;
+	}
+	
+	public static synchronized AgentKnowledgeBase getInstance(String dirForAgentKnowledgesBase) {
+		if (instance == null) {
 			instance = new AgentKnowledgeBase();
-			instance.init();
+			instance.init(dirForAgentKnowledgesBase);
 			instance.logger.info("AgentKnowledgeBase was created");
 		}
 		return instance;
@@ -42,9 +52,15 @@ public class AgentKnowledgeBase {
 		return AgentLocator.getPathToJpsDataKnowledgeDir() + "/OntoAgent";
 	}
 	
-	protected void init() {
-		//TODO-AE file path hard coded
-		String dir = getDirForAgentKnowledgesBase();
+	protected String getDirForAgentKnowledgesBaseInternally() {
+		return getDirForAgentKnowledgesBase();
+	}
+	
+	protected void init(String dirForAgentKnowledgesBase) {
+		String dir = dirForAgentKnowledgesBase;
+		if (dir == null) {
+			dir = getDirForAgentKnowledgesBaseInternally();
+		}	
 		knowledgebase = JenaHelper.createModel(dir);
 	}
 	
@@ -52,6 +68,9 @@ public class AgentKnowledgeBase {
 		Query query = QueryFactory.create(sparql);
 		OntModel model = getInstance().knowledgebase;
 		QueryExecution queryExec = QueryExecutionFactory.create(query, model);
-		return queryExec.execSelect();   
+		ResultSet rs = queryExec.execSelect();   
+		ResultSetRewindable results = ResultSetFactory.copyResults(rs);    //reset the cursor, so that the ResultSet can be repeatedly used
+		ResultSetFormatter.out(System.out, results, query);
+		return results;
 	}
 }

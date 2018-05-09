@@ -24,13 +24,14 @@ public class JenaHelper {
 	
 	/**
 	 * If <code>path</code> denotes one OWL file, the file is imported to the model. If <code>path</code> denote a directory, 
-	 * all OWL files of this directory are imported to the model.
+	 * all OWL files of this directory are imported to the model. Other directories in this directory are ignored.
 	 * 
 	 * @param path
 	 * @return
 	 */
 	public static OntModel createModel(String path) {
 		// this class is a singleton. It is enough to read the ontology only once
+		//logger.debug("createing Jena Model, path  = " + path);
 		OntModel result = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
 		File file = new File(path);
 		if (file.isFile()) {
@@ -38,8 +39,10 @@ public class JenaHelper {
 			result.read(file.toURI().toString());
 		} else {
 			for (File current : file.listFiles()) {
-				//logger.debug("Jena Model is importing file = " + file.getAbsolutePath());
-				result.read(current.toURI().toString());
+				if (current.isFile()) {
+					//logger.debug("Jena Model is importing file = " + file.getAbsolutePath());
+					result.read(current.toURI().toString());
+				}
 			}
 		}
 		return result;
@@ -75,12 +78,12 @@ public class JenaHelper {
 
 		Query queryCreated = QueryFactory.create(query);
 		QueryExecution qe = QueryExecutionFactory.create(queryCreated, model);
+		
+		//return qe.execSelect();
+		
 		ResultSet rs = qe.execSelect();                                    //the ResultSet can only be iterated once
 		ResultSetRewindable results = ResultSetFactory.copyResults(rs);    //reset the cursor, so that the ResultSet can be repeatedly used
-		
-		//TODO-AE
 		ResultSetFormatter.out(System.out, results, queryCreated);
-				
 		return results;
 	}
 	
