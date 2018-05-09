@@ -17,7 +17,11 @@ public class PythonHelper {
 	 * @throws IOException
 	 */
 	public static String callPython(String pythonScriptName, String parameter) throws IOException {
-		String path = AgentLocator.getPathToPythonScript(pythonScriptName);
+		return callPython(pythonScriptName, parameter, new Object());
+	}
+	
+	public static String callPython(String pythonScriptName, String parameter, Object thisObject) throws IOException {
+		String path = AgentLocator.getNewPathToPythonScript(pythonScriptName, thisObject);
 
 		String[] cmd = { "python", path, parameter };
 
@@ -36,8 +40,8 @@ public class PythonHelper {
 		}
 	}
 	
-	public static String callPython(String pythonScriptName, String parameter1, String parameter2) throws IOException {
-		String pathPythonScript = AgentLocator.getPathToPythonScript(pythonScriptName);		
+	public static String callPython(String pythonScriptName, String parameter1, String parameter2, Object thisObject) throws IOException {
+		String pathPythonScript = AgentLocator.getNewPathToPythonScript(pythonScriptName, thisObject);		
 		
 		String[] cmd = { "python", pathPythonScript, parameter1, parameter2 };
 		
