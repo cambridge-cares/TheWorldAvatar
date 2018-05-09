@@ -18,7 +18,7 @@ public class TestADMSHelper extends TestCase {
 		
 		boolean pythonExcWasCaught = false;
 		try {
-			String result = PythonHelper.callPython("caresjpsadmsinputs/ADMSGeoJsonGetter.py", g.toJson(jsonString));
+			String result = PythonHelper.callPython("caresjpsadmsinputs/ADMSGeoJsonGetter.py", g.toJson(jsonString), this);
 //			assertEquals("INVALID QUERY", result);
 		} catch (PythonException e) {
 			e.printStackTrace();

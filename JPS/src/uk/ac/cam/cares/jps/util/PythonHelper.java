@@ -13,13 +13,11 @@ public class PythonHelper {
 	 * @param pythonScriptName
 	 *            (including package name followed by script name and .py extension,
 	 *            e.g. caresjpsadmsinputs/ADMSGeoJsonGetter.py)
+	 * @param parameter input parameter for calling python
+	 * @param thisObject <code>this</code> must be used as input value 
 	 * @return
 	 * @throws IOException
 	 */
-	public static String callPython(String pythonScriptName, String parameter) throws IOException {
-		return callPython(pythonScriptName, parameter, new Object());
-	}
-	
 	public static String callPython(String pythonScriptName, String parameter, Object thisObject) throws IOException {
 		String path = AgentLocator.getNewPathToPythonScript(pythonScriptName, thisObject);
 

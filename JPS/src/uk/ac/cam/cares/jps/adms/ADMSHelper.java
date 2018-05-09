@@ -39,7 +39,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
 		
 		String result;
 		try {
-			result = PythonHelper.callPython("caresjpsadmsinputs/ADMSGeoJsonGetter.py", g.toJson(jsonString));
+			result = PythonHelper.callPython("caresjpsadmsinputs/ADMSGeoJsonGetter.py", g.toJson(jsonString), this);
 			response.setContentType("application/json");
 			response.getWriter().write(result);
 		} catch (PythonException e) {

@@ -21,7 +21,7 @@ public class TestADMSOutput extends TestCase {
 		
 		try {
 		
-			String result = PythonHelper.callPython("caresjpsadmsinputs/ADMSOutput.py", outputFile , g.toJson(jsonString));
+			String result = PythonHelper.callPython("caresjpsadmsinputs/ADMSOutput.py", outputFile , g.toJson(jsonString), this);
 			assertEquals("[79173.32, 454193.47, 55.1295, 54.2263, 51.6046, 47.5137]", result);
 			
 		} catch (IOException ie) {
