@@ -45,11 +45,12 @@ public class arbitrage {
 		   
 	}
 	
-	public static void Running_analysis_MoDS() throws Exception {
+	public static String Running_analysis_MoDS(String input) throws Exception {
 		
 		
 		String[] sim_address = {"E:\\MoDS_Projects\\Arbitrage\\Models\\CPO_to_FAME_26042016_001\\Sims\\HDMR_50_001", "HDMR_Alg_1"};
-		Double[] inputs = {24220.0656};
+		//Double[] inputs = {24220.0656};
+		Double[] inputs = {Double.parseDouble(input)};
 		List<Double> data = MoDS(inputs,sim_address);
 	    
 		String result = inputs[0].toString();
@@ -65,6 +66,8 @@ public class arbitrage {
 	
 		String result1 = PythonHelper.callPython(CPO_to_FAME_analysis, market_data_plot, result, new arbitrage());
 		System.out.println(result1);
+		
+		return result1;
 
 	}
 	
@@ -347,6 +350,6 @@ public class arbitrage {
 		//Storing_Aspen_data();
 		//Reading_data();
 		//Running_analysis_Aspen();
-		Running_analysis_MoDS();
+		//Running_analysis_MoDS();
 	}
 }

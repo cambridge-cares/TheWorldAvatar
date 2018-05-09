@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.arbitrage;
 
+
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import uk.ac.cam.cares.jps.adms.PythonException;
 import uk.ac.cam.cares.jps.util.PythonHelper;
+import uk.ac.cam.cares.jps.arbitrage.arbitrage;
 import com.google.gson.Gson;
 
 /**
@@ -39,10 +41,14 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
 		
 		String result;
 		try {
-			result = PythonHelper.callPython("caresjpsadmsinputs/ADMSGeoJsonGetter.py", g.toJson(jsonString));
+			//result = PythonHelper.callPython("caresjpsadmsinputs/ADMSGeoJsonGetter.py", g.toJson(jsonString));
+			result = arbitrage.Running_analysis_MoDS(g.toJson(jsonString));			
 			response.setContentType("application/json");
 			response.getWriter().write(result);
 		} catch (PythonException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
 	}
