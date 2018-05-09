@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.config;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Map.Entry;
 import java.util.Properties;
 
@@ -18,7 +20,7 @@ public class AgentLocator {
 
 	private static AgentLocator instance = null;
 	
-	private Logger logger = LoggerFactory.getLogger(AgentLocator.class);
+	private static Logger logger = LoggerFactory.getLogger(AgentLocator.class);
 	private String jpsRootDirectory = null;
 	private Properties jpsProps = null;
 	private Properties jpsTestProps = null;
@@ -27,7 +29,7 @@ public class AgentLocator {
 	private AgentLocator() {
 	}
 
-	public static synchronized AgentLocator getSingleton() {
+	private static synchronized AgentLocator getSingleton() {
 		if (instance == null) {
 			instance = new AgentLocator();
 			instance.init();
@@ -95,6 +97,38 @@ public class AgentLocator {
 		return getSingleton().jpsRootDirectory;
 	}
 	
+	public static String getNewRootDirectory(Object thisObject) {
+		
+		String classDir = thisObject.getClass().getClassLoader().getResource("").getPath();
+		String path;
+		try {
+			path = URLDecoder.decode(classDir, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+		if ((path.indexOf("/") == 0) || (path.indexOf("\\") == 0)) {
+			path = path.substring(1);
+		}
+		int index = path.lastIndexOf("/WEB-INF/classes/");
+		if (index == -1) {
+			index = path.lastIndexOf("\\WEB-INF/classes/");
+			if (index == -1) {
+				index = path.lastIndexOf("/bin/");
+				if (index == -1) {
+					index = path.lastIndexOf("\\bin\\");
+				}
+			}
+		}
+		if (index == -1) {
+			String message = "root directory was not found, classDir = " + classDir;
+			logger.error(message);
+			throw new RuntimeException(message);
+		}
+		path = path.substring(0, index);
+		logger.info("rootDirectory = " + path + " , classDirectory = " + classDir);
+		return path;
+	}
+	
 	public static String getAbsolutePath(String keyForRelativePath) {
 		String relativePath = getProperty(keyForRelativePath);
 		return getJPSRootDirectory() + "/" + relativePath;
@@ -109,16 +143,22 @@ public class AgentLocator {
 		return getJPSRootDirectory() + "/" + relativePath + "/" + pythonScriptName;
 	}
 	
+	//TODO-AE replace original methods after Janusz checked that this method is working
+	public static String getNewPathToPythonScript(String pythonScriptName, Object thisObject) {
+		String relativePath = getProperty("reldir.python");
+		return getNewRootDirectory(thisObject) + "/" + relativePath + "/" + pythonScriptName;
+	}
+	
 	public static String getPathToWorkingDir() {
 		String relativePath = getProperty("reldir.workingdir");
 		return getJPSRootDirectory() + "/" + relativePath;
 	}
 	
-	public static String getPathToJpsDataKnowledgeBaseDir() {
+	public static String getPathToJpsDataKnowledgeDir() {
 		return getProperty("absdir.jpsdata.knowledgebase");
 	}
 	
-	public static String getPathToJpsDataOntologyBaseDir() {
+	public static String getPathToJpsDataOntologyDir() {
 		return getProperty("absdir.jpsdata.ontology");
 	}
 	
@@ -150,7 +190,7 @@ public class AgentLocator {
 	
 	private String callAgentInternally(String agentKey)  throws ClientProtocolException, IOException {
 		String combinedUrl = url + AgentLocator.getProperty(agentKey);
-		logger.info("calling agent " + url);
+		logger.info("calling agent " + combinedUrl);
 		HttpUriRequest request = new HttpGet(combinedUrl);
 		HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 		String response = EntityUtils.toString(httpResponse.getEntity());

@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.discovery.api.AbstractAgentDescription;
+import uk.ac.cam.cares.jps.discovery.api.AbstractAgentServiceDescription;
 import uk.ac.cam.cares.jps.discovery.api.Agent;
 import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
 import uk.ac.cam.cares.jps.discovery.api.AgentResponse;
@@ -36,7 +36,7 @@ public class WeatherAgentTwo extends JPSBaseServlet {
 		String serializedAgentRequest = req.getParameter("agentrequest");
 		AgentRequest agentRequest = serializer.<AgentRequest>convertFrom(serializedAgentRequest).get();
 		AgentResponse agentResponse = new AgentResponse();
-		AbstractAgentDescription.copyParameters(agentRequest, agentResponse);
+		AbstractAgentServiceDescription.copyParameters(agentRequest, agentResponse);
 		
 		Parameter param = agentResponse.getOutputParameters().get(0);
 		param.setValue(new TypeString("30.3"));

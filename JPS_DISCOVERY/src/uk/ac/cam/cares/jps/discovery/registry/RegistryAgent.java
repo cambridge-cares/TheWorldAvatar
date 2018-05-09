@@ -14,10 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.discovery.api.Agent;
-import uk.ac.cam.cares.jps.discovery.api.AgentDescription;
 import uk.ac.cam.cares.jps.discovery.api.TypeIRI;
 import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
-import uk.ac.cam.cares.jps.discovery.util.ISerializer;
 import uk.ac.cam.cares.jps.discovery.util.JPSBaseServlet;
 import uk.ac.cam.cares.jps.discovery.util.JavaSerializer;
 
@@ -27,7 +25,6 @@ public class RegistryAgent extends JPSBaseServlet {
 	private static final long serialVersionUID = -1084832972879292460L;
 
 	Logger logger = LoggerFactory.getLogger(RegistryAgent.class);
-	private ISerializer serializer = DiscoveryFactory.getSerializer();
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -36,7 +33,7 @@ public class RegistryAgent extends JPSBaseServlet {
 		logger.info("RegistryAgent is called, path = " + path);
 
 		if ("/register".equals(path)) {
-			String serializedDescr = req.getParameter("agentdescription");
+			String serializedDescr = req.getParameter("agent");
 			// TODO-AE here we still use the Java binary serializer instead of OWL
 			// reason: Tests use register method and do not run as there is no deserialization
 			// from OWL to Java class AgentDescription yet!
@@ -45,14 +42,14 @@ public class RegistryAgent extends JPSBaseServlet {
 			Agent description = new JavaSerializer().<Agent>convertFrom(serializedDescr).get();
 			DiscoveryFactory.getRegistry().register(description);
 		} else if ("/deregister".equals(path)) {
-			String agentAddress = req.getParameter("agentaddress");
+			String agentAddress = req.getParameter("agentname");
 			DiscoveryFactory.getRegistry().deregister(agentAddress);
 		} else if ("/agents".equals(path)) {
-			print(resp, getNamesOfAllAgents());
+			print(resp, getAllAgentNames());
 		}
 	}	
 	
-	private List<TypeIRI> getNamesOfAllAgents() throws IOException {
+	private List<TypeIRI> getAllAgentNames() throws IOException {
 		
 		List<TypeIRI> result = new ArrayList<TypeIRI>();
 		
