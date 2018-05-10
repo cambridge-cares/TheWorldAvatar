@@ -14,7 +14,7 @@ import org.apache.http.util.EntityUtils;
 import junit.framework.TestCase;
 
 
-public class TestMoDSAnalysis extends TestCase{
+public class TestDataDownload extends TestCase{
 
 	
 	public static String executeGet(String path, String key, String value)
@@ -35,12 +35,11 @@ public class TestMoDSAnalysis extends TestCase{
 	}
 
 	public void testDoGetHttpServletRequestHttpServletResponse() throws URISyntaxException, ClientProtocolException, IOException {
-		String path = "/JPS_Arbitrage/ArbitrageAgent";
+		String path = "/JPS_Arbitrage/DataDownloadAgent";
 		String key = "MoDS_input";
 		String value = "24220.0656";
 		
 		String actual = executeGet(path,key,value);
 		System.out.println(actual);
-		assertTrue(actual.contains("The highest marginal profit per tonne"));
 	}
 }
