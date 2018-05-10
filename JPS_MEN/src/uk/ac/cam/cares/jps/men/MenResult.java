@@ -47,6 +47,7 @@ public class MenResult {
 			b.append(" ").append(columnName);
 		}
 		
+		//put the content of the table
 		for (String key : mapRawNameToRaw.keySet()) {
 			String row = "";
 			for (double d : mapRawNameToRaw.get(key)) {
