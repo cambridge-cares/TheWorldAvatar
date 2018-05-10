@@ -1,15 +1,11 @@
-package uk.ac.cam.cares.jps.arbitrage;
+package uk.ac.cam.cares.jps.market;
 
-
-import com.cmclinnovations.mods.api.MoDSAPI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import com.hp.hpl.jena.util.FileUtils;
@@ -17,61 +13,16 @@ import com.hp.hpl.jena.util.FileUtils;
 import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
-import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import uk.ac.cam.cares.jps.util.PythonHelper;
 
+public class DataDownload {
 
-
-public class arbitrage {
 	
-
-	public static void Running_analysis_Aspen() throws Exception {
-		
-		/** this function executes 4 Python scripts which download market data and stores it in separate CSV files */ 
-		
-		String CPO_to_FAME_analysis = new String("caresjpsarbitrage/CPO_to_FAME.py"); 
-		
-		String market_data_plot = new String("C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\workingdir\\arbitrage_CPO.png"); 
-
-		String result = PythonHelper.callPython(CPO_to_FAME_analysis, market_data_plot, new arbitrage());
-		System.out.println(result);
-		   
-		   
-	}
 	
-	public static String Running_analysis_MoDS(String input) throws Exception {
-		
-		
-		String[] sim_address = {"E:\\MoDS_Projects\\Arbitrage\\Models\\CPO_to_FAME_26042016_001\\Sims\\HDMR_50_001", "HDMR_Alg_1"};
-		//Double[] inputs = {24220.0656};
-		Double[] inputs = {Double.parseDouble(input)};
-		List<Double> data = MoDS(inputs,sim_address);
-	    
-		String result = inputs[0].toString();
-	    for (int i = 0; i <data.size(); i++){ 
-	    	result += "," + data.get(i).toString();
-	    }
-
-		/** this function executes 4 Python scripts which download market data and stores it in separate CSV files  */
-		
-		String CPO_to_FAME_analysis = new String("caresjpsarbitrage/CPO_to_FAME_MoDS.py"); 
-		
-		String market_data_plot = new String("C:\\Users\\Janusz\\Desktop\\Commodity_prices\\Market_data\\arbitrage_CPO_MoDS.png"); 
-	
-		String result1 = PythonHelper.callPython(CPO_to_FAME_analysis, market_data_plot, result, new arbitrage());
-		System.out.println(result1);
-		
-		return result1;
-
-	}
-	
-	public static void Downloading_market_data() throws Exception {
+	public static String Downloading_market_data() throws Exception {
 		
 		/** this function executes 4 Python scripts which download market data and stores it in separate CSV files */ 
 		
@@ -92,7 +43,7 @@ public class arbitrage {
 				};
 		
 		for (int i = 0; i <commands.length; i++){
-			String result = PythonHelper.callPython(commands[i][0], commands[i][1], new arbitrage());
+			String result = PythonHelper.callPython(commands[i][0], commands[i][1], new DataDownload());
 			System.out.println(commands[i][0]+" "+result);
 		}
 
@@ -130,7 +81,7 @@ public class arbitrage {
 		jenaOwlModel.save(new URI("file:/"+filePath), FileUtils.langXMLAbbrev, errors, jenaOwlModel.getOntModel());
 		System.out.println("File saved with " + errors.size() + " errors.");  
 		  
-		   
+		   return "Nothing for now";
 		   
 	}
 	
@@ -145,7 +96,7 @@ public class arbitrage {
 		String currency_data = new String("C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\workingdir\\exchange_rates.csv"); 
 
 
-		String result = PythonHelper.callPython(currency_download, currency_data, new arbitrage());
+		String result = PythonHelper.callPython(currency_download, currency_data, new DataDownload());
 		System.out.println(result);
 
 		/** split the console output into headers and exchange rates*/
@@ -198,7 +149,7 @@ public class arbitrage {
 		
 		String Aspen_data = new String("caresjpsarbitrage/print_Aspen_data.pyw");
 		
-		String result = PythonHelper.callPython(Aspen_data, "1", new arbitrage());
+		String result = PythonHelper.callPython(Aspen_data, "1", new DataDownload());
 		System.out.println(result);
 		
 		/** split the console output into headers and exchange rates*/
@@ -257,7 +208,7 @@ public class arbitrage {
 		
 		String print = new String("caresjpsarbitrage/print_headers.pyw");
 		
-		String result = PythonHelper.callPython(print, "1", new arbitrage());
+		String result = PythonHelper.callPython(print, "1", new DataDownload());
 		System.out.println(result);
 		
 		/** split the console output into headers and exchange rates*/
@@ -328,28 +279,11 @@ public class arbitrage {
 		   
 	}
 	
-	public static List<Double> MoDS(final Double[] args, final String[] args1) { //final String[] args
-		final String simDir = args1[0];
-	    final String surrogateAlgName = args1[1];
-		
-		//final String simDir = "E:\\MoDS_Projects\\Arbitrage\\Models\\CPO_to_FAME_26042016_001\\Sims\\HDMR_50_001";
-	    //final String surrogateAlgName = "HDMR_Alg_1";
-	    // Example is for a surrogate with 10 input variables
-	    // Note that IndexOutOfBoundsException is thrown if you supply too many inputs, but *no exception is thrown if you supply too few!*.
-	    final List<Double> inputs_1 = new ArrayList<>(Arrays.asList(args));
-
-	    // Evaluate the surrogate for a single set of inputs.  The result is a List<Double> of size Noutputs
-	    List<Double> outputs1 = MoDSAPI.evaluateSurrogate(simDir, surrogateAlgName, inputs_1);
-	    return outputs1;
-	}	  	   
-	
-	
 	public static void main(String[] args) throws Exception {
 		//Downloading_market_data();
 		//Downloading_currencies();
 		//Storing_Aspen_data();
 		//Reading_data();
-		//Running_analysis_Aspen();
-		//Running_analysis_MoDS();
 	}
+	
 }

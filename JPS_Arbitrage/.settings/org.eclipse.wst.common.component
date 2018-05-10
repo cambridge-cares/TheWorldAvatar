@@ -2,6 +2,9 @@
     <wb-module deploy-name="JPS_Arbitrage">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/workingdir" source-path="/workingdir"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/test"/>
+        <wb-resource deploy-path="/python" source-path="/python"/>
+        <wb-resource deploy-path="/conf" source-path="/conf"/>
         <property name="context-root" value="JPS_Arbitrage"/>
         <property name="java-output-path" value="/JPS_Arbitrage/build/classes"/>
     </wb-module>
