@@ -52,6 +52,7 @@ public class LogServer extends HttpServlet {
 			writer.close();
 			
 			System.out.println("MY LOGSERVER = " + buffer.toString());
+			System.out.println("");
 			
 //			System.out.println(buffer.toString());
 			// System.out.println("MESSAGE FROM LOGSERVER:");
