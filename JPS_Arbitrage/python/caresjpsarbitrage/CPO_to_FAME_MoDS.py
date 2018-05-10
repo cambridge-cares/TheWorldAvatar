@@ -272,7 +272,8 @@ def plotting_prices(dates, prices, labels,plot_address):
     #plt.savefig(r'C:\Users\Janusz\Desktop\Commodity_prices\Market_data\arbitrage_CPO.png')
     plt.savefig(plot_address)
 
-def run(plot_address, data):
+#def run(plot_address, data):
+def run(data):
 
     MoDS_data = data.split(',')
     for i in range(len(MoDS_data)):
@@ -293,11 +294,11 @@ def run(plot_address, data):
     look_for_munnies(MoDS_data, prices, dates)
 
     # Define titles and labels to plot the futures prices data and plot the data
-    labels = {'FAME':{'title':'Biodiesel FAME futures prices from Chicago Mercantile Exchange', 'label':'Price (USD per tonne)'},'CPO':{'title':'Crude palm oil futures prices from Chicago Mercantile Exchange', 'label':'Price (USD per tonne)'}, 'x':{'title':'Delivery date (-)', 'label':dates['FAME']}}
-    plotting_prices(dates, prices, labels,plot_address)
+    #labels = {'FAME':{'title':'Biodiesel FAME futures prices from Chicago Mercantile Exchange', 'label':'Price (USD per tonne)'},'CPO':{'title':'Crude palm oil futures prices from Chicago Mercantile Exchange', 'label':'Price (USD per tonne)'}, 'x':{'title':'Delivery date (-)', 'label':dates['FAME']}}
+    #plotting_prices(dates, prices, labels,plot_address)
 
 
 
 if __name__ == "__main__":
-    run(str(sys.argv[1]), str(sys.argv[2]))
+    run(str(sys.argv[1]))
 

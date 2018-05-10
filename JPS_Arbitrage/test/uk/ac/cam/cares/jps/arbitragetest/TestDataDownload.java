@@ -36,10 +36,11 @@ public class TestDataDownload extends TestCase{
 
 	public void testDoGetHttpServletRequestHttpServletResponse() throws URISyntaxException, ClientProtocolException, IOException {
 		String path = "/JPS_Arbitrage/DataDownloadAgent";
-		String key = "MoDS_input";
-		String value = "24220.0656";
-		
+		String key = "CPO_page";
+		String value = "http://www.cmegroup.com/trading/agricultural/grain-and-oilseed/usd-malaysian-crude-palm-oil-calendar.html?optionProductId=8075";
 		String actual = executeGet(path,key,value);
 		System.out.println(actual);
+		assertTrue(actual.contains("JAN 2021,FEB 2021,MAR 2021,APR 2021"));
+
 	}
 }
