@@ -17,7 +17,7 @@ import uk.ac.cam.cares.jps.men.entity.Transportation;
 public class TestMenGamsConverter extends TestCase {
 	
 	// Preprint 164, p20, Table 8: Parameters for calculating costs and CO2 emissions
-	// format: transportation name, transportation cost (dollar per t * km, installation cost (dollar per km), emission (gramm C02 per t * km)
+	// format: transportation name, transportation cost (dollar per t * km), installation cost (dollar per km), emission (gramm C02 per t * km)
 	String TRANSPORTATIONS_AS_STRING = "Trucks,0.1,0.0,138.0"
 			+ ",Ships,0.015,0.0,31.0"
 			+ ",LandPipelines,0.0017,85320.0,10.0"
@@ -63,7 +63,7 @@ public class TestMenGamsConverter extends TestCase {
 	/**
 	 * only sinks d7,d11,d13 (and thus sources r4 and r16), no near sea plants
 	 * international market is considered, 
-	 * r4 and r16 have different price 1364
+	 * r4 and r16 have different price 1364 vs 1023
 	 * in the result only trucks are used for transport
 	 */
 	public void test2Preprint164SimpleNetworkWithDifferentPriceAndInternationalMarket() {
@@ -392,9 +392,9 @@ public class TestMenGamsConverter extends TestCase {
 		
 		//calculateMaterialPurchaseCostDirectly(sources, sinks, connections, 1.05);
 		
-		double[] annualCostFactors = new double[] {1., 0.1, 0.02, 0.013, 0.012, 0.01};
+		double[] annualCostFactors = new double[] {1., 0.1, 0.02, 0.013, 0.012, 0.01}; //reflect the 1/years factor 
 		// result Array has one line per factor with columns
-		// obj value, totalMaterialPurchaseCost, totalMaterialPurchaseCostIntMarkte, totalTransportationCost, totalC02Emission, totalInstallationCost
+		// obj value, totalMaterialPurchaseCost, totalMaterialPurchaseCostIntMarket, totalTransportationCost, totalC02Emission, totalInstallationCost
 		double[][] expected = new double[][] {
 			{5.987268E9, 5.986443E9, 2.244794E9, 771143., 1082.,       0.},
 			{6.009149E9, 6.008846E9, 2.715272E9, 131462.,  230., 1595484.},
