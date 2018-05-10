@@ -96,9 +96,9 @@ public class WeatherAgent extends JPSBaseServlet {
 		Parameter param2 = agentResponse.getOutputParameters().get(1);
 		param2.setValue(new TypeString("5"));
 		Parameter param3 = agentResponse.getOutputParameters().get(2);
-		param3.setValue(new TypeString("15"));
+		param3.setValue(new TypeString(windvalue));
 		Parameter param4 = agentResponse.getOutputParameters().get(3);
-		param4.setValue(new TypeString("50"));
+		param4.setValue(new TypeString(direction));
 		
 		//convert from the serialized object to string for the response
 		String serializedAgentResponse = serializer.convertToString(agentResponse);
