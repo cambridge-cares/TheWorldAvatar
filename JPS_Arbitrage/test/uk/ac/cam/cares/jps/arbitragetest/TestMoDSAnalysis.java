@@ -39,18 +39,7 @@ public class TestMoDSAnalysis extends TestCase{
 		String key = "MoDS_input";
 		String value = "24220.0656";
 		
-		
 		String actual = executeGet(path,key,value);
-
-		/**
-		URIBuilder builder = new URIBuilder().setScheme("http").setHost("localhost:8080")
-				.setPath(path);
-		        .setParameter(key, value);
-		        
-		HttpGet request = new HttpGet(builder.build());
-		HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
-		String actual = EntityUtils.toString(httpResponse.getEntity());
-		*/
 		System.out.println(actual);
 	}
 }

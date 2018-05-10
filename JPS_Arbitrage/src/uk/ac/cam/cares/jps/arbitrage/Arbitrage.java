@@ -56,12 +56,8 @@ public class Arbitrage {
 		/** this function executes 4 Python scripts which download market data and stores it in separate CSV files  */
 		
 		String CPO_to_FAME_analysis = new String("caresjpsarbitrage/CPO_to_FAME_MoDS.py"); 
-		
 		String market_data_plot = new String("C:\\Users\\Janusz\\Desktop\\Commodity_prices\\Market_data\\arbitrage_CPO_MoDS.png"); 
-	
 		String result1 = PythonHelper.callPython(CPO_to_FAME_analysis, market_data_plot, result, new Arbitrage());
-		System.out.println(result1);
-		
 		return result1;
 
 	}
@@ -339,12 +335,12 @@ public class Arbitrage {
 	}	  	   
 	
 	
-	public static void main(String args) throws Exception {
+	public static void main(String[] args) throws Exception {
 		//Downloading_market_data();
 		//Downloading_currencies();
 		//Storing_Aspen_data();
 		//Reading_data();
 		//Running_analysis_Aspen();
-		//Running_analysis_MoDS(args);
+		//Running_analysis_MoDS("24220.0656");
 	}
 }

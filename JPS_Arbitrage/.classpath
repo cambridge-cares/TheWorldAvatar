@@ -60,6 +60,5 @@
 	<classpathentry kind="lib" path="C:/Users/Janusz/Desktop/JParkSimulator-git/JPS_Arbitrage/WebContent/WEB-INF/lib/httpmime-4.5.5.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Janusz/Desktop/JParkSimulator-git/JPS_Arbitrage/WebContent/WEB-INF/lib/jna-4.4.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Janusz/Desktop/JParkSimulator-git/JPS_Arbitrage/WebContent/WEB-INF/lib/jna-platform-4.4.0.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/JPS"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
