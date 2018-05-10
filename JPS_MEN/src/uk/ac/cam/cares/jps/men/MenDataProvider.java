@@ -44,7 +44,7 @@ public class MenDataProvider {
 		
 		getData();
 		
-		
+		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 	    System.out.println("Number of sources = " + sources.size());
 	    System.out.println("Number of sinks = " + sinks.size());
 	    System.out.println("Number of connections = " + feasibleConnections.size());
@@ -53,8 +53,8 @@ public class MenDataProvider {
 	    System.out.println("sources = " + sources);
 	    System.out.println("sinks = " + sinks);
 	    System.out.println("connections = " + feasibleConnections);
-	    System.out.println("transporations = " + transportations); 
-		
+	    System.out.println("transportations = " + transportations); 
+	    System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 		// TODO-AE remove owl file from resource dir
 		String TaskFile = ".\\res\\MassExchangeNetworkIntegration.owl";   
  
@@ -89,6 +89,7 @@ public class MenDataProvider {
 				;
 		
 		ResultSet rs_source = sparql(Jr_MEN_OKB, IdSource);  //query information (name and IRI) for the sources
+		
 		//go through the source set and extract source info				
 		while(rs_source.hasNext()) {
 			QuerySolution qs_s = rs_source.nextSolution();
@@ -137,7 +138,8 @@ public class MenDataProvider {
 
 		}		
 		
-		
+		System.out.println("Number of sources = " + sources.size());
+		System.out.println("sources = " + sources);
 		
 		//Step_2 Identify Sinks
 		String IdSink = "PREFIX rns:<http://www.jparksimulator.com/ResourceNetworkSimplified.owl#> "
@@ -203,11 +205,13 @@ public class MenDataProvider {
 		System.out.println("Number of sinks = " + sinks.size());
 		System.out.println("sinks = " + sinks);
 		
+		//step 3 to connect the sink & the source with feasible transportation & distance 
 		for (Sink sink : sinks) {
 			for (Source source : sources) {
 			    
 			    if (INamed.equalNames(sink.getProduct(), source.getProduct())) {
 			    	
+			    	System.out.println("..................................................");
 			    	System.out.println("next feabible connection: " + sink + " " + source);
 			
 					String dis = "PREFIX tp:<http://www.jparksimulator.com/transportation_simple.owl#> "
@@ -239,6 +243,7 @@ public class MenDataProvider {
 		
 		
 		//Step_4 extract the transportation means' information from transportation ontology
+		
 		//Land transportation
 		String lt = "PREFIX tp:<http://www.jparksimulator.com/transportation_simple.owl#> "
 				+ "SELECT ?lt ?Ctrans ?emission ?Cinst "
