@@ -11,8 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class DataDownloadAgent
  */
-@WebServlet("/DataDownloadAgent")
-
+@WebServlet(urlPatterns = {"/download", "/read"})
 public class DataDownloadAgent extends HttpServlet {
 	private static final long serialVersionUID = 2L; //??
     
@@ -28,6 +27,11 @@ public class DataDownloadAgent extends HttpServlet {
 	 */
 protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+	
+	String path = request.getServletPath();
+
+	if ("/download".equals(path)) {
+	
 		// -- Get String formatted in Array of Strings -- //
 		request.setCharacterEncoding("UTF-8");
 		String jsonString = request.getParameter("CPO_page");
@@ -42,5 +46,10 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
+	
+	} else if ("/read".equals(path)) {
+		System.out.println("READ!!");
+	}
+	
 	}
 }

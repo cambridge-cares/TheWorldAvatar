@@ -281,6 +281,75 @@ public class DataDownload {
 		   
 	}
 	
+	public static String Call_data(String[] headers) throws Exception {
+		
+		
+		/** URIs of ontologies used to define KBs in which market data will be stored*/ 
+		String ontoPath = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15"; //KB
+		String ontoPath2 = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl";
+		
+		
+		/** ontology addresses*/
+		String ontoPath3 = "http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl";
+		String ontoPath4 = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13";
+		
+		
+		
+		String[][] addresses2 = {{ontoPath3+"#"+"data", ontoPath4+"#"+"CMECrudePalmOil_001"},
+				{ontoPath3+"#"+"data", ontoPath4+"#"+"CMEBiodiesel_001"},
+				{ontoPath3+"#"+"data", ontoPath4+"#"+"ZCEMethanol_001"},
+				{ontoPath3+"#"+"data", ontoPath4+"#"+"CMENaturalGas_001"}
+				};
+
+		
+		/** URIs of relevant individuals and their properties are defined */
+		String[][] addresses = new String[headers.length][];
+		for (int i = 0; i <addresses.length; i++){
+			addresses[i] = new String[] {ontoPath2+"#"+"numericalValue", ontoPath+"#"+headers[i]};
+			System.out.println(addresses[i][1]);
+		}
+		
+
+		   /**get model from an owl file*/
+		   String filePath = "C:/Users/Janusz/Desktop/JParkSimulator-git/JPS_Arbitrage/workingdir/OntoArbitrage_PlantInfo_KB.owl";
+		   OWLModel owlModel = null;
+		   
+		   try {
+		      owlModel = ProtegeOWL.createJenaOWLModelFromURI("file:/"+filePath);
+		     } catch (OntologyLoadException e1) {
+		      e1.printStackTrace();
+		     }
+
+				
+			for (int i = 0; i <addresses.length; i++){
+				RDFIndividual individual = owlModel.getRDFIndividual(addresses[i][1]);
+				String name = individual.getPropertyValueLiteral(owlModel.getRDFProperty(addresses[i][0])).getString();
+				System.out.println(name);
+				}
+
+			
+			
+			   /**get model from an owl file*/
+			   String filePath2 = "C:/Users/Janusz/Desktop/Commodity_prices/Ontology/OntoArbitrage_Market_KB.owl";
+			   OWLModel owlModel2 = null;
+			   
+			   try {
+				   owlModel2 = ProtegeOWL.createJenaOWLModelFromURI("file:/"+filePath2);
+			     } catch (OntologyLoadException e1) {
+			      e1.printStackTrace();
+			     }
+			
+			
+			for (int i = 0; i <addresses2.length; i++){
+				RDFIndividual individual = owlModel2.getRDFIndividual(addresses2[i][1]);
+				String name = individual.getPropertyValueLiteral(owlModel2.getRDFProperty(addresses2[i][0])).getString();
+				System.out.println(name);
+				}
+		   String data = null;
+		   return data;
+	}
+	
+	
 	public static void main(String[] args) throws Exception {
 		//Downloading_market_data();
 		Downloading_currencies();
