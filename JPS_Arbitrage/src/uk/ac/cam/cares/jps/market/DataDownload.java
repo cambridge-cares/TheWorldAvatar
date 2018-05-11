@@ -284,22 +284,12 @@ public class DataDownload {
 	public static String Call_data(String[] headers) throws Exception {
 		
 		
+		
 		/** URIs of ontologies used to define KBs in which market data will be stored*/ 
 		String ontoPath = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15"; //KB
 		String ontoPath2 = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl";
 		
-		
-		/** ontology addresses*/
-		String ontoPath3 = "http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl";
-		String ontoPath4 = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13";
-		
-		
-		
-		String[][] addresses2 = {{ontoPath3+"#"+"data", ontoPath4+"#"+"CMECrudePalmOil_001"},
-				{ontoPath3+"#"+"data", ontoPath4+"#"+"CMEBiodiesel_001"},
-				{ontoPath3+"#"+"data", ontoPath4+"#"+"ZCEMethanol_001"},
-				{ontoPath3+"#"+"data", ontoPath4+"#"+"CMENaturalGas_001"}
-				};
+
 
 		
 		/** URIs of relevant individuals and their properties are defined */
@@ -329,32 +319,49 @@ public class DataDownload {
 
 			
 			
+			
+			/** ontology addresses*/
+			String ontoPath3 = "http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl";
+			String ontoPath4 = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13";
+			
+			
+			
+			String[][] addresses2 = {{ontoPath3+"#"+"data", ontoPath4+"#"+"CMECrudePalmOil_001"},
+					{ontoPath3+"#"+"data", ontoPath4+"#"+"CMEBiodiesel_001"},
+					{ontoPath3+"#"+"data", ontoPath4+"#"+"ZCEMethanol_001"},
+					{ontoPath3+"#"+"data", ontoPath4+"#"+"CMENaturalGas_001"}
+					};
+			
 			   /**get model from an owl file*/
 			   String filePath2 = "C:/Users/Janusz/Desktop/Commodity_prices/Ontology/OntoArbitrage_Market_KB.owl";
 			   OWLModel owlModel2 = null;
 			   
+			   
+
 			   try {
 				   owlModel2 = ProtegeOWL.createJenaOWLModelFromURI("file:/"+filePath2);
 			     } catch (OntologyLoadException e1) {
 			      e1.printStackTrace();
 			     }
 			
-			
+     		 String result = "";
 			for (int i = 0; i <addresses2.length; i++){
 				RDFIndividual individual = owlModel2.getRDFIndividual(addresses2[i][1]);
 				String name = individual.getPropertyValueLiteral(owlModel2.getRDFProperty(addresses2[i][0])).getString();
 				System.out.println(name);
+				if (i == 0) {result = name.toString();}
 				}
-		   String data = null;
-		   return data;
+		   return result;
 	}
 	
 	
 	public static void main(String[] args) throws Exception {
 		//Downloading_market_data();
-		Downloading_currencies();
+		//Downloading_currencies();
 		//Storing_Aspen_data();
 		//Reading_data();
+		//String value = 	"V_Price_Storage_NaturalGas_001,V_Price_CoolingWater_001,V_Price_Storage_Biodiesel_001,V_Price_Storage_CrudePalmOil_001,V_Costs_Storage_CrudePalmOil_001,V_Price_Storage_Methanol_001,V_Price_Transport_Malaysia-SG_CrudePalmOil_001,V_Price_Electricity_001,V_Price_Transport_SG-SC_Methanol_001,V_USD_to_SGD,V_Price_ProcessWater_001,V_Price_Transport_USGC-NEA_NaturalGas_001,V_Price_HighPressureSteam_001,V_USD_to_CNY,V_Price_MediumPressureSteam_001,V_Price_LowPressureSteam_001,V_Price_Transport_SEA-SC_Biodiesel_001,V_Price_FuelGas_001";
+		//Call_data(value.split(","));
 	}
 	
 }

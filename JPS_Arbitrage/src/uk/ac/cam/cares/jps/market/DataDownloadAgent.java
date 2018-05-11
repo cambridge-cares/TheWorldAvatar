@@ -40,15 +40,25 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
 			String result = DataDownload.Downloading_market_data(jsonString);
 			response.setContentType("application/json");
 			response.getWriter().write(result);
-//		} catch (PythonException e) {
-//			e.printStackTrace();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
 	
 	} else if ("/read".equals(path)) {
-		System.out.println("READ!!");
+		
+		// -- Get String formatted in Array of Strings -- //
+		request.setCharacterEncoding("UTF-8");
+		String jsonString = request.getParameter("individuals");
+		
+		try {
+			String result = DataDownload.Call_data(jsonString.split(","));
+			response.setContentType("application/json");
+			response.getWriter().write(result);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 	}
 	
 	}
