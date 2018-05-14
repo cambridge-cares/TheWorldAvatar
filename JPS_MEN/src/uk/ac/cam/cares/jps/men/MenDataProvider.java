@@ -40,8 +40,15 @@ public class MenDataProvider {
 		provider.startCalculation();
 	}
 	
-	public void startCalculation() {
-		
+	public MenResult startCalculation() {
+	    // TODO-AE URGENT switch to true for highest base price?
+	    //format of parameter= carbonTax , interestFactor , annualCostFactor , internationalMarketPriceFactor , internationalMarketLowestPrice
+	    Parameters parameters = new Parameters(50., 1., 1., 1.05, false);	
+	    return startCalculation(parameters);
+	}
+
+	public MenResult startCalculation(Parameters parameters ) {
+	
 		getData();
 		
 		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
@@ -60,9 +67,9 @@ public class MenDataProvider {
  
 	    
 	    MenGamsConverter converter = new MenGamsConverter();
-	    // TODO-AE URGENT switch to true for highest base price?
-	    Parameters parameters = new Parameters(50., 1., 1., 1.05, false);
-	    converter.calculate(sources, sinks, feasibleConnections, transportations, parameters);
+
+	    
+	    return converter.calculate(sources, sinks, feasibleConnections, transportations, parameters);
 	}
 	
 	private void getData() {
@@ -76,6 +83,199 @@ public class MenDataProvider {
 		String nameOfResourceNetwork = "Jurong_MEN";  //define the name of the resource network that is to be synthesized 
 
 		// Step_1 Identify Sources
+		addSourceDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
+		
+		//Step_2 Identify Sinks
+		addSinkDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
+		
+		//step 3 to connect the sink & the source with feasible transportation & distance 
+		connectSinkandSourceWithTransportation(Transport_OKB,sinks,sources);
+		
+		//Step_4 extract the transportation means' information from transportation ontology
+		getTransportationMeansInfoFromKB(Transport_OKB);  
+	}
+
+	public List<Transportation> getTransportationMeansInfoFromKB(String Transport_OKB) {
+		
+		//Land transportation
+		String lt = "PREFIX tp:<http://www.jparksimulator.com/transportation_simple.owl#> "
+				+ "SELECT ?lt ?Ctrans ?emission ?Cinst "
+				+ "WHERE { ?entity a tp:LandTransportation ."
+				+ "?entity tp:hasName ?lt ."
+				+ "?entity tp:hasTransportationCost ?Ctrans ."
+				+ "?entity tp:hasEmission ?emission ."
+				+ "?entity tp:hasInstallationCost ?Cinst ."
+				+ "}"
+				;
+		
+		ResultSet rs_lt = sparql(Transport_OKB, lt);
+		//go through the land transportation methods and extract the name, transportation cost, CO2 emission and installation cost
+	    while(rs_lt.hasNext()) {
+	    	QuerySolution qs_lt = rs_lt.nextSolution();
+			Literal ltrans = qs_lt.getLiteral("lt") ;     //extract the transportation means' name (lt= land transportation)
+		    String ltransN = ltrans.getString();
+		    Literal Ct = qs_lt.getLiteral("Ctrans") ;     //extract the transportation cost of the transportation means
+		    String Ctrans = Ct.getString();  
+		    Literal em = qs_lt.getLiteral("emission") ;     //extract the CO2 emission of the transportation means
+		    String emission = em.getString();
+		    Literal Cinst = qs_lt.getLiteral("Cinst") ;     //extract the installation cost of the transportation means
+		    String Cinstallation = Cinst.getString();
+		    
+		    Transportation trans = new Transportation(ltransN);
+		    trans.setTransportationCost(Double.valueOf(Ctrans));
+		    trans.setEmission(Double.valueOf(emission));
+		    trans.setInstallationCost(Double.valueOf(Cinstallation));
+		    
+		    transportations.add(trans);
+	    }
+	    
+		
+
+	    
+	    //Short-sea transportation
+		String sst = "PREFIX tp:<http://www.jparksimulator.com/transportation_simple.owl#> "
+				+ "SELECT ?sst ?Ctrans ?emission ?Cinst "
+				+ "WHERE { ?entity a tp:ShortSeaTransportation ."
+				+ "?entity tp:hasName ?sst ."
+				+ "?entity tp:hasTransportationCost ?Ctrans ."
+				+ "?entity tp:hasEmission ?emission ."
+				+ "?entity tp:hasInstallationCost ?Cinst ."
+				+ "}"
+				;
+		
+		ResultSet rs_sst = sparql(Transport_OKB, sst);
+		//go through the short sea transportation methods and extract the name, transportation cost, CO2 emission and installation cost
+	    while(rs_sst.hasNext()) {
+	    	QuerySolution qs_sst = rs_sst.nextSolution();
+			Literal ltrans = qs_sst.getLiteral("sst") ;     //extract the transportation means' name (short sea transportation)
+		    String transName = ltrans.getString();  
+		    Literal Ct = qs_sst.getLiteral("Ctrans") ;     //extract the transportation cost of the transportation means
+		    String Ctrans = Ct.getString();   
+		    Literal em = qs_sst.getLiteral("emission") ;     //extract the CO2 emission of the transportation means
+		    String emission = em.getString(); 
+		    Literal Cinst = qs_sst.getLiteral("Cinst") ;     //extract the installation cost of the transportation means
+		    String Cinstallation = Cinst.getString();
+		    
+		    Transportation trans = new Transportation(transName);
+		    trans.setTransportationCost(Double.valueOf(Ctrans));
+		    trans.setEmission(Double.valueOf(emission));
+		    trans.setInstallationCost(Double.valueOf(Cinstallation));
+		    
+		    transportations.add(trans);
+	    }
+	    
+		System.out.println("Number of transportation means = " + transportations.size());
+		System.out.println("transportation means = " +  transportations);
+		return  transportations;
+	}
+
+	public List<FeasibleConnection> connectSinkandSourceWithTransportation(String Transport_OKB,List<Sink> sinks,List<Source> sources) {
+		for (Sink sink : sinks) {
+			for (Source source : sources) {
+			    
+			    if (INamed.equalNames(sink.getProduct(), source.getProduct())) {
+			    	
+			    	System.out.println("..................................................");
+			    	System.out.println("next feabible connection: " + sink + " " + source);
+			
+					String dis = "PREFIX tp:<http://www.jparksimulator.com/transportation_simple.owl#> "
+				    		+ "SELECT ?distance "
+				    		+ "WHERE { ?entity a tp:TransportationRoute ."
+				    		+ "?entity tp:startsFrom ?startP ."
+				    		+ "?startP tp:hasName ?startPN ."
+				    		+ "?entity tp:endsAt ?endP ."
+				    		+ "?endP   tp:hasName ?endPN ."
+				    		+ "?entity tp:hasLength ?distance ."
+				    		+ "FILTER regex (str(?startPN), '"+ sink.getName() +"') ."
+				    		+ "FILTER regex (str(?endPN), '"+ source.getName() +"') "
+				    		+ "}"
+				    		;
+					
+					ResultSet rs_dis = sparql(Transport_OKB, dis);
+					QuerySolution qs_dis = rs_dis.nextSolution();
+				    Literal distanceL = qs_dis.getLiteral("distance") ;     //extract the name of the sink
+				    String distance = distanceL.getString();   
+
+				    FeasibleConnection connection = new FeasibleConnection(source, sink);
+				    connection.setDistance(Float.valueOf(distance));
+				    
+				    feasibleConnections.add(connection);
+				}					
+			}
+		}
+		System.out.println("Number of feasible Connections = " + feasibleConnections.size());
+		System.out.println("connection = " +  feasibleConnections);
+		return  feasibleConnections;
+	}
+
+	public List<Sink> addSinkDataFromKB(String Jr_MEN_OKB, String OKB, String nameOfResourceNetwork) {
+		String IdSink = "PREFIX rns:<http://www.jparksimulator.com/ResourceNetworkSimplified.owl#> "
+				+ "SELECT ?sink ?IRI "
+				+ "WHERE { ?entity a rns:ResourceNetwork ."
+				+ "?entity rns:hasSinks ?s_i ."
+				+ "?s_i rns:hasName ?sink ."
+				+ "?s_i rns:hasIRI ?IRI ."
+				+ "FILTER regex (str(?entity), '"+ nameOfResourceNetwork +"') ."
+				+ "}"
+				+ "ORDER BY ?sinks DESC(?added)"
+				;
+		
+		ResultSet rs_sink = sparql(Jr_MEN_OKB, IdSink);  //query information (name and IRI) for the sinks
+		//go through the source set and extract sink info				
+		while(rs_sink.hasNext()) {
+			
+			
+			
+			QuerySolution qs_s = rs_sink.nextSolution();
+		    Literal sinkLit = qs_s.getLiteral("sink") ;     //extract the name of the sink
+		    String sinkName = sinkLit.getString();
+		    Literal iri = qs_s.getLiteral("IRI") ;           //extract the IRI of the sink
+		    String sinkIRI = iri.getString();
+		    				    
+		    System.out.println("sink IRI =" + sinkIRI);
+		    
+		    //extract product information (product name, capacity, price) from the OKB
+		    String sinkInfo = "PREFIX cp:<"+ sinkIRI.split("#")[0] +"#> "
+		    		+ "SELECT ?rawMaterial ?demand ?nearSea "
+		    		+ "WHERE {?entity  a  cp:ChemicalPlant  ."
+		    		+ "?entity   cp:nearSea ?nearSea ."
+		    		+ "?entity cp:consumes ?RawMaterialI ."
+		    		+ "?RawMaterialI  cp:name ?rawMaterial ."
+		    		+ "?RawMaterialI  cp:demand ?demand ."
+		    		+ "FILTER regex (str(?entity), '"+ sinkIRI.split("#")[1] +"')"
+		    		+ "}"
+		    		+ "ORDER BY ?rawMaterial DESC(?added)"
+		    		;
+		    
+		    ResultSet rs_rm = sparql(OKB, sinkInfo);         //query raw material information (raw material name, demand) for the sources
+		    //go through the product set and extract capacity and price
+		    for( ; rs_rm.hasNext(); ) {
+		    	QuerySolution qs_r = rs_rm.nextSolution();
+		    	Literal rm = qs_r.getLiteral("rawMaterial") ;       //extract the name of the source
+			    String rawMaterialName = rm.getString();
+		    	Literal dem = qs_r.getLiteral("demand") ;      //extract the name of the source
+			    String demand = dem.getString();
+			    Literal nS = qs_r.getLiteral("nearSea") ;      //extract the name of the source
+			    String nearSea = nS.getString();
+			    
+			    Product product = new Product(rawMaterialName);
+			    product.setCapacity(Double.valueOf(demand));
+			    Sink sink = new Sink(sinkName, product);
+			    // TODO-AE in OWL files, the value true and false are used 
+			    sink.setNearSea(Boolean.valueOf(nearSea));
+			    
+			    sinks.add(sink);
+		    }				    
+		}
+		
+		
+		System.out.println("Number of sinks = " + sinks.size());
+		System.out.println("sinks = " + sinks);
+		return sinks;
+	}
+
+	public List<Source> addSourceDataFromKB(String Jr_MEN_OKB, String OKB, String nameOfResourceNetwork) {
+		
 		
 		String IdSource = "PREFIX rns:<http://www.jparksimulator.com/ResourceNetworkSimplified.owl#> "
 				+ "SELECT ?source ?IRI "
@@ -140,177 +340,9 @@ public class MenDataProvider {
 		
 		System.out.println("Number of sources = " + sources.size());
 		System.out.println("sources = " + sources);
-		
-		//Step_2 Identify Sinks
-		String IdSink = "PREFIX rns:<http://www.jparksimulator.com/ResourceNetworkSimplified.owl#> "
-				+ "SELECT ?sink ?IRI "
-				+ "WHERE { ?entity a rns:ResourceNetwork ."
-				+ "?entity rns:hasSinks ?s_i ."
-				+ "?s_i rns:hasName ?sink ."
-				+ "?s_i rns:hasIRI ?IRI ."
-				+ "FILTER regex (str(?entity), '"+ nameOfResourceNetwork +"') ."
-				+ "}"
-				+ "ORDER BY ?sinks DESC(?added)"
-				;
-		
-		ResultSet rs_sink = sparql(Jr_MEN_OKB, IdSink);  //query information (name and IRI) for the sinks
-		//go through the source set and extract sink info				
-		while(rs_sink.hasNext()) {
-			
-			
-			
-			QuerySolution qs_s = rs_sink.nextSolution();
-		    Literal sinkLit = qs_s.getLiteral("sink") ;     //extract the name of the sink
-		    String sinkName = sinkLit.getString();
-		    Literal iri = qs_s.getLiteral("IRI") ;           //extract the IRI of the sink
-		    String sinkIRI = iri.getString();
-		    				    
-		    System.out.println("sink IRI =" + sinkIRI);
-		    
-		    //extract product information (product name, capacity, price) from the OKB
-		    String sinkInfo = "PREFIX cp:<"+ sinkIRI.split("#")[0] +"#> "
-		    		+ "SELECT ?rawMaterial ?demand ?nearSea "
-		    		+ "WHERE {?entity  a  cp:ChemicalPlant  ."
-		    		+ "?entity   cp:nearSea ?nearSea ."
-		    		+ "?entity cp:consumes ?RawMaterialI ."
-		    		+ "?RawMaterialI  cp:name ?rawMaterial ."
-		    		+ "?RawMaterialI  cp:demand ?demand ."
-		    		+ "FILTER regex (str(?entity), '"+ sinkIRI.split("#")[1] +"')"
-		    		+ "}"
-		    		+ "ORDER BY ?rawMaterial DESC(?added)"
-		    		;
-		    
-		    ResultSet rs_rm = sparql(OKB, sinkInfo);         //query raw material information (raw material name, demand) for the sources
-		    //go through the product set and extract capacity and price
-		    for( ; rs_rm.hasNext(); ) {
-		    	QuerySolution qs_r = rs_rm.nextSolution();
-		    	Literal rm = qs_r.getLiteral("rawMaterial") ;       //extract the name of the source
-			    String rawMaterialName = rm.getString();
-		    	Literal dem = qs_r.getLiteral("demand") ;      //extract the name of the source
-			    String demand = dem.getString();
-			    Literal nS = qs_r.getLiteral("nearSea") ;      //extract the name of the source
-			    String nearSea = nS.getString();
-			    
-			    Product product = new Product(rawMaterialName);
-			    product.setCapacity(Double.valueOf(demand));
-			    Sink sink = new Sink(sinkName, product);
-			    // TODO-AE in OWL files, the value true and false are used 
-			    sink.setNearSea(Boolean.valueOf(nearSea));
-			    
-			    sinks.add(sink);
-		    }				    
-		}
-		
-		
-		System.out.println("Number of sinks = " + sinks.size());
-		System.out.println("sinks = " + sinks);
-		
-		//step 3 to connect the sink & the source with feasible transportation & distance 
-		for (Sink sink : sinks) {
-			for (Source source : sources) {
-			    
-			    if (INamed.equalNames(sink.getProduct(), source.getProduct())) {
-			    	
-			    	System.out.println("..................................................");
-			    	System.out.println("next feabible connection: " + sink + " " + source);
-			
-					String dis = "PREFIX tp:<http://www.jparksimulator.com/transportation_simple.owl#> "
-				    		+ "SELECT ?distance "
-				    		+ "WHERE { ?entity a tp:TransportationRoute ."
-				    		+ "?entity tp:startsFrom ?startP ."
-				    		+ "?startP tp:hasName ?startPN ."
-				    		+ "?entity tp:endsAt ?endP ."
-				    		+ "?endP   tp:hasName ?endPN ."
-				    		+ "?entity tp:hasLength ?distance ."
-				    		+ "FILTER regex (str(?startPN), '"+ sink.getName() +"') ."
-				    		+ "FILTER regex (str(?endPN), '"+ source.getName() +"') "
-				    		+ "}"
-				    		;
-					
-					ResultSet rs_dis = sparql(Transport_OKB, dis);
-					QuerySolution qs_dis = rs_dis.nextSolution();
-				    Literal distanceL = qs_dis.getLiteral("distance") ;     //extract the name of the sink
-				    String distance = distanceL.getString();   
-
-				    FeasibleConnection connection = new FeasibleConnection(source, sink);
-				    connection.setDistance(Float.valueOf(distance));
-				    
-				    feasibleConnections.add(connection);
-				}					
-			}
-		}
-		
-		
-		
-		//Step_4 extract the transportation means' information from transportation ontology
-		
-		//Land transportation
-		String lt = "PREFIX tp:<http://www.jparksimulator.com/transportation_simple.owl#> "
-				+ "SELECT ?lt ?Ctrans ?emission ?Cinst "
-				+ "WHERE { ?entity a tp:LandTransportation ."
-				+ "?entity tp:hasName ?lt ."
-				+ "?entity tp:hasTransportationCost ?Ctrans ."
-				+ "?entity tp:hasEmission ?emission ."
-				+ "?entity tp:hasInstallationCost ?Cinst ."
-				+ "}"
-				;
-		
-		ResultSet rs_lt = sparql(Transport_OKB, lt);
-		//go through the land transportation methods and extract the name, transportation cost, CO2 emission and installation cost
-	    while(rs_lt.hasNext()) {
-	    	QuerySolution qs_lt = rs_lt.nextSolution();
-			Literal ltrans = qs_lt.getLiteral("lt") ;     //extract the transportation means' name
-		    String ltransN = ltrans.getString();
-		    Literal Ct = qs_lt.getLiteral("Ctrans") ;     //extract the transportation cost of the transportation means
-		    String Ctrans = Ct.getString();  
-		    Literal em = qs_lt.getLiteral("emission") ;     //extract the CO2 emission of the transportation means
-		    String emission = em.getString();
-		    Literal Cinst = qs_lt.getLiteral("Cinst") ;     //extract the installation cost of the transportation means
-		    String Cinstallation = Cinst.getString();
-		    
-		    Transportation trans = new Transportation(ltransN);
-		    trans.setTransportationCost(Double.valueOf(Ctrans));
-		    trans.setEmission(Double.valueOf(emission));
-		    trans.setInstallationCost(Double.valueOf(Cinstallation));
-		    
-		    transportations.add(trans);
-	    }
-	    
-		
-
-	    
-	    //Short-sea transportation
-		String sst = "PREFIX tp:<http://www.jparksimulator.com/transportation_simple.owl#> "
-				+ "SELECT ?sst ?Ctrans ?emission ?Cinst "
-				+ "WHERE { ?entity a tp:ShortSeaTransportation ."
-				+ "?entity tp:hasName ?sst ."
-				+ "?entity tp:hasTransportationCost ?Ctrans ."
-				+ "?entity tp:hasEmission ?emission ."
-				+ "?entity tp:hasInstallationCost ?Cinst ."
-				+ "}"
-				;
-		
-		ResultSet rs_sst = sparql(Transport_OKB, sst);
-		//go through the short sea transportation methods and extract the name, transportation cost, CO2 emission and installation cost
-	    while(rs_sst.hasNext()) {
-	    	QuerySolution qs_sst = rs_sst.nextSolution();
-			Literal ltrans = qs_sst.getLiteral("sst") ;     //extract the transportation means' name
-		    String transName = ltrans.getString();  
-		    Literal Ct = qs_sst.getLiteral("Ctrans") ;     //extract the transportation cost of the transportation means
-		    String Ctrans = Ct.getString();   
-		    Literal em = qs_sst.getLiteral("emission") ;     //extract the CO2 emission of the transportation means
-		    String emission = em.getString(); 
-		    Literal Cinst = qs_sst.getLiteral("Cinst") ;     //extract the installation cost of the transportation means
-		    String Cinstallation = Cinst.getString();
-		    
-		    Transportation trans = new Transportation(transName);
-		    trans.setTransportationCost(Double.valueOf(Ctrans));
-		    trans.setEmission(Double.valueOf(emission));
-		    trans.setInstallationCost(Double.valueOf(Cinstallation));
-		    
-		    transportations.add(trans);
-	    }  
+		return sources;
 	}
+	
 	
 	/**
 	 * This method is to perform a given sparql query task on an ontological knowledge base (OKB) 
@@ -332,7 +364,7 @@ public class MenDataProvider {
 		QueryExecution qe = QueryExecutionFactory.create(query, model);
 		ResultSet rs = qe.execSelect();                                    //the ResultSet can only be iterated once
 		ResultSetRewindable results = ResultSetFactory.copyResults(rs);    //reset the cursor, so that the ResultSet can be repeatedly used
-		ResultSetFormatter.out(System.out, results, query);
+		//ResultSetFormatter.out(System.out, results, query);
 				
 		return results;
 	}
