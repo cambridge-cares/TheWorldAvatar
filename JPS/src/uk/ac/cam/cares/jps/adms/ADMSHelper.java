@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
+import uk.ac.cam.cares.jps.util.PythonException;
 import uk.ac.cam.cares.jps.util.PythonHelper;
 
 /**
@@ -38,7 +39,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
 		
 		String result;
 		try {
-			result = PythonHelper.callPython("caresjpsadmsinputs/ADMSGeoJsonGetter.py", g.toJson(jsonString));
+			result = PythonHelper.callPython("caresjpsadmsinputs/ADMSGeoJsonGetter.py", g.toJson(jsonString), this);
 			response.setContentType("application/json");
 			response.getWriter().write(result);
 		} catch (PythonException e) {

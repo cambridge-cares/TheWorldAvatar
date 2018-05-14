@@ -3,51 +3,74 @@ package uk.ac.cam.cares.jps.discovery.knowledgebase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFactory;
+import com.hp.hpl.jena.query.ResultSetFormatter;
+import com.hp.hpl.jena.query.ResultSetRewindable;
 
-import uk.ac.cam.cares.jps.discovery.api.AgentServiceDescription;
-import uk.ac.cam.cares.jps.discovery.util.Helper;
+import uk.ac.cam.cares.jps.config.AgentLocator;
 
 public class AgentKnowledgeBase {
-
+	
+	public static final String ONTOAGENT_BASE_IRI = "http://www.theworldavatar.com/OntoAgent";
+	public static final String ONTOAGENT_ONTOLOGY_IRI = ONTOAGENT_BASE_IRI + "/OntoAgent.owl";
+	
 	private static AgentKnowledgeBase instance = null;
-	//TODO-AE hard coded name space
-	private static final String NAME_SPACE = "C://Users/Andreas/my/agentdiscovery#";
+
 	private Logger logger = LoggerFactory.getLogger(AgentKnowledgeBase.class);
-	private OntModel model = null;
+	private OntModel knowledgebase = null;
 	
 	private AgentKnowledgeBase () {
 	}
 	
 	public static synchronized AgentKnowledgeBase getInstance() {
 		if (instance == null) {
+			return getInstance(null);
+		}
+		return instance;
+	}
+	
+	public static synchronized AgentKnowledgeBase getInstance(String dirForAgentKnowledgesBase) {
+		if (instance == null) {
 			instance = new AgentKnowledgeBase();
-			instance.init();
+			instance.init(dirForAgentKnowledgesBase);
 			instance.logger.info("AgentKnowledgeBase was created");
 		}
 		return instance;
 	}
 	
-	private void init() {
-		//TODO-AE file path hard coded
-		String filepath = "C://Users/Andreas/my/agentdiscovery/AgentOntology.owl";
-		model = RDFHelper.loadModel(filepath);
+	public static String getFileForAgentOntology() {
+		return AgentLocator.getPathToJpsDataOntologyDir() + "/OntoAgent/OntoAgent.owl";
 	}
 	
-	public void add(AgentServiceDescription descr) {
-		
-		OntClass agentDescrClass = model.getOntClass(NAME_SPACE + "AgentDescription");
-		
-		Individual ad = createIndividual(agentDescrClass);
-		
-		//ad.add
-		
+	public static String getDirForAgentKnowledgesBase() {
+		return AgentLocator.getPathToJpsDataKnowledgeDir() + "/OntoAgent";
 	}
 	
-	private Individual createIndividual(OntClass ontClass) {
-		String indName = NAME_SPACE + ontClass.getLocalName() + Helper.createUUID();
-		return  model.createIndividual(indName, ontClass);
+	protected String getDirForAgentKnowledgesBaseInternally() {
+		return getDirForAgentKnowledgesBase();
+	}
+	
+	protected void init(String dirForAgentKnowledgesBase) {
+		String dir = dirForAgentKnowledgesBase;
+		if (dir == null) {
+			dir = getDirForAgentKnowledgesBaseInternally();
+		}	
+		knowledgebase = JenaHelper.createModel(dir);
+	}
+	
+	public static ResultSet query(String sparql) {
+		Query query = QueryFactory.create(sparql);
+		OntModel model = getInstance().knowledgebase;
+		QueryExecution queryExec = QueryExecutionFactory.create(query, model);
+		ResultSet rs = queryExec.execSelect();   
+		ResultSetRewindable results = ResultSetFactory.copyResults(rs);    //reset the cursor, so that the ResultSet can be repeatedly used
+		ResultSetFormatter.out(System.out, results, query);
+		return results;
 	}
 }

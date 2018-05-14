@@ -1,0 +1,36 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:jpsago="http://www.theworldavatar.com/OntoAgent/OntoAgent.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:jpsagkb="http://www.theworldavatar.com/OntoAgent/Agente94be0e8-72f4-4f61-91b9-a4da5b59d35a.owl#" > 
+  <rdf:Description rdf:about="http://www.theworldavatar.com/OntoAgent/Agente94be0e8-72f4-4f61-91b9-a4da5b59d35a.owl#Property1">
+    <jpsago:hasValue>weather</jpsago:hasValue>
+    <jpsago:hasKey>domain</jpsago:hasKey>
+    <jpsago:hasIndex>1</jpsago:hasIndex>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoAgent/OntoAgent.owl#Property"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/OntoAgent/Agente94be0e8-72f4-4f61-91b9-a4da5b59d35a.owl#OutputParameter3">
+    <jpsago:hasKey>IRItemperature</jpsago:hasKey>
+    <jpsago:hasIndex>3</jpsago:hasIndex>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoAgent/OntoAgent.owl#OutputParameter"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/OntoAgent/Agente94be0e8-72f4-4f61-91b9-a4da5b59d35a.owl#AgentServiceDescription0">
+    <jpsago:hasKeyValuePair rdf:resource="http://www.theworldavatar.com/OntoAgent/Agente94be0e8-72f4-4f61-91b9-a4da5b59d35a.owl#OutputParameter3"/>
+    <jpsago:hasKeyValuePair rdf:resource="http://www.theworldavatar.com/OntoAgent/Agente94be0e8-72f4-4f61-91b9-a4da5b59d35a.owl#InputParameter2"/>
+    <jpsago:hasKeyValuePair rdf:resource="http://www.theworldavatar.com/OntoAgent/Agente94be0e8-72f4-4f61-91b9-a4da5b59d35a.owl#Property1"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoAgent/OntoAgent.owl#AgentServiceDescription"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/OntoAgent/Agente94be0e8-72f4-4f61-91b9-a4da5b59d35a.owl#Agent">
+    <jpsago:hasAgentServiceDescription rdf:resource="http://www.theworldavatar.com/OntoAgent/Agente94be0e8-72f4-4f61-91b9-a4da5b59d35a.owl#AgentServiceDescription0"/>
+    <jpsago:hasName>IRIsomeAgent</jpsago:hasName>
+    <jpsago:hasId>e94be0e8-72f4-4f61-91b9-a4da5b59d35a</jpsago:hasId>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoAgent/OntoAgent.owl#Agent"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/OntoAgent/Agente94be0e8-72f4-4f61-91b9-a4da5b59d35a.owl#InputParameter2">
+    <jpsago:hasKey>city</jpsago:hasKey>
+    <jpsago:hasIndex>2</jpsago:hasIndex>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoAgent/OntoAgent.owl#InputParameter"/>
+  </rdf:Description>
+</rdf:RDF>

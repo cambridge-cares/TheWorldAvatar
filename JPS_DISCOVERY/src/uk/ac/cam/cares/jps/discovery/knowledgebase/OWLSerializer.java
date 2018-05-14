@@ -35,14 +35,13 @@ import uk.ac.cam.cares.jps.discovery.util.ISerializer;
 public class OWLSerializer implements ISerializer {
 	
 	private static OWLSerializer instance = null;
-	private static final String ONTOAGENT = "http://www.theworldavatar.com/OntoAgent";
 	
 	Logger logger = LoggerFactory.getLogger(OWLSerializer.class);
 	private OntModel ontology = null;
 	private String ontBaseIRI = null;
 	private OntModel knowledgeBase = null;
 	private String kbBaseIRI = null;
-	private int counter = 0;
+	private int counter = -1;
 	
 	private OWLSerializer() {
 
@@ -62,11 +61,9 @@ public class OWLSerializer implements ISerializer {
 	
 	private void init( ) {
 		// this class is a singleton. It is enough to read the ontology only once
-		ontology = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
-		String path = AgentLocator.getPathToJpsDataOntologyDir() + "/OntoAgent/OntoAgent.owl";
-		File file = new File(path);
-		ontology.read(file.toURI().toString());
-		ontBaseIRI = ONTOAGENT + "/OntoAgent.owl#";
+		String path = AgentKnowledgeBase.getFileForAgentOntology();
+		ontology = JenaHelper.createModel(path);
+		ontBaseIRI = AgentKnowledgeBase.ONTOAGENT_ONTOLOGY_IRI + "#";
 	}
 	
 	@Override
@@ -87,7 +84,7 @@ public class OWLSerializer implements ISerializer {
 	
 	private ByteArrayOutputStream convertToString(Serializable object, UUID uuid) {
 		
-		counter = 0;
+		counter = -1;
 		
 		// Create a new model (knowledgeBase) for the instances that will be generated from the input parameter "object" 
 		// This model is created in addition to the model (ontology) for the classes
@@ -97,7 +94,7 @@ public class OWLSerializer implements ISerializer {
 		knowledgeBase.setNsPrefix("jpsago", ontBaseIRI);
 		
 		if (object instanceof Agent) {	
-			kbBaseIRI = ONTOAGENT + "/Agent" + uuid + ".owl#";
+			kbBaseIRI = AgentKnowledgeBase.ONTOAGENT_BASE_IRI + "/Agent" + uuid + ".owl#";
 			knowledgeBase.setNsPrefix("jpsagkb", kbBaseIRI);
 			
 			//TODO-AE if then for AgentDesription, Request, Response ...
@@ -105,7 +102,7 @@ public class OWLSerializer implements ISerializer {
 		} else if (object instanceof AgentServiceDescription) {
 			//TODO-AE Class in OntoAgent.owl is AgentServiceDescription --> rename java Code
 			//TODO-AE AgentMessage --> AgentServiceRequest, AgentServiceResponse
-			kbBaseIRI = ONTOAGENT + "/AgentMessage#";
+			kbBaseIRI = AgentKnowledgeBase.ONTOAGENT_BASE_IRI + "/AgentMessage#";
 			knowledgeBase.setNsPrefix("jpsagkb", kbBaseIRI);
 			//TODO-AE check that there is a least one output parameter (and domain, name...)
 			createAgentDescription((AbstractAgentServiceDescription) object);
@@ -128,6 +125,8 @@ public class OWLSerializer implements ISerializer {
 		InputStream is = new ByteArrayInputStream( objectAsString.getBytes(StandardCharsets.UTF_8) );
 		knowledgeBase.read(is, null);
 		
+		//TODO-AE this method is not implemented yet
+		
 		return null;
 	}
 	
@@ -137,7 +136,7 @@ public class OWLSerializer implements ISerializer {
 		
 		OntClass agentClass = ontology.getOntClass(ontBaseIRI + "Agent");
 		// TODO-AE why do we need .owl in the IRI
-		Individual agentInd = knowledgeBase.createIndividual(ONTOAGENT + "/Agent" + uuid + ".owl#Agent", agentClass);
+		Individual agentInd = knowledgeBase.createIndividual(AgentKnowledgeBase.ONTOAGENT_BASE_IRI + "/Agent" + uuid + ".owl#Agent", agentClass);
 		createTripleWithDatatypeProperty(agentInd, "hasId", uuid.toString());
 		createTripleWithDatatypeProperty(agentInd, "hasName", agent.getName().getValue());
 		
@@ -164,7 +163,7 @@ public class OWLSerializer implements ISerializer {
 		allParameters.addAll(createIndividualList(params, "InputParameter"));
 		params = description.getOutputParameters();
 		allParameters.addAll(createIndividualList(params, "OutputParameter"));
-		
+				
 		for (Individual current : allParameters) {
 			createTripleWithObjectProperty(result, "hasKeyValuePair", current);
 		}

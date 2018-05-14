@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import uk.ac.cam.cares.jps.adms.PythonException;
+import uk.ac.cam.cares.jps.util.PythonException;
 import uk.ac.cam.cares.jps.config.AgentLocator;
 
 public class PythonHelper {
@@ -13,11 +13,13 @@ public class PythonHelper {
 	 * @param pythonScriptName
 	 *            (including package name followed by script name and .py extension,
 	 *            e.g. caresjpsadmsinputs/ADMSGeoJsonGetter.py)
+	 * @param parameter input parameter for calling python
+	 * @param thisObject <code>this</code> must be used as input value 
 	 * @return
 	 * @throws IOException
 	 */
-	public static String callPython(String pythonScriptName, String parameter) throws IOException {
-		String path = AgentLocator.getPathToPythonScript(pythonScriptName);
+	public static String callPython(String pythonScriptName, String parameter, Object thisObject) throws IOException {
+		String path = AgentLocator.getNewPathToPythonScript(pythonScriptName, thisObject);
 
 		String[] cmd = { "python", path, parameter };
 
@@ -36,8 +38,8 @@ public class PythonHelper {
 		}
 	}
 	
-	public static String callPython(String pythonScriptName, String parameter1, String parameter2) throws IOException {
-		String pathPythonScript = AgentLocator.getPathToPythonScript(pythonScriptName);		
+	public static String callPython(String pythonScriptName, String parameter1, String parameter2, Object thisObject) throws IOException {
+		String pathPythonScript = AgentLocator.getNewPathToPythonScript(pythonScriptName, thisObject);		
 		
 		String[] cmd = { "python", pathPythonScript, parameter1, parameter2 };
 		

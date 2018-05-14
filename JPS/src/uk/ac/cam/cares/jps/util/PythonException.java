@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.adms;
+package uk.ac.cam.cares.jps.util;
 
 public class PythonException extends RuntimeException {
 	public PythonException(String message) {

@@ -5,7 +5,7 @@
 # Important assumptions include instantenaous conversion and transport, pricing other than futures is based on the literature, only marginal profit is calculated (this is liable to changes soon). 
 # Additionally, it i assumed that the plant is already functioning on a long-term contract. For that reason the changes to plant's function cannot be too great and capital costs may be ignored in the calculations.
 
-import win32api, win32com.client as win32, requests
+import win32api, win32com.client as win32, requests, sys
 from lxml import html
 from math import inf
 import matplotlib.pyplot as plt
@@ -178,7 +178,7 @@ def conversion_cost(aspen):
     
     return total/consumption['FAME']['value']
 
-def look_for_munnies(SimAddress, prices):
+def look_for_munnies(SimAddress, prices, dates):
     
     # This function performs puts together all the data and looks for the most profitable arbitrage opportunity using a brute force approach (i.e. checking all possible combintations subject to chronological order constraint).
 
@@ -279,7 +279,7 @@ def plotting_prices(dates, prices, labels,plot_address):
 	#plt.savefig(r'C:\Users\Janusz\Desktop\Commodity_prices\Market_data\arbitrage_CPO.png')
     plt.savefig(plot_address)
 
-def run(plot_address)
+def run(plot_address):
 	# Define address of a relevant Aspen Plus model
 	SimAddress = win32api.GetLongPathName(r"C:\Users\Janusz\Desktop\Commodity_prices\Biodiesel Final Simulation_20160429\Jbiod_WWHR_23052017.apw") 
 	 
@@ -299,7 +299,7 @@ def run(plot_address)
 	prices = transport_costs(prices)
 
 	# Search through the arbitrage opportunities
-	look_for_munnies(SimAddress, prices)
+	look_for_munnies(SimAddress, prices, dates)
 
 	# Define titles and labels to plot the futures prices data and plot the data
 	labels = {'FAME':{'title':'Biodiesel FAME futures prices from Chicago Mercantile Exchange', 'label':'Price (USD per tonne)'},'CPO':{'title':'Crude palm oil futures prices from Chicago Mercantile Exchange', 'label':'Price (USD per tonne)'}, 'x':{'title':'Delivery date (-)', 'label':dates['FAME']}}

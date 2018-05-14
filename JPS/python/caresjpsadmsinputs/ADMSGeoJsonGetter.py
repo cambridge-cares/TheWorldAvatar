@@ -5,8 +5,8 @@ import json
 import sys
 
 import os
-caresjpsutilPath = os.path.abspath(os.path.join(os.getcwd(), '../caresjpsutil'))
-sys.path.insert(0, caresjpsutilPath)
+# caresjpsutilPath = os.path.abspath(os.path.join(os.getcwd(), '../caresjpsutil'))
+# sys.path.insert(0, caresjpsutilPath)
 from javaConnector import returnExceptionToJava, returnResultsToJava
 
 owlCRS = Proj(init='epsg:28992')
@@ -190,7 +190,7 @@ def return_buildings():
     listOfIRIs = json.loads(sys.argv[1])
 
     if listOfIRIs == []:
-        raise ValueError("INVALID QUERY")
+        raise ValueError("EMPTY ARRAY")
 
     # --Obtain list of building heights-- #
     # --Obtain list of building coordinates-- #

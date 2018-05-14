@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.config.test;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import org.apache.http.client.ClientProtocolException;
 
@@ -25,5 +26,19 @@ public class TestAgentLocator extends TestCase {
 		System.out.println("python directory = " + directory);
 		File file = new File(directory);
 		assertTrue(file.exists());
+	}
+	
+	public void testRootDirectoryOnClientSide() throws UnsupportedEncodingException {
+		String dir = AgentLocator.getNewRootDirectory(this);
+		boolean b1 = dir.endsWith("/JPS");
+		boolean b2 = dir.endsWith("\\JPS");
+		assertTrue(b1 || b2);
+	}
+	
+	public void testRootDirectoryOnServerSide() throws ClientProtocolException, IOException {
+		String dir = AgentLocator.callAgent("agent.test.agentreturningrootdirectory");
+		boolean b1 = dir.endsWith("/JPS");
+		boolean b2 = dir.endsWith("\\JPS");
+		assertTrue(b1 || b2);
 	}
 }
