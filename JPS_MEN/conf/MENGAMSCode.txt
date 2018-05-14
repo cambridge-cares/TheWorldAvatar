@@ -1,0 +1,158 @@
+* mass exchange network integration
+* see CoMo preprint 164 section 4
+
+Sets
+         i						resource (source) index
+         j						demand (sink) index
+         tt						transportation type
+         ckey  					constant key (CARBONTAX INTERESTFACTOR ANNUALCOSTFACTOR) 
+
+Parameters
+         price(i)				price of resource i
+         priceIntMarket(j)		price of international market for remaining demand j
+         source(i)				production mass of resource i
+         demand(j)				total mass of demand j
+         connection(i,j,tt)		feasible connections between source i and demand j through transportation type tt
+         distance(i,j)			distance between source i and demand j
+         TCUnit(tt)				transportation cost per t and km
+         EMUnit(tt)				CO2 emission in gramm per t and km
+         ICUnit(tt)				installation cost per km
+         constant(ckey)			constant values
+
+*$if not set gdxincname $abort 'no include file name for data file provided'
+$gdxin _gams_java_gdb1.gdx
+$load i j tt ckey price priceIntMarket source demand connection distance TCUnit EMUnit ICUnit constant
+$gdxin
+display i, j, tt, ckey, price, priceIntMarket, source, demand, connection, distance, TCUnit, EMUnit, ICUnit, constant;
+
+Positive Variable
+		 Mass(i,j,tt)   		mass of resource i transported to demand j through transportation type tt  
+		 TMass(i,j)     		total mass of resource i transported to demand j
+         MassIntMarket(j)  		mass purchased from the international market for demand j  
+
+		 TPC(j)         		total raw material purchasing cost of demand j incl. international market
+		 TOTALPC				total raw material purchasing cost		 
+		 TPCintMarket			total raw material purchasing cost for international market only
+		 
+         TC(i,j,tt)   			transportation cost of transport material from i to j through transportation type tt
+		 TTC(j)     			total transportation cost of j
+		 TTCTransp(tt)			total transportation cost of transportation type tt
+		 TOTALTC				total transportation cost
+		 
+         IC(i,j,tt)   			installation cost of transportation type tt from i to j
+		 TICTransp(tt)			total installation cost of transportation type tt
+		 TOTALIC				total installation cost
+		 
+         EM(i,j,tt)   			CO2 emission of resource connection between i and j through transportation type tt (in gramm)
+         TEM(j)       			total CO2 emission of j (in gramm)
+		 TEMTransp(tt)			total C02 emission of transportation type tt
+		 TOTALEM				total C02 emission (in gramm)
+;
+
+Binary Variables
+		 xTRANSP(i,j,tt)		indicates the use of the transportation type tt between source i and sink j (see preprint p16 and p17)
+;
+Variables
+         ObjValue       		objective value
+;
+
+Equations
+		 e1a(i,j,tt)			if no connection between i and j for given tt is feasible then XTRANSP must be zero
+		 e1b(i,j)				at most one of the transport type tt can be selected (in addition to purchasing from international market)
+		 e2a(i,j,tt)			the raw material transported between i and j by transportation type tt must be zero if XTRANSP is zero
+		 e2aADD(i,j,tt)			without this additional constraint on XTRANSP a non-optimal solution might be calculated where everything is purchased from internation market
+		 e2b(i,j)   			equation for total raw material over all transportation types
+         e2c(i)      			mass balance equation for source i
+         e2d(j)      			mass balance equation for sink j
+         e3a(j)      			equation for raw material purchasing cost for sink j
+		 e3b					equation for total raw material purchasing cost
+		 e3c					equation for total raw material purchasing cost for international market only
+         e4a(i,j,tt)			equation for the transportation cost
+		 e4b(j)					equation for the total transportation cost for sink j
+		 e4c					equation for the total transportation cost	
+		 e4d					equation for the total transportation cost for each transportation type
+         e5a(i,j,tt)    		equation for installation cost
+		 e5b(tt)				equation for total installation cost for each transportation type
+		 e5c					equation for total installation cost
+         e6a(i,j,tt)			equation for C02 emission
+         e6b(j)					equation for total C02 emission for sink j
+		 e6c					equation for total C02 emission
+		 e6d(tt)				equation for total C02 emission cost for each transportation type
+         obj        			objective function
+;
+
+**EQUATIONS
+
+* (1) selection of transport type
+e1a(i,j,tt)								..xTRANSP(i,j,tt) =l= connection(i,j,tt);
+e1b(i,j)								..sum(tt, xTRANSP(i,j,tt)) =l= 1;
+
+* (2) raw material mass
+* The next equation is in accordance to eq. (4) to (9) of preprint 164 with M = 10000000
+* The demand should not be larger than M. It we choose a larger value for M, this might lead to solvation problems.
+* If we use an alternative formulation for the equations it could happen that the solver might not find an optimal solution any more. 
+e2a(i,j,tt)								..Mass(i,j,tt) =l= 10000000 * xTRANSP(i,j,tt);
+e2aADD(i,j,tt)							..Mass(i,j,tt) =g= xTRANSP(i,j,tt);
+* eq. (12) and (13) of preprint 164
+e2b(i,j)        						..TMass(i,j) =e= sum(tt, Mass(i,j,tt));
+* eq. (13) and (14) of preprint 164
+e2c(i)							   		..source(i) =g= sum(j, TMass(i,j));
+* eq. (10) and (11) of preprint 164
+e2d(j)                              	..demand(j) =e= sum(i, TMass(i,j)) + MassIntMarket(j);
+
+* (3) raw material purchasing cost
+* the next two equations are eq. (26) of preprint 164 
+e3a(j)							   		..TPC(j) =e= sum(i, price(i) * TMass(i,j)) + priceIntMarket(j) * MassIntMarket(j);
+e3b								   		..TOTALPC =e= sum(j,TPC(j));
+e3c										..TPCintMarket =e= sum(j, priceIntMarket(j) * MassIntMarket(j));
+
+* (4) transportation cost
+* eq. (16) (18) (20) and (21) of preprint 164
+e4a(i,j,tt)$(connection(i,j,tt)=1)    	..TC(i,j,tt) =e= TCUnit(tt) * distance(i,j) * Mass(i,j,tt);
+e4b(j)                                  ..TTC(j) =e= sum(tt, sum(i, TC(i,j,tt)));
+e4c										..TOTALTC =e= sum(j, TTC(j));
+e4d(tt)									..TTCTransp(tt) =e= sum(i, sum(j, TC(i,j,tt)));
+
+* (5) installation cost
+* eq. (24) and (25) of preprint 164
+e5a(i,j,tt)$(connection(i,j,tt)=1)    	..IC(i,j,tt) =e= ICUnit(tt) * distance(i,j) * xTRANSP(i,j,tt);
+e5b(tt)									..TICTransp(tt) =e= sum(j, sum(i$(connection(i,j,tt)=1), IC(i,j,tt)));
+e5c										..TOTALIC =e= sum(tt, TICTransp(tt));
+
+* (6) CO2 emission 
+* eq. (17) (19) (22) and (23) of preprint 164
+* EMUnit is defined in g C02 per t and km as in table 8 at page 20 
+* thus we use factor 0.000001 here such that EM is measured in tons 
+e6a(i,j,tt)$(connection(i,j,tt)=1)    	..EM(i,j,tt) =e= 0.000001 * EMUnit(tt) * distance(i,j) * Mass(i,j,tt);
+* the next two equations are eq. (27) of preprint 164
+e6b(j)                                  ..TEM(j) =e= sum(tt, sum(i, EM(i,j,tt)));
+e6c										..TOTALEM =e= sum(j, TEM(j));
+e6d(tt)									..TEMTransp(tt) =e= sum(i, sum(j, EM(i,j,tt)));
+
+* (7) objective function
+* the next equation referes to eq. (28) of preprint 164
+* in eq.(28) the total transportation cost TOTALTC is missing and this was added here 
+obj    ..ObjValue =e= constant("INTERESTFACTOR") * (TOTALPC + TOTALTC + constant("CARBONTAX") * TOTALEM + constant("ANNUALCOSTFACTOR") * TOTALIC);
+
+
+
+
+Mass.l(i,j,tt)=0;
+TMass.l(i,j) = 0;
+MassIntMarket.l(j) = 0;
+TPC.l(j)=0;
+TC.l(i,j,tt)=0;
+IC.l(i,j,tt)=0;
+EM.l(i,j,tt)=0;
+xTRANSP.l(i,j,tt)=0;
+
+
+
+
+Model materialnetwork /all/;
+
+Solve materialnetwork using minlp minimize ObjValue;
+*execute_unload "results.gdx"
+*execute 'gdxxrw.exe results.gdx var=xTRANSP.L'
+
+display ObjValue.l, xTRANSP.l, Mass.l, TMass.l, MassIntMarket.l, TPCintMarket.l, TPC.l, TOTALPC.l, TC.l, TTCTransp.l, TOTALTC.l, TEMTransp.l, TOTALEM.l, TICTransp.l, TOTALIC.l;

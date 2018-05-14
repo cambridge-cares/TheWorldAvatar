@@ -11,8 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class DataDownloadAgent
  */
-@WebServlet("/DataDownloadAgent")
-
+@WebServlet(urlPatterns = {"/download", "/read"})
 public class DataDownloadAgent extends HttpServlet {
 	private static final long serialVersionUID = 2L; //??
     
@@ -28,19 +27,39 @@ public class DataDownloadAgent extends HttpServlet {
 	 */
 protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+	
+	String path = request.getServletPath();
+
+	if ("/download".equals(path)) {
+	
 		// -- Get String formatted in Array of Strings -- //
 		request.setCharacterEncoding("UTF-8");
-		String jsonString = request.getParameter("MoDS_input");
+		String jsonString = request.getParameter("CPO_page");
 		
 		try {
-			String result = DataDownload.Downloading_market_data();
+			String result = DataDownload.Downloading_market_data(jsonString);
 			response.setContentType("application/json");
 			response.getWriter().write(result);
-//		} catch (PythonException e) {
-//			e.printStackTrace();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
+	
+	} else if ("/read".equals(path)) {
+		
+		// -- Get String formatted in Array of Strings -- //
+		request.setCharacterEncoding("UTF-8");
+		String jsonString = request.getParameter("individuals");
+		
+		try {
+			String result = DataDownload.Call_data(jsonString.split(","));
+			response.setContentType("application/json");
+			response.getWriter().write(result);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	}
+	
 	}
 }
