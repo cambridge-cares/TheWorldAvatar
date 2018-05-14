@@ -397,9 +397,9 @@ public class TestMenGamsConverter extends TestCase {
 		MenGamsConverter converter = new MenGamsConverter();
 		Parameters parameters = new Parameters(50., 1., 1., 1.05, false);
 		MenResult result = converter.calculate(sources, sinks, connections, transportations, parameters);
-		assertEquals(6.1898241E9, result.totalMaterialPurchaseCost, 1.);
-		assertEquals(1235143, result.totalTransportationCost, 1.);
-		assertEquals(1723., result.totalCO2Emission, 1.); // in gramm 
+		assertEquals(6.41811655E9, result.totalMaterialPurchaseCost, 1.);
+		assertEquals(1062291, result.totalTransportationCost, 1.);
+		assertEquals(1472.95734, result.totalCO2Emission, 1.); // in gramm 
 	}
 	
 	
