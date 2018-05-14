@@ -49,18 +49,18 @@ public class AgentLocator {
 		}
 		if (index == -1) {
 			String message = "The root directory for JPS was not found, path = " + path;
-//			logger.error(message);
+			logger.error(message);
 			throw new RuntimeException(message);
 		}
 		
 		jpsRootDirectory = path.substring(0, index + 4);
-//		logger.info("jpsRootDirectory = " + jpsRootDirectory);
+		logger.info("jpsRootDirectory = " + jpsRootDirectory);
 		
 		try {
 			jpsProps = loadProperties("jps.properties");
 			logProperties(jpsProps);
 		} catch (IOException exc) {
-//			logger.error(exc.getMessage(), exc);
+			logger.error(exc.getMessage(), exc);
 		}
 		
 		try {
@@ -68,17 +68,17 @@ public class AgentLocator {
 			logProperties(jpsTestProps);
 		} catch (IOException exc) {
 			// this is no error. jpstest.properties should not be available on production system.
-//			logger.info("jpstest.properties not found");
+			logger.info("jpstest.properties not found");
 		}			
 
 		url = getProperty("host") + ":" + getProperty("port");
-//		logger.info("created url from properties: " + url);
+		logger.info("created url from properties: " + url);
 	}
 	
 	private Properties loadProperties(String fileName) throws IOException {
 	      
 		String configPath = getJPSRootDirectory() + "/conf/" + fileName;
-//		logger.info("loading " + configPath);
+		logger.info("loading " + configPath);
 		
 		FileInputStream inputStream = new FileInputStream(configPath);
 		Properties props = new Properties();
@@ -89,7 +89,7 @@ public class AgentLocator {
 	
 	private void logProperties(Properties properties) {
 		for (Entry<Object, Object> current : properties.entrySet()) {
-//			logger.info(current.toString());
+			logger.info(current.toString());
 		}
 	}
 	
@@ -121,11 +121,11 @@ public class AgentLocator {
 		}
 		if (index == -1) {
 			String message = "root directory was not found, classDir = " + classDir;
-//			logger.error(message);
+			logger.error(message);
 			throw new RuntimeException(message);
 		}
 		path = path.substring(0, index);
-//		logger.info("rootDirectory = " + path + " , classDirectory = " + classDir);
+		logger.info("rootDirectory = " + path + " , classDirectory = " + classDir);
 		return path;
 	}
 	
@@ -190,7 +190,7 @@ public class AgentLocator {
 	
 	private String callAgentInternally(String agentKey)  throws ClientProtocolException, IOException {
 		String combinedUrl = url + AgentLocator.getProperty(agentKey);
-//		logger.info("calling agent " + combinedUrl);
+		logger.info("calling agent " + combinedUrl);
 		HttpUriRequest request = new HttpGet(combinedUrl);
 		HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 		String response = EntityUtils.toString(httpResponse.getEntity());

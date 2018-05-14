@@ -38,7 +38,7 @@ public class ADMSOutput extends HttpServlet {
 		
 		String outputFile = AgentLocator.getPathToWorkingDir() + "/" + "ADMS/caresjpsadmsinputs/test.levels.gst";
 		
-		String result = PythonHelper.callPython("caresjpsadmsinputs/ADMSOutput.py", outputFile , g.toJson(jsonString));
+		String result = PythonHelper.callPython("caresjpsadmsinputs/ADMSOutput.py", outputFile , g.toJson(jsonString), this);
 		
 		response.setContentType("application/json");
 		response.getWriter().write(result);
