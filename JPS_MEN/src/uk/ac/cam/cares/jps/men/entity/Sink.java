@@ -29,6 +29,6 @@ public class Sink implements INamed {
 	}
 	
 	public String toString( ) {
-		return "Sink[name=" + getName() + ", product=" + getProduct().getName() + "]";
+		return "Sink[name=" + getName() + ", raw material=" + getProduct().getName() + ", nearSea = " + isNearSea() + "]"; //product need to be changed by consumed (raw material needed)
 	}
 }
