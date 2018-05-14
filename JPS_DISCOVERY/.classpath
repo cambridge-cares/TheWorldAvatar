@@ -43,5 +43,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jps_base.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/JPS"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
