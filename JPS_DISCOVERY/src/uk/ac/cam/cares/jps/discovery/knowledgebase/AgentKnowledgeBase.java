@@ -13,7 +13,7 @@ import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 
-import uk.ac.cam.cares.jps.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 
 public class AgentKnowledgeBase {
 	
@@ -45,7 +45,7 @@ public class AgentKnowledgeBase {
 	}
 	
 	public static String getFileForAgentOntology() {
-		return AgentLocator.getPathToJpsDataOntologyDir() + "/OntoAgent/OntoAgent.owl";
+		return uk.ac.cam.cares.jps.base.config.AgentLocator.getPathToJpsDataOntologyDir() + "/OntoAgent/OntoAgent.owl";
 	}
 	
 	public static String getDirForAgentKnowledgesBase() {
