@@ -29,6 +29,6 @@ public class Source implements INamed {
 	}
 	
 	public String toString( ) {
-		return "Source[name=" + getName() + ", product=" + getProduct().getName() + "]";
+		return "Source[name=" + getName() + ", product=" + getProduct().getName() + ", nearSea = " + isNearSea() + "]";
 	}
 }
