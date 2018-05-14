@@ -241,15 +241,15 @@ public class TestMenGamsConverter extends TestCase {
 		// Preprint 164, p20, Table 7: sink information in the material network
 		// format: sink name, amount (kt per year) 
 		String sinksAsString = "d1,35.3,d2,68.4,d3,400,d4,10,d5,38.8"
-				+ ",d6,87.5,d7,412.5,d8,181,d9,28.2,d10,33.6"
 				+ ",d11,411.5,d12,205.8,d13,292.5,d14,131.1,d15,42.6"
 				+ ",d16,35,d17,202,d18,39.2,d19,10.3"
+				+ ",d6,87.5,d7,412.5,d8,181,d9,28.2,d10,33.6"
 				+ ",d21,12,d22,8.3,d23,9.9,d24,285.7,d25,27.8,d26,574.8";
 		// Preprint 164, p18, Table 6: Distances between the potential connectable companies
 		// format: source name, sink name, distance (km)
 		String distancesAsString = "r2,d9,1.5,r2,d24,4,r3,d2,4,r3,d3,5.3,r3,d10,3.8,r4,d7,8,r4,d11,5,r4,d13,8,r5,d5,2"
-				+ ",r6,d21,3.5,r7,d1,1,r7,d4,1.5,r8,d17,0.5,r9,d2,4,r9,d3,1.5,r9,d10,4,r10,d6,3.2,r10,d8,2.2,r10,d12,3.1,r10,d14,2.2,r10,d15,3,r10,d16,3"
 				+ ",r11,d19,8,r11,d22,3,r12,d9,1.5,r12,d24,4,r13,d18,0.5,r14,d21,3.5,r15,d21,3.5"
+				+ ",r6,d21,3.5,r7,d1,1,r7,d4,1.5,r8,d17,0.5,r9,d2,4,r9,d3,1.5,r9,d10,4,r10,d6,3.2,r10,d8,2.2,r10,d12,3.1,r10,d14,2.2,r10,d15,3,r10,d16,3"
 				+ ",r16,d7,10.4,r16,d11,5.3,r16,d13,10.4,r17,d23,8,r18,d25,7,r18,d26,4";
 		
 		List<Source> sources = createSources(sourcesAsString);
@@ -357,10 +357,59 @@ public class TestMenGamsConverter extends TestCase {
 	/**
 	 *  All sinks, sources and connections as in preprint 164. 
 	 *  The near sea information is derived from fig. 9 of preprint 164.
+	 */
+	public void test5aPreprint164Withoutr1d20connection() {
+		
+		// Preprint 164, p20, Table 7: source information in the material network
+		// format: source name, amount (kt per year), price (dollar per t) 
+		String sourcesAsString = "r1,500,555,r2,250,1750,r3,1900,1254,r4,580,1364,r5,115,1700"
+				+ ",r6,120,2010,r7,300,1510,r8,210,2072,r9,1010,1254,r10,1000,1124"
+				+ ",r11,55,2161,r12,181,1750,r13,73,1988,r14,200,2010,r15,223,2010"
+				+ ",r16,438,1023,r17,65,1605,r18,150,3190";
+		// Preprint 164, p20, Table 7: sink information in the material network
+		// format: sink name, amount (kt per year) 
+		String sinksAsString = "d1,35.3,d2,68.4,d3,400,d4,10,d5,38.8"
+				+ ",d6,87.5,d7,412.5,d8,181,d9,28.2,d10,33.6"
+				+ ",d11,411.5,d12,205.8,d13,292.5,d14,131.1,d15,42.6"
+				+ ",d16,35,d17,202,d18,39.2,d19,10.3,d20,283.8"
+				+ ",d21,12,d22,8.3,d23,9.9,d24,285.7,d25,27.8,d26,574.8";
+		// Preprint 164, p18, Table 6: Distances between the potential connectable companies
+		// format: source name, sink name, distance (km)
+		String distancesAsString = "r2,d9,1.5,r2,d24,4,r3,d2,4,r3,d3,5.3,r3,d10,3.8,r3,d20,1.5,r4,d7,8,r4,d11,5,r4,d13,8,r5,d5,2"
+				+ ",r6,d21,3.5,r7,d1,1,r7,d4,1.5,r8,d17,0.5,r9,d2,4,r9,d3,1.5,r9,d10,4,r9,d20,6.3,r10,d6,3.2,r10,d8,2.2,r10,d12,3.1,r10,d14,2.2,r10,d15,3,r10,d16,3"
+				+ ",r11,d19,8,r11,d22,3,r12,d9,1.5,r12,d24,4,r13,d18,0.5,r14,d21,3.5,r15,d21,3.5"
+				+ ",r16,d7,10.4,r16,d11,5.3,r16,d13,10.4,r17,d23,8,r18,d25,7,r18,d26,4";
+		
+		
+		List<Source> sources = createSources(sourcesAsString);
+		List<Sink> sinks = createSinks(sinksAsString);
+		List<FeasibleConnection> connections = createFeasibleConnections(sources, sinks, distancesAsString);
+		List<Transportation> transportations = createTransportations(TRANSPORTATIONS_AS_STRING);
+		
+		//addNearSeaInformation(sources, "r2,r12,r17,r18", sinks, "d23,d24,d26");
+		addNearSeaInformation(sources, "r17,r18", sinks, "d23,d24,d26,d6");
+	
+		System.out.println("created " + sources.size() + " sources");
+		System.out.println(sources);
+		System.out.println("created " + sinks.size() + " sinks");
+		System.out.println(sinks);
+		
+		MenGamsConverter converter = new MenGamsConverter();
+		Parameters parameters = new Parameters(50., 1., 1., 1.05, false);
+		MenResult result = converter.calculate(sources, sinks, connections, transportations, parameters);
+		assertEquals(6.1898241E9, result.totalMaterialPurchaseCost, 1.);
+		assertEquals(1235143, result.totalTransportationCost, 1.);
+		assertEquals(1723., result.totalCO2Emission, 1.); // in gramm 
+	}
+	
+	
+	/**
+	 *  All sinks, sources and connections as in preprint 164. 
+	 *  The near sea information is derived from fig. 9 of preprint 164.
 	 *  Six calculation for different annual cost factors.
 	 *  The results agree at least in a qualitative sense with table 9 from preprint 164
 	 */
-	public void test5bPreprint164() {
+	public void test5bPreprint164WithVaryingAnnualCostFactors() {
 		
 		// Preprint 164, p20, Table 7: source information in the material network
 		// format: source name, amount (kt per year), price (dollar per t) 
