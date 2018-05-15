@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.discovery.test;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
@@ -22,10 +21,11 @@ public class TestAgentLocator extends TestCase {
 	}
 
 	public void testRelativeDirectory() {
-		String directory = AgentLocator.getAbsolutePath("reldir.workingdir");
-		System.out.println("workingdir directory = " + directory);
-		File file = new File(directory);
-		assertTrue(file.exists());
+		String dir = AgentLocator.getAbsolutePath("reldir.workingdir", this);
+		System.out.println("workingdir directory = " + dir);
+		boolean b1 = dir.endsWith("/JPS_DISCOVERY/workingdir");
+		boolean b2 = dir.endsWith("\\JPS_DISCOVERY\\workingdir");
+		assertTrue(b1 || b2);
 	}
 	
 	public void testRootDirectoryOnClientSide() throws UnsupportedEncodingException {

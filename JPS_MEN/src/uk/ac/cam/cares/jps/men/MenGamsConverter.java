@@ -6,6 +6,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.gams.api.GAMSDatabase;
 import com.gams.api.GAMSJob;
 import com.gams.api.GAMSOptions;
@@ -28,6 +31,7 @@ public class MenGamsConverter {
 	//TODO-AE GAMS produces new files for each optimization. Old files must be deleted. Maybe move the workingDir to another place
 	// to use is also from ADMS and to have a general strategy for deleting old files. Move also location log files there
 	final private String WORKING_DIR_GAMS = "C:\\Users\\kevin\\TEMP\\JPS_workingdir\\JPS_MEN_GAMS";
+	private Logger logger = LoggerFactory.getLogger(MenGamsConverter.class);	
 	
 	public MenResult calculate(List<Source> sources, List<Sink> sinks, List<FeasibleConnection> feasibleConnections, List<Transportation> transportations, Parameters parameters) {
 	
@@ -72,7 +76,7 @@ public class MenGamsConverter {
 
         job.run(opt, db);
 
-        System.out.println(parameters);
+        logger.info("parameter= "+parameters);
         
         return createResultFromGams(job, transportations);
 	}
@@ -102,9 +106,8 @@ public class MenGamsConverter {
         	result.addRaw(transpName, raw);
         }
         
-        System.out.println("Result from GAMS calculation:");
-        System.out.println(result);
-        System.out.println(result.convertMatrixToString());
+       logger.info("Result from GAMS calculation: "+result);
+       logger.info("Result in matrix= "+result.convertMatrixToString());
         
         return result;
 	}

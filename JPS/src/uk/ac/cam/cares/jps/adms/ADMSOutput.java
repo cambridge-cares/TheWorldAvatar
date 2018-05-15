@@ -10,8 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
-import uk.ac.cam.cares.jps.config.AgentLocator;
-import uk.ac.cam.cares.jps.util.PythonHelper;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 /**
  * Servlet implementation class ADMSOutput
@@ -36,7 +36,7 @@ public class ADMSOutput extends HttpServlet {
 		
 		Gson g = new Gson();
 		
-		String outputFile = AgentLocator.getPathToWorkingDir() + "/" + "ADMS/caresjpsadmsinputs/test.levels.gst";
+		String outputFile = AgentLocator.getPathToWorkingDir(this) + "/" + "ADMS/caresjpsadmsinputs/test.levels.gst";
 		
 		String result = PythonHelper.callPython("caresjpsadmsinputs/ADMSOutput.py", outputFile , g.toJson(jsonString), this);
 		
