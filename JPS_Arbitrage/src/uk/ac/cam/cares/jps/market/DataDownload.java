@@ -16,7 +16,7 @@ import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import uk.ac.cam.cares.jps.util.PythonHelper;
+import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 public class DataDownload {
 
@@ -333,7 +333,6 @@ public class DataDownload {
 					//{ontoPath3+"#"+"data", ontoPath4+"#"+"ZCEMethanol_001"},
 					//{ontoPath3+"#"+"data", ontoPath4+"#"+"CMENaturalGas_001"}
 					};
-			String[] headers2 = {"CMECrudePalmOil_001","CMEBiodiesel_001"}; 
 			
 			   /**get model from an owl file*/
 			   String filePath2 = "C:/Users/Janusz/Desktop/JParkSimulator-git/JPS_Arbitrage/workingdir/OntoArbitrage_Market_KB.owl";
@@ -352,7 +351,6 @@ public class DataDownload {
 				//JSONObject row = new JSONObject();
 				RDFIndividual individual = owlModel2.getRDFIndividual(addresses2[i][1]);
 				String name = individual.getPropertyValueLiteral(owlModel2.getRDFProperty(addresses2[i][0])).getString();
-				data += headers2[i] + ",";
 				data += name + ",";
 				//data.put(headers2[i],name);
 				//System.out.println(name);

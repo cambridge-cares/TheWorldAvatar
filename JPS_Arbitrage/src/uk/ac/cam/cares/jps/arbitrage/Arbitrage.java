@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 import com.cmclinnovations.mods.api.MoDSAPI;
 
-import uk.ac.cam.cares.jps.util.PythonHelper;
+import uk.ac.cam.cares.jps.base.util.PythonHelper;
 import uk.ac.cam.cares.jps.arbitragetest.TestMoDSAnalysis;
 
 
@@ -86,7 +86,7 @@ public class Arbitrage {
 	    System.out.println(1);
 		String CPO_to_FAME_analysis = new String("caresjpsarbitrage/CPO_to_FAME_MoDS2.py"); 
 		//String market_data_plot = new String("C:\\Users\\Janusz\\Desktop\\Commodity_prices\\Market_data\\arbitrage_CPO_MoDS.png"); 
-		//String result1 = PythonHelper.callPython(CPO_to_FAME_analysis, result, new Arbitrage());
+		//String result1 = PythonHelper.callPython(CPO_to_FAME_analysis, result, actual, new Arbitrage());
 		//System.out.println(result1);
 		
 	
