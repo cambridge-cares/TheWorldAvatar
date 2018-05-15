@@ -28,11 +28,11 @@ def HNG(url_address, driver):
 	price = tree.xpath("//td[re:test(@id, 'quotesFuturesProductTable1_NG[A-Z][0-9]_priorSettle')]/text()", namespaces={'re': "http://exslt.org/regular-expressions"})
 	delivery = remove_duplicates(tree.xpath('//span[@class="cmeNoWrap"]/text()'))
 	
-	string = '"HNG,Date,Price type,Size (mmBTU)'
+	string = '&HNG,Date,Price type,Size (mmBTU)'
 	for i in range(len(delivery)):
 		string += "," + delivery[i]
 
-	string += '"'+page.headers['Date']+ ',Prior Settlement (USD per mmBTU),10.0'
+	string += '&'+page.headers['Date']+ ',Prior Settlement (USD per mmBTU),10.0'
 	for i in range(len(price)):
 		string += "," + price[i]
 	
