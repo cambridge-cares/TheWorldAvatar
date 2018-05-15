@@ -4,8 +4,8 @@ setup(
     # Needed to silence warnings (and to be a worthwhile package)
     name='javaConnector',
     url='https://github.com/jladan/package_demo',
-    author='WN',
-    author_email='jimmyzhou.ntu@gmail.com',
+    author='WE',
+    author_email='weiern.cares.c4t@gmail.com',
     # Needed to actually package something
     packages=['javaConnector'],
     # Needed for dependencies
