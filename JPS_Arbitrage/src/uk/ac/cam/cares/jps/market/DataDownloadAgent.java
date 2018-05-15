@@ -8,6 +8,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 /**
  * Servlet implementation class DataDownloadAgent
  */
@@ -54,7 +57,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
 		try {
 			String result = DataDownload.Call_data(jsonString.split(","));
 			response.setContentType("application/json");
-			response.getWriter().write(result);
+			response.getWriter().write(result.toString());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

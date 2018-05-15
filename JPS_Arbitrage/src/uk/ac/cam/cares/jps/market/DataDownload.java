@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.json.JSONObject;
+
 import com.hp.hpl.jena.util.FileUtils;
 
 import edu.stanford.smi.protege.exception.OntologyLoadException;
@@ -22,7 +24,7 @@ public class DataDownload {
 
 	
 	
-	public static String Downloading_market_data(String CPO_page) throws Exception {
+	public static String Downloading_market_data(String CPO_page1) throws Exception {
 		
 		/** this function executes 4 Python scripts which download market data and stores it in separate CSV files */ 
 		
@@ -31,7 +33,7 @@ public class DataDownload {
 		String ZCE_download = new String("caresjpsarbitrage/ZCE_download.pyw"); 
 		String HNG_download = new String("caresjpsarbitrage/HNG_download.pyw");
 		
-		//String CPO_page = new String("http://www.cmegroup.com/trading/agricultural/grain-and-oilseed/usd-malaysian-crude-palm-oil-calendar.html?optionProductId=8075"); 
+		String CPO_page = new String("http://www.cmegroup.com/trading/agricultural/grain-and-oilseed/usd-malaysian-crude-palm-oil-calendar.html?optionProductId=8075"); 
 		String FAME_page = new String("http://www.cmegroup.com/trading/energy/refined-products/fame-0-argus-biodiesel-fob-rdam-red-compliant-swap-futures.html");
 		String ZCE_page = new String("http://english.czce.com.cn/enportal/DFSStaticFiles/Future/EnglishFutureQuotesMA.htm"); 
 		String HNG_page = new String("http://www.cmegroup.com/trading/energy/natural-gas/natural-gas.html"); 
@@ -289,8 +291,8 @@ public class DataDownload {
 		String ontoPath = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15"; //KB
 		String ontoPath2 = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl";
 		
-
-
+		//JSONObject data = new JSONObject();
+		String data = "";
 		
 		/** URIs of relevant individuals and their properties are defined */
 		String[][] addresses = new String[headers.length][];
@@ -310,12 +312,14 @@ public class DataDownload {
 		      e1.printStackTrace();
 		     }
 
-				
+		   
 			for (int i = 0; i <addresses.length; i++){
 				RDFIndividual individual = owlModel.getRDFIndividual(addresses[i][1]);
 				String name = individual.getPropertyValueLiteral(owlModel.getRDFProperty(addresses[i][0])).getString();
-				System.out.println(name);
-				}
+				//data.put(headers[i],name);
+				data += headers[i] + ",";
+				data += name + ",";
+			}
 
 			
 			
@@ -328,9 +332,10 @@ public class DataDownload {
 			
 			String[][] addresses2 = {{ontoPath3+"#"+"data", ontoPath4+"#"+"CMECrudePalmOil_001"},
 					{ontoPath3+"#"+"data", ontoPath4+"#"+"CMEBiodiesel_001"},
-					{ontoPath3+"#"+"data", ontoPath4+"#"+"ZCEMethanol_001"},
-					{ontoPath3+"#"+"data", ontoPath4+"#"+"CMENaturalGas_001"}
+					//{ontoPath3+"#"+"data", ontoPath4+"#"+"ZCEMethanol_001"},
+					//{ontoPath3+"#"+"data", ontoPath4+"#"+"CMENaturalGas_001"}
 					};
+			String[] headers2 = {"CMECrudePalmOil_001","CMEBiodiesel_001"}; 
 			
 			   /**get model from an owl file*/
 			   String filePath2 = "C:/Users/Janusz/Desktop/Commodity_prices/Ontology/OntoArbitrage_Market_KB.owl";
@@ -344,19 +349,24 @@ public class DataDownload {
 			      e1.printStackTrace();
 			     }
 			
-     		 String result = "";
+
 			for (int i = 0; i <addresses2.length; i++){
+				//JSONObject row = new JSONObject();
 				RDFIndividual individual = owlModel2.getRDFIndividual(addresses2[i][1]);
 				String name = individual.getPropertyValueLiteral(owlModel2.getRDFProperty(addresses2[i][0])).getString();
-				System.out.println(name);
-				if (i == 0) {result = name.toString();}
+				data += headers2[i] + ",";
+				data += name + ",";
+				//data.put(headers2[i],name);
+				//System.out.println(name);
+				//if (i == 0) {result = name.toString();}
 				}
-		   return result;
+			
+		   return data;
 	}
 	
 	
 	public static void main(String[] args) throws Exception {
-		//Downloading_market_data();
+		Downloading_market_data("http://www.cmegroup.com/trading/agricultural/grain-and-oilseed/usd-malaysian-crude-palm-oil-calendar.html?optionProductId=8075");
 		//Downloading_currencies();
 		//Storing_Aspen_data();
 		//Reading_data();
