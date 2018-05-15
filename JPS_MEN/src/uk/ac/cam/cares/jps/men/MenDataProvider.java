@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openjena.atlas.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,10 +40,10 @@ public class MenDataProvider {
 	public static void main(String[] args) throws Exception {
 		
 		MenDataProvider provider = new MenDataProvider();
-		provider.startCalculation();
+		provider.startCalculationwithdefaultparameter();
 	}
 	
-	public MenResult startCalculation() {
+	public MenResult startCalculationwithdefaultparameter() {
 	    // TODO-AE URGENT switch to true for highest base price?
 	    //format of parameter= carbonTax , interestFactor , annualCostFactor , internationalMarketPriceFactor , internationalMarketLowestPrice
 	    Parameters parameters = new Parameters(50., 1., 1., 1.05, false);	
@@ -299,6 +300,7 @@ public class MenDataProvider {
 		    String sourceName = sourceLit.getString();
 		    Literal iri = qs_s.getLiteral("IRI") ;           //extract the IRI of the source
 		    String sourceIRI = iri.getString();
+		    System.out.println("source of IRI= "+ sourceIRI);
 		    
 		    
 		    //extract product information (product name, capacity, price) from the OKB
