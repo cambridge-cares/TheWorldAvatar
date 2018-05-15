@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import com.google.gson.Gson;
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.config.AgentLocator;
-import uk.ac.cam.cares.jps.util.PythonHelper;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 // IMPORTANT: have to put test.levels.gst file in the actual JPS directory e.g. C:\Users\WE\Desktop\JPS\JParkSimulator-git\JPS\workingdir\ADMS\caresjpsadmsinputs\test.levels.gst
 
@@ -17,7 +17,7 @@ public class TestADMSOutput extends TestCase {
 		
 		Gson g = new Gson();
 		
-		String outputFile = AgentLocator.getPathToWorkingDir() + "/" + "ADMS/caresjpsadmsinputs/test.levels.gst";
+		String outputFile = AgentLocator.getPathToWorkingDir(this) + "/" + "ADMS/caresjpsadmsinputs/test.levels.gst";
 		
 		try {
 		

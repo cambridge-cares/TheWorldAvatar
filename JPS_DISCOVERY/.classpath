@@ -42,6 +42,10 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/JPS"/>
-	<classpathentry kind="output" path="build/classes"/>
+	<classpathentry kind="lib" path="/JPS_BASE/workingdir/jps_base.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="bin"/>
 </classpath>

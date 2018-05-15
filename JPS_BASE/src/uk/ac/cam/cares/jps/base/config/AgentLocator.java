@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.config;
+package uk.ac.cam.cares.jps.base.config;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -16,12 +16,14 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+
 public class AgentLocator {
 
 	private static AgentLocator instance = null;
 	
 	private static Logger logger = LoggerFactory.getLogger(AgentLocator.class);
-	private String jpsRootDirectory = null;
+	private String jpsBaseDirectory = null;
 	private Properties jpsProps = null;
 	private Properties jpsTestProps = null;
 	private String url = null;
@@ -37,35 +39,44 @@ public class AgentLocator {
 		return instance;
 	}
 
+	/**
+	 * Loads the property files. There is only one source for the property files, namely the config directory
+	 * within the deployed JPS_BASE app.
+	 */
 	private void init() {
 		
-		String path = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-		if ((path.indexOf("/") == 0) || (path.indexOf("\\") == 0)) {
-			path = path.substring(1);
-		}
-		int index = path.lastIndexOf("/JPS");
-		if (index == -1) {
-			index = path.lastIndexOf("\\JPS");
-		}
-		if (index == -1) {
-			String message = "The root directory for JPS was not found, path = " + path;
-			logger.error(message);
-			throw new RuntimeException(message);
+		String path = getCurrentJpsAppDirectory(this);
+		boolean isJpsBaseDir = path.endsWith("/JPS_BASE") || path.endsWith("\\JPS_BASE");
+
+		if (!isJpsBaseDir) {
+			int index = path.lastIndexOf("/JPS");
+			if (index == -1) {
+				index = path.lastIndexOf("\\JPS");
+				path = path.substring(0, index) + "\\JPS_BASE";
+			} else {
+				path = path.substring(0, index) + "/JPS_BASE";
+			}
 		}
 		
-		jpsRootDirectory = path.substring(0, index + 4);
-		logger.info("jpsRootDirectory = " + jpsRootDirectory);
+		jpsBaseDirectory = path;
+		logger.info("JPS_BASE directory = " + jpsBaseDirectory);
 		
 		try {
 			jpsProps = loadProperties("jps.properties");
-			logProperties(jpsProps);
+			if (isJpsBaseDir) {
+				logProperties(jpsProps);
+			}
+			// else no need to log again
 		} catch (IOException exc) {
 			logger.error(exc.getMessage(), exc);
 		}
 		
 		try {
 			jpsTestProps = loadProperties("jpstest.properties");
-			logProperties(jpsTestProps);
+			if (isJpsBaseDir) {
+				logProperties(jpsTestProps);
+			}
+			// else no need to log again
 		} catch (IOException exc) {
 			// this is no error. jpstest.properties should not be available on production system.
 			logger.info("jpstest.properties not found");
@@ -77,7 +88,7 @@ public class AgentLocator {
 	
 	private Properties loadProperties(String fileName) throws IOException {
 	      
-		String configPath = getJPSRootDirectory() + "/conf/" + fileName;
+		String configPath = getJPSBaseDirectory() + "/conf/" + fileName;
 		logger.info("loading " + configPath);
 		
 		FileInputStream inputStream = new FileInputStream(configPath);
@@ -92,19 +103,16 @@ public class AgentLocator {
 			logger.info(current.toString());
 		}
 	}
-	
-	private static String getJPSRootDirectory() {
-		return getSingleton().jpsRootDirectory;
-	}
-	
-	public static String getNewRootDirectory(Object thisObject) {
+
+	public static String getCurrentJpsAppDirectory(Object thisObject) {
 		
 		String classDir = thisObject.getClass().getClassLoader().getResource("").getPath();
 		String path;
 		try {
 			path = URLDecoder.decode(classDir, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
+			throw new JPSRuntimeException(e);
+		
 		}
 		if ((path.indexOf("/") == 0) || (path.indexOf("\\") == 0)) {
 			path = path.substring(1);
@@ -120,38 +128,37 @@ public class AgentLocator {
 			}
 		}
 		if (index == -1) {
-			String message = "root directory was not found, classDir = " + classDir;
+			String message = "current JPS app directory was not found, class directory = " + classDir;
 			logger.error(message);
-			throw new RuntimeException(message);
+			throw new JPSRuntimeException(message);
 		}
 		path = path.substring(0, index);
-		logger.info("rootDirectory = " + path + " , classDirectory = " + classDir);
+		logger.info("current JPS app directory = " + path + " , class directory = " + classDir);
 		return path;
 	}
 	
-	public static String getAbsolutePath(String keyForRelativePath) {
+	private static String getJPSBaseDirectory() {
+		return getSingleton().jpsBaseDirectory;
+	}
+	
+	public static String getAbsolutePath(String keyForRelativePath, Object thisObject) {
 		String relativePath = getProperty(keyForRelativePath);
-		return getJPSRootDirectory() + "/" + relativePath;
+		return getCurrentJpsAppDirectory(thisObject) + "/" + relativePath;
 	}
 	
 	/**
 	 * @param pythonScriptName (including package name followed by script name and .py extension, e.g. caresjpsadmsinputs/ADMSGeoJsonGetter.py)
 	 * @return
 	 */
-	public static String getPathToPythonScript(String pythonScriptName) {
-		String relativePath = getProperty("reldir.python");
-		return getJPSRootDirectory() + "/" + relativePath + "/" + pythonScriptName;
-	}
-	
 	//TODO-AE replace original methods after Janusz checked that this method is working
 	public static String getNewPathToPythonScript(String pythonScriptName, Object thisObject) {
 		String relativePath = getProperty("reldir.python");
-		return getNewRootDirectory(thisObject) + "/" + relativePath + "/" + pythonScriptName;
+		return getCurrentJpsAppDirectory(thisObject) + "/" + relativePath + "/" + pythonScriptName;
 	}
 	
-	public static String getPathToWorkingDir() {
+	public static String getPathToWorkingDir(Object thisObject) {
 		String relativePath = getProperty("reldir.workingdir");
-		return getJPSRootDirectory() + "/" + relativePath;
+		return getCurrentJpsAppDirectory(thisObject) + "/" + relativePath;
 	}
 	
 	public static String getPathToJpsDataKnowledgeDir() {

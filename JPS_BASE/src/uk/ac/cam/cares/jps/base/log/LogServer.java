@@ -44,22 +44,13 @@ public class LogServer extends HttpServlet {
 				buffer.append(line);
 			}
 			
-			File file = new File("C:/jps/temp/file.txt");
-			file.getParentFile().mkdirs();
-
-			PrintWriter writer = new PrintWriter(file, "UTF-8");
-			writer.println(buffer.toString());
-			writer.close();
-			
-			System.out.println("MY LOGSERVER = " + buffer.toString());
-			
-//			System.out.println(buffer.toString());
-			// System.out.println("MESSAGE FROM LOGSERVER:");
-			// System.out.println(buffer.toString());
-			// logger.debug(buffer.toString());
+//			File file = new File("C:/jps/temp/file.txt");
+//			file.getParentFile().mkdirs();
+//			PrintWriter writer = new PrintWriter(file, "UTF-8");
+//			writer.println(buffer.toString());
+//			writer.close();
+	
 			logger.info(buffer.toString());
-			// logger.warn(buffer.toString());
-			// logger.error(buffer.toString());
 		} catch (Exception e) {
 			logger.error("Failed to read the request body from the request.");
 		}

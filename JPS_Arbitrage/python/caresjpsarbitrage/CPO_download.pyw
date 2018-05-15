@@ -28,10 +28,11 @@ def CPO(url_address, driver):
 	price = tree.xpath("//td[re:test(@id, 'quotesFuturesProductTable1_CPO[A-Z][0-9]_priorSettle')]/text()", namespaces={'re': "http://exslt.org/regular-expressions"})
 	delivery = remove_duplicates(tree.xpath('//span[@class="cmeNoWrap"]/text()'))
 	
-	string = delivery[0]
-	for i in range(1,len(delivery)):
+	string = '"CPO,Date,Price type,Size (tonne)'
+	for i in range(len(delivery)):
 		string += "," + delivery[i]
 	
+	string += '"'+page.headers['Date']+ ',Prior Settlement (USD per tonne),25.0'
 	for i in range(len(price)):
 		string += "," + price[i]
 	

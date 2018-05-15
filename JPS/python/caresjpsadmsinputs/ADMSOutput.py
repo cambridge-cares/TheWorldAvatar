@@ -4,11 +4,22 @@ import sys
 import csv
 import math
 
+import requests
+import logging
+from io import StringIO
+
+class LevelFilter(logging.Filter):
+    def __init__(self, levels):
+        self.levels = levels
+
+    def filter(self, record):
+        return record.levelno in self.levels
+
 # admsCRS = Proj(init='epsg:28992')
 # osmCRS = Proj(init='epsg:4326')
 
 def getADMSOutput():
-
+    
     # clicked coordinates is received and stored in Python float variables
     filePath = sys.argv[1]
     coordinatesLatLon = json.loads(sys.argv[2])
@@ -50,4 +61,20 @@ def getADMSOutput():
         return json.dumps(entryShortestDistance)
 
 if __name__ == "__main__":
+    log_stream = StringIO()
+    logging.basicConfig(stream=log_stream,
+                        level=logging.INFO,
+                        format='%(asctime)s %(levelname)s [Python] %(module)s{} %(message)s'.format(".py"))
+    logging.getLogger().addFilter(LevelFilter((logging.INFO, logging.WARNING, logging.ERROR)))
+
+    logging.info('start of ADMSOutput.py')
+    requests.post('http://localhost:8080/JPS_BASE/LogServer', data=log_stream.getvalue())
+    log_stream.seek(0)
+    log_stream.truncate(0)
+    
     print(getADMSOutput())
+    
+    logging.info('end of ADMSOutput.py')
+    requests.post('http://localhost:8080/JPS_BASE/LogServer', data=log_stream.getvalue())
+    log_stream.seek(0)
+    log_stream.truncate(0)

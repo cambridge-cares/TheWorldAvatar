@@ -54,7 +54,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
 		try {
 			String result = DataDownload.Call_data(jsonString.split(","));
 			response.setContentType("application/json");
-			response.getWriter().write(result);
+			response.getWriter().write(result.toString());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

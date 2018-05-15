@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.config.test;
+package uk.ac.cam.cares.jps.discovery.test;
 
 import java.io.IOException;
 import java.io.PrintWriter;

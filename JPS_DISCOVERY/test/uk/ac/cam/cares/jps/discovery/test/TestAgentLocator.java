@@ -1,13 +1,12 @@
-package uk.ac.cam.cares.jps.config.test;
+package uk.ac.cam.cares.jps.discovery.test;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import org.apache.http.client.ClientProtocolException;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 
 public class TestAgentLocator extends TestCase {
 
@@ -22,23 +21,24 @@ public class TestAgentLocator extends TestCase {
 	}
 
 	public void testRelativeDirectory() {
-		String directory = AgentLocator.getAbsolutePath("reldir.python");
-		System.out.println("python directory = " + directory);
-		File file = new File(directory);
-		assertTrue(file.exists());
+		String dir = AgentLocator.getAbsolutePath("reldir.workingdir", this);
+		System.out.println("workingdir directory = " + dir);
+		boolean b1 = dir.endsWith("/JPS_DISCOVERY/workingdir");
+		boolean b2 = dir.endsWith("\\JPS_DISCOVERY\\workingdir");
+		assertTrue(b1 || b2);
 	}
 	
 	public void testRootDirectoryOnClientSide() throws UnsupportedEncodingException {
-		String dir = AgentLocator.getNewRootDirectory(this);
-		boolean b1 = dir.endsWith("/JPS");
-		boolean b2 = dir.endsWith("\\JPS");
+		String dir = AgentLocator.getCurrentJpsAppDirectory(this);
+		boolean b1 = dir.endsWith("/JPS_DISCOVERY");
+		boolean b2 = dir.endsWith("\\JPS_DISCOVERY");
 		assertTrue(b1 || b2);
 	}
 	
 	public void testRootDirectoryOnServerSide() throws ClientProtocolException, IOException {
 		String dir = AgentLocator.callAgent("agent.test.agentreturningrootdirectory");
-		boolean b1 = dir.endsWith("/JPS");
-		boolean b2 = dir.endsWith("\\JPS");
+		boolean b1 = dir.endsWith("/JPS_DISCOVERY");
+		boolean b2 = dir.endsWith("\\JPS_DISCOVERY");
 		assertTrue(b1 || b2);
 	}
 }

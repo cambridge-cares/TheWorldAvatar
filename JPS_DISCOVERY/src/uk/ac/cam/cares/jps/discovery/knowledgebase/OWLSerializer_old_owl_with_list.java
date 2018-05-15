@@ -24,7 +24,7 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
-import uk.ac.cam.cares.jps.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.discovery.api.AbstractAgentServiceDescription;
 import uk.ac.cam.cares.jps.discovery.api.Agent;
 import uk.ac.cam.cares.jps.discovery.api.AgentServiceDescription;

@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
-import uk.ac.cam.cares.jps.util.PythonException;
-import uk.ac.cam.cares.jps.util.PythonHelper;
+import uk.ac.cam.cares.jps.base.exception.PythonException;
+import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 /**
  * Servlet implementation class ADMSHelper

@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.config.test;
+package uk.ac.cam.cares.jps.discovery.test;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 
 @WebServlet(urlPatterns = {"/Configtest/AgentOne/*"})
 public class AgentOne extends HttpServlet {
@@ -23,6 +23,7 @@ public class AgentOne extends HttpServlet {
 
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+			
 		response.setContentType("text/plain");
 		response.setCharacterEncoding("UTF-8");
 

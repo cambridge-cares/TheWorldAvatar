@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.config.test;
+package uk.ac.cam.cares.jps.discovery.test;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import uk.ac.cam.cares.jps.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 
 @WebServlet(urlPatterns = {"/Configtest/AgentReturningRootDirectory"})
 public class AgentReturningRootDirectory extends HttpServlet {
@@ -22,7 +22,7 @@ public class AgentReturningRootDirectory extends HttpServlet {
 		response.setCharacterEncoding("UTF-8");
 
 		PrintWriter out = response.getWriter();
-		String message = AgentLocator.getNewRootDirectory(this);
+		String message = AgentLocator.getCurrentJpsAppDirectory(this);
 		out.print(message);
 	}
 }
