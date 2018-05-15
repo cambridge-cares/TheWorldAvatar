@@ -64,7 +64,7 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/wstx-asl-3.2.9.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/xml-apis.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Janusz/Dropbox (Cambridge CARES)/IRP3 CAPRICORN shared folder/_JPS Development/lib/jps_base/jps_base.jar">
+	<classpathentry kind="lib" path="/JPS_BASE/workingdir/jps_base.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>

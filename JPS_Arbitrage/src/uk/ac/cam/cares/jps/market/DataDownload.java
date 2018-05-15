@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.json.JSONObject;
-
 import com.hp.hpl.jena.util.FileUtils;
 
 import edu.stanford.smi.protege.exception.OntologyLoadException;
@@ -338,7 +336,7 @@ public class DataDownload {
 			String[] headers2 = {"CMECrudePalmOil_001","CMEBiodiesel_001"}; 
 			
 			   /**get model from an owl file*/
-			   String filePath2 = "C:/Users/Janusz/Desktop/Commodity_prices/Ontology/OntoArbitrage_Market_KB.owl";
+			   String filePath2 = "C:/Users/Janusz/Desktop/JParkSimulator-git/JPS_Arbitrage/workingdir/OntoArbitrage_Market_KB.owl";
 			   OWLModel owlModel2 = null;
 			   
 			   
