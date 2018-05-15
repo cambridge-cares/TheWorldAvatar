@@ -141,9 +141,9 @@ public class AgentLocator {
 		return getSingleton().jpsBaseDirectory;
 	}
 	
-	public static String getAbsolutePath(String keyForRelativePath) {
+	public static String getAbsolutePath(String keyForRelativePath, Object thisObject) {
 		String relativePath = getProperty(keyForRelativePath);
-		return getJPSBaseDirectory() + "/" + relativePath;
+		return getCurrentJpsAppDirectory(thisObject) + "/" + relativePath;
 	}
 	
 	/**
@@ -156,9 +156,9 @@ public class AgentLocator {
 		return getCurrentJpsAppDirectory(thisObject) + "/" + relativePath + "/" + pythonScriptName;
 	}
 	
-	public static String getPathToWorkingDir() {
+	public static String getPathToWorkingDir(Object thisObject) {
 		String relativePath = getProperty("reldir.workingdir");
-		return getJPSBaseDirectory() + "/" + relativePath;
+		return getCurrentJpsAppDirectory(thisObject) + "/" + relativePath;
 	}
 	
 	public static String getPathToJpsDataKnowledgeDir() {

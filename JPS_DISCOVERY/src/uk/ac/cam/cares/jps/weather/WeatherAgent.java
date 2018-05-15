@@ -25,7 +25,6 @@ import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.test.DescriptionFactory;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;
 import uk.ac.cam.cares.jps.discovery.util.JPSBaseServlet;
-import uk.ac.cam.cares.jps.util.PythonHelper;
 
 @WebServlet(urlPatterns = {"/DiscoveryTest/WeatherAgent"})
 public class WeatherAgent extends JPSBaseServlet {
