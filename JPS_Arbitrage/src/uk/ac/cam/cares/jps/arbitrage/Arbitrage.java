@@ -74,17 +74,9 @@ public class Arbitrage {
 		String actual = TestMoDSAnalysis.executeGet(path,key,value);
 		System.out.println(actual);
 		System.out.println(result);
-		
-/*		JSONObject prices = new JSONObject(actual);	
 
-		String CPO = prices.getString("CMECrudePalmOil_001");
-		String FAME = prices.getString("CMEBiodiesel_001");
-		
-		System.out.println(CPO);
-		System.out.println(FAME);*/
 		
 		/** this function executes 4 Python scripts which download market data and stores it in separate CSV files  */
-	    System.out.println(1);
 		String CPO_to_FAME_analysis = new String("caresjpsarbitrage/CPO_to_FAME_MoDS2.py"); 
 		//String market_data_plot = new String("C:\\Users\\Janusz\\Desktop\\Commodity_prices\\Market_data\\arbitrage_CPO_MoDS.png"); 
 		String result1 = PythonHelper.callPython(CPO_to_FAME_analysis, result, actual, new Arbitrage());
@@ -93,7 +85,6 @@ public class Arbitrage {
 	
 		
 		return result1;
-		//return "fds";
 
 	}
 
@@ -114,6 +105,6 @@ public class Arbitrage {
 	
 	public static void main(String[] args) throws Exception {
 		//Running_analysis_Aspen();
-		Running_analysis_MoDS2("24220.0656");
+		//Running_analysis_MoDS2("24220.0656");
 	}
 }

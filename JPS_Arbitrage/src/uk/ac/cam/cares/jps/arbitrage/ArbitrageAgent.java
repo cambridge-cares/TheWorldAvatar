@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class ArbitrageAgent
  */
-@WebServlet("/ArbitrageAgent")
+@WebServlet(urlPatterns = {"/hardcode", "/KB"})
 
 public class ArbitrageAgent extends HttpServlet {
 	private static final long serialVersionUID = 2L; //??
@@ -27,7 +27,10 @@ public class ArbitrageAgent extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+	String path = request.getServletPath();
+	
+	if ("/hardcode".equals(path)) {
+	
 		// -- Get String formatted in Array of Strings -- //
 		request.setCharacterEncoding("UTF-8");
 		String jsonString = request.getParameter("MoDS_input");
@@ -36,11 +39,24 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
 			String result = Arbitrage.Running_analysis_MoDS(jsonString);
 			response.setContentType("application/json");
 			response.getWriter().write(result);
-//		} catch (PythonException e) {
-//			e.printStackTrace();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
+	} else if ("/KB".equals(path)) {
+		// -- Get String formatted in Array of Strings -- //
+		request.setCharacterEncoding("UTF-8");
+		String jsonString = request.getParameter("MoDS_input");
+		
+		try {
+			String result = Arbitrage.Running_analysis_MoDS2(jsonString);
+			response.setContentType("application/json");
+			response.getWriter().write(result);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 	}
 }
+}
+}
+

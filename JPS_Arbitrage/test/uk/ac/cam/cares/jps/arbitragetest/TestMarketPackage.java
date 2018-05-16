@@ -34,11 +34,19 @@ public class TestMarketPackage extends TestCase{
 		return EntityUtils.toString(httpResponse.getEntity());
 	}
 
-	public void testdatadownload() throws URISyntaxException, ClientProtocolException, IOException {
+	public void testmarketdatadownload() throws URISyntaxException, ClientProtocolException, IOException {
 		String path = "/JPS_Arbitrage/download";
 		String actual = executeGet(path,"whatver", "whatever2");
 		System.out.println(actual);
 		assertTrue(actual.contains("JAN 2021,FEB 2021,MAR 2021,APR 2021"));
+
+	}
+	
+	public void testcurrencydatadownload() throws URISyntaxException, ClientProtocolException, IOException {
+		String path = "/JPS_Arbitrage/download2";
+		String actual = executeGet(path,"whatver", "whatever2");
+		System.out.println(actual);
+		assertTrue(actual.contains("USD"));
 
 	}
 	

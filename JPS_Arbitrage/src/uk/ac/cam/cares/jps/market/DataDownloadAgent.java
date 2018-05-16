@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class DataDownloadAgent
  */
-@WebServlet(urlPatterns = {"/download", "/read"})
+@WebServlet(urlPatterns = {"/download", "/download2", "/read"})
 public class DataDownloadAgent extends HttpServlet {
 	private static final long serialVersionUID = 2L; //??
     
@@ -52,6 +52,19 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
 		
 		try {
 			String result = DataDownload.Call_data(jsonString.split(","));
+			response.setContentType("application/json");
+			response.getWriter().write(result.toString());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	} else if ("/download2".equals(path)) {
+		
+		// -- Get String formatted in Array of Strings -- //
+		request.setCharacterEncoding("UTF-8");
+		
+		try {
+			String result = DataDownload.Downloading_currencies();
 			response.setContentType("application/json");
 			response.getWriter().write(result.toString());
 		} catch (Exception e) {
