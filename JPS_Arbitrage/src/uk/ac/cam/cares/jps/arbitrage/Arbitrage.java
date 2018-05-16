@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import com.cmclinnovations.mods.api.MoDSAPI;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 import uk.ac.cam.cares.jps.arbitragetest.TestMoDSAnalysis;
 
@@ -106,5 +107,6 @@ public class Arbitrage {
 	public static void main(String[] args) throws Exception {
 		//Running_analysis_Aspen();
 		//Running_analysis_MoDS2("24220.0656");
+		System.out.println(AgentLocator.getPathToWorkingDir(new Arbitrage()));
 	}
 }

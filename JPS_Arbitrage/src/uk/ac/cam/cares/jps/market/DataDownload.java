@@ -16,6 +16,8 @@ import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import uk.ac.cam.cares.jps.arbitrage.Arbitrage;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 public class DataDownload {
@@ -58,7 +60,7 @@ public class DataDownload {
 		
 		/** knowledge base from an owl file in a jenaOWL model; URIs of relevant individuals and their properties are defined and
 		 * locations of the CSV files with the market data are stored in KB one by one */
-		String filePath = "C:/Users/Janusz/Desktop/JParkSimulator-git/JPS_Arbitrage/workingdir/OntoArbitrage_Market_KB.owl";
+		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload())+"/OntoArbitrage_Market_KB.owl";
 		FileInputStream inFile= new FileInputStream(filePath);
 		Reader in = new InputStreamReader(inFile,"UTF-8");
 		JenaOWLModel jenaOwlModel = ProtegeOWL.createJenaOWLModelFromReader(in);
@@ -120,7 +122,7 @@ public class DataDownload {
 		
 		
 		/** knowledge base from an owl file in a jenaOWL model; rates are stored in KB one by one */
-		String filePath = "C:/Users/Janusz/Desktop/JParkSimulator-git/JPS_Arbitrage/workingdir/OntoArbitrage_PlantInfo_KB.owl";
+		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload())+"/OntoArbitrage_PlantInfo_KB.owl";
 		FileInputStream inFile= new FileInputStream(filePath);
 		Reader in = new InputStreamReader(inFile,"UTF-8");
 		JenaOWLModel jenaOwlModel = ProtegeOWL.createJenaOWLModelFromReader(in);
@@ -179,7 +181,7 @@ public class DataDownload {
 		
 		
 		/** knowledge base from an owl file in a jenaOWL model; rates are stored in KB one by one */
-		String filePath = "C:/Users/Janusz/Desktop/JParkSimulator-git/JPS_Arbitrage/workingdir/OntoArbitrage_PlantInfo_KB.owl";
+		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload())+"/OntoArbitrage_PlantInfo_KB.owl";
 		FileInputStream inFile= new FileInputStream(filePath);
 		Reader in = new InputStreamReader(inFile,"UTF-8");
 		JenaOWLModel jenaOwlModel = ProtegeOWL.createJenaOWLModelFromReader(in);
@@ -220,7 +222,7 @@ public class DataDownload {
 		
 
 		   /**get model from an owl file*/
-		   String filePath = "C:/Users/Janusz/Desktop/JParkSimulator-git/JPS_Arbitrage/workingdir/OntoArbitrage_PlantInfo_KB.owl";
+		   String filePath = AgentLocator.getPathToWorkingDir(new DataDownload())+"/OntoArbitrage_PlantInfo_KB.owl";
 		   OWLModel owlModel = null;
 		   
 		   try {
@@ -254,7 +256,7 @@ public class DataDownload {
 					};
 			
 			   /**get model from an owl file*/
-			   String filePath2 = "C:/Users/Janusz/Desktop/JParkSimulator-git/JPS_Arbitrage/workingdir/OntoArbitrage_Market_KB.owl";
+			   String filePath2 = AgentLocator.getPathToWorkingDir(new DataDownload())+"/OntoArbitrage_Market_KB.owl";
 			   OWLModel owlModel2 = null;
 			   
 			   
