@@ -3,6 +3,3 @@ def returnExceptionToJava(exception):
     
 def returnResultsToJava(result):
     print(result)
-    
-def logInfoMessage(message):
-    print(message)

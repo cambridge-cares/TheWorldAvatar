@@ -4,6 +4,7 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
         <wb-resource deploy-path="/conf" source-path="/conf"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/test"/>
+        <wb-resource deploy-path="/PythonCustomLibraries" source-path="/PythonCustomLibraries"/>
         <property name="context-root" value="JPS_BASE"/>
         <property name="java-output-path" value="/JPS_BASE/build/classes"/>
     </wb-module>

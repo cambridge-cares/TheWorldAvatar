@@ -8,6 +8,8 @@ import requests
 import logging
 from io import StringIO
 
+from caresjpsutil import PythonLogger
+
 class LevelFilter(logging.Filter):
     def __init__(self, levels):
         self.levels = levels
@@ -61,20 +63,23 @@ def getADMSOutput():
         return json.dumps(entryShortestDistance)
 
 if __name__ == "__main__":
-    log_stream = StringIO()
-    logging.basicConfig(stream=log_stream,
-                        level=logging.INFO,
-                        format='%(asctime)s %(levelname)s [Python] %(module)s{} %(message)s'.format(".py"))
-    logging.getLogger().addFilter(LevelFilter((logging.INFO, logging.WARNING, logging.ERROR)))
-
-    logging.info('start of ADMSOutput.py')
-    requests.post('http://localhost:8080/JPS_BASE/LogServer', data=log_stream.getvalue())
-    log_stream.seek(0)
-    log_stream.truncate(0)
+    pythonLogger = PythonLogger('ADMSOutput.py')
+    pythonLogger.postInfoToLogServer('start of ADMSOutput.py')
+#     log_stream = StringIO()
+#     logging.basicConfig(stream=log_stream,
+#                         level=logging.INFO,
+#                         format='%(asctime)s %(levelname)s [Python] %(module)s{} %(message)s'.format(".py"))
+#     logging.getLogger().addFilter(LevelFilter((logging.INFO, logging.WARNING, logging.ERROR)))
+# 
+#     logging.info('start of ADMSOutput.py')
+#     requests.post('http://www.theworldavatar.com/JPS_BASE/LogServer', data=log_stream.getvalue())
+#     log_stream.seek(0)
+#     log_stream.truncate(0)
     
     print(getADMSOutput())
+    pythonLogger.postInfoToLogServer('end of ADMSOutput.py')
     
-    logging.info('end of ADMSOutput.py')
-    requests.post('http://localhost:8080/JPS_BASE/LogServer', data=log_stream.getvalue())
-    log_stream.seek(0)
-    log_stream.truncate(0)
+#     logging.info('end of ADMSOutput.py')
+#     requests.post('http://www.theworldavatar.com/JPS_BASE/LogServer', data=log_stream.getvalue())
+#     log_stream.seek(0)
+#     log_stream.truncate(0)
