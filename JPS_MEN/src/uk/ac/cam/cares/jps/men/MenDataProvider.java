@@ -5,6 +5,10 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openjena.atlas.logging.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.Query;
@@ -14,7 +18,6 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
-import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -33,14 +36,14 @@ public class MenDataProvider {
 	private List<Sink> sinks = new ArrayList<Sink>();
 	private List<FeasibleConnection> feasibleConnections = new ArrayList<FeasibleConnection>();
 	private List<Transportation> transportations = new ArrayList<Transportation>();
-				
+	private Logger logger = LoggerFactory.getLogger(MenDataProvider.class);			
 	public static void main(String[] args) throws Exception {
 		
 		MenDataProvider provider = new MenDataProvider();
-		provider.startCalculation();
+		provider.startCalculationwithdefaultparameter();
 	}
 	
-	public MenResult startCalculation() {
+	public MenResult startCalculationwithdefaultparameter() {
 	    // TODO-AE URGENT switch to true for highest base price?
 	    //format of parameter= carbonTax , interestFactor , annualCostFactor , internationalMarketPriceFactor , internationalMarketLowestPrice
 	    Parameters parameters = new Parameters(50., 1., 1., 1.05, false);	
@@ -51,17 +54,17 @@ public class MenDataProvider {
 	
 		getData();
 		
-		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-	    System.out.println("Number of sources = " + sources.size());
-	    System.out.println("Number of sinks = " + sinks.size());
-	    System.out.println("Number of connections = " + feasibleConnections.size());
-	    System.out.println("Number of transp = " + transportations.size());
+		//System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+		logger.info("Number of sources = " + sources.size());
+	    logger.info("Number of sinks = " + sinks.size());
+	    logger.info("Number of connections = " + feasibleConnections.size());
+	    logger.info("Number of transp = " + transportations.size());
 	    
-	    System.out.println("sources = " + sources);
-	    System.out.println("sinks = " + sinks);
-	    System.out.println("connections = " + feasibleConnections);
-	    System.out.println("transportations = " + transportations); 
-	    System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+	    logger.info("sources = " + sources);
+	    logger.info("sinks = " + sinks);
+	    logger.info("connections = " + feasibleConnections);
+	    logger.info("transportations = " + transportations); 
+	  //  System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 		// TODO-AE remove owl file from resource dir
 		String TaskFile = ".\\res\\MassExchangeNetworkIntegration.owl";   
  
@@ -164,8 +167,8 @@ public class MenDataProvider {
 		    transportations.add(trans);
 	    }
 	    
-		System.out.println("Number of transportation means = " + transportations.size());
-		System.out.println("transportation means = " +  transportations);
+	    logger.info("Number of transportation means = " + transportations.size());
+	    logger.info("transportation means = " +  transportations);
 		return  transportations;
 	}
 
@@ -175,8 +178,8 @@ public class MenDataProvider {
 			    
 			    if (INamed.equalNames(sink.getProduct(), source.getProduct())) {
 			    	
-			    	System.out.println("..................................................");
-			    	System.out.println("next feabible connection: " + sink + " " + source);
+			    	logger.info("..................................................");
+			    	logger.info("next feabible connection: " + sink + " " + source);
 			
 					String dis = "PREFIX tp:<http://www.jparksimulator.com/transportation_simple.owl#> "
 				    		+ "SELECT ?distance "
@@ -203,8 +206,8 @@ public class MenDataProvider {
 				}					
 			}
 		}
-		System.out.println("Number of feasible Connections = " + feasibleConnections.size());
-		System.out.println("connection = " +  feasibleConnections);
+		logger.info("Number of feasible Connections = " + feasibleConnections.size());
+		logger.info("connection = " +  feasibleConnections);
 		return  feasibleConnections;
 	}
 
@@ -232,7 +235,7 @@ public class MenDataProvider {
 		    Literal iri = qs_s.getLiteral("IRI") ;           //extract the IRI of the sink
 		    String sinkIRI = iri.getString();
 		    				    
-		    System.out.println("sink IRI =" + sinkIRI);
+		    //System.out.println("sink IRI =" + sinkIRI);
 		    
 		    //extract product information (product name, capacity, price) from the OKB
 		    String sinkInfo = "PREFIX cp:<"+ sinkIRI.split("#")[0] +"#> "
@@ -269,8 +272,8 @@ public class MenDataProvider {
 		}
 		
 		
-		System.out.println("Number of sinks = " + sinks.size());
-		System.out.println("sinks = " + sinks);
+		logger.info("Number of sinks = " + sinks.size());
+		logger.info("sinks = " + sinks);
 		return sinks;
 	}
 
@@ -297,6 +300,7 @@ public class MenDataProvider {
 		    String sourceName = sourceLit.getString();
 		    Literal iri = qs_s.getLiteral("IRI") ;           //extract the IRI of the source
 		    String sourceIRI = iri.getString();
+		    System.out.println("source of IRI= "+ sourceIRI);
 		    
 		    
 		    //extract product information (product name, capacity, price) from the OKB
@@ -338,8 +342,8 @@ public class MenDataProvider {
 
 		}		
 		
-		System.out.println("Number of sources = " + sources.size());
-		System.out.println("sources = " + sources);
+		logger.info("Number of sources = " + sources.size());
+		logger.info("sources = " + sources);
 		return sources;
 	}
 	

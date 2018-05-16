@@ -36,9 +36,7 @@ public class TestMarketPackage extends TestCase{
 
 	public void testdatadownload() throws URISyntaxException, ClientProtocolException, IOException {
 		String path = "/JPS_Arbitrage/download";
-		String key = "CPO_page";
-		String value = "http://www.cmegroup.com/trading/agricultural/grain-and-oilseed/usd-malaysian-crude-palm-oil-calendar.html?optionProductId=8075";
-		String actual = executeGet(path,key,value);
+		String actual = executeGet(path,"whatver", "whatever2");
 		System.out.println(actual);
 		assertTrue(actual.contains("JAN 2021,FEB 2021,MAR 2021,APR 2021"));
 

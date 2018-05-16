@@ -73,6 +73,7 @@ public class Arbitrage {
 		String value = 	"V_Price_CoolingWater_001,V_Price_Storage_Biodiesel_001,V_Price_Storage_CrudePalmOil_001,V_Price_Transport_Malaysia-SG_CrudePalmOil_001,V_Price_Electricity_001,V_USD_to_SGD,V_Price_ProcessWater_001,V_Price_HighPressureSteam_001,V_Price_MediumPressureSteam_001,V_Price_Transport_SEA-SC_Biodiesel_001,V_Price_FuelGas_001";
 		String actual = TestMoDSAnalysis.executeGet(path,key,value);
 		System.out.println(actual);
+		System.out.println(result);
 		
 /*		JSONObject prices = new JSONObject(actual);	
 
@@ -86,13 +87,13 @@ public class Arbitrage {
 	    System.out.println(1);
 		String CPO_to_FAME_analysis = new String("caresjpsarbitrage/CPO_to_FAME_MoDS2.py"); 
 		//String market_data_plot = new String("C:\\Users\\Janusz\\Desktop\\Commodity_prices\\Market_data\\arbitrage_CPO_MoDS.png"); 
-		//String result1 = PythonHelper.callPython(CPO_to_FAME_analysis, result, actual, new Arbitrage());
-		//System.out.println(result1);
+		String result1 = PythonHelper.callPython(CPO_to_FAME_analysis, result, actual, new Arbitrage());
+		System.out.println(result1);
 		
 	
 		
-		//return result1;
-		return "fds";
+		return result1;
+		//return "fds";
 
 	}
 

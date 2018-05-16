@@ -34,10 +34,9 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
 	
 		// -- Get String formatted in Array of Strings -- //
 		request.setCharacterEncoding("UTF-8");
-		String jsonString = request.getParameter("CPO_page");
 		
 		try {
-			String result = DataDownload.Downloading_market_data(jsonString);
+			String result = DataDownload.Downloading_market_data();
 			response.setContentType("application/json");
 			response.getWriter().write(result);
 		} catch (Exception e) {

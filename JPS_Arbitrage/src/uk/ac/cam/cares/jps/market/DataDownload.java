@@ -22,7 +22,7 @@ public class DataDownload {
 
 	
 	
-	public static String Downloading_market_data(String CPO_page1) throws Exception {
+	public static String Downloading_market_data() throws Exception {
 		
 		/** this function executes 4 Python scripts which download market data and stores it in separate CSV files */ 
 		
@@ -362,7 +362,7 @@ public class DataDownload {
 	
 	
 	public static void main(String[] args) throws Exception {
-		Downloading_market_data("http://www.cmegroup.com/trading/agricultural/grain-and-oilseed/usd-malaysian-crude-palm-oil-calendar.html?optionProductId=8075");
+		Downloading_market_data();
 		//Downloading_currencies();
 		//Storing_Aspen_data();
 		//Reading_data();
