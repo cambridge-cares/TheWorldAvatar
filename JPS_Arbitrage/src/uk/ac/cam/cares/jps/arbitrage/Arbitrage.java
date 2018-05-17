@@ -5,14 +5,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import com.cmclinnovations.mods.api.MoDSAPI;
 
+import uk.ac.cam.cares.jps.arbitragetest.TestMoDSAnalysis;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
-import uk.ac.cam.cares.jps.arbitragetest.TestMoDSAnalysis;
 
 
 public class Arbitrage {

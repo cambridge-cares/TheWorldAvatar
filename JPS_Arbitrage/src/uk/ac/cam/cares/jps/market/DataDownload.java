@@ -16,7 +16,6 @@ import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import uk.ac.cam.cares.jps.arbitrage.Arbitrage;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
@@ -81,7 +80,7 @@ public class DataDownload {
 				
 
 		/**save the updated model file; also, any error messages are collected and printed */
-		Collection errors = new ArrayList();
+		Collection<Object> errors = new ArrayList<Object>();
 		jenaOwlModel.save(new URI("file:/"+filePath), FileUtils.langXMLAbbrev, errors, jenaOwlModel.getOntModel());
 		System.out.println("File saved with " + errors.size() + " errors.");  
 		  
@@ -135,7 +134,7 @@ public class DataDownload {
 				
 
 		/**save the updated model file; also, any error messages are collected and printed*/
-		Collection errors = new ArrayList();
+		Collection<Object> errors = new ArrayList<Object>();
 		jenaOwlModel.save(new URI("file:/"+filePath), FileUtils.langXMLAbbrev, errors, jenaOwlModel.getOntModel());
 		System.out.println("File saved with " + errors.size() + " errors.");  
 		   
@@ -194,7 +193,7 @@ public class DataDownload {
 				
 
 		/**save the updated model file; also, any error messages are collected and printed*/
-		Collection errors = new ArrayList();
+		Collection<Object> errors = new ArrayList<Object>();
 		jenaOwlModel.save(new URI("file:/"+filePath), FileUtils.langXMLAbbrev, errors, jenaOwlModel.getOntModel());
 		System.out.println("File saved with " + errors.size() + " errors.");  
 		   
@@ -283,6 +282,7 @@ public class DataDownload {
 	
 	
 	public static void main(String[] args) throws Exception {
+		Downloading_market_data();
 	}
 	
 }
