@@ -4,6 +4,12 @@ import rdflib
 import json
 import sys
 
+import os
+# caresjpsutilPath = os.path.abspath(os.path.join(os.getcwd(), '../caresjpsutil'))
+# sys.path.insert(0, caresjpsutilPath)
+from caresjpsutil import returnExceptionToJava, returnResultsToJava
+from caresjpsutil import PythonLogger
+
 owlCRS = Proj(init='epsg:28992')
 osmCRS = Proj(init='epsg:4326')
 
@@ -136,7 +142,7 @@ def getBuildingCoordinates(buildingCoordinates):
     # use prevPolygon to compare with current polygon in for-loop
     prevPolygon = firstEntry['polygon']['value']
 
-    # todo: have to consider the scenario in which there is only one pair of coordinates
+    # assume that each building in the owl files have the appropriate pairs of coordinates
     for entry in buildingCoordinates[1:]:
 
         if entry['polygon']['value'] != prevPolygon:
@@ -153,7 +159,7 @@ def getBuildingCoordinates(buildingCoordinates):
     building.append([polygon])
     return building
 
-# stores each building's data in a python dictionary in GeoJSON format
+# stores each building's data in a Python dictionary in GeoJSON format
 def getGeoJSON(listBuildingCoordinates, listBuildingHeights):
     listBuildingsToTransfer = []
 
@@ -182,38 +188,38 @@ def getGeoJSON(listBuildingCoordinates, listBuildingHeights):
 
 def return_buildings():
     
-    try:
-        listOfIRIs = json.loads(sys.argv[1])
-        
+    listOfIRIs = json.loads(sys.argv[1])
 
-        # --Obtain list of building heights-- #
-        # --Obtain list of building coordinates-- #
-        
-        listBuildingHeights = []
-        listBuildingCoordinates = []
+    if listOfIRIs == []:
+        raise ValueError("EMPTY ARRAY")
 
-        for building in listOfIRIs:
+    # --Obtain list of building heights-- #
+    # --Obtain list of building coordinates-- #
 
-            buildingHeight = sparqlBuildingHeights(building)["results"]["bindings"]
-            height = getBuildingHeights(buildingHeight)
-            listBuildingHeights.append(height)
+    listBuildingHeights = []
+    listBuildingCoordinates = []
 
-            buildingCoordinates = sparqlBuildingCoordinates(building)["results"]["bindings"]
-            coordinates = getBuildingCoordinates(buildingCoordinates)
-            listBuildingCoordinates.append(coordinates)
+    for building in listOfIRIs:
 
-        # --Write building coordinates into a text file-- #
-        # writeFile(buildingCoordinates)
+        buildingHeight = sparqlBuildingHeights(building)["results"]["bindings"]
+        height = getBuildingHeights(buildingHeight)
+        listBuildingHeights.append(height)
 
-    except:
-        print("INVALID QUERY")
+        buildingCoordinates = sparqlBuildingCoordinates(building)["results"]["bindings"]
+        coordinates = getBuildingCoordinates(buildingCoordinates)
+        listBuildingCoordinates.append(coordinates)
+
 
     listBuildingsToTransfer = getGeoJSON(listBuildingCoordinates, listBuildingHeights)
-
-    # writeToJSONFile(listBuildingsToTransfer, 'buildingData.json')
-    # listBuildingsToTransfer = readFromJSONFile('buildingData.json')
 
     return json.dumps(listBuildingsToTransfer)
 
 if __name__ == "__main__":
-    print(return_buildings())
+    pythonLogger = PythonLogger('ADMSGeoJsonGetter.py')
+    pythonLogger.postInfoToLogServer('start of ADMSGeoJsonGetter.py')
+    try:
+        returnResultsToJava(return_buildings())
+        pythonLogger.postInfoToLogServer('end of ADMSGeoJsonGetter.py')
+    except Exception as e:
+        returnExceptionToJava(e)
+        pythonLogger.postInfoToLogServer('end of ADMSGeoJsonGetter.py')

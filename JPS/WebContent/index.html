@@ -17,6 +17,7 @@
     <title>J-Park Simulator</title>
     <link rel="stylesheet" href="css/OSMBuildings.css">
     <script src="scripts/OSMBuildings.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.4.4/proj4.js"></script>
 	<script src="scripts/admstthreeDmap.js"></script>
 	<script src="scripts/start.js"></script>
 
@@ -32,7 +33,7 @@
 
 </div>
 
-<div>
+<div id="inputFields">
 
     <select id="reaction-select">
         <option value="">
@@ -49,16 +50,16 @@
 
     <label for="xlower">X lower:</label>
 
-    <input id="xlower" type="text"/>
+    <input id="xlower" type="text" value='79480'/>
     <label for="xupper">X upper:</label>
-    <input id="xupper" type="text"/>
+    <input id="xupper" type="text" value='85000'/>
 
 
     <label for="ylower">Y lower:</label>
 
-    <input id="ylower" type="text"/>
+    <input id="ylower" type="text" value='454670'/>
     <label for="yupper">Y upper:</label>
-    <input id="yupper" type="text"/>
+    <input id="yupper" type="text" value='460000'/>
 
 
     <button id="start">Start simulation</button>
@@ -77,12 +78,12 @@
             </div>
         </fieldset>
         <div id="output">
-            <p id="lat">lat: <span id="latitude"></span></p>
-            <p id="lon">lon: <span id="longitude"></span></p>
-            <p id="conc0">concentration (0m): <span id="concentration0"></span></p>
-            <p id="conc10">concentration (10m): <span id="concentration10"></span></p>
-            <p id="conc20">concentration (20m): <span id="concentration20"></span></p>
-            <p id="conc30">concentration (30m): <span id="concentration30"></span></p>
+            <p id="lat">x: <span id="latitude"></span></p>
+            <p id="lon">y: <span id="longitude"></span></p>
+            <p id="conc0">concentration (0m) in &mu;g/m<sup>3</sup>: <br><span id="concentration0"></span></p>
+            <p id="conc10">concentration (10m) in &mu;g/m<sup>3</sup>: <br><span id="concentration10"></span></p>
+            <p id="conc20">concentration (20m) in &mu;g/m<sup>3</sup>: <br><span id="concentration20"></span></p>
+            <p id="conc30">concentration (30m) in &mu;g/m<sup>3</sup>: <br><span id="concentration30"></span></p>
         </div>
     </div>
 </div>

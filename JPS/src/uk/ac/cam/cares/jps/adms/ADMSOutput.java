@@ -10,7 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
-import uk.ac.cam.cares.jps.util.PythonHelper;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 /**
  * Servlet implementation class ADMSOutput
@@ -24,22 +25,20 @@ public class ADMSOutput extends HttpServlet {
      */
     public ADMSOutput() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		request.setCharacterEncoding("UTF-8");
 		String jsonString = request.getParameter("coordinatesLonLat");
 		
-//		System.out.println("jsonString in Java Servlet "+ jsonString);
-		
 		Gson g = new Gson();
 		
-		String result = PythonHelper.callPython("caresjpsadmsinputs/ADMSOutput.py", "ADMS/caresjpsadmsinputs/test.gst" ,g.toJson(jsonString));
+		String outputFile = AgentLocator.getPathToWorkingDir(this) + "/" + "ADMS/caresjpsadmsinputs/test.levels.gst";
+		
+		String result = PythonHelper.callPython("caresjpsadmsinputs/ADMSOutput.py", outputFile , g.toJson(jsonString), this);
 		
 		response.setContentType("application/json");
 		response.getWriter().write(result);

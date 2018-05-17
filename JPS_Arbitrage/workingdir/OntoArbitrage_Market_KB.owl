@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:electricity-markets="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13#">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl"/>
+  </owl:Ontology>
+  <owl:NamedIndividual rdf:ID="CMECrudePalmOil_001">
+    <rdf:type rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#FuturesMarket"/>
+    <electricity-markets:data rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >&amp;CPO,Date,Price type,Size (tonne),MAY 2018,JUN 2018,JUL 2018,AUG 2018,SEP 2018,OCT 2018,NOV 2018,DEC 2018,JAN 2019,FEB 2019,MAR 2019,APR 2019,MAY 2019,JUN 2019,JUL 2019,AUG 2019,SEP 2019,OCT 2019,NOV 2019,DEC 2019,JAN 2020,FEB 2020,MAR 2020,APR 2020,MAY 2020,JUN 2020,JUL 2020,AUG 2020,SEP 2020,OCT 2020,NOV 2020,DEC 2020,JAN 2021,FEB 2021,MAR 2021,APR 2021,MAY 2021,JUN 2021,JUL 2021,AUG 2021,SEP 2021,OCT 2021,NOV 2021,DEC 2021,JAN 2022,FEB 2022,MAR 2022,APR 2022,MAY 2022,JUN 2022,JUL 2022,AUG 2022,SEP 2022,OCT 2022,NOV 2022,DEC 2022,JAN 2023,FEB 2023,MAR 2023,APR 2023,MAY 2023&amp;Thu, 17 May 2018 00:52:47 GMT,Prior Settlement (USD per tonne),25.0,611.00,613.00,612.75,613.00,612.00,614.25,621.50,624.50,629.00,632.75,635.25,634.75,634.00,633.50,632.75,632.25,631.75,631.00,630.50,630.00,629.50,629.00,628.25,627.75,627.25,626.75,626.25,625.75,625.00,624.50,624.00,623.50,623.00,622.25,621.50,620.75,620.00,619.25,618.50,617.75,617.00,616.25,615.50,614.75,614.00,613.25,612.50,611.75,611.00,610.25,609.50,608.75,608.00,607.25,606.50,605.75,605.00,604.25,603.50,602.75,-</electricity-markets:data>
+  </owl:NamedIndividual>
+  <owl:AllDisjointClasses/>
+  <owl:AllDisjointClasses/>
+  <owl:AllDisjointClasses/>
+  <owl:AllDisjointClasses/>
+  <owl:AllDisjointClasses/>
+  <owl:AllDisjointClasses/>
+  <owl:AllDisjointClasses/>
+  <owl:AllDisjointClasses/>
+  <owl:AllDisjointClasses/>
+  <owl:AllDisjointClasses/>
+  <owl:AllDisjointClasses/>
+  <owl:AllDisjointClasses/>
+  <owl:AllDisjointClasses/>
+  <owl:AllDisjointClasses/>
+  <owl:AllDisjointClasses/>
+  <owl:AllDisjointClasses/>
+  <owl:NamedIndividual rdf:ID="CMENaturalGas_001">
+    <electricity-markets:data rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >&amp;HNG,Date,Price type,Size (mmBTU),JUN 2018,JUL 2018,AUG 2018,SEP 2018,OCT 2018,NOV 2018,DEC 2018,JAN 2019,FEB 2019,MAR 2019,APR 2019,MAY 2019,JUN 2019,JUL 2019,AUG 2019,SEP 2019,OCT 2019,NOV 2019,DEC 2019,JAN 2020,FEB 2020,MAR 2020,APR 2020,MAY 2020,JUN 2020,JUL 2020,AUG 2020,SEP 2020,OCT 2020,NOV 2020,DEC 2020,JAN 2021,FEB 2021,MAR 2021,APR 2021,MAY 2021,JUN 2021,JUL 2021,AUG 2021,SEP 2021,OCT 2021,NOV 2021,DEC 2021,JAN 2022,FEB 2022,MAR 2022,APR 2022,MAY 2022,JUN 2022,JUL 2022,AUG 2022,SEP 2022,OCT 2022,NOV 2022,DEC 2022,JAN 2023,FEB 2023,MAR 2023,APR 2023,MAY 2023,JUN 2023,JUL 2023,AUG 2023,SEP 2023,OCT 2023,NOV 2023,DEC 2023,JAN 2024,FEB 2024,MAR 2024,APR 2024,MAY 2024,JUN 2024,JUL 2024,AUG 2024,SEP 2024,OCT 2024,NOV 2024,DEC 2024,JAN 2025,FEB 2025,MAR 2025,APR 2025,MAY 2025,JUN 2025,JUL 2025,AUG 2025,SEP 2025,OCT 2025,NOV 2025,DEC 2025,JAN 2026,FEB 2026,MAR 2026,APR 2026,MAY 2026,JUN 2026,JUL 2026,AUG 2026,SEP 2026,OCT 2026,NOV 2026,DEC 2026,JAN 2027,FEB 2027,MAR 2027,APR 2027,MAY 2027,JUN 2027,JUL 2027,AUG 2027,SEP 2027,OCT 2027,NOV 2027,DEC 2027,JAN 2028,FEB 2028,MAR 2028,APR 2028,MAY 2028&amp;Thu, 17 May 2018 00:53:17 GMT,Prior Settlement (USD per mmBTU),10.0,2.815,2.837,2.850,2.832,2.837,2.877,2.977,3.059,3.022,2.914,2.582,2.548,2.579,2.611,2.615,2.599,2.620,2.678,2.817,2.924,2.894,2.805,2.540,2.515,2.541,2.573,2.581,2.569,2.593,2.652,2.791,2.893,2.867,2.779,2.544,2.520,2.546,2.574,2.584,2.582,2.610,2.672,2.819,2.926,2.901,2.833,2.581,2.559,2.585,2.613,2.627,2.628,2.656,2.719,2.866,2.978,2.956,2.895,2.650,2.632,2.657,2.684,2.707,2.709,2.737,2.800,2.947,3.061,3.039,2.978,2.720,2.702,2.729,2.758,2.782,2.787,2.817,2.882,3.030,3.148,3.126,3.065,2.790,2.770,2.796,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,2.691,2.821</electricity-markets:data>
+    <rdf:type rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#FuturesMarket"/>
+  </owl:NamedIndividual>
+  <owl:AllDisjointClasses/>
+  <owl:AllDisjointClasses/>
+  <owl:AllDisjointClasses/>
+  <owl:AllDisjointClasses/>
+  <owl:AllDisjointClasses/>
+  <owl:NamedIndividual rdf:ID="CMEBiodiesel_001">
+    <rdf:type rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#FuturesMarket"/>
+    <electricity-markets:data rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >&amp;FAME,Date,Price type,Size (tonne),MAY 2018,JUN 2018,JUL 2018,AUG 2018,SEP 2018,OCT 2018,NOV 2018,DEC 2018,JAN 2019,FEB 2019,MAR 2019,APR 2019,MAY 2019,JUN 2019,JUL 2019,AUG 2019,SEP 2019,OCT 2019,NOV 2019,DEC 2019,JAN 2020,FEB 2020,MAR 2020,APR 2020,MAY 2020&amp;Thu, 17 May 2018 00:52:57 GMT,Prior Settlement (USD per tonne),100.0,851.685,850.500,854.932,854.402,854.088,832.859,831.057,830.013,803.727,801.950,799.750,833.071,831.804,831.175,842.263,842.263,842.263,842.263,842.263,0.000,0.000,0.000,0.000,0.000,-</electricity-markets:data>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="ZCEMethanol_001">
+    <rdf:type rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#FuturesMarket"/>
+    <electricity-markets:data rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >&amp;ZCE,Date,Price type,Size (tonne),MA806,MA807,MA808,MA809,MA810,MA811,MA812,MA901,MA902,MA903,MA904,MA905&amp;Thu, 17 May 2018 00:53:05 GMT,Prior Settlement (CNY per tonne),1.0,2744.0,2794.0,2797.0,2794.0,2810.0,2826.0,2848.0,2850.0,2842.0,2841.0,2821.0,2821.0</electricity-markets:data>
+  </owl:NamedIndividual>
+  <owl:AllDisjointClasses/>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.4.8, Build 629)  http://protege.stanford.edu -->
