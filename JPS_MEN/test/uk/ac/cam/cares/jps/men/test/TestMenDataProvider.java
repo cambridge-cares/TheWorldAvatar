@@ -1,8 +1,11 @@
 package uk.ac.cam.cares.jps.men.test;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.men.MenDataProvider;
@@ -15,21 +18,32 @@ import uk.ac.cam.cares.jps.men.entity.Source;
 import uk.ac.cam.cares.jps.men.entity.Transportation;
 
 public class TestMenDataProvider extends TestCase {
-
-	String Jr_MEN_OKB = ".\\res\\res2\\Jr_MEN.owl";                  // location of the owl file that contains information for the mass exchange network
-	String Transport_OKB = ".\\res\\res2\\Jr_Transportation_simplified.owl";                  // location of the owl file that contains information for the transportation system
-	String OKB = ".\\res\\res2\\JurongChemicalPlant_trimmed.owl";                      // define file location of the ontological knowledge base 
-	//x source10 sink 4
-	//String Jr_MEN_OKB2 = ".\\res\\Jr_MEN2.owl"; 
+	List<String> plantkb= new ArrayList<String>();
 	
+	public List<String> getsourcedirectory() {
+		File[] files = new File("D:\\tmp\\new").listFiles();
+		// If this pathname does not denote a directory, then listFiles() returns null.
+
+		for (File file : files) {
+			if (file.isFile() && !file.getName().equals("catalog-v001.xml")) {
+				plantkb.add("D:\\tmp\\new\\" + file.getName());
+			}
+		}
+		return plantkb;
+	}
+		
 	// based on the Jr_MEN OKB
 	String nameOfResourceNetwork = "Jurong_MEN";                               //define the name of the resource network that is to be synthesized 
 
 	public static Map<String, String> NametoCode = new HashMap<>();
 	public static Map<String, String> NametoCode2 = new HashMap<>();
+
+	String Transport_OKB = ".\\res\\res2\\Jr_Transportation_simplified.owl";                  // location of the owl file that contains information for the transportation system
+	
 	public TestMenDataProvider()
 	
 	{
+		
 	NametoCode.put("EllbaEasternPteLtd, product=PropyleneOxide", "r2");
 	NametoCode.put("ExxonMobilChemicalAsiaPacificPteLtd, product=Ethylene", "r3");
 	NametoCode.put("ExxonMobilChemicalAsiaPacificPteLtd, product=Benzene", "r4");
@@ -76,32 +90,44 @@ public class TestMenDataProvider extends TestCase {
 	NametoCode2.put("HuntsmanSingaporePteLtd, raw material=Oxo-Alcohols", "d25");
 	NametoCode2.put("ShellMEG, raw material=Oxo-Alcohols", "d26");
 	}
+
 	
 	public void mapper (){
-		
+		getsourcedirectory();
 		MenDataProvider provider= new MenDataProvider();
-		int numberofsourcedata = provider.addSourceDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork).size();
+		int numberofsourcedata = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork).size();
 		assertEquals(18, numberofsourcedata);
 	}
 	
-	public void test1createsource (){
-		
+	public void test1createsourcewithoutr1d20 (){
+		getsourcedirectory();
 		MenDataProvider provider= new MenDataProvider();
-		int numberofsourcedata = provider.addSourceDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork).size();
-		assertEquals(18, numberofsourcedata);
+		List<Sink> sink = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
+		List<Source> source = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
+		source=provider.puresourcescategorial(source, sink);
+		int numberofsourcedata = source.size();
+		assertEquals(17, numberofsourcedata);
 	}
 
 	public void test2createsink (){
-	
+		getsourcedirectory();
 		MenDataProvider provider= new MenDataProvider();
-		int numberofsinkdata = provider.addSinkDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork).size();
+		List<Sink> sink = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
+		List<Source> source = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
+		sink=provider.puresinkscategorial(sink, source);
+		int numberofsinkdata = sink.size();
 		assertEquals(26, numberofsinkdata);
 	}
 	
 	public void test3connectsourceandsink (){
-		
+		getsourcedirectory();
 		MenDataProvider provider= new MenDataProvider();
-		int numberofconnectiondata = provider.connectSinkandSourceWithTransportation(Transport_OKB,provider.addSinkDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork),provider.addSourceDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork)).size();
+		List<Sink> sink = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
+		List<Source> source = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
+		sink=provider.puresinkscategorial(sink, source);
+		source=provider.puresourcescategorial(source, sink);
+		
+		int numberofconnectiondata = provider.connectSinkandSourceWithTransportation(sink,source).size();
 		assertEquals(37, numberofconnectiondata);
 	}
 
@@ -113,9 +139,13 @@ public class TestMenDataProvider extends TestCase {
 	}
 	
 	public void testcheckthevalueofsink (){
-		
+		getsourcedirectory();
 		MenDataProvider provider= new MenDataProvider();
-		String sink1 = provider.addSinkDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork).get(3).toString();
+		List<Sink> sink = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
+		List<Source> source = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
+		sink=provider.puresinkscategorial(sink, source);
+		source=provider.puresourcescategorial(source, sink);
+		String sink1 = sink.get(3).toString();
 		assertEquals("Sink[name=CelaneseSingaporePteLtd, raw material=Ethylene, nearSea = false]", sink1);
 	}
 	
@@ -130,12 +160,14 @@ public class TestMenDataProvider extends TestCase {
 	};
 	*/
 	public void test5aPreprint164Withoutr1d20connectionWithOWLfiles() {
-		
+		getsourcedirectory();
 		MenDataProvider provider= new MenDataProvider();
 		
-		List<Sink> sink1 = provider.addSinkDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
-		List<Source> sources1 = provider.addSourceDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
-		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation(Transport_OKB,sink1,sources1);
+		List<Sink> sink1 = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
+		List<Source> sources1 = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
+		sink1=provider.puresinkscategorial(sink1, sources1);
+		 sources1 = provider.puresourcescategorial(sources1,sink1);
+		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation(sink1,sources1);
 		List<Transportation> transportations1 = provider.getTransportationMeansInfoFromKB(Transport_OKB);
 		
 		System.out.println("created " + sources1.size() + " sources");
@@ -154,15 +186,15 @@ public class TestMenDataProvider extends TestCase {
 			
 			
 			String orig=connections1.get(x).toString();
-			System.out.println ("number= "+x);
-			System.out.println("orig= "+ orig);
+			//System.out.println ("number= "+x);
+			//System.out.println("orig= "+ orig);
 			String tmpname=tobeprint.split("name=")[1];
 			String companysource=tmpname.split(", nearSea")[0];
-			System.out.println("companysource= "+companysource );
-			System.out.println("companysource= "+NametoCode.get(companysource));
+			//System.out.println("companysource= "+companysource );
+			//System.out.println("companysource= "+NametoCode.get(companysource));
 			String companysink = tobeprint.split("name=")[2].split(", nearSea")[0];
-			System.out.println("companysink= "+companysink );
-			System.out.println("companysink= "+NametoCode2.get(companysink));
+			//System.out.println("companysink= "+companysink );
+			//System.out.println("companysink= "+NametoCode2.get(companysink));
 			tobeprint=tobeprint.replace(companysource, NametoCode.get(companysource));
 			tobeprint=tobeprint.replace(companysink, NametoCode2.get(companysink));
 			
@@ -186,10 +218,12 @@ public class TestMenDataProvider extends TestCase {
 	
 	public void testcheckthevaluefromOWLwith1yearcostfactor() {
 		MenDataProvider provider = new MenDataProvider();
-
-		List<Sink> sink1 = provider.addSinkDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
-		List<Source> sources1 = provider.addSourceDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
-		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation(Transport_OKB, sink1,
+		getsourcedirectory();
+		List<Sink> sink1 = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
+		List<Source> sources1 = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
+		sink1=provider.puresinkscategorial(sink1, sources1);
+		 sources1 = provider.puresourcescategorial(sources1,sink1);
+		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation( sink1,
 				sources1);
 		List<Transportation> transportations1 = provider.getTransportationMeansInfoFromKB(Transport_OKB);
 
@@ -211,10 +245,12 @@ public class TestMenDataProvider extends TestCase {
 	
 	public void testcheckthevaluefromOWLwith10yearcostfactor() {
 		MenDataProvider provider = new MenDataProvider();
-
-		List<Sink> sink1 = provider.addSinkDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
-		List<Source> sources1 = provider.addSourceDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
-		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation(Transport_OKB, sink1,
+		getsourcedirectory();
+		List<Sink> sink1 = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
+		List<Source> sources1 = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
+		sink1=provider.puresinkscategorial(sink1, sources1);
+		 sources1 = provider.puresourcescategorial(sources1,sink1);
+		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation( sink1,
 				sources1);
 		List<Transportation> transportations1 = provider.getTransportationMeansInfoFromKB(Transport_OKB);
 
@@ -236,10 +272,12 @@ public class TestMenDataProvider extends TestCase {
 	
 	public void testcheckthevaluefromOWLwith50yearcostfactor() {
 		MenDataProvider provider = new MenDataProvider();
-
-		List<Sink> sink1 = provider.addSinkDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
-		List<Source> sources1 = provider.addSourceDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
-		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation(Transport_OKB, sink1,
+		getsourcedirectory();
+		List<Sink> sink1 = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
+		List<Source> sources1 = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
+		sink1=provider.puresinkscategorial(sink1, sources1);
+		 sources1 = provider.puresourcescategorial(sources1,sink1);
+		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation(sink1,
 				sources1);
 		List<Transportation> transportations1 = provider.getTransportationMeansInfoFromKB(Transport_OKB);
 
@@ -261,10 +299,12 @@ public class TestMenDataProvider extends TestCase {
 	
 	public void testcheckthevaluefromOWLwith77yearcostfactor() {
 		MenDataProvider provider = new MenDataProvider();
-
-		List<Sink> sink1 = provider.addSinkDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
-		List<Source> sources1 = provider.addSourceDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
-		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation(Transport_OKB, sink1,
+		getsourcedirectory();
+		List<Sink> sink1 = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
+		List<Source> sources1 = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
+		sink1=provider.puresinkscategorial(sink1, sources1);
+		 sources1 = provider.puresourcescategorial(sources1,sink1);
+		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation( sink1,
 				sources1);
 		List<Transportation> transportations1 = provider.getTransportationMeansInfoFromKB(Transport_OKB);
 
@@ -286,10 +326,12 @@ public class TestMenDataProvider extends TestCase {
 	
 	public void testcheckthevaluefromOWLwith83yearcostfactor() {
 		MenDataProvider provider = new MenDataProvider();
-
-		List<Sink> sink1 = provider.addSinkDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
-		List<Source> sources1 = provider.addSourceDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
-		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation(Transport_OKB, sink1,
+		getsourcedirectory();
+		List<Sink> sink1 = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
+		List<Source> sources1 = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
+		sink1=provider.puresinkscategorial(sink1, sources1);
+		 sources1 = provider.puresourcescategorial(sources1,sink1);
+		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation( sink1,
 				sources1);
 		List<Transportation> transportations1 = provider.getTransportationMeansInfoFromKB(Transport_OKB);
 
@@ -310,10 +352,12 @@ public class TestMenDataProvider extends TestCase {
 	
 	public void testcheckthevaluefromOWLwith100yearcostfactor() {
 		MenDataProvider provider = new MenDataProvider();
-
-		List<Sink> sink1 = provider.addSinkDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
-		List<Source> sources1 = provider.addSourceDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
-		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation(Transport_OKB, sink1,
+		getsourcedirectory();
+		List<Sink> sink1 = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
+		List<Source> sources1 = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
+		sink1=provider.puresinkscategorial(sink1, sources1);
+		 sources1 = provider.puresourcescategorial(sources1,sink1);
+		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation(sink1,
 				sources1);
 		List<Transportation> transportations1 = provider.getTransportationMeansInfoFromKB(Transport_OKB);
 
@@ -334,10 +378,12 @@ public class TestMenDataProvider extends TestCase {
 
 	public void testcheckthevaluefromOWLwith1yearcostfactortruemarketlowestprice() {
 		MenDataProvider provider = new MenDataProvider();
-
-		List<Sink> sink1 = provider.addSinkDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
-		List<Source> sources1 = provider.addSourceDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
-		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation(Transport_OKB, sink1,
+		getsourcedirectory();
+		List<Sink> sink1 = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
+		List<Source> sources1 = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
+		sink1=provider.puresinkscategorial(sink1, sources1);
+		 sources1 = provider.puresourcescategorial(sources1,sink1);
+		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation( sink1,
 				sources1);
 		List<Transportation> transportations1 = provider.getTransportationMeansInfoFromKB(Transport_OKB);
 
@@ -358,10 +404,12 @@ public class TestMenDataProvider extends TestCase {
 	
 	public void testcheckthevaluefromOWLwithcarbontaxvariation1() {
 		MenDataProvider provider = new MenDataProvider();
-
-		List<Sink> sink1 = provider.addSinkDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
-		List<Source> sources1 = provider.addSourceDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
-		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation(Transport_OKB, sink1,
+		getsourcedirectory();
+		List<Sink> sink1 = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
+		List<Source> sources1 = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
+		sink1=provider.puresinkscategorial(sink1, sources1);
+		 sources1 = provider.puresourcescategorial(sources1,sink1);
+		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation(sink1,
 				sources1);
 		List<Transportation> transportations1 = provider.getTransportationMeansInfoFromKB(Transport_OKB);
 
@@ -382,10 +430,12 @@ public class TestMenDataProvider extends TestCase {
 	
 	public void testcheckthevaluefromOWLwithinterestfactorvariation2() {
 		MenDataProvider provider = new MenDataProvider();
-
-		List<Sink> sink1 = provider.addSinkDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
-		List<Source> sources1 = provider.addSourceDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
-		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation(Transport_OKB, sink1,
+		getsourcedirectory();
+		List<Sink> sink1 = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
+		List<Source> sources1 = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
+		sink1=provider.puresinkscategorial(sink1, sources1);
+		 sources1 = provider.puresourcescategorial(sources1,sink1);
+		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation( sink1,
 				sources1);
 		List<Transportation> transportations1 = provider.getTransportationMeansInfoFromKB(Transport_OKB);
 
@@ -406,10 +456,12 @@ public class TestMenDataProvider extends TestCase {
 	
 	public void testcheckthevaluefromOWLwithinternationalmarketpricefactorvariation3() {
 		MenDataProvider provider = new MenDataProvider();
-
-		List<Sink> sink1 = provider.addSinkDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
-		List<Source> sources1 = provider.addSourceDataFromKB(Jr_MEN_OKB, OKB, nameOfResourceNetwork);
-		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation(Transport_OKB, sink1,
+		getsourcedirectory();
+		List<Sink> sink1 = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
+		List<Source> sources1 = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
+		sink1=provider.puresinkscategorial(sink1, sources1);
+		 sources1 = provider.puresourcescategorial(sources1,sink1);
+		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation( sink1,
 				sources1);
 		List<Transportation> transportations1 = provider.getTransportationMeansInfoFromKB(Transport_OKB);
 
@@ -427,5 +479,13 @@ public class TestMenDataProvider extends TestCase {
 		assertEquals(0, actual.totalInstallationCost, 1.);
 
 	}
+	
+	
+	public void testdistance() {
+		MenDataProvider provider = new MenDataProvider();
+		assertEquals(0.31165, provider.distancecalcforWGS84coord(1.273108, 103.713892, 1.2717503, 103.7159824), 1.);
+	}
+
+
 }
 
