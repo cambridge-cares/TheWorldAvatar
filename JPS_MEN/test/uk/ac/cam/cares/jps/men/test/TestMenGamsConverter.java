@@ -463,6 +463,9 @@ public class TestMenGamsConverter extends TestCase {
 		}
 	}
 	
+
+	
+	
 	private void assertMenResult(double[]  expected, MenResult actual) {
 		assertEquals(expected[0], actual.objValue, 1000.);
 		assertEquals(expected[1], actual.totalMaterialPurchaseCost, 1000.);

@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//import org.osgeo.proj4j.BasicCoordinateTransform;
+//import org.osgeo.proj4j.CRSFactory;
+//import org.osgeo.proj4j.CoordinateReferenceSystem;
+//import org.osgeo.proj4j.ProjCoordinate;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.men.MenDataProvider;
@@ -19,14 +23,20 @@ import uk.ac.cam.cares.jps.men.entity.Transportation;
 
 public class TestMenDataProvider extends TestCase {
 	List<String> plantkb= new ArrayList<String>();
+	String Transport_OKB= getTransportationFile();
+	
+	private String getTransportationFile() {
+		return ".\\testres\\transportation\\Jr_Transportation_simplified.owl"; // location of the owl file that contains information for the transportation system
+		
+	}
 	
 	public List<String> getsourcedirectory() {
-		File[] files = new File("D:\\tmp\\new").listFiles();
+		File[] files = new File(".\\testres\\chemicalplant").listFiles();
 		// If this pathname does not denote a directory, then listFiles() returns null.
 
 		for (File file : files) {
 			if (file.isFile() && !file.getName().equals("catalog-v001.xml")) {
-				plantkb.add("D:\\tmp\\new\\" + file.getName());
+				plantkb.add(".\\testres\\chemicalplant\\" + file.getName());
 			}
 		}
 		return plantkb;
@@ -38,7 +48,7 @@ public class TestMenDataProvider extends TestCase {
 	public static Map<String, String> NametoCode = new HashMap<>();
 	public static Map<String, String> NametoCode2 = new HashMap<>();
 
-	String Transport_OKB = ".\\res\\res2\\Jr_Transportation_simplified.owl";                  // location of the owl file that contains information for the transportation system
+	
 	
 	public TestMenDataProvider()
 	
@@ -98,6 +108,7 @@ public class TestMenDataProvider extends TestCase {
 		int numberofsourcedata = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork).size();
 		assertEquals(18, numberofsourcedata);
 	}
+
 	
 	public void test1createsourcewithoutr1d20 (){
 		getsourcedirectory();
@@ -137,32 +148,10 @@ public class TestMenDataProvider extends TestCase {
 		int numberoftransportationmeans = provider.getTransportationMeansInfoFromKB(Transport_OKB).size();
 		assertEquals(4, numberoftransportationmeans);
 	}
-	
-	public void testcheckthevalueofsink (){
-		getsourcedirectory();
-		MenDataProvider provider= new MenDataProvider();
-		List<Sink> sink = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
-		List<Source> source = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
-		sink=provider.puresinkscategorial(sink, source);
-		source=provider.puresourcescategorial(source, sink);
-		String sink1 = sink.get(3).toString();
-		assertEquals("Sink[name=CelaneseSingaporePteLtd, raw material=Ethylene, nearSea = false]", sink1);
-	}
-	
-	//double[] annualCostFactors = new double[] {1., 0.1, 0.02, 0.013, 0.012, 0.01};
-	/*double[][] expected = new double[][] {
-		{5.987268E9, 5.986443E9, 2.244794E9, 771143., 1082.,       0.},
-		{6.009149E9, 6.008846E9, 2.715272E9, 131462.,  230., 1595484.},
-		{6.008969E9, 6.008846E9, 2.715272E9,  51949.,  127., 3199500.},
-		{6.008946E9, 6.008846E9, 2.715272E9,  47820.,  121., 3498120.},
-		{6.008942E9, 6.008846E9, 2.715272E9,  38246.,  109., 4308660.},
-		{6.008933E9, 6.008846E9, 2.715272E9,  35798.,  106., 4564620.}
-	};
-	*/
+
 	public void test5aPreprint164Withoutr1d20connectionWithOWLfiles() {
 		getsourcedirectory();
 		MenDataProvider provider= new MenDataProvider();
-		
 		List<Sink> sink1 = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
 		List<Source> sources1 = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
 		sink1=provider.puresinkscategorial(sink1, sources1);
@@ -197,285 +186,218 @@ public class TestMenDataProvider extends TestCase {
 			//System.out.println("companysink= "+NametoCode2.get(companysink));
 			tobeprint=tobeprint.replace(companysource, NametoCode.get(companysource));
 			tobeprint=tobeprint.replace(companysink, NametoCode2.get(companysink));
-			
-			System.out.println("modified= "+ tobeprint);
-			
-			
+			System.out.println("modified= "+ tobeprint);	
 		}
 	
 		
 		System.out.println("created " + transportations1.size() + " transportations");
 		System.out.println(transportations1);
 		
-		MenGamsConverter converter = new MenGamsConverter();
+		MenDataProvider converter = new MenDataProvider();
 		Parameters parameters = new Parameters(50., 1., 1.0, 1.05, false);
-		MenResult actual = converter.calculate(sources1, sink1, connections1, transportations1, parameters);
-		assertEquals(6.41811655E9, actual.totalMaterialPurchaseCost, 1.);
-		assertEquals(1062291, actual.totalTransportationCost, 1.);
-		assertEquals(1472.95734, actual.totalCO2Emission, 1.); // in gramm 
+		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
+		assertEquals(6.41811655E9, actual.totalMaterialPurchaseCost, 1.);//using derived= 6.41811655E9
+		assertEquals(577381.8713, actual.totalTransportationCost, 1.);  //if using derived= 577381.8713
+		assertEquals(802.8382587404967, actual.totalCO2Emission, 1.); // in gramm ;if using derived=802.8382587404967
+		
+		
+		
+		double[] annualCostFactors = new double[] {1., 0.1, 0.02, 0.013, 0.012, 0.01}; //reflect the 1/years factor 
+		// result Array has one line per factor with columns
+		// obj value, totalMaterialPurchaseCost, totalMaterialPurchaseCostIntMarket, totalTransportationCost, totalC02Emission, totalInstallationCost
+		double[][] expected = new double[][] {
+			{5.987268E9, 5.986443E9, 2.244794E9, 771143., 1082.,       0.},
+			{6.009149E9, 6.008846E9, 2.715272E9, 131462.,  230., 1595484.},
+			{6.008969E9, 6.008846E9, 2.715272E9,  51949.,  127., 3199500.},
+			{6.008946E9, 6.008846E9, 2.715272E9,  47820.,  121., 3498120.},
+			{6.008942E9, 6.008846E9, 2.715272E9,  38246.,  109., 4308660.},
+			{6.008933E9, 6.008846E9, 2.715272E9,  35798.,  106., 4564620.}
+		};
+		
+		MenGamsConverter converter2 = new MenGamsConverter();
+		//MenDataProvider converter = new MenDataProvider();
+		for (int i=0; i<annualCostFactors.length; i++) {
+			double factor = annualCostFactors[i];
+			System.out.println("Annual Cost Factor =" + factor);
+			//Parameters parameters = new Parameters(50., 1., factor, 1.05, true);
+			 actual = converter2.calculate(sources1, sink1, connections1, transportations1, parameters);
+			//MenResult actual = converter.startCalculation(parameters);
+			//assertMenResult(expected[i], actual);
+		}
 	}
 	
 	
 	public void testcheckthevaluefromOWLwith1yearcostfactor() {
-		MenDataProvider provider = new MenDataProvider();
 		getsourcedirectory();
-		List<Sink> sink1 = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
-		List<Source> sources1 = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
-		sink1=provider.puresinkscategorial(sink1, sources1);
-		 sources1 = provider.puresourcescategorial(sources1,sink1);
-		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation( sink1,
-				sources1);
-		List<Transportation> transportations1 = provider.getTransportationMeansInfoFromKB(Transport_OKB);
-
-		MenGamsConverter converter = new MenGamsConverter();
-
+		MenDataProvider converter = new MenDataProvider();
 		double factor = 1.0;
 		System.out.println("Annual Cost Factor =" + factor);
 		Parameters parameters = new Parameters(50., 1., factor, 1.05, false);
-		MenResult actual = converter.calculate(sources1, sink1, connections1, transportations1, parameters);
-		// provider.startCalculation();
-		assertEquals(6.419252488E9, actual.objValue, 1000.);
+		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
+		assertEquals(6.418734E9, actual.objValue, 1000.);
 		assertEquals(6.41811655E9, actual.totalMaterialPurchaseCost, 1000.);
 		assertEquals(2.2852966E9, actual.totalMaterialPurchaseCostInternationalMarket, 1000.);
-		assertEquals(1062291.006, actual.totalTransportationCost, 1.);
-		assertEquals(1472.9573, actual.totalCO2Emission, 1.); // in gramm
+		assertEquals(577381.87135, actual.totalTransportationCost, 1.);
+		assertEquals(802.8382587, actual.totalCO2Emission, 1.); // in gramm
 		assertEquals(0, actual.totalInstallationCost, 1.);
 
 	}
 	
 	public void testcheckthevaluefromOWLwith10yearcostfactor() {
-		MenDataProvider provider = new MenDataProvider();
 		getsourcedirectory();
-		List<Sink> sink1 = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
-		List<Source> sources1 = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
-		sink1=provider.puresinkscategorial(sink1, sources1);
-		 sources1 = provider.puresourcescategorial(sources1,sink1);
-		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation( sink1,
-				sources1);
-		List<Transportation> transportations1 = provider.getTransportationMeansInfoFromKB(Transport_OKB);
-
-		MenGamsConverter converter = new MenGamsConverter();
+		MenDataProvider converter = new MenDataProvider();
 
 		double factor = 0.1;
 		System.out.println("Annual Cost Factor =" + factor);
 		Parameters parameters = new Parameters(50., 1., factor, 1.05, false);
-		MenResult actual = converter.calculate(sources1, sink1, connections1, transportations1, parameters);
+		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
 		// provider.startCalculation();
-		assertEquals(6.637116668E9, actual.objValue, 1000.);
+		assertEquals(6.63704039E9, actual.objValue, 1000.);
 		assertEquals(6.636902E9, actual.totalMaterialPurchaseCost, 1000.);
 		assertEquals(3.743276E9, actual.totalMaterialPurchaseCostInternationalMarket, 1000.);
-		assertEquals(111673.20983, actual.totalTransportationCost, 1.);
-		assertEquals(179.867, actual.totalCO2Emission, 1.); // in gramm
-		assertEquals(938520.00, actual.totalInstallationCost, 1.);
+		assertEquals(64485.39744, actual.totalTransportationCost, 1.);
+		assertEquals(108.33174, actual.totalCO2Emission, 1.); // in gramm
+		assertEquals(683435.5091, actual.totalInstallationCost, 1.);
 
 	}
 	
 	public void testcheckthevaluefromOWLwith50yearcostfactor() {
-		MenDataProvider provider = new MenDataProvider();
+	
 		getsourcedirectory();
-		List<Sink> sink1 = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
-		List<Source> sources1 = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
-		sink1=provider.puresinkscategorial(sink1, sources1);
-		 sources1 = provider.puresourcescategorial(sources1,sink1);
-		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation(sink1,
-				sources1);
-		List<Transportation> transportations1 = provider.getTransportationMeansInfoFromKB(Transport_OKB);
-
-		MenGamsConverter converter = new MenGamsConverter();
+		MenDataProvider converter = new MenDataProvider();
 
 		double factor = 0.02;
 		System.out.println("Annual Cost Factor =" + factor);
 		Parameters parameters = new Parameters(50., 1., factor, 1.05, false);
-		MenResult actual = converter.calculate(sources1, sink1, connections1, transportations1, parameters);
+		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
 		// provider.startCalculation();
-		assertEquals(6.63698897E9, actual.objValue, 1000.);
+		assertEquals(6.636958433E9, actual.objValue, 1000.);
 		assertEquals(6.636902E9, actual.totalMaterialPurchaseCost, 1000.);
 		assertEquals(3.743276E9, actual.totalMaterialPurchaseCostInternationalMarket, 1000.);
-		assertEquals(32160.305989, actual.totalTransportationCost, 1.);
-		assertEquals(76.3304, actual.totalCO2Emission, 1.); // in gramm
-		assertEquals(2542535.99763, actual.totalInstallationCost, 1.);
+		assertEquals(22539.661189, actual.totalTransportationCost, 1.);
+		assertEquals(53.7127, actual.totalCO2Emission, 1.); // in gramm
+		assertEquals(1552885.9635, actual.totalInstallationCost, 1.);
 
 	}
 	
 	public void testcheckthevaluefromOWLwith77yearcostfactor() {
-		MenDataProvider provider = new MenDataProvider();
 		getsourcedirectory();
-		List<Sink> sink1 = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
-		List<Source> sources1 = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
-		sink1=provider.puresinkscategorial(sink1, sources1);
-		 sources1 = provider.puresourcescategorial(sources1,sink1);
-		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation( sink1,
-				sources1);
-		List<Transportation> transportations1 = provider.getTransportationMeansInfoFromKB(Transport_OKB);
-
-		MenGamsConverter converter = new MenGamsConverter();
-
+		MenDataProvider converter = new MenDataProvider();
 		double factor = 0.013;
 		System.out.println("Annual Cost Factor =" + factor);
 		Parameters parameters = new Parameters(50., 1., factor, 1.05, false);
-		MenResult actual = converter.calculate(sources1, sink1, connections1, transportations1, parameters);
-		// provider.startCalculation();
-		assertEquals(6.63697066E9, actual.objValue, 1000.);
+		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
+		assertEquals(6.63694733E9, actual.objValue, 1000.);
 		assertEquals(6.636902E9, actual.totalMaterialPurchaseCost, 1000.);
 		assertEquals(3.743276E9, actual.totalMaterialPurchaseCostInternationalMarket, 1000.);
-		assertEquals(28031.705989, actual.totalTransportationCost, 1.);
-		assertEquals(70.9544, actual.totalCO2Emission, 1.); // in gramm
-		assertEquals(2841155.99593, actual.totalInstallationCost, 1.);
+		assertEquals(20673.953, actual.totalTransportationCost, 1.);
+		assertEquals(51.2832, actual.totalCO2Emission, 1.); // in gramm
+		assertEquals(1687831.89558, actual.totalInstallationCost, 1.);
 
 	}
 	
 	public void testcheckthevaluefromOWLwith83yearcostfactor() {
-		MenDataProvider provider = new MenDataProvider();
-		getsourcedirectory();
-		List<Sink> sink1 = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
-		List<Source> sources1 = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
-		sink1=provider.puresinkscategorial(sink1, sources1);
-		 sources1 = provider.puresourcescategorial(sources1,sink1);
-		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation( sink1,
-				sources1);
-		List<Transportation> transportations1 = provider.getTransportationMeansInfoFromKB(Transport_OKB);
-
-		MenGamsConverter converter = new MenGamsConverter();
+		
+		 getsourcedirectory();
+		MenDataProvider converter = new MenDataProvider();
 
 		double factor = 0.012;
 		System.out.println("Annual Cost Factor =" + factor);
 		Parameters parameters = new Parameters(50., 1., factor, 1.05, false);
-		MenResult actual = converter.calculate(sources1, sink1, connections1, transportations1, parameters);
-		assertEquals(6.63696735E9, actual.objValue, 1000.);
+		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
+		assertEquals(6.63694535E9, actual.objValue, 1000.);
 		assertEquals(6.636902E9, actual.totalMaterialPurchaseCost, 1000.);
 		assertEquals(3.743276E9, actual.totalMaterialPurchaseCostInternationalMarket, 1000.);
-		assertEquals(18457.285989, actual.totalTransportationCost, 1.);
-		assertEquals(58.4872, actual.totalCO2Emission, 1.); // in gramm
-		assertEquals(3651695.99593, actual.totalInstallationCost, 1.);
+		assertEquals(14038.89056, actual.totalTransportationCost, 1.);
+		assertEquals(42.64351, actual.totalCO2Emission, 1.); // in gramm
+		assertEquals(2249074.098, actual.totalInstallationCost, 1.);
 
 	}
 	
 	public void testcheckthevaluefromOWLwith100yearcostfactor() {
-		MenDataProvider provider = new MenDataProvider();
-		getsourcedirectory();
-		List<Sink> sink1 = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
-		List<Source> sources1 = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
-		sink1=provider.puresinkscategorial(sink1, sources1);
-		 sources1 = provider.puresourcescategorial(sources1,sink1);
-		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation(sink1,
-				sources1);
-		List<Transportation> transportations1 = provider.getTransportationMeansInfoFromKB(Transport_OKB);
-
-		MenGamsConverter converter = new MenGamsConverter();
+	
+		 getsourcedirectory();
+		MenDataProvider converter = new MenDataProvider();
 		double factor = 0.01;
 		System.out.println("Annual Cost Factor =" + factor);
 		Parameters parameters = new Parameters(50., 1., factor, 1.05, false);
-		MenResult actual = converter.calculate(sources1, sink1, connections1, transportations1, parameters);
+		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
 	
-		assertEquals(6.6369600E9, actual.objValue, 1000.);
+		assertEquals(6.63694078E9, actual.objValue, 1000.);
 		assertEquals(6.636902E9, actual.totalMaterialPurchaseCost, 1000.);
 		assertEquals(3.743276E9, actual.totalMaterialPurchaseCostInternationalMarket, 1000.);
-		assertEquals(16009.615989, actual.totalTransportationCost, 1.);
-		assertEquals(55.3, actual.totalCO2Emission, 1.); // in gramm
-		assertEquals(3907655.99593, actual.totalInstallationCost, 1.);
+		assertEquals(12660.72143, actual.totalTransportationCost, 1.);
+		assertEquals(40.84895, actual.totalCO2Emission, 1.); // in gramm
+		assertEquals(2393193.269, actual.totalInstallationCost, 1.);
 
 	}
 
 	public void testcheckthevaluefromOWLwith1yearcostfactortruemarketlowestprice() {
-		MenDataProvider provider = new MenDataProvider();
-		getsourcedirectory();
-		List<Sink> sink1 = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
-		List<Source> sources1 = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
-		sink1=provider.puresinkscategorial(sink1, sources1);
-		 sources1 = provider.puresourcescategorial(sources1,sink1);
-		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation( sink1,
-				sources1);
-		List<Transportation> transportations1 = provider.getTransportationMeansInfoFromKB(Transport_OKB);
-
-		MenGamsConverter converter = new MenGamsConverter();
-
+		
+		 getsourcedirectory();
+		MenDataProvider converter = new MenDataProvider();
 		double factor = 1.0;
 		System.out.println("Annual Cost Factor =" + factor);
 		Parameters parameters = new Parameters(50., 1., factor, 1.05, true);
-		MenResult actual = converter.calculate(sources1, sink1, connections1, transportations1, parameters);
-		assertEquals(6.21537554E9, actual.objValue, 1000.);
+		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
+		assertEquals(6.21513591E9, actual.objValue, 1000.);
 		assertEquals(6.2147356E9, actual.totalMaterialPurchaseCost, 1000.);
 		assertEquals(2.8730357E9, actual.totalMaterialPurchaseCostInternationalMarket, 1000.);
-		assertEquals(598291.006, actual.totalTransportationCost, 1.);
-		assertEquals(832.637356, actual.totalCO2Emission, 1.); // in gramm
+		assertEquals(374167.89, actual.totalTransportationCost, 1.);
+		assertEquals(522.40296, actual.totalCO2Emission, 1.); // in gramm
 		assertEquals(0, actual.totalInstallationCost, 1.);
 
 	}
 	
 	public void testcheckthevaluefromOWLwithcarbontaxvariation1() {
-		MenDataProvider provider = new MenDataProvider();
+		
 		getsourcedirectory();
-		List<Sink> sink1 = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
-		List<Source> sources1 = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
-		sink1=provider.puresinkscategorial(sink1, sources1);
-		 sources1 = provider.puresourcescategorial(sources1,sink1);
-		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation(sink1,
-				sources1);
-		List<Transportation> transportations1 = provider.getTransportationMeansInfoFromKB(Transport_OKB);
-
-		MenGamsConverter converter = new MenGamsConverter();
+		MenDataProvider converter = new MenDataProvider();
 
 		double factor = 1.0;
 		System.out.println("Annual Cost Factor =" + factor);
 		Parameters parameters = new Parameters(70., 1., factor, 1.05, true);
-		MenResult actual = converter.calculate(sources1, sink1, connections1, transportations1, parameters);
-		assertEquals(6.2153922E9, actual.objValue, 1000.);
+		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
+		assertEquals(6.21514636E9, actual.objValue, 1000.);
 		assertEquals(6.2147356E9, actual.totalMaterialPurchaseCost, 1000.);
 		assertEquals(2.8730357E9, actual.totalMaterialPurchaseCostInternationalMarket, 1000.);
-		assertEquals(598291.006, actual.totalTransportationCost, 1.);
-		assertEquals(832.63734856, actual.totalCO2Emission, 1.); // in gramm
+		assertEquals(374167.89, actual.totalTransportationCost, 1.);
+		assertEquals(522.40296, actual.totalCO2Emission, 1.); // in gramm
 		assertEquals(0, actual.totalInstallationCost, 1.);
 
 	}
 	
 	public void testcheckthevaluefromOWLwithinterestfactorvariation2() {
-		MenDataProvider provider = new MenDataProvider();
-		getsourcedirectory();
-		List<Sink> sink1 = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
-		List<Source> sources1 = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
-		sink1=provider.puresinkscategorial(sink1, sources1);
-		 sources1 = provider.puresourcescategorial(sources1,sink1);
-		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation( sink1,
-				sources1);
-		List<Transportation> transportations1 = provider.getTransportationMeansInfoFromKB(Transport_OKB);
 
-		MenGamsConverter converter = new MenGamsConverter();
+		getsourcedirectory();
+
+		MenDataProvider converter = new MenDataProvider();
 
 		double factor = 1.0;
 		System.out.println("Annual Cost Factor =" + factor);
 		Parameters parameters = new Parameters(50., 1.3, factor, 1.05, true);
-		MenResult actual = converter.calculate(sources1, sink1, connections1, transportations1, parameters);
-		assertEquals(8.0799882E9, actual.objValue, 1000.);
+		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
+		assertEquals(8.079676E9, actual.objValue, 1000.);
 		assertEquals(6.2147356E9, actual.totalMaterialPurchaseCost, 1000.);
 		assertEquals(2.8730357E9, actual.totalMaterialPurchaseCostInternationalMarket, 1000.);
-		assertEquals(598291.006, actual.totalTransportationCost, 1.);
-		assertEquals(832.63734856, actual.totalCO2Emission, 1.); // in gramm
+		assertEquals(374167.89, actual.totalTransportationCost, 1.);
+		assertEquals(522.40296, actual.totalCO2Emission, 1.); // in gramm
 		assertEquals(0, actual.totalInstallationCost, 1.);
 
 	}
 	
 	public void testcheckthevaluefromOWLwithinternationalmarketpricefactorvariation3() {
-		MenDataProvider provider = new MenDataProvider();
 		getsourcedirectory();
-		List<Sink> sink1 = provider.addSinkDataFromKB(plantkb, nameOfResourceNetwork);
-		List<Source> sources1 = provider.addSourceDataFromKB(plantkb, nameOfResourceNetwork);
-		sink1=provider.puresinkscategorial(sink1, sources1);
-		 sources1 = provider.puresourcescategorial(sources1,sink1);
-		List<FeasibleConnection> connections1 = provider.connectSinkandSourceWithTransportation( sink1,
-				sources1);
-		List<Transportation> transportations1 = provider.getTransportationMeansInfoFromKB(Transport_OKB);
-
-		MenGamsConverter converter = new MenGamsConverter();
-
+		MenDataProvider converter = new MenDataProvider();
 		double factor = 1.0;
 		System.out.println("Annual Cost Factor =" + factor);
 		Parameters parameters = new Parameters(50., 1., factor, 1.4, true);
-		MenResult actual = converter.calculate(sources1, sink1, connections1, transportations1, parameters);
-		assertEquals(7.133994138E9, actual.objValue, 1000.);
-		assertEquals(7.13285826E9, actual.totalMaterialPurchaseCost, 1000.);
+		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
+		assertEquals(7.133475E9, actual.objValue, 1000.);
+		assertEquals(7.132858E9, actual.totalMaterialPurchaseCost, 1000.);
 		assertEquals(3.0000383E9, actual.totalMaterialPurchaseCostInternationalMarket, 1000.);
-		assertEquals(1062291.006, actual.totalTransportationCost, 1.);
-		assertEquals(1472.95734, actual.totalCO2Emission, 1.); // in gramm
+		assertEquals(577381.8713, actual.totalTransportationCost, 1.);
+		assertEquals(802.83825, actual.totalCO2Emission, 1.); // in gramm
 		assertEquals(0, actual.totalInstallationCost, 1.);
 
 	}
@@ -483,7 +405,21 @@ public class TestMenDataProvider extends TestCase {
 	
 	public void testdistance() {
 		MenDataProvider provider = new MenDataProvider();
-		assertEquals(0.31165, provider.distancecalcforWGS84coord(1.273108, 103.713892, 1.2717503, 103.7159824), 1.);
+		//assertEquals(0.7717, provider.distancecalcforWGS84coord(103.720555,1.275694, 103.726241,  1.271702), 1.);
+		
+		/*CRSFactory factory = new CRSFactory();
+		CoordinateReferenceSystem srcCrs = factory.createFromName("EPSG:4326"); //wgs84
+		CoordinateReferenceSystem dstCrs = factory.createFromName("EPSG:32648"); //UTM48N
+
+		BasicCoordinateTransform transform = new BasicCoordinateTransform(srcCrs, dstCrs);
+
+		ProjCoordinate srcCoord = new ProjCoordinate(103.720555,  1.275694); //jurongAromatic
+		ProjCoordinate dstCoord = new ProjCoordinate();
+		
+		ProjCoordinate srcCoord2 = new ProjCoordinate(103.726241,  1.271702); //jurongAromatic
+		ProjCoordinate dstCoord2 = new ProjCoordinate();
+		*/
+		assertEquals(0.7717,provider.distancecalcforUTMcoord (357652.95745539985,141038.13894726874,358285.4509346582,140596.4772218702),1.);
 	}
 
 
