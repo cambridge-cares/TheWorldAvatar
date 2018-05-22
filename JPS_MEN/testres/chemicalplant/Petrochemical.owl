@@ -1,0 +1,317 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.jparksimulator.com/Petrochemical.owl#"
+     xml:base="http://www.jparksimulator.com/Petrochemical.owl"
+     xmlns:p1="file:/C:/OntoCAPE/meta_model/data_structures/binary_tree.owl#"
+     xmlns:p2="file:/C:/OntoCAPE/meta_model/data_structures/array.owl#"
+     xmlns:p3="file:/C:/OntoCAPE/meta_model/data_structures/linked_list.owl#"
+     xmlns:p4="file:/C:/OntoCAPE/meta_model/data_structures/loop.owl#"
+     xmlns:p5="file:/C:/OntoCAPE/meta_model/data_structures/multiset.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:p6="file:/C:/OntoCAPE/meta_model/topology/topology.owl#"
+     xmlns:p7="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+     xmlns:p8="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:p9="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/network_system.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:p10="http://www.theworldavatar.com/OntoEIP/upper_level/system_v1.owl#"
+     xmlns:p12="http://www.theworldavatar.com/OntoEIP/upper_level/system_function.owl#"
+     xmlns:p11="http://www.theworldavatar.com/OntoEIP/upper_level/system_behavior.owl#"
+     xmlns:p14="http://www.theworldavatar.com/OntoEIP/upper_level/system_realization.owl#"
+     xmlns:p13="http://www.theworldavatar.com/OntoEIP/upper_level/system_performance.owl#"
+     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+     xmlns:p16="http://www.jparksimulator.com/OntoCAPE/meta_model/data_structures/binary_tree.owl#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:p15="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#"
+     xmlns:p18="http://www.jparksimulator.com/OntoCAPE/meta_model/data_structures/linked_list.owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:p17="http://www.jparksimulator.com/OntoCAPE/meta_model/data_structures/array.owl#"
+     xmlns:p19="http://www.jparksimulator.com/OntoCAPE/meta_model/data_structures/loop.owl#"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:j.1="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#"
+     xmlns:j.0="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#"
+     xmlns:p21="http://www.jparksimulator.com/OntoCAPE/meta_model/topology/topology.owl#"
+     xmlns:j.3="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#"
+     xmlns:j.2="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+     xmlns:p20="http://www.jparksimulator.com/OntoCAPE/meta_model/data_structures/multiset.owl#"
+     xmlns:p23="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#"
+     xmlns:p22="http://www.jparksimulator.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+     xmlns:p24="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <owl:Ontology rdf:about="http://www.jparksimulator.com/Petrochemical.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfButadieneByPetrochemical -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfButadieneByPetrochemical">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Capacity"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_CapacityOfButadieneByPetrochemical"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfEthyleneByPetrochemical -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfEthyleneByPetrochemical">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Capacity"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_CapacityOfEthyleneByPetrochemical"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfPropyleneByPetrochemical -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfPropyleneByPetrochemical">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Capacity"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_CapacityOfPropyleneByPetrochemical"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#Petrochemical -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#Petrochemical">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ChemicalPlant"/>
+        <p24:hasGISCoordinateSystem rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PetrochemicalCoordinateSystem"/>
+        <j.0:produces rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PetrochemicalButadiene"/>
+        <j.0:produces rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PetrochemicalButene-1"/>
+        <j.0:produces rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PetrochemicalEthylene"/>
+        <j.0:produces rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PetrochemicalPropylene"/>
+        <p10:isOwnedBy rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PetrochemicalCorporationOfSingaporePteLtd"/>
+        <p24:nearSea rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</p24:nearSea>
+        <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PetrochemicalCorporationOfSingaporePteLtd</p10:hasName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PetrochemicalButadiene -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PetrochemicalButadiene">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Product"/>
+        <j.0:hasCapacity rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfButadieneByPetrochemical"/>
+        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfButadieneByPetrochemical"/>
+        <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Butadiene</p10:hasName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PetrochemicalButene-1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PetrochemicalButene-1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Product"/>
+        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfButene-1ByPetrochemical"/>
+        <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Butene-1</p10:hasName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PetrochemicalCoordinateSystem -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PetrochemicalCoordinateSystem">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#ProjectedCoordinateSystem"/>
+        <p24:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#x_Petrochemical"/>
+        <p24:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#y_Petrochemical"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PetrochemicalCorporationOfSingaporePteLtd -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PetrochemicalCorporationOfSingaporePteLtd">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/upper_level/system_v1.owl#Organization"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PetrochemicalEthylene -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PetrochemicalEthylene">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Product"/>
+        <j.0:hasCapacity rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfEthyleneByPetrochemical"/>
+        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfEthyleneByPetrochemical"/>
+        <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ethylene</p10:hasName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PetrochemicalPropylene -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PetrochemicalPropylene">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Product"/>
+        <j.0:hasCapacity rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfPropyleneByPetrochemical"/>
+        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfPropyleneByPetrochemical"/>
+        <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Propylene</p10:hasName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfButadieneByPetrochemical -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfButadieneByPetrochemical">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#Price"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfButadieneByPetrochemical"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfButene-1ByPetrochemical -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfButene-1ByPetrochemical">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#Price"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfButene-1ByPetrochemical"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfEthyleneByPetrochemical -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfEthyleneByPetrochemical">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#Price"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfEthyleneByPetrochemical"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfPropyleneByPetrochemical -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfPropyleneByPetrochemical">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#Price"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfPropyleneByPetrochemical"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_CapacityOfButadieneByPetrochemical -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_CapacityOfButadieneByPetrochemical">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kton/year"/>
+        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfButadieneByPetrochemical"/>
+        <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">55000.0</j.2:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_CapacityOfEthyleneByPetrochemical -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_CapacityOfEthyleneByPetrochemical">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kton/year"/>
+        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfEthyleneByPetrochemical"/>
+        <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1010000.0</j.2:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_CapacityOfPropyleneByPetrochemical -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_CapacityOfPropyleneByPetrochemical">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kton/year"/>
+        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfPropyleneByPetrochemical"/>
+        <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1000000.0</j.2:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfButadieneByPetrochemical -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfButadieneByPetrochemical">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
+        <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">2161.0</j.2:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfButene-1ByPetrochemical -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfButene-1ByPetrochemical">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
+        <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1676.0</j.2:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfEthyleneByPetrochemical -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfEthyleneByPetrochemical">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
+        <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1254.0</j.2:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfPropyleneByPetrochemical -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfPropyleneByPetrochemical">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
+        <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1124.0</j.2:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_x_Petrochemical -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_x_Petrochemical">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#x_Petrochemical"/>
+        <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">356911.2728966188</j.2:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_y_Petrochemical -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_y_Petrochemical">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#y_Petrochemical"/>
+        <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">140750.39289713025</j.2:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#x_Petrochemical -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#x_Petrochemical">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <j.1:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_x_Petrochemical"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#y_Petrochemical -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#y_Petrochemical">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <j.1:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_y_Petrochemical"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+
