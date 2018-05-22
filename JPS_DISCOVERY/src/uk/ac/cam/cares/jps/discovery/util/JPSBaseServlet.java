@@ -7,8 +7,8 @@ import java.util.List;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 
-import uk.ac.cam.cares.jps.discovery.api.IAgentCommunication;
-import uk.ac.cam.cares.jps.discovery.api.TypeIRI;
+import uk.ac.cam.cares.jps.base.discovery.IAgentCommunication;
+import uk.ac.cam.cares.jps.base.discovery.TypeIRI;
 import uk.ac.cam.cares.jps.discovery.client.DiscoveryProvider;
 
 public class JPSBaseServlet extends HttpServlet {

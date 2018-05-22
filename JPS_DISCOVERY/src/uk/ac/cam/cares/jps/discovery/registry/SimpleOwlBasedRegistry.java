@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.discovery.api.Agent;
+import uk.ac.cam.cares.jps.base.discovery.Agent;
 
 public class SimpleOwlBasedRegistry implements IRegistry {
 
