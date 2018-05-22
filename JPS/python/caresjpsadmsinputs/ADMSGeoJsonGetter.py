@@ -7,7 +7,8 @@ import sys
 import os
 # caresjpsutilPath = os.path.abspath(os.path.join(os.getcwd(), '../caresjpsutil'))
 # sys.path.insert(0, caresjpsutilPath)
-from javaConnector import returnExceptionToJava, returnResultsToJava
+from caresjpsutil import returnExceptionToJava, returnResultsToJava
+from caresjpsutil import PythonLogger
 
 owlCRS = Proj(init='epsg:28992')
 osmCRS = Proj(init='epsg:4326')
@@ -214,7 +215,11 @@ def return_buildings():
     return json.dumps(listBuildingsToTransfer)
 
 if __name__ == "__main__":
+    pythonLogger = PythonLogger('ADMSGeoJsonGetter.py')
+    pythonLogger.postInfoToLogServer('start of ADMSGeoJsonGetter.py')
     try:
         returnResultsToJava(return_buildings())
+        pythonLogger.postInfoToLogServer('end of ADMSGeoJsonGetter.py')
     except Exception as e:
         returnExceptionToJava(e)
+        pythonLogger.postInfoToLogServer('end of ADMSGeoJsonGetter.py')

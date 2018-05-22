@@ -2,12 +2,12 @@ from setuptools import setup
 
 setup(
     # Needed to silence warnings (and to be a worthwhile package)
-    name='javaConnector',
+    name='caresjpsutil',
     url='https://github.com/jladan/package_demo',
     author='WE',
     author_email='weiern.cares.c4t@gmail.com',
     # Needed to actually package something
-    packages=['javaConnector'],
+    packages=['caresjpsutil'],
     # Needed for dependencies
     install_requires=[],
     # *strongly* suggested for sharing

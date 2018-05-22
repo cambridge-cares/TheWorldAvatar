@@ -34,8 +34,8 @@ public class TestMoDSAnalysis extends TestCase{
 		return EntityUtils.toString(httpResponse.getEntity());
 	}
 
-	public void testDoGetHttpServletRequestHttpServletResponse() throws URISyntaxException, ClientProtocolException, IOException {
-		String path = "/JPS_Arbitrage/ArbitrageAgent";
+	public void testMoDSPythonHardcode() throws URISyntaxException, ClientProtocolException, IOException {
+		String path = "/JPS_Arbitrage/hardcode";
 		String key = "MoDS_input";
 		String value = "24220.0656";
 		
@@ -43,4 +43,16 @@ public class TestMoDSAnalysis extends TestCase{
 		System.out.println(actual);
 		assertTrue(actual.contains("The highest marginal profit per tonne"));
 	}
+	
+	
+	public void testMoDSPythonKB() throws URISyntaxException, ClientProtocolException, IOException {
+		String path = "/JPS_Arbitrage/KB";
+		String key = "MoDS_input";
+		String value = "24220.0656";
+		
+		String actual = executeGet(path,key,value);
+		System.out.println(actual);
+		assertTrue(actual.contains("The highest marginal profit per tonne"));
+	}
+
 }

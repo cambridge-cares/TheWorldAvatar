@@ -8,11 +8,11 @@ import java.util.StringTokenizer;
 
 import org.apache.http.ParseException;
 
-import uk.ac.cam.cares.jps.discovery.api.Agent;
-import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
-import uk.ac.cam.cares.jps.discovery.api.AgentResponse;
-import uk.ac.cam.cares.jps.discovery.api.IAgentCommunication;
-import uk.ac.cam.cares.jps.discovery.api.TypeIRI;
+import uk.ac.cam.cares.jps.base.discovery.Agent;
+import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
+import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
+import uk.ac.cam.cares.jps.base.discovery.IAgentCommunication;
+import uk.ac.cam.cares.jps.base.discovery.TypeIRI;
 import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.util.Helper;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;

@@ -159,9 +159,9 @@
           </owl:NamedIndividual>
         </system:hasUnitOfMeasure>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
-        >1.142857143</system:numericalValue>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
         >6.571428571</system:numericalValue>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+        >1.142857143</system:numericalValue>
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
       </owl:NamedIndividual>
     </system:hasValue>
@@ -268,7 +268,7 @@
     <system:hasValue>
       <owl:NamedIndividual rdf:ID="V_USD_to_CNY">
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >0.15719400320185</system:numericalValue>
+        >0.157024743871</system:numericalValue>
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure>
           <owl:NamedIndividual rdf:about="#USD/CNY">
@@ -377,7 +377,7 @@
       <owl:NamedIndividual rdf:ID="V_USD_to_SGD">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >0.74518117978711</system:numericalValue>
+        >0.74480515100122</system:numericalValue>
         <system:hasUnitOfMeasure>
           <owl:NamedIndividual rdf:about="#USD/SGD">
             <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>

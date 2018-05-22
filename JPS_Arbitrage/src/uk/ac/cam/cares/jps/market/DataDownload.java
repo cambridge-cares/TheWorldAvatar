@@ -16,13 +16,14 @@ import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 public class DataDownload {
 
 	
 	
-	public static String Downloading_market_data(String CPO_page1) throws Exception {
+	public static String Downloading_market_data() throws Exception {
 		
 		/** this function executes 4 Python scripts which download market data and stores it in separate CSV files */ 
 		
@@ -58,7 +59,7 @@ public class DataDownload {
 		
 		/** knowledge base from an owl file in a jenaOWL model; URIs of relevant individuals and their properties are defined and
 		 * locations of the CSV files with the market data are stored in KB one by one */
-		String filePath = "C:/Users/Janusz/Desktop/JParkSimulator-git/JPS_Arbitrage/workingdir/OntoArbitrage_Market_KB.owl";
+		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload())+"/OntoArbitrage_Market_KB.owl";
 		FileInputStream inFile= new FileInputStream(filePath);
 		Reader in = new InputStreamReader(inFile,"UTF-8");
 		JenaOWLModel jenaOwlModel = ProtegeOWL.createJenaOWLModelFromReader(in);
@@ -79,7 +80,7 @@ public class DataDownload {
 				
 
 		/**save the updated model file; also, any error messages are collected and printed */
-		Collection errors = new ArrayList();
+		Collection<Object> errors = new ArrayList<Object>();
 		jenaOwlModel.save(new URI("file:/"+filePath), FileUtils.langXMLAbbrev, errors, jenaOwlModel.getOntModel());
 		System.out.println("File saved with " + errors.size() + " errors.");  
 		  
@@ -87,7 +88,7 @@ public class DataDownload {
 		   
 	}
 	
-	public static void Downloading_currencies() throws Exception {
+	public static String Downloading_currencies() throws Exception {
 		
 		/** this function executes a Python script which downloads exchange rates and stores it in separate CSV files;
 		 * the currencies are defined within the script; the rates are printed to the console by the script thus allowing to store them
@@ -95,10 +96,8 @@ public class DataDownload {
 
 		String currency_download = new String("caresjpsarbitrage/exchange_rates.pyw"); 
 
-		String currency_data = new String("C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\workingdir\\exchange_rates.csv"); 
 
-
-		String result = PythonHelper.callPython(currency_download, currency_data, new DataDownload());
+		String result = PythonHelper.callPython(currency_download, "whatever", new DataDownload());
 		System.out.println(result);
 
 		/** split the console output into headers and exchange rates*/
@@ -122,7 +121,7 @@ public class DataDownload {
 		
 		
 		/** knowledge base from an owl file in a jenaOWL model; rates are stored in KB one by one */
-		String filePath = "C:/Users/Janusz/Desktop/JParkSimulator-git/JPS_Arbitrage/workingdir/OntoArbitrage_PlantInfo_KB.owl";
+		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload())+"/OntoArbitrage_PlantInfo_KB.owl";
 		FileInputStream inFile= new FileInputStream(filePath);
 		Reader in = new InputStreamReader(inFile,"UTF-8");
 		JenaOWLModel jenaOwlModel = ProtegeOWL.createJenaOWLModelFromReader(in);
@@ -135,11 +134,11 @@ public class DataDownload {
 				
 
 		/**save the updated model file; also, any error messages are collected and printed*/
-		Collection errors = new ArrayList();
+		Collection<Object> errors = new ArrayList<Object>();
 		jenaOwlModel.save(new URI("file:/"+filePath), FileUtils.langXMLAbbrev, errors, jenaOwlModel.getOntModel());
 		System.out.println("File saved with " + errors.size() + " errors.");  
 		   
-		   
+		return headers[0];
 		   
 	}
 	
@@ -181,7 +180,7 @@ public class DataDownload {
 		
 		
 		/** knowledge base from an owl file in a jenaOWL model; rates are stored in KB one by one */
-		String filePath = "C:/Users/Janusz/Desktop/JParkSimulator-git/JPS_Arbitrage/workingdir/OntoArbitrage_PlantInfo_KB.owl";
+		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload())+"/OntoArbitrage_PlantInfo_KB.owl";
 		FileInputStream inFile= new FileInputStream(filePath);
 		Reader in = new InputStreamReader(inFile,"UTF-8");
 		JenaOWLModel jenaOwlModel = ProtegeOWL.createJenaOWLModelFromReader(in);
@@ -194,89 +193,10 @@ public class DataDownload {
 				
 
 		/**save the updated model file; also, any error messages are collected and printed*/
-		Collection errors = new ArrayList();
+		Collection<Object> errors = new ArrayList<Object>();
 		jenaOwlModel.save(new URI("file:/"+filePath), FileUtils.langXMLAbbrev, errors, jenaOwlModel.getOntModel());
 		System.out.println("File saved with " + errors.size() + " errors.");  
 		   
-		   
-		   
-	}
-	
-	public static void Reading_data() throws Exception {
-		
-		/** this function executes a Python script which prints input and output headers and data from an Aspen model;
-		 *  information to be sourced from the model and printed is defined in the script;
-		 *  data is stored in the relevant KB*/ 
-		
-		String print = new String("caresjpsarbitrage/print_headers.pyw");
-		
-		String result = PythonHelper.callPython(print, "1", new DataDownload());
-		System.out.println(result);
-		
-		/** split the console output into headers and exchange rates*/
-		String[] headers = result.split(",");
-		
-		/** URIs of ontologies used to define KBs in which market data will be stored*/ 
-		String ontoPath = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15"; //KB
-		String ontoPath2 = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl";
-		
-		
-		/** ontology addresses*/
-		String ontoPath3 = "http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl";
-		String ontoPath4 = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13";
-		
-		
-		
-		String[][] addresses2 = {{ontoPath3+"#"+"data", ontoPath4+"#"+"CMECrudePalmOil_001"},
-				{ontoPath3+"#"+"data", ontoPath4+"#"+"CMEBiodiesel_001"},
-				{ontoPath3+"#"+"data", ontoPath4+"#"+"ZCEMethanol_001"},
-				{ontoPath3+"#"+"data", ontoPath4+"#"+"CMENaturalGas_001"}
-				};
-
-		
-		/** URIs of relevant individuals and their properties are defined */
-		String[][] addresses = new String[headers.length][];
-		for (int i = 0; i <addresses.length; i++){
-			addresses[i] = new String[] {ontoPath2+"#"+"numericalValue", ontoPath+"#"+headers[i]};
-			System.out.println(addresses[i][1]);
-		}
-		
-
-		   /**get model from an owl file*/
-		   String filePath = "C:/Users/Janusz/Desktop/JParkSimulator-git/JPS_Arbitrage/workingdir/OntoArbitrage_PlantInfo_KB.owl";
-		   OWLModel owlModel = null;
-		   
-		   try {
-		      owlModel = ProtegeOWL.createJenaOWLModelFromURI("file:/"+filePath);
-		     } catch (OntologyLoadException e1) {
-		      e1.printStackTrace();
-		     }
-
-				
-			for (int i = 0; i <addresses.length; i++){
-				RDFIndividual individual = owlModel.getRDFIndividual(addresses[i][1]);
-				String name = individual.getPropertyValueLiteral(owlModel.getRDFProperty(addresses[i][0])).getString();
-				System.out.println(name);
-				}
-
-			
-			
-			   /**get model from an owl file*/
-			   String filePath2 = "C:/Users/Janusz/Desktop/Commodity_prices/Ontology/OntoArbitrage_Market_KB.owl";
-			   OWLModel owlModel2 = null;
-			   
-			   try {
-				   owlModel2 = ProtegeOWL.createJenaOWLModelFromURI("file:/"+filePath2);
-			     } catch (OntologyLoadException e1) {
-			      e1.printStackTrace();
-			     }
-			
-			
-			for (int i = 0; i <addresses2.length; i++){
-				RDFIndividual individual = owlModel2.getRDFIndividual(addresses2[i][1]);
-				String name = individual.getPropertyValueLiteral(owlModel2.getRDFProperty(addresses2[i][0])).getString();
-				System.out.println(name);
-				}
 		   
 		   
 	}
@@ -301,7 +221,7 @@ public class DataDownload {
 		
 
 		   /**get model from an owl file*/
-		   String filePath = "C:/Users/Janusz/Desktop/JParkSimulator-git/JPS_Arbitrage/workingdir/OntoArbitrage_PlantInfo_KB.owl";
+		   String filePath = AgentLocator.getPathToWorkingDir(new DataDownload())+"/OntoArbitrage_PlantInfo_KB.owl";
 		   OWLModel owlModel = null;
 		   
 		   try {
@@ -335,7 +255,7 @@ public class DataDownload {
 					};
 			
 			   /**get model from an owl file*/
-			   String filePath2 = "C:/Users/Janusz/Desktop/JParkSimulator-git/JPS_Arbitrage/workingdir/OntoArbitrage_Market_KB.owl";
+			   String filePath2 = AgentLocator.getPathToWorkingDir(new DataDownload())+"/OntoArbitrage_Market_KB.owl";
 			   OWLModel owlModel2 = null;
 			   
 			   
@@ -362,12 +282,7 @@ public class DataDownload {
 	
 	
 	public static void main(String[] args) throws Exception {
-		Downloading_market_data("http://www.cmegroup.com/trading/agricultural/grain-and-oilseed/usd-malaysian-crude-palm-oil-calendar.html?optionProductId=8075");
-		//Downloading_currencies();
-		//Storing_Aspen_data();
-		//Reading_data();
-		//String value = 	"V_Price_Storage_NaturalGas_001,V_Price_CoolingWater_001,V_Price_Storage_Biodiesel_001,V_Price_Storage_CrudePalmOil_001,V_Costs_Storage_CrudePalmOil_001,V_Price_Storage_Methanol_001,V_Price_Transport_Malaysia-SG_CrudePalmOil_001,V_Price_Electricity_001,V_Price_Transport_SG-SC_Methanol_001,V_USD_to_SGD,V_Price_ProcessWater_001,V_Price_Transport_USGC-NEA_NaturalGas_001,V_Price_HighPressureSteam_001,V_USD_to_CNY,V_Price_MediumPressureSteam_001,V_Price_LowPressureSteam_001,V_Price_Transport_SEA-SC_Biodiesel_001,V_Price_FuelGas_001";
-		//Call_data(value.split(","));
+		Downloading_market_data();
 	}
 	
 }

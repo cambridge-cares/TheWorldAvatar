@@ -10,12 +10,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.discovery.api.AbstractAgentServiceDescription;
-import uk.ac.cam.cares.jps.discovery.api.Agent;
-import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
-import uk.ac.cam.cares.jps.discovery.api.AgentResponse;
-import uk.ac.cam.cares.jps.discovery.api.Parameter;
-import uk.ac.cam.cares.jps.discovery.api.TypeString;
+import uk.ac.cam.cares.jps.base.discovery.AbstractAgentServiceDescription;
+import uk.ac.cam.cares.jps.base.discovery.Agent;
+import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
+import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
+import uk.ac.cam.cares.jps.base.discovery.Parameter;
+import uk.ac.cam.cares.jps.base.discovery.TypeString;
 import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;
 import uk.ac.cam.cares.jps.discovery.util.JPSBaseServlet;

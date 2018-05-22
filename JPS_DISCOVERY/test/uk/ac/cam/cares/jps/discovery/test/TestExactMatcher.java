@@ -3,8 +3,8 @@ package uk.ac.cam.cares.jps.discovery.test;
 import java.util.List;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.discovery.api.Agent;
-import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
+import uk.ac.cam.cares.jps.base.discovery.Agent;
+import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.matching.exact.ExactMatcher;
 import uk.ac.cam.cares.jps.discovery.registry.IRegistry;

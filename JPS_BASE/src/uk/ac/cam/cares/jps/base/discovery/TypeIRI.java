@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.discovery.api;
+package uk.ac.cam.cares.jps.base.discovery;
 
 public class TypeIRI extends TypeString {
 

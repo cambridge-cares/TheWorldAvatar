@@ -3,12 +3,12 @@ package uk.ac.cam.cares.jps.discovery.matching.exact;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.ac.cam.cares.jps.discovery.api.Agent;
-import uk.ac.cam.cares.jps.discovery.api.AgentServiceDescription;
-import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
-import uk.ac.cam.cares.jps.discovery.api.IMatcher;
-import uk.ac.cam.cares.jps.discovery.api.IType;
-import uk.ac.cam.cares.jps.discovery.api.Parameter;
+import uk.ac.cam.cares.jps.base.discovery.Agent;
+import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
+import uk.ac.cam.cares.jps.base.discovery.AgentServiceDescription;
+import uk.ac.cam.cares.jps.base.discovery.IMatcher;
+import uk.ac.cam.cares.jps.base.discovery.IType;
+import uk.ac.cam.cares.jps.base.discovery.Parameter;
 import uk.ac.cam.cares.jps.discovery.registry.IRegistry;
 
 public class ExactMatcher implements IMatcher{

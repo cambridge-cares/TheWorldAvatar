@@ -25,10 +25,10 @@ import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.discovery.api.AbstractAgentServiceDescription;
-import uk.ac.cam.cares.jps.discovery.api.Agent;
-import uk.ac.cam.cares.jps.discovery.api.AgentServiceDescription;
-import uk.ac.cam.cares.jps.discovery.api.Parameter;
+import uk.ac.cam.cares.jps.base.discovery.AbstractAgentServiceDescription;
+import uk.ac.cam.cares.jps.base.discovery.Agent;
+import uk.ac.cam.cares.jps.base.discovery.AgentServiceDescription;
+import uk.ac.cam.cares.jps.base.discovery.Parameter;
 import uk.ac.cam.cares.jps.discovery.util.Helper;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;
 
