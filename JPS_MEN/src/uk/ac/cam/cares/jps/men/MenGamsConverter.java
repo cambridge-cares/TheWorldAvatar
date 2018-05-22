@@ -20,7 +20,7 @@ import com.gams.api.GAMSWorkspace;
 import com.gams.api.GAMSWorkspaceInfo;
 
 import uk.ac.cam.cares.jps.men.entity.FeasibleConnection;
-import uk.ac.cam.cares.jps.men.entity.Parameters;
+import uk.ac.cam.cares.jps.men.entity.MenCalculationParameters;
 import uk.ac.cam.cares.jps.men.entity.Product;
 import uk.ac.cam.cares.jps.men.entity.Sink;
 import uk.ac.cam.cares.jps.men.entity.Source;
@@ -33,7 +33,7 @@ public class MenGamsConverter {
 	final private String WORKING_DIR_GAMS = "C:\\Users\\kevin\\TEMP\\JPS_workingdir\\JPS_MEN_GAMS";
 	private Logger logger = LoggerFactory.getLogger(MenGamsConverter.class);	
 	
-	public MenResult calculate(List<Source> sources, List<Sink> sinks, List<FeasibleConnection> feasibleConnections, List<Transportation> transportations, Parameters parameters) {
+	public MenResult calculate(List<Source> sources, List<Sink> sinks, List<FeasibleConnection> feasibleConnections, List<Transportation> transportations, MenCalculationParameters parameters) {
 	
 		// create a GAMS model
 		// -------------------
@@ -200,7 +200,7 @@ public class MenGamsConverter {
         }
 	}
 	
-	private void prepareGamsParameterForConstants(GAMSDatabase db, Parameters parameters) {
+	private void prepareGamsParameterForConstants(GAMSDatabase db, MenCalculationParameters parameters) {
 		GAMSSet cSet = db.addSet("ckey", 1, "constant names");
 		GAMSParameter param = db.addParameter("constant", 1 , "constant values");
 		

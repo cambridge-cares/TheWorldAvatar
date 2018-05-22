@@ -1,7 +1,7 @@
 package uk.ac.cam.cares.jps.men.entity;
 
 
-public class Parameters {
+public class MenCalculationParameters {
 	
 	static public double INTERNATIONAL_MARKET_PRICE_FACTOR = 1.05;
 
@@ -16,7 +16,7 @@ public class Parameters {
 	// the base price for international market is multiplied with this factor
 	public double internationalMarketPriceFactor = 1.05;
 	
-	public Parameters(double carbonTax, double interestFactor, double annualCostFactor, double internationalMarketPriceFactor, boolean internationalMarketLowestPrice) {
+	public MenCalculationParameters(double carbonTax, double interestFactor, double annualCostFactor, double internationalMarketPriceFactor, boolean internationalMarketLowestPrice) {
 		this.carbonTax = carbonTax;
 		this.interestFactor = interestFactor;
 		this.annualCostFactor = annualCostFactor;

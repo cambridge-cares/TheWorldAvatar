@@ -25,7 +25,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 import uk.ac.cam.cares.jps.men.entity.FeasibleConnection;
 import uk.ac.cam.cares.jps.men.entity.INamed;
-import uk.ac.cam.cares.jps.men.entity.Parameters;
+import uk.ac.cam.cares.jps.men.entity.MenCalculationParameters;
 import uk.ac.cam.cares.jps.men.entity.Product;
 import uk.ac.cam.cares.jps.men.entity.Sink;
 import uk.ac.cam.cares.jps.men.entity.Source;
@@ -42,7 +42,7 @@ public class MenDataProvider {
 	private Logger logger = LoggerFactory.getLogger(MenDataProvider.class);	
 
 
-	public MenResult startCalculation(Parameters parameters, String transportationIRI, List<String> chemicalPlantIRIs) {
+	public MenResult startCalculation(MenCalculationParameters parameters, String transportationIRI, List<String> chemicalPlantIRIs) {
 	
 		getData(transportationIRI, chemicalPlantIRIs);
 		

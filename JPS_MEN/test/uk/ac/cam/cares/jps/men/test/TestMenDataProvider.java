@@ -16,7 +16,7 @@ import uk.ac.cam.cares.jps.men.MenDataProvider;
 import uk.ac.cam.cares.jps.men.MenGamsConverter;
 import uk.ac.cam.cares.jps.men.MenResult;
 import uk.ac.cam.cares.jps.men.entity.FeasibleConnection;
-import uk.ac.cam.cares.jps.men.entity.Parameters;
+import uk.ac.cam.cares.jps.men.entity.MenCalculationParameters;
 import uk.ac.cam.cares.jps.men.entity.Sink;
 import uk.ac.cam.cares.jps.men.entity.Source;
 import uk.ac.cam.cares.jps.men.entity.Transportation;
@@ -24,6 +24,12 @@ import uk.ac.cam.cares.jps.men.entity.Transportation;
 public class TestMenDataProvider extends TestCase {
 	List<String> plantkb= new ArrayList<String>();
 	String Transport_OKB= getTransportationFile();
+	
+	// based on the Jr_MEN OKB
+	String nameOfResourceNetwork = "Jurong_MEN";                               //define the name of the resource network that is to be synthesized 
+
+	public static Map<String, String> NametoCode = new HashMap<>();
+	public static Map<String, String> NametoCode2 = new HashMap<>();
 	
 	private String getTransportationFile() {
 		return ".\\testres\\transportation\\Jr_Transportation_simplified.owl"; // location of the owl file that contains information for the transportation system
@@ -41,14 +47,6 @@ public class TestMenDataProvider extends TestCase {
 		}
 		return plantkb;
 	}
-		
-	// based on the Jr_MEN OKB
-	String nameOfResourceNetwork = "Jurong_MEN";                               //define the name of the resource network that is to be synthesized 
-
-	public static Map<String, String> NametoCode = new HashMap<>();
-	public static Map<String, String> NametoCode2 = new HashMap<>();
-
-	
 	
 	public TestMenDataProvider()
 	
@@ -194,7 +192,7 @@ public class TestMenDataProvider extends TestCase {
 		System.out.println(transportations1);
 		
 		MenDataProvider converter = new MenDataProvider();
-		Parameters parameters = new Parameters(50., 1., 1.0, 1.05, false);
+		MenCalculationParameters parameters = new MenCalculationParameters(50., 1., 1.0, 1.05, false);
 		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
 		assertEquals(6.41811655E9, actual.totalMaterialPurchaseCost, 1.);//using derived= 6.41811655E9
 		assertEquals(577381.8713, actual.totalTransportationCost, 1.);  //if using derived= 577381.8713
@@ -232,7 +230,7 @@ public class TestMenDataProvider extends TestCase {
 		MenDataProvider converter = new MenDataProvider();
 		double factor = 1.0;
 		System.out.println("Annual Cost Factor =" + factor);
-		Parameters parameters = new Parameters(50., 1., factor, 1.05, false);
+		MenCalculationParameters parameters = new MenCalculationParameters(50., 1., factor, 1.05, false);
 		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
 		assertEquals(6.418734E9, actual.objValue, 1000.);
 		assertEquals(6.41811655E9, actual.totalMaterialPurchaseCost, 1000.);
@@ -249,7 +247,7 @@ public class TestMenDataProvider extends TestCase {
 
 		double factor = 0.1;
 		System.out.println("Annual Cost Factor =" + factor);
-		Parameters parameters = new Parameters(50., 1., factor, 1.05, false);
+		MenCalculationParameters parameters = new MenCalculationParameters(50., 1., factor, 1.05, false);
 		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
 		// provider.startCalculation();
 		assertEquals(6.63704039E9, actual.objValue, 1000.);
@@ -268,7 +266,7 @@ public class TestMenDataProvider extends TestCase {
 
 		double factor = 0.02;
 		System.out.println("Annual Cost Factor =" + factor);
-		Parameters parameters = new Parameters(50., 1., factor, 1.05, false);
+		MenCalculationParameters parameters = new MenCalculationParameters(50., 1., factor, 1.05, false);
 		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
 		// provider.startCalculation();
 		assertEquals(6.636958433E9, actual.objValue, 1000.);
@@ -285,7 +283,7 @@ public class TestMenDataProvider extends TestCase {
 		MenDataProvider converter = new MenDataProvider();
 		double factor = 0.013;
 		System.out.println("Annual Cost Factor =" + factor);
-		Parameters parameters = new Parameters(50., 1., factor, 1.05, false);
+		MenCalculationParameters parameters = new MenCalculationParameters(50., 1., factor, 1.05, false);
 		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
 		assertEquals(6.63694733E9, actual.objValue, 1000.);
 		assertEquals(6.636902E9, actual.totalMaterialPurchaseCost, 1000.);
@@ -303,7 +301,7 @@ public class TestMenDataProvider extends TestCase {
 
 		double factor = 0.012;
 		System.out.println("Annual Cost Factor =" + factor);
-		Parameters parameters = new Parameters(50., 1., factor, 1.05, false);
+		MenCalculationParameters parameters = new MenCalculationParameters(50., 1., factor, 1.05, false);
 		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
 		assertEquals(6.63694535E9, actual.objValue, 1000.);
 		assertEquals(6.636902E9, actual.totalMaterialPurchaseCost, 1000.);
@@ -320,7 +318,7 @@ public class TestMenDataProvider extends TestCase {
 		MenDataProvider converter = new MenDataProvider();
 		double factor = 0.01;
 		System.out.println("Annual Cost Factor =" + factor);
-		Parameters parameters = new Parameters(50., 1., factor, 1.05, false);
+		MenCalculationParameters parameters = new MenCalculationParameters(50., 1., factor, 1.05, false);
 		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
 	
 		assertEquals(6.63694078E9, actual.objValue, 1000.);
@@ -338,7 +336,7 @@ public class TestMenDataProvider extends TestCase {
 		MenDataProvider converter = new MenDataProvider();
 		double factor = 1.0;
 		System.out.println("Annual Cost Factor =" + factor);
-		Parameters parameters = new Parameters(50., 1., factor, 1.05, true);
+		MenCalculationParameters parameters = new MenCalculationParameters(50., 1., factor, 1.05, true);
 		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
 		assertEquals(6.21513591E9, actual.objValue, 1000.);
 		assertEquals(6.2147356E9, actual.totalMaterialPurchaseCost, 1000.);
@@ -356,7 +354,7 @@ public class TestMenDataProvider extends TestCase {
 
 		double factor = 1.0;
 		System.out.println("Annual Cost Factor =" + factor);
-		Parameters parameters = new Parameters(70., 1., factor, 1.05, true);
+		MenCalculationParameters parameters = new MenCalculationParameters(70., 1., factor, 1.05, true);
 		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
 		assertEquals(6.21514636E9, actual.objValue, 1000.);
 		assertEquals(6.2147356E9, actual.totalMaterialPurchaseCost, 1000.);
@@ -375,7 +373,7 @@ public class TestMenDataProvider extends TestCase {
 
 		double factor = 1.0;
 		System.out.println("Annual Cost Factor =" + factor);
-		Parameters parameters = new Parameters(50., 1.3, factor, 1.05, true);
+		MenCalculationParameters parameters = new MenCalculationParameters(50., 1.3, factor, 1.05, true);
 		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
 		assertEquals(8.079676E9, actual.objValue, 1000.);
 		assertEquals(6.2147356E9, actual.totalMaterialPurchaseCost, 1000.);
@@ -391,7 +389,7 @@ public class TestMenDataProvider extends TestCase {
 		MenDataProvider converter = new MenDataProvider();
 		double factor = 1.0;
 		System.out.println("Annual Cost Factor =" + factor);
-		Parameters parameters = new Parameters(50., 1., factor, 1.4, true);
+		MenCalculationParameters parameters = new MenCalculationParameters(50., 1., factor, 1.4, true);
 		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
 		assertEquals(7.133475E9, actual.objValue, 1000.);
 		assertEquals(7.132858E9, actual.totalMaterialPurchaseCost, 1000.);

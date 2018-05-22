@@ -8,7 +8,7 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.men.MenGamsConverter;
 import uk.ac.cam.cares.jps.men.MenResult;
 import uk.ac.cam.cares.jps.men.entity.FeasibleConnection;
-import uk.ac.cam.cares.jps.men.entity.Parameters;
+import uk.ac.cam.cares.jps.men.entity.MenCalculationParameters;
 import uk.ac.cam.cares.jps.men.entity.Product;
 import uk.ac.cam.cares.jps.men.entity.Sink;
 import uk.ac.cam.cares.jps.men.entity.Source;
@@ -134,7 +134,7 @@ public class TestMenGamsConverter extends TestCase {
 		
 		MenGamsConverter converter = new MenGamsConverter();
 		//Parameters parameters = createDefaultParameters();
-		Parameters parameters = new Parameters(50., 1., .01, 1.05, false);
+		MenCalculationParameters parameters = new MenCalculationParameters(50., 1., .01, 1.05, false);
 		MenResult result = converter.calculate(sources, sinks, connections, transportations, parameters);
 		assertEquals(1.3802657E9, result.totalMaterialPurchaseCost, 1.);
 		// first solution, objective function value is very close to the minimum
@@ -182,7 +182,7 @@ public class TestMenGamsConverter extends TestCase {
 		addNearSeaInformation(sources, "r2,r12,r17,r18", sinks, "d23,d24,d26");
 		
 		MenGamsConverter converter = new MenGamsConverter();
-		Parameters parameters = new Parameters(50., 1., 1., 1.05, false);
+		MenCalculationParameters parameters = new MenCalculationParameters(50., 1., 1., 1.05, false);
 		MenResult result = converter.calculate(sources, sinks, connections, transportations, parameters);
 		assertEquals(6.0323151E9, result.totalMaterialPurchaseCost, 1.);
 		assertEquals(1064863, result.totalTransportationCost, 1.);
@@ -258,7 +258,7 @@ public class TestMenGamsConverter extends TestCase {
 		
 		List<Transportation> transportations = createTransportations(TRANSPORTATIONS_AS_STRING);
 		
-		Parameters parameters = new Parameters(50., 1., 1., 1.05, false);
+		MenCalculationParameters parameters = new MenCalculationParameters(50., 1., 1., 1.05, false);
 		
 		calculateMaterialPurchaseCostDirectly(sources, sinks, connections, parameters.internationalMarketPriceFactor, parameters.internationalMarketLowestPrice);
 		// the cost for sink d25 differs from GAMS calculation
@@ -309,7 +309,7 @@ public class TestMenGamsConverter extends TestCase {
 		addNearSeaInformation(sources, "r2,r12,r17,r18", sinks, "d23,d24,d26");
 		
 		MenGamsConverter converter = new MenGamsConverter();
-		Parameters parameters = new Parameters(50., 1., 1., 1.05, false);
+		MenCalculationParameters parameters = new MenCalculationParameters(50., 1., 1., 1.05, false);
 		MenResult result = converter.calculate(sources, sinks, connections, transportations, parameters);
 		assertEquals(6.1898241E9, result.totalMaterialPurchaseCost, 1.);
 		assertEquals(1235143, result.totalTransportationCost, 1.);
@@ -395,7 +395,7 @@ public class TestMenGamsConverter extends TestCase {
 		System.out.println(sinks);
 		
 		MenGamsConverter converter = new MenGamsConverter();
-		Parameters parameters = new Parameters(50., 1., 1., 1.05, false);
+		MenCalculationParameters parameters = new MenCalculationParameters(50., 1., 1., 1.05, false);
 		MenResult result = converter.calculate(sources, sinks, connections, transportations, parameters);
 		assertEquals(6.41811655E9, result.totalMaterialPurchaseCost, 1.);
 		assertEquals(1062291, result.totalTransportationCost, 1.);
@@ -457,7 +457,7 @@ public class TestMenGamsConverter extends TestCase {
 		for (int i=0; i<annualCostFactors.length; i++) {
 			double factor = annualCostFactors[i];
 			System.out.println("Annual Cost Factor =" + factor);
-			Parameters parameters = new Parameters(50., 1., factor, 1.05, true);
+			MenCalculationParameters parameters = new MenCalculationParameters(50., 1., factor, 1.05, true);
 			MenResult actual = converter.calculate(sources, sinks, connections, transportations, parameters);
 			assertMenResult(expected[i], actual);
 		}
@@ -619,8 +619,8 @@ public class TestMenGamsConverter extends TestCase {
 		}
 	}
 	
-	private Parameters createDefaultParameters() {
-		return new Parameters(50., 1., 1., 1.05, false);
+	private MenCalculationParameters createDefaultParameters() {
+		return new MenCalculationParameters(50., 1., 1., 1.05, false);
 	}
 	
 	private double calculateMaterialPurchaseCostDirectly(List<Source> sources, List<Sink> sinks, List<FeasibleConnection> connections, 
