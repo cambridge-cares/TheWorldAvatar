@@ -10,16 +10,15 @@ import uk.ac.cam.cares.jps.base.discovery.Agent;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
 import uk.ac.cam.cares.jps.base.discovery.IAgentCommunication;
-import uk.ac.cam.cares.jps.base.discovery.TypeString;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.discovery.util.Helper;
 
 public class DiscoveryProvider implements IAgentCommunication {
 	
 	@Override
-	public List<TypeString> searchAgents(AgentRequest searchDescr) {
+	public List<String> searchAgents(AgentRequest searchDescr) {
 		
-		List<TypeString> result = new ArrayList<TypeString>();
+		List<String> result = new ArrayList<String>();
 		
 		String serialized = new Gson().toJson(searchDescr);
 		try {
@@ -29,7 +28,7 @@ public class DiscoveryProvider implements IAgentCommunication {
 			StringTokenizer tokenizer = new StringTokenizer(response, " ");
 			while (tokenizer.hasMoreTokens()) {	
 				String token = tokenizer.nextToken();
-				result.add(new TypeString(token));
+				result.add(new String(token));
 			}
 		} catch (Exception e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
@@ -75,9 +74,9 @@ public class DiscoveryProvider implements IAgentCommunication {
 	}
 	
 	@Override
-	public void deregisterAgent(TypeString agentAddress) {
+	public void deregisterAgent(String agentAddress) {
 		try {
-			Helper.executeGet("/JPS_DISCOVERY/deregister", "agentname", agentAddress.getValue());
+			Helper.executeGet("/JPS_DISCOVERY/deregister", "agentname", agentAddress);
 		} catch (Exception e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		}
@@ -89,9 +88,9 @@ public class DiscoveryProvider implements IAgentCommunication {
 	 * Only use this method for test purposes !!!
 	 */
 	@Override
-	public List<TypeString> getAllAgentNames() {
+	public List<String> getAllAgentNames() {
 		
-		List<TypeString> result = new ArrayList<TypeString>();
+		List<String> result = new ArrayList<String>();
 		
 		try {
 			String response = Helper.executeGet("/JPS_DISCOVERY/agents");
@@ -102,7 +101,7 @@ public class DiscoveryProvider implements IAgentCommunication {
 			StringTokenizer tokenizer = new StringTokenizer(response, " ");
 			while (tokenizer.hasMoreTokens()) {	
 				String token = tokenizer.nextToken();
-				result.add(new TypeString(token));
+				result.add(new String(token));
 			}
 		} catch (Exception e) {
 			throw new JPSRuntimeException(e.getMessage(), e);

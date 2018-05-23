@@ -29,7 +29,6 @@ import uk.ac.cam.cares.jps.base.discovery.AbstractAgentServiceDescription;
 import uk.ac.cam.cares.jps.base.discovery.Agent;
 import uk.ac.cam.cares.jps.base.discovery.AgentServiceDescription;
 import uk.ac.cam.cares.jps.base.discovery.Parameter;
-import uk.ac.cam.cares.jps.discovery.util.Helper;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;
 
 public class OWLSerializer implements ISerializer {
@@ -138,7 +137,7 @@ public class OWLSerializer implements ISerializer {
 		// TODO-AE why do we need .owl in the IRI
 		Individual agentInd = knowledgeBase.createIndividual(AgentKnowledgeBase.ONTOAGENT_BASE_IRI + "/Agent" + uuid + ".owl#Agent", agentClass);
 		createTripleWithDatatypeProperty(agentInd, "hasId", uuid.toString());
-		createTripleWithDatatypeProperty(agentInd, "hasName", agent.getName().getValue());
+		createTripleWithDatatypeProperty(agentInd, "hasName", agent.getName());
 		
 		for (AgentServiceDescription current : agent.getDescriptions()) {
 			Individual descrInd = createAgentDescription(current);
@@ -184,9 +183,9 @@ public class OWLSerializer implements ISerializer {
 			int index = inc();
 			Individual ind = knowledgeBase.createIndividual(kbBaseIRI + classForIndividualsinList + index, cl);
 			createTripleWithDatatypeProperty(ind, "hasIndex", "" + index);
-			createTripleWithDatatypeProperty(ind, "hasKey", current.getKey().getValue());
-			if ((current.getValue() != null) && (!"null".equals(current.getValue().getValue()))) {
-				createTripleWithDatatypeProperty(ind, "hasValue", current.getValue().getValue());
+			createTripleWithDatatypeProperty(ind, "hasKey", current.getKey());
+			if ((current.getValue() != null) && (!"null".equals(current.getValue()))) {
+				createTripleWithDatatypeProperty(ind, "hasValue", current.getValue());
 			}
 			result.add(ind);
 		}

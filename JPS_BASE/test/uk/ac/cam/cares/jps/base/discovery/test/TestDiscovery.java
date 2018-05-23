@@ -5,18 +5,17 @@ import com.google.gson.Gson;
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.Parameter;
-import uk.ac.cam.cares.jps.base.discovery.TypeString;
 
 public class TestDiscovery extends TestCase {
 	
 	public void testSerializeAgentReqestWithJson() {
 		
 		AgentRequest expected = new AgentRequest();
-		Parameter prop = new Parameter(new TypeString("myPropertyKey"), new TypeString("myPropertyValue"));
+		Parameter prop = new Parameter("myPropertyKey", "myPropertyValue");
 		expected.getProperties().add(prop);
-		Parameter paramIn = new Parameter(new TypeString("myInputKey"), new TypeString("myInputValue"));
+		Parameter paramIn = new Parameter("myInputKey", "myInputValue");
 		expected.getInputParameters().add(paramIn);
-		Parameter paramOut = new Parameter(new TypeString("myOutputKey"), new TypeString("myOutputValue"));
+		Parameter paramOut = new Parameter("myOutputKey", "myOutputValue");
 		expected.getOutputParameters().add(paramOut);
 		
 		Gson gson = new Gson();

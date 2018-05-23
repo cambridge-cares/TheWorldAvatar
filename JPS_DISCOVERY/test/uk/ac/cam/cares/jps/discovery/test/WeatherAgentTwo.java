@@ -15,7 +15,6 @@ import uk.ac.cam.cares.jps.base.discovery.Agent;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
 import uk.ac.cam.cares.jps.base.discovery.Parameter;
-import uk.ac.cam.cares.jps.base.discovery.TypeString;
 import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;
 import uk.ac.cam.cares.jps.discovery.util.JPSBaseServlet;
@@ -39,7 +38,7 @@ public class WeatherAgentTwo extends JPSBaseServlet {
 		AbstractAgentServiceDescription.copyParameters(agentRequest, agentResponse);
 		
 		Parameter param = agentResponse.getOutputParameters().get(0);
-		param.setValue(new TypeString("30.3"));
+		param.setValue("30.3");
 		String serializedAgentResponse = serializer.convertToString(agentResponse);
 		
 		print(resp, serializedAgentResponse);

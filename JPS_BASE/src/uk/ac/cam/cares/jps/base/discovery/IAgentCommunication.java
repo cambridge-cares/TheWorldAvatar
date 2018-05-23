@@ -4,13 +4,13 @@ import java.util.List;
 
 public interface IAgentCommunication {
 
-	List<TypeString> searchAgents(AgentRequest agentRequest);
+	List<String> searchAgents(AgentRequest agentRequest);
 	
 	AgentResponse callAgent(AgentRequest agentRequest);
 	
 	void registerAgent(Agent agent);
 	
-	void deregisterAgent(TypeString agentAddress);
+	void deregisterAgent(String agentAddress);
 	
 	/**
 	 * This method returns the names of all agents registered in JPS.
@@ -18,5 +18,5 @@ public interface IAgentCommunication {
 	 *  
 	 * @return
 	 */
-	List<TypeString> getAllAgentNames();
+	List<String> getAllAgentNames();
 }

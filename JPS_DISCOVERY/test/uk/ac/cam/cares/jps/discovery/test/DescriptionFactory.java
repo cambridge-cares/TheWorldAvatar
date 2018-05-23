@@ -9,15 +9,14 @@ import uk.ac.cam.cares.jps.base.discovery.Agent;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.AgentServiceDescription;
 import uk.ac.cam.cares.jps.base.discovery.Parameter;
-import uk.ac.cam.cares.jps.base.discovery.TypeString;
 
 public class DescriptionFactory {
 
-	private static TypeString createType(String s) {
+	private static String createType(String s) {
 		if ("null".equals(s)) {
 			return null;
 		}
-		return new TypeString(s);
+		return s;
 	}
 	
 	private static List<Parameter> createParameters(String parameters) {
@@ -46,7 +45,7 @@ public class DescriptionFactory {
 		StringTokenizer tokenizer = new StringTokenizer(general, ",");
 		while (tokenizer.hasMoreTokens()) {	
 			String key = tokenizer.nextToken();
-			TypeString value = createType(tokenizer.nextToken());
+			String value = createType(tokenizer.nextToken());
 			
 			boolean attributeFound = true;
 			if ("domain".equals(key)) {
@@ -65,7 +64,7 @@ public class DescriptionFactory {
 	
 	public static Agent createAgent(String name, String general, String input, String output) {
 		Agent result = new Agent();
-		result.setName(new TypeString(name));
+		result.setName(name);
 		AgentServiceDescription descr = createAgentServiceDescription(general, input, output);
 		result.addDescription(descr);	
 		return result;

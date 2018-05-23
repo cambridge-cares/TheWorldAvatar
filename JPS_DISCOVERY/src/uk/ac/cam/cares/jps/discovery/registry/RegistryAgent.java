@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.Agent;
-import uk.ac.cam.cares.jps.base.discovery.TypeString;
 import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.util.JPSBaseServlet;
 
@@ -48,9 +47,9 @@ public class RegistryAgent extends JPSBaseServlet {
 		}
 	}	
 	
-	private List<TypeString> getAllAgentNames() throws IOException {
+	private List<String> getAllAgentNames() throws IOException {
 		
-		List<TypeString> result = new ArrayList<TypeString>();
+		List<String> result = new ArrayList<String>();
 		
 		Collection<Agent> list = DiscoveryFactory.getRegistry().getAllAgents();
 		for (Agent current : list) {

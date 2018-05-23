@@ -2,15 +2,15 @@ package uk.ac.cam.cares.jps.base.discovery;
 
 import java.io.Serializable;
 
-public class TypeString implements Serializable {
+public class TypeStringFORDELETION implements Serializable {
 
 	private static final long serialVersionUID = -3426018488650523518L;
 	private String value = null;
 	
-	public TypeString() {
+	public TypeStringFORDELETION() {
 	}
 	
-	public TypeString(String value) {
+	public TypeStringFORDELETION(String value) {
 		this.value = value;
 	}
 
@@ -34,7 +34,7 @@ public class TypeString implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		TypeString other = (TypeString) obj;
+		TypeStringFORDELETION other = (TypeStringFORDELETION) obj;
 		if (value == null) {
 			if (other.value != null)
 				return false;

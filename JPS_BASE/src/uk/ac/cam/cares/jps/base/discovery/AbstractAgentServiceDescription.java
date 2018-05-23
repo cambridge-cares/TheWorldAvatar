@@ -20,8 +20,8 @@ public abstract class AbstractAgentServiceDescription implements Serializable {
 		this.properties = properties;
 	}
 	
-	public void setDomain(TypeString domain) {
-		Parameter param = new Parameter(new TypeString("domain"), domain);
+	public void setDomain(String domain) {
+		Parameter param = new Parameter(new String("domain"), domain);
 		properties.add(param);
 	}
 
@@ -41,7 +41,7 @@ public abstract class AbstractAgentServiceDescription implements Serializable {
 		this.outputParameters = outputParameters;
 	}
 	
-	public void addOutputParameter(TypeString key) {
+	public void addOutputParameter(String key) {
 		Parameter param = new Parameter(key, null);
 		outputParameters.add(param);
 	}
@@ -56,18 +56,10 @@ public abstract class AbstractAgentServiceDescription implements Serializable {
 		List<Parameter> result = new ArrayList<Parameter>();
 		
 		for (Parameter current : params) {
-			Parameter copiedParam = new Parameter(copy(current.getKey()), copy(current.getValue()));
+			Parameter copiedParam = new Parameter(current.getKey(), current.getValue());
 			result.add(copiedParam);
 		}
 		
 		return result;
-	}
-	
-	private static TypeString copy(TypeString type) {
-		
-		if ((type == null)) {
-			return null;
-		}
-		return new TypeString(type.getValue());
 	}
 }
