@@ -1,34 +1,26 @@
 package uk.ac.cam.cares.jps.discovery.client;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.apache.http.ParseException;
+import com.google.gson.Gson;
 
 import uk.ac.cam.cares.jps.base.discovery.Agent;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
 import uk.ac.cam.cares.jps.base.discovery.IAgentCommunication;
-import uk.ac.cam.cares.jps.base.discovery.TypeString;
-import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.discovery.util.Helper;
-import uk.ac.cam.cares.jps.discovery.util.ISerializer;
-import uk.ac.cam.cares.jps.discovery.util.JavaSerializer;
 
 public class DiscoveryProvider implements IAgentCommunication {
-
-	
-	private ISerializer serializer = DiscoveryFactory.getSerializer();
 	
 	@Override
-	public List<TypeString> searchAgents(AgentRequest searchDescr) {
+	public List<String> searchAgents(AgentRequest searchDescr) {
 		
-		List<TypeString> result = new ArrayList<TypeString>();
+		List<String> result = new ArrayList<String>();
 		
-		String serialized = serializer.convertToString(searchDescr);
+		String serialized = new Gson().toJson(searchDescr);
 		try {
 			String response = Helper.executeGet("/JPS_DISCOVERY/search", "agentrequest", serialized);
 			
@@ -36,13 +28,10 @@ public class DiscoveryProvider implements IAgentCommunication {
 			StringTokenizer tokenizer = new StringTokenizer(response, " ");
 			while (tokenizer.hasMoreTokens()) {	
 				String token = tokenizer.nextToken();
-				result.add(new TypeString(token));
+				result.add(new String(token));
 			}
-			
-		} catch (ParseException | IOException | URISyntaxException e) {
-			// TODO-AE throws further?
-			e.printStackTrace();
-			result = null;
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
 		}
 		
 		return result;
@@ -51,20 +40,19 @@ public class DiscoveryProvider implements IAgentCommunication {
 	@Override
 	public AgentResponse callAgent(AgentRequest agentRequest)  {
 		
-		String serializedAgentRequest = serializer.convertToString(agentRequest);
+		Gson gson = new Gson();
+		
+		String serializedAgentRequest = gson.toJson(agentRequest);
 		try {
 			String serializedAgentResponse = Helper.executeGet("/JPS_DISCOVERY/call", "agentrequest", serializedAgentRequest);
-			return serializer.<AgentResponse>convertFrom(serializedAgentResponse).get();
-		} catch (ParseException | IOException | URISyntaxException e) {
-			// TODO-AE throws further?
-			e.printStackTrace();
+			return gson.fromJson(serializedAgentResponse, AgentResponse.class);
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
 		}
-		
-		return null;
 	}
 	
 	@Override
-	public void registerAgent(Agent agent) throws IOException {
+	public void registerAgent(Agent agent) {
 		// TODO-AE remove project dependency to JPS by moving Agentlocator etc.
 		// attention:
 		// a) added property for discovery agent to config properties
@@ -77,22 +65,20 @@ public class DiscoveryProvider implements IAgentCommunication {
 		// reason: Tests use register method and do not run as there is no deserialization
 		// from OWL to Java class AgentDescription yet!
 		//String serialized = serializer.convertToString(description);
-		String serialized = new JavaSerializer().convertToString(agent);
+		String serialized = new Gson().toJson(agent);
 		try {
 			Helper.executeGet("/JPS_DISCOVERY/register", "agent", serialized);
-		} catch (ParseException | IOException | URISyntaxException e) {
-			// TODO-AE throws further?
-			e.printStackTrace();
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
 		}
 	}
 	
 	@Override
-	public void deregisterAgent(TypeString agentAddress) throws IOException {
+	public void deregisterAgent(String agentAddress) {
 		try {
-			Helper.executeGet("/JPS_DISCOVERY/deregister", "agentname", agentAddress.getValue());
-		} catch (ParseException | IOException | URISyntaxException e) {
-			// TODO-AE throws further?
-			e.printStackTrace();
+			Helper.executeGet("/JPS_DISCOVERY/deregister", "agentname", agentAddress);
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
 		}
 	}
 
@@ -102,9 +88,9 @@ public class DiscoveryProvider implements IAgentCommunication {
 	 * Only use this method for test purposes !!!
 	 */
 	@Override
-	public List<TypeString> getAllAgentNames() {
+	public List<String> getAllAgentNames() {
 		
-		List<TypeString> result = new ArrayList<TypeString>();
+		List<String> result = new ArrayList<String>();
 		
 		try {
 			String response = Helper.executeGet("/JPS_DISCOVERY/agents");
@@ -115,11 +101,10 @@ public class DiscoveryProvider implements IAgentCommunication {
 			StringTokenizer tokenizer = new StringTokenizer(response, " ");
 			while (tokenizer.hasMoreTokens()) {	
 				String token = tokenizer.nextToken();
-				result.add(new TypeString(token));
+				result.add(new String(token));
 			}
-		} catch (ParseException | IOException | URISyntaxException e) {
-			// TODO-AE throws further?
-			e.printStackTrace();
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
 		}
 		
 		return result;

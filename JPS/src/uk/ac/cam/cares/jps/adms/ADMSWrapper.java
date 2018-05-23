@@ -22,6 +22,11 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.util.*;
+
+
 /**
  * Servlet implementation class ADMSWrapper
  */
@@ -58,28 +63,20 @@ public class ADMSWrapper extends HttpServlet {
 		
 		Boolean filterSource = (request.getParameter("filterSource").equals("true"));
 		
-//		
-//		System.out.println("buildingLimit" + buildingLimit);
-//		System.out.println("selectedSource" + selectedSource);
-//		System.out.println("buildingTopNode" + buildingTopNode);
-//		System.out.println("coordinates" + coordinates);
-//		System.out.println("substances" + Arrays.toString(substances));
-//		System.out.println("filterSource" + filterSource);
-//		
+
+		// ====================   Start admsMain to create input files for ADMS ===================
 		ArrayList<String> args  = new ArrayList<String>();
-		//  [selectedSource, buildingTopNode,coordinates, substances, builingLimit,filterSource];
+		args.add("python");
+		args.add("admsMain.py"); 		//python admsMain.py %1 %2
 		args.add(selectedSource.toString());
-		//args.add(buildingTopNode.toString());
 		args.add(coordinates.toString().replaceAll(",", "#"));
-		//args.add(Arrays.toString(substances));
-		//args.add(buildingLimit.toString());
-		//args.add(buildingNumber.toString());
-		//args.add(filterSource.toString());
-		
-		System.out.println(args);
-		runPython("startADMSMain.bat", args, response);
+		ServletContext context = getServletContext();
+		String fullPath = AgentLocator.getPathToWorkingDir(this) + "/" + "ADMS";
+		args.add(fullPath); // this extra parameter tells the python script where to put the input files, in this case, working dir
+		String targetFolder = "/python/caresjpsadmsinputs";
+		CommandHelper.executeCommands(targetFolder, args);
 		response.getWriter().write("Success");
-		
+		// =========================================================================================
  
 		
 		
@@ -94,61 +91,6 @@ public class ADMSWrapper extends HttpServlet {
 	}
 	
 	
-	
-	
-	
-	public String runPython(String filename , ArrayList<String> args, HttpServletResponse response) 
-	{ //need to call myscript.py and also pass arg1 as its arguments.
-	  //and also myscript.py path is in C:\Demo\myscript.py
-		// ServletContext context = getServletContext();
-		// String fullPath = context.getRealPath("/WEB-INF/admsInput/admsMain.py");// Such path is in the folder where your tomcat for this project is installed 
-				
-		ServletContext context = getServletContext();
-		String fullPath =  context.getRealPath("/workingdir/ADMS/caresjpsadmsinputs/") + filename ; // Hardcoded
-
-
-		String[] cmd = new String[1 + args.size()];
-		//cmd[0] = "start";
-		cmd[0] = "\"" + fullPath + "\"" ;// Hardcoded
-		System.out.println("=============================================================");
-		System.out.println(cmd[0]);
-		System.out.println("=============================================================");
-		// cmd[3] = fullPath;
-		for(int i = 0; i < args.size(); i++) {
-		cmd[i+1] = args.get(i);
-		}
-		// create runtime to execute external command
-		Runtime rt = Runtime.getRuntime();
-		Process pr = null;
-		
-		System.out.println("cmd : " + cmd);
-		try {
-			pr = rt.exec(cmd);
-			System.out.print("Executing");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		 
-		// retrieve output from python script
-		BufferedReader bfr = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-		String line = "";
-		String resultString = "";
-		try {
-			while((line = bfr.readLine()) != null) {
-			// display each output line form python script
-			resultString += line;
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return resultString;
-		
-		 
-	
-	}
-	
+ 
 
 }

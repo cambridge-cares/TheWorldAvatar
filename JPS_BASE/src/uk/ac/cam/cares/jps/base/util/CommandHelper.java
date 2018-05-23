@@ -9,9 +9,10 @@ import java.util.ArrayList;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.platform.commons.logging.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.sun.istack.internal.logging.Logger;
+
 
 public class CommandHelper {
 	/* Author ZHOU XIAOCHI 2018.5.17*/
@@ -21,14 +22,14 @@ public class CommandHelper {
 	 * @param targetFolder target folder path you want to apply the commands upon
 	 * @param args An array of commands you want to execute  
 	 */
-	
+	private static Logger logger = LoggerFactory.getLogger(CommandHelper.class);
+
 	
 	public static String executeSingleCommand(String targetFolder , String command) 
 	{  
 	 
+		logger.info("In folder: " + targetFolder + " Excuted: " + command);
 		Runtime rt = Runtime.getRuntime();
-	
-		
 		Process pr = null;
 				try {
 			pr = rt.exec(command, null, new File(targetFolder)); // IMPORTANT: By specifying targetFolder, all the cmds will be executed within such folder.
@@ -59,7 +60,7 @@ public class CommandHelper {
 	public static String executeCommands(String targetFolder , ArrayList<String> commands) 
 	{  
 	 
-		
+		logger.info("In folder: " + targetFolder + " Excuted: " + commands);
 		Runtime rt = Runtime.getRuntime();
 		Process pr = null;
 				try {

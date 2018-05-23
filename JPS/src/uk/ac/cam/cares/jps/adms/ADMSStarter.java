@@ -13,6 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.tribes.util.Arrays;
 
+import uk.ac.cam.cares.jps.base.util.*;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
+
 /**
  * Servlet implementation class AMDSStarter
  */
@@ -49,35 +52,11 @@ public class ADMSStarter extends HttpServlet {
 	public String startADMS()
 	{
 		// ServletContext context = getServletContext();
+		String startADMSCommand = "\"C:\\Program Files (x86)\\CERC\\ADMS 5\\ADMSModel.exe\" /e2 /ADMS \"test.APL\"";
 		ServletContext context = getServletContext();
-		String fullPath =  context.getRealPath("/workingdir/ADMS/caresjpsadmsinputs/")  ; // Hardcoded		System.out.println("full path" + fullPath);
-		String[] cmd = {fullPath + "startADMS.bat"}; //// Hardcoded 
-		Runtime rt = Runtime.getRuntime();
-		Process pr = null;
-		System.out.println("cmd : " + Arrays.toString(cmd));
-		try {
-			pr = rt.exec(cmd);
-			System.out.print("Executing");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		// retrieve output from python script
-		BufferedReader bfr = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-		String line = "";
-
-		try {
-			while((line = bfr.readLine()) != null) {
-			// display each output line form python script
-			System.out.println(line);
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return line;
+		String targetFolder  =  AgentLocator.getPathToWorkingDir(this) + "/" + "ADMS";   // execute adms within the target folder where the input file is generated in the previous step
+		CommandHelper.executeSingleCommand(targetFolder, startADMSCommand);
+		return "Started ADMS"; 
 	}
 	 
 

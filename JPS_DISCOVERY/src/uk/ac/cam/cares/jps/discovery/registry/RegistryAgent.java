@@ -14,10 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.Agent;
-import uk.ac.cam.cares.jps.base.discovery.TypeString;
 import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.util.JPSBaseServlet;
-import uk.ac.cam.cares.jps.discovery.util.JavaSerializer;
 
 @WebServlet(urlPatterns = {"/register", "/deregister", "/agents"})
 public class RegistryAgent extends JPSBaseServlet {
@@ -39,7 +37,7 @@ public class RegistryAgent extends JPSBaseServlet {
 			// from OWL to Java class AgentDescription yet!
 			//String serialized = serializer.convertToString(description);	
 			//AgentDescription description = serializer.<AgentDescription>convertFrom(serializedDescr).get();
-			Agent description = new JavaSerializer().<Agent>convertFrom(serializedDescr).get();
+			Agent description = DiscoveryFactory.getSerializer().<Agent>convertFrom(serializedDescr, Agent.class).get();
 			DiscoveryFactory.getRegistry().register(description);
 		} else if ("/deregister".equals(path)) {
 			String agentAddress = req.getParameter("agentname");
@@ -49,9 +47,9 @@ public class RegistryAgent extends JPSBaseServlet {
 		}
 	}	
 	
-	private List<TypeString> getAllAgentNames() throws IOException {
+	private List<String> getAllAgentNames() throws IOException {
 		
-		List<TypeString> result = new ArrayList<TypeString>();
+		List<String> result = new ArrayList<String>();
 		
 		Collection<Agent> list = DiscoveryFactory.getRegistry().getAllAgents();
 		for (Agent current : list) {

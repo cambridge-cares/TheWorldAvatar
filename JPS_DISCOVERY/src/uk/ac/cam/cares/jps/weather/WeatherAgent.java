@@ -20,7 +20,6 @@ import uk.ac.cam.cares.jps.base.discovery.Agent;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
 import uk.ac.cam.cares.jps.base.discovery.Parameter;
-import uk.ac.cam.cares.jps.base.discovery.TypeString;
 import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.test.DescriptionFactory;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;
@@ -44,7 +43,7 @@ public class WeatherAgent extends JPSBaseServlet {
 		String serializedAgentRequest = req.getParameter("agentrequest");
 		
 		//convert from the string to serialized object for the response
-		AgentRequest agentRequest = serializer.<AgentRequest>convertFrom(serializedAgentRequest).get();
+		AgentRequest agentRequest = serializer.<AgentRequest>convertFrom(serializedAgentRequest, AgentRequest.class).get();
 		
 		AgentResponse agentResponse = new AgentResponse();
 		
@@ -91,13 +90,13 @@ public class WeatherAgent extends JPSBaseServlet {
 		
 		//later put the value to be taken from the website of weather and put to the knowledge base of the weather
 		Parameter param = agentResponse.getOutputParameters().get(0);
-		param.setValue(new TypeString("28"));
+		param.setValue("28");
 		Parameter param2 = agentResponse.getOutputParameters().get(1);
-		param2.setValue(new TypeString("5"));
+		param2.setValue("5");
 		Parameter param3 = agentResponse.getOutputParameters().get(2);
-		param3.setValue(new TypeString(windvalue));
+		param3.setValue(windvalue);
 		Parameter param4 = agentResponse.getOutputParameters().get(3);
-		param4.setValue(new TypeString(direction));
+		param4.setValue(direction);
 		
 		//convert from the serialized object to string for the response
 		String serializedAgentResponse = serializer.convertToString(agentResponse);
@@ -105,7 +104,7 @@ public class WeatherAgent extends JPSBaseServlet {
 		print(resp, serializedAgentResponse);
 		
 		//convert from the string to serialized object for the response
-		serializer.<AgentResponse>convertFrom(serializedAgentResponse).get();
+		serializer.<AgentResponse>convertFrom(serializedAgentResponse, AgentResponse.class).get();
 		
 
 		

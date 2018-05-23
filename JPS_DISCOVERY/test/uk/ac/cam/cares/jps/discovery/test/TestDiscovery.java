@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.discovery.test;
 import static org.junit.Assert.assertNotEquals;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -20,11 +19,10 @@ import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
 import uk.ac.cam.cares.jps.base.discovery.AgentServiceDescription;
 import uk.ac.cam.cares.jps.base.discovery.Parameter;
-import uk.ac.cam.cares.jps.base.discovery.TypeString;
 import uk.ac.cam.cares.jps.discovery.client.DiscoveryProvider;
+import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.knowledgebase.OWLSerializer;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;
-import uk.ac.cam.cares.jps.discovery.util.JavaSerializer;
 
 public class TestDiscovery extends TestCase {
 	
@@ -36,12 +34,12 @@ public class TestDiscovery extends TestCase {
 	
 		AgentServiceDescription descr = DescriptionFactory.createAgentServiceDescription(general, input, output);
 		
-		ISerializer serializer = new JavaSerializer();
+		ISerializer serializer = DiscoveryFactory.getSerializer();
 		String s = serializer.convertToString(descr);
 		
 		System.out.println("serialized = " + s);
 		
-		AgentServiceDescription actual = serializer.<AgentServiceDescription>convertFrom(s).get();
+		AgentServiceDescription actual = serializer.<AgentServiceDescription>convertFrom(s, AgentServiceDescription.class).get();
 		
 		// the objects itself are different
 		assertNotEquals(descr, actual);
@@ -105,21 +103,12 @@ public class TestDiscovery extends TestCase {
 	}
 	
 	private List<String> getAgents() throws ClientProtocolException, IOException {
-		
-		List<String> result = new ArrayList<String>();
-		
-		List<TypeString> names = new DiscoveryProvider().getAllAgentNames();
-		for (TypeString current : names) {
-			result.add(current.getValue());
-		}
-	
-		return result;
+		return  new DiscoveryProvider().getAllAgentNames();
 	}
 
 	private void deregisterAllAgents() throws ClientProtocolException, IOException {	
 		for (String current : getAgents()) {
-			TypeString name = new TypeString(current);
-			new DiscoveryProvider().deregisterAgent(name);
+			new DiscoveryProvider().deregisterAgent(current);
 		}
 	}
 	
@@ -137,7 +126,7 @@ public class TestDiscovery extends TestCase {
 		register(agent);	
 		List<String> actual = getAgents();
 		assertEquals(1, actual.size());
-		assertEquals(agent.getName().getValue(), actual.get(0));
+		assertEquals(agent.getName(), actual.get(0));
 	}
 	
 	private void registerFiveAgents() throws IOException {
@@ -184,13 +173,13 @@ public class TestDiscovery extends TestCase {
 		String output = "IRItemperature,null";
 		AgentRequest searchDescr = DescriptionFactory.createDiscoveryMessage(general, input, output);
 
-		List<TypeString> actualSearch = new DiscoveryProvider().searchAgents(searchDescr);
+		List<String> actualSearch = new DiscoveryProvider().searchAgents(searchDescr);
 		assertEquals(2, actualSearch.size());
 		
-		String actv0 = actualSearch.get(0).getValue();
-		String actv1 = actualSearch.get(1).getValue();
-		String expvOne = agentOne.getName().getValue();
-		String expvTwo = agentTwo.getName().getValue();
+		String actv0 = actualSearch.get(0);
+		String actv1 = actualSearch.get(1);
+		String expvOne = agentOne.getName();
+		String expvTwo = agentTwo.getName();
 		boolean b = (actv0.equals(expvOne) && actv1.equals(expvTwo)) 
 				|| (actv0.equals(expvTwo) && actv1.equals(expvOne));
 		assertTrue(b);
@@ -218,7 +207,7 @@ public class TestDiscovery extends TestCase {
 		AgentRequest agentRequest = DescriptionFactory.createDiscoveryMessage(general, input, output);
 		
 		AgentResponse agentResponse = new DiscoveryProvider().callAgent(agentRequest);
-		String actual = agentResponse.getOutputParameters().get(0).getValue().getValue();
+		String actual = agentResponse.getOutputParameters().get(0).getValue();
 		assertEquals("30.3", actual);
 	}
 }
