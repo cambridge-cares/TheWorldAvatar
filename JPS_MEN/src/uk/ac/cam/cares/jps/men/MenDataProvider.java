@@ -443,9 +443,6 @@ public class MenDataProvider {
 				}
 			}
 		}
-		System.out.println("Total sources = " + totalsources);
-		System.out.println("Total sources amount = " + totalsources.size());
-
 		return totalsources;
 	}
 	
@@ -465,8 +462,6 @@ public class MenDataProvider {
 				}
 			}			
 		}
-		System.out.println("Total sinks = " + totalsinks);
-		System.out.println("Total sinks amount = " + totalsinks.size());
 		
 		return totalsinks;
 	}
@@ -547,7 +542,7 @@ public class MenDataProvider {
 				- B / 6 * cos2SigmaM * (-3 + 4 * sinSigma * sinSigma) * (-3 + 4 * cos2SigmaM * cos2SigmaM)));
 
 		double s = b * A * (sigma - deltaSigma)/1000; //in km unit
-		System.out.println("distance= " + s);
+		
 		return s;
 
 	}
@@ -556,7 +551,6 @@ public class MenDataProvider {
 	public double distancecalcforUTMcoord (Double x1,Double y1,Double x2,Double y2)
 	{
 		double distance= Math.sqrt(Math.pow(Math.abs(x2-x1),2)+Math.pow(Math.abs(y2-y1),2))/1000; //in km
-		System.out.println("distance= " + distance);
 		return distance;
 	}
 }
