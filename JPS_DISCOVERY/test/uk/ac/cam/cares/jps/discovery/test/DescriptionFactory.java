@@ -8,17 +8,13 @@ import uk.ac.cam.cares.jps.base.discovery.AbstractAgentServiceDescription;
 import uk.ac.cam.cares.jps.base.discovery.Agent;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.AgentServiceDescription;
-import uk.ac.cam.cares.jps.base.discovery.IType;
 import uk.ac.cam.cares.jps.base.discovery.Parameter;
-import uk.ac.cam.cares.jps.base.discovery.TypeIRI;
 import uk.ac.cam.cares.jps.base.discovery.TypeString;
 
 public class DescriptionFactory {
 
-	private static IType createType(String s) {
-		if (s.startsWith("IRI") || s.startsWith("http") ) {
-			return new TypeIRI(s);
-		} else if ("null".equals(s)) {
+	private static TypeString createType(String s) {
+		if ("null".equals(s)) {
 			return null;
 		}
 		return new TypeString(s);
@@ -50,7 +46,7 @@ public class DescriptionFactory {
 		StringTokenizer tokenizer = new StringTokenizer(general, ",");
 		while (tokenizer.hasMoreTokens()) {	
 			String key = tokenizer.nextToken();
-			IType value = createType(tokenizer.nextToken());
+			TypeString value = createType(tokenizer.nextToken());
 			
 			boolean attributeFound = true;
 			if ("domain".equals(key)) {
@@ -69,7 +65,7 @@ public class DescriptionFactory {
 	
 	public static Agent createAgent(String name, String general, String input, String output) {
 		Agent result = new Agent();
-		result.setName(new TypeIRI(name));
+		result.setName(new TypeString(name));
 		AgentServiceDescription descr = createAgentServiceDescription(general, input, output);
 		result.addDescription(descr);	
 		return result;

@@ -7,8 +7,8 @@ import uk.ac.cam.cares.jps.base.discovery.Agent;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.AgentServiceDescription;
 import uk.ac.cam.cares.jps.base.discovery.IMatcher;
-import uk.ac.cam.cares.jps.base.discovery.IType;
 import uk.ac.cam.cares.jps.base.discovery.Parameter;
+import uk.ac.cam.cares.jps.base.discovery.TypeString;
 import uk.ac.cam.cares.jps.discovery.registry.IRegistry;
 
 public class ExactMatcher implements IMatcher{
@@ -45,7 +45,7 @@ public class ExactMatcher implements IMatcher{
 		return result;
 	}
 	
-	private boolean matchTypes(IType p, IType q) {
+	private boolean matchTypes(TypeString p, TypeString q) {
 		
 		if ((p == null) || (q == null)) {
 			return false;
@@ -78,8 +78,8 @@ public class ExactMatcher implements IMatcher{
 		}
 		
 		for (int i=0; i<p.size(); i++) {
-			IType pKey = p.get(i).getKey();
-			IType qKey = q.get(i).getKey();
+			TypeString pKey = p.get(i).getKey();
+			TypeString qKey = q.get(i).getKey();
 			
 			if (!matchTypes(pKey, qKey)) {
 				return false;

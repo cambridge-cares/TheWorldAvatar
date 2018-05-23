@@ -5,13 +5,13 @@ import java.util.List;
 
 public interface IAgentCommunication {
 
-	List<TypeIRI> searchAgents(AgentRequest agentRequest);
+	List<TypeString> searchAgents(AgentRequest agentRequest);
 	
 	AgentResponse callAgent(AgentRequest agentRequest);
 	
 	void registerAgent(Agent agent) throws IOException;
 	
-	void deregisterAgent(TypeIRI agentAddress) throws IOException;
+	void deregisterAgent(TypeString agentAddress) throws IOException;
 	
 	/**
 	 * This method returns the names of all agents registered in JPS.
@@ -19,5 +19,5 @@ public interface IAgentCommunication {
 	 *  
 	 * @return
 	 */
-	List<TypeIRI> getAllAgentNames();
+	List<TypeString> getAllAgentNames();
 }

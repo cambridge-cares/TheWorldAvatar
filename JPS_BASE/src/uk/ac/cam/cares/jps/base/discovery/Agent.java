@@ -7,14 +7,14 @@ import java.util.List;
 public class Agent implements Serializable {
 
 	private static final long serialVersionUID = 4541394875847067036L;
-	TypeIRI name = null;
+	TypeString name = null;
 	List<AgentServiceDescription> descriptions = new ArrayList<AgentServiceDescription>();
 	
-	public TypeIRI getName() {
+	public TypeString getName() {
 		return name;
 	}
 	
-	public void setName(TypeIRI name) {
+	public void setName(TypeString name) {
 		this.name = name;
 	}
 	

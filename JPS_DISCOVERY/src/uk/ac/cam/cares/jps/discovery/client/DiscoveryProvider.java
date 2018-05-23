@@ -12,7 +12,7 @@ import uk.ac.cam.cares.jps.base.discovery.Agent;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
 import uk.ac.cam.cares.jps.base.discovery.IAgentCommunication;
-import uk.ac.cam.cares.jps.base.discovery.TypeIRI;
+import uk.ac.cam.cares.jps.base.discovery.TypeString;
 import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.util.Helper;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;
@@ -24,9 +24,9 @@ public class DiscoveryProvider implements IAgentCommunication {
 	private ISerializer serializer = DiscoveryFactory.getSerializer();
 	
 	@Override
-	public List<TypeIRI> searchAgents(AgentRequest searchDescr) {
+	public List<TypeString> searchAgents(AgentRequest searchDescr) {
 		
-		List<TypeIRI> result = new ArrayList<TypeIRI>();
+		List<TypeString> result = new ArrayList<TypeString>();
 		
 		String serialized = serializer.convertToString(searchDescr);
 		try {
@@ -36,7 +36,7 @@ public class DiscoveryProvider implements IAgentCommunication {
 			StringTokenizer tokenizer = new StringTokenizer(response, " ");
 			while (tokenizer.hasMoreTokens()) {	
 				String token = tokenizer.nextToken();
-				result.add(new TypeIRI(token));
+				result.add(new TypeString(token));
 			}
 			
 		} catch (ParseException | IOException | URISyntaxException e) {
@@ -87,7 +87,7 @@ public class DiscoveryProvider implements IAgentCommunication {
 	}
 	
 	@Override
-	public void deregisterAgent(TypeIRI agentAddress) throws IOException {
+	public void deregisterAgent(TypeString agentAddress) throws IOException {
 		try {
 			Helper.executeGet("/JPS_DISCOVERY/deregister", "agentname", agentAddress.getValue());
 		} catch (ParseException | IOException | URISyntaxException e) {
@@ -102,9 +102,9 @@ public class DiscoveryProvider implements IAgentCommunication {
 	 * Only use this method for test purposes !!!
 	 */
 	@Override
-	public List<TypeIRI> getAllAgentNames() {
+	public List<TypeString> getAllAgentNames() {
 		
-		List<TypeIRI> result = new ArrayList<TypeIRI>();
+		List<TypeString> result = new ArrayList<TypeString>();
 		
 		try {
 			String response = Helper.executeGet("/JPS_DISCOVERY/agents");
@@ -115,7 +115,7 @@ public class DiscoveryProvider implements IAgentCommunication {
 			StringTokenizer tokenizer = new StringTokenizer(response, " ");
 			while (tokenizer.hasMoreTokens()) {	
 				String token = tokenizer.nextToken();
-				result.add(new TypeIRI(token));
+				result.add(new TypeString(token));
 			}
 		} catch (ParseException | IOException | URISyntaxException e) {
 			// TODO-AE throws further?

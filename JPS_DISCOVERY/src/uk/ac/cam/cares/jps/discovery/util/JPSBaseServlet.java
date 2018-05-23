@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 
 import uk.ac.cam.cares.jps.base.discovery.IAgentCommunication;
-import uk.ac.cam.cares.jps.base.discovery.TypeIRI;
+import uk.ac.cam.cares.jps.base.discovery.TypeString;
 import uk.ac.cam.cares.jps.discovery.client.DiscoveryProvider;
 
 public class JPSBaseServlet extends HttpServlet {
@@ -23,7 +23,7 @@ public class JPSBaseServlet extends HttpServlet {
 		return discoveryProvider;
 	}	
 	
-	protected void print(HttpServletResponse resp, List<TypeIRI> list) throws IOException {
+	protected void print(HttpServletResponse resp, List<TypeString> list) throws IOException {
 		resp.setContentType("text/plain");
 		resp.setCharacterEncoding("UTF-8");
 		

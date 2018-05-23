@@ -18,7 +18,7 @@ import uk.ac.cam.cares.jps.base.discovery.AbstractAgentServiceDescription;
 import uk.ac.cam.cares.jps.base.discovery.Agent;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
-import uk.ac.cam.cares.jps.base.discovery.TypeIRI;
+import uk.ac.cam.cares.jps.base.discovery.TypeString;
 import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.matching.exact.ExactMatcher;
 import uk.ac.cam.cares.jps.discovery.util.Helper;
@@ -42,7 +42,7 @@ public class SearchAgent extends JPSBaseServlet {
 		if ("/search".equals(path)) {
 			String serializedSearchDescr = req.getParameter("agentrequest");
 			AgentRequest agentRequest = serializer.<AgentRequest>convertFrom(serializedSearchDescr).get();
-			List<TypeIRI> list = search(agentRequest);
+			List<TypeString> list = search(agentRequest);
 			print(resp, list);
 		} else if ("/call".equals(path)) {
 			String serializedAgentRequest = req.getParameter("agentrequest");
@@ -52,9 +52,9 @@ public class SearchAgent extends JPSBaseServlet {
 		}
 	}
 	
-	private List<TypeIRI> search(AgentRequest agentRequest) {
+	private List<TypeString> search(AgentRequest agentRequest) {
 		
-		List<TypeIRI> result = new ArrayList<TypeIRI>();
+		List<TypeString> result = new ArrayList<TypeString>();
 		
 		ExactMatcher matcher = new ExactMatcher(DiscoveryFactory.getRegistry());
 		List<Agent> list = matcher.getMatches(agentRequest);
@@ -70,7 +70,7 @@ public class SearchAgent extends JPSBaseServlet {
 		AgentResponse result = null;
 
 		AgentRequest agentRequest = serializer.<AgentRequest>convertFrom(serializedAgentRequest).get();
-		List<TypeIRI> list = search(agentRequest);
+		List<TypeString> list = search(agentRequest);
 		if (list.size() > 0) {
 			// TODO-AE path vs. local host, this must be clearified. 
 			// The agent could also run on 3rd party server or any server different from 
