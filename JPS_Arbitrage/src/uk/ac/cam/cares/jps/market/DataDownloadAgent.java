@@ -27,6 +27,10 @@ public class DataDownloadAgent extends HttpServlet {
 	 */
 protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+	/**this function is a servlet for calling functions in uk.ac.cam.cares.jps.market package and returning their results;
+	 * it discriminates between "/download", "/download2" and "/read" URL patterns and calls DataDownload.Downloading_market_data,
+	 * DataDownload.Downloading_currencies and DataDownload.Call_data, respectively
+	 */
 	
 	String path = request.getServletPath();
 

@@ -25,7 +25,9 @@ public class DataDownload {
 	
 	public static String Downloading_market_data() throws Exception {
 		
-		/** this function executes 4 Python scripts which download market data and stores it in separate CSV files */ 
+		/** this function calls cmd to execute 4 Python scripts which download market prices for crude palm oil (CPO), biodiesel (FAME),
+		 *  natural gas at Henry Hub (HNG) and methanol at Zhengzhou exchange (ZCE) and stores it JPS knowledge base;
+		 *  prices of CPO are captured from cmd and returned for testing purposes */ 
 		
 		String CPO_download = new String("caresjpsarbitrage/CPO_download.pyw"); 
 		String FAME_download = new String("caresjpsarbitrage/FAME_download.pyw"); 
@@ -90,9 +92,9 @@ public class DataDownload {
 	
 	public static String Downloading_currencies() throws Exception {
 		
-		/** this function executes a Python script which downloads exchange rates and stores it in separate CSV files;
-		 * the currencies are defined within the script; the rates are printed to the console by the script thus allowing to store them
-		 * in KB */ 
+		/** this function calls cmd to execute a Python script which downloads exchange rates and print them to the console;
+		 * those are captured and stored in JPS knowledge base; the currencies are defined within the script;
+		 * first currency-pair header is returned for testing purposes */ 
 
 		String currency_download = new String("caresjpsarbitrage/exchange_rates.pyw"); 
 
@@ -144,9 +146,9 @@ public class DataDownload {
 	
 	public static void Storing_Aspen_data() throws Exception {
 		
-		/** this function executes a Python script which prints input and output headers and data from an Aspen model;
-		 *  information to be sourced from the model and printed is defined in the script;
-		 *  data is stored in the relevant KB*/ 
+		/** this function calls cmd to execute a Python script which prints input and output headers and the associated data
+		 *  from an Aspen model; those are captured and stored in JPS knowledge base;
+		 *  information to be sourced from the model and printed is defined in the script*/ 
 		
 		String Aspen_data = new String("caresjpsarbitrage/print_Aspen_data.pyw");
 		
@@ -157,13 +159,6 @@ public class DataDownload {
 		int results_size =result.split(",").length;
 		String[] headers = Arrays.copyOfRange(result.split(","), 0, results_size/2);
 		String[] data = Arrays.copyOfRange(result.split(","), results_size/2,results_size);
-		
-		/**
-		for (int i = 0; i <headers.length; i++){
-			System.out.println(headers[i]);
-			System.out.println(rates[i]);
-		}
-		*/
 
 		
 		/** URIs of ontologies used to define KBs in which market data will be stored */
@@ -203,13 +198,14 @@ public class DataDownload {
 	
 	public static String Call_data(String[] headers) throws Exception {
 		
-		
+		/** this function receives names of individuals, which are to be found in JPS knowledge base, and retrieves data under
+		 * numericalValue associated with them; in addition, market prices for crude palm oil (CPO) and biodiesel (FAME) are retrieved;
+		 * the names and the data are converted into a string and returned */ 	
 		
 		/** URIs of ontologies used to define KBs in which market data will be stored*/ 
 		String ontoPath = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15"; //KB
 		String ontoPath2 = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl";
 		
-		//JSONObject data = new JSONObject();
 		String data = "";
 		
 		/** URIs of relevant individuals and their properties are defined */
@@ -234,7 +230,6 @@ public class DataDownload {
 			for (int i = 0; i <addresses.length; i++){
 				RDFIndividual individual = owlModel.getRDFIndividual(addresses[i][1]);
 				String name = individual.getPropertyValueLiteral(owlModel.getRDFProperty(addresses[i][0])).getString();
-				//data.put(headers[i],name);
 				data += headers[i] + ",";
 				data += name + ",";
 			}
@@ -268,19 +263,14 @@ public class DataDownload {
 			
 
 			for (int i = 0; i <addresses2.length; i++){
-				//JSONObject row = new JSONObject();
 				RDFIndividual individual = owlModel2.getRDFIndividual(addresses2[i][1]);
 				String name = individual.getPropertyValueLiteral(owlModel2.getRDFProperty(addresses2[i][0])).getString();
 				data += name + ",";
-				//data.put(headers2[i],name);
-				//System.out.println(name);
-				//if (i == 0) {result = name.toString();}
 				}
 			
 		   return data;
 	}
-	
-	
+		
 	public static void main(String[] args) throws Exception {
 		Downloading_market_data();
 	}

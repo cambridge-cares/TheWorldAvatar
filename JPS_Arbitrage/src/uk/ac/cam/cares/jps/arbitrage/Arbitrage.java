@@ -4,11 +4,8 @@ package uk.ac.cam.cares.jps.arbitrage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import com.cmclinnovations.mods.api.MoDSAPI;
-
 import uk.ac.cam.cares.jps.arbitragetest.TestMoDSAnalysis;
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 
@@ -17,7 +14,9 @@ public class Arbitrage {
 
 	public static void Running_analysis_Aspen() throws Exception {
 		
-		/** this function executes 4 Python scripts which download market data and stores it in separate CSV files */ 
+		/** this function calls cmd to execute a Python script which uses market prices of crude palm oil (CPO) and biodiesel (FAME) stored in CSV files
+		 * and hardcoded utility prices and exchange rates to conduct the financial analysis, result of which is captured from cmd and printed to the eclipse console;
+		 * the script also prints a plot of market data to the location defined below */ 
 		
 		String CPO_to_FAME_analysis = new String("caresjpsarbitrage/CPO_to_FAME.py"); 
 		
@@ -31,6 +30,10 @@ public class Arbitrage {
 	
 	public static String Running_analysis_MoDS(String input) throws Exception {
 		
+		/** this function uses MoDS-Java API to evaluate the pre-generated MoDS surrogate model stored a location defined below, converts MoDS output values into a string, 
+		 * which is passed to a Python script, and calls cmd to execute the Python script which uses market prices of crude palm oil (CPO) and biodiesel (FAME)
+		 * stored in CSV files and hardcoded utility prices and exchange rates to conduct the financial analysis, result of which is printed to the eclipse
+		 * console and returned as a string */ 
 		
 		String[] sim_address = {"E:\\MoDS_Projects\\Arbitrage\\Models\\CPO_to_FAME_26042016_001\\Sims\\HDMR_50_001", "HDMR_Alg_1"};
 		//Double[] inputs = {24220.0656};
@@ -42,10 +45,7 @@ public class Arbitrage {
 	    	result += "," + data.get(i).toString();
 	    }
 
-		/** this function executes 4 Python scripts which download market data and stores it in separate CSV files  */
-	    System.out.println(1);
 		String CPO_to_FAME_analysis = new String("caresjpsarbitrage/CPO_to_FAME_MoDS.py"); 
-		//String market_data_plot = new String("C:\\Users\\Janusz\\Desktop\\Commodity_prices\\Market_data\\arbitrage_CPO_MoDS.png"); 
 		String result1 = PythonHelper.callPython(CPO_to_FAME_analysis, result, new Arbitrage());
 		System.out.println(result1);
 		return result1;
@@ -54,7 +54,11 @@ public class Arbitrage {
 	
 	
 	public static String Running_analysis_MoDS2(String input) throws Exception {
-		
+
+		/** this function uses MoDS-Java API to evaluate the pre-generated MoDS surrogate model stored a location defined below, converts MoDS output values into a string, 
+		 * which is passed to a Python script, calls DataDownloadAgent via Tomcat server to retrieve market prices of crude palm oil (CPO) and biodiesel (FAME),
+		 * utility prices and exchange rates from JPS knowledge base, which are passed to the Python script as a string, and
+		 * calls cmd to execute the Python script which conducts the financial analysis, result of which is printed to the eclipse console and returned as a string */ 
 		
 		String[] sim_address = {"E:\\MoDS_Projects\\Arbitrage\\Models\\CPO_to_FAME_26042016_001\\Sims\\HDMR_50_001", "HDMR_Alg_1"};
 		//Double[] inputs = {24220.0656};
@@ -74,9 +78,7 @@ public class Arbitrage {
 		System.out.println(result);
 
 		
-		/** this function executes 4 Python scripts which download market data and stores it in separate CSV files  */
 		String CPO_to_FAME_analysis = new String("caresjpsarbitrage/CPO_to_FAME_MoDS2.py"); 
-		//String market_data_plot = new String("C:\\Users\\Janusz\\Desktop\\Commodity_prices\\Market_data\\arbitrage_CPO_MoDS.png"); 
 		String result1 = PythonHelper.callPython(CPO_to_FAME_analysis, result, actual, new Arbitrage());
 		System.out.println(result1);
 		
@@ -86,13 +88,19 @@ public class Arbitrage {
 
 	}
 
-	public static List<Double> MoDS(final Double[] args, final String[] args1) { //final String[] args
+	public static List<Double> MoDS(final Double[] args, final String[] args1) {
+		
+		/** this function was based on an example provided by cmcl showing how to evaluate MoDS surrogate models using their MoDS-Java API;
+		 * it is required to provide the API with location and name of the surrogate model and a List<Double> of input values;
+		 * List<Double> of outputs is returned
+		 */
+		
 		final String simDir = args1[0];
 	    final String surrogateAlgName = args1[1];
 		
 		//final String simDir = "E:\\MoDS_Projects\\Arbitrage\\Models\\CPO_to_FAME_26042016_001\\Sims\\HDMR_50_001";
 	    //final String surrogateAlgName = "HDMR_Alg_1";
-	    // Example is for a surrogate with 10 input variables
+	    
 	    // Note that IndexOutOfBoundsException is thrown if you supply too many inputs, but *no exception is thrown if you supply too few!*.
 	    final List<Double> inputs_1 = new ArrayList<>(Arrays.asList(args));
 
@@ -104,6 +112,5 @@ public class Arbitrage {
 	public static void main(String[] args) throws Exception {
 		//Running_analysis_Aspen();
 		//Running_analysis_MoDS2("24220.0656");
-		System.out.println(AgentLocator.getPathToWorkingDir(new Arbitrage()));
 	}
 }

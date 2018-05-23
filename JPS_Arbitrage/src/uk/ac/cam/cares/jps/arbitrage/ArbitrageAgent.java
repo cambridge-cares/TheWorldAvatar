@@ -27,6 +27,12 @@ public class ArbitrageAgent extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+	/**this function is a servlet for calling functions in uk.ac.cam.cares.jps.arbitrage package and returning their results;
+	 * it discriminates between "/hardcode", "/KB" URL patterns and calls Arbitrage.Running_analysis_MoDS and 
+	 * Arbitrage.Running_analysis_MoDS2, respectively
+	 */
+	
 	String path = request.getServletPath();
 	
 	if ("/hardcode".equals(path)) {
