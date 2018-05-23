@@ -29,9 +29,10 @@ import uk.ac.cam.cares.jps.base.discovery.AbstractAgentServiceDescription;
 import uk.ac.cam.cares.jps.base.discovery.Agent;
 import uk.ac.cam.cares.jps.base.discovery.AgentServiceDescription;
 import uk.ac.cam.cares.jps.base.discovery.Parameter;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;
 
-public class OWLSerializer implements ISerializer {
+public class OWLSerializer {
 	
 	private static OWLSerializer instance = null;
 	
@@ -65,7 +66,6 @@ public class OWLSerializer implements ISerializer {
 		ontBaseIRI = AgentKnowledgeBase.ONTOAGENT_ONTOLOGY_IRI + "#";
 	}
 	
-	@Override
 	public synchronized String convertToString(Serializable object) {
 		// OWLSerializer is a singleton. Because it has java attributes such as knowledgeBase 
 		// all public convert methods have to be synchronized for parallel access
@@ -95,18 +95,9 @@ public class OWLSerializer implements ISerializer {
 		if (object instanceof Agent) {	
 			kbBaseIRI = AgentKnowledgeBase.ONTOAGENT_BASE_IRI + "/Agent" + uuid + ".owl#";
 			knowledgeBase.setNsPrefix("jpsagkb", kbBaseIRI);
-			
-			//TODO-AE if then for AgentDesription, Request, Response ...
 			createAgent((Agent) object, uuid);
-		} else if (object instanceof AgentServiceDescription) {
-			//TODO-AE Class in OntoAgent.owl is AgentServiceDescription --> rename java Code
-			//TODO-AE AgentMessage --> AgentServiceRequest, AgentServiceResponse
-			kbBaseIRI = AgentKnowledgeBase.ONTOAGENT_BASE_IRI + "/AgentMessage#";
-			knowledgeBase.setNsPrefix("jpsagkb", kbBaseIRI);
-			//TODO-AE check that there is a least one output parameter (and domain, name...)
-			createAgentDescription((AbstractAgentServiceDescription) object);
 		} else {
-			throw new RuntimeException("can't serialize the object of type = " + object.getClass().getName());
+			throw new JPSRuntimeException("can't serialize the object of type = " + object.getClass().getName());
 		}
 		
 		//knowledgeBase.write(System.out);
@@ -115,18 +106,6 @@ public class OWLSerializer implements ISerializer {
 		knowledgeBase.write(stream, "RDF/XML");
 		
 		return stream;
-	}
-
-	@Override
-	public synchronized <T extends Serializable> Optional<T> convertFrom(String objectAsString, Class<T> classtype) {
-		
-		knowledgeBase = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
-		InputStream is = new ByteArrayInputStream( objectAsString.getBytes(StandardCharsets.UTF_8) );
-		knowledgeBase.read(is, null);
-		
-		//TODO-AE this method is not implemented yet
-		
-		return null;
 	}
 	
 	private void createAgent(Agent agent, UUID uuid) {
@@ -148,15 +127,13 @@ public class OWLSerializer implements ISerializer {
 	private Individual createAgentDescription(AbstractAgentServiceDescription description) {
 		
 		if (description.getProperties().isEmpty()) {
-			// TODO-AE create new JPS Runtime Exception in JPS_BASE
-			throw new RuntimeException("empty property list of agent description");
+			throw new JPSRuntimeException("empty property list of agent description");
 		}
 		
 		Individual result = createIndividual("AgentServiceDescription");
 		
 		// create individuals for all parameters
 		List<Parameter> params = description.getProperties();
-		//TODO-AE extend to domain iris here, e.g. for weather
 		List<Individual> allParameters = createIndividualList(params, "Property");
 		params = description.getInputParameters();
 		allParameters.addAll(createIndividualList(params, "InputParameter"));

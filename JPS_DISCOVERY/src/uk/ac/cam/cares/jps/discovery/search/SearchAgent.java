@@ -1,35 +1,33 @@
 package uk.ac.cam.cares.jps.discovery.search;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.base.discovery.AbstractAgentServiceDescription;
 import uk.ac.cam.cares.jps.base.discovery.Agent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.matching.exact.ExactMatcher;
-import uk.ac.cam.cares.jps.discovery.util.JPSBaseServlet;
 
 @WebServlet(urlPatterns = {"/search", "/call"})
-public class SearchAgent extends JPSBaseServlet {
+public class SearchAgent extends HttpServlet {
 	
 	private static final long serialVersionUID = 5462239838527386746L;
 	
 	Logger logger = LoggerFactory.getLogger(SearchAgent.class);
 	
 	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) {
 
 		String path = req.getServletPath();
 		logger.info("SearchAgent is called, path = " + path);
@@ -37,10 +35,10 @@ public class SearchAgent extends JPSBaseServlet {
 		if ("/search".equals(path)) {
 			AgentRequest agentRequest = AgentCaller.getAgentRequest(req);
 			List<String> list = search(agentRequest);
-			print(resp, list);
+			AgentCaller.printToResponse(list, resp);
 		} else if ("/call".equals(path)) {
 			AgentResponse agentResponse = call(req);
-			AgentCaller.printAgentResponse(agentResponse, resp);
+			AgentCaller.printToResponse(agentResponse, resp);
 		}
 	}
 	
@@ -73,19 +71,12 @@ public class SearchAgent extends JPSBaseServlet {
 			// TODO-AE this is a complete hack to get the path
 			int index = address.indexOf("8080");
 			String path = address.substring(index+4);
-			System.out.println("MY PATH = " + path);
-//			String serializedAgentRequest = req.getParameter("agentrequest");
-//			String serializedAgentResponse = AgentCaller.executeGet(path, "agentrequest", serializedAgentRequest);
-//			result = serializer.<AgentResponse>convertFrom(serializedAgentResponse, AgentResponse.class).get();		
-			
-			
 			result = AgentCaller.callAgent(path, agentRequest);
 			
 		} else {
-			result = new AgentResponse();
-			// TODO-AE better: return an error?
-			// copy original parameters from the search request
-			AbstractAgentServiceDescription.copyParameters(agentRequest, result);
+			// TODO-AE better: I guess this error will not be shown in the error message of HTTP response
+			// do we have to change this?
+			throw new JPSRuntimeException("no suitable agent found");
 		}
 		
 		return result;
