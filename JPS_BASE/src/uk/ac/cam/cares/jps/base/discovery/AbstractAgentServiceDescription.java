@@ -20,7 +20,7 @@ public abstract class AbstractAgentServiceDescription implements Serializable {
 		this.properties = properties;
 	}
 	
-	public void setDomain(IType domain) {
+	public void setDomain(TypeString domain) {
 		Parameter param = new Parameter(new TypeString("domain"), domain);
 		properties.add(param);
 	}
@@ -41,7 +41,7 @@ public abstract class AbstractAgentServiceDescription implements Serializable {
 		this.outputParameters = outputParameters;
 	}
 	
-	public void addOutputParameter(TypeIRI key) {
+	public void addOutputParameter(TypeString key) {
 		Parameter param = new Parameter(key, null);
 		outputParameters.add(param);
 	}
@@ -63,14 +63,10 @@ public abstract class AbstractAgentServiceDescription implements Serializable {
 		return result;
 	}
 	
-	private static IType copy(IType type) {
+	private static TypeString copy(TypeString type) {
 		
 		if ((type == null)) {
 			return null;
-		}
-		
-		if (type instanceof TypeIRI) {
-			return new TypeIRI(type.getValue());
 		}
 		return new TypeString(type.getValue());
 	}

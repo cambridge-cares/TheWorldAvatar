@@ -1,9 +1,5 @@
 package uk.ac.cam.cares.jps.discovery.test;
 
-import java.io.IOException;
-
-import org.apache.http.client.ClientProtocolException;
-
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Literal;
@@ -16,7 +12,7 @@ import uk.ac.cam.cares.jps.discovery.knowledgebase.AgentKnowledgeBase;
 public class TestAgentKnowledgeBase extends TestCase {
 
 	public void testAgentImportToKnowledgeBase() {
-		//TODO-AE getNewRooo.... refactor
+		//TODO-AE finish this test
 		String dirForAgentKnowledgesBase = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres/fiveagentsowlfiles";
 		AgentKnowledgeBase.getInstance(dirForAgentKnowledgesBase);
 		

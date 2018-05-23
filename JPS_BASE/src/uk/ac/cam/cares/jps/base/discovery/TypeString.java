@@ -1,15 +1,19 @@
 package uk.ac.cam.cares.jps.base.discovery;
 
-public class TypeString implements IType {
+import java.io.Serializable;
+
+public class TypeString implements Serializable {
 
 	private static final long serialVersionUID = -3426018488650523518L;
 	private String value = null;
+	
+	public TypeString() {
+	}
 	
 	public TypeString(String value) {
 		this.value = value;
 	}
 
-	@Override
 	public String getValue() {
 		return value;
 	}

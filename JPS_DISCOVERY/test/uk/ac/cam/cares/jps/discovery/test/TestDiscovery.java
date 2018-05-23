@@ -20,7 +20,7 @@ import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
 import uk.ac.cam.cares.jps.base.discovery.AgentServiceDescription;
 import uk.ac.cam.cares.jps.base.discovery.Parameter;
-import uk.ac.cam.cares.jps.base.discovery.TypeIRI;
+import uk.ac.cam.cares.jps.base.discovery.TypeString;
 import uk.ac.cam.cares.jps.discovery.client.DiscoveryProvider;
 import uk.ac.cam.cares.jps.discovery.knowledgebase.OWLSerializer;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;
@@ -108,8 +108,8 @@ public class TestDiscovery extends TestCase {
 		
 		List<String> result = new ArrayList<String>();
 		
-		List<TypeIRI> names = new DiscoveryProvider().getAllAgentNames();
-		for (TypeIRI current : names) {
+		List<TypeString> names = new DiscoveryProvider().getAllAgentNames();
+		for (TypeString current : names) {
 			result.add(current.getValue());
 		}
 	
@@ -118,7 +118,7 @@ public class TestDiscovery extends TestCase {
 
 	private void deregisterAllAgents() throws ClientProtocolException, IOException {	
 		for (String current : getAgents()) {
-			TypeIRI name = new TypeIRI(current);
+			TypeString name = new TypeString(current);
 			new DiscoveryProvider().deregisterAgent(name);
 		}
 	}
@@ -184,7 +184,7 @@ public class TestDiscovery extends TestCase {
 		String output = "IRItemperature,null";
 		AgentRequest searchDescr = DescriptionFactory.createDiscoveryMessage(general, input, output);
 
-		List<TypeIRI> actualSearch = new DiscoveryProvider().searchAgents(searchDescr);
+		List<TypeString> actualSearch = new DiscoveryProvider().searchAgents(searchDescr);
 		assertEquals(2, actualSearch.size());
 		
 		String actv0 = actualSearch.get(0).getValue();

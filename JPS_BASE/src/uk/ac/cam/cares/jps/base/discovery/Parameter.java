@@ -6,27 +6,27 @@ public class Parameter implements Serializable {
 
 	private static final long serialVersionUID = 2109996100052539444L;
 	
-	private IType key = null;
-	private IType value = null;
+	private TypeString key = null;
+	private TypeString value = null;
 	
-	public Parameter(IType key, IType value) {
+	public Parameter(TypeString key, TypeString value) {
 		this.key = key;
 		this.value = value;
 	}
 	
-	public IType getKey() {
+	public TypeString getKey() {
 		return key;
 	}
 	
-	public void setKey(IType key) {
+	public void setKey(TypeString key) {
 		this.key = key;
 	}
 	
-	public IType getValue() {
+	public TypeString getValue() {
 		return value;
 	}
 	
-	public void setValue(IType value) {
+	public void setValue(TypeString value) {
 		this.value = value;
 	}
 }
