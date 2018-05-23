@@ -1,8 +1,10 @@
 package uk.ac.cam.cares.jps.discovery.util;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -10,10 +12,14 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
+import com.google.gson.Gson;
+
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
+import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
-public class Helper {
+public class AgentCallerFORDELETION {
 	
 	private static String hostPort = null;
 	
@@ -53,9 +59,10 @@ public class Helper {
 		} 
 	}
 	
-	public static String getRequestBody(final HttpServletRequest request) {
+	// TODO-AE this method seems not to be required. 
+	public static String getRequestBody(final HttpServletRequest req) {
 	    final StringBuilder builder = new StringBuilder();
-	    try (final BufferedReader reader = request.getReader()) {
+	    try (final BufferedReader reader = req.getReader()) {
 	        String line;
 	        while ((line = reader.readLine()) != null) {
 	            builder.append(line);
@@ -64,5 +71,35 @@ public class Helper {
 	    } catch (final Exception e) {
 	        return null;
 	    }
+	}
+	
+	public static AgentResponse callAgent(String contextPath, AgentRequest agentRequest)  {
+		
+		Gson gson = new Gson();
+		
+		String serializedAgentRequest = gson.toJson(agentRequest);
+		try {
+			String serializedAgentResponse = AgentCallerFORDELETION.executeGet(contextPath, "agentrequest", serializedAgentRequest);
+			return gson.fromJson(serializedAgentResponse, AgentResponse.class);
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		}
+	}
+	
+	public static AgentRequest getAgentRequest(HttpServletRequest req) {
+		String serializedAgentRequest = req.getParameter("agentrequest");
+		return new Gson().fromJson(serializedAgentRequest, AgentRequest.class);
+	}
+	
+	public static void printAgentResponse(AgentResponse agentResponse, HttpServletResponse resp) {
+		
+		String message = new Gson().toJson(agentResponse);
+		resp.setContentType("text/plain");
+		resp.setCharacterEncoding("UTF-8");
+		try {
+			resp.getWriter().print(message);
+		} catch (IOException e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		}	
 	}
 }

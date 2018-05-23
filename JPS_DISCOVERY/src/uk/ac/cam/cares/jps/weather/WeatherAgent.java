@@ -17,12 +17,11 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AbstractAgentServiceDescription;
 import uk.ac.cam.cares.jps.base.discovery.Agent;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
 import uk.ac.cam.cares.jps.base.discovery.Parameter;
-import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.test.DescriptionFactory;
-import uk.ac.cam.cares.jps.discovery.util.ISerializer;
 import uk.ac.cam.cares.jps.discovery.util.JPSBaseServlet;
 
 @WebServlet(urlPatterns = {"/DiscoveryTest/WeatherAgent"})
@@ -31,22 +30,14 @@ public class WeatherAgent extends JPSBaseServlet {
 	private static final long serialVersionUID = -4199209974912271432L;
 	
 	Logger logger = LoggerFactory.getLogger(WeatherAgent.class);
-	private ISerializer serializer = DiscoveryFactory.getSerializer();
-	
-
 	
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
 		
 		logger.info("WeatherAgent start");
 
-		String serializedAgentRequest = req.getParameter("agentrequest");
-		
-		//convert from the string to serialized object for the response
-		AgentRequest agentRequest = serializer.<AgentRequest>convertFrom(serializedAgentRequest, AgentRequest.class).get();
-		
-		AgentResponse agentResponse = new AgentResponse();
-		
+		AgentRequest agentRequest = AgentCaller.getAgentRequest(req);
+				
 		//if need to take the value using the python code
 		//PythonHelper.callPython("JPS/python/caresjpsadmsinputs/cobbling.py", "main");
 		
@@ -85,6 +76,8 @@ public class WeatherAgent extends JPSBaseServlet {
         logger.info("cloud cover= "+cloudcovercalculate);
        
 		
+        
+		AgentResponse agentResponse = new AgentResponse();
 		//copy from the request stream of input and output parameter into the response stream
 		AbstractAgentServiceDescription.copyParameters(agentRequest, agentResponse);
 		
@@ -98,15 +91,7 @@ public class WeatherAgent extends JPSBaseServlet {
 		Parameter param4 = agentResponse.getOutputParameters().get(3);
 		param4.setValue(direction);
 		
-		//convert from the serialized object to string for the response
-		String serializedAgentResponse = serializer.convertToString(agentResponse);
-		
-		print(resp, serializedAgentResponse);
-		
-		//convert from the string to serialized object for the response
-		serializer.<AgentResponse>convertFrom(serializedAgentResponse, AgentResponse.class).get();
-		
-
+		AgentCaller.printAgentResponse(agentResponse, resp);
 		
 		logger.info("WeatherAgent exit");
 	}
