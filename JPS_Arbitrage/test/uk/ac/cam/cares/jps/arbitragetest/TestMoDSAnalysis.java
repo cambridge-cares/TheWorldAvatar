@@ -19,6 +19,8 @@ public class TestMoDSAnalysis extends TestCase{
 	
 	public static String executeGet(String path, String key, String value)
 			throws ParseException, IOException, URISyntaxException {
+		/** this function was provided by Andreas and so I don't really know how it works*/
+		
 		// TODO-AE change localhost, maybe use directly class java.net.URI, maybe move this class to JPS_BASE
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost("localhost:8080")
 				.setPath(path)
@@ -35,6 +37,9 @@ public class TestMoDSAnalysis extends TestCase{
 	}
 
 	public void testMoDSPythonHardcode() throws URISyntaxException, ClientProtocolException, IOException {
+		/** this function calls ArbitrageAgent to call Arbitrage.Running_analysis_MoDS and check that the returned string contains
+		 * a predefined substring */
+
 		String path = "/JPS_Arbitrage/hardcode";
 		String key = "MoDS_input";
 		String value = "24220.0656";
@@ -46,6 +51,9 @@ public class TestMoDSAnalysis extends TestCase{
 	
 	
 	public void testMoDSPythonKB() throws URISyntaxException, ClientProtocolException, IOException {
+		/** this function calls ArbitrageAgent to call Arbitrage.Running_analysis_MoDS2 and check that the returned string contains
+		 * a predefined substring */
+		
 		String path = "/JPS_Arbitrage/KB";
 		String key = "MoDS_input";
 		String value = "24220.0656";

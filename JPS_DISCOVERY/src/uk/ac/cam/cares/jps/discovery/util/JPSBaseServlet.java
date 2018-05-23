@@ -22,6 +22,7 @@ public class JPSBaseServlet extends HttpServlet {
 		return discoveryProvider;
 	}	
 	
+	// TODO-AE remove if not required any more
 	protected void print(HttpServletResponse resp, List<String> list) throws IOException {
 		resp.setContentType("text/plain");
 		resp.setCharacterEncoding("UTF-8");
@@ -37,6 +38,7 @@ public class JPSBaseServlet extends HttpServlet {
 		}
 	}
 	
+	// TODO-AE remove if not required any more
 	protected void print(HttpServletResponse resp, String message) throws IOException {
 		resp.setContentType("text/plain");
 		resp.setCharacterEncoding("UTF-8");

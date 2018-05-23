@@ -14,12 +14,11 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AbstractAgentServiceDescription;
 import uk.ac.cam.cares.jps.base.discovery.Agent;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
 import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.matching.exact.ExactMatcher;
-import uk.ac.cam.cares.jps.discovery.util.Helper;
-import uk.ac.cam.cares.jps.discovery.util.ISerializer;
 import uk.ac.cam.cares.jps.discovery.util.JPSBaseServlet;
 
 @WebServlet(urlPatterns = {"/search", "/call"})
@@ -28,7 +27,6 @@ public class SearchAgent extends JPSBaseServlet {
 	private static final long serialVersionUID = 5462239838527386746L;
 	
 	Logger logger = LoggerFactory.getLogger(SearchAgent.class);
-	private ISerializer serializer = DiscoveryFactory.getSerializer();
 	
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
@@ -37,15 +35,12 @@ public class SearchAgent extends JPSBaseServlet {
 		logger.info("SearchAgent is called, path = " + path);
 
 		if ("/search".equals(path)) {
-			String serializedSearchDescr = req.getParameter("agentrequest");
-			AgentRequest agentRequest = serializer.<AgentRequest>convertFrom(serializedSearchDescr, AgentRequest.class).get();
+			AgentRequest agentRequest = AgentCaller.getAgentRequest(req);
 			List<String> list = search(agentRequest);
 			print(resp, list);
 		} else if ("/call".equals(path)) {
-			String serializedAgentRequest = req.getParameter("agentrequest");
-			AgentResponse agentResponse = call(serializedAgentRequest);
-			String serializedAgentResponse = serializer.convertToString(agentResponse);
-			print(resp, serializedAgentResponse);
+			AgentResponse agentResponse = call(req);
+			AgentCaller.printAgentResponse(agentResponse, resp);
 		}
 	}
 	
@@ -62,11 +57,12 @@ public class SearchAgent extends JPSBaseServlet {
 		return result;
 	}
 	
-	private AgentResponse call(String serializedAgentRequest) {
+	private AgentResponse call(HttpServletRequest req) {
 		
 		AgentResponse result = null;
-
-		AgentRequest agentRequest = serializer.<AgentRequest>convertFrom(serializedAgentRequest, AgentRequest.class).get();
+		
+		AgentRequest agentRequest = AgentCaller.getAgentRequest(req);
+		
 		List<String> list = search(agentRequest);
 		if (list.size() > 0) {
 			// TODO-AE path vs. local host, this must be clearified. 
@@ -77,11 +73,17 @@ public class SearchAgent extends JPSBaseServlet {
 			// TODO-AE this is a complete hack to get the path
 			int index = address.indexOf("8080");
 			String path = address.substring(index+4);
-			logger.info("MYPATH=" + path);
-			String serializedAgentResponse = Helper.executeGet(path, "agentrequest", serializedAgentRequest);
-			result = serializer.<AgentResponse>convertFrom(serializedAgentResponse, AgentResponse.class).get();		
+			System.out.println("MY PATH = " + path);
+//			String serializedAgentRequest = req.getParameter("agentrequest");
+//			String serializedAgentResponse = AgentCaller.executeGet(path, "agentrequest", serializedAgentRequest);
+//			result = serializer.<AgentResponse>convertFrom(serializedAgentResponse, AgentResponse.class).get();		
+			
+			
+			result = AgentCaller.callAgent(path, agentRequest);
+			
 		} else {
 			result = new AgentResponse();
+			// TODO-AE better: return an error?
 			// copy original parameters from the search request
 			AbstractAgentServiceDescription.copyParameters(agentRequest, result);
 		}
