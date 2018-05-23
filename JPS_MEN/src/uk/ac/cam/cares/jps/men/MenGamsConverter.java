@@ -19,6 +19,7 @@ import com.gams.api.GAMSVariableRecord;
 import com.gams.api.GAMSWorkspace;
 import com.gams.api.GAMSWorkspaceInfo;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.men.entity.FeasibleConnection;
 import uk.ac.cam.cares.jps.men.entity.MenCalculationParameters;
 import uk.ac.cam.cares.jps.men.entity.Product;
@@ -39,7 +40,7 @@ public class MenGamsConverter {
          
     	//TODO-AE GAMS produces new files for each optimization. Old files must be deleted. Maybe move the workingDir to another place
     	// to use is also from ADMS and to have a general strategy for deleting old files. Move also location log files there
-        String workingDirGams = "";
+        String workingDirGams = AgentLocator.getPathToJpsWorkingDir() + "\\JPS_MEN\\gams";
         
         File workingDirectory = new File(workingDirGams);
         workingDirectory.mkdir();
