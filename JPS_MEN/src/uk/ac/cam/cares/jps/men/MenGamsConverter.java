@@ -28,9 +28,6 @@ import uk.ac.cam.cares.jps.men.entity.Transportation;
 
 public class MenGamsConverter {
 	
-	//TODO-AE GAMS produces new files for each optimization. Old files must be deleted. Maybe move the workingDir to another place
-	// to use is also from ADMS and to have a general strategy for deleting old files. Move also location log files there
-	final private String WORKING_DIR_GAMS = "C:\\Users\\kevin\\TEMP\\JPS_workingdir\\JPS_MEN_GAMS";
 	private Logger logger = LoggerFactory.getLogger(MenGamsConverter.class);	
 	
 	public MenResult calculate(List<Source> sources, List<Sink> sinks, List<FeasibleConnection> feasibleConnections, List<Transportation> transportations, MenCalculationParameters parameters) {
@@ -39,9 +36,12 @@ public class MenGamsConverter {
 		// -------------------
 		
         GAMSWorkspaceInfo  wsInfo  = new GAMSWorkspaceInfo();
-        // TODO-AE: read the file from somewhere else
-        //File workingDirectory = new File(System.getProperty("user.dir"), "MaterialExchangeNetwork");
-        File workingDirectory = new File(WORKING_DIR_GAMS);
+         
+    	//TODO-AE GAMS produces new files for each optimization. Old files must be deleted. Maybe move the workingDir to another place
+    	// to use is also from ADMS and to have a general strategy for deleting old files. Move also location log files there
+        String workingDirGams = "";
+        
+        File workingDirectory = new File(workingDirGams);
         workingDirectory.mkdir();
         wsInfo.setWorkingDirectory(workingDirectory.getAbsolutePath());
         // create a workspace
