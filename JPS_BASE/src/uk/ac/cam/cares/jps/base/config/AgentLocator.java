@@ -82,7 +82,7 @@ public class AgentLocator {
 			logger.info("jpstest.properties not found");
 		}			
 
-		url = getProperty("host") + ":" + getProperty("port");
+		url = "http://" + getProperty("host") + ":" + getProperty("port");
 		logger.info("created url from properties: " + url);
 	}
 	

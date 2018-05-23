@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.base.discovery;
 
-import java.io.IOException;
 import java.util.List;
 
 public interface IAgentCommunication {
@@ -9,9 +8,9 @@ public interface IAgentCommunication {
 	
 	AgentResponse callAgent(AgentRequest agentRequest);
 	
-	void registerAgent(Agent agent) throws IOException;
+	void registerAgent(Agent agent);
 	
-	void deregisterAgent(TypeString agentAddress) throws IOException;
+	void deregisterAgent(TypeString agentAddress);
 	
 	/**
 	 * This method returns the names of all agents registered in JPS.

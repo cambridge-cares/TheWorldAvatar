@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.discovery.search;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +9,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.http.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +39,7 @@ public class SearchAgent extends JPSBaseServlet {
 
 		if ("/search".equals(path)) {
 			String serializedSearchDescr = req.getParameter("agentrequest");
-			AgentRequest agentRequest = serializer.<AgentRequest>convertFrom(serializedSearchDescr).get();
+			AgentRequest agentRequest = serializer.<AgentRequest>convertFrom(serializedSearchDescr, AgentRequest.class).get();
 			List<TypeString> list = search(agentRequest);
 			print(resp, list);
 		} else if ("/call".equals(path)) {
@@ -65,11 +63,11 @@ public class SearchAgent extends JPSBaseServlet {
 		return result;
 	}
 	
-	private AgentResponse call(String serializedAgentRequest) throws ParseException, IOException {
+	private AgentResponse call(String serializedAgentRequest) {
 		
 		AgentResponse result = null;
 
-		AgentRequest agentRequest = serializer.<AgentRequest>convertFrom(serializedAgentRequest).get();
+		AgentRequest agentRequest = serializer.<AgentRequest>convertFrom(serializedAgentRequest, AgentRequest.class).get();
 		List<TypeString> list = search(agentRequest);
 		if (list.size() > 0) {
 			// TODO-AE path vs. local host, this must be clearified. 
@@ -81,13 +79,8 @@ public class SearchAgent extends JPSBaseServlet {
 			int index = address.indexOf("8080");
 			String path = address.substring(index+4);
 			logger.info("MYPATH=" + path);
-			try {
-				String serializedAgentResponse = Helper.executeGet(path, "agentrequest", serializedAgentRequest);
-				result = serializer.<AgentResponse>convertFrom(serializedAgentResponse).get();
-			} catch (URISyntaxException e) {
-				// TODO-AE Auto-generated catch block
-				e.printStackTrace();
-			}			
+			String serializedAgentResponse = Helper.executeGet(path, "agentrequest", serializedAgentRequest);
+			result = serializer.<AgentResponse>convertFrom(serializedAgentResponse, AgentResponse.class).get();		
 		} else {
 			result = new AgentResponse();
 			// copy original parameters from the search request

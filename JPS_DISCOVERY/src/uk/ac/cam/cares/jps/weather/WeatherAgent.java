@@ -44,7 +44,7 @@ public class WeatherAgent extends JPSBaseServlet {
 		String serializedAgentRequest = req.getParameter("agentrequest");
 		
 		//convert from the string to serialized object for the response
-		AgentRequest agentRequest = serializer.<AgentRequest>convertFrom(serializedAgentRequest).get();
+		AgentRequest agentRequest = serializer.<AgentRequest>convertFrom(serializedAgentRequest, AgentRequest.class).get();
 		
 		AgentResponse agentResponse = new AgentResponse();
 		
@@ -105,7 +105,7 @@ public class WeatherAgent extends JPSBaseServlet {
 		print(resp, serializedAgentResponse);
 		
 		//convert from the string to serialized object for the response
-		serializer.<AgentResponse>convertFrom(serializedAgentResponse).get();
+		serializer.<AgentResponse>convertFrom(serializedAgentResponse, AgentResponse.class).get();
 		
 
 		

@@ -75,7 +75,7 @@ public class OWLSerializer_old_owl_with_list implements ISerializer {
 		// OWLSerializer is a singleton. Because it has java attributes such as knowledgeBase 
 		// all public convert methods have to be synchronized for parallel access
 		
-		UUID uuid = Helper.createUUID();	
+		UUID uuid = createUUID();	
 		ByteArrayOutputStream stream = convertToString(object, uuid);
 		String s = stream.toString();
 		try {
@@ -123,7 +123,7 @@ public class OWLSerializer_old_owl_with_list implements ISerializer {
 	}
 
 	@Override
-	public synchronized <T extends Serializable> Optional<T> convertFrom(String objectAsString) {
+	public synchronized <T extends Serializable> Optional<T> convertFrom(String objectAsString, Class<T> classtype) {
 		
 		knowledgeBase = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
 		InputStream is = new ByteArrayInputStream( objectAsString.getBytes(StandardCharsets.UTF_8) );
@@ -222,7 +222,7 @@ public class OWLSerializer_old_owl_with_list implements ISerializer {
 	
 	public void writeAsOwlFile(Agent agent) throws IOException {
 		
-		UUID uuid = Helper.createUUID();
+		UUID uuid = createUUID();
 		ByteArrayOutputStream bytestream = convertToString(agent, uuid);
 		
 		String path = AgentLocator.getPathToJpsDataKnowledgeDir() + "/OntoAgent/Agent" + uuid + ".owl";
@@ -235,5 +235,9 @@ public class OWLSerializer_old_owl_with_list implements ISerializer {
 		bytestream.writeTo(filestream);
 		bytestream.close();
 		filestream.close();
+	}
+	
+	private static UUID createUUID() {
+		return UUID.randomUUID();
 	}
 }

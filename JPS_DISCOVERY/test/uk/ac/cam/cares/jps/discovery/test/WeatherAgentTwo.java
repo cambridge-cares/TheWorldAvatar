@@ -34,7 +34,7 @@ public class WeatherAgentTwo extends JPSBaseServlet {
 		logger.info("WeatherAgentTwo start");
 
 		String serializedAgentRequest = req.getParameter("agentrequest");
-		AgentRequest agentRequest = serializer.<AgentRequest>convertFrom(serializedAgentRequest).get();
+		AgentRequest agentRequest = serializer.<AgentRequest>convertFrom(serializedAgentRequest, AgentRequest.class).get();
 		AgentResponse agentResponse = new AgentResponse();
 		AbstractAgentServiceDescription.copyParameters(agentRequest, agentResponse);
 		
@@ -44,7 +44,7 @@ public class WeatherAgentTwo extends JPSBaseServlet {
 		
 		print(resp, serializedAgentResponse);
 		
-		serializer.<AgentResponse>convertFrom(serializedAgentResponse).get();
+		serializer.<AgentResponse>convertFrom(serializedAgentResponse, AgentResponse.class).get();
 		
 		logger.info("WeatherAgentTwo exit");
 	}

@@ -12,7 +12,7 @@ public class TestAgentLocator extends TestCase {
 
 	public void testProperties() {
 		String host = AgentLocator.getProperty("host");
-		assertEquals("http://localhost", host);
+		assertEquals("localhost", host);
 	}
 
 	public void testCallingAgentOneAndAgentTwo() throws ClientProtocolException, IOException {

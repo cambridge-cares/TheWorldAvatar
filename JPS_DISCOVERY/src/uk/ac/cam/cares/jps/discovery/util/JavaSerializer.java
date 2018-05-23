@@ -22,7 +22,8 @@ public class JavaSerializer implements ISerializer{
 		}
 	}
 
-	public <T extends Serializable> Optional<T> convertFrom(final String objectAsString) {
+	@Override
+	public <T extends Serializable> Optional<T> convertFrom(String objectAsString, Class<T> classtype) {
 		final byte[] data = Base64.getDecoder().decode(objectAsString);
 		try (final ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data))) {
 			return Optional.of((T) ois.readObject());

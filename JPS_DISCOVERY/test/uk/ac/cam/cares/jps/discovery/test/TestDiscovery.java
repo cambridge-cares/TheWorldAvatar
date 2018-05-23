@@ -22,9 +22,9 @@ import uk.ac.cam.cares.jps.base.discovery.AgentServiceDescription;
 import uk.ac.cam.cares.jps.base.discovery.Parameter;
 import uk.ac.cam.cares.jps.base.discovery.TypeString;
 import uk.ac.cam.cares.jps.discovery.client.DiscoveryProvider;
+import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.knowledgebase.OWLSerializer;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;
-import uk.ac.cam.cares.jps.discovery.util.JavaSerializer;
 
 public class TestDiscovery extends TestCase {
 	
@@ -36,12 +36,12 @@ public class TestDiscovery extends TestCase {
 	
 		AgentServiceDescription descr = DescriptionFactory.createAgentServiceDescription(general, input, output);
 		
-		ISerializer serializer = new JavaSerializer();
+		ISerializer serializer = DiscoveryFactory.getSerializer();
 		String s = serializer.convertToString(descr);
 		
 		System.out.println("serialized = " + s);
 		
-		AgentServiceDescription actual = serializer.<AgentServiceDescription>convertFrom(s).get();
+		AgentServiceDescription actual = serializer.<AgentServiceDescription>convertFrom(s, AgentServiceDescription.class).get();
 		
 		// the objects itself are different
 		assertNotEquals(descr, actual);
