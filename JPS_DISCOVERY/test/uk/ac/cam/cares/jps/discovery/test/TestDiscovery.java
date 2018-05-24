@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.discovery.test;
 import static org.junit.Assert.assertNotEquals;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -15,20 +14,19 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.discovery.api.Agent;
-import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
-import uk.ac.cam.cares.jps.discovery.api.AgentResponse;
-import uk.ac.cam.cares.jps.discovery.api.AgentServiceDescription;
-import uk.ac.cam.cares.jps.discovery.api.Parameter;
-import uk.ac.cam.cares.jps.discovery.api.TypeIRI;
-import uk.ac.cam.cares.jps.discovery.client.DiscoveryProvider;
+import uk.ac.cam.cares.jps.base.discovery.Agent;
+import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
+import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
+import uk.ac.cam.cares.jps.base.discovery.AgentServiceDescription;
+import uk.ac.cam.cares.jps.base.discovery.DiscoveryProvider;
+import uk.ac.cam.cares.jps.base.discovery.Parameter;
+import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.knowledgebase.OWLSerializer;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;
-import uk.ac.cam.cares.jps.discovery.util.JavaSerializer;
 
 public class TestDiscovery extends TestCase {
 	
-	public void testSerializeAgentServiceDescriptionWithJavaSerializer() {
+	public void testSerializeAgentServiceDescriptionWithSerializer() {
 		
 		String general = "domain,weather";
 		String input = "city,null";
@@ -36,12 +34,12 @@ public class TestDiscovery extends TestCase {
 	
 		AgentServiceDescription descr = DescriptionFactory.createAgentServiceDescription(general, input, output);
 		
-		ISerializer serializer = new JavaSerializer();
+		ISerializer serializer = DiscoveryFactory.getSerializer();
 		String s = serializer.convertToString(descr);
 		
 		System.out.println("serialized = " + s);
 		
-		AgentServiceDescription actual = serializer.<AgentServiceDescription>convertFrom(s).get();
+		AgentServiceDescription actual = serializer.<AgentServiceDescription>convertFrom(s, AgentServiceDescription.class).get();
 		
 		// the objects itself are different
 		assertNotEquals(descr, actual);
@@ -61,19 +59,6 @@ public class TestDiscovery extends TestCase {
 		assertEquals(pDescr.getValue(), pActual.getValue());
 	}
 	
-	public void testSerializeAgentServiceDescriptionWithOWLSerializer() {
-		
-		String general = "domain,weather";
-		String input = "city,null";
-		String output = "IRItemperature,null";
-	
-		AgentServiceDescription descr = DescriptionFactory.createAgentServiceDescription(general, input, output);
-		
-		String s = OWLSerializer.getInstance().convertToString(descr);
-		
-		System.out.println("\n\nserialized = \n" + s);
-	}
-	
 	public void testSerializeAgentWithOWLSerializer() {
 		
 		String general = "domain,weather";
@@ -87,7 +72,7 @@ public class TestDiscovery extends TestCase {
 		System.out.println("\n\nserialized = \n" + s);
 	}
 	
-	public void testWriteAgentToOwlFile() throws IOException {
+	public void donttestWriteAgentToOwlFile() throws IOException {
 		
 		String general = "domain,weather";
 		String input = "city,null";
@@ -105,26 +90,17 @@ public class TestDiscovery extends TestCase {
 	}
 	
 	private List<String> getAgents() throws ClientProtocolException, IOException {
-		
-		List<String> result = new ArrayList<String>();
-		
-		List<TypeIRI> names = new DiscoveryProvider().getAllAgentNames();
-		for (TypeIRI current : names) {
-			result.add(current.getValue());
-		}
-	
-		return result;
+		return  DiscoveryProvider.getAllAgentNames();
 	}
 
 	private void deregisterAllAgents() throws ClientProtocolException, IOException {	
 		for (String current : getAgents()) {
-			TypeIRI name = new TypeIRI(current);
-			new DiscoveryProvider().deregisterAgent(name);
+			DiscoveryProvider.deregisterAgent(current);
 		}
 	}
 	
 	private void register(Agent agent) throws IOException {
-		new DiscoveryProvider().registerAgent(agent);
+		DiscoveryProvider.registerAgent(agent);
 	}
 	
 	public void testRegisterOneAgentTwice() throws IOException {
@@ -137,7 +113,7 @@ public class TestDiscovery extends TestCase {
 		register(agent);	
 		List<String> actual = getAgents();
 		assertEquals(1, actual.size());
-		assertEquals(agent.getName().getValue(), actual.get(0));
+		assertEquals(agent.getName(), actual.get(0));
 	}
 	
 	private void registerFiveAgents() throws IOException {
@@ -184,13 +160,13 @@ public class TestDiscovery extends TestCase {
 		String output = "IRItemperature,null";
 		AgentRequest searchDescr = DescriptionFactory.createDiscoveryMessage(general, input, output);
 
-		List<TypeIRI> actualSearch = new DiscoveryProvider().searchAgents(searchDescr);
+		List<String> actualSearch = DiscoveryProvider.searchAgents(searchDescr);
 		assertEquals(2, actualSearch.size());
 		
-		String actv0 = actualSearch.get(0).getValue();
-		String actv1 = actualSearch.get(1).getValue();
-		String expvOne = agentOne.getName().getValue();
-		String expvTwo = agentTwo.getName().getValue();
+		String actv0 = actualSearch.get(0);
+		String actv1 = actualSearch.get(1);
+		String expvOne = agentOne.getName();
+		String expvTwo = agentTwo.getName();
 		boolean b = (actv0.equals(expvOne) && actv1.equals(expvTwo)) 
 				|| (actv0.equals(expvTwo) && actv1.equals(expvOne));
 		assertTrue(b);
@@ -217,8 +193,8 @@ public class TestDiscovery extends TestCase {
 		String output = "IRItemperature,null";
 		AgentRequest agentRequest = DescriptionFactory.createDiscoveryMessage(general, input, output);
 		
-		AgentResponse agentResponse = new DiscoveryProvider().callAgent(agentRequest);
-		String actual = agentResponse.getOutputParameters().get(0).getValue().getValue();
+		AgentResponse agentResponse = DiscoveryProvider.callAgent(agentRequest);
+		String actual = agentResponse.getOutputParameters().get(0).getValue();
 		assertEquals("30.3", actual);
 	}
 }

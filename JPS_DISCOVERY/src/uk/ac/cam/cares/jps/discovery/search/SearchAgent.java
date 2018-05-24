@@ -1,60 +1,50 @@
 package uk.ac.cam.cares.jps.discovery.search;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.http.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.discovery.api.AbstractAgentServiceDescription;
-import uk.ac.cam.cares.jps.discovery.api.Agent;
-import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
-import uk.ac.cam.cares.jps.discovery.api.AgentResponse;
-import uk.ac.cam.cares.jps.discovery.api.TypeIRI;
+import uk.ac.cam.cares.jps.base.discovery.Agent;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
+import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.matching.exact.ExactMatcher;
-import uk.ac.cam.cares.jps.discovery.util.Helper;
-import uk.ac.cam.cares.jps.discovery.util.ISerializer;
-import uk.ac.cam.cares.jps.discovery.util.JPSBaseServlet;
 
 @WebServlet(urlPatterns = {"/search", "/call"})
-public class SearchAgent extends JPSBaseServlet {
+public class SearchAgent extends HttpServlet {
 	
 	private static final long serialVersionUID = 5462239838527386746L;
 	
 	Logger logger = LoggerFactory.getLogger(SearchAgent.class);
-	private ISerializer serializer = DiscoveryFactory.getSerializer();
 	
 	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) {
 
 		String path = req.getServletPath();
 		logger.info("SearchAgent is called, path = " + path);
 
 		if ("/search".equals(path)) {
-			String serializedSearchDescr = req.getParameter("agentrequest");
-			AgentRequest agentRequest = serializer.<AgentRequest>convertFrom(serializedSearchDescr).get();
-			List<TypeIRI> list = search(agentRequest);
-			print(resp, list);
+			AgentRequest agentRequest = AgentCaller.getAgentRequest(req);
+			List<String> list = search(agentRequest);
+			AgentCaller.printToResponse(list, resp);
 		} else if ("/call".equals(path)) {
-			String serializedAgentRequest = req.getParameter("agentrequest");
-			AgentResponse agentResponse = call(serializedAgentRequest);
-			String serializedAgentResponse = serializer.convertToString(agentResponse);
-			print(resp, serializedAgentResponse);
+			AgentResponse agentResponse = call(req);
+			AgentCaller.printToResponse(agentResponse, resp);
 		}
 	}
 	
-	private List<TypeIRI> search(AgentRequest agentRequest) {
+	private List<String> search(AgentRequest agentRequest) {
 		
-		List<TypeIRI> result = new ArrayList<TypeIRI>();
+		List<String> result = new ArrayList<String>();
 		
 		ExactMatcher matcher = new ExactMatcher(DiscoveryFactory.getRegistry());
 		List<Agent> list = matcher.getMatches(agentRequest);
@@ -65,33 +55,28 @@ public class SearchAgent extends JPSBaseServlet {
 		return result;
 	}
 	
-	private AgentResponse call(String serializedAgentRequest) throws ParseException, IOException {
+	private AgentResponse call(HttpServletRequest req) {
 		
 		AgentResponse result = null;
-
-		AgentRequest agentRequest = serializer.<AgentRequest>convertFrom(serializedAgentRequest).get();
-		List<TypeIRI> list = search(agentRequest);
+		
+		AgentRequest agentRequest = AgentCaller.getAgentRequest(req);
+		
+		List<String> list = search(agentRequest);
 		if (list.size() > 0) {
 			// TODO-AE path vs. local host, this must be clearified. 
 			// The agent could also run on 3rd party server or any server different from 
 			// where the discovery is located!
 			// TODO-AE why the first agent --> evaluate performance of agents
-			String address = list.get(0).getValue();
+			String address = list.get(0);
 			// TODO-AE this is a complete hack to get the path
 			int index = address.indexOf("8080");
 			String path = address.substring(index+4);
-			logger.info("MYPATH=" + path);
-			try {
-				String serializedAgentResponse = Helper.executeGet(path, "agentrequest", serializedAgentRequest);
-				result = serializer.<AgentResponse>convertFrom(serializedAgentResponse).get();
-			} catch (URISyntaxException e) {
-				// TODO-AE Auto-generated catch block
-				e.printStackTrace();
-			}			
+			result = AgentCaller.callAgent(path, agentRequest);
+			
 		} else {
-			result = new AgentResponse();
-			// copy original parameters from the search request
-			AbstractAgentServiceDescription.copyParameters(agentRequest, result);
+			// TODO-AE better: I guess this error will not be shown in the error message of HTTP response
+			// do we have to change this?
+			throw new JPSRuntimeException("no suitable agent found");
 		}
 		
 		return result;

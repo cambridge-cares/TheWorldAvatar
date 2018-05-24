@@ -6,6 +6,8 @@ public class Source implements INamed {
 	// if a named source such as a producing plant produces more than one product, then for each product an own instance of Source is created
 	private Product product = null;
 	private boolean nearSea = false;
+	private double x = 0.0;
+	private double y = 0.0;
 	
 	public Source(String name, Product product) {
 		this.name = name;
@@ -28,7 +30,23 @@ public class Source implements INamed {
 		this.nearSea = nearSea;
 	}
 	
+	public Double getx() {
+		return x;
+	}
+	
+	public Double gety() {
+		return y;
+	}
+	
+	public void setx(double x) {
+		this.x = x;
+	}
+	
+	public void sety(double y) {
+		this.y = y;
+	}
+	
 	public String toString( ) {
-		return "Source[name=" + getName() + ", product=" + getProduct().getName() + ", nearSea = " + isNearSea() + "]";
+		return "Source[name=" + getName() + ", product=" + getProduct().getName() + ", nearSea = " + isNearSea() + ", x = " + getx() + ", y = " + gety() + "]";
 	}
 }

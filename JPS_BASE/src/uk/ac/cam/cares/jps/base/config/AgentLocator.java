@@ -82,7 +82,7 @@ public class AgentLocator {
 			logger.info("jpstest.properties not found");
 		}			
 
-		url = getProperty("host") + ":" + getProperty("port");
+		url = "http://" + getProperty("host") + ":" + getProperty("port");
 		logger.info("created url from properties: " + url);
 	}
 	
@@ -167,6 +167,10 @@ public class AgentLocator {
 	
 	public static String getPathToJpsDataOntologyDir() {
 		return getProperty("absdir.jpsdata.ontology");
+	}
+	
+	public static String getPathToJpsWorkingDir() {
+		return getProperty("absdir.jpsdata.workingdir");
 	}
 	
 	/**

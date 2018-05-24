@@ -6,6 +6,5 @@ import java.util.Optional;
 public interface ISerializer {
 
 	public String convertToString(final Serializable object);
-	public <T extends Serializable> Optional<T> convertFrom(final String objectAsString);
-
+	public <T extends Serializable> Optional<T> convertFrom(final String objectAsString, Class<T> classtype);
 }

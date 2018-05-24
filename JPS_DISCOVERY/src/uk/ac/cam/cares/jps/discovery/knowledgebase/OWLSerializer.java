@@ -25,14 +25,14 @@ import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.discovery.api.AbstractAgentServiceDescription;
-import uk.ac.cam.cares.jps.discovery.api.Agent;
-import uk.ac.cam.cares.jps.discovery.api.AgentServiceDescription;
-import uk.ac.cam.cares.jps.discovery.api.Parameter;
-import uk.ac.cam.cares.jps.discovery.util.Helper;
+import uk.ac.cam.cares.jps.base.discovery.AbstractAgentServiceDescription;
+import uk.ac.cam.cares.jps.base.discovery.Agent;
+import uk.ac.cam.cares.jps.base.discovery.AgentServiceDescription;
+import uk.ac.cam.cares.jps.base.discovery.Parameter;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.discovery.util.ISerializer;
 
-public class OWLSerializer implements ISerializer {
+public class OWLSerializer {
 	
 	private static OWLSerializer instance = null;
 	
@@ -66,12 +66,11 @@ public class OWLSerializer implements ISerializer {
 		ontBaseIRI = AgentKnowledgeBase.ONTOAGENT_ONTOLOGY_IRI + "#";
 	}
 	
-	@Override
 	public synchronized String convertToString(Serializable object) {
 		// OWLSerializer is a singleton. Because it has java attributes such as knowledgeBase 
 		// all public convert methods have to be synchronized for parallel access
 		
-		UUID uuid = Helper.createUUID();	
+		UUID uuid = createUUID();	
 		ByteArrayOutputStream stream = convertToString(object, uuid);
 		String s = stream.toString();
 		try {
@@ -96,18 +95,9 @@ public class OWLSerializer implements ISerializer {
 		if (object instanceof Agent) {	
 			kbBaseIRI = AgentKnowledgeBase.ONTOAGENT_BASE_IRI + "/Agent" + uuid + ".owl#";
 			knowledgeBase.setNsPrefix("jpsagkb", kbBaseIRI);
-			
-			//TODO-AE if then for AgentDesription, Request, Response ...
 			createAgent((Agent) object, uuid);
-		} else if (object instanceof AgentServiceDescription) {
-			//TODO-AE Class in OntoAgent.owl is AgentServiceDescription --> rename java Code
-			//TODO-AE AgentMessage --> AgentServiceRequest, AgentServiceResponse
-			kbBaseIRI = AgentKnowledgeBase.ONTOAGENT_BASE_IRI + "/AgentMessage#";
-			knowledgeBase.setNsPrefix("jpsagkb", kbBaseIRI);
-			//TODO-AE check that there is a least one output parameter (and domain, name...)
-			createAgentDescription((AbstractAgentServiceDescription) object);
 		} else {
-			throw new RuntimeException("can't serialize the object of type = " + object.getClass().getName());
+			throw new JPSRuntimeException("can't serialize the object of type = " + object.getClass().getName());
 		}
 		
 		//knowledgeBase.write(System.out);
@@ -116,18 +106,6 @@ public class OWLSerializer implements ISerializer {
 		knowledgeBase.write(stream, "RDF/XML");
 		
 		return stream;
-	}
-
-	@Override
-	public synchronized <T extends Serializable> Optional<T> convertFrom(String objectAsString) {
-		
-		knowledgeBase = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
-		InputStream is = new ByteArrayInputStream( objectAsString.getBytes(StandardCharsets.UTF_8) );
-		knowledgeBase.read(is, null);
-		
-		//TODO-AE this method is not implemented yet
-		
-		return null;
 	}
 	
 	private void createAgent(Agent agent, UUID uuid) {
@@ -138,7 +116,7 @@ public class OWLSerializer implements ISerializer {
 		// TODO-AE why do we need .owl in the IRI
 		Individual agentInd = knowledgeBase.createIndividual(AgentKnowledgeBase.ONTOAGENT_BASE_IRI + "/Agent" + uuid + ".owl#Agent", agentClass);
 		createTripleWithDatatypeProperty(agentInd, "hasId", uuid.toString());
-		createTripleWithDatatypeProperty(agentInd, "hasName", agent.getName().getValue());
+		createTripleWithDatatypeProperty(agentInd, "hasName", agent.getName());
 		
 		for (AgentServiceDescription current : agent.getDescriptions()) {
 			Individual descrInd = createAgentDescription(current);
@@ -149,15 +127,13 @@ public class OWLSerializer implements ISerializer {
 	private Individual createAgentDescription(AbstractAgentServiceDescription description) {
 		
 		if (description.getProperties().isEmpty()) {
-			// TODO-AE create new JPS Runtime Exception in JPS_BASE
-			throw new RuntimeException("empty property list of agent description");
+			throw new JPSRuntimeException("empty property list of agent description");
 		}
 		
 		Individual result = createIndividual("AgentServiceDescription");
 		
 		// create individuals for all parameters
 		List<Parameter> params = description.getProperties();
-		//TODO-AE extend to domain iris here, e.g. for weather
 		List<Individual> allParameters = createIndividualList(params, "Property");
 		params = description.getInputParameters();
 		allParameters.addAll(createIndividualList(params, "InputParameter"));
@@ -184,9 +160,9 @@ public class OWLSerializer implements ISerializer {
 			int index = inc();
 			Individual ind = knowledgeBase.createIndividual(kbBaseIRI + classForIndividualsinList + index, cl);
 			createTripleWithDatatypeProperty(ind, "hasIndex", "" + index);
-			createTripleWithDatatypeProperty(ind, "hasKey", current.getKey().getValue());
-			if ((current.getValue() != null) && (!"null".equals(current.getValue().getValue()))) {
-				createTripleWithDatatypeProperty(ind, "hasValue", current.getValue().getValue());
+			createTripleWithDatatypeProperty(ind, "hasKey", current.getKey());
+			if ((current.getValue() != null) && (!"null".equals(current.getValue()))) {
+				createTripleWithDatatypeProperty(ind, "hasValue", current.getValue());
 			}
 			result.add(ind);
 		}
@@ -219,7 +195,7 @@ public class OWLSerializer implements ISerializer {
 	
 	public void writeAsOwlFile(Agent agent) throws IOException {
 		
-		UUID uuid = Helper.createUUID();
+		UUID uuid = createUUID();
 		ByteArrayOutputStream bytestream = convertToString(agent, uuid);
 		
 		String path = AgentLocator.getPathToJpsDataKnowledgeDir() + "/OntoAgent/Agent" + uuid + ".owl";
@@ -232,5 +208,10 @@ public class OWLSerializer implements ISerializer {
 		bytestream.writeTo(filestream);
 		bytestream.close();
 		filestream.close();
+	}
+	
+	
+	private static UUID createUUID() {
+		return UUID.randomUUID();
 	}
 }

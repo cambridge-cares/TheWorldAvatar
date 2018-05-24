@@ -4,47 +4,40 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.discovery.api.AbstractAgentServiceDescription;
-import uk.ac.cam.cares.jps.discovery.api.Agent;
-import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
-import uk.ac.cam.cares.jps.discovery.api.AgentResponse;
-import uk.ac.cam.cares.jps.discovery.api.Parameter;
-import uk.ac.cam.cares.jps.discovery.api.TypeString;
-import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
-import uk.ac.cam.cares.jps.discovery.util.ISerializer;
-import uk.ac.cam.cares.jps.discovery.util.JPSBaseServlet;
+import uk.ac.cam.cares.jps.base.discovery.AbstractAgentServiceDescription;
+import uk.ac.cam.cares.jps.base.discovery.Agent;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
+import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
+import uk.ac.cam.cares.jps.base.discovery.Parameter;
 
 @WebServlet(urlPatterns = {"/DiscoveryTest/AgentTwo"})
-public class WeatherAgentTwo extends JPSBaseServlet {
+public class WeatherAgentTwo extends HttpServlet {
 	
 	private static final long serialVersionUID = -4199209974912271432L;
 	
 	Logger logger = LoggerFactory.getLogger(WeatherAgentTwo.class);
-	private ISerializer serializer = DiscoveryFactory.getSerializer();
 	
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
 		
 		logger.info("WeatherAgentTwo start");
-
-		String serializedAgentRequest = req.getParameter("agentrequest");
-		AgentRequest agentRequest = serializer.<AgentRequest>convertFrom(serializedAgentRequest).get();
+		
+		AgentRequest agentRequest = AgentCaller.getAgentRequest(req);
 		AgentResponse agentResponse = new AgentResponse();
 		AbstractAgentServiceDescription.copyParameters(agentRequest, agentResponse);
 		
 		Parameter param = agentResponse.getOutputParameters().get(0);
-		param.setValue(new TypeString("30.3"));
-		String serializedAgentResponse = serializer.convertToString(agentResponse);
+		param.setValue("30.3");
 		
-		print(resp, serializedAgentResponse);
-		
-		serializer.<AgentResponse>convertFrom(serializedAgentResponse).get();
+		AgentCaller.printToResponse(agentResponse, resp);
 		
 		logger.info("WeatherAgentTwo exit");
 	}
