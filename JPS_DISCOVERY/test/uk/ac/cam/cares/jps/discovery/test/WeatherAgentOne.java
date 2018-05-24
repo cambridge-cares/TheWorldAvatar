@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -12,10 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.Agent;
-import uk.ac.cam.cares.jps.discovery.util.JPSBaseServlet;
 
 @WebServlet(urlPatterns = {"/DiscoveryTest/AgentOne"})
-public class WeatherAgentOne extends JPSBaseServlet {
+public class WeatherAgentOne extends HttpServlet {
 	
 	private static final long serialVersionUID = -4199209974912271432L;
 	Logger logger = LoggerFactory.getLogger(WeatherAgentOne.class);

@@ -6,7 +6,6 @@ import java.util.List;
 import uk.ac.cam.cares.jps.base.discovery.Agent;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.AgentServiceDescription;
-import uk.ac.cam.cares.jps.base.discovery.IMatcher;
 import uk.ac.cam.cares.jps.base.discovery.Parameter;
 import uk.ac.cam.cares.jps.discovery.registry.IRegistry;
 

@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,11 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.Agent;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
-import uk.ac.cam.cares.jps.discovery.util.JPSBaseServlet;
 
 @WebServlet(urlPatterns = {"/register", "/deregister", "/agents"})
-public class RegistryAgent extends JPSBaseServlet {
+public class RegistryAgent extends HttpServlet {
 
 	private static final long serialVersionUID = -1084832972879292460L;
 
@@ -32,18 +33,13 @@ public class RegistryAgent extends JPSBaseServlet {
 
 		if ("/register".equals(path)) {
 			String serializedDescr = req.getParameter("agent");
-			// TODO-AE here we still use the Java binary serializer instead of OWL
-			// reason: Tests use register method and do not run as there is no deserialization
-			// from OWL to Java class AgentDescription yet!
-			//String serialized = serializer.convertToString(description);	
-			//AgentDescription description = serializer.<AgentDescription>convertFrom(serializedDescr).get();
 			Agent description = DiscoveryFactory.getSerializer().<Agent>convertFrom(serializedDescr, Agent.class).get();
 			DiscoveryFactory.getRegistry().register(description);
 		} else if ("/deregister".equals(path)) {
 			String agentAddress = req.getParameter("agentname");
 			DiscoveryFactory.getRegistry().deregister(agentAddress);
 		} else if ("/agents".equals(path)) {
-			print(resp, getAllAgentNames());
+			AgentCaller.printToResponse(getAllAgentNames(), resp);
 		}
 	}	
 	

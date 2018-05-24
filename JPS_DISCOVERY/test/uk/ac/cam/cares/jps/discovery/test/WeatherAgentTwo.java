@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,10 +17,9 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
 import uk.ac.cam.cares.jps.base.discovery.Parameter;
-import uk.ac.cam.cares.jps.discovery.util.JPSBaseServlet;
 
 @WebServlet(urlPatterns = {"/DiscoveryTest/AgentTwo"})
-public class WeatherAgentTwo extends JPSBaseServlet {
+public class WeatherAgentTwo extends HttpServlet {
 	
 	private static final long serialVersionUID = -4199209974912271432L;
 	
@@ -37,7 +37,7 @@ public class WeatherAgentTwo extends JPSBaseServlet {
 		Parameter param = agentResponse.getOutputParameters().get(0);
 		param.setValue("30.3");
 		
-		AgentCaller.printAgentResponse(agentResponse, resp);
+		AgentCaller.printToResponse(agentResponse, resp);
 		
 		logger.info("WeatherAgentTwo exit");
 	}

@@ -48,22 +48,6 @@ public class JenaHelper {
 		return result;
 	}
 	
-	// TODO-AE delete
-//	public static OntModel loadModel(String filepath) {
-//		OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
-//
-//		try {
-//		    File file = new File(filepath);
-//		    FileInputStream reader = new FileInputStream(file);
-//		    model.read(reader,null);     
-//		} catch (Exception e) {
-//			//TODO-AE
-//		    e.printStackTrace();
-//		}
-//		
-//		return model;
-//	}
-	
 	public static ResultSet sparql (String filepath, String query) {
 		
 		OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);

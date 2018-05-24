@@ -15,8 +15,6 @@ import org.apache.http.util.EntityUtils;
 import com.google.gson.Gson;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
-import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class AgentCaller {
@@ -91,9 +89,9 @@ public class AgentCaller {
 		return new Gson().fromJson(serializedAgentRequest, AgentRequest.class);
 	}
 	
-	public static void printAgentResponse(AgentResponse agentResponse, HttpServletResponse resp) {
+	public static void printToResponse(Object object, HttpServletResponse resp) {
 		
-		String message = new Gson().toJson(agentResponse);
+		String message = new Gson().toJson(object);
 		resp.setContentType("text/plain");
 		resp.setCharacterEncoding("UTF-8");
 		try {
