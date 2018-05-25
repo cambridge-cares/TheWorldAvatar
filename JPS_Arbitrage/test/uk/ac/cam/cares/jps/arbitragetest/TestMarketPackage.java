@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.arbitragetest;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
@@ -10,9 +9,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-
 import junit.framework.TestCase;
-
 
 public class TestMarketPackage extends TestCase{
 
@@ -34,7 +31,10 @@ public class TestMarketPackage extends TestCase{
 		return EntityUtils.toString(httpResponse.getEntity());
 	}
 
-	public void testdatadownload() throws URISyntaxException, ClientProtocolException, IOException {
+	public void testmarketdatadownload() throws URISyntaxException, ClientProtocolException, IOException {
+		/** this function calls DataDownload to call DataDownload.Downloading_market_data and check that the returned string contains
+		 * a predefined substring */
+		
 		String path = "/JPS_Arbitrage/download";
 		String actual = executeGet(path,"whatver", "whatever2");
 		System.out.println(actual);
@@ -42,7 +42,21 @@ public class TestMarketPackage extends TestCase{
 
 	}
 	
+	public void testcurrencydatadownload() throws URISyntaxException, ClientProtocolException, IOException {
+		/** this function calls DataDownload to call DataDownload.Downloading_currencies and check that the returned string contains
+		 * a predefined substring */
+		
+		String path = "/JPS_Arbitrage/download2";
+		String actual = executeGet(path,"whatver", "whatever2");
+		System.out.println(actual);
+		assertTrue(actual.contains("USD"));
+
+	}
+	
 	public void testreadingdata() throws URISyntaxException, ClientProtocolException, IOException {
+		/** this function calls DataDownload to call DataDownload.Call_data and check that the returned string contains
+		 * a predefined substring */
+		
 		String path = "/JPS_Arbitrage/read";
 		String key = "individuals";
 		String value = 	"V_Price_Storage_NaturalGas_001,V_Price_CoolingWater_001,V_Price_Storage_Biodiesel_001,V_Price_Storage_CrudePalmOil_001,V_Costs_Storage_CrudePalmOil_001,V_Price_Storage_Methanol_001,V_Price_Transport_Malaysia-SG_CrudePalmOil_001,V_Price_Electricity_001,V_Price_Transport_SG-SC_Methanol_001,V_USD_to_SGD,V_Price_ProcessWater_001,V_Price_Transport_USGC-NEA_NaturalGas_001,V_Price_HighPressureSteam_001,V_USD_to_CNY,V_Price_MediumPressureSteam_001,V_Price_LowPressureSteam_001,V_Price_Transport_SEA-SC_Biodiesel_001,V_Price_FuelGas_001";

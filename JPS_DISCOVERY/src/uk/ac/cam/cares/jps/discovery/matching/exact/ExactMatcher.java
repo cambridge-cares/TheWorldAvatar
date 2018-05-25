@@ -3,12 +3,10 @@ package uk.ac.cam.cares.jps.discovery.matching.exact;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.ac.cam.cares.jps.discovery.api.Agent;
-import uk.ac.cam.cares.jps.discovery.api.AgentServiceDescription;
-import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
-import uk.ac.cam.cares.jps.discovery.api.IMatcher;
-import uk.ac.cam.cares.jps.discovery.api.IType;
-import uk.ac.cam.cares.jps.discovery.api.Parameter;
+import uk.ac.cam.cares.jps.base.discovery.Agent;
+import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
+import uk.ac.cam.cares.jps.base.discovery.AgentServiceDescription;
+import uk.ac.cam.cares.jps.base.discovery.Parameter;
 import uk.ac.cam.cares.jps.discovery.registry.IRegistry;
 
 public class ExactMatcher implements IMatcher{
@@ -45,17 +43,13 @@ public class ExactMatcher implements IMatcher{
 		return result;
 	}
 	
-	private boolean matchTypes(IType p, IType q) {
+	private boolean matchTypes(String p, String q) {
 		
 		if ((p == null) || (q == null)) {
 			return false;
 		}
 		
-		if (!p.getClass().equals(q.getClass())) {
-			return false;
-		}
-		
-		if (!p.getValue().equals(q.getValue())) {
+		if (!p.equals(q)) {
 			return false;
 		}
 		
@@ -78,8 +72,8 @@ public class ExactMatcher implements IMatcher{
 		}
 		
 		for (int i=0; i<p.size(); i++) {
-			IType pKey = p.get(i).getKey();
-			IType qKey = q.get(i).getKey();
+			String pKey = p.get(i).getKey();
+			String qKey = q.get(i).getKey();
 			
 			if (!matchTypes(pKey, qKey)) {
 				return false;

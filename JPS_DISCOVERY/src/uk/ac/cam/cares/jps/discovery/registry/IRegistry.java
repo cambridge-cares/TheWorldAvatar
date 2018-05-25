@@ -2,7 +2,7 @@ package uk.ac.cam.cares.jps.discovery.registry;
 
 import java.util.Collection;
 
-import uk.ac.cam.cares.jps.discovery.api.Agent;
+import uk.ac.cam.cares.jps.base.discovery.Agent;
 
 public interface IRegistry {
 

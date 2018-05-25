@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class DataDownloadAgent
  */
-@WebServlet(urlPatterns = {"/download", "/read"})
+@WebServlet(urlPatterns = {"/download", "/download2", "/read"})
 public class DataDownloadAgent extends HttpServlet {
 	private static final long serialVersionUID = 2L; //??
     
@@ -27,6 +27,10 @@ public class DataDownloadAgent extends HttpServlet {
 	 */
 protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+	/**this function is a servlet for calling functions in uk.ac.cam.cares.jps.market package and returning their results;
+	 * it discriminates between "/download", "/download2" and "/read" URL patterns and calls DataDownload.Downloading_market_data,
+	 * DataDownload.Downloading_currencies and DataDownload.Call_data, respectively
+	 */
 	
 	String path = request.getServletPath();
 
@@ -52,6 +56,19 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
 		
 		try {
 			String result = DataDownload.Call_data(jsonString.split(","));
+			response.setContentType("application/json");
+			response.getWriter().write(result.toString());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	} else if ("/download2".equals(path)) {
+		
+		// -- Get String formatted in Array of Strings -- //
+		request.setCharacterEncoding("UTF-8");
+		
+		try {
+			String result = DataDownload.Downloading_currencies();
 			response.setContentType("application/json");
 			response.getWriter().write(result.toString());
 		} catch (Exception e) {

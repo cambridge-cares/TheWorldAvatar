@@ -7,7 +7,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.discovery.api.Agent;
+import uk.ac.cam.cares.jps.base.discovery.Agent;
 
 public class SimpleInMemoryRegistry implements IRegistry {
 	
@@ -35,14 +35,14 @@ public class SimpleInMemoryRegistry implements IRegistry {
 	@Override
 	public void register(Agent agent) {
 		
-		String address = agent.getName().getValue();
+		String address = agent.getName();
 		boolean contained = agents.containsKey(address);
 		agents.put(address, agent);
 		
 		if (contained) {
-			logger.info("Agent was updated, agent name = " + agent.getName().getValue());
+			logger.info("Agent was updated, agent name = " + agent.getName());
 		} else {
-			logger.info("Agent was registered, agent name = " + agent.getName().getValue());
+			logger.info("Agent was registered, agent name = " + agent.getName());
 		}
 	}
 	

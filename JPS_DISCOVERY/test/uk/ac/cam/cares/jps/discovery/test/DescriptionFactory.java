@@ -4,24 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import uk.ac.cam.cares.jps.discovery.api.AbstractAgentServiceDescription;
-import uk.ac.cam.cares.jps.discovery.api.Agent;
-import uk.ac.cam.cares.jps.discovery.api.AgentServiceDescription;
-import uk.ac.cam.cares.jps.discovery.api.AgentRequest;
-import uk.ac.cam.cares.jps.discovery.api.IType;
-import uk.ac.cam.cares.jps.discovery.api.Parameter;
-import uk.ac.cam.cares.jps.discovery.api.TypeIRI;
-import uk.ac.cam.cares.jps.discovery.api.TypeString;
+import uk.ac.cam.cares.jps.base.discovery.AbstractAgentServiceDescription;
+import uk.ac.cam.cares.jps.base.discovery.Agent;
+import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
+import uk.ac.cam.cares.jps.base.discovery.AgentServiceDescription;
+import uk.ac.cam.cares.jps.base.discovery.Parameter;
 
 public class DescriptionFactory {
 
-	private static IType createType(String s) {
-		if (s.startsWith("IRI") || s.startsWith("http") ) {
-			return new TypeIRI(s);
-		} else if ("null".equals(s)) {
+	private static String createType(String s) {
+		if ("null".equals(s)) {
 			return null;
 		}
-		return new TypeString(s);
+		return s;
 	}
 	
 	private static List<Parameter> createParameters(String parameters) {
@@ -50,7 +45,7 @@ public class DescriptionFactory {
 		StringTokenizer tokenizer = new StringTokenizer(general, ",");
 		while (tokenizer.hasMoreTokens()) {	
 			String key = tokenizer.nextToken();
-			IType value = createType(tokenizer.nextToken());
+			String value = createType(tokenizer.nextToken());
 			
 			boolean attributeFound = true;
 			if ("domain".equals(key)) {
@@ -69,7 +64,7 @@ public class DescriptionFactory {
 	
 	public static Agent createAgent(String name, String general, String input, String output) {
 		Agent result = new Agent();
-		result.setName(new TypeIRI(name));
+		result.setName(name);
 		AgentServiceDescription descr = createAgentServiceDescription(general, input, output);
 		result.addDescription(descr);	
 		return result;
