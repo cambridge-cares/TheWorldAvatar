@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="http://www.xml-cml.org/schema" xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/">
+   <module dictRef="cc:jobList">
+      <module dictRef="cc:job">
+         <module dictRef="cc:initialization">
+            <molecule>
+               <atomArray>
+                  <atom count="2.0" elementType="Cl"/>
+                  <atom count="6.0" elementType="O"/>
+               </atomArray>
+               <formula concise="Cl 2 O 6 "/>
+            </molecule>
+         </module>
+         <module dictRef="cc:finalization">
+            <propertyList>
+               <property dictRef="cc:vibrations">
+                  <array dataType="xsd:double" dictRef="cc:frequencies" units="nonSi:cm-1">34.3014 41.1936 95.3693 203.578 215.9875 333.8134 374.2213 446.1444 497.7222 512.9317 527.9276 572.0791 644.9055 921.2212 1006.3497 1115.8451 1139.9607 1169.4585</array>
+               </property>
+               <property dictRef="cc:rotational_symmetry">
+                  <scalar units="si:none" dataType="xsd:integer">1</scalar>
+               </property>
+               <property dictRef="cc:rotational_constants">
+                  <array size="3" units="nonSi:GHZ">3.40343 0.93535 0.86793</array>
+               </property>
+               <property dictRef="cc:geometry_type">
+                  <scalar dataType="xsd:string">nonlinear</scalar>
+               </property>
+            </propertyList>
+            <molecule id="mol-final-2" convention="convention:molecular" spinMultiplicity="1">
+               <atomArray>
+                  <atom z3="-0.40307" id="a1" x3="0.01834" y3="-0.78386" elementType="O"/>
+                  <atom z3="0.00529" id="a2" x3="-1.40483" y3="0.00178" elementType="Cl"/>
+                  <atom z3="-0.15395" id="a3" x3="-2.39204" y3="-1.05109" elementType="O"/>
+                  <atom z3="-0.93053" id="a4" x3="-1.54458" y3="1.1063" elementType="O"/>
+                  <atom z3="1.38847" id="a5" x3="-1.18905" y3="0.43292" elementType="O"/>
+                  <atom z3="0.30056" id="a6" x3="1.7266" y3="-0.01308" elementType="Cl"/>
+                  <atom z3="-0.25547" id="a7" x3="1.81668" y3="1.33709" elementType="O"/>
+                  <atom z3="-0.29538" id="a8" x3="2.60691" y3="-1.01735" elementType="O"/>
+               </atomArray>
+            </molecule>
+         </module>
+      </module>
+   </module>
+</module>
