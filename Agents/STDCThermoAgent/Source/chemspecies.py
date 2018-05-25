@@ -3,7 +3,6 @@ import params as p
 import numpy as np
 import thermochemistry as sthd
 import utilities as utl
-import scipy.optimize as opt
 import lmfit as lmf
 from lxml import etree
 import csv
