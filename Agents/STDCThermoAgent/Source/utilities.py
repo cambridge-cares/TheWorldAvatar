@@ -1,0 +1,572 @@
+﻿import numpy as np
+import params as p
+import re
+
+LENGTH_UNITS = ['m', 'cm', 'mm', 'microm', 'nm', 'A', 'a0']
+TIME_UNITS = ['s', 'min', 'h', 'micros', 'ns']
+MASS_UNITS = ['kg', 't', 'dg', 'g', 'mg', 'microg', 'amu']
+TEMPERATURE_UNITS = ['K', 'C', 'F']
+MOLE_UNITS = ['mol', '#', 'kmol']
+ENERGY_UNITS = ['J', 'kJ', 'MJ', 'GJ', 'cal', 'kcal', 'Mcal', 'Gcal', 'Ha', 'eV']
+FREQUENCY_UNITS = ['1/s','Hz','kHz','GHz','MHz']
+
+# intertia tensor
+# -----------------------------
+def getInertiaTensor(aElMolWt,aXYZ):
+    # ===================================
+    # helper functions to populate 
+    # inertia tensor
+    #
+    # diagonal elements    
+    def getDiagMoments(a,b,m):
+        MolWt = sum(m)
+        sum1 = 0.0
+        sum2 = 0.0
+        sum3 = 0.0
+        for i,rows in enumerate(m):
+            sum1 = sum1 + m[i]*(a[i]*a[i]+b[i]*b[i])
+            sum2 = sum2 + m[i]*a[i]
+            sum3 = sum3 + m[i]*b[i]
+        sum2 = sum2*sum2 * 1.0/MolWt
+        sum3 = sum3*sum3 * 1.0/MolWt
+        Iaa = sum1 - sum2 - sum3
+        return Iaa
+    # off-diagonal elements
+    # -----------------------------
+    def getOffDiagMoments(a,b,m):
+        MolWt = sum(m)
+        sum1 = 0.0
+        sum2 = 0.0
+        sum3 = 0.0
+        for i,rows in enumerate(m):
+            sum1 = sum1 + m[i]*a[i]*b[i]
+            sum2 = sum2 + m[i]*a[i]
+            sum3 = sum3 + m[i]*b[i]
+        Iab = -sum1 + 1.0/MolWt*sum2*sum3
+        return Iab
+    # ===================================
+
+    # init inertia tensor
+    IT = np.empty([3,3])
+    # get mass vector and X,Y,Z coordiantes
+    m = aElMolWt
+    X = aXYZ[:,0]
+    Y = aXYZ[:,1]
+    Z = aXYZ[:,2]
+    # get diagonal and off-diagonal elements
+    Ixx = getDiagMoments(Y,Z,m)
+    Iyy = getDiagMoments(X,Z,m)
+    Izz = getDiagMoments(X,Y,m)
+    Ixy = getOffDiagMoments(X,Y,m)
+    Iyx = Ixy
+    Ixz = getOffDiagMoments(X,Z,m)
+    Izx = Ixz
+    Iyz = getOffDiagMoments(Y,Z,m)
+    Izy = Iyz
+    # put everything together
+    IT = [[Ixx,Ixy,Ixz],[Iyx,Iyy,Iyz],[Izx,Izy,Izz]]
+    return IT
+
+# Get moments of Inertia 
+# of a molecule
+#---------------------------------
+def getMomentsOfInertia(aElMolWt,aXYZ,aGeomType):
+    InertiaMom = []    
+    #construct the mass and XYZ np arrays
+    if len(aElMolWt)>0 and len(aXYZ)>0:
+        IT = getInertiaTensor(aElMolWt,aXYZ)
+        eigen,V = np.linalg.eig(IT)
+        InertiaMom = [eigen[0],eigen[1],eigen[2]] # in amu*A^2
+    return sorted(InertiaMom,reverse=True)
+
+
+def convertLengthUnitsToSI(aunit_in,exponent=1.0):
+    # SI: m
+    SI_unit = 'm'
+    mult_factor = 1.0
+    if aunit_in == 'm':
+        mult_factor = 1.0
+    elif aunit_in == 'km':
+        mult_factor = 1E3
+    elif aunit_in == 'cm':
+        mult_factor = 1E-2
+    elif aunit_in == 'mm':
+        mult_factor = 1E-3
+    elif aunit_in == 'microm':
+        mult_factor = 1E-6
+    elif aunit_in == 'nm':
+        mult_factor = 1E-9
+    elif aunit_in == 'A':
+        mult_factor = p.Angs
+    elif aunit_in == 'a0':
+        mult_factor = p.a0
+    elif checkUnitType(aunit_in,'LENGTH^n'):
+        unit_tokens ,unit_exps = extractUnits(aunit_in)
+        mult_factor = convertLengthUnitsToSI(unit_tokens[0],float(unit_exps[0]))
+    return mult_factor**exponent
+
+def convertTimeUnitsToSI(aunit_in,exponent=1.0):
+    # SI: s
+    SI_unit = 's'
+    mult_factor = 1.0
+    if aunit_in == 's':
+        mult_factor = 1.0
+    elif aunit_in == 'h':
+        mult_factor = 3600.0
+    elif aunit_in == 'min':
+        mult_factor = 60
+    elif aunit_in == 'ms':
+        mult_factor = 1E-3
+    elif aunit_in == 'micros':
+        mult_factor = 1E-6
+    elif aunit_in == 'ns':
+        mult_factor = 1E-9
+    elif checkUnitType(aunit_in,'TIME^n'):
+        unit_tokens ,unit_exps = extractUnits(aunit_in)
+        mult_factor = convertTimeUnitsToSI(unit_tokens[0],float(unit_exps[0]))
+    return mult_factor**exponent
+
+
+def convertMassUnitsToSI(aunit_in,exponent=1.0):
+    # SI: kg
+    SI_unit = 'kg'
+    mult_factor = 1.0
+    if aunit_in == 'kg':
+        mult_factor = 1.0
+    elif aunit_in == 't':
+        mult_factor = 1E3
+    elif aunit_in == 'dg':
+        mult_factor = 1E3
+    elif aunit_in == 'g':
+        mult_factor = 1E-3
+    elif aunit_in == 'mg':
+        mult_factor = 1E-6
+    elif aunit_in == 'microg':
+        mult_factor = 1E-9
+    elif aunit_in == 'amu':
+        mult_factor = p.amu
+    elif checkUnitType(aunit_in,'MASS^n'):
+        unit_tokens ,unit_exps = extractUnits(aunit_in)
+        mult_factor = convertMassUnitsToSI(unit_tokens[0],float(unit_exps[0]))
+    return mult_factor**exponent
+
+def convertTemperatureUnitsToSI(aunit_in,exponent=1.0):
+    # SI: K
+    SI_unit = 'K'
+    mult_factor = 1.0
+    if aunit_in == 'K':
+        mult_factor = 1.0
+    elif aunit_in == 'C':
+        add_factor = 273.15
+    elif aunit_in == 'F':
+        mult_factor = 5.0/9.0
+        add_factor = 255.3722222
+    elif checkUnitType(aunit_in,'TEMPERATURE^n'):
+        unit_tokens ,unit_exps = extractUnits(aunit_in)
+        mult_factor = convertTemperatureUnitsToSI(unit_tokens[0],float(unit_exps[0]))
+    return mult_factor**exponent
+
+def convertMoleUnitsToSI(aunit_in,exponent=1.0):
+    # SI: 1/s or Hz          
+    SI_unit = 'mol' # or NA
+    mult_factor = 1.0
+    if aunit_in == 'mol':
+        mult_factor = 1.0
+    elif aunit_in == '#':
+        mult_factor = 1.0/p.NA
+    elif aunit_in == 'kmol':
+        mult_factor = 1E3
+    elif checkUnitType(aunit_in,'MOLE^n'):
+        unit_tokens ,unit_exps = extractUnits(aunit_in)
+        mult_factor = convertMoleUnitsToSI(unit_tokens[0],float(unit_exps[0]))
+    return mult_factor**exponent
+
+def convertFrequencyUnitsToSI(aunit_in,exponent=1.0):
+    # SI: 1/s or Hz          
+    SI_unit = '1/s' # or Hz
+    mult_factor = 1.0
+    if aunit_in == '1/s' or aunit_in == 'Hz':
+        mult_factor = 1.0
+    elif aunit_in == 'kHz':
+        mult_factor = 1E3
+    elif aunit_in == 'MHz':
+        mult_factor = 1E6
+    elif aunit_in == 'GHz':
+        mult_factor = 1E9
+    elif checkUnitType(aunit_in,'TEMPERATURE'):
+        mult_factor = convertTemperatureUnitsToSI(aunit_in)
+        mult_factor = mult_factor*p.kB/p.h
+    elif checkUnitType(aunit_in,'TIME^-1'):
+        mult_factor = convertTimeUnitsToSI(aunit_in)
+        #unit_tokens ,unit_exps = extractUnits(aunit_in)
+        #mult_factor = convertTimeUnitsToSI(unit_tokens[0],float(unit_exps[0])) #,'reverse'?
+    elif checkUnitType(aunit_in,'LENGTH^-1'):
+        mult_factor = convertLengthUnitsToSI(aunit_in)
+        #unit_tokens ,unit_exps = extractUnits(aunit_in)
+        #mult_factor = convertLengthUnitsToSI(unit_tokens[0],float(unit_exps[0])) #,'reverse'?
+        mult_factor = p.c*mult_factor
+    return mult_factor**exponent
+
+def convertEnergyMoleculeUnitsToSI(aunit_in,exponent=1.0):
+    # SI: J        
+    SI_unit = 'J'
+    mult_factor = 1.0
+    if aunit_in == 'J':
+        mult_factor = 1.0
+    elif aunit_in == 'kJ':
+        mult_factor = 1E3
+    elif aunit_in == 'MJ':
+        mult_factor = 1E6
+    elif aunit_in == 'GJ':
+        mult_factor = 1E9
+    elif aunit_in == 'cal':
+        mult_factor = 4.184
+    elif aunit_in == 'kcal':
+        mult_factor = 4.184E3
+    elif aunit_in == 'Mcal':
+        mult_factor = 4.184E6
+    elif aunit_in == 'Gcal':
+        mult_factor = 4.184E9
+    elif aunit_in == 'Ha':
+        mult_factor = p.Ha
+    elif aunit_in == 'eV':
+        mult_factor = p.eV
+    elif checkUnitType(aunit_in,'TIME^-1'):
+        unit_tokens ,unit_exps = extractUnits(aunit_in)
+        mult_factor = convertTimeUnitsToSI(unit_tokens[0],float(unit_exps[0]))
+        #unit_tokens ,unit_exps = extractUnits(aunit_in)
+        #mult_factor = convertTimeUnitsToSI(unit_tokens[0],float(unit_exps[0])) #,'reverse'?
+        mult_factor = mult_factor*p.h
+    elif checkUnitType(aunit_in,'FREQUENCY'):
+        mult_factor = convertFrequencyUnitsToSI(aunit_in)
+        mult_factor = mult_factor*p.h
+    elif checkUnitType(aunit_in,'LENGTH^-1'):
+        unit_tokens ,unit_exps = extractUnits(aunit_in)
+        mult_factor = convertLengthUnitsToSI(unit_tokens[0],float(unit_exps[0]))
+        #unit_tokens ,unit_exps = extractUnits(aunit_in)
+        #mult_factor = convertLengthUnitsToSI(unit_tokens[0],float(unit_exps[0])) #,'reverse'?
+        mult_factor = mult_factor*p.c*p.h
+    elif checkUnitType(aunit_in,'TEMPERATURE'):
+        mult_factor = convertTemperatureUnitsToSI(aunit_in)
+        mult_factor = p.kB*mult_factor
+    return mult_factor**exponent
+
+def convertEnergyMoleUnitsToSI(aunit_in,exponent=1.0):
+    # SI: J/mol
+    SI_unit = 'J/mol'
+    mult_factor = 1.0
+    if aunit_in == 'J/mol':
+        mult_factor = 1.0
+    elif checkUnitType(aunit_in,'ENERGY_PER_MOLECULE'):
+        mult_factor1, _ = convertUnitsToSI('ENERGY_PER_MOLECULE',aunit_in)
+        mult_factor2, _ = convertUnitsToSI('MOLE','#','reverse')
+        mult_factor = mult_factor1*mult_factor2
+    elif checkUnitType(aunit_in,'ENERGY_PER_MOLECULE,MOLE^-1'):
+        unit_tokens ,unit_exps = extractUnits(aunit_in)
+        for i,ut in enumerate(unit_tokens):
+            mult_factor1, _ = convertUnitsToSI(getUnitType(ut),ut,float(unit_exps[i]))
+            mult_factor = mult_factor*mult_factor1
+    elif checkUnitType(aunit_in,'TIME^-1'):
+        mult_factor = convertTimeUnitsToSI(aunit_in)
+        #unit_tokens ,unit_exps = extractUnits(aunit_in)
+        #mult_factor = convertTimeUnitsToSI(unit_tokens[0],float(unit_exps[0]))
+        mult_factor = mult_factor*p.h*p.NA
+    elif checkUnitType(aunit_in,'LENGTH^-1'):
+        mult_factor = convertLengthUnitsToSI(aunit_in)
+        #unit_tokens ,unit_exps = extractUnits(aunit_in)
+        #mult_factor = convertLengthUnitsToSI(unit_tokens[0],float(unit_exps[0]))
+        mult_factor = mult_factor*p.h*p.c*p.NA
+    elif checkUnitType(aunit_in,'TEMPERATURE'):
+        mult_factor = convertTemperatureUnitsToSI(aunit_in)
+        mult_factor = p.kB*mult_factor*p.NA
+    return mult_factor**exponent
+
+
+def convertInertiaUnitsToSI(aunit_in,exponent=1.0):
+    # SI: kg*m^2
+    if aunit_in == 'kg*m^2':
+        mult_factor = 1.0
+    elif checkUnitType(aunit_in,'MASS,LENGTH^2'):
+        unit_tokens ,unit_exps = extractUnits(aunit_in)
+        for i,ut in enumerate(unit_tokens):
+            mult_factor1, _ = convertUnitsToSI(getUnitType(ut),ut,float(unit_exps[i]))
+            mult_factor = mult_factor*mult_factor1
+    return mult_factor**exponent
+
+def convertUnitsToSI(atype,aunit_in,mode=''):
+    mult_factor = 1.0
+    add_factor = 0.0
+    exponent = 1.0
+    if mode=='reverse':
+        exponent = -1.0
+
+    if atype.upper()=='LENGTH':
+        # SI: m
+        mult_factor = convertLengthUnitsToSI(aunit_in,exponent)
+
+    if atype.upper()=='TIME':
+        # SI: s
+        mult_factor = convertTimeUnitsToSI(aunit_in,exponent)
+
+    if atype.upper()=='MASS':
+        # SI: kg
+        mult_factor = convertMassUnitsToSI(aunit_in,exponent)
+
+    if atype.upper()=='FREQUENCIES':
+        mult_factor = convertFrequencyUnitsToSI(aunit_in,exponent)
+
+    if atype.upper()=='MOLE':
+        # SI: mol or NA
+        mult_factor = convertMoleUnitsToSI(aunit_in,exponent)
+
+    if atype.upper()=='ENERGY_PER_MOLECULE':
+        # SI: J
+        mult_factor = convertEnergyMoleculeUnitsToSI(aunit_in,exponent)
+
+    if atype.upper()=='ENERGY_PER_MOLE':
+        # SI: J/mol
+        mult_factor = convertEnergyMoleUnitsToSI(aunit_in,exponent)
+
+    if atype.upper()=='INERTIA':
+        # SI: kg*m^2
+        mult_factor = convertInertiaUnitsToSI(aunit_in,exponent)
+
+    if atype.upper()=='TEMPERATURE':
+        # SI: K
+        mult_factor = convertTemperatureUnitsToSI(aunit_in,exponent)
+
+    return mult_factor**exponent,add_factor
+
+def getUnitType(aunit_in):
+    rtype = 'None'
+    if compareList(aunit_in,LENGTH_UNITS):
+        rtype = 'LENGTH'
+    if compareList(aunit_in,TIME_UNITS):
+        rtype = 'TIME'        
+    if compareList(aunit_in,MASS_UNITS):
+        rtype = 'MASS'        
+    if compareList(aunit_in,TEMPERATURE_UNITS):
+        rtype = 'TEMPERATURE'
+    if compareList(aunit_in,MOLE_UNITS):
+        rtype = 'MOLE'
+    if compareList(aunit_in,ENERGY_UNITS):
+        rtype = 'ENERGY_PER_MOLECULE'
+    if compareList(aunit_in,FREQUENCY_UNITS):
+        rtype = 'FREQUENCY'
+    return rtype
+
+
+def checkUnitType(aunit_in,aunit_check):
+    flag = True
+    # extract units and exponents    
+    unit_intokens, unit_inexp = extractUnits(aunit_in)
+    # tokenize and sort aunit_check
+    if ',' in aunit_check:
+        unit_checktokens=aunit_check.split(',')
+        unit_check_ind = sorted(range(len(unit_checktokens)), key=lambda k: unit_checktokens[k])
+        unit_checktokens =  [unit_checktokens[x] for x in unit_check_ind]
+    else:
+        unit_checktokens = []
+        unit_checktokens.append(aunit_check)                
+    
+    # construct final aunit_in strings
+    unit_in1 = []
+    unit_in2 = []
+    unit_in3 = []
+    for i,ut in enumerate(unit_intokens):
+        unit_in1.append(getUnitType(ut)+'^'+unit_inexp[i])
+        unit_in3.append(getUnitType(ut)+'^n')
+        if unit_inexp[i] != '1':
+            unit_in2.append(getUnitType(ut)+'^'+unit_inexp[i])
+        else:
+            unit_in2.append(getUnitType(ut))
+    # sort aunit_in strings
+    unit_in1_ind = sorted(range(len(unit_in1)), key=lambda k: unit_in1[k])
+    unit_in2_ind = sorted(range(len(unit_in2)), key=lambda k: unit_in2[k])
+    unit_in3_ind = sorted(range(len(unit_in3)), key=lambda k: unit_in3[k])
+    unit_in1 = [unit_in1[x] for x in unit_in1_ind]
+    unit_in2 =  [unit_in2[x] for x in unit_in2_ind]
+    unit_in3 =  [unit_in3[x] for x in unit_in3_ind]
+    
+    # compare aunit_in strings with aunit_check
+    if len(unit_checktokens)!=len(unit_in1):
+        flag = False
+    else:
+        for i,check_units in enumerate(unit_checktokens):
+            if check_units != unit_in1[i] and check_units != unit_in2[i] \
+                and check_units != unit_in3[i]:
+                flag = False
+    return flag
+
+def compareList(avalue,alist):
+    result = False
+    for items in alist:
+        if items == avalue:
+            result = True
+            break
+    return result
+
+
+def extractUnits(aunit_in):
+    unit_list = []
+    exp_value = []
+    #find all ^number patterns where number can be 1, 1.0, 1/2 or 1.0/2.0 etc..
+    # --------------------------------
+    match = re.findall('(\^[+-]?\d+[\/\d. ]*|\d)', aunit_in)
+    # assign a temp variable
+    temp_unit = aunit_in
+    # if there was at least on match
+    if match:
+        # loop through matches removing '/' characters that may appear at the end of string 
+        for m in match:
+            # to make sure we catched the correct string
+            if m[0]=='^':
+                if m[-1] == '/':
+                    m = m[:-1]
+                #also do not keep '^' character
+                m = m[1:]            
+                exp_value.append(m)
+                # remove found numbers from aunit_in and store it in temp unit
+                temp_unit = re.sub(m, '', aunit_in)
+    # --------------------------------
+    
+    # split temp_unit at '/' but keep this delimiter e.g. str= 'a/b' => ['a','/','b']
+    temp_unit = re.split('(\/)',temp_unit)
+    # --------------------------------
+    # merge '/' with the proceeding substring e.g. ['a','/','b'] => ['a','/b']
+    # --------------------------------
+    add_flag = False
+    for item in temp_unit:
+        if add_flag:
+            unit_list[-1] = unit_list[-1]+item
+            add_flag = False
+        else:
+            # check for 1/m etc.. units, we do not want numbers here
+            if not item.isdigit():
+                unit_list.append(item)
+        if item == '/':
+            add_flag = True
+    temp_unit = unit_list
+    # --------------------------------
+
+    # split temp_unit at '*'
+    # --------------------------------
+    temp_unit2 = []
+    for units in temp_unit:
+        if '*' in units:
+            match = re.split('\*',units)
+            for m in match:
+                temp_unit2.append(m)
+        else:
+            temp_unit2.append(units)
+    temp_unit = temp_unit2
+    # --------------------------------
+
+    final_exps = []
+    final_units = []
+    it = 0
+    for i,token in enumerate(temp_unit):
+        if '/' in token and '^' in token:
+            if '-' == exp_value[it][0]:
+                final_exps.append(exp_value[it][1:])
+            else:
+                final_exps.append(exp_value[it])
+            final_units.append(re.sub('(\/|\^)','',token))
+            it = it + 1
+        elif '^' in token:
+                final_exps.append(exp_value[it])
+                final_units.append(re.sub('(\^)','',token))
+                it = it + 1
+        elif '/' in token:
+            final_exps.append('-1')
+            final_units.append(re.sub('(\/)','',token))
+        else:
+            final_exps.append('1')
+            final_units.append(token)
+    return final_units,final_exps
+
+
+
+# Entropy of a species from NASA polynomials
+#--------------------------
+def getEntropy(alow,ahigh,Trange,T):
+    S = 0.0        
+    if T>0.0:
+        Tmid = Trange[1]
+        Ta=[]
+        Ta.append(np.log(T))   #0
+        Ta.append(T)           #1
+        Ta.append(T*T/2.0)     #2
+        Ta.append(T*T*T/3.0)   #3
+        Ta.append(T*T*T*T/4.0) #4
+        if T<=Tmid:
+            a = alow
+        else:
+            a = ahigh
+        for i in range(len(Ta)):
+            S = S + a[i]*Ta[i]
+        S = (S + a[6])*p.R
+    return S
+
+# Internal Energy of a species from NASA polynomials
+#--------------------------
+def getInternalEnergy(alow,ahigh,Trange,T):
+    H = getEnthalpy(alow,ahigh,Trange,T)
+    U = H - p.R*T
+    return U
+
+# Heat Capacity Cv of a species from NASA polynomials
+#--------------------------
+def getHeatCapacityCv(alow,ahigh,Trange,T):
+    Cv = getHeatCapacityCp(alow,ahigh,Trange,T) - p.R
+    return Cv
+
+# Heat Capacity Cp of a species from NASA polynomials
+#--------------------------
+def getHeatCapacityCp(alow,ahigh,Trange,T):
+    Cp = 0.0
+    Tmid = Trange[1]
+    Ta=[]
+    Ta.append(1.0)      #0
+    Ta.append(T)        #1
+    Ta.append(T*T)      #2
+    Ta.append(T*T*T)    #3
+    Ta.append(T*T*T*T)  #4
+    if T<=Tmid:
+        a = alow
+    else:
+        a = ahigh
+    for i in range(len(Ta)):
+        Cp = Cp + a[i]*Ta[i]
+    Cp = Cp*p.R
+    return Cp
+
+# Enthalpy of a species from NASA polynomials
+#--------------------------
+def getEnthalpy(alow,ahigh,Trange,T):
+    H = 0.0
+    if T>0.0:
+        Tmid = Trange[1]
+        Ta=[]
+        Ta.append(1.0)         #0
+        Ta.append(T/2.0)       #1
+        Ta.append(T*T/3.0)     #2
+        Ta.append(T*T*T/4.0)   #3
+        Ta.append(T*T*T*T/5.0) #4
+        Ta.append(1.0/T)       #5
+        if T<=Tmid:
+            a = alow
+        else:
+            a = ahigh
+        for i in range(len(Ta)):
+            H = H + a[i]*Ta[i]
+        H = H*p.R*T
+    return H
+
+# Gibbs Energy of a species from NASA polynomials
+#--------------------------
+def getGibbsEnergy(alow,ahigh,Trange,T):
+    H = getEnthalpy(alow,ahigh,Trange,T)
+    S = getEntropy(alow,ahigh,Trange,T)
+    G = H - T*S
+    return G
