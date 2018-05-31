@@ -1,16 +1,12 @@
 package uk.ac.cam.cares.jps.discovery.knowledgebase;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -21,7 +17,6 @@ import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
@@ -30,7 +25,6 @@ import uk.ac.cam.cares.jps.base.discovery.Agent;
 import uk.ac.cam.cares.jps.base.discovery.AgentServiceDescription;
 import uk.ac.cam.cares.jps.base.discovery.Parameter;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.discovery.util.ISerializer;
 
 public class OWLSerializer {
 	
@@ -113,7 +107,6 @@ public class OWLSerializer {
 		// https://stackoverflow.com/questions/43719469/create-individuals-using-jena
 		
 		OntClass agentClass = ontology.getOntClass(ontBaseIRI + "Agent");
-		// TODO-AE why do we need .owl in the IRI
 		Individual agentInd = knowledgeBase.createIndividual(AgentKnowledgeBase.ONTOAGENT_BASE_IRI + "/Agent" + uuid + ".owl#Agent", agentClass);
 		createTripleWithDatatypeProperty(agentInd, "hasId", uuid.toString());
 		createTripleWithDatatypeProperty(agentInd, "hasName", agent.getName());
@@ -162,7 +155,7 @@ public class OWLSerializer {
 			createTripleWithDatatypeProperty(ind, "hasIndex", "" + index);
 			createTripleWithDatatypeProperty(ind, "hasKey", current.getKey());
 			if ((current.getValue() != null) && (!"null".equals(current.getValue()))) {
-				createTripleWithDatatypeProperty(ind, "hasValue", current.getValue());
+				createTripleWithDatatypeProperty(ind, "hasValue", (String) current.getValue());
 			}
 			result.add(ind);
 		}

@@ -1,10 +1,13 @@
 package uk.ac.cam.cares.jps.discovery.knowledgebase;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
@@ -18,57 +21,97 @@ import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+
 public class JenaHelper {
-	
-	private static Logger logger = LoggerFactory.getLogger(JenaHelper.class);
-	
+
 	/**
-	 * If <code>path</code> denotes one OWL file, the file is imported to the model. If <code>path</code> denote a directory, 
-	 * all OWL files of this directory are imported to the model. Other directories in this directory are ignored.
+	 * {@see #read(String, OntModel)}
 	 * 
 	 * @param path
 	 * @return
 	 */
 	public static OntModel createModel(String path) {
-		// this class is a singleton. It is enough to read the ontology only once
-		//logger.debug("createing Jena Model, path  = " + path);
-		OntModel result = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
-		File file = new File(path);
-		if (file.isFile()) {
-			//logger.debug("Jena Model is importing file = " + file.getAbsolutePath());
-			result.read(file.toURI().toString());
-		} else {
-			for (File current : file.listFiles()) {
-				if (current.isFile()) {
-					//logger.debug("Jena Model is importing file = " + file.getAbsolutePath());
-					result.read(current.toURI().toString());
-				}
-			}
-		}
+		OntModel result = createModel();
+		read(path, result);
 		return result;
 	}
 	
-	public static ResultSet sparql (String filepath, String query) {
-		
-		OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+	public static OntModel createModel() {
+		return ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+	}
+
+	/**
+	 * If <code>path</code> denotes an URL, the OWL file will be read from the URL and imported to the model.
+	 * If <code>path</code> denotes one OWL file, the file is imported to the model.
+	 * If <code>path</code> denotes a directory, all OWL files of this directory are
+	 * imported to the model. Other directories in this directory are ignored.
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public static void read(String path, OntModel model) {
 
 		try {
-		    File file = new File(filepath);
-		    FileInputStream reader = new FileInputStream(file);
-		    model.read(reader,null);     //load the ontology model
-		} catch (Exception e) {
-		    e.printStackTrace();
+			URL url = new URL(path);
+			readFromUrl(url, model);
+			return;
+		} catch (MalformedURLException e) {
+			// nothing to do here
 		}
-
-		Query queryCreated = QueryFactory.create(query);
-		QueryExecution qe = QueryExecutionFactory.create(queryCreated, model);
 		
-		//return qe.execSelect();
-		
-		ResultSet rs = qe.execSelect();                                    //the ResultSet can only be iterated once
-		ResultSetRewindable results = ResultSetFactory.copyResults(rs);    //reset the cursor, so that the ResultSet can be repeatedly used
-		ResultSetFormatter.out(System.out, results, queryCreated);
-		return results;
+		File file = new File(path);
+		if (file.isFile()) {
+			readFromFile(file, model);
+		} else {
+			for (File current : file.listFiles()) {
+				readFromFile(current, model);
+			}
+		}
 	}
 	
+	public static void readFromUrl(URL url, OntModel model) {
+		try {
+			InputStream is = url.openStream();
+			read(is, model);
+		} catch (IOException e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		}
+		
+	}
+	
+	public static void readFromFile(File owlFile, OntModel model) {
+		try {
+			if (owlFile.isFile() && owlFile.getName().endsWith(".owl")) {
+				InputStream is = new FileInputStream(owlFile);
+				read(is, model);
+			}
+		} catch (IOException e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		}	
+	}
+	
+	public static void readFromString(String s, OntModel model) {
+		InputStream is = new ByteArrayInputStream( s.getBytes(StandardCharsets.UTF_8) );
+		read(is, model);
+	}
+
+	public static void read(InputStream is, OntModel model) {
+		try {
+			model.read(is, null);
+			is.close();
+		} catch (IOException e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		}
+	}
+
+	public static synchronized ResultSet query(String sparql, OntModel model) {
+		Query query = QueryFactory.create(sparql);
+		QueryExecution queryExec = QueryExecutionFactory.create(query, model);
+		ResultSet rs = queryExec.execSelect();   
+		//reset the cursor, so that the ResultSet can be repeatedly used
+		ResultSetRewindable results = ResultSetFactory.copyResults(rs);    
+		ResultSetFormatter.out(System.out, results, query);
+		return results;
+	}
 }

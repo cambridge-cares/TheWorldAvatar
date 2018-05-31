@@ -16,9 +16,10 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.Agent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
+import uk.ac.cam.cares.jps.base.discovery.DiscoveryProvider;
+import uk.ac.cam.cares.jps.discovery.knowledgebase.AgentKnowledgeBase;
 
-@WebServlet(urlPatterns = {"/register", "/deregister", "/agents"})
+@WebServlet(urlPatterns = {"/register", "/clear", "/agents"})
 public class RegistryAgent extends HttpServlet {
 
 	private static final long serialVersionUID = -1084832972879292460L;
@@ -33,11 +34,10 @@ public class RegistryAgent extends HttpServlet {
 
 		if ("/register".equals(path)) {
 			String serializedDescr = req.getParameter("agent");
-			Agent description = DiscoveryFactory.getSerializer().<Agent>convertFrom(serializedDescr, Agent.class).get();
-			DiscoveryFactory.getRegistry().register(description);
-		} else if ("/deregister".equals(path)) {
-			String agentAddress = req.getParameter("agentname");
-			DiscoveryFactory.getRegistry().deregister(agentAddress);
+			Agent description = DiscoveryProvider.convertFromJson(serializedDescr, Agent.class);
+			AgentKnowledgeBase.getInstance().add(description);
+		} else if ("/clear".equals(path)) {
+			AgentKnowledgeBase.createNewInstanceWithoutReading();
 		} else if ("/agents".equals(path)) {
 			AgentCaller.printToResponse(getAllAgentNames(), resp);
 		}
@@ -47,7 +47,7 @@ public class RegistryAgent extends HttpServlet {
 		
 		List<String> result = new ArrayList<String>();
 		
-		Collection<Agent> list = DiscoveryFactory.getRegistry().getAllAgents();
+		Collection<Agent> list = AgentKnowledgeBase.getInstance().getAllAgents();
 		for (Agent current : list) {
 			result.add(current.getName());
 		}

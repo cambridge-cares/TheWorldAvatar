@@ -51,6 +51,11 @@ public class AgentCaller {
 		try {
 			HttpGet request = new HttpGet(builder.build());
 			HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+			
+			if (httpResponse.getStatusLine().getStatusCode() != 200) {
+				throw new JPSRuntimeException("HTTP response with error = " + httpResponse.getStatusLine());
+			}
+		
 			return EntityUtils.toString(httpResponse.getEntity());
 		} catch (Exception e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
