@@ -11,14 +11,18 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
+
 public class AgentCaller {
 	
+	private static Logger logger = LoggerFactory.getLogger(AgentCaller.class);
 	private static String hostPort = null;
 	
 	private static synchronized String getHostPort() {
@@ -75,9 +79,17 @@ public class AgentCaller {
 		
 		Gson gson = new Gson();
 		
+		logger.debug("callAgent start ");
+		
 		String serializedAgentRequest = gson.toJson(agentRequest);
+		
+		logger.debug("SerAgRequ " + serializedAgentRequest);
+		
 		try {
 			String serializedAgentResponse = executeGet(contextPath, "agentrequest", serializedAgentRequest);
+			
+			logger.debug("SerAgResp " + serializedAgentResponse);
+						
 			return gson.fromJson(serializedAgentResponse, AgentResponse.class);
 		} catch (Exception e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
