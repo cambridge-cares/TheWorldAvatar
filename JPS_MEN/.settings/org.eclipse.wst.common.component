@@ -2,6 +2,7 @@
     <wb-module deploy-name="JPS_MEN">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <wb-resource deploy-path="/conf" source-path="/conf"/>
         <property name="context-root" value="JPS_MEN"/>
         <property name="java-output-path" value="/JPS_MEN/build/classes"/>
     </wb-module>
