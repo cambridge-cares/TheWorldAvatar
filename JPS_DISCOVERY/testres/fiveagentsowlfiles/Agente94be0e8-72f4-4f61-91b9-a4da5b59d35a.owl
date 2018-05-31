@@ -24,7 +24,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="http://www.theworldavatar.com/OntoAgent/Agente94be0e8-72f4-4f61-91b9-a4da5b59d35a.owl#Agent">
     <jpsago:hasAgentServiceDescription rdf:resource="http://www.theworldavatar.com/OntoAgent/Agente94be0e8-72f4-4f61-91b9-a4da5b59d35a.owl#AgentServiceDescription0"/>
-    <jpsago:hasName>IRIsomeAgent</jpsago:hasName>
+    <jpsago:hasName>IRIAgent4</jpsago:hasName>
     <jpsago:hasId>e94be0e8-72f4-4f61-91b9-a4da5b59d35a</jpsago:hasId>
     <rdf:type rdf:resource="http://www.theworldavatar.com/OntoAgent/OntoAgent.owl#Agent"/>
   </rdf:Description>

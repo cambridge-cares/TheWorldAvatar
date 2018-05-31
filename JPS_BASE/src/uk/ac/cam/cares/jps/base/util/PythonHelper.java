@@ -14,6 +14,21 @@ public class PythonHelper {
 	
 	private static Logger logger = LoggerFactory.getLogger(PythonHelper.class);
 
+	public static String processCommand(String[] cmd) throws IOException {
+		Process p = Runtime.getRuntime().exec(cmd);
+		BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		String returnValue = stdInput.readLine();
+		
+		int index = returnValue.lastIndexOf("{exception:");
+		if (index >= 0) {
+			int lastIndex = returnValue.length() - 1;
+			String message = returnValue.substring(index+11, lastIndex);
+			throw (new PythonException(message));
+		} else {
+			return returnValue;
+		}
+	}
+	
 	/**
 	 * @param pythonScriptName
 	 *            (including package name followed by script name and .py extension,
@@ -30,19 +45,7 @@ public class PythonHelper {
 		
 		String[] cmd = { "python", path, parameter };
 
-		Process p = Runtime.getRuntime().exec(cmd);
-
-		BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-		String returnValue = stdInput.readLine();
-		
-		int index = returnValue.lastIndexOf("{exception:");
-		if (index >= 0) {
-			int lastIndex = returnValue.length() - 1;
-			String message = returnValue.substring(index+11, lastIndex);
-			throw (new PythonException(message));
-		} else {
-			return returnValue;
-		}
+		return processCommand(cmd);	
 	}
 	
 	public static String callPython(String pythonScriptName, String parameter1, String parameter2, Object thisObject) throws IOException {
@@ -52,9 +55,6 @@ public class PythonHelper {
 		
 		String[] cmd = { "python", pathPythonScript, parameter1, parameter2 };
 		
-		Process p = Runtime.getRuntime().exec(cmd);
-		
-		BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-		return stdInput.readLine();
+		return processCommand(cmd);
 	}
 }

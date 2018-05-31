@@ -1,20 +1,19 @@
 package uk.ac.cam.cares.jps.discovery.matching.exact;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import uk.ac.cam.cares.jps.base.discovery.AbstractAgentServiceDescription;
 import uk.ac.cam.cares.jps.base.discovery.Agent;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.AgentServiceDescription;
 import uk.ac.cam.cares.jps.base.discovery.Parameter;
-import uk.ac.cam.cares.jps.discovery.registry.IRegistry;
+import uk.ac.cam.cares.jps.discovery.knowledgebase.AgentKnowledgeBase;
 
 public class ExactMatcher implements IMatcher{
-
-	private IRegistry registry = null;
 	
-	public ExactMatcher(IRegistry registry) {
-		this.registry = registry;
+	public ExactMatcher() {
 	}
 	
 	@Override
@@ -22,14 +21,14 @@ public class ExactMatcher implements IMatcher{
 		
 		List<Agent> result = new ArrayList<Agent>();
 		
-		for (Agent currentAgent : registry.getAllAgents()) {
+		Parameter domain = findProperty(agentRequest, "domain");
+		Collection<Agent> foundAgents = searchAgents((String) domain.getValue());
+		
+		for (Agent currentAgent : foundAgents) {
 			
 			Agent agent = null;
-		
 			for (AgentServiceDescription currentDescr : currentAgent.getDescriptions()) {
-			
 				if (match(agentRequest, currentDescr)) {
-					
 					if (agent == null) {
 						agent = new Agent();
 						agent.setName(currentAgent.getName());
@@ -41,6 +40,33 @@ public class ExactMatcher implements IMatcher{
 		}
 		
 		return result;
+	}
+	
+	public Collection<Agent> searchAgents(String domain) {
+		
+		List<Agent> result = new ArrayList<Agent>();
+		
+		for (Agent currentAgent : AgentKnowledgeBase.getInstance().getAllAgents()) {
+			for (AgentServiceDescription currentDescr : currentAgent.getDescriptions()) {
+				
+				Parameter domainParam = findProperty(currentDescr, "domain");
+				if ((domainParam != null) && domain.equals(domainParam.getValue())) {
+					result.add(currentAgent);
+					break;
+				}
+			}					
+		}
+		
+		return result;
+	}
+	
+	private Parameter findProperty(AbstractAgentServiceDescription descr, String key) {
+		for (Parameter current : descr.getProperties()) {
+			if (key.equals(current.getKey())) {
+				return current;
+			}
+		}
+		return null;
 	}
 	
 	private boolean matchTypes(String p, String q) {
