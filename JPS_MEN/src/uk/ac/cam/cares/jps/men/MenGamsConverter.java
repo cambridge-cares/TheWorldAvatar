@@ -19,8 +19,8 @@ import com.gams.api.GAMSVariableRecord;
 import com.gams.api.GAMSWorkspace;
 import com.gams.api.GAMSWorkspaceInfo;
 
-import jdk.management.resource.internal.TotalResourceContext;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.men.entity.FeasibleConnection;
 import uk.ac.cam.cares.jps.men.entity.MenCalculationParameters;
 import uk.ac.cam.cares.jps.men.entity.Product;
@@ -68,8 +68,7 @@ public class MenGamsConverter {
 		try {
 			gamsCode = readGamsCode();
 		} catch (IOException e) {
-			// TODO-AE Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
       
         GAMSJob job = ws.addJobFromString(gamsCode);
@@ -256,10 +255,6 @@ public class MenGamsConverter {
             		String[] indices = new String[]{getSourceKey(i,source), getSinkKey(j, sink),getTransportationTypeKey(currentTransp.getName())};
 				
 	        		// TODO-AE move this rule and all transportation types to class data provider 
-            		// TODO-AE the second rule means that a sink near sea is on an different island such that truck and landpipelines cant be used
-//	        		boolean transportationPossible = currentTransp.getName().equals("Trucks") 
-//	        				|| currentTransp.getName().equals("LandPipelines")
-//	        				|| (source.isNearSea() && sink.isNearSea());
 	        		boolean transportationPossible = false;
 	        		if (currentTransp.getName().equals("Trucks") || currentTransp.getName().equals("LandPipelines")) {
 	        			transportationPossible = !sink.isNearSea();
@@ -300,9 +295,7 @@ public class MenGamsConverter {
 	}
 	
 	public static double getPriceForInternationalMarket(List<Source> sources, Sink sink, List<FeasibleConnection> connections, double priceFactor, boolean lowestPrice) {
-		
-		// TODO-AE move this method to data provider
-		
+				
 		double result = 0;
 		
 		List<FeasibleConnection> orderedConnections = orderByPriceAscending(sources, sink, connections);
@@ -314,7 +307,7 @@ public class MenGamsConverter {
 			result = priceFactor * basePrice;
 		} else {
 			//TODO-AE what should happen if there is no sink with a price?
-			throw new RuntimeException("No price is found for international market");
+			throw new JPSRuntimeException("No price is found for international market");
 		}
 		
 		return result;

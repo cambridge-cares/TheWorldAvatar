@@ -1,0 +1,125 @@
+
+<html>
+
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <link rel="stylesheet" type="text/css" href="css/adms3dmap.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="scripts/start.js"></script>
+
+    <title>J-Park Simulator</title>
+    <link rel="stylesheet" href="css/OSMBuildings.css">
+	<script src="scripts/start.js"></script>
+
+</head>
+<style>
+TH {
+    padding: 5px; align-content:center
+}
+</style>
+<body>
+<div class="jumbotron text-center" id="topBanner">
+
+
+    <a href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
+        <img  src="images/cam_lang_negativ1%20NEW_0.png">
+    </a>
+<p id="description">this is the description defined later ya</p>
+
+</div>
+
+<div id="inputFields">
+
+    <h1 id="head1"></h1>
+    <p id="description"></p>
+
+    <label for="carbontax">Carbon Tax:</label>
+
+    <input id="carbontax" type="text" value='50'/>
+    <label for="interestfactor">Interest Factor:</label>
+    <input id="interestfactor" type="text" value='1'/>
+    <label for="intmarketpricefactor">International Market Price Factor:</label>
+    <input id="intmarketpricefactor" type="text" value='1.05'/>
+    <label for="intmarketlowestprice">International Market Lowest Price Applied:</label>
+  <select id="intmarketlowestprice">
+    <option value="false">false</option>
+    <option value="true">true</option>
+  </select>
+    <button id="start">Start simulation</button>
+
+</div>
+
+<div id="outputFields">
+<TABLE id="table" border="2" >
+			   <TR>
+			      <TH>Project life times</TH>
+			      <TH>Transport Cost per year <br> (10^3 x $/yr)</TH>
+				  <TH> Material Purchase Cost per year <br> (10^9 x $/yr)</TH>
+			      <TH>Pipeline Installation Cost <br> (10^6 x $)</TH>
+				  <TH>CO2 Emission per year <br> (t/yr)</TH>
+			      <TH>CO2 Emission cost per year <br> (10^3 x $/yr)</TH>
+				  <TH>Total Transportation cost in 1 year <br> (10^6 x $)</TH>
+				  <TH>Total Transportation cost in 10 year <br> (10^6 x $)</TH>
+			      <TH>Total Transportation cost in 50 year <br> (10^6 x $)</TH>
+			      <TH>Total Transportation cost in 100 year <br> (10^6 x $)</TH>
+			   </TR>
+				   <TR>
+			      <TH>1 year</TH>
+			      <TD align="center" id="cell11"></TD>
+				  <TD align="center" id="cell12"></TD>
+			      <TD align="center" id="cell13"></TD>
+				  <TD align="center" id="cell14"></TD>
+			      <TD align="center" id="cell15"></TD>
+				  <TD align="center" id="cell16"></TD>
+			      <TD align="center" id="cell17"></TD>
+				  <TD align="center" id="cell18"></TD>
+				  <TD align="center" id="cell19"></TD>
+			   </TR>
+				   <TR>
+			      <TH>10 year</TH>
+			      <TD align="center" id="cell21"></TD>
+				  <TD align="center" id="cell22"></TD>
+			      <TD align="center" id="cell23"></TD>
+				  <TD align="center" id="cell24"></TD>
+			      <TD align="center" id="cell25"></TD>
+				  <TD align="center" id="cell26"></TD>
+			      <TD align="center" id="cell27"></TD>
+				  <TD align="center" id="cell28"></TD>
+				  <TD align="center" id="cell29"></TD>
+			   </TR>
+				   <TR>
+			      <TH>50 year</TH>
+			       <TD align="center" id="cell31"></TD>
+				  <TD align="center" id="cell32"></TD>
+			      <TD align="center" id="cell33"></TD>
+				  <TD align="center" id="cell34"></TD>
+			      <TD align="center" id="cell35"></TD>
+				  <TD align="center" id="cell36"></TD>
+			      <TD align="center" id="cell37"></TD>
+				  <TD align="center" id="cell38"></TD>
+				  <TD align="center" id="cell39"></TD>
+			   </TR>
+				   <TR>
+			      <TH>100 year</TH>
+			        <TD align="center" id="cell41"></TD>
+				  <TD align="center" id="cell42"></TD>
+			      <TD align="center" id="cell43"></TD>
+				  <TD align="center" id="cell44"></TD>
+			      <TD align="center" id="cell45"></TD>
+				  <TD align="center" id="cell46"></TD>
+			      <TD align="center" id="cell47"></TD>
+				  <TD align="center" id="cell48"></TD>
+				  <TD align="center" id="cell49"></TD>
+			   </TR>
+			</TABLE>
+</div>
+
+</body>
+</html>

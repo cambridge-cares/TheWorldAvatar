@@ -55,11 +55,7 @@ public class MenDataProvider {
 	    logger.info("sources = " + totalsources);
 	    logger.info("sinks = " + totalsinks);
 	    logger.info("connections = " + feasibleConnections);
-	    logger.info("transportations = " + transportations); 
-	  //  System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		// TODO-AE remove owl file from resource dir
-		//String TaskFile = ".\\res\\MassExchangeNetworkIntegration.owl";   
- 
+	    logger.info("transportations = " + transportations);  
 	    
 	    MenGamsConverter converter = new MenGamsConverter();
 
@@ -339,7 +335,6 @@ public class MenDataProvider {
 				Product product = new Product(rawMaterialName);
 				product.setCapacity(Double.valueOf(demand));
 				Sink sink = new Sink(sinkName, product);
-				// TODO-AE in OWL files, the value true and false are used
 				sink.setNearSea(Boolean.valueOf(nearSea));
 				sink.setx(Double.valueOf(xvalue));
 				sink.sety(Double.valueOf(yvalue));
@@ -413,7 +408,6 @@ public class MenDataProvider {
 				product.setCapacity(Double.valueOf(capacity));
 				product.setPrice(Double.valueOf(price));
 				Source source = new Source(sourceName, product);
-				// TODO-AE in OWL files, the value true and false are used
 				source.setNearSea(Boolean.valueOf(nearSea));
 				source.setx(Double.valueOf(xvalue));
 				source.sety(Double.valueOf(yvalue));
