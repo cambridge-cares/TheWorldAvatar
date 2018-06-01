@@ -2,13 +2,13 @@
 import params as p
 import re
 
-LENGTH_UNITS = ['m', 'cm', 'mm', 'microm', 'nm', 'A', 'a0']
-TIME_UNITS = ['s', 'min', 'h', 'micros', 'ns']
-MASS_UNITS = ['kg', 't', 'dg', 'g', 'mg', 'microg', 'amu']
+LENGTH_UNITS = ['M', 'CM', 'MM', 'MICROM', 'NM', 'A', 'A0']
+TIME_UNITS = ['S', 'MIN', 'H', 'MICROS', 'NS']
+MASS_UNITS = ['KG', 'T', 'DG', 'G', 'MG', 'MICROG', 'AMU']
 TEMPERATURE_UNITS = ['K', 'C', 'F']
-MOLE_UNITS = ['mol', '#', 'kmol']
-ENERGY_UNITS = ['J', 'kJ', 'MJ', 'GJ', 'cal', 'kcal', 'Mcal', 'Gcal', 'Ha', 'eV']
-FREQUENCY_UNITS = ['1/s','Hz','kHz','GHz','MHz']
+MOLE_UNITS = ['MOL', '#', 'KMOL']
+ENERGY_UNITS = ['J', 'KJ', 'MJ', 'GJ', 'CAL', 'KCAL', 'MCAL', 'GCAL', 'HA', 'EV']
+FREQUENCY_UNITS = ['1/S','HZ','KHZ','GHZ','MHZ']
 
 # intertia tensor
 # -----------------------------
@@ -79,26 +79,28 @@ def getMomentsOfInertia(aElMolWt,aXYZ,aGeomType):
         InertiaMom = [eigen[0],eigen[1],eigen[2]] # in amu*A^2
     return sorted(InertiaMom,reverse=True)
 
-
+#
+# Units conversion stuff
+#
 def convertLengthUnitsToSI(aunit_in,exponent=1.0):
     # SI: m
-    SI_unit = 'm'
+    SI_unit = 'M'
     mult_factor = 1.0
-    if aunit_in == 'm':
+    if aunit_in == 'M':
         mult_factor = 1.0
-    elif aunit_in == 'km':
+    elif aunit_in == 'KM':
         mult_factor = 1E3
-    elif aunit_in == 'cm':
+    elif aunit_in == 'CM':
         mult_factor = 1E-2
-    elif aunit_in == 'mm':
+    elif aunit_in == 'MM':
         mult_factor = 1E-3
-    elif aunit_in == 'microm':
+    elif aunit_in == 'MICROM':
         mult_factor = 1E-6
-    elif aunit_in == 'nm':
+    elif aunit_in == 'NM':
         mult_factor = 1E-9
     elif aunit_in == 'A':
         mult_factor = p.Angs
-    elif aunit_in == 'a0':
+    elif aunit_in == 'A0':
         mult_factor = p.a0
     elif checkUnitType(aunit_in,'LENGTH^n'):
         unit_tokens ,unit_exps = extractUnits(aunit_in)
@@ -107,19 +109,19 @@ def convertLengthUnitsToSI(aunit_in,exponent=1.0):
 
 def convertTimeUnitsToSI(aunit_in,exponent=1.0):
     # SI: s
-    SI_unit = 's'
+    SI_unit = 'S'
     mult_factor = 1.0
-    if aunit_in == 's':
+    if aunit_in == 'S':
         mult_factor = 1.0
-    elif aunit_in == 'h':
+    elif aunit_in == 'H':
         mult_factor = 3600.0
-    elif aunit_in == 'min':
+    elif aunit_in == 'MIN':
         mult_factor = 60
-    elif aunit_in == 'ms':
+    elif aunit_in == 'MS':
         mult_factor = 1E-3
-    elif aunit_in == 'micros':
+    elif aunit_in == 'MICROS':
         mult_factor = 1E-6
-    elif aunit_in == 'ns':
+    elif aunit_in == 'NS':
         mult_factor = 1E-9
     elif checkUnitType(aunit_in,'TIME^n'):
         unit_tokens ,unit_exps = extractUnits(aunit_in)
@@ -129,21 +131,21 @@ def convertTimeUnitsToSI(aunit_in,exponent=1.0):
 
 def convertMassUnitsToSI(aunit_in,exponent=1.0):
     # SI: kg
-    SI_unit = 'kg'
+    SI_unit = 'KG'
     mult_factor = 1.0
-    if aunit_in == 'kg':
+    if aunit_in == 'KG':
         mult_factor = 1.0
-    elif aunit_in == 't':
+    elif aunit_in == 'T':
         mult_factor = 1E3
-    elif aunit_in == 'dg':
+    elif aunit_in == 'DG':
         mult_factor = 1E3
-    elif aunit_in == 'g':
+    elif aunit_in == 'G':
         mult_factor = 1E-3
-    elif aunit_in == 'mg':
+    elif aunit_in == 'MG':
         mult_factor = 1E-6
-    elif aunit_in == 'microg':
+    elif aunit_in == 'MICROG':
         mult_factor = 1E-9
-    elif aunit_in == 'amu':
+    elif aunit_in == 'AMU':
         mult_factor = p.amu
     elif checkUnitType(aunit_in,'MASS^n'):
         unit_tokens ,unit_exps = extractUnits(aunit_in)
@@ -168,13 +170,13 @@ def convertTemperatureUnitsToSI(aunit_in,exponent=1.0):
 
 def convertMoleUnitsToSI(aunit_in,exponent=1.0):
     # SI: 1/s or Hz          
-    SI_unit = 'mol' # or NA
+    SI_unit = 'MOL' # or NA
     mult_factor = 1.0
-    if aunit_in == 'mol':
+    if aunit_in == 'MOL':
         mult_factor = 1.0
     elif aunit_in == '#':
         mult_factor = 1.0/p.NA
-    elif aunit_in == 'kmol':
+    elif aunit_in == 'KMOL':
         mult_factor = 1E3
     elif checkUnitType(aunit_in,'MOLE^n'):
         unit_tokens ,unit_exps = extractUnits(aunit_in)
@@ -183,27 +185,23 @@ def convertMoleUnitsToSI(aunit_in,exponent=1.0):
 
 def convertFrequencyUnitsToSI(aunit_in,exponent=1.0):
     # SI: 1/s or Hz          
-    SI_unit = '1/s' # or Hz
+    SI_unit = '1/S' # or Hz
     mult_factor = 1.0
-    if aunit_in == '1/s' or aunit_in == 'Hz':
+    if aunit_in == '1/S' or aunit_in == 'HZ':
         mult_factor = 1.0
-    elif aunit_in == 'kHz':
+    elif aunit_in == 'KHZ':
         mult_factor = 1E3
-    elif aunit_in == 'MHz':
+    elif aunit_in == 'MHZ':
         mult_factor = 1E6
-    elif aunit_in == 'GHz':
+    elif aunit_in == 'GHZ':
         mult_factor = 1E9
     elif checkUnitType(aunit_in,'TEMPERATURE'):
         mult_factor = convertTemperatureUnitsToSI(aunit_in)
         mult_factor = mult_factor*p.kB/p.h
     elif checkUnitType(aunit_in,'TIME^-1'):
         mult_factor = convertTimeUnitsToSI(aunit_in)
-        #unit_tokens ,unit_exps = extractUnits(aunit_in)
-        #mult_factor = convertTimeUnitsToSI(unit_tokens[0],float(unit_exps[0])) #,'reverse'?
     elif checkUnitType(aunit_in,'LENGTH^-1'):
         mult_factor = convertLengthUnitsToSI(aunit_in)
-        #unit_tokens ,unit_exps = extractUnits(aunit_in)
-        #mult_factor = convertLengthUnitsToSI(unit_tokens[0],float(unit_exps[0])) #,'reverse'?
         mult_factor = p.c*mult_factor
     return mult_factor**exponent
 
@@ -213,29 +211,27 @@ def convertEnergyMoleculeUnitsToSI(aunit_in,exponent=1.0):
     mult_factor = 1.0
     if aunit_in == 'J':
         mult_factor = 1.0
-    elif aunit_in == 'kJ':
+    elif aunit_in == 'KJ':
         mult_factor = 1E3
     elif aunit_in == 'MJ':
         mult_factor = 1E6
     elif aunit_in == 'GJ':
         mult_factor = 1E9
-    elif aunit_in == 'cal':
+    elif aunit_in == 'CAL':
         mult_factor = 4.184
-    elif aunit_in == 'kcal':
+    elif aunit_in == 'KCAL':
         mult_factor = 4.184E3
-    elif aunit_in == 'Mcal':
+    elif aunit_in == 'MCAL':
         mult_factor = 4.184E6
-    elif aunit_in == 'Gcal':
+    elif aunit_in == 'GCAL':
         mult_factor = 4.184E9
-    elif aunit_in == 'Ha':
+    elif aunit_in == 'HA':
         mult_factor = p.Ha
-    elif aunit_in == 'eV':
+    elif aunit_in == 'EV':
         mult_factor = p.eV
     elif checkUnitType(aunit_in,'TIME^-1'):
         unit_tokens ,unit_exps = extractUnits(aunit_in)
         mult_factor = convertTimeUnitsToSI(unit_tokens[0],float(unit_exps[0]))
-        #unit_tokens ,unit_exps = extractUnits(aunit_in)
-        #mult_factor = convertTimeUnitsToSI(unit_tokens[0],float(unit_exps[0])) #,'reverse'?
         mult_factor = mult_factor*p.h
     elif checkUnitType(aunit_in,'FREQUENCY'):
         mult_factor = convertFrequencyUnitsToSI(aunit_in)
@@ -243,8 +239,6 @@ def convertEnergyMoleculeUnitsToSI(aunit_in,exponent=1.0):
     elif checkUnitType(aunit_in,'LENGTH^-1'):
         unit_tokens ,unit_exps = extractUnits(aunit_in)
         mult_factor = convertLengthUnitsToSI(unit_tokens[0],float(unit_exps[0]))
-        #unit_tokens ,unit_exps = extractUnits(aunit_in)
-        #mult_factor = convertLengthUnitsToSI(unit_tokens[0],float(unit_exps[0])) #,'reverse'?
         mult_factor = mult_factor*p.c*p.h
     elif checkUnitType(aunit_in,'TEMPERATURE'):
         mult_factor = convertTemperatureUnitsToSI(aunit_in)
@@ -253,9 +247,9 @@ def convertEnergyMoleculeUnitsToSI(aunit_in,exponent=1.0):
 
 def convertEnergyMoleUnitsToSI(aunit_in,exponent=1.0):
     # SI: J/mol
-    SI_unit = 'J/mol'
+    SI_unit = 'J/MOL'
     mult_factor = 1.0
-    if aunit_in == 'J/mol':
+    if aunit_in == 'J/MOL':
         mult_factor = 1.0
     elif checkUnitType(aunit_in,'ENERGY_PER_MOLECULE'):
         mult_factor1, _ = convertUnitsToSI('ENERGY_PER_MOLECULE',aunit_in)
@@ -268,23 +262,18 @@ def convertEnergyMoleUnitsToSI(aunit_in,exponent=1.0):
             mult_factor = mult_factor*mult_factor1
     elif checkUnitType(aunit_in,'TIME^-1'):
         mult_factor = convertTimeUnitsToSI(aunit_in)
-        #unit_tokens ,unit_exps = extractUnits(aunit_in)
-        #mult_factor = convertTimeUnitsToSI(unit_tokens[0],float(unit_exps[0]))
         mult_factor = mult_factor*p.h*p.NA
     elif checkUnitType(aunit_in,'LENGTH^-1'):
         mult_factor = convertLengthUnitsToSI(aunit_in)
-        #unit_tokens ,unit_exps = extractUnits(aunit_in)
-        #mult_factor = convertLengthUnitsToSI(unit_tokens[0],float(unit_exps[0]))
         mult_factor = mult_factor*p.h*p.c*p.NA
     elif checkUnitType(aunit_in,'TEMPERATURE'):
         mult_factor = convertTemperatureUnitsToSI(aunit_in)
         mult_factor = p.kB*mult_factor*p.NA
     return mult_factor**exponent
 
-
 def convertInertiaUnitsToSI(aunit_in,exponent=1.0):
     # SI: kg*m^2
-    if aunit_in == 'kg*m^2':
+    if aunit_in == 'KG*M^2':
         mult_factor = 1.0
     elif checkUnitType(aunit_in,'MASS,LENGTH^2'):
         unit_tokens ,unit_exps = extractUnits(aunit_in)
@@ -338,7 +327,7 @@ def convertUnitsToSI(atype,aunit_in,mode=''):
     return mult_factor**exponent,add_factor
 
 def getUnitType(aunit_in):
-    rtype = 'None'
+    rtype = 'NONE'
     if compareList(aunit_in,LENGTH_UNITS):
         rtype = 'LENGTH'
     if compareList(aunit_in,TIME_UNITS):
@@ -415,7 +404,7 @@ def extractUnits(aunit_in):
     match = re.findall('(\^[+-]?\d+[\/\d. ]*|\d)', aunit_in)
     # assign a temp variable
     temp_unit = aunit_in
-    # if there was at least on match
+    # if there was at least one match
     if match:
         # loop through matches removing '/' characters that may appear at the end of string 
         for m in match:

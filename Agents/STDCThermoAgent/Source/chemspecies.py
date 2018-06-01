@@ -95,7 +95,7 @@ class ChemSpecies:
     #---------------------------------
     def getElMolWt(self):
         m = []
-        u_fact = utl.convertMassUnitsToSI('amu') # amu => kg
+        u_fact = utl.convertMassUnitsToSI('AMU') # amu => kg
         # get the vector order from the geometry
         if len(self.Geometry)!= 0:
             Elements = [row[0] for row in self.Geometry]
@@ -154,7 +154,7 @@ class ChemSpecies:
     #--------------------------
     def getRotTemp(self):
         RotTemp = [] # in K
-        u_fact = utl.convertEnergyMoleculeUnitsToSI('1/m') # 1/m => J
+        u_fact = utl.convertEnergyMoleculeUnitsToSI('1/M') # 1/m => J
         u_fact = u_fact * utl.convertEnergyMoleculeUnitsToSI('K', -1.0) # J=>K
         if len(self.RotConst)>0:
             for B in self.RotConst:
@@ -165,7 +165,7 @@ class ChemSpecies:
     #--------------------------
     def getVibTemp(self):
         VibTemp = [] # in K
-        u_fact = utl.convertEnergyMoleculeUnitsToSI('1/s') # 1/s => J
+        u_fact = utl.convertEnergyMoleculeUnitsToSI('1/S') # 1/s => J
         u_fact = u_fact * utl.convertEnergyMoleculeUnitsToSI('K', -1.0) # J=>K
         if len(self.VibFreq)>0: # in 1/s
             for vib in self.VibFreq:
@@ -337,8 +337,8 @@ def readSpecXML(xmlfile):
             for subprop in property.iterchildren():
                 if 'vibrations' in subprop.attrib['dictRef']:
                     propchild = subprop.getchildren()[0]
-                    VibFreqUnit = propchild.attrib['units'].split(':')[1]
-                    if 'm-1' in VibFreqUnit:
+                    VibFreqUnit = propchild.attrib['units'].split(':')[1].upper()
+                    if 'M-1' in VibFreqUnit:
                         VibFreqUnit = VibFreqUnit.replace('-1','^-1')
                     u_fact = utl.convertFrequencyUnitsToSI(VibFreqUnit)
                     VibFreq = [float(f)*u_fact for f in propchild.text.split()]
@@ -347,9 +347,9 @@ def readSpecXML(xmlfile):
                     SymNr = float(propchild.text)
                 elif 'rotational_constants' in subprop.attrib['dictRef']:
                     propchild = subprop.getchildren()[0]
-                    RotConstUnit = propchild.attrib['units'].split(':')[1]
+                    RotConstUnit = propchild.attrib['units'].split(':')[1].upper()
                     u_fact1 = utl.convertEnergyMoleculeUnitsToSI(RotConstUnit,1.0) # 1/TIME,Hz,1/cm => J
-                    u_fact2 = utl.convertEnergyMoleculeUnitsToSI('1/m',-1.0) # J => 1/m
+                    u_fact2 = utl.convertEnergyMoleculeUnitsToSI('1/M',-1.0) # J => 1/m
                     u_fact = u_fact1*u_fact2
                     RotConst = [float(f)*u_fact for f in propchild.text.split()]
                     InertiaMom = getImomFromRotConstant(RotConst)
@@ -576,7 +576,7 @@ def readChemSpeciesFile(spFile,spName='ALL'):
         key = key.split(parseVars['start_bracket'])
         key = key[1].split(parseVars['end_bracket'])
         key = key[0]
-        runit = key
+        runit = key.upper()
         return runit
     # check and prepare file line
     #--------------------------
@@ -707,7 +707,7 @@ def readChemSpeciesFile(spFile,spName='ALL'):
                     if len(aInertiaMom) == 0:
                         runit = getUnit(key,parseVars)
                         u_fact1 = utl.convertEnergyMoleculeUnitsToSI(runit,1.0) # 1/TIME,Hz,1/cm => J
-                        u_fact2 = utl.convertEnergyMoleculeUnitsToSI('1/m',-1.0) # J => 1/m
+                        u_fact2 = utl.convertEnergyMoleculeUnitsToSI('1/M',-1.0) # J => 1/m
                         u_fact = u_fact1*u_fact2
                         value = value.split(parseVars['data_delim'])
                         for v in value:
@@ -764,7 +764,7 @@ def getRotConstFromImom(aImom):
     return RotConst
 
 def getImomFromRotConstant(aRotConst):
-    InertiaMom = [] # I in kg*m^
+    InertiaMom = [] # I in kg*m^2
     if len(aRotConst)>0:
         for B in aRotConst:
             if B>0.0: # B in 1/m

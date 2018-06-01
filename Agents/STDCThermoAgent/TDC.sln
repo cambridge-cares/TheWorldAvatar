@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "TDC", "TDC.pyproj", "{7BC0164A-6E46-43CE-9D15-1AE4583E61C9}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "TDC", "TDC.pyproj", "{909425CD-1556-44A7-B690-1812B613A720}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,8 +11,8 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7BC0164A-6E46-43CE-9D15-1AE4583E61C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7BC0164A-6E46-43CE-9D15-1AE4583E61C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{909425CD-1556-44A7-B690-1812B613A720}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{909425CD-1556-44A7-B690-1812B613A720}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

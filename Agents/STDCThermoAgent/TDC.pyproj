@@ -14,7 +14,7 @@
     <InterpreterId />
     <InterpreterVersion />
     <IsWindowsApplication>False</IsWindowsApplication>
-    <CommandLineArguments>-x freq-hr-fine-species-0232-radical-0-restricted.xml --tfit "300, 1000, 3000" --tcsv "300, 500, 1000, 1500, 2000" --href "298.15,33900.91067972189"</CommandLineArguments>
+    <CommandLineArguments>-x TiCl4.xml</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
