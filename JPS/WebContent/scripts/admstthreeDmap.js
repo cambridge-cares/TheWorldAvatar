@@ -37,7 +37,7 @@ var initadms3dmap  = function (list) {
         function(data) {
             var geojson = data;
             var arrayLength = geojson.length;
-
+            
             for (var i = 0; i < arrayLength; i++) {
 
                 try {
@@ -46,10 +46,10 @@ var initadms3dmap  = function (list) {
                 catch(err) {
                     console.log(err.name)
                 }
-                // finally {
-                //     console.log(i);
-                //     console.log(geojson[i]);
-                // }
+//                finally {
+//                     console.log(i);
+//                     console.log(geojson[i]);
+//                 }
             }
         });
 
