@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://www.jparksimulator.com/Jr_Transportation_simplified.owl"
+<rdf:RDF xmlns="http://www.jparksimulator.com/Jr_Transportation_simplified.owl#"
+     xml:base="http://www.jparksimulator.com/Jr_Transportation_simplified.owl"
      xmlns:system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:terms="http://purl.org/dc/terms/"
@@ -12,6 +13,8 @@
         <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl"/>
         <owl:imports rdf:resource="http://www.jparksimulator.com/transportation_simple.owl"/>
     </owl:Ontology>
+    
+
 
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -100,10 +103,10 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#LT_01">
         <rdf:type rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#Truck"/>
-        <transportation_simple:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Trucks</transportation_simple:hasName>
         <transportation_simple:hasEmission rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#EmissionOfLT_01"/>
         <transportation_simple:hasInstallationCost rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#InstallationCostOfLT_01"/>
         <transportation_simple:hasTransportationCost rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#TransportationCostOfLT_01"/>
+        <transportation_simple:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Trucks</transportation_simple:hasName>
     </owl:NamedIndividual>
     
 
@@ -112,10 +115,10 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#LT_02">
         <rdf:type rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#LandPipelines"/>
-        <transportation_simple:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LandPipelines</transportation_simple:hasName>
         <transportation_simple:hasEmission rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#EmissionOfLT_02"/>
         <transportation_simple:hasInstallationCost rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#InstallationCostOfLT_02"/>
         <transportation_simple:hasTransportationCost rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#TransportationCostOfLT_02"/>
+        <transportation_simple:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LandPipelines</transportation_simple:hasName>
     </owl:NamedIndividual>
     
 
@@ -124,10 +127,10 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#SST_01">
         <rdf:type rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#SeaPipelines"/>
-        <transportation_simple:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SeaPipelines</transportation_simple:hasName>
         <transportation_simple:hasEmission rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#EmissionOfSST_01"/>
         <transportation_simple:hasInstallationCost rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#InstallationCostOfSST_01"/>
         <transportation_simple:hasTransportationCost rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#TransportationCostOfSST_01"/>
+        <transportation_simple:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SeaPipelines</transportation_simple:hasName>
     </owl:NamedIndividual>
     
 
@@ -136,10 +139,10 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#SST_02">
         <rdf:type rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#Ship"/>
-        <transportation_simple:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ships</transportation_simple:hasName>
         <transportation_simple:hasEmission rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#EmissionOfSST_02"/>
         <transportation_simple:hasInstallationCost rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#InstallationCostOfSST_02"/>
         <transportation_simple:hasTransportationCost rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#TransportationCostOfSST_02"/>
+        <transportation_simple:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ships</transportation_simple:hasName>
     </owl:NamedIndividual>
     
 
@@ -244,7 +247,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#V_InstallationCostOfSST_01">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#km"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">620000.0</system:numericalValue>
     </owl:NamedIndividual>
     

@@ -55,11 +55,7 @@ public class MenDataProvider {
 	    logger.info("sources = " + totalsources);
 	    logger.info("sinks = " + totalsinks);
 	    logger.info("connections = " + feasibleConnections);
-	    logger.info("transportations = " + transportations); 
-	  //  System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		// TODO-AE remove owl file from resource dir
-		//String TaskFile = ".\\res\\MassExchangeNetworkIntegration.owl";   
- 
+	    logger.info("transportations = " + transportations);  
 	    
 	    MenGamsConverter converter = new MenGamsConverter();
 
@@ -339,7 +335,6 @@ public class MenDataProvider {
 				Product product = new Product(rawMaterialName);
 				product.setCapacity(Double.valueOf(demand));
 				Sink sink = new Sink(sinkName, product);
-				// TODO-AE in OWL files, the value true and false are used
 				sink.setNearSea(Boolean.valueOf(nearSea));
 				sink.setx(Double.valueOf(xvalue));
 				sink.sety(Double.valueOf(yvalue));
@@ -413,7 +408,6 @@ public class MenDataProvider {
 				product.setCapacity(Double.valueOf(capacity));
 				product.setPrice(Double.valueOf(price));
 				Source source = new Source(sourceName, product);
-				// TODO-AE in OWL files, the value true and false are used
 				source.setNearSea(Boolean.valueOf(nearSea));
 				source.setx(Double.valueOf(xvalue));
 				source.sety(Double.valueOf(yvalue));
@@ -443,9 +437,6 @@ public class MenDataProvider {
 				}
 			}
 		}
-		System.out.println("Total sources = " + totalsources);
-		System.out.println("Total sources amount = " + totalsources.size());
-
 		return totalsources;
 	}
 	
@@ -465,8 +456,6 @@ public class MenDataProvider {
 				}
 			}			
 		}
-		System.out.println("Total sinks = " + totalsinks);
-		System.out.println("Total sinks amount = " + totalsinks.size());
 		
 		return totalsinks;
 	}
@@ -547,7 +536,7 @@ public class MenDataProvider {
 				- B / 6 * cos2SigmaM * (-3 + 4 * sinSigma * sinSigma) * (-3 + 4 * cos2SigmaM * cos2SigmaM)));
 
 		double s = b * A * (sigma - deltaSigma)/1000; //in km unit
-		System.out.println("distance= " + s);
+		
 		return s;
 
 	}
@@ -556,7 +545,6 @@ public class MenDataProvider {
 	public double distancecalcforUTMcoord (Double x1,Double y1,Double x2,Double y2)
 	{
 		double distance= Math.sqrt(Math.pow(Math.abs(x2-x1),2)+Math.pow(Math.abs(y2-y1),2))/1000; //in km
-		System.out.println("distance= " + distance);
 		return distance;
 	}
 }
