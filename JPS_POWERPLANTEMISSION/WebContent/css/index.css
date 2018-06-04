@@ -1,0 +1,69 @@
+#topBanner {
+    background-color: #10616C;
+    border-radius: 0px;
+    margin: 0px;
+}
+
+#overallTable {
+	left: 
+}
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 30px;
+    table-layout: fixed;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+td:nth-child(1), th:nth-child(1){
+	width: 16%;
+}
+
+td:nth-child(2), th:nth-child(2){
+	width: 8%;
+}
+
+td:nth-child(3), th:nth-child(3){
+	width: 8%;
+}
+
+td:nth-child(4), th:nth-child(4){
+	width: 13%;
+}
+
+td:nth-child(5), th:nth-child(5){
+	width: 4%;
+}
+
+td:nth-child(6), th:nth-child(6){
+	width: 4%;
+}
+
+td:nth-child(7), th:nth-child(7){
+	width: 8%;
+}
+
+td:nth-child(8), th:nth-child(8){
+	width: 8%;
+}
+
+td:nth-child(9), th:nth-child(9){
+	width: 15%;
+}
+
+td:nth-child(10), th:nth-child(10){
+	width: 15%;
+}
