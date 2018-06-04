@@ -48,13 +48,7 @@ public class MenAgent extends HttpServlet {
 		String value4 =(String) agentRequest.getInputParameters().get(3).getValue();
 		String value5 =(String) agentRequest.getInputParameters().get(4).getValue();
 		String value6 =(String) agentRequest.getInputParameters().get(5).getValue();
-		String value7 =(String) agentRequest.getInputParameters().get(6).getValue();
-		
-		//String value8 =agentRequest.getInputParameters().get(0).getKey(); ????
-		System.out.println("result value3= "+value3);
-		System.out.println("result of agent calling= "+key1 +"and "+value1);
-		//...
-		
+		String value7 =(String) agentRequest.getInputParameters().get(6).getValue();		
         
 		AgentResponse agentResponse = new AgentResponse();
 		//copy from the request stream of input and output parameter into the response stream

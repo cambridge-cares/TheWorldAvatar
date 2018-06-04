@@ -466,27 +466,10 @@ public class MenDataProvider {
 	 * This method is to perform a given sparql query task on an ontological knowledge base (OKB) 
 	 * @param Qstring
 	 */
-	public static ResultSet sparql (String fileLocat, String Qstring) {
-	
-		OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
-
-		try {
-		    File file = new File(fileLocat);
-		    
-		    	    
-		    FileInputStream reader = new FileInputStream(file);
-		    model.read(reader,null);     //load the ontology model
-		} catch (Exception e) {
-		    e.printStackTrace();
-		}
-
-		Query query = QueryFactory.create(Qstring);
-		QueryExecution qe = QueryExecutionFactory.create(query, model);
-		ResultSet rs = qe.execSelect();                                    //the ResultSet can only be iterated once
-		ResultSetRewindable results = ResultSetFactory.copyResults(rs);    //reset the cursor, so that the ResultSet can be repeatedly used
-		//ResultSetFormatter.out(System.out, results, query);
-				
-		return results;
+	public static ResultSet sparql (String fileLocat, String sparql) {
+		
+		OntModel model = JenaHelper.createModel(fileLocat);
+		return JenaHelper.query(sparql, model);
 	}
 
 

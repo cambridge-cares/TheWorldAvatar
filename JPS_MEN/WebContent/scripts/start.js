@@ -2,31 +2,15 @@ $(function(){
      
     
     $('#start').click(function(){
-//        console.log("start simulation")
-        //$('#start').attr("disabled", true);
     	
         var carbontax = parseFloat($('#carbontax').val());
         var interestfactor = parseFloat($('#interestfactor').val());
         var intmarketpricefactor = parseFloat($('#intmarketpricefactor').val());
         var intmarketlowestprice = JSON.parse($('#intmarketlowestprice').val());
-      var list =[carbontax,interestfactor,intmarketpricefactor,intmarketlowestprice];
-      var vartime =["timeone","timeten","timefifty","timehundred"];
-       // alert("you click the run button and marketlowestprice= " +intmarketlowestprice);
-//        console.log(xmin +" "+xmax + " " + ymin + " " + ymax)
-        
-        
-     /* $.ajax('http://www.theworldavatar.com/JPS_MEN/MENTableAgent?calculationparameter='+encodeURIComponent(JSON.stringify({'carbontax':carbontax,'interestfactor':interestfactor, 'intmarketpricefactor':intmarketpricefactor, 'intmarketlowestprice':intmarketlowestprice}).replaceAll('"',"'")))
-		.done(function () {
-
-			$.get("MenTableAgent", function(response) {
-			    console.log(response);
-			});
-        })
-        
-        .fail(function () {
-            console.log("error")
-        })*/
       
+       var timefactor = $('#timefactor').val().split(",");
+      var list =[carbontax,interestfactor,intmarketpricefactor,intmarketlowestprice,timefactor];
+  
         $.getJSON('/JPS_MEN/MENTableAgent',
                 {
         			listOfInputs: JSON.stringify(list)
@@ -36,74 +20,52 @@ $(function(){
                var result = data;
                console.log("data of result= "+JSON.stringify(result)); 
                
+               var n= $('#timefactor').val().replace("[","").replace("]","").split(","); 
+               var totalyear=n.length;
+                              
+               var tablestring="<TABLE id=\"table\" border=\"2\" >";
+                   
+                          tablestring+="<tr>";
+                          tablestring+="<TH>Project life times</TH>";
+                          tablestring+="<TH>Transport Cost per year <br> (10^3 x $/yr)</TH>";
+                          tablestring+="<TH> Material Purchase Cost per year <br> (10^9 x $/yr)</TH>";
+                          tablestring+="<TH>Pipeline Installation Cost <br> (10^6 x $)</TH>";
+                          tablestring+="<TH>CO2 Emission per year <br> (t/yr)</TH>";
+                          tablestring+="<TH>CO2 Emission cost per year <br> (10^3 x $/yr)</TH>";
+                          for(var c=0; c<totalyear; c++) {
+                        	  tablestring+="<TH>Total Transportation cost in "+n[c]+" year <br> (10^6 x $)</TH>";
+                      			}
+                          tablestring+="</tr>";
+                          
+                   for (var a=1; a <= totalyear; a++) { 
+                	   tablestring+="<tr>";
+                	   tablestring+="<TH>"+n[a-1]+" year</TH>";
+                          for(var b=1; b<=5+totalyear; b++) {
+                        	  tablestring+="<td align=\"center\" id=cell"+a+b+"></td>";
+                      			}
+                          tablestring+="</tr>";
+                      }
+                   tablestring+="</table>";	
+                 document.getElementById("outputFields").innerHTML = tablestring; 
               
-               console.log("data of transportationcost11= "+result.timeten[0].totalTransportationCost); 
-       	   // alert("you click the run button and finish "+result[1][1]);	
-               
-               document.getElementById("cell11").innerHTML = result.timeone[0].totalTransportationCost;
-               document.getElementById("cell12").innerHTML = result.timeone[0].totalMaterialPurchaseCost;
-               document.getElementById("cell13").innerHTML = result.timeone[0].totalInstallationCost;
-               document.getElementById("cell14").innerHTML = result.timeone[0].totalCO2Emission;
-               document.getElementById("cell15").innerHTML = result.timeone[0].totalCO2EmissionCost;
-               document.getElementById("cell16").innerHTML = result.timeone[0].totalTransportCost1year;
-               document.getElementById("cell17").innerHTML = result.timeone[0].totalTransportCost10year;
-               document.getElementById("cell18").innerHTML = result.timeone[0].totalTransportCost50year;
-               document.getElementById("cell19").innerHTML = result.timeone[0].totalTransportCost100year;
-               
-               document.getElementById("cell21").innerHTML = result.timeten[0].totalTransportationCost;
-               document.getElementById("cell22").innerHTML = result.timeten[0].totalMaterialPurchaseCost;
-               document.getElementById("cell23").innerHTML = result.timeten[0].totalInstallationCost;
-               document.getElementById("cell24").innerHTML = result.timeten[0].totalCO2Emission;
-               document.getElementById("cell25").innerHTML = result.timeten[0].totalCO2EmissionCost;
-               document.getElementById("cell26").innerHTML = result.timeten[0].totalTransportCost1year;
-               document.getElementById("cell27").innerHTML = result.timeten[0].totalTransportCost10year;
-               document.getElementById("cell28").innerHTML = result.timeten[0].totalTransportCost50year;
-               document.getElementById("cell29").innerHTML = result.timeten[0].totalTransportCost100year;
-               
-               document.getElementById("cell31").innerHTML = result.timefifty[0].totalTransportationCost;
-               document.getElementById("cell32").innerHTML = result.timefifty[0].totalMaterialPurchaseCost;
-               document.getElementById("cell33").innerHTML = result.timefifty[0].totalInstallationCost;
-               document.getElementById("cell34").innerHTML = result.timefifty[0].totalCO2Emission;
-               document.getElementById("cell35").innerHTML = result.timefifty[0].totalCO2EmissionCost;
-               document.getElementById("cell36").innerHTML = result.timefifty[0].totalTransportCost1year;
-               document.getElementById("cell37").innerHTML = result.timefifty[0].totalTransportCost10year;
-               document.getElementById("cell38").innerHTML = result.timefifty[0].totalTransportCost50year;
-               document.getElementById("cell39").innerHTML = result.timefifty[0].totalTransportCost100year;
-               
-               document.getElementById("cell41").innerHTML = result.timehundred[0].totalTransportationCost;
-               document.getElementById("cell42").innerHTML = result.timehundred[0].totalMaterialPurchaseCost;
-               document.getElementById("cell43").innerHTML = result.timehundred[0].totalInstallationCost;
-               document.getElementById("cell44").innerHTML = result.timehundred[0].totalCO2Emission;
-               document.getElementById("cell45").innerHTML = result.timehundred[0].totalCO2EmissionCost;
-               document.getElementById("cell46").innerHTML = result.timehundred[0].totalTransportCost1year;
-               document.getElementById("cell47").innerHTML = result.timehundred[0].totalTransportCost10year;
-               document.getElementById("cell48").innerHTML = result.timehundred[0].totalTransportCost50year;
-               document.getElementById("cell49").innerHTML = result.timehundred[0].totalTransportCost100year;
-            	
-               
-              /* document.getElementById("concentration10").innerHTML = concentrations[3];
-               document.getElementById("concentration20").innerHTML = concentrations[4];
-               document.getElementById("concentration30").innerHTML = concentrations[5];*/
-                    
-                   /* for (var i = 0; i < arrayLength; i++) {
-
-                        try {
-                           osmb.addGeoJSON(geojson[i]);
-                        	
-                        }
-                        catch(err) {
-                            console.log(err.name)
-                        }
-
-                    }*/
+                   
+                   for (var i=1; i<=timefactor.length;i++)
+            	   {
+               document.getElementById("cell"+i+"1").innerHTML = result.totalTransportationCost[i-1];
+               document.getElementById("cell"+i+"2").innerHTML = result.totalMaterialPurchaseCost[i-1];
+               document.getElementById("cell"+i+"3").innerHTML = result.totalInstallationCost[i-1];
+               document.getElementById("cell"+i+"4").innerHTML = result.totalCO2Emission[i-1];
+               document.getElementById("cell"+i+"5").innerHTML = result.totalCO2EmissionCost[i-1];
+              
+               		for(var h=0;h<timefactor.length;h++)
+               			{
+               			document.getElementById("cell"+i+String(6+h)).innerHTML = result.totaltransportyearcost[timefactor.length*(i-1)+h];
+               			}
+              			               			
+            	   }
+             
                 })
                 
                 
     })
 });
-
-    
-//String.prototype.replaceAll = function(search, replacement) {
-  //  var target = this;
-    //return target.replace(new RegExp(search, 'g'), replacement);
-//};
