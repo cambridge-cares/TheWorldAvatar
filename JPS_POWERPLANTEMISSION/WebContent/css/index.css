@@ -15,7 +15,7 @@ table {
     margin-left: auto;
     margin-right: auto;
     margin-top: 30px;
-    table-layout: fixed;
+    /* table-layout: fixed; */
 }
 
 td, th {
