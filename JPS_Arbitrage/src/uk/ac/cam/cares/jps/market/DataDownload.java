@@ -23,11 +23,14 @@ public class DataDownload {
 
 	
 	
-	public static String Downloading_market_data() throws Exception {
-		
-		/** this function calls cmd to execute 4 Python scripts which download market prices for crude palm oil (CPO), biodiesel (FAME),
-		 *  natural gas at Henry Hub (HNG) and methanol at Zhengzhou exchange (ZCE) and stores it JPS knowledge base;
-		 *  prices of CPO are captured from cmd and returned for testing purposes */ 
+	/**
+	 * this function calls cmd to execute 4 Python scripts which download market prices for crude palm oil (CPO), biodiesel (FAME),
+	 *  natural gas at Henry Hub (HNG) and methanol at Zhengzhou exchange (ZCE) and stores it JPS knowledge base;
+	 *  prices of CPO are captured from cmd and returned for testing purposes
+	 * @return
+	 * @throws Exception
+	 */
+	public static String downloadingAndSavingMarketDataInTheKnowledgeBase() throws Exception {
 		
 		String CPO_download = new String("caresjpsarbitrage/CPO_download.pyw"); 
 		String FAME_download = new String("caresjpsarbitrage/FAME_download.pyw"); 
@@ -90,12 +93,15 @@ public class DataDownload {
 		   
 	}
 	
-	public static String Downloading_currencies() throws Exception {
+	/**
+	 * this function calls cmd to execute a Python script which downloads exchange rates and print them to the console;
+	 * those are captured and stored in JPS knowledge base; the currencies are defined within the script;
+	 * first currency-pair header is returned for testing purposes
+	 * @return
+	 * @throws Exception
+	 */
+	public static String downloadingAndSavingExchangeRatesInTheKnowledgeBase() throws Exception {
 		
-		/** this function calls cmd to execute a Python script which downloads exchange rates and print them to the console;
-		 * those are captured and stored in JPS knowledge base; the currencies are defined within the script;
-		 * first currency-pair header is returned for testing purposes */ 
-
 		String currency_download = new String("caresjpsarbitrage/exchange_rates.pyw"); 
 
 
@@ -144,11 +150,20 @@ public class DataDownload {
 		   
 	}
 	
-	public static void Storing_Aspen_data() throws Exception {
+	/**
+	 * this function calls cmd to execute a Python script which prints input and output headers and the associated data
+	 *  from an Aspen model; those are captured and stored in JPS knowledge base;
+	 *  information to be sourced from the model and printed is defined in the script
+	 *  
+	 * this function is more or less obsolete, but was
+	 * retained in case anyone would like to use Aspen as
+	 * a source of info about a chemical plant
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unused")
+	private static void retrievingPlantDataFromAspenModelAndSavingItInTheKnowledgeBase() throws Exception {
 		
-		/** this function calls cmd to execute a Python script which prints input and output headers and the associated data
-		 *  from an Aspen model; those are captured and stored in JPS knowledge base;
-		 *  information to be sourced from the model and printed is defined in the script*/ 
 		
 		String Aspen_data = new String("caresjpsarbitrage/print_Aspen_data.pyw");
 		
@@ -196,12 +211,16 @@ public class DataDownload {
 		   
 	}
 	
-	public static String Call_data(String[] headers) throws Exception {
-		
-		/** this function receives names of individuals, which are to be found in JPS knowledge base, and retrieves data under
-		 * numericalValue associated with them; in addition, market prices for crude palm oil (CPO) and biodiesel (FAME) are retrieved;
-		 * the names and the data are converted into a string and returned */ 	
-		
+	/**
+	 * this function receives names of individuals, which are to be found in JPS knowledge base, and retrieves data under
+	 * numericalValue associated with them; in addition, market prices for crude palm oil (CPO) and biodiesel (FAME) are retrieved;
+	 * the names and the data are converted into a string and returned
+	 * @param headers
+	 * @return
+	 * @throws Exception
+	 */
+	public static String retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase(String[] headers) throws Exception {
+
 		/** URIs of ontologies used to define KBs in which market data will be stored*/ 
 		String ontoPath = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15"; //KB
 		String ontoPath2 = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl";
@@ -272,7 +291,6 @@ public class DataDownload {
 	}
 		
 	public static void main(String[] args) throws Exception {
-		Downloading_market_data();
 	}
 	
 }

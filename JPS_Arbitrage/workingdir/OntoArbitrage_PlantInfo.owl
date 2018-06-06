@@ -41,10 +41,34 @@
     
 
 
+    <!-- http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#RawMaterialPrice -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#RawMaterialPrice">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#Price"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#StorageCosts -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#StorageCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#IndividualCosts"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#StoragePrice -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#StoragePrice">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#Price"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#TransportCosts -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#TransportCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#IndividualCosts"/>
     </owl:Class>
     
 
