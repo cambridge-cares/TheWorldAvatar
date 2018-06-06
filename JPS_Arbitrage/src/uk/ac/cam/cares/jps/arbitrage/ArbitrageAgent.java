@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.arbitrage;
 
-
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -8,61 +7,89 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+
 /**
  * Servlet implementation class ArbitrageAgent
  */
-@WebServlet(urlPatterns = {"/hardcode", "/KB"})
+@WebServlet(urlPatterns = {
+		"/runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles",
+		"/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent" })
 
 public class ArbitrageAgent extends HttpServlet {
-	private static final long serialVersionUID = 2L; //??
-    
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public ArbitrageAgent() {
-        super();
-    }
+	private static Logger logger = LoggerFactory
+			.getLogger(ArbitrageAgent.class);	
+	
+	private static final long serialVersionUID = 2L; // ??
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#HttpServlet()
 	 */
-protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public ArbitrageAgent() {
+		super();
+	}
 
-	/**this function is a servlet for calling functions in uk.ac.cam.cares.jps.arbitrage package and returning their results;
-	 * it discriminates between "/hardcode", "/KB" URL patterns and calls Arbitrage.Running_analysis_MoDS and 
+	/**
+	 * 
+	 * this function is a servlet for calling functions in
+	 * uk.ac.cam.cares.jps.arbitrage package and returning
+	 * their results; it discriminates between "/hardcode",
+	 * "/KB" URL patterns and calls
+	 * Arbitrage.Running_analysis_MoDS and
 	 * Arbitrage.Running_analysis_MoDS2, respectively
+	 * 
+	 * @see HttpServlet#doGet(HttpServletRequest request,
+	 *      HttpServletResponse response)
 	 */
-	
-	String path = request.getServletPath();
-	
-	if ("/hardcode".equals(path)) {
-	
-		// -- Get String formatted in Array of Strings -- //
-		request.setCharacterEncoding("UTF-8");
-		String jsonString = request.getParameter("MoDS_input");
-		
-		try {
-			String result = Arbitrage.Running_analysis_MoDS(jsonString);
-			response.setContentType("application/json");
-			response.getWriter().write(result);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
-	} else if ("/KB".equals(path)) {
-		// -- Get String formatted in Array of Strings -- //
-		request.setCharacterEncoding("UTF-8");
-		String jsonString = request.getParameter("MoDS_input");
-		
-		try {
-			String result = Arbitrage.Running_analysis_MoDS2(jsonString);
-			response.setContentType("application/json");
-			response.getWriter().write(result);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	protected void doGet(HttpServletRequest request,
+			HttpServletResponse response)
+			throws ServletException, IOException {
+
+		String path = request.getServletPath();
+
+		if ("/runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles"
+				.equals(path)) {
+
+			// -- Get String formatted in Array of Strings
+			// -- //
+			request.setCharacterEncoding("UTF-8");
+			String jsonString = request
+					.getParameter("MoDS_input");
+
+			try {
+				String result = Arbitrage
+						.runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles(
+								jsonString);
+				response.setContentType("application/json");
+				response.getWriter().write(result);
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+				throw new JPSRuntimeException(
+						e.getMessage(), e);
+			}
+		} else if ("/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent"
+				.equals(path)) {
+			// -- Get String formatted in Array of Strings
+			// -- //
+			request.setCharacterEncoding("UTF-8");
+			String jsonString = request
+					.getParameter("MoDS_input");
+
+			try {
+				String result = Arbitrage
+						.runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent(
+								jsonString);
+				response.setContentType("application/json");
+				response.getWriter().write(result);
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+				throw new JPSRuntimeException(
+						e.getMessage(), e);
+			}
+		}
 	}
 }
-}
-}
-
