@@ -273,16 +273,21 @@ def plotting_prices(dates, prices, labels,plot_address):
     plt.savefig(plot_address)
 
 #def run(plot_address, data):
-def run(data):
+def run(data, address):
 
     MoDS_data = data.split(',')
     for i in range(len(MoDS_data)):
         MoDS_data[i] = float(MoDS_data[i])
         
+    #file_addresses = {
+    #'CPO':r'C:\Users\Janusz\Desktop\Commodity_prices\Market_data\CPO_data.csv',
+    #'FAME':r'C:\Users\Janusz\Desktop\Commodity_prices\Market_data\FAME_data.csv'
+    #}
+	
     file_addresses = {
-    'CPO':r'C:\Users\Janusz\Desktop\Commodity_prices\Market_data\CPO_data.csv',
-    'FAME':r'C:\Users\Janusz\Desktop\Commodity_prices\Market_data\FAME_data.csv'
-    }
+    'CPO':address+'/CPO_data.csv',
+    'FAME':address+'/FAME_data.csv'
+    }	
 
     # Read in and process data into an appripriate format
     dates, prices = preprocessing(file_addresses)
@@ -300,5 +305,5 @@ def run(data):
 
 
 if __name__ == "__main__":
-    run(str(sys.argv[1]))
+    run(str(sys.argv[1]),str(sys.argv[2]))
 
