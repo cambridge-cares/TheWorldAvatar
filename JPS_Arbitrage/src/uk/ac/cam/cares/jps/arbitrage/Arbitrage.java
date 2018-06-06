@@ -70,14 +70,15 @@ public class Arbitrage {
 	 */
 	public static String runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles(
 			String input) throws Exception {
-		
-	
+
 		String[] sim_address = {
-				AgentLocator.getCurrentJpsAppDirectory(new Arbitrage()) + "/MoDS/HDMR_50_001",
-				"HDMR_Alg_1" };	
-//		String[] sim_address = {
-//				"C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\MoDS\\HDMR_50_001",
-//				"HDMR_Alg_1" };
+				AgentLocator.getCurrentJpsAppDirectory(
+						new Arbitrage())
+						+ "/MoDS/HDMR_50_001",
+				"HDMR_Alg_1" };
+		// String[] sim_address = {
+		// "C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\MoDS\\HDMR_50_001",
+		// "HDMR_Alg_1" };
 		// Double[] inputs = {24220.0656};
 		Double[] raw_materials = {
 				Double.parseDouble(input) };
@@ -89,12 +90,17 @@ public class Arbitrage {
 			result += "," + data.get(i).toString();
 		}
 
+		String workingdir = AgentLocator
+				.getCurrentJpsAppDirectory(new Arbitrage())
+				+ "/workingdir";
 		String CPO_to_FAME_analysis = new String(
 				"caresjpsarbitrage/CPO_to_FAME_MoDS.py");
+		
 		String result1 = PythonHelper.callPython(
-				CPO_to_FAME_analysis, result,
+				CPO_to_FAME_analysis, result, workingdir,
 				new Arbitrage());
 		logger.info(result1);
+		System.out.println(result1);
 		return result1;
 
 	}
@@ -121,11 +127,13 @@ public class Arbitrage {
 			String input) throws Exception {
 
 		String[] sim_address = {
-				AgentLocator.getCurrentJpsAppDirectory(new Arbitrage()) + "/MoDS/HDMR_50_001",
-				"HDMR_Alg_1" };	
-//		String[] sim_address = {
-//				"C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\MoDS\\HDMR_50_001",
-//				"HDMR_Alg_1" };
+				AgentLocator.getCurrentJpsAppDirectory(
+						new Arbitrage())
+						+ "/MoDS/HDMR_50_001",
+				"HDMR_Alg_1" };
+		// String[] sim_address = {
+		// "C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\MoDS\\HDMR_50_001",
+		// "HDMR_Alg_1" };
 		// Double[] inputs = {24220.0656};
 		Double[] raw_materials = {
 				Double.parseDouble(input) };
