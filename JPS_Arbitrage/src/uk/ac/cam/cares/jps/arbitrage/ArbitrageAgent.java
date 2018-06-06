@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
@@ -18,6 +21,9 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 		"/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent" })
 
 public class ArbitrageAgent extends HttpServlet {
+	private static Logger logger = LoggerFactory
+			.getLogger(ArbitrageAgent.class);	
+	
 	private static final long serialVersionUID = 2L; // ??
 
 	/**
@@ -61,8 +67,7 @@ public class ArbitrageAgent extends HttpServlet {
 				response.setContentType("application/json");
 				response.getWriter().write(result);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e.getMessage());
 				throw new JPSRuntimeException(
 						e.getMessage(), e);
 			}
@@ -81,8 +86,9 @@ public class ArbitrageAgent extends HttpServlet {
 				response.setContentType("application/json");
 				response.getWriter().write(result);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e.getMessage());
+				throw new JPSRuntimeException(
+						e.getMessage(), e);
 			}
 		}
 	}

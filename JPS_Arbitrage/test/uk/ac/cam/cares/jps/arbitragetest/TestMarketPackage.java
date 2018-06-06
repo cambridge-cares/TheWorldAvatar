@@ -9,16 +9,19 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import junit.framework.TestCase;
 
 public class TestMarketPackage extends TestCase {
-
+	private static Logger logger = LoggerFactory
+			.getLogger(TestMarketPackage.class);
+	
 	public static String executeGet(String path, String key,
 			String value) throws ParseException,
 			IOException, URISyntaxException {
-		// TODO-AE change localhost, maybe use directly
-		// class java.net.URI, maybe move this class to
-		// JPS_BASE
+		
 		URIBuilder builder = new URIBuilder()
 				.setScheme("http").setHost("localhost:8080")
 				.setPath(path).setParameter(key, value);
@@ -52,7 +55,7 @@ public class TestMarketPackage extends TestCase {
 		String path = "/JPS_Arbitrage/downloadingAndSavingMarketDataInTheKnowledgeBase";
 		String actual = executeGet(path, "whatver",
 				"whatever2");
-		System.out.println(actual);
+		logger.info(actual);
 		assertTrue(actual.contains(
 				"JAN 2021,FEB 2021,MAR 2021,APR 2021"));
 
@@ -74,7 +77,7 @@ public class TestMarketPackage extends TestCase {
 		String path = "/JPS_Arbitrage/downloadingAndSavingExchangeRatesInTheKnowledgeBase";
 		String actual = executeGet(path, "whatver",
 				"whatever2");
-		System.out.println(actual);
+		logger.info(actual);
 		assertTrue(actual.contains("USD"));
 
 	}
@@ -96,7 +99,7 @@ public class TestMarketPackage extends TestCase {
 		String key = "individuals";
 		String value = "V_Price_Storage_NaturalGas_001,V_Price_CoolingWater_001,V_Price_Storage_Biodiesel_001,V_Price_Storage_CrudePalmOil_001,V_Costs_Storage_CrudePalmOil_001,V_Price_Storage_Methanol_001,V_Price_Transport_Malaysia-SG_CrudePalmOil_001,V_Price_Electricity_001,V_Price_Transport_SG-SC_Methanol_001,V_USD_to_SGD,V_Price_ProcessWater_001,V_Price_Transport_USGC-NEA_NaturalGas_001,V_Price_HighPressureSteam_001,V_USD_to_CNY,V_Price_MediumPressureSteam_001,V_Price_LowPressureSteam_001,V_Price_Transport_SEA-SC_Biodiesel_001,V_Price_FuelGas_001";
 		String actual = executeGet(path, key, value);
-		System.out.println(actual);
+		logger.info(actual);
 		assertTrue(actual.contains(
 				"JAN 2021,FEB 2021,MAR 2021,APR 2021"));
 

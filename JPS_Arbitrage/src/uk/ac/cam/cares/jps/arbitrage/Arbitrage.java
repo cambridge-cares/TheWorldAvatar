@@ -3,12 +3,18 @@ package uk.ac.cam.cares.jps.arbitrage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.cmclinnovations.mods.api.MoDSAPI;
 import uk.ac.cam.cares.jps.arbitragetest.TestMoDSAnalysis;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 public class Arbitrage {
+	private static Logger logger = LoggerFactory
+			.getLogger(Arbitrage.class);
 
 	/**
 	 * this function calls cmd to execute a Python script
@@ -41,7 +47,7 @@ public class Arbitrage {
 		String result = PythonHelper.callPython(
 				CPO_to_FAME_analysis, market_data_plot,
 				new Arbitrage());
-		System.out.println(result);
+		logger.info(result);
 
 	}
 
@@ -88,7 +94,7 @@ public class Arbitrage {
 		String result1 = PythonHelper.callPython(
 				CPO_to_FAME_analysis, result,
 				new Arbitrage());
-		System.out.println(result1);
+		logger.info(result1);
 		return result1;
 
 	}
@@ -136,15 +142,15 @@ public class Arbitrage {
 		String value = "V_Price_CoolingWater_001,V_Price_Storage_Biodiesel_001,V_Price_Storage_CrudePalmOil_001,V_Price_Transport_Malaysia-SG_CrudePalmOil_001,V_Price_Electricity_001,V_USD_to_SGD,V_Price_ProcessWater_001,V_Price_HighPressureSteam_001,V_Price_MediumPressureSteam_001,V_Price_Transport_SEA-SC_Biodiesel_001,V_Price_FuelGas_001";
 		String actual = TestMoDSAnalysis.executeGet(path,
 				key, value);
-		System.out.println(actual);
-		System.out.println(result);
+		logger.info(actual);
+		logger.info(result);
 
 		String CPO_to_FAME_analysis = new String(
 				"caresjpsarbitrage/CPO_to_FAME_MoDS2.py");
 		String result1 = PythonHelper.callPython(
 				CPO_to_FAME_analysis, result, actual,
 				new Arbitrage());
-		System.out.println(result1);
+		logger.info(result1);
 
 		return result1;
 
