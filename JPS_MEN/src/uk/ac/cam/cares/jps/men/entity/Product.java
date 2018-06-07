@@ -1,12 +1,9 @@
 package uk.ac.cam.cares.jps.men.entity;
 
-// TODO-AE rename to Ressource or whatever fits to EIP ontology
 public class Product implements INamed {
 
 	private String name = "";
-	// TODO-AE change to physical quantity f
 	private double capacity = 0;
-	// TODO-AE change to currency object
 	private double price = 0;
 
 	public Product(String name) {
@@ -21,6 +18,9 @@ public class Product implements INamed {
 		return capacity;
 	}
 
+	/**
+	 * @param capacity in t/year
+	 */
 	public void setCapacity(double capacity) {
 		this.capacity = capacity;
 	}

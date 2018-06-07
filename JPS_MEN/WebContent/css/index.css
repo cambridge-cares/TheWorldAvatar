@@ -1,0 +1,26 @@
+#topBanner
+{
+    background-color: #10616C;
+}
+
+#head1
+{
+    color: white;
+}
+
+#description
+{
+    color: white;
+    width:60%;
+    margin-left: 20%;
+}
+
+div#outputFields {
+	margin-left: 15px;
+	margin-top: 30px;
+	margin-right: 15px;
+}
+
+div#inputFields {
+	margin-left: 15px;
+}

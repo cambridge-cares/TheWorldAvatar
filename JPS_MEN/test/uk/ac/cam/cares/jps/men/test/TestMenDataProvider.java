@@ -275,6 +275,8 @@ public class TestMenDataProvider extends TestCase {
 		assertEquals(22539.661189, actual.totalTransportationCost, 1.);
 		assertEquals(53.7127, actual.totalCO2Emission, 1.); // in gramm
 		assertEquals(1552885.9635, actual.totalInstallationCost, 1.);
+		assertEquals(2685.6338, actual.totalC02EmissionCost, 1.);
+		
 
 	}
 	

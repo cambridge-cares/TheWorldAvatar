@@ -54,8 +54,10 @@ public class ADMSCoordinationAgent extends HttpServlet {
 		HttpUriRequest request2 = new HttpGet(requestToADMSWrapper);
 		HttpResponse httpResponse2 = HttpClientBuilder.create().build().execute(request2);
 		String responseString2 = EntityUtils.toString(httpResponse2.getEntity());
+ 
 		
-		
+		// response.getWriter().write(responseString2);
+
 		
 		/*
 		 * 'http://localhost:8080/JPS/ADMS/ADMSWrapper?selectedSource=' + encodeURIComponent('http://www.theworldavatar.com/Plant-001.owl') + '&buildingTopNode=' + null + '&coordinates=' + encodeURIComponent(JSON.stringify(coordinate))

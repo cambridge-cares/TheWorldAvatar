@@ -20,9 +20,8 @@ import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
 import uk.ac.cam.cares.jps.base.discovery.AgentServiceDescription;
 import uk.ac.cam.cares.jps.base.discovery.DiscoveryProvider;
 import uk.ac.cam.cares.jps.base.discovery.Parameter;
-import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.discovery.knowledgebase.OWLSerializer;
-import uk.ac.cam.cares.jps.discovery.util.ISerializer;
 
 public class TestDiscovery extends TestCase {
 	
@@ -34,12 +33,11 @@ public class TestDiscovery extends TestCase {
 	
 		AgentServiceDescription descr = DescriptionFactory.createAgentServiceDescription(general, input, output);
 		
-		ISerializer serializer = DiscoveryFactory.getSerializer();
-		String s = serializer.convertToString(descr);
+		String s = DiscoveryProvider.convertToJson(descr);
 		
 		System.out.println("serialized = " + s);
 		
-		AgentServiceDescription actual = serializer.<AgentServiceDescription>convertFrom(s, AgentServiceDescription.class).get();
+		AgentServiceDescription actual = DiscoveryProvider.convertFromJson(s, AgentServiceDescription.class);
 		
 		// the objects itself are different
 		assertNotEquals(descr, actual);
@@ -93,10 +91,8 @@ public class TestDiscovery extends TestCase {
 		return  DiscoveryProvider.getAllAgentNames();
 	}
 
-	private void deregisterAllAgents() throws ClientProtocolException, IOException {	
-		for (String current : getAgents()) {
-			DiscoveryProvider.deregisterAgent(current);
-		}
+	private void clearRegistry() throws ClientProtocolException, IOException {	
+		DiscoveryProvider.clear();
 	}
 	
 	private void register(Agent agent) throws IOException {
@@ -105,15 +101,22 @@ public class TestDiscovery extends TestCase {
 	
 	public void testRegisterOneAgentTwice() throws IOException {
 		
-		deregisterAllAgents();
+		clearRegistry();
 		
 		Agent agent = new WeatherAgentOne().getAgent();
 		
 		register(agent);	
-		register(agent);	
-		List<String> actual = getAgents();
-		assertEquals(1, actual.size());
-		assertEquals(agent.getName(), actual.get(0));
+		boolean excCaugth = false;
+		try {
+			register(agent);	
+		} catch (JPSRuntimeException e) {
+			excCaugth = true;
+		}
+		assertTrue(excCaugth);
+		
+//		List<String> actual = getAgents();
+//		assertEquals(1, actual.size());
+//		assertEquals(agent.getName(), actual.get(0));
 	}
 	
 	private void registerFiveAgents() throws IOException {
@@ -129,14 +132,14 @@ public class TestDiscovery extends TestCase {
 	
 	public void testRegisterAndUnregisterFiveAgents() throws IOException {
 		
-		deregisterAllAgents();
+		clearRegistry();
 		
 		registerFiveAgents();
 		
 		List<String> actual = getAgents();
 		assertEquals(5, actual.size());
 		
-		deregisterAllAgents();
+		clearRegistry();
 		
 		actual = getAgents();
 		assertEquals(0, actual.size());
@@ -144,7 +147,7 @@ public class TestDiscovery extends TestCase {
 	
 	public void testSearchTwoAgentsOutofSevenRegisteredAgentsAndCallOneAgent() throws IOException {
 		
-		deregisterAllAgents();
+		clearRegistry();
 		
 		registerFiveAgents();
 		Agent agentOne = new WeatherAgentOne().getAgent();
@@ -183,7 +186,7 @@ public class TestDiscovery extends TestCase {
 	
 	public void testSearchAndCallAgentByDiscoveryService() throws IOException {
 		
-		deregisterAllAgents();
+		clearRegistry();
 		
 		Agent agentTwo = new WeatherAgentTwo().getAgent();
 		register(agentTwo);	
@@ -194,7 +197,7 @@ public class TestDiscovery extends TestCase {
 		AgentRequest agentRequest = DescriptionFactory.createDiscoveryMessage(general, input, output);
 		
 		AgentResponse agentResponse = DiscoveryProvider.callAgent(agentRequest);
-		String actual = agentResponse.getOutputParameters().get(0).getValue();
+		Object actual = agentResponse.getOutputParameters().get(0).getValue();
 		assertEquals("30.3", actual);
 	}
 }

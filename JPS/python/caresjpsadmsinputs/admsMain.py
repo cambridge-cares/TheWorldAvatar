@@ -19,7 +19,7 @@ for key, value in result.items():
     print (value) 
 
 
-writer = admsAplWriter(result, 'test.apl')
+writer = admsAplWriter(result, 'testqunimagedaxuebi.apl')
 
 writer.write()
 '''
@@ -52,6 +52,6 @@ if __name__ == "__main__":
         print (value) 
 
 
-    writer = admsAplWriter(result, 'test.apl')
+    writer = admsAplWriter(result, '..\..\workingdir\ADMS\test.apl')
 
     writer.write()

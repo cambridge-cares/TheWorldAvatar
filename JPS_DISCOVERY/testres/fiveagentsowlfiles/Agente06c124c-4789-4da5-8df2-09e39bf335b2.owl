@@ -22,14 +22,14 @@
     <rdf:type rdf:resource="http://www.theworldavatar.com/OntoAgent/OntoAgent.owl#InputParameter"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://www.theworldavatar.com/OntoAgent/Agente06c124c-4789-4da5-8df2-09e39bf335b2.owl#Property1">
-    <jpsago:hasValue>weather</jpsago:hasValue>
+    <jpsago:hasValue>transportation</jpsago:hasValue>
     <jpsago:hasKey>domain</jpsago:hasKey>
     <jpsago:hasIndex>1</jpsago:hasIndex>
     <rdf:type rdf:resource="http://www.theworldavatar.com/OntoAgent/OntoAgent.owl#Property"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://www.theworldavatar.com/OntoAgent/Agente06c124c-4789-4da5-8df2-09e39bf335b2.owl#Agent">
     <jpsago:hasAgentServiceDescription rdf:resource="http://www.theworldavatar.com/OntoAgent/Agente06c124c-4789-4da5-8df2-09e39bf335b2.owl#AgentServiceDescription0"/>
-    <jpsago:hasName>IRIsomeAgent</jpsago:hasName>
+    <jpsago:hasName>IRIAgent3</jpsago:hasName>
     <jpsago:hasId>e06c124c-4789-4da5-8df2-09e39bf335b2</jpsago:hasId>
     <rdf:type rdf:resource="http://www.theworldavatar.com/OntoAgent/OntoAgent.owl#Agent"/>
   </rdf:Description>

@@ -29,7 +29,7 @@ public class ADMSHelper extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		// -- Get String formatted in Array of Strings -- //
 		request.setCharacterEncoding("UTF-8");

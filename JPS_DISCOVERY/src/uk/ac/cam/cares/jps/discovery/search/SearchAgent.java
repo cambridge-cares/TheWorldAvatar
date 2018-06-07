@@ -16,7 +16,6 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.matching.exact.ExactMatcher;
 
 @WebServlet(urlPatterns = {"/search", "/call"})
@@ -46,7 +45,7 @@ public class SearchAgent extends HttpServlet {
 		
 		List<String> result = new ArrayList<String>();
 		
-		ExactMatcher matcher = new ExactMatcher(DiscoveryFactory.getRegistry());
+		ExactMatcher matcher = new ExactMatcher();
 		List<Agent> list = matcher.getMatches(agentRequest);
 		for (Agent current : list) {
 			result.add(current.getName());
@@ -66,7 +65,7 @@ public class SearchAgent extends HttpServlet {
 			// TODO-AE path vs. local host, this must be clearified. 
 			// The agent could also run on 3rd party server or any server different from 
 			// where the discovery is located!
-			// TODO-AE why the first agent --> evaluate performance of agents
+			// TODO-AE why the first agent --> evaluate performance / quality of agents and then select the best one
 			String address = list.get(0);
 			// TODO-AE this is a complete hack to get the path
 			int index = address.indexOf("8080");
@@ -74,8 +73,6 @@ public class SearchAgent extends HttpServlet {
 			result = AgentCaller.callAgent(path, agentRequest);
 			
 		} else {
-			// TODO-AE better: I guess this error will not be shown in the error message of HTTP response
-			// do we have to change this?
 			throw new JPSRuntimeException("no suitable agent found");
 		}
 		

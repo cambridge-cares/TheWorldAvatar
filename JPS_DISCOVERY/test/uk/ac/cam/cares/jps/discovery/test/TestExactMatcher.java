@@ -1,75 +1,82 @@
 package uk.ac.cam.cares.jps.discovery.test;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.Agent;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
-import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 import uk.ac.cam.cares.jps.discovery.matching.exact.ExactMatcher;
-import uk.ac.cam.cares.jps.discovery.registry.IRegistry;
-import uk.ac.cam.cares.jps.discovery.registry.SimpleInMemoryRegistry;
 
 public class TestExactMatcher extends TestCase {
 	
+	
+	private ExactMatcher createMatcherMock(final Collection<Agent> agents) {
+		
+		return new ExactMatcher() {
+
+			@Override
+			public Collection<Agent> searchAgents(String domain) {
+				return agents;
+			}
+		};
+	}
+	
 	private ExactMatcher createMatcherWithOneAgent() {
 		
-		IRegistry registry = DiscoveryFactory.getRegistry();
-		// TODO-AE make clear part of IRegistry? 
-		((SimpleInMemoryRegistry) registry).clear();
+		List<Agent> agents = new ArrayList<Agent>();
 		
 		String general = "domain,weather";
 		String input = "city,null";
 		String output = "IRItemperature,null";
 	
 		Agent agent = DescriptionFactory.createAgent("IRIagentOne", general, input, output);
-		registry.register(agent);
+		agents.add(agent);
 		
-		return new ExactMatcher(registry);
+		return createMatcherMock(agents);
 	}
 	
 	private ExactMatcher createMatcherWithFiveAgents() {
 		
-		IRegistry registry = DiscoveryFactory.getRegistry();
-		// TODO-AE make clear part of IRegistry? 
-		((SimpleInMemoryRegistry) registry).clear();
+		List<Agent> agents = new ArrayList<Agent>();
 		
 		// agent 1
 		String general = "domain,weather";
 		String input = "city,null";
 		String output = "IRItemperature,null";
 		Agent agent = DescriptionFactory.createAgent("IRIagentOne", general, input, output);
-		registry.register(agent);
+		agents.add(agent);
 		
 		// agent 2 (same description as agent 1)
 		general = "domain,weather";
 		input = "city,null";
 		output = "IRItemperature,null";
 		agent = DescriptionFactory.createAgent("IRIagentTwo", general, input, output);
-		registry.register(agent);
+		agents.add(agent);
 		
 		// agent 3
 		general = "domain,weather";
 		input = "city,null,region,null";
 		output = "IRItemperature,null";
 		agent = DescriptionFactory.createAgent("IRIagentThree", general, input, output);
-		registry.register(agent);
+		agents.add(agent);
 		
 		// agent 4
 		general = "domain,weather";
 		input = "city,null";
 		output = "temperature,null";
 		agent = DescriptionFactory.createAgent("IRIagentFour", general, input, output);
-		registry.register(agent);
+		agents.add(agent);
 		
 		// agent 5
 		general = "";
 		input = "city,null";
 		output = "IRItemperature,null";
 		agent = DescriptionFactory.createAgent("IRIagentFive", general, input, output);
-		registry.register(agent);
+		agents.add(agent);
 		
-		return new ExactMatcher(registry);
+		return createMatcherMock(agents);
 	}
 	
 	public void testMatchForRegistryWithOneAgent() {
