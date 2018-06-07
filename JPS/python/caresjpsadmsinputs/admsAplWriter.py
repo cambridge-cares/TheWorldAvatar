@@ -165,10 +165,10 @@ GRD = '''
     GrdCoordSysType        = 0
     GrdSpacingType         = 0
     GrdRegularMin          = 
-      7.9173323e+4 4.54193456e+5 0.00e+0
+      {0} {1} 0.00e+0
       1.0e+1 0.0e+0 0.0e+0
     GrdRegularMax          = 
-      8.0199621e+4 4.55030337e+5 3.00e+1
+      {2} {3} 3.00e+1
       1.000e+3 3.30e+2 0.0e+0
     GrdRegularNumPoints    = 
       80 80 4
@@ -202,7 +202,7 @@ BKGETC = '''
     BkgFixedLevels  = 1
     /
     &ADMS_PARAMETERS_ETC
-    SrcNumSources    = {}
+    SrcNumSources    = 1
     PolNumPollutants = 16
     PolNumIsotopes   = 0
     /
@@ -740,11 +740,12 @@ class admsAplWriter(object):
             self.writeBdn(file, self.data['Bdn'])
             self.writeStr(file,HIL)
             self.writeStr(file,FLC)
-            self.writeStr(file,GRD)
+            self.writeTemp(file,GRD,self.data['Grd'])
+
             self.writeStr(file,PUFGAM)
             self.writeOpt(file,self.data['Opt'])
             self.writeStr(file,CHM)
-            self.writeTemp(file,BKGETC,[self.data['Opt'].OptNumOutputs])
+            self.writeStr(file,BKGETC)
 
 
             self.writeCoordSys(file)# a special case, to be unified in future
@@ -811,6 +812,7 @@ class admsAplWriter(object):
         file.write('\n')
 
     def writeTemp(self, file, temp, data):
+        print(data)
         self.writeStr( file, temp.format(*data))    
 
 
