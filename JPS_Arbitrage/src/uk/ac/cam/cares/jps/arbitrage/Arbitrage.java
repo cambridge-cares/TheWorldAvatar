@@ -139,8 +139,10 @@ public class Arbitrage {
 		// "C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\MoDS\\HDMR_50_001",
 		// "HDMR_Alg_1" };
 		// Double[] inputs = {24220.0656};
-		Double[] raw_materials = {
-				Double.parseDouble(input) };
+		Gson g = new Gson();
+//		Double[] raw_materials = {
+//				Double.parseDouble(input) };
+		Double[] raw_materials = g.fromJson(input, Double[].class);
 		List<Double> MoDS_data = MoDS(raw_materials,
 				sim_address);
 

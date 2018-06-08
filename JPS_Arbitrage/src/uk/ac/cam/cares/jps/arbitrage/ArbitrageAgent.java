@@ -98,7 +98,7 @@ public class ArbitrageAgent extends HttpServlet {
 //			delete later
 //			System.out.println(path);
 //			System.out.println(jsonString);
-//			writeStringUsingBufferedWriter(path, jsonString);
+			writeStringUsingBufferedWriter(path, jsonString);
 
 			try {
 				String result = g.toJson(Arbitrage
