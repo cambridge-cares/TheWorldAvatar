@@ -5,6 +5,7 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/test"/>
         <wb-resource deploy-path="/python" source-path="/python"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <wb-resource deploy-path="/MoDS" source-path="/MoDS"/>
         <property name="context-root" value="JPS_Arbitrage"/>
         <property name="java-output-path" value="/JPS_Arbitrage/build/classes"/>
     </wb-module>

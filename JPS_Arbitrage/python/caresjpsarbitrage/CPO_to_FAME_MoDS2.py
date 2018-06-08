@@ -11,65 +11,64 @@ from math import inf
 import matplotlib.pyplot as plt
 from csv_funcs import RCSV, ACSV
 
-def preprocessing(file_addresses):
-    
-    # This function reads pricing data from .csv files in 'file_addresses', converts numbers from strings to floats and CNY to USD and sorts prices and their timestamps into separate dictionaries
-    # It accepts a dictionary where keys are names of the chemicals and values are the file addresses.
 
-    # Create variables to hold the read data
-    prices, dates = {}, {}
-    for key in file_addresses:
-        prices[key] = []
-        dates[key] = []
+def preprocessing(data):
 
-    # Read and store data in arrays in the dictionaries
-    for key in file_addresses:
-        prices[key], dates[key] = RCSV(file_addresses[key])
-        # This line discards historical data  by trimming off just the last line
-        prices[key] = prices[key][-len(dates[key]):] 
+    data = data.split('&')
 
-    
-    # This loops convert the contract size and the prices from strings to floats. It is assumed that the first two entries are not numbers, but headers.
-    # If a string within the range is not a number or a 0, then it is store as a None.
-    for key in file_addresses:
-        for i in range(2,len(prices[key])):
+    for i in range(len(data)):
+        if data[i][-1] == ",": data[i] = data[i][:-1]
+        
+    dates = {}
+    prices = {}
+    u_prices = {}
+    t_prices = {}
+    ex_rates = {}
+    s_prices = {}
+
+    data[1] = data[1].split(",")
+    dates[data[1][0]] = data[1][1:]
+
+    data[3] = data[3].split(",")
+    dates[data[3][0]] = data[3][1:]
+
+    data[2] = data[2].split(",")
+    prices[data[1][0]] = data[2][1:]
+
+    data[4] = data[4].split(",")
+    prices[data[3][0]] = data[4][1:]
+
+
+    for key in prices:
+        for j in range(2,len(prices[key])):
             try:
-                prices[key][i] = float(prices[key][i])
-                if  prices[key][i] == 0:  prices[key][i] = None
-            except ValueError:
-                prices[key][i] = None
+                prices[key][j] = float(prices[key][j])
+                if float(prices[key][j]) == 0.0: 
+                    prices[key][j] = None
+                    continue                
+            except:
+                prices[key][j] = None
 
-    return dates, prices
- 
-def exchange_rates(prices, currencies):
-    # This function converts an array of prices from one currency to another. It accepts an array with floats (but skips over non-floats) and an array with two strings. The latter need to be the correct currency codenames as per www.xe.com as this function will download the rates from there.
-    # The first entry in the array with codenames corresponds to the present currency, while the second to the target currency. 
-
-    # Url is being formulated
-    url = 'http://www.xe.com/currencyconverter/convert/?Amount=1&From='+currencies[0]+'&To='+currencies[1]
+                
+    data[0] = data[0].split(",")
+    for i in range(len(data[0])):
+        if data[0][i].rfind('USD') != -1:
+            ex_rates[data[0][i]] = float(data[0][i+1])
+            continue
+        if data[0][i].rfind('Storage') != -1:
+            s_prices[data[0][i]] = float(data[0][i+1])
+            continue
+        if data[0][i].rfind('Transport') != -1:
+            t_prices[data[0][i]] = float(data[0][i+1])
+            continue
+        try: float(data[0][i])
+        except: u_prices[data[0][i]] = float(data[0][i+1])
     
-    # requests library is used to download the source code of the page with exchange rates. The code is then parsed as html.
-    page = requests.get(url)
-    tree = html.fromstring(page.content)
-    page.close()
+    
+    return dates, prices, u_prices, t_prices, ex_rates, s_prices
+ 
 
-    # lxml library is used to search through the html file using its structure and attributes
-    exchange_rate = float(tree.xpath('//span[@class="uccResultUnit"]')[0].attrib['data-amount'])
-
-    # This loop calculates the converted prices if they are in an array.
-    if type(prices) == list:
-        for i in range(len(prices)):
-               if type(prices[i]) == float: prices[i] *= exchange_rate
-    elif type(prices) == dict:
-        for key in prices:
-            if  prices[key]['unit'][:3] == currencies[1]:
-                continue
-            else:
-                prices[key]['value'] *= exchange_rate
-                prices[key]['unit'] = currencies[1]+prices[key]['unit'][3:]
-    return prices
-
-def transport_costs(prices):
+def transport_costs(prices, t_prices):
     # This function adds transportation cost to the prices of the reagent and subtracts the transportation cost from the prices of the product. 
     for key in prices:
         if key == 'FAME':
@@ -79,7 +78,7 @@ def transport_costs(prices):
             tmp = prices[key][3:]
             # This loop calculates the converted prices.
             for i in range(len(tmp)):
-                if type(tmp[i]) == float: tmp[i] = tmp[i] - 40
+                if type(tmp[i]) == float: tmp[i] = tmp[i] - t_prices['V_Price_Transport_SEA-SC_Biodiesel_001']
             prices[key][3:] = tmp
 
         else:
@@ -88,32 +87,10 @@ def transport_costs(prices):
             tmp = prices[key][3:]
             # This loop calculates the converted prices.
             for i in range(len(tmp)):
-                if type(tmp[i]) == float: tmp[i] = tmp[i] + 5
+                if type(tmp[i]) == float: tmp[i] = tmp[i] + t_prices['V_Price_Transport_Malaysia-SG_CrudePalmOil_001']
             prices[key][3:] = tmp
 
     return prices
-
-def storage_cost(prices = None):
-    # This function desribes two option for pricing storage of biodiesel and crude palm oil.
-    # Option 1 is entirely based on literature and data from the biodiesel plant on Jurong Island provided by Martin (for details see below).
-    # Option 2 is based on the futures prices where it is assumed that the differences in chronologically subsequent prices approximates storage prices.
-    
-    
-    # Option 1 - Literature
-    # Storage and associated costs per year per tonne of biodiesel and crude palm oil is 2.70 USD in 2017 (extrapolated from Martin's documents by adjusting for inflation using http://www.usinflationcalculator.com/ on 09.05.2017; ~3.5SGD or ~2.3USD in 2007  (price range 3-4 SGD in 2007); conversion from SGD to USD based on historical rates from http://www.x-rates.com/historical/?from=SGD&amount=1&date=2007-05-01)
-  
-    # Prices are converted to USD per tonne per month
-    storage = {'CPO':2.49/12, 'FAME':2.49/12}
-    
-    # Option 2 - infer from futres prices
-    #for key in prices:
-    #    counter = 0
-    #    while prices[key][4+counter] == None or prices[key][3+counter] == None:
-    #        counter += 1
-    #    if prices[key][4+counter]-prices[key][3+counter] > 0: storage[key] = prices[key][4+counter]-prices[key][3+counter]
-    #    print(prices[key][4+counter]-prices[key][3+counter])
-
-    return storage
 
 def chemical_conversion(complexity = 'simple', MoDS_data = 1):
     # This function calculates the number of tonnes of crude palm oil required to produce a metric tonne of biodiesel.
@@ -138,7 +115,7 @@ def chemical_conversion(complexity = 'simple', MoDS_data = 1):
         
         return CPO/FAME
 
-def conversion_cost(MoDS_data):
+def conversion_cost(MoDS_data, u_prices):
     
     # This function calculates the cost of producing an additional metric tonne of biodiesel based on the average utility consumption.
     # The pricing data has been taken from Martin's spreadsheets of the biodiesel plant and govermental data.
@@ -152,32 +129,33 @@ def conversion_cost(MoDS_data):
     # FUEL GAS in spreadhsheet 'utilities cost v19 (SCU) excl CPO refining.xls' in 'unit prices' see 'Fuel gas' 14.85 SGD per mmBTU in 2007 (converting to USD in 2007 and adjusting for inflation 9.8 USD until 09.05.2017)
     
     # Realistic utility costs (in order of significance: COOLING WATER, MP STEAM, HP STEAM, FUEL GAS, PROCESS WATER, Elec)
-    cost = {'MP STEAM':{'value': 12.64/1000, 'unit':'USD per kg'}, 'PROCESS WATER': {'value':0.33/1000, 'unit':'USD per kg'}, 'COOLING WATER':{'value': 1.74/1000, 'unit':'USD per kg'}, 'Elec': {'value':(0.1727+0.1051)/2/3600, 'unit':'SGD per kJ'}, 'FUEL GAS': {'value':9.8, 'unit':'USD per mmBTU'}, 'HP STEAM':{'value': 3.49/1000, 'unit':'USD per kg'}}
+    
+    
+    #cost = {'MP STEAM':{'value': 12.64/1000, 'unit':'USD per kg'}, 'PROCESS WATER': {'value':0.33/1000, 'unit':'USD per kg'}, 'COOLING WATER':{'value': 1.74/1000, 'unit':'USD per kg'}, 'Elec': {'value':(0.1727+0.1051)/2/3600, 'unit':'SGD per kJ'}, 'FUEL GAS': {'value':9.8, 'unit':'USD per mmBTU'}, 'HP STEAM':{'value': 3.49/1000, 'unit':'USD per kg'}}
 
-    cost = exchange_rates(cost, ['SGD', 'USD'])
-
+    
     # Read consumption rates from the provided HYSYS simulation
     consumption = {}
     consumption['FAME'] = {'value':MoDS_data[1], 'unit':'kg/hr'}
     # kW are converted to kJ/hr
-    consumption['Elec'] = {'value':MoDS_data[2]*3600, 'unit':'kJ/hr'}
-    consumption['COOLING WATER'] = {'value':MoDS_data[7], 'unit':'kg/hr'}
+    consumption['V_Price_Electricity_001'] = {'value':MoDS_data[2]*3600, 'unit':'kJ/hr'}
+    consumption['V_Price_CoolingWater_001'] = {'value':MoDS_data[7], 'unit':'kg/hr'}
     # kmol/hr are converted into l/hr (molar volume of methane at STD was taken from http://chemistry.tutorvista.com/inorganic-chemistry/molar-volume.html)
     # l/hr into Mcft/hr (google.com unit converter; 1 Mcft = 1000 cft)
     # Mcft/hr into mmBTU/hr (https://business.directenergy.com/understanding-energy/energy-tools/conversion-factors)
-    consumption['FUEL GAS'] = {'value':float(MoDS_data[3])*22.4*0.0353147*0.9756, 'unit':'mmBTU/hr'}
-    consumption['HP STEAM'] = {'value':MoDS_data[4], 'unit':'kg/hr'}
-    consumption['MP STEAM'] = {'value':MoDS_data[6], 'unit':'kg/hr'}
-    consumption['PROCESS WATER'] = {'value':MoDS_data[8], 'unit':'kg/hr'}
+    consumption['V_Price_FuelGas_001'] = {'value':float(MoDS_data[3])*22.4*0.0353147*0.9756, 'unit':'mmBTU/hr'}
+    consumption['V_Price_HighPressureSteam_001'] = {'value':MoDS_data[4], 'unit':'kg/hr'}
+    consumption['V_Price_MediumPressureSteam_001'] = {'value':MoDS_data[6], 'unit':'kg/hr'}
+    consumption['V_Price_ProcessWater_001'] = {'value':MoDS_data[8], 'unit':'kg/hr'}
     
     # Calculate cost per tonne of biodiesel
     total = 0
-    for key in cost:
-        total += consumption[key]['value']*cost[key]['value']
+    for key in u_prices:
+        total += consumption[key]['value']*u_prices[key]
     
     return total/consumption['FAME']['value']
 
-def look_for_munnies(MoDS_data, prices, dates):
+def look_for_munnies(MoDS_data, prices, dates,s_prices,u_prices):
     
     # This function performs puts together all the data and looks for the most profitable arbitrage opportunity using a brute force approach (i.e. checking all possible combintations subject to chronological order constraint).
 
@@ -185,11 +163,11 @@ def look_for_munnies(MoDS_data, prices, dates):
     # In case this cannot be done a simple analysis will be performed.
 
     # Retrieve the average conversion cost per tonne of methanol
-    conv = conversion_cost(MoDS_data)
+    conv = conversion_cost(MoDS_data,u_prices)
     #how many NG contracts are needed to fulfill 1 MeoH contract
     CPO_FAME = chemical_conversion('complex', MoDS_data)
     # The storage cost per month-tonne are retrieved
-    storage = storage_cost()
+    storage = {'CPO':s_prices['V_Price_Storage_CrudePalmOil_001'], 'FAME':s_prices['V_Price_Storage_Biodiesel_001']}
 
     # This loop searches through opportunities given that all ncrude palm oil is stored and that conversion is instantaneous
     lowest_diff = {'price difference': -inf, 'month_CPO':None, 'month_FAME':None}
@@ -214,7 +192,7 @@ def look_for_munnies(MoDS_data, prices, dates):
     
     print('The highest marginal profit per tonne of  biodiesel FAME is', round(lowest_diff['price difference'],2), 'USD. The futures contracts need to be accepted at the following ratio of reagent to product:',CPO_FAME/prices['CPO'][2]*prices['FAME'][2], '. Buy crude palm oil futures contracts with delivery in', lowest_diff['month_CPO'], 'and sell biodiesel FAME futures contracts with delivery in', lowest_diff['month_FAME'],'.', lowest_diff['note'])
 
-def plotting_prices(dates, prices, labels,plot_address):
+def plotting_prices(dates, prices, labels):
 
     # This function plots the futures prices for two commodities. It assumes that there may be None values between the headers and the prices. It searches for them and they are excluded from the plot.
 
@@ -268,39 +246,30 @@ def plotting_prices(dates, prices, labels,plot_address):
     plt.xticks(range(len(x_labels)),[])
     # The line below defines the style. For more information see Python manual.
     plt.plot(prices[key_2][lower_bound:upper_bound], 'k', prices[key_2][lower_bound:upper_bound], 'ro')
-    #plt.show()
+    plt.show()
     #plt.savefig(r'C:\Users\Janusz\Desktop\Commodity_prices\Market_data\arbitrage_CPO.png')
-    plt.savefig(plot_address)
+    #plt.savefig(plot_address)
 
 #def run(plot_address, data):
-def run(data, address):
+def run(MoDS_data, data):
 
-    MoDS_data = data.split(',')
+    MoDS_data = MoDS_data.split(',')
     for i in range(len(MoDS_data)):
         MoDS_data[i] = float(MoDS_data[i])
         
-    #file_addresses = {
-    #'CPO':r'C:\Users\Janusz\Desktop\Commodity_prices\Market_data\CPO_data.csv',
-    #'FAME':r'C:\Users\Janusz\Desktop\Commodity_prices\Market_data\FAME_data.csv'
-    #}
-	
-    file_addresses = {
-    'CPO':address+'/CPO_data.csv',
-    'FAME':address+'/FAME_data.csv'
-    }	
-
     # Read in and process data into an appripriate format
-    dates, prices = preprocessing(file_addresses)
-
+    dates, prices, u_prices, t_prices, ex_rates, s_prices = preprocessing(data)
+    u_prices['V_Price_Electricity_001'] = u_prices['V_Price_Electricity_001']*ex_rates['V_USD_to_SGD']
+    
     # Adjust prices to include the transport cost
-    prices = transport_costs(prices)
+    prices = transport_costs(prices, t_prices)
 
     # Search through the arbitrage opportunities
-    look_for_munnies(MoDS_data, prices, dates)
+    look_for_munnies(MoDS_data, prices, dates,s_prices,u_prices)
 
     # Define titles and labels to plot the futures prices data and plot the data
     #labels = {'FAME':{'title':'Biodiesel FAME futures prices from Chicago Mercantile Exchange', 'label':'Price (USD per tonne)'},'CPO':{'title':'Crude palm oil futures prices from Chicago Mercantile Exchange', 'label':'Price (USD per tonne)'}, 'x':{'title':'Delivery date (-)', 'label':dates['FAME']}}
-    #plotting_prices(dates, prices, labels,plot_address)
+    #plotting_prices(dates, prices, labels)
 
 
 

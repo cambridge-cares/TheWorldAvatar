@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.market;
 
-
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -10,76 +11,134 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+
 /**
  * Servlet implementation class DataDownloadAgent
  */
-@WebServlet(urlPatterns = {"/download", "/download2", "/read"})
+@WebServlet(urlPatterns = {
+		"/downloadingAndSavingMarketDataInTheKnowledgeBase",
+		"/downloadingAndSavingExchangeRatesInTheKnowledgeBase",
+		"/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase" })
 public class DataDownloadAgent extends HttpServlet {
-	private static final long serialVersionUID = 2L; //??
-    
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public DataDownloadAgent() {
-        super();
-    }
+	private static Logger logger = LoggerFactory
+			.getLogger(DataDownloadAgent.class);
+
+	private static final long serialVersionUID = 2L; // ??
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#HttpServlet()
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-			
-		/**this function is a servlet for calling functions in uk.ac.cam.cares.jps.market package and returning their results;
-		 * it discriminates between "/download", "/download2" and "/read" URL patterns and calls DataDownload.Downloading_market_data,
-		 * DataDownload.Downloading_currencies and DataDownload.Call_data, respectively
-		 */
-		
-		Gson gson = new Gson();
-		
-		String path = request.getServletPath();
+	public DataDownloadAgent() {
+		super();
+	}
 	
-		if ("/download".equals(path)) {
+	// delete later
+	public void writeStringUsingBufferedWriter(String function, String result) throws IOException {
+		BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\jps\\jps_arbitrage\\consoleOutputDataDownloadAgent.txt", true));
+		writer.append(function);
+		writer.newLine();
+		writer.append(result);
+		writer.newLine();
+		writer.close();
+	}
+
+	/**
+	 * this function is a servlet for calling functions in
+	 * uk.ac.cam.cares.jps.market package and returning
+	 * their results; it discriminates between "/download",
+	 * "/download2" and "/read" URL patterns and calls
+	 * DataDownload.Downloading_market_data,
+	 * DataDownload.Downloading_currencies and
+	 * DataDownload.Call_data, respectively
+	 * 
+	 * @see HttpServlet#doGet(HttpServletRequest request,
+	 *      HttpServletResponse response)
+	 */
+
+	protected void doGet(HttpServletRequest request,
+			HttpServletResponse response)
+			throws ServletException, IOException {
+
+		String path = request.getServletPath();
 		
-			// -- Get String formatted in Array of Strings -- //
+		Gson g = new Gson();
+
+		if ("/downloadingAndSavingMarketDataInTheKnowledgeBase"
+				.equals(path)) {
+
+			// -- Get String formatted in Array of Strings
+			// -- //
 			request.setCharacterEncoding("UTF-8");
-			
+
 			try {
-				String result = gson.toJson(DataDownload.Downloading_market_data());
+				String result = g.toJson(DataDownload
+						.downloadingAndSavingMarketDataInTheKnowledgeBase());
+//				String result = DataDownload
+//						.downloadingAndSavingMarketDataInTheKnowledgeBase();
+				// delete later
+				writeStringUsingBufferedWriter(path, g.fromJson(result, String.class));
+				
 				response.setContentType("application/json");
 				response.getWriter().write(result);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}	
-		
-		} else if ("/read".equals(path)) {
-			
-			// -- Get String formatted in Array of Strings -- //
+				logger.error(e.getMessage());
+				throw new JPSRuntimeException(
+						e.getMessage(), e);
+			}
+
+		} else if ("/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase"
+				.equals(path)) {
+
+			// -- Get String formatted in Array of Strings
+			// -- //
 			request.setCharacterEncoding("UTF-8");
-			String jsonString = request.getParameter("individuals");
-			
+			String jsonString = request
+					.getParameter("individuals");
+
 			try {
-				String result = DataDownload.Call_data(jsonString.split(","));
+				String result = DataDownload
+						.retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase(
+								jsonString.split(","));
+				
+				// delete later
+				writeStringUsingBufferedWriter(path, result);
+				
 				response.setContentType("application/json");
-				response.getWriter().write(result.toString());
+				response.getWriter()
+						.write(result.toString());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}	
-		} else if ("/download2".equals(path)) {
-			
-			// -- Get String formatted in Array of Strings -- //
+				logger.error(e.getMessage());
+				throw new JPSRuntimeException(
+						e.getMessage(), e);
+			}
+		} else if ("/downloadingAndSavingExchangeRatesInTheKnowledgeBase"
+				.equals(path)) {
+
+			// -- Get String formatted in Array of Strings
+			// -- //
 			request.setCharacterEncoding("UTF-8");
-			
+
 			try {
-				String result = DataDownload.Downloading_currencies();
+				String result = g.toJson(DataDownload
+						.downloadingAndSavingExchangeRatesInTheKnowledgeBase());
+								
+				// delete later
+				writeStringUsingBufferedWriter(path, g.fromJson(result, String.class));
+				
 				response.setContentType("application/json");
-				response.getWriter().write(result.toString());
+				response.getWriter()
+						.write(result.toString());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}	
+				logger.error(e.getMessage());
+				throw new JPSRuntimeException(
+						e.getMessage(), e);
+			}
 		}
-		
+
 	}
 }

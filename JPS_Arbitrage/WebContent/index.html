@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>JPS Arbitrage</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/index.css">
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="./script/index.js"></script>
+</head>
+<body>
+	<div class="jumbotron text-center" id="topBanner">
+		<a href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
+			<img src="./images/cam_lang_negativ1%20NEW_0.png" />
+		</a>
+	</div>
+	
+	<div class="split left">
+        <div class="centered">
+            <div id="electricityPriceParams">
+	            <form id="submitValues">
+	                <label>
+	                    Input A:
+	                    <input id="textInputA" type="text" required value="A" />
+	                </label>
+	                <label>
+	                    Input B:
+	                    <input id="textInputB" type="text" required />
+	                </label>
+	                <label>
+	                    Input C:
+	                    <input id="textInputC" type="text" required />
+	                </label><br />
+	                <input type="submit" value="Start Simulation" onclick="processInputs(); return false"/>
+	            </form>
+            </div>
+            <div id="marketPrices">
+            	<svg class="line-chart"></svg>
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="split right">
+        <div class="centered">
+            <h2>Right Panel</h2>
+        </div>
+    </div>
+</body>
+</html>
