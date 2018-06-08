@@ -1,6 +1,7 @@
 package uk.ac.ceb.como.jaxb.parser.g09;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.util.List;
 
 import org.xmlcml.cml.base.CMLElement;
@@ -72,10 +73,10 @@ public class ParsingFrequencies {
 						 *         information about frequencies.
 						 */
 						Array arrayXML = new Array();
+						
 
 						String arrayXMLUnits = array.getUnits();
 
-						System.out.println(arrayXMLUnits);
 
 						/**
 						 * @author nk510 CompChem XML schema does not allow units to have character '^'.
@@ -84,14 +85,22 @@ public class ParsingFrequencies {
 						 * 
 						 */
 						arrayXMLUnits = arrayXMLUnits.replace("^", "");
+						
+						System.out.println(array.getSize());
 
 						/**
 						 * @author nk510 An Array JAXB object variable contains DictRef, Units, Value
-						 *         and DataType taken from CMLArray object variable 'array' .
+						 *         and DataType taken from CMLArray's object variable 'array' .
 						 */
 						arrayXML.setDictRef(array.getDictRef());
 						arrayXML.setUnits(arrayXMLUnits);
 						arrayXML.setValue(array.getValue());
+						/**
+						 * @author nk510
+						 * Adds the number of frequeny data (size).
+						 */
+						arrayXML.setSize(BigInteger.valueOf(array.getSize()));
+						
 						arrayXML.setDataType(array.getDataType());
 
 						/**
