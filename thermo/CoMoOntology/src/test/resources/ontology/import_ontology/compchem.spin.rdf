@@ -56,6 +56,66 @@
     <rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
   </rdfs:Class>
   
+  <!-- http://purl.org/gc/MolecularMethodology -->
+
+    <rdfs:Class rdf:about="http://purl.org/gc/MolecularMethodology">
+        <rdfs:subClassOf rdf:resource="http://purl.org/gc/CalculationConcept"/>
+<!--        <rdfs:subClassOf rdf:resource="http://purl.org/gc/GainesvilleCoreTerm"/>-->
+        <rdfs:comment xml:lang="en">A class for MolecularMethodology.</rdfs:comment>
+        <rdfs:comment xml:lang="en">A class for general methodologies of computational chemistry.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+        <rdfs:label xml:lang="en">Molecular Methodology</rdfs:label>
+        <rdfs:label xml:lang="en">MolecularMethodology</rdfs:label>
+    </rdfs:Class>
+    
+    <!-- http://purl.org/gc/QuantumMechanics -->
+
+    <rdfs:Class rdf:about="http://purl.org/gc/QuantumMechanics">
+    <!--    <rdfs:subClassOf rdf:resource="http://purl.org/gc/GainesvilleCoreTerm"/>-->
+        <rdfs:subClassOf rdf:resource="http://purl.org/gc/MolecularMethodology"/>
+        <rdfs:comment xml:lang="en">A class for Quantum Mechanical methods.</rdfs:comment>
+        <rdfs:comment xml:lang="en">A class for QuantumMechanics.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+        <rdfs:label xml:lang="en">Quantum Mechanics</rdfs:label>
+        <rdfs:label xml:lang="en">QuantumMechanics</rdfs:label>
+    </rdfs:Class>
+    
+        <!-- http://purl.org/gc/SingleReferenceState -->
+
+    <rdfs:Class rdf:about="http://purl.org/gc/SingleReferenceState">
+        <rdfs:subClassOf rdf:resource="http://purl.org/gc/QuantumMechanics"/>
+        <rdfs:comment xml:lang="en">A class for Single Reference (SR) coupled-cluster methods.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+        <rdfs:label xml:lang="en">Single Reference State</rdfs:label>
+    </rdfs:Class>
+    
+    
+    <!-- http://purl.org/gc/MultipleDeterminant -->
+
+    <rdfs:Class rdf:about="http://purl.org/gc/MultipleDeterminant">
+        <rdfs:subClassOf rdf:resource="http://purl.org/gc/SingleReferenceState"/>
+        <owl:disjointWith rdf:resource="http://purl.org/gc/SingleDeterminant"/>
+        <rdfs:comment xml:lang="en">A class for the methods of quantum chemistry using multiple Slater determinants.</rdfs:comment>
+        <rdfs:label xml:lang="en">Multiple Determinant</rdfs:label>
+    </rdfs:Class>
+    
+    
+    <!-- http://purl.org/gc/Gaussian-n -->
+
+    <rdfs:Class rdf:about="http://purl.org/gc/Gaussian-n">
+        <rdfs:subClassOf rdf:resource="http://purl.org/gc/MultipleDeterminant"/>
+        <rdfs:comment xml:lang="en">A collection of composite calculations (mainly quadratic CI plus others) that try to approximate full CI.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+        <rdfs:label xml:lang="en">Gaussian-n</rdfs:label>
+    </rdfs:Class>
+    
+    <!-- https://como.cheng.cam.ac.uk/kb/ontokin/G09 -->
+
+    <rdfs:Class rdf:about="https://como.cheng.cam.ac.uk/kb/ontokin/G09">
+        <rdfs:subClassOf rdf:resource="http://purl.org/gc/Gaussian-n"/>
+    </rdfs:Class>
+    
+    
   <owl:ObjectProperty rdf:about="http://purl.org/gc/hasMolecule">
     <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
     <rdfs:comment xml:lang="en">A property that specifies a molecule.</rdfs:comment>
