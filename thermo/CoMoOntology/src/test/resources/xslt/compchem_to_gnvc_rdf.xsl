@@ -61,15 +61,17 @@
 		</xsl:variable>
 
 		<rdf:Description
-			rdf:about="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_no_namespace}_{$vmodule}_molecular_methdology">
+			rdf:about="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_no_namespace}_{$vmodule}_molecular_methоdology">
 			<rdf:type rdf:resource="https://como.cheng.cam.ac.uk/kb/ontokin/G09" />
 		</rdf:Description>
 
 	</xsl:template>
 
-	<!-- This template matches node that has cc:jo attribute value. It creates 
-		child rdf node of molecular computation rdf node by using current node name 
-		and dirctRef attribute value of current node. -->
+	<!-- 
+	This template matches node that has cc:jo attribute value. It creates 
+	child rdf node of molecular computation rdf node by using current node name 
+	and dirctRef attribute value of current node. 
+	-->
 
 	<xsl:template match="module/module/*[local-name() = 'module']">
 
@@ -93,19 +95,13 @@
 		</xsl:variable>
 
 		<rdf:Description
-			rdf:about="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_parent_no_namespace}_{$vmodule}_molecular_methdology">
+			rdf:about="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_parent_no_namespace}_{$vmodule}_molecular_methоdology">
 			<rdf:type rdf:resource="https://como.cheng.cam.ac.uk/kb/ontokin/G09" />
-
-			<gc:hasCalculation
-				rdf:resource="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_no_namespace}_{$vmodule}_molecular_computation"/>
+							
+		    <ontokin:hasInitialization rdf:resource="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_no_namespace}_{$vmodule}_has_initilization_module"/>
 
 		</rdf:Description>
-
-		<rdf:Description
-			rdf:about="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_no_namespace}_{$vmodule}_molecular_computation">
-			<rdf:type rdf:resource="http://purl.org/gc/MolecularComputation" />
-		</rdf:Description>
-
+		
 
 	</xsl:template>
 
@@ -131,11 +127,22 @@
 
 		<xsl:variable name="vdictRef_parent">
 			<xsl:value-of select="../@dictRef" />
-		</xsl:variable>
+		</xsl:variable>	
 
 		<xsl:variable name="vdictRef_parent_no_namespace">
 			<xsl:value-of select="substring-after($vdictRef_parent,'cc:')" />
 		</xsl:variable>
+		
+		<xsl:variable name="vdictRef_parent_of_parent">
+			<xsl:value-of select="../../@dictRef" />
+		</xsl:variable>
+		
+		<xsl:variable name="vdictRef_parent_of_parent_no_namespace">
+			<xsl:value-of select="substring-after($vdictRef_parent_of_parent,'cc:')" />
+		</xsl:variable>
+		
+		
+		
 
 		<xsl:choose>
 
@@ -143,22 +150,24 @@
 
 
 				<rdf:Description
-					rdf:about="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_parent_no_namespace}_{$vmodule}_molecular_computation">	
-					<rdf:type rdf:resource="http://purl.org/gc/MolecularComputation"/>				
+					rdf:about="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_parent_no_namespace}_{$vmodule}_has_initilization_module">	
+					<rdf:type rdf:resource="http://purl.org/gc/MethodologyFeature"/>
+									
 					<gc:hasMoleculeProperty
 						rdfs:resource="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_no_namespace}_{$vmodule}_has_molecule_property" />
 
 				</rdf:Description>
 
-
 				<rdf:Description
 					rdf:about="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_no_namespace}_{$vmodule}_has_molecule_property">
-					<rdf:type rdf:resource="http://ontologies.makolab.com/gc/gc/MoleculeProperty" />
+					<rdf:type rdf:resource="http://purl.org/gc/MoleculeProperty" />
 				</rdf:Description>
 
-				<!-- Read value of 'count' and 'elementType' attributes for a molecule 
-					as attribute values of tag 'atom' and creates rdf graph for each atom by 
-					using Periodic Table ontology. -->
+				<!-- 
+				Read value of 'count' and 'elementType' attributes for a molecule 
+				as attribute values of tag 'atom' and creates rdf graph for each atom by 
+				using Periodic Table ontology. 
+				-->
 
 				<xsl:for-each select="molecule/atomArray/*[local-name() = 'atom']">
 					.
@@ -169,7 +178,7 @@
 
 					<rdf:Description
 						rdf:about="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_no_namespace}_{$vmodule}_has_molecule_property">
-						<rdf:type rdf:resource="http://ontologies.makolab.com/gc/gc/MoleculeProperty" />
+						<rdf:type rdf:resource="http://purl.org/gc/MoleculeProperty" />
 
 						<gc:hasMolecule
 							rdf:resource="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_no_namespace}_{$vmodule}_has_molecule_{$velementType}_{generate-id()}" />
@@ -179,7 +188,7 @@
 
 					<rdf:Description
 						rdf:about="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_no_namespace}_{$vmodule}_has_molecule_{$velementType}_{generate-id()}">
-						<rdf:type rdf:resource="http://ontologies.makolab.com/gc/gc/Molecule" />
+						<rdf:type rdf:resource="http://purl.org/gc/Molecule" />
 
 						<!-- URI for chemical element implemented in Periodic table ontology 
 							are not available on the web. For example: http://http://daml.org/2003/01/periodictable/PeriodicTable#Ti 
@@ -187,10 +196,15 @@
 
 						<gc:hasAtom
 							rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable#{$velementType}" />
-						<gc:hasAtomCount>
+						<gc:hasNumberOfAtoms>
 							<xsl:value-of select="substring-before(@count,'.0')" />
-						</gc:hasAtomCount>
+						</gc:hasNumberOfAtoms>
 
+					</rdf:Description>
+					
+					<rdf:Description rdf:about="http://www.daml.org/2003/01/periodictable/PeriodicTable#{$velementType}">
+					<rdf:type rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable#Element"/>
+					
 					</rdf:Description>
 
 				</xsl:for-each>
@@ -212,22 +226,39 @@
 
 			<xsl:when test="$module_type='cc:finalization'">
 
-				<rdf:Description
-					rdf:about="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_parent_no_namespace}_{$vmodule}_molecular_computation">
-					<rdf:type rdf:resource="http://purl.org/gc/MolecularComputation"/>
-					<!-- rdf:type rdf:resource="different type of molecular computations" -->
-
-					<gc:hasResult 				
-						rdfs:resource="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_no_namespace}_{$vmodule}_calculation_result" />
-						
-						<!-- here to add type of results such as rotational frequencies etc. -->
-
-				</rdf:Description>
-
-				<rdf:Description
-					rdf:about="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_no_namespace}_{$vmodule}_calculation_result">
-					<rdf:type rdf:resource="http://purl.org/gc/CalculationResult" />
-				</rdf:Description>
+            	
+			
+			<xsl:for-each select="propertyList/*[local-name() = 'property']">
+			    
+			    <xsl:if test="@dictRef='cc:vibrations'">
+			    
+			    <rdf:Description
+			    rdf:about="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_parent_of_parent_no_namespace}_{$vmodule}_molecular_methоdology">
+			    
+			    <rdf:type rdf:resource="https://como.cheng.cam.ac.uk/kb/ontokin/G09" />
+			
+			    <gc:isCalculationOn 	rdf:resource="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_no_namespace}_{$vmodule}_molecular_computation_{generate-id()}"/>
+				
+			    </rdf:Description>
+			
+			    				
+				</xsl:if>
+				
+				<xsl:if test="@dictRef='cc:rotational_symmetry'">			    
+			    <xsl:apply-templates select="@dictRef"/>			
+				</xsl:if>
+				
+				
+				<xsl:if test="@dictRef='cc:rotational_constants'">			    
+			    <xsl:apply-templates select="@dictRef"/>			
+				</xsl:if>				
+				
+				<xsl:if test="@dictRef='cc:geometry_type'">			    
+			    <xsl:apply-templates select="@dictRef"/>			
+				</xsl:if>
+				
+			
+			 </xsl:for-each>
 
 			</xsl:when>
 
