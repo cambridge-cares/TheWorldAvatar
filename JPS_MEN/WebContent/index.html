@@ -12,9 +12,9 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="scripts/start.js"></script>
 
-    <title>J-Park Simulator</title>
+
+    <title>J-Park Simulator : Mass Exchange Network Model</title>
 	<script src="scripts/start.js"></script>
 
 </head>
@@ -30,7 +30,8 @@ TH {
     <a href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
         <img  src="images/cam_lang_negativ1%20NEW_0.png">
     </a>
-<p id="description">this is the description defined later ya</p>
+       <h1 id="head1">J-Park Simulator : Mass Exchange Network Model</h1>
+<p id="description">Simulate the optimum mass exchange network configuration inside an eco-industrial park by using GAMS, considering the carbon tax, international market price factor, annual cost factor as the input and showing the CO2 emission with some specific costs as the output. </p>
 
 </div>
 
@@ -39,21 +40,28 @@ TH {
     <h1 id="head1"></h1>
     <p id="description"></p>
 
-    <label for="carbontax">Carbon Tax ($/year):</label>
-
+    <label for="carbontax">Carbon Tax ($/ton CO2.year):</label>
     <input id="carbontax" type="text" value='50'/>
-    <label for="interestfactor">Interest Factor:</label>
-    <input id="interestfactor" type="text" value='1'/>
+    
+    
     <label for="intmarketpricefactor">International Market Price Factor:</label>
     <input id="intmarketpricefactor" type="text" value='1.05'/>
-    <label for="intmarketlowestprice">International Market Lowest Price Applied:</label>
-  <select id="intmarketlowestprice">
-    <option value="false">false</option>
-    <option value="true">true</option>
-  </select>
-  <input id="timefactor" type="text" value='1,10,50,100'/>
-    <button id="start">Start simulation</button>
+    
+ 	<label for="annualtimefactor">annual time factor (projection in <i>n-th</i> year):</label>
+  	<input id="timefactor" type="text" value='1,10,50,100'/> 
+  	
+  	<label for="intmarketlowestprice">International Market Lowest Price Applied:</label>
+  	<select
+			id="intmarketlowestprice">
+			<option value="false">false</option>
+			<option value="true">true</option>
+	</select>
+	</div>
 
+<div id="buttonrun">
+<p align="center">
+<button id="start">Start simulation</button>
+</p>
 </div>
 
 <div id="outputFields">

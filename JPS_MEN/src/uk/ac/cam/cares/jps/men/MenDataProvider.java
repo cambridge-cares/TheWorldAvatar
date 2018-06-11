@@ -1,27 +1,15 @@
 package uk.ac.cam.cares.jps.men;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
-
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFactory;
-import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-
 
 import uk.ac.cam.cares.jps.men.entity.FeasibleConnection;
 import uk.ac.cam.cares.jps.men.entity.INamed;
@@ -45,17 +33,16 @@ public class MenDataProvider {
 	public MenResult startCalculation(MenCalculationParameters parameters, String transportationIRI, List<String> chemicalPlantIRIs) {
 	
 		getData(transportationIRI, chemicalPlantIRIs);
-		
-		//System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		logger.info("Number of sources = " + totalsources.size());
-	    logger.info("Number of sinks = " + totalsinks.size());
-	    logger.info("Number of connections = " + feasibleConnections.size());
-	    logger.info("Number of transp = " + transportations.size());
+
+		logger.debug("Number of sources = " + totalsources.size());
+		logger.debug("Number of sinks = " + totalsinks.size());
+	    logger.debug("Number of connections = " + feasibleConnections.size());
+	    logger.debug("Number of transp = " + transportations.size());
 	    
-	    logger.info("sources = " + totalsources);
-	    logger.info("sinks = " + totalsinks);
-	    logger.info("connections = " + feasibleConnections);
-	    logger.info("transportations = " + transportations);  
+	    logger.debug("sources = " + totalsources);
+	    logger.debug("sinks = " + totalsinks);
+	    logger.debug("connections = " + feasibleConnections);
+	    logger.debug("transportations = " + transportations);  
 	    
 	    MenGamsConverter converter = new MenGamsConverter();
 
@@ -255,8 +242,8 @@ public class MenDataProvider {
 		    transportations.add(trans);
 	    }
 	    
-	    logger.info("Number of transportation means = " + transportations.size());
-	    logger.info("transportation means = " +  transportations);
+	    logger.debug("Number of transportation means = " + transportations.size());
+	    logger.debug("transportation means = " +  transportations);
 		return  transportations;
 	}
 
@@ -276,8 +263,8 @@ public class MenDataProvider {
 				}					
 			}
 		}
-		logger.info("Number of feasible Connections = " + feasibleConnections.size());
-		logger.info("connection = " +  feasibleConnections);
+		logger.debug("Number of feasible Connections = " + feasibleConnections.size());
+		logger.debug("connection = " +  feasibleConnections);
 		return  feasibleConnections;
 	}
 

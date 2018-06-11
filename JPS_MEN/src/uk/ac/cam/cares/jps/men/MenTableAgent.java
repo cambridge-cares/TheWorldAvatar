@@ -15,9 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openjena.atlas.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -29,11 +29,13 @@ import uk.ac.cam.cares.jps.base.discovery.Parameter;
 
 public class MenTableAgent extends HttpServlet {
 	
+
+	
 	private static final long serialVersionUID = -4199209974912271432L;
 	Logger logger = LoggerFactory.getLogger(MenTableAgent.class);
 	
 	private String getContextPathForJPSMen() {
-		return "JPS_MEN";
+		return "/JPS_MEN/MENAgent";
 	}
 	
 	private String getAnnualCostFactor(int x, String[] annualcostfactor) {
@@ -52,35 +54,15 @@ public class MenTableAgent extends HttpServlet {
 	
 	private String getTransportationFile() {
 		
-		String baseDir = AgentLocator.getProperty("absdir.jps_men");
+	//	String baseDir = AgentLocator.getProperty("absdir.jps_men");
 		
-		return baseDir + "/testres/transportation/Jr_Transportation_simplified.owl"; // location of the owl file that contains information for the transportation system
-		
+		//return baseDir + "/testres/transportation/Jr_Transportation_simplified.owl"; // location of the owl file that contains information for the transportation system
+		return "http://www.jparksimulator.com/Jr_Transportation_simplified.owl";
 	}
 	
 	public String getChemicalPlants() {
-		
-		String baseDir = AgentLocator.getProperty("absdir.jps_men");
-		
-		List<String> result = new ArrayList<String>();
-		String result2 = null;
-		//File[] files = new File("./testres/chemicalplant").listFiles();
-		File[] files = new File(baseDir+"/testres/chemicalplant").listFiles();
-		// If this pathname does not denote a directory, then listFiles() returns null.
 
-		for (File file : files) {
-			if (file.isFile() && !file.getName().equals("catalog-v001.xml")) {
-				result.add(baseDir + "/testres/chemicalplant/" + file.getName());
-				
-			
-			}
-			
-		}
-		result2=String.join(",", result);
-			 
-		//return new Gson().toJson(result);
-		 
-		return result2;
+		return "http://www.jparksimulator.com/JurongIsland.owl";
 	}
 	
 	@Override
@@ -91,7 +73,7 @@ public class MenTableAgent extends HttpServlet {
 		
 		String jsonString = request.getParameter("listOfInputs");
 		
-		System.out.println("jsonstring= "+jsonString);
+		logger.info("jsonstring= "+jsonString);
 		
 		
 		
@@ -109,21 +91,11 @@ public class MenTableAgent extends HttpServlet {
 		{
 			annualcostfactor[timefactor]=parameterfromjson[timefactor+4].replaceAll("\"", "");
 		}
-		
-		//from the test
-//		String carbontax = agentRequest.getInputParameters().get(0).getValue();
-//		String interestfactor = agentRequest.getInputParameters().get(1).getValue();
-//		String intmarketpricefactor = agentRequest.getInputParameters().get(2).getValue();
-//		String intmarketlowestprice = agentRequest.getInputParameters().get(3).getValue();
 	
 		String resultjson;
 		JSONObject json = new JSONObject();
-		
-		//Double[] totaltransportcost= new Double[annualcostfactor.length];
+
 		Double[][] totaltransportcost= new Double[annualcostfactor.length][annualcostfactor.length];
-		
-		
-		System.out.println(annualcostfactor);
 		
 		JSONArray tmpc = new JSONArray();
 		JSONArray ttc = new JSONArray();
@@ -138,7 +110,7 @@ public class MenTableAgent extends HttpServlet {
 			Parameter param = new Parameter("transportationModes", getTransportationFile());
 			agrequest.getInputParameters().add(param);
 
-			Parameter param2 = new Parameter("ChemicalPlants", getChemicalPlants());
+			Parameter param2 = new Parameter("eco-industrialpark", getChemicalPlants());
 			agrequest.getInputParameters().add(param2);
 
 			// additional Parameters --> five parameters
@@ -158,40 +130,6 @@ public class MenTableAgent extends HttpServlet {
 			agrequest.getInputParameters().add(param7);
 
 			AgentResponse resp = AgentCaller.callAgent(getContextPathForJPSMen(), agrequest);
-			
-
-			/*try {
-				
-				JSONArray array = new JSONArray();
-				JSONObject item = new JSONObject();
-				Double totalMaterialPurchaseCost= Double.valueOf((String) resp.getOutputParameters().get(1).getValue())/1000000000;
-				Double totalTransportationCost= Double.valueOf((String) resp.getOutputParameters().get(3).getValue())/1000;
-				Double totalInstallationCost= Double.valueOf((String) resp.getOutputParameters().get(6).getValue())/1000000;
-				Double totalCO2Emission= Double.valueOf((String) resp.getOutputParameters().get(4).getValue());
-				Double totalCO2EmissionCost= Double.valueOf((String) resp.getOutputParameters().get(5).getValue())/1000;
-				
-				
-				//item.put("objectiveValue", resp.getOutputParameters().get(0).getValue());
-				item.put("totalMaterialPurchaseCost", String.format("%.2f",totalMaterialPurchaseCost));
-				//item.put("totalMaterialPurchaseCostInternationalMarket", resp.getOutputParameters().get(2).getValue());
-				item.put("totalTransportationCost", String.format("%.2f", totalTransportationCost));
-				item.put("totalCO2Emission", String.format("%.2f", totalCO2Emission));
-				item.put("totalCO2EmissionCost", String.format("%.2f", totalCO2EmissionCost));
-				item.put("totalInstallationCost", String.format("%.2f", totalInstallationCost));
-			
-				
-				for (int count=0;count<annualcostfactor.length;count++)
-				{
-					 totaltransportcost[count]=(Double.valueOf(annualcostfactor[count])* totalTransportationCost*1000+totalInstallationCost*1000000)/1000000;
-
-						item.put("totalTransportCost"+annualcostfactor[count]+"year", String.format("%.2f", totaltransportcost[count]));
-				}
-				array.put(item);
-		
-
-				json.put("time" + annualcostfactor[time], array);
-
-			} */
 			
 			Double totalMaterialPurchaseCost= Double.valueOf((String) resp.getOutputParameters().get(1).getValue())/1000000000;
 			Double totalTransportationCost= Double.valueOf((String) resp.getOutputParameters().get(3).getValue())/1000;
@@ -215,7 +153,8 @@ public class MenTableAgent extends HttpServlet {
 					totaltransportcost[count][count2]=(Double.valueOf(annualcostfactor[count2])* ttc.getDouble(count)*1000+tic.getDouble(count)*1000000)/1000000;
 				} catch (NumberFormatException | JSONException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error(e.getMessage());
+					//e.printStackTrace();
 				}
 				ttyc.put(String.format("%.2f", totaltransportcost[count][count2]));
 			}
@@ -231,12 +170,13 @@ public class MenTableAgent extends HttpServlet {
 			json.put("totaltransportyearcost",ttyc);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage());
+			//e.printStackTrace();
 		}
 		
 		
 		resultjson = json.toString();
-		System.out.println("response of the agent=" + resultjson);
+		logger.info("response of the agent=" + resultjson);
 
 		
 		response.setContentType("application/json");

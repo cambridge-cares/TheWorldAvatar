@@ -4,7 +4,7 @@ $(function(){
     $('#start').click(function(){
     	
         var carbontax = parseFloat($('#carbontax').val());
-        var interestfactor = parseFloat($('#interestfactor').val());
+        var interestfactor = 1.0;
         var intmarketpricefactor = parseFloat($('#intmarketpricefactor').val());
         var intmarketlowestprice = JSON.parse($('#intmarketlowestprice').val());
       
