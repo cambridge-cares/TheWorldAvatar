@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.mods.api.MoDSAPI;
+import com.google.gson.Gson;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
@@ -71,6 +72,8 @@ public class Arbitrage {
 	public static String runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles(
 			String input) throws Exception {
 
+		Gson g = new Gson();
+		
 		String[] sim_address = {
 				AgentLocator.getCurrentJpsAppDirectory(
 						new Arbitrage())
@@ -80,10 +83,11 @@ public class Arbitrage {
 		// "C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\MoDS\\HDMR_50_001",
 		// "HDMR_Alg_1" };
 		// Double[] inputs = {24220.0656};
-		Double[] raw_materials = {
-				Double.parseDouble(input) };
-		List<Double> data = MoDS(raw_materials,
-				sim_address);
+		
+//		Double[] raw_materials = { Double.parseDouble(input) };
+		Double[] raw_materials = g.fromJson(input, Double[].class);
+		
+		List<Double> data = MoDS(raw_materials, sim_address);
 
 		String result = raw_materials[0].toString();
 		for (int i = 0; i < data.size(); i++) {
@@ -135,8 +139,10 @@ public class Arbitrage {
 		// "C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\MoDS\\HDMR_50_001",
 		// "HDMR_Alg_1" };
 		// Double[] inputs = {24220.0656};
+		//Gson g = new Gson();
 		Double[] raw_materials = {
 				Double.parseDouble(input) };
+		//Double[] raw_materials = g.fromJson(input, Double[].class);
 		List<Double> MoDS_data = MoDS(raw_materials,
 				sim_address);
 

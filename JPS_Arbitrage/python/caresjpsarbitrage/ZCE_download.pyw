@@ -22,7 +22,7 @@ def ZCE(url_address, driver):
 		delivery.append(data[(i+1)*7])
 		price.append(float(sub(',','',data[(i+1)*7+6])))
 	
-	string = '&ZCE,Date,Price type,Size (tonne)'
+	string = '&MeOH,Date,Price type,Size (tonne)'
 	for i in range(len(delivery)):
 		string += "," + str(delivery[i])
 

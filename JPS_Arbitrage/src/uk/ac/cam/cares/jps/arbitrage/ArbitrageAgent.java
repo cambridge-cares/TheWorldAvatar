@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.arbitrage;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -10,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -32,6 +36,16 @@ public class ArbitrageAgent extends HttpServlet {
 	public ArbitrageAgent() {
 		super();
 	}
+	
+	// delete later
+	public void writeStringUsingBufferedWriter(String function, String result) throws IOException {
+		BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\jps\\jps_arbitrage\\consoleOutputArbitrageAgent.txt", true));
+		writer.append(function);
+		writer.newLine();
+		writer.append(result);
+		writer.newLine();
+		writer.close();
+	}
 
 	/**
 	 * 
@@ -50,6 +64,8 @@ public class ArbitrageAgent extends HttpServlet {
 			throws ServletException, IOException {
 
 		String path = request.getServletPath();
+		
+		Gson g = new Gson();
 
 		if ("/runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles"
 				.equals(path)) {
@@ -78,11 +94,16 @@ public class ArbitrageAgent extends HttpServlet {
 			request.setCharacterEncoding("UTF-8");
 			String jsonString = request
 					.getParameter("MoDS_input");
+			
+//			delete later
+//			System.out.println(path);
+//			System.out.println(jsonString);
+			writeStringUsingBufferedWriter(path, jsonString);
 
 			try {
-				String result = Arbitrage
+				String result = g.toJson(Arbitrage
 						.runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent(
-								jsonString);
+								jsonString));
 				response.setContentType("application/json");
 				response.getWriter().write(result);
 			} catch (Exception e) {

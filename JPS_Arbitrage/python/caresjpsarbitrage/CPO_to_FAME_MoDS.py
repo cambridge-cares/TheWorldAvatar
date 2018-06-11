@@ -8,7 +8,7 @@
 import win32api, win32com.client as win32, requests, sys
 from lxml import html
 from math import inf
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from csv_funcs import RCSV, ACSV
 
 def preprocessing(file_addresses):

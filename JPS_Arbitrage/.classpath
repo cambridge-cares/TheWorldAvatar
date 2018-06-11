@@ -26,39 +26,161 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/MoDS_Java_API-0.3.3.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/protege.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/slf4j-api-1.7.25.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/antlr-2.7.5.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/arq-extra.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/arq.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/axis.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/commons-discovery-0.4.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/commons-lang-2.0.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/concurrent.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/edtftpj-1.5.2.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/ekitspell.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/icu4j_3.4.4.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/iri.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/jcalendar.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/jdom.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/jena-dig.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/jena.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/jep-2.4.0.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/json.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/junit.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/kazuki.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/log4j-1.2.12.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/orphanNodesAlg.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/owlsyntax.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/protege-owl.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/slf4j-api-1.5.8.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/slf4j-log4j12-1.5.8.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/stax-api-1.0.1.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/swingx-1.0.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/swrl-drools-bridge.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/swrl-jess-bridge.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/wstx-asl-3.2.9.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/xercesImpl.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/xml-apis.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/antlr-2.7.5.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/arq-extra.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/arq.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/axis.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/commons-discovery-0.4.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/commons-lang-2.0.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/commons-logging-1.1.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/concurrent.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/edtftpj-1.5.2.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/ekitspell.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/icu4j_3.4.4.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/iri.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/jcalendar.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/jdom.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/jena-dig.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/jena.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/jep-2.4.0.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/json.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/junit.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/kazuki.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/log4j-1.2.12.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/orphanNodesAlg.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/owlsyntax.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/protege-owl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/stax-api-1.0.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/swingx-1.0.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/swrl-drools-bridge.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/swrl-jess-bridge.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/wstx-asl-3.2.9.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/xercesImpl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/xml-apis.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="/JPS_BASE/workingdir/jps_base.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>

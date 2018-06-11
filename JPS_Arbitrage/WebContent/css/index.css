@@ -1,0 +1,40 @@
+#topBanner {
+    background-color: #10616C;
+    border-radius: 0px;
+    margin: 0px;
+}
+
+svg.line-chart {
+    margin-top: 5rem;
+}
+
+
+.split {
+    height: 100%;
+    /*width: 50%;*/
+    position: fixed;
+    z-index: 1;
+    top: inherit;
+    overflow-x: hidden;
+    /*padding-top: 20px;*/
+}
+
+.left {
+    left: 0;
+    width: 40%;
+}
+
+.right {
+    right: 0;
+    width: 60%;
+}
+
+.centered {
+    margin: 2rem;
+    position: absolute;
+}
+
+.centered h2 {
+    vertical-align: top;
+    margin: 0;
+}
