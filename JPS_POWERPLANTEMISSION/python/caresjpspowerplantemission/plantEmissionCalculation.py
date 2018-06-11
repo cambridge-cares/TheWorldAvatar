@@ -11,6 +11,16 @@ from caresjpsutil import returnExceptionToJava, returnResultsToJava
 from caresjpsutil import PythonLogger
 from costEmissionCalculation import cost_emission_calculation
 
+# Preconditions:
+# 1. external libraries must be installed in system
+# 2. "data" folder must be placed in workingdir of JPS_POWERPLANTEMISSION
+# 3. costEmissionCalculation.py file placed in the same folder i.e. caresjpspowerplantemission
+
+# Postconditions:
+# Takes in data from csv files and constructs a surrogate model for each of the csv files
+# which represents a specific technology
+
+
 # define a function here that can interpolate the emission and cost surface, and calculate the corresponding power plant emission
 # m is the power plant database, n is the emission inventory
 
@@ -20,7 +30,6 @@ if __name__ == "__main__":
     
     try:
         dirPath = sys.argv[1]
-#         print(json.dumps(dirPath + '/data/input/powerplant_database.csv'))
         
         # load the powerplant database    
         df = pd.read_csv(dirPath + '/data/input/powerplant_database.csv', header='infer', sep=',')

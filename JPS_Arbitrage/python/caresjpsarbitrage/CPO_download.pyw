@@ -8,6 +8,7 @@ from lxml import html
 from re import sub
 import requests, sys
 from selenium import webdriver
+import json
 
 	
 ##this function removes duplicates while preserving order within an array
@@ -54,4 +55,5 @@ def run(url_address):
 
 		
 if __name__ == "__main__":
+# 	print(json.dumps(sys.argv[1]))
 	run(str(sys.argv[1]))

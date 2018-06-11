@@ -5,10 +5,9 @@
 # Important assumptions include instantenaous conversion and transport, pricing other than futures is based on the literature, only marginal profit is calculated (this is liable to changes soon). 
 # Additionally, it i assumed that the plant is already functioning on a long-term contract. For that reason the changes to plant's function cannot be too great and capital costs may be ignored in the calculations.
 
-import win32api, win32com.client as win32, requests, sys
-from lxml import html
+import sys
 from math import inf
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from csv_funcs import RCSV, ACSV
 
 
@@ -259,13 +258,13 @@ def run(MoDS_data, data):
         
     # Read in and process data into an appripriate format
     dates, prices, u_prices, t_prices, ex_rates, s_prices = preprocessing(data)
-    u_prices['V_Price_Electricity_001'] = u_prices['V_Price_Electricity_001']*ex_rates['V_USD_to_SGD']
+    u_prices['V_Price_Electricity_001'] *= ex_rates['V_USD_to_SGD']
     
     # Adjust prices to include the transport cost
     prices = transport_costs(prices, t_prices)
 
     # Search through the arbitrage opportunities
-    look_for_munnies(MoDS_data, prices, dates,s_prices,u_prices)
+    look_for_munnies(MoDS_data, prices, dates, s_prices, u_prices)
 
     # Define titles and labels to plot the futures prices data and plot the data
     #labels = {'FAME':{'title':'Biodiesel FAME futures prices from Chicago Mercantile Exchange', 'label':'Price (USD per tonne)'},'CPO':{'title':'Crude palm oil futures prices from Chicago Mercantile Exchange', 'label':'Price (USD per tonne)'}, 'x':{'title':'Delivery date (-)', 'label':dates['FAME']}}

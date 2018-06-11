@@ -7,7 +7,9 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,10 +24,13 @@ import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
+import com.google.gson.Gson;
+
 public class DataDownload {
 	private static Logger logger = LoggerFactory
 			.getLogger(DataDownload.class);
 
+	
 	/**
 	 * this function calls cmd to execute 4 Python scripts
 	 * which download market prices for crude palm oil
@@ -131,8 +136,13 @@ public class DataDownload {
 		logger.info("File saved with " + errors.size()
 				+ " errors.");
 
-		return results[0];
-
+//		return results[0];
+		// maybe return array of Strings?
+		
+		
+		// delete later
+		// returns single String of joined elements in an Array
+		return StringUtils.join(results, "\r\n");
 	}
 
 	/**
@@ -219,8 +229,18 @@ public class DataDownload {
 		logger.info("File saved with " + errors.size()
 				+ " errors.");
 
-		return headers[0];
-
+//		return headers[0];
+		
+		// delete later
+//		String[] headersAndRates = Stream.of(headers, rates).flatMap(Stream::of).toArray(String[]::new);
+//		return StringUtils.join(headersAndRates, "\r\n");
+		
+		String[][] headersAndRates = {headers, rates};
+		
+		Gson g = new Gson();
+		String headersAndRatesString = g.toJson(headersAndRates);
+		
+		return headersAndRatesString;
 	}
 
 	/**
