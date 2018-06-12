@@ -36,6 +36,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13#Apr-18">
         <rdf:type rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Period"/>
+        <rdf:type rdf:resource="http://www.w3.org/2006/time#MonthOfYear"/>
     </owl:NamedIndividual>
     
 
@@ -86,6 +87,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13#May-18">
         <rdf:type rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Period"/>
+        <rdf:type rdf:resource="http://www.w3.org/2006/time#MonthOfYear"/>
     </owl:NamedIndividual>
     
 
@@ -95,6 +97,7 @@
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13#NaturalGas_of_CMENaturalGas_001">
         <rdf:type rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#MarketProduct"/>
         <electricity-markets:hasPrice rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13#Price_NaturalGas_of_CMENaturalGas_001_month1_ObservedOn_time1"/>
+        <electricity-markets:hasPrice rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13#Price_NaturalGas_of_CMENaturalGas_001_month2_ObservedOn_time1"/>
         <electricity-markets:hasSize rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13#Size_NaturalGas_of_CMENaturalGas_001"/>
     </owl:NamedIndividual>
     
@@ -117,6 +120,18 @@
         <time:hasTime rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13#ObservingTimeInstant_001"/>
         <electricity-markets:unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string">USD/tonne</electricity-markets:unit>
         <electricity-markets:value rdf:datatype="http://www.w3.org/2001/XMLSchema#double">853.821</electricity-markets:value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13#Price_NaturalGas_of_CMENaturalGas_001_month2_ObservedOn_time1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13#Price_NaturalGas_of_CMENaturalGas_001_month2_ObservedOn_time1">
+        <rdf:type rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#PriorSettlementPrice"/>
+        <electricity-markets:hasPeriod rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13#May-18"/>
+        <time:hasTime rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13#ObservingTimeInstant_001"/>
+        <electricity-markets:unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string">USD/tonne</electricity-markets:unit>
+        <electricity-markets:value rdf:datatype="http://www.w3.org/2001/XMLSchema#double">851.685</electricity-markets:value>
     </owl:NamedIndividual>
     
 
