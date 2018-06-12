@@ -118,13 +118,13 @@ public class TestMenAgent extends TestCase {
 		Double ans7 = Double.valueOf((String) resp.getOutputParameters().get(6).getValue());
 	
 
-		/*assertEquals(6.636958433E9, ans1, 1000.);
-		assertEquals(6.636902E9, ans2, 1000.);
+		//assertEquals(6.636958433E9, ans1, 1000.);
+		//assertEquals(6.636902E9, ans2, 1000.);
 		assertEquals(3.743276E9, ans3, 1000.);
 		assertEquals(22539.661189, ans4, 1.);
 		assertEquals(53.7127, ans5, 1.);
 		assertEquals(2685.6338, ans6, 1.);
-		assertEquals(1552885.9635, ans7, 1.);*/
+		assertEquals(1552885.9635, ans7, 1.);
 
 	}
 }

@@ -4,7 +4,7 @@ $(function(){
     $('#start').click(function(){
     	
         var carbontax = parseFloat($('#carbontax').val());
-        var interestfactor = 1.0;
+        var interestfactor = "1.0";
         var intmarketpricefactor = parseFloat($('#intmarketpricefactor').val());
         var intmarketlowestprice = JSON.parse($('#intmarketlowestprice').val());
       
@@ -33,7 +33,7 @@ $(function(){
                           tablestring+="<TH>CO2 Emission per year <br> (t/yr)</TH>";
                           tablestring+="<TH>CO2 Emission cost per year <br> (10^3 x $/yr)</TH>";
                           for(var c=0; c<totalyear; c++) {
-                        	  tablestring+="<TH>Total Transportation cost in "+n[c]+" year <br> (10^6 x $)</TH>";
+                        	  tablestring+="<TH>Total Cost Related to Transportation in "+n[c]+" year <br> (10^6 x $)</TH>";
                       			}
                           tablestring+="</tr>";
                           

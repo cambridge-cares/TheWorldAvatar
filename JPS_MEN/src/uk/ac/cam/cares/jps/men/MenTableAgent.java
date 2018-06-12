@@ -82,7 +82,8 @@ public class MenTableAgent extends HttpServlet {
 		int sizeofparameterjson= parameterfromjson.length;
 		
 		String carbontax = parameterfromjson[0];
-		String interestfactor = parameterfromjson[1];
+		//String interestfactor = parameterfromjson[1];
+		String interestfactor = "1.0";
 		String intmarketpricefactor =parameterfromjson[2];
 		String intmarketlowestprice = parameterfromjson[3];
 		
