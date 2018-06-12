@@ -83,6 +83,14 @@
     
 
 
+    <!-- http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13#GMT -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13#GMT">
+        <rdf:type rdf:resource="http://www.w3.org/2006/time#TimePosition"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13#Jun-18 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13#Jun-18">
@@ -117,6 +125,7 @@
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13#ObservingTimeInstant_001">
         <rdf:type rdf:resource="http://www.w3.org/2006/time#Instant"/>
         <time:inDateTime rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13#DateTime_ObservingTimeInstant_001"/>
+        <time:inTimePosition rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13#GMT"/>
     </owl:NamedIndividual>
     
 
