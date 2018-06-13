@@ -1,46 +1,60 @@
 /**
  * 
  */
+const retrieveInputParams = () => {
+	return $.getJSON('/JPS_Arbitrage/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase');
+};
 
 const downloadAndSaveMarketData = () => {
 	return $.getJSON('/JPS_Arbitrage/downloadingAndSavingMarketDataInTheKnowledgeBase');
-}
+};
 
 const processMarketData = (marketData) => {
 	console.log("In processMarketData function");
+	console.log(marketData);
     // -- Process HTTP response in the form of a string -- //
 	let splitStrings = marketData.split('&');
+	splitStrings.shift(); // remove first element which is an empty string
 	let stringSize = splitStrings.length;
+	let i = 0;
+	let parsedDataArray = [];
 
-	let positionSecondAmpersand = marketData.indexOf('&', 1);
-	let stringHeaderAndXVal = marketData.slice(1, positionSecondAmpersand);
-	let stringDatetimeAndYVal = marketData.slice(positionSecondAmpersand + 1);
+	console.log(splitStrings);
 
-	// -- Splits individual strings which are comma-separated into array of strings -- //
-	let arrayHeaderAndXVal = stringHeaderAndXVal.split(',');
-	let arrayDatetimeAndYVal = stringDatetimeAndYVal.split(',');
+	while(i < stringSize) {
 
-	// -- Separates arrays into its constituents -- //
-	let arrayHeader = arrayHeaderAndXVal.slice(0,4);
-	let arrayXVal = arrayHeaderAndXVal.slice(4);
+		let stringHeaderAndXVal = splitStrings[i];
+		let stringDatetimeAndYVal = splitStrings[i+1];
 
-	let arrayDatetime = arrayDatetimeAndYVal.slice(0,4);
-	let arrayYVal = arrayDatetimeAndYVal.slice(4);
+        // -- Splits individual strings which are comma-separated into array of strings -- //
+        let arrayHeaderAndXVal = stringHeaderAndXVal.split(',');
+        let arrayDatetimeAndYVal = stringDatetimeAndYVal.split(',');
 
-	// -- arrayDatetime and arrayXVal must have equal length i.e. each datetime must have a corresponding xval -- //
-	if (arrayYVal.length > 0 && arrayXVal.length > 0) {
-		let parsedData = parseData(arrayYVal, arrayXVal);
-		drawChart(parsedData);
-	} else {
-		console.log("NO MARKET DATA FOR CPO RETRIEVED");
-	}
+        // -- Separates arrays into its constituents -- //
+        let arrayHeader = arrayHeaderAndXVal.slice(0, 4);
+        let arrayXVal = arrayHeaderAndXVal.slice(4);
 
-	return;
-}
+        let arrayDatetime = arrayDatetimeAndYVal.slice(0, 4);
+        let arrayYVal = arrayDatetimeAndYVal.slice(4);
+
+
+		// -- arrayDatetime and arrayXVal must have equal length i.e. each datetime must have a corresponding xval -- //
+		if (arrayYVal.length > 0 && arrayXVal.length > 0) {
+			let parsedData = parseData(arrayYVal, arrayXVal);
+			parsedDataArray.push(parsedData);
+		} else {
+			console.log("NO MARKET DATA FOR CPO RETRIEVED");
+		}
+
+        i = i + 2;
+    }
+
+    drawChart(parsedDataArray);
+};
 
 const downloadAndSaveExchangeRates = () => {
 	return $.getJSON('/JPS_Arbitrage/downloadingAndSavingExchangeRatesInTheKnowledgeBase');
-}
+};
 
 /**
  * param exchangeRates is a JSON-serialized 2d-array
@@ -54,7 +68,7 @@ const processExchangeRates = (exchangeRates) => {
     for(let i = 0; i < arraySize; i++) {
         console.log(arrayExchangeRates[0][i], arrayExchangeRates[1][i]);
     }
-}
+};
 
 const processInputs = () => {
 	console.log("Begin processing input");
@@ -65,21 +79,36 @@ const processInputs = () => {
 		let exchangeRates = responseTwo[0];
 		processExchangeRates(exchangeRates);
 
-		let inputA = parseFloat($('#textInputA').val());
+		let inputA = parseFloat($('#flowrateCPO').val());
 
-        $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent',
-            {
-				MoDS_input: JSON.stringify([inputA])
-            },
-            function(data){
-                $('#MoDSOutput').text(data);
-            });
+		let choiceAnalysis = $("#analysisSelection option:selected").text();
+
+		if(choiceAnalysis === "Market Data from DataDownload Agent") {
+            $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent',
+                {
+                    MoDS_input: JSON.stringify([inputA])
+                },
+                function (data) {
+                    $('#MoDSOutput').text(data);
+                });
+        } else {
+            $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles',
+                {
+                    MoDS_input: JSON.stringify([inputA])
+                },
+                function (data) {
+                    $('#MoDSOutput').text(data);
+                });
+		}
 	})
-}
+};
 
-// $(document).ready(function(){
-//     processInputs();
-// });
+$(document).ready(function(){
+	let promise = retrieveInputParams();
+	promise.done(function(response){
+		console.log(response);
+	})
+});
 
 //API to fetch historical data of Bitcoin Price Index
 //const api = 'https://api.coindesk.com/v1/bpi/historical/close.json?start=2017-12-31&end=2018-04-01';
@@ -117,7 +146,7 @@ function parseData(arrayYVal, arrayXVal) {
  * Creates a chart using D3
  * @param {object} data Object containing historical data of BPI
  */
-function drawChart(data) {
+function drawChart(parsedDataArray) {
 	var svgWidth = 750, svgHeight = 500; // initially 600, 400
 	var margin = { top: 20, right: 20, bottom: 30, left: 50 };
 	var width = svgWidth - margin.left - margin.right;
@@ -138,9 +167,15 @@ function drawChart(data) {
 
 	var line = d3.line()
 		.x(function(d) { return x(d.date)})
-		.y(function(d) { return y(d.value)})
-		x.domain(d3.extent(data, function(d) { return d.date }));
-		y.domain(d3.extent(data, function(d) { return d.value }));
+		.y(function(d) { return y(d.value)});
+
+	// x.domain(d3.extent(parsedDataArray[0], function(d) { return d.date }));
+	// y.domain(d3.extent(parsedDataArray[0], function(d) { return d.value }));
+	x.domain(d3.extent(parsedDataArray[0], function(d) { return d.date }));
+	y.domain([0,3000]);
+
+	console.log("Parsed Data Array:");
+	console.log(parsedDataArray);
 
 	g.append("g")
 		.attr("transform", "translate(0," + height + ")")
@@ -158,13 +193,19 @@ function drawChart(data) {
 		.attr("text-anchor", "end")
 		.text("Price ($)");
 
-	g.append("path")
-		.datum(data)
-		.attr("fill", "none")
-		.attr("stroke", "steelblue")
-		.attr("stroke-linejoin", "round")
-		.attr("stroke-linecap", "round")
-		.attr("stroke-width", 1.5)
-		.attr("d", line);
-}
+	// g.append("path")
+	// 	.datum(parsedDataArray[0])
+	// 	.attr("fill", "none")
+	// 	.attr("stroke", "steelblue")
+	// 	.attr("stroke-linejoin", "round")
+	// 	.attr("stroke-linecap", "round")
+	// 	.attr("stroke-width", 1.5)
+	// 	.attr("d", line);
 
+	g.selectAll('.graph1')
+		.data(parsedDataArray[0])
+		.enter()
+		.append('path')
+		.attr('class', 'graph1')
+		.attr('d', line(parsedDataArray[0]));
+}

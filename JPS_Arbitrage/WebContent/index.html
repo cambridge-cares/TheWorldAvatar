@@ -8,6 +8,7 @@
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://d3js.org/d3.v4.min.js"></script>
+	<!--<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>-->
     <script src="./script/index.js"></script>
 </head>
 <body>
@@ -21,33 +22,53 @@
         <div class="centered">
             <div id="electricityPriceParams">
 	            <form id="submitValues">
-	                <label>
-	                    Input A:
-	                    <input id="textInputA" type="text" required value="24220.0656"/>
-	                </label>
-	                <!--<label>-->
-	                    <!--Input B:-->
-	                    <!--<input id="textInputB" type="text" required value="B" />-->
-	                <!--</label>-->
-	                <!--<label>-->
-	                    <!--Input C:-->
-	                    <!--<input id="textInputC" type="text" required />-->
-	                <!--</label><br />-->
-	                <input type="submit" value="Start Simulation" onclick="processInputs(); return false"/>
+					<div id="inputParams">
+						<label>
+							Flow-rate of Crude Palm Oil(CPO):
+							<input id="flowrateCPO" type="text" required value="24220.0656"/>
+						</label>
+						<!--<label>-->
+							<!--Input B:-->
+							<!--<input id="textInputB" type="text" required value="B" />-->
+						<!--</label>-->
+						<!--<label>-->
+							<!--Input C:-->
+							<!--<input id="textInputC" type="text" required />-->
+						<!--</label><br />-->
+					</div>
 	            </form>
-            </div>
+			</div>
+			<div id="plantTypes" style="display: inline-block">
+				<label for="plantSelection">Plant: </label>
+				<select name="plantSelection" id="plantSelection">
+					<option value="biodiesel" selected="selected">Biodiesel</option>
+					<option value="naturalGas">Natural Gas</option>
+				</select>
+			</div>
+			<div id="analysis" style="display: inline-block">
+				<label for="analysisSelection">Run MoDS Analysis Using: </label>
+				<select name="analysisSelection" id="analysisSelection">
+					<option value="Market Data from CSV files">Market Data from CSV files</option>
+					<option value="Market Data from DataDownload Agent">Market Data from DataDownload Agent</option>
+				</select>
+			</div>
+			<input type="submit" value="Start Simulation" onclick="processInputs(); return false"/>
             <div id="marketPrices">
             	<svg class="line-chart"></svg>
             </div>
-            
+
+			<div>
+				<h2>Recommendation</h2>
+				<p id="MoDSOutput"></p>
+			</div>
         </div>
     </div>
 
-    <div class="split right">
-        <div class="centered">
-            <h2>Recommendation</h2>
-			<p id="MoDSOutput"></p>
-        </div>
-    </div>
+    <!--<div class="split right">-->
+        <!--<div class="centered">-->
+            <!--<h2>Recommendation</h2>-->
+			<!--<p id="MoDSOutput"></p>-->
+        <!--</div>-->
+    <!--</div>-->
 </body>
 </html>

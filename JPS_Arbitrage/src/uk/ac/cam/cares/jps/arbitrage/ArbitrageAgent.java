@@ -38,14 +38,14 @@ public class ArbitrageAgent extends HttpServlet {
 	}
 	
 	// delete later
-	public void writeStringUsingBufferedWriter(String function, String result) throws IOException {
-		BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\jps\\jps_arbitrage\\consoleOutputArbitrageAgent.txt", true));
-		writer.append(function);
-		writer.newLine();
-		writer.append(result);
-		writer.newLine();
-		writer.close();
-	}
+//	public void writeStringUsingBufferedWriter(String function, String result) throws IOException {
+//		BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\jps\\jps_arbitrage\\consoleOutputArbitrageAgent.txt", true));
+//		writer.append(function);
+//		writer.newLine();
+//		writer.append(result);
+//		writer.newLine();
+//		writer.close();
+//	}
 
 	/**
 	 * 
@@ -77,9 +77,9 @@ public class ArbitrageAgent extends HttpServlet {
 					.getParameter("MoDS_input");
 
 			try {
-				String result = Arbitrage
+				String result = g.toJson(Arbitrage
 						.runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles(
-								jsonString);
+								jsonString));
 				response.setContentType("application/json");
 				response.getWriter().write(result);
 			} catch (Exception e) {
@@ -98,7 +98,7 @@ public class ArbitrageAgent extends HttpServlet {
 //			delete later
 //			System.out.println(path);
 //			System.out.println(jsonString);
-			writeStringUsingBufferedWriter(path, jsonString);
+//			writeStringUsingBufferedWriter(path, jsonString);
 
 			try {
 				String result = g.toJson(Arbitrage

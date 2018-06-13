@@ -12,22 +12,22 @@ svg.line-chart {
 .split {
     height: 100%;
     /*width: 50%;*/
-    position: fixed;
-    z-index: 1;
-    top: inherit;
-    overflow-x: hidden;
+    /*position: fixed;*/
+    /*z-index: 1;*/
+    /*top: inherit;*/
+    /*overflow-x: hidden;*/
     /*padding-top: 20px;*/
 }
 
-.left {
-    left: 0;
-    width: 40%;
-}
+/*.left {*/
+    /*left: 0;*/
+    /*width: 40%;*/
+/*}*/
 
-.right {
-    right: 0;
-    width: 60%;
-}
+/*.right {*/
+    /*right: 0;*/
+    /*width: 60%;*/
+/*}*/
 
 .centered {
     margin: 2rem;
