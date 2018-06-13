@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.transform.Transformer;
-
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
@@ -19,25 +18,30 @@ import javax.xml.transform.stream.StreamSource;
  * @author nk510 This class implements methods for xslt transformations from
  *         CompChem XML files to RDF graph as Abox assertions of CoMo CompChem
  *         ontology ver 0.1.
+ *         
  */
 
 public class Transformation {
 
 	/**
+	 * 
 	 * @author nk510 Folder path where generated CompChem XML files are saved.
+	 * 
 	 */
 
-	static String folderPath = "src/test/resources/compchem_xml/";
+	static String folderPath = "src/test/resources/compchem_xml/"; //xslt
 
 	/**
 	 * @author nk510 Path to XSLT file.
 	 *
 	 */
-	static String xsltPath = "src/test/resources/xslt/compchem_to_gnvc_rdf.xsl";
-
+	
+	static String xsltPath = "src/test/resources/xslt/compchem_to_gnvc_rdf.xsl";   //Ti-g09/test.xsl;   
+	
 	public static void main(String[] args) throws TransformerException, IOException {
 
 		/**
+		 * 
 		 * @author nk510 File list of all CompChem xml files stored in folder path.
 		 * 
 		 */
@@ -45,6 +49,7 @@ public class Transformation {
 		File[] fileList = getFileList(folderPath);
 
 		/**
+		 * 
 		 * @author nk510 Iterates over file list given in folder
 		 *         'src/test/resources/compchem_xml/'
 		 * 
@@ -55,9 +60,11 @@ public class Transformation {
 			InputStream xmlSource = new FileInputStream(f.getPath());
 
 			StreamSource xsltSource = new StreamSource(xsltPath);
+			
 			/**
 			 * @author nk510 Creates output path for each CompChem XML file from file list.
 			 */
+			
 			String outputPath = "src/test/resources/ontology/" + f.getName().replace(".xml", "").toString() + ".rdf";
 
 			FileOutputStream outputStream = new FileOutputStream(new File(outputPath));
@@ -66,6 +73,7 @@ public class Transformation {
 			 * @author nk510 Runs XSLT transformation for each CompChem XML file form file
 			 *         list.
 			 */
+			
 			trasnformation(xmlSource, outputStream, xsltSource);
 
 		}
@@ -93,7 +101,7 @@ public class Transformation {
 			throws TransformerException {
 
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		Transformer transformer = transformerFactory.newTransformer(xsltSource);
+		Transformer transformer = transformerFactory.newTransformer(xsltSource);		
 		transformer.transform(new StreamSource(XmlSource), new StreamResult(outputStream));
 
 	}
@@ -118,5 +126,4 @@ public class Transformation {
 
 		return fileList;
 	}
-
 }
