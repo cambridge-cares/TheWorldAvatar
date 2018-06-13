@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.mods.api.MoDSAPI;
-import com.google.gson.Gson;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
@@ -72,8 +71,8 @@ public class Arbitrage {
 	public static String runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles(
 			String input) throws Exception {
 
-		Gson g = new Gson();
-		
+		//Gson g = new Gson();
+
 		String[] sim_address = {
 				AgentLocator.getCurrentJpsAppDirectory(
 						new Arbitrage())
@@ -83,11 +82,14 @@ public class Arbitrage {
 		// "C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\MoDS\\HDMR_50_001",
 		// "HDMR_Alg_1" };
 		// Double[] inputs = {24220.0656};
-		
-//		Double[] raw_materials = { Double.parseDouble(input) };
-		Double[] raw_materials = g.fromJson(input, Double[].class);
-		
-		List<Double> data = MoDS(raw_materials, sim_address);
+
+		 Double[] raw_materials = {
+		 Double.parseDouble(input) };
+		//Double[] raw_materials = g.fromJson(input,
+		//		Double[].class);
+
+		List<Double> data = MoDS(raw_materials,
+				sim_address);
 
 		String result = raw_materials[0].toString();
 		for (int i = 0; i < data.size(); i++) {
@@ -99,7 +101,7 @@ public class Arbitrage {
 				+ "/workingdir";
 		String CPO_to_FAME_analysis = new String(
 				"caresjpsarbitrage/CPO_to_FAME_MoDS.py");
-		
+
 		String result1 = PythonHelper.callPython(
 				CPO_to_FAME_analysis, result, workingdir,
 				new Arbitrage());
@@ -139,10 +141,11 @@ public class Arbitrage {
 		// "C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\MoDS\\HDMR_50_001",
 		// "HDMR_Alg_1" };
 		// Double[] inputs = {24220.0656};
-		//Gson g = new Gson();
+		// Gson g = new Gson();
 		Double[] raw_materials = {
 				Double.parseDouble(input) };
-		//Double[] raw_materials = g.fromJson(input, Double[].class);
+		// Double[] raw_materials = g.fromJson(input,
+		// Double[].class);
 		List<Double> MoDS_data = MoDS(raw_materials,
 				sim_address);
 
@@ -154,8 +157,8 @@ public class Arbitrage {
 		String path = "/JPS_Arbitrage/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase";
 		String key = "individuals";
 		String value = "V_Price_CoolingWater_001,V_Price_Storage_Biodiesel_001,V_Price_Storage_CrudePalmOil_001,V_Price_Transport_Malaysia-SG_CrudePalmOil_001,V_Price_Electricity_001,V_USD_to_SGD,V_Price_ProcessWater_001,V_Price_HighPressureSteam_001,V_Price_MediumPressureSteam_001,V_Price_Transport_SEA-SC_Biodiesel_001,V_Price_FuelGas_001";
-		String actual = AgentCaller.executeGet(path,
-				key, value);
+		String actual = AgentCaller.executeGet(path, key,
+				value);
 		logger.info(actual);
 		logger.info(result);
 
@@ -206,7 +209,4 @@ public class Arbitrage {
 		return outputs1;
 	}
 
-	public static void main(String[] args)
-			throws Exception {
-	}
 }
