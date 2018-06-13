@@ -36,7 +36,7 @@ public class ADMSOutput extends HttpServlet {
 		
 		Gson g = new Gson();
 		
-		String outputFile = AgentLocator.getPathToWorkingDir(this) + "/" + "ADMS/caresjpsadmsinputs/test.levels.gst";
+		String outputFile = "C:/TOMCAT/webapps/JPS/workingdir/test.levels.gst";
 		
 		String result = PythonHelper.callPython("caresjpsadmsinputs/ADMSOutput.py", outputFile , g.toJson(jsonString), this);
 		
