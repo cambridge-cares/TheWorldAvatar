@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module xmlns="http://www.xml-cml.org/schema" xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/">
+<module xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/" xmlns:targetNamespace="http://www.xml-cml.org/schema">
    <module dictRef="cc:jobList">
       <module dictRef="cc:job">
          <module dictRef="cc:initialization">
@@ -21,7 +21,7 @@
          <module dictRef="cc:finalization">
             <propertyList>
                <property dictRef="cc:vibrations">
-                  <array dataType="xsd:double" dictRef="cc:frequencies" units="nonSi:cm-1">110.4308 388.7549 1043.6705</array>
+                  <array dataType="xsd:double" dictRef="cc:frequencies" size="3" units="nonSi:cm-1">110.4308 388.7549 1043.6705</array>
                </property>
                <property dictRef="cc:rotational_symmetry">
                   <scalar units="si:none" dataType="xsd:integer">1</scalar>
