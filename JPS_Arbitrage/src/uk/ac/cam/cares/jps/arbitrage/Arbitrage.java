@@ -139,12 +139,15 @@ public class Arbitrage {
 						new Arbitrage())
 						+ "/MoDS/HDMR_50_001",
 				"HDMR_Alg_1" };
-
+		
+		Gson g = new Gson();
+		Double[] raw_materials = g.fromJson(input, Double[].class);
+		List<Double> MoDS_data = MoDS(raw_materials, sim_address);
+		
 		String result = raw_materials[0].toString();
 		for (int i = 0; i < MoDS_data.size(); i++) {
 			result += "," + MoDS_data.get(i).toString();
 		}
-		Gson g = new Gson();
 		String path = "/JPS_Arbitrage/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase";
 		String key = "individuals";
 		String value = "V_Price_CoolingWater_001,V_Price_Storage_Biodiesel_001,V_Price_Storage_CrudePalmOil_001,V_Price_Transport_Malaysia-SG_CrudePalmOil_001,V_Price_Electricity_001,V_USD_to_SGD,V_Price_ProcessWater_001,V_Price_HighPressureSteam_001,V_Price_MediumPressureSteam_001,V_Price_Transport_SEA-SC_Biodiesel_001,V_Price_FuelGas_001";

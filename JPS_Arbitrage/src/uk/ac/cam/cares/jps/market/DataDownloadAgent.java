@@ -225,7 +225,7 @@ public class DataDownloadAgent extends HttpServlet {
 
 			try {
 				String result = g.toJson(DataDownload
-						.retrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase(
+						.retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase(
 								jsonString.split(",")));
 
 				// delete later
