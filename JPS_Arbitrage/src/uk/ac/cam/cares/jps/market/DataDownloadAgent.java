@@ -42,16 +42,19 @@ public class DataDownloadAgent extends HttpServlet {
 	public DataDownloadAgent() {
 		super();
 	}
-	
+
 	// delete later
-//	public void writeStringUsingBufferedWriter(String function, String result) throws IOException {
-//		BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\jps\\jps_arbitrage\\consoleOutputDataDownloadAgent.txt", true));
-//		writer.append(function);
-//		writer.newLine();
-//		writer.append(result);
-//		writer.newLine();
-//		writer.close();
-//	}
+	// public void writeStringUsingBufferedWriter(String
+	// function, String result) throws IOException {
+	// BufferedWriter writer = new BufferedWriter(new
+	// FileWriter("C:\\jps\\jps_arbitrage\\consoleOutputDataDownloadAgent.txt",
+	// true));
+	// writer.append(function);
+	// writer.newLine();
+	// writer.append(result);
+	// writer.newLine();
+	// writer.close();
+	// }
 
 	/**
 	 * this function is a servlet for calling functions in
@@ -71,7 +74,7 @@ public class DataDownloadAgent extends HttpServlet {
 			throws ServletException, IOException {
 
 		String path = request.getServletPath();
-		
+
 		Gson g = new Gson();
 		
 		if ("/downloadCPOMarketData"
@@ -147,11 +150,12 @@ public class DataDownloadAgent extends HttpServlet {
 			try {
 				String result = g.toJson(DataDownload
 						.downloadingAndSavingMarketDataInTheKnowledgeBase());
-//				String result = DataDownload
-//						.downloadingAndSavingMarketDataInTheKnowledgeBase();
+				// String result = DataDownload
+				// .downloadingAndSavingMarketDataInTheKnowledgeBase();
 				// delete later
-//				writeStringUsingBufferedWriter(path, g.fromJson(result, String.class));
-				
+				// writeStringUsingBufferedWriter(path,
+				// g.fromJson(result, String.class));
+
 				response.setContentType("application/json");
 				response.getWriter().write(result);
 			} catch (Exception e) {
@@ -198,13 +202,38 @@ public class DataDownloadAgent extends HttpServlet {
 				String result = g.toJson(DataDownload
 						.retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase(
 								jsonString.split(",")));
-				
+
 				// delete later
-//				writeStringUsingBufferedWriter(path, result);
-				
+				// writeStringUsingBufferedWriter(path,
+				// result);
+
 				response.setContentType("application/json");
-				response.getWriter()
-						.write(result);
+				response.getWriter().write(result);
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+				throw new JPSRuntimeException(
+						e.getMessage(), e);
+			}
+		} else if ("/retrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase"
+				.equals(path)) {
+
+			// -- Get String formatted in Array of Strings
+			// -- //
+			request.setCharacterEncoding("UTF-8");
+			String jsonString = request
+					.getParameter("individuals");
+
+			try {
+				String result = g.toJson(DataDownload
+						.retrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase(
+								jsonString.split(",")));
+
+				// delete later
+				// writeStringUsingBufferedWriter(path,
+				// result);
+
+				response.setContentType("application/json");
+				response.getWriter().write(result);
 			} catch (Exception e) {
 				logger.error(e.getMessage());
 				throw new JPSRuntimeException(
@@ -220,10 +249,11 @@ public class DataDownloadAgent extends HttpServlet {
 			try {
 				String result = g.toJson(DataDownload
 						.downloadingAndSavingExchangeRatesInTheKnowledgeBase());
-								
+
 				// delete later
-//				writeStringUsingBufferedWriter(path, g.fromJson(result, String.class));
-				
+				// writeStringUsingBufferedWriter(path,
+				// g.fromJson(result, String.class));
+
 				response.setContentType("application/json");
 				response.getWriter()
 						.write(result.toString());
