@@ -159,7 +159,7 @@
           </owl:NamedIndividual>
         </system:hasUnitOfMeasure>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >12.571428571_1.142857143</system:numericalValue>
+        >6.571428571_1.142857143</system:numericalValue>
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
       </owl:NamedIndividual>
     </system:hasValue>
@@ -585,14 +585,14 @@
           <j.0:ContinuousMaterialAmount rdf:ID="MaterialAmount_NaturalGasInput_001">
             <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
             <system:hasProperty>
-              <owl:NamedIndividual rdf:ID="massF_NaturalGasInput_001">
+              <owl:NamedIndividual rdf:ID="moleF_NaturalGasInput_001">
                 <system:hasValue>
-                  <owl:NamedIndividual rdf:ID="V_massF_NaturalGasInput_001">
+                  <owl:NamedIndividual rdf:ID="V_moleF_NaturalGasInput_001">
                     <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                     >1</system:numericalValue>
                     <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
                     <system:hasUnitOfMeasure>
-                      <owl:NamedIndividual rdf:about="#mmBTU/s">
+                      <owl:NamedIndividual rdf:about="#kmol/s">
                         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
                       </owl:NamedIndividual>
                     </system:hasUnitOfMeasure>

@@ -108,7 +108,7 @@ public class Arbitrage {
 				CPO_to_FAME_analysis, result, workingdir,
 				new Arbitrage());
 		logger.info(result1);
-		System.out.println(result1);
+		//System.out.println(result1);
 		return result1;
 
 	}
@@ -213,14 +213,9 @@ public class Arbitrage {
 				value), String.class);
 		logger.info(actual);
 		logger.info(result);
-
-		System.out.println(1);
-		System.out.println(actual);
-		System.out.println(result);
-		System.out.println(1);
 		
 		String NG_to_MeOH_analysis = new String(
-				"caresjpsarbitrage/NG_to_MeOH_MoDS2222.py");
+				"caresjpsarbitrage/NG_to_MeOH_MoDS.py");
 		String result1 = PythonHelper.callPython(
 				NG_to_MeOH_analysis, result, actual,
 				new Arbitrage());
