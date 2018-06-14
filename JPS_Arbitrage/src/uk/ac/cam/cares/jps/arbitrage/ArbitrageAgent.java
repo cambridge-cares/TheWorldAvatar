@@ -119,7 +119,7 @@ public class ArbitrageAgent extends HttpServlet {
 			request.setCharacterEncoding("UTF-8");
 			String jsonString = request
 					.getParameter("MoDS_input");
-			
+
 //			delete later
 //			System.out.println(path);
 //			System.out.println(jsonString);

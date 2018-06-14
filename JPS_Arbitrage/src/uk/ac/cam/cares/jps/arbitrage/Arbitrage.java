@@ -73,7 +73,7 @@ public class Arbitrage {
 	public static String runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles(
 			String input) throws Exception {
 
-		//Gson g = new Gson();
+		Gson g = new Gson();
 
 		String[] sim_address = {
 				AgentLocator.getCurrentJpsAppDirectory(
@@ -85,10 +85,9 @@ public class Arbitrage {
 		// "HDMR_Alg_1" };
 		// Double[] inputs = {24220.0656};
 
-		 Double[] raw_materials = {
-		 Double.parseDouble(input) };
-		//Double[] raw_materials = g.fromJson(input,
-		//		Double[].class);
+//		 Double[] raw_materials = {
+//		 Double.parseDouble(input) };
+		Double[] raw_materials = g.fromJson(input, Double[].class);
 
 		List<Double> data = MoDS(raw_materials,
 				sim_address);
