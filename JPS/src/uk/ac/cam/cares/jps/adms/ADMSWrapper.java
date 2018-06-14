@@ -73,7 +73,7 @@ public class ADMSWrapper extends HttpServlet {
 		ServletContext context = getServletContext();
 		String fullPath = AgentLocator.getPathToWorkingDir(this) + "/" + "ADMS";
 		args.add(fullPath); // this extra parameter tells the python script where to put the input files, in this case, working dir
-		String targetFolder = "/python/caresjpsadmsinputs";
+		String targetFolder = "C:/TOMCAT/webapps/JPS/python/caresjpsadmsinputs";
 		CommandHelper.executeCommands(targetFolder, args);
 		response.getWriter().write("Success");
 		// =========================================================================================
