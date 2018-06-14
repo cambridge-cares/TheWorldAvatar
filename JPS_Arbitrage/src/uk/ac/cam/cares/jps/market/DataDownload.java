@@ -29,7 +29,6 @@ public class DataDownload {
 	private static Logger logger = LoggerFactory
 			.getLogger(DataDownload.class);
 
-	
 	/**
 	 * this function calls cmd to execute 4 Python scripts
 	 * which download market prices for crude palm oil
@@ -135,12 +134,12 @@ public class DataDownload {
 		logger.info("File saved with " + errors.size()
 				+ " errors.");
 
-//		return results[0];
+		// return results[0];
 		// maybe return array of Strings?
-		
-		
+
 		// delete later
-		// returns single String of joined elements in an Array
+		// returns single String of joined elements in an
+		// Array
 		return StringUtils.join(results, "\r\n");
 	}
 
@@ -228,17 +227,19 @@ public class DataDownload {
 		logger.info("File saved with " + errors.size()
 				+ " errors.");
 
-//		return headers[0];
-		
+		// return headers[0];
+
 		// delete later
-//		String[] headersAndRates = Stream.of(headers, rates).flatMap(Stream::of).toArray(String[]::new);
-//		return StringUtils.join(headersAndRates, "\r\n");
-		
-		String[][] headersAndRates = {headers, rates};
-		
+		// String[] headersAndRates = Stream.of(headers,
+		// rates).flatMap(Stream::of).toArray(String[]::new);
+		// return StringUtils.join(headersAndRates, "\r\n");
+
+		String[][] headersAndRates = { headers, rates };
+
 		Gson g = new Gson();
-		String headersAndRatesString = g.toJson(headersAndRates);
-		
+		String headersAndRatesString = g
+				.toJson(headersAndRates);
+
 		return headersAndRatesString;
 	}
 
@@ -433,6 +434,106 @@ public class DataDownload {
 			data += name + ",";
 		}
 
+		return data;
+	}
+
+	/**
+	 * this function receives names of individuals, which
+	 * are to be found in JPS knowledge base, and retrieves
+	 * data under numericalValue associated with them; in
+	 * addition, market prices for natural gas (HNG) and
+	 * methanol (ZCE) are retrieved; the names and the data
+	 * are converted into a string and returned
+	 * 
+	 * @param headers
+	 * @return
+	 * @throws Exception
+	 */
+	public static String retrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase(
+			String[] headers) throws Exception {
+
+		/**
+		 * URIs of ontologies used to define KBs in which
+		 * market data will be stored
+		 */
+		String ontoPath = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15"; // KB
+		String ontoPath2 = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl";
+
+		String data = "";
+
+		/**
+		 * URIs of relevant individuals and their properties
+		 * are defined
+		 */
+		String[][] addresses = new String[headers.length][];
+		for (int i = 0; i < addresses.length; i++) {
+			addresses[i] = new String[] {
+					ontoPath2 + "#" + "numericalValue",
+					ontoPath + "#" + headers[i] };
+			logger.info(addresses[i][1]);
+		}
+
+		/** get model from an owl file */
+		String filePath = AgentLocator
+				.getPathToWorkingDir(new DataDownload())
+				+ "/OntoArbitrage_PlantInfo_KB.owl";
+		OWLModel owlModel = null;
+
+		try {
+			owlModel = ProtegeOWL.createJenaOWLModelFromURI(
+					"file:/" + filePath);
+		} catch (OntologyLoadException e1) {
+			logger.warn(e1.getMessage());
+		}
+
+		for (int i = 0; i < addresses.length; i++) {
+			RDFIndividual individual = owlModel
+					.getRDFIndividual(addresses[i][1]);
+			String name = individual
+					.getPropertyValueLiteral(
+							owlModel.getRDFProperty(
+									addresses[i][0]))
+					.getString();
+			data += headers[i] + ",";
+			data += name + ",";
+		}
+
+		/** ontology addresses */
+		String ontoPath3 = "http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl";
+		String ontoPath4 = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13";
+
+		String[][] addresses2 = {
+				{ ontoPath3 + "#" + "data",
+						ontoPath4 + "#"
+								+ "CMENaturalGas_001" },
+				{ ontoPath3 + "#" + "data", ontoPath4 + "#"
+						+ "ZCEMethanol_001" }, };
+
+		/** get model from an owl file */
+		String filePath2 = AgentLocator
+				.getPathToWorkingDir(new DataDownload())
+				+ "/OntoArbitrage_Market_KB.owl";
+		OWLModel owlModel2 = null;
+
+		try {
+			owlModel2 = ProtegeOWL
+					.createJenaOWLModelFromURI(
+							"file:/" + filePath2);
+		} catch (OntologyLoadException e1) {
+			logger.warn(e1.getMessage());
+		}
+
+		for (int i = 0; i < addresses2.length; i++) {
+			RDFIndividual individual = owlModel2
+					.getRDFIndividual(addresses2[i][1]);
+			String name = individual
+					.getPropertyValueLiteral(
+							owlModel2.getRDFProperty(
+									addresses2[i][0]))
+					.getString();
+			data += name + ",";
+		}
+		System.out.println(data);
 		return data;
 	}
 
