@@ -9,6 +9,27 @@ from re import sub
 import requests, sys
 from selenium import webdriver
 
+# takes in a time period e.g. MA809 and returns a string denoting the month and year SEP 2018
+def convertMarketTimePeriods(stringTimePeriod):
+	dictMonths = {
+        '01': 'JAN',
+        '02': 'FEB',
+        '03': 'MAR',
+        '04': 'APR',
+        '05': 'MAY',
+        '06': 'JUN',
+        '07': 'JUL',
+        '08': 'AUG',
+        '09': 'SEP',
+        '10': 'OCT',
+        '11': 'NOV',
+        '12': 'DEC'
+    }
+	
+	year = "201{}".format(stringTimePeriod[2])
+	return dictMonths['{}'.format(stringTimePeriod[-2:])] + " " + year;
+
+
  ##this function downloads methanol futures prices for a methanol delivered by Zhengzhou Commodity Exchange; it is done by downloading their page source and parsing through it as if it was an XML file
 def ZCE(url_address, driver):
 	#url_address = 'http://english.czce.com.cn/enportal/DFSStaticFiles/Future/EnglishFutureQuotesMA.htm'
@@ -19,7 +40,7 @@ def ZCE(url_address, driver):
 	price = []
 
 	for i in range(int(len(data)/7-1)):
-		delivery.append(data[(i+1)*7])
+		delivery.append(convertMarketTimePeriods(str(data[(i+1)*7])))
 		price.append(float(sub(',','',data[(i+1)*7+6])))
 	
 	string = '&MeOH,Date,Price type,Size (tonne)'

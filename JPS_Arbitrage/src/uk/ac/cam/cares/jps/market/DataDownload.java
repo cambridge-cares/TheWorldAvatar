@@ -28,6 +28,51 @@ import com.google.gson.Gson;
 public class DataDownload {
 	private static Logger logger = LoggerFactory
 			.getLogger(DataDownload.class);
+	
+	public static String downloadMarketData(String script, String source) throws Exception {
+		return PythonHelper.callPython(script, source, new DataDownload());
+	}
+	
+	public static String downloadCPOMarketData() throws Exception {
+		String CPO_download = new String(
+				"caresjpsarbitrage/CPO_download.pyw");
+		
+		String CPO_page = new String(
+				"http://www.cmegroup.com/trading/agricultural/grain-and-oilseed/usd-malaysian-crude-palm-oil-calendar.html?optionProductId=8075");
+		
+		return downloadMarketData(CPO_download, CPO_page);
+	}
+	
+	public static String downloadFAMEMarketData() throws Exception {
+		String FAME_download = new String(
+				"caresjpsarbitrage/FAME_download.pyw");
+		
+		String FAME_page = new String(
+				"http://www.cmegroup.com/trading/energy/refined-products/fame-0-argus-biodiesel-fob-rdam-red-compliant-swap-futures.html");
+		
+		return downloadMarketData(FAME_download, FAME_page);
+	}
+	
+	public static String downloadZCEMarketData() throws Exception {
+		String ZCE_download = new String(
+				"caresjpsarbitrage/ZCE_download.pyw");
+		
+		String ZCE_page = new String(
+				"http://english.czce.com.cn/enportal/DFSStaticFiles/Future/EnglishFutureQuotesMA.htm");
+		
+		return downloadMarketData(ZCE_download, ZCE_page);		
+	}
+	
+	public static String downloadHNGMarketData() throws Exception {
+		String HNG_download = new String(
+				"caresjpsarbitrage/HNG_download.pyw");
+		
+		String HNG_page = new String(
+				"http://www.cmegroup.com/trading/energy/natural-gas/natural-gas.html");
+		
+		return downloadMarketData(HNG_download, HNG_page);
+	}
+
 
 	
 	/**
@@ -44,37 +89,16 @@ public class DataDownload {
 	public static String downloadingAndSavingMarketDataInTheKnowledgeBase()
 			throws Exception {
 
-		String CPO_download = new String(
-				"caresjpsarbitrage/CPO_download.pyw");
-		String FAME_download = new String(
-				"caresjpsarbitrage/FAME_download.pyw");
-		String ZCE_download = new String(
-				"caresjpsarbitrage/ZCE_download.pyw");
-		String HNG_download = new String(
-				"caresjpsarbitrage/HNG_download.pyw");
-
-		String CPO_page = new String(
-				"http://www.cmegroup.com/trading/agricultural/grain-and-oilseed/usd-malaysian-crude-palm-oil-calendar.html?optionProductId=8075");
-		String FAME_page = new String(
-				"http://www.cmegroup.com/trading/energy/refined-products/fame-0-argus-biodiesel-fob-rdam-red-compliant-swap-futures.html");
-		String ZCE_page = new String(
-				"http://english.czce.com.cn/enportal/DFSStaticFiles/Future/EnglishFutureQuotesMA.htm");
-		String HNG_page = new String(
-				"http://www.cmegroup.com/trading/energy/natural-gas/natural-gas.html");
-
-		String[][] commands = { { CPO_download, CPO_page },
-				{ FAME_download, FAME_page },
-				{ ZCE_download, ZCE_page },
-				{ HNG_download, HNG_page } };
-
-		String[] results = new String[commands.length];
-		for (int i = 0; i < commands.length; i++) {
-			String result = PythonHelper.callPython(
-					commands[i][0], commands[i][1],
-					new DataDownload());
-			results[i] = result;
-			logger.info(result);
-		}
+		String[] results = new String[4];
+		
+		results[0] = downloadCPOMarketData();
+		logger.info(results[0]);
+		results[1] = downloadFAMEMarketData();
+		logger.info(results[1]);
+		results[2] = downloadZCEMarketData();
+		logger.info(results[2]);
+		results[3] = downloadHNGMarketData();
+		logger.info(results[3]);
 
 		/**
 		 * URIs of ontologies used to define KBs in which
@@ -241,6 +265,80 @@ public class DataDownload {
 		
 		return headersAndRatesString;
 	}
+	
+	/**
+	 * this function accepts an array and stored in JPS
+	 * knowledge base; the currencies are defined within the
+	 * script; first currency-pair header is returned for
+	 * testing purposes
+	 * 
+	 * @throws Exception
+	 */
+	public static String savingDataInTheKnowledgeBase(String receivedData) throws Exception {
+		Gson g = new Gson();
+		String[][] arrayHeaderPrices = g.fromJson(receivedData, String[][].class);
+		
+		/**
+		 * split the console output into headers and
+		 * exchange rates
+		 */
+		String[] headers = arrayHeaderPrices[0];
+		String[] data = arrayHeaderPrices[1];
+
+		/**
+		 * URIs of ontologies used to define KBs in which
+		 * market data will be stored
+		 */
+		String ontoPath = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15"; // KB
+		String ontoPath2 = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl";
+
+		/**
+		 * URIs of relevant individuals and their properties
+		 * are defined
+		 */
+		String[][] addresses = new String[headers.length][];
+
+		for (int i = 0; i < addresses.length; i++) {
+			addresses[i] = new String[] {
+					ontoPath2 + "#" + "numericalValue",
+					ontoPath + "#" + headers[i] };
+		}
+
+		/**
+		 * knowledge base from an owl file in a jenaOWL
+		 * model; rates are stored in KB one by one
+		 */
+		String filePath = AgentLocator
+				.getPathToWorkingDir(new DataDownload())
+				+ "/OntoArbitrage_PlantInfo_KB.owl";
+		FileInputStream inFile = new FileInputStream(
+				filePath);
+		Reader in = new InputStreamReader(inFile, "UTF-8");
+		JenaOWLModel jenaOwlModel = ProtegeOWL
+				.createJenaOWLModelFromReader(in);
+
+		for (int i = 0; i < addresses.length; i++) {
+			RDFProperty property = jenaOwlModel
+					.getRDFProperty(addresses[i][0]);
+			RDFIndividual individual = jenaOwlModel
+					.getRDFIndividual(addresses[i][1]);
+			individual.setPropertyValue(property, data[i]);
+		}
+
+		/**
+		 * save the updated model file; also, any error
+		 * messages are collected and printed
+		 */
+		Collection<Object> errors = new ArrayList<Object>();
+		jenaOwlModel.save(new URI("file:/" + filePath),
+				FileUtils.langXMLAbbrev, errors,
+				jenaOwlModel.getOntModel());
+		logger.info("File saved with " + errors.size()
+				+ " errors.");
+		
+		String[] inputHeaders = {"V_Price_CoolingWater_001", "V_Price_FuelGas_001", "V_Price_Electricity_001"};
+		return retrieveUtilityPrices(inputHeaders);
+	}
 
 	/**
 	 * this function calls cmd to execute a Python script
@@ -390,6 +488,49 @@ public class DataDownload {
 		
 		return data;
 	}
+
+	
+	
+	public static String retrieveMarketPricesFromKnowledgeBase(String entity) throws Exception {
+		/** ontology addresses */
+		String ontoPath3 = "http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl";
+		String ontoPath4 = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13";
+		
+		String stringIndividual = ontoPath4 + "#" + entity;
+		String stringProperty = ontoPath3 + "#data";
+
+		/** get model from an owl file */
+		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload())
+				+ "/OntoArbitrage_Market_KB.owl";
+		OWLModel owlModel = null;
+
+		try {
+			owlModel = ProtegeOWL.createJenaOWLModelFromURI(
+							"file:/" + filePath);
+		} catch (OntologyLoadException e1) {
+			logger.warn(e1.getMessage());
+		}
+
+		RDFIndividual individual = owlModel.getRDFIndividual(stringIndividual);
+		String name = individual.getPropertyValueLiteral(owlModel.getRDFProperty(stringProperty)).getString();
+		return name;
+	}
+	
+	public static String retrieveCPOMarketPricesFromKnowledgeBase() throws Exception {
+		return retrieveMarketPricesFromKnowledgeBase("CMECrudePalmOil_001");		
+	}
+	
+	public static String retrieveBiodieselPricesFromKnowledgeBase() throws Exception {
+		return retrieveMarketPricesFromKnowledgeBase("CMEBiodiesel_001");
+	}
+	
+	public static String retrieveMethanolPricesFromKnowledgeBase() throws Exception {
+		return retrieveMarketPricesFromKnowledgeBase("ZCEMethanol_001");
+	}
+	
+	public static String retrieveNaturalGasPricesFromKnowledgeBase() throws Exception {
+		return retrieveMarketPricesFromKnowledgeBase("CMENaturalGas_001");
+	}
 	
 	/**
 	 * this function receives names of individuals, which
@@ -406,50 +547,10 @@ public class DataDownload {
 	public static String retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase(
 			String[] headers) throws Exception {
 
-		String data = retrieveUtilityPrices(headers);
-
-		/** ontology addresses */
-		String ontoPath3 = "http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl";
-		String ontoPath4 = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13";
-
-		String[][] addresses2 = {
-				{ ontoPath3 + "#" + "data",
-						ontoPath4 + "#"
-								+ "CMECrudePalmOil_001" },
-				{ ontoPath3 + "#" + "data", ontoPath4 + "#"
-						+ "CMEBiodiesel_001" },
-				// {ontoPath3+"#"+"data",
-				// ontoPath4+"#"+"ZCEMethanol_001"},
-				// {ontoPath3+"#"+"data",
-				// ontoPath4+"#"+"CMENaturalGas_001"}
-		};
-
-		/** get model from an owl file */
-		String filePath2 = AgentLocator
-				.getPathToWorkingDir(new DataDownload())
-				+ "/OntoArbitrage_Market_KB.owl";
-		OWLModel owlModel2 = null;
-
-		try {
-			owlModel2 = ProtegeOWL
-					.createJenaOWLModelFromURI(
-							"file:/" + filePath2);
-		} catch (OntologyLoadException e1) {
-			logger.warn(e1.getMessage());
-		}
-
-		for (int i = 0; i < addresses2.length; i++) {
-			RDFIndividual individual = owlModel2
-					.getRDFIndividual(addresses2[i][1]);
-			String name = individual
-					.getPropertyValueLiteral(
-							owlModel2.getRDFProperty(
-									addresses2[i][0]))
-					.getString();
-			data += name + ",";
-		}
+		String data = retrieveUtilityPrices(headers);		
+		data += retrieveCPOMarketPricesFromKnowledgeBase() + "," + 
+				retrieveBiodieselPricesFromKnowledgeBase() + ",";
 
 		return data;
 	}
-
 }

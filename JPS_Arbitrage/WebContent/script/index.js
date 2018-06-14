@@ -1,6 +1,12 @@
 /**
  * 
  */
+const storeUtilityPricesInKnowledgeBase = arrayHeaderPrices => {
+	return $.getJSON('/JPS_Arbitrage/savingDataInTheKnowledgeBase', {
+		arrayHeaderPrices: JSON.stringify(arrayHeaderPrices)
+	});
+};
+
 const downloadAndSaveMarketData = () => {
 	return $.getJSON('/JPS_Arbitrage/downloadingAndSavingMarketDataInTheKnowledgeBase');
 };
@@ -73,35 +79,57 @@ const retrieveSelectedPlantParams = () => {
 
 const processInputs = () => {
 	console.log("Begin processing input");
-	$.when(downloadAndSaveMarketData(), downloadAndSaveExchangeRates()).done(function(responseOne, responseTwo){
-		let marketData = responseOne[0];
-		processMarketData(marketData);
+	
+	let inputFlowRateCPO = $('input#flowrateCPO').val();	
+	let inputPriceCoolingWater = $('input#priceCoolingWater').val();
+	let inputPriceFuelGas = $('input#priceFuelGas').val();
+	let inputPriceElectricity = $('input#priceElectricity').val();
+	
+	let pattern = /^\d+(\.\d+)?$/;
 
-		let exchangeRates = responseTwo[0];
-		processExchangeRates(exchangeRates);
+	if (pattern.test(inputFlowRateCPO) && 
+		pattern.test(inputPriceCoolingWater) && 
+		pattern.test(inputPriceFuelGas) && 
+		pattern.test(inputPriceElectricity)) {
 
-		let inputA = parseFloat($('#flowrateCPO').val());
-
-		let choiceAnalysis = $("#analysisSelection option:selected").text();
-
-		if(choiceAnalysis === "Market Data from DataDownload Agent") {
-            $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent',
-                {
-                    MoDS_input: JSON.stringify([inputA])
-                },
-                function (data) {
-                    $('#MoDSOutput').text(data);
-                });
-        } else {
-            $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles',
-                {
-                    MoDS_input: JSON.stringify([inputA])
-                },
-                function (data) {
-                    $('#MoDSOutput').text(data);
-                });
-		}
-	})
+		let header = ["V_Price_CoolingWater_001", "V_Price_FuelGas_001", "V_Price_Electricity_001"];
+		let prices = [inputPriceCoolingWater, inputPriceFuelGas, inputPriceElectricity];
+		arrayHeaderPrices = [header, prices];
+		
+		$.when(downloadAndSaveMarketData(), downloadAndSaveExchangeRates(), storeUtilityPricesInKnowledgeBase(arrayHeaderPrices)).done(function(responseOne, responseTwo, responseThree){
+			let marketData = responseOne[0];
+			processMarketData(marketData);
+		
+			let exchangeRates = responseTwo[0];
+			processExchangeRates(exchangeRates);
+			
+			let storeUtilityPricesInKnowledgeBaseResults = responseThree[0];
+			console.log(storeUtilityPricesInKnowledgeBaseResults);
+		
+			let inputA = parseFloat($('#flowrateCPO').val());
+			let choiceAnalysis = $("#analysisSelection option:selected").text();
+			
+			if(choiceAnalysis === "Market Data from DataDownload Agent") {
+		        $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent',
+		            {
+		                MoDS_input: JSON.stringify([inputA])
+		            },
+		            function (data) {
+		                $('#MoDSOutput').text(data);
+		            });
+		    } else {
+		        $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles',
+		            {
+		                MoDS_input: JSON.stringify([inputA])
+		            },
+		            function (data) {
+		                $('#MoDSOutput').text(data);
+		            });
+			}
+		})
+	} else {
+		console.log("Please fill in ALL parameters with positive real numbers.")
+	}
 };
 
 $(document).ready(function(){
@@ -115,6 +143,13 @@ $(document).ready(function(){
 				$('input#priceCoolingWater').val(dataArray[1]);
 				$('input#priceFuelGas').val(dataArray[3]);
 				$('input#priceElectricity').val(dataArray[5]);
+			});
+	$.getJSON('/JPS_Arbitrage/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase',
+			{
+				individuals: "V_Price_CoolingWater_001,V_Price_Storage_Biodiesel_001,V_Price_Storage_CrudePalmOil_001,V_Price_Transport_Malaysia-SG_CrudePalmOil_001,V_Price_Electricity_001,V_USD_to_SGD,V_Price_ProcessWater_001,V_Price_HighPressureSteam_001,V_Price_MediumPressureSteam_001,V_Price_Transport_SEA-SC_Biodiesel_001,V_Price_FuelGas_001"
+			},
+			function(data){
+				console.log(data);
 			});
 });
 

@@ -12,6 +12,8 @@ import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
+import com.google.gson.Gson;
+
 public class Arbitrage {
 	private static Logger logger = LoggerFactory
 			.getLogger(Arbitrage.class);
@@ -141,13 +143,11 @@ public class Arbitrage {
 		// "C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\MoDS\\HDMR_50_001",
 		// "HDMR_Alg_1" };
 		// Double[] inputs = {24220.0656};
-		// Gson g = new Gson();
-		Double[] raw_materials = {
-				Double.parseDouble(input) };
-		// Double[] raw_materials = g.fromJson(input,
-		// Double[].class);
-		List<Double> MoDS_data = MoDS(raw_materials,
-				sim_address);
+		Gson g = new Gson();
+//		Double[] raw_materials = {
+//				Double.parseDouble(input) };
+		 Double[] raw_materials = g.fromJson(input, Double[].class);
+		List<Double> MoDS_data = MoDS(raw_materials, sim_address);
 
 		String result = raw_materials[0].toString();
 		for (int i = 0; i < MoDS_data.size(); i++) {
@@ -157,8 +157,8 @@ public class Arbitrage {
 		String path = "/JPS_Arbitrage/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase";
 		String key = "individuals";
 		String value = "V_Price_CoolingWater_001,V_Price_Storage_Biodiesel_001,V_Price_Storage_CrudePalmOil_001,V_Price_Transport_Malaysia-SG_CrudePalmOil_001,V_Price_Electricity_001,V_USD_to_SGD,V_Price_ProcessWater_001,V_Price_HighPressureSteam_001,V_Price_MediumPressureSteam_001,V_Price_Transport_SEA-SC_Biodiesel_001,V_Price_FuelGas_001";
-		String actual = AgentCaller.executeGet(path, key,
-				value);
+		String actual = g.fromJson(AgentCaller.executeGet(path, key,
+				value), String.class);
 		logger.info(actual);
 		logger.info(result);
 

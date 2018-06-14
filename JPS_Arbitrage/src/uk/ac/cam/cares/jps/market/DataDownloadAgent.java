@@ -21,8 +21,13 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * Servlet implementation class DataDownloadAgent
  */
 @WebServlet(urlPatterns = {
+		"/downloadCPOMarketData",
+		"/downloadFAMEMarketData",
+		"/downloadZCEMarketData",
+		"/downloadHNGMarketData",
 		"/downloadingAndSavingMarketDataInTheKnowledgeBase",
 		"/downloadingAndSavingExchangeRatesInTheKnowledgeBase",
+		"/savingDataInTheKnowledgeBase",
 		"/retrieveUtilityPrices",
 		"/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase" })
 public class DataDownloadAgent extends HttpServlet {
@@ -68,8 +73,71 @@ public class DataDownloadAgent extends HttpServlet {
 		String path = request.getServletPath();
 		
 		Gson g = new Gson();
+		
+		if ("/downloadCPOMarketData"
+				.equals(path)) {
+			request.setCharacterEncoding("UTF-8");
 
-		if ("/downloadingAndSavingMarketDataInTheKnowledgeBase"
+			try {
+				String result = g.toJson(DataDownload
+						.downloadCPOMarketData());
+				
+				response.setContentType("application/json");
+				response.getWriter().write(result);
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+				throw new JPSRuntimeException(
+						e.getMessage(), e);
+			}
+		} else if ("/downloadFAMEMarketData"
+				.equals(path)) {
+			request.setCharacterEncoding("UTF-8");
+
+			try {
+				String result = g.toJson(DataDownload
+						.downloadFAMEMarketData());
+				
+				response.setContentType("application/json");
+				response.getWriter().write(result);
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+				throw new JPSRuntimeException(
+						e.getMessage(), e);
+			}
+
+		} else if ("/downloadZCEMarketData"
+				.equals(path)) {
+			request.setCharacterEncoding("UTF-8");
+
+			try {
+				String result = g.toJson(DataDownload
+						.downloadZCEMarketData());
+				
+				response.setContentType("application/json");
+				response.getWriter().write(result);
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+				throw new JPSRuntimeException(
+						e.getMessage(), e);
+			}
+
+		} else if ("/downloadHNGMarketData"
+				.equals(path)) {
+			request.setCharacterEncoding("UTF-8");
+
+			try {
+				String result = g.toJson(DataDownload
+						.downloadHNGMarketData());
+				
+				response.setContentType("application/json");
+				response.getWriter().write(result);
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+				throw new JPSRuntimeException(
+						e.getMessage(), e);
+			}
+
+		} else if ("/downloadingAndSavingMarketDataInTheKnowledgeBase"
 				.equals(path)) {
 
 			// -- Get String formatted in Array of Strings
@@ -159,6 +227,27 @@ public class DataDownloadAgent extends HttpServlet {
 				response.setContentType("application/json");
 				response.getWriter()
 						.write(result.toString());
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+				throw new JPSRuntimeException(
+						e.getMessage(), e);
+			}
+		} else if ("/savingDataInTheKnowledgeBase".equals(path)) {
+			request.setCharacterEncoding("UTF-8");
+			String jsonString = request.getParameter("arrayHeaderPrices");
+			
+			System.out.println("In SERVLET");
+			System.out.println(jsonString);
+			
+			try {
+				String result = g.toJson(DataDownload.savingDataInTheKnowledgeBase(jsonString));
+								
+				// delete later
+//				writeStringUsingBufferedWriter(path, g.fromJson(result, String.class));
+				
+				response.setContentType("application/json");
+				response.getWriter()
+						.write(result);
 			} catch (Exception e) {
 				logger.error(e.getMessage());
 				throw new JPSRuntimeException(
