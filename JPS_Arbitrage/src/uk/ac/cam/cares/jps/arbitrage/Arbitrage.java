@@ -139,15 +139,8 @@ public class Arbitrage {
 						new Arbitrage())
 						+ "/MoDS/HDMR_50_001",
 				"HDMR_Alg_1" };
-		// String[] sim_address = {
-		// "C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\MoDS\\HDMR_50_001",
-		// "HDMR_Alg_1" };
-		// Double[] inputs = {24220.0656};
-		Gson g = new Gson();
 		Double[] raw_materials = {
 				Double.parseDouble(input) };
-		// Double[] raw_materials = g.fromJson(input,
-		// Double[].class);
 		List<Double> MoDS_data = MoDS(raw_materials,
 				sim_address);
 
@@ -155,7 +148,7 @@ public class Arbitrage {
 		for (int i = 0; i < MoDS_data.size(); i++) {
 			result += "," + MoDS_data.get(i).toString();
 		}
-
+		Gson g = new Gson();
 		String path = "/JPS_Arbitrage/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase";
 		String key = "individuals";
 		String value = "V_Price_CoolingWater_001,V_Price_Storage_Biodiesel_001,V_Price_Storage_CrudePalmOil_001,V_Price_Transport_Malaysia-SG_CrudePalmOil_001,V_Price_Electricity_001,V_USD_to_SGD,V_Price_ProcessWater_001,V_Price_HighPressureSteam_001,V_Price_MediumPressureSteam_001,V_Price_Transport_SEA-SC_Biodiesel_001,V_Price_FuelGas_001";
@@ -163,7 +156,8 @@ public class Arbitrage {
 				value), String.class);
 		logger.info(actual);
 		logger.info(result);
-		System.out.println(actual);
+		
+		
 		String CPO_to_FAME_analysis = new String(
 				"caresjpsarbitrage/CPO_to_FAME_MoDS2.py");
 		String result1 = PythonHelper.callPython(
@@ -175,6 +169,68 @@ public class Arbitrage {
 
 	}
 
+	/**
+	 * this function uses MoDS-Java API to evaluate the
+	 * pre-generated MoDS surrogate model stored a location
+	 * defined below, converts MoDS output values into a
+	 * string, which is passed to a Python script, calls
+	 * DataDownloadAgent via Tomcat server to retrieve
+	 * market prices of crude palm oil (CPO) and biodiesel
+	 * (FAME), utility prices and exchange rates from JPS
+	 * knowledge base, which are passed to the Python script
+	 * as a string, and calls cmd to execute the Python
+	 * script which conducts the financial analysis, result
+	 * of which is printed to the eclipse console and
+	 * returned as a string
+	 * 
+	 * @param input
+	 * @return
+	 * @throws Exception
+	 */
+	public static String runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2(
+			String input) throws Exception {
+
+		String[] sim_address = {
+				AgentLocator.getCurrentJpsAppDirectory(
+						new Arbitrage())
+						+ "/MoDS/HDMR_0%2E01_001",
+				"HDMR_Alg_1" };
+		Double[] raw_materials = {
+				Double.parseDouble(input) };
+		List<Double> MoDS_data = MoDS(raw_materials,
+				sim_address);
+
+		String result = raw_materials[0].toString();
+		for (int i = 0; i < MoDS_data.size(); i++) {
+			result += "," + MoDS_data.get(i).toString();
+		}
+		Gson g = new Gson();
+
+		String path = "/JPS_Arbitrage/retrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase";
+		String key = "individuals";
+		String value = "V_Price_CoolingWater_001,V_Price_Storage_NaturalGas_001,V_Price_Storage_Methanol_001,V_Price_Transport_USGC-NEA_NaturalGas_001,V_Price_Electricity_001,V_USD_to_SGD,V_USD_to_CNY,V_Price_ProcessWater_001,V_Price_HighPressureSteam_001,V_Price_MediumPressureSteam_001,V_Price_Transport_SG-SC_Methanol_001,V_Price_FuelGas_001";
+		String actual = g.fromJson(AgentCaller.executeGet(path, key,
+				value), String.class);
+		logger.info(actual);
+		logger.info(result);
+
+		System.out.println(1);
+		System.out.println(actual);
+		System.out.println(result);
+		System.out.println(1);
+		
+		String NG_to_MeOH_analysis = new String(
+				"caresjpsarbitrage/NG_to_MeOH_MoDS2222.py");
+		String result1 = PythonHelper.callPython(
+				NG_to_MeOH_analysis, result, actual,
+				new Arbitrage());
+		logger.info(result1);
+
+		return result1;
+
+	}
+
+	
 	/**
 	 * this function was based on an example provided by
 	 * cmcl showing how to evaluate MoDS surrogate models

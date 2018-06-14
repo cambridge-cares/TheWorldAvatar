@@ -433,7 +433,9 @@ public class DataDownload {
 					.getString();
 			data += name + ",";
 		}
-
+		System.out.println(1);
+System.out.println(data);
+System.out.println(1);
 		return data;
 	}
 
@@ -533,7 +535,7 @@ public class DataDownload {
 					.getString();
 			data += name + ",";
 		}
-		System.out.println(data);
+		//System.out.println(data);
 		return data;
 	}
 

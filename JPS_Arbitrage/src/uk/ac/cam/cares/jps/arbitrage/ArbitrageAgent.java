@@ -22,7 +22,8 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  */
 @WebServlet(urlPatterns = {
 		"/runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles",
-		"/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent" })
+		"/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent",
+		"/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2"})
 
 public class ArbitrageAgent extends HttpServlet {
 	private static Logger logger = LoggerFactory
@@ -103,6 +104,30 @@ public class ArbitrageAgent extends HttpServlet {
 			try {
 				String result = g.toJson(Arbitrage
 						.runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent(
+								jsonString));
+				response.setContentType("application/json");
+				response.getWriter().write(result);
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+				throw new JPSRuntimeException(
+						e.getMessage(), e);
+			}
+		} else if ("/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2"
+				.equals(path)) {
+			// -- Get String formatted in Array of Strings
+			// -- //
+			request.setCharacterEncoding("UTF-8");
+			String jsonString = request
+					.getParameter("MoDS_input");
+			
+//			delete later
+//			System.out.println(path);
+//			System.out.println(jsonString);
+//			writeStringUsingBufferedWriter(path, jsonString);
+
+			try {
+				String result = g.toJson(Arbitrage
+						.runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2(
 								jsonString));
 				response.setContentType("application/json");
 				response.getWriter().write(result);

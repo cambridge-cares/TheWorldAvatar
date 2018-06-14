@@ -158,10 +158,8 @@
             <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
           </owl:NamedIndividual>
         </system:hasUnitOfMeasure>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
-        >6.571428571</system:numericalValue>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
-        >1.142857143</system:numericalValue>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >12.571428571_1.142857143</system:numericalValue>
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
       </owl:NamedIndividual>
     </system:hasValue>

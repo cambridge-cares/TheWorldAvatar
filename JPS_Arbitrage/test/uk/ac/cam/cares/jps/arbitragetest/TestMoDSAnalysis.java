@@ -59,5 +59,19 @@ public class TestMoDSAnalysis extends TestCase {
 		assertTrue(actual.contains(
 				"The highest marginal profit per tonne"));
 	}
+	
+	public void testRunningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2()
+			throws URISyntaxException,
+			ClientProtocolException, IOException {
+
+		String path = "/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2";
+		String key = "MoDS_input";
+		String value = "0.5527777778";
+
+		String actual = AgentCaller.executeGet(path, key, value);
+		logger.info(actual);
+		assertTrue(actual.contains(
+				"The highest marginal profit per tonne"));
+	}
 
 }
