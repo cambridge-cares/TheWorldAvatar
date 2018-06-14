@@ -101,16 +101,16 @@ public class DataDownloadAgent extends HttpServlet {
 					.getParameter("individuals");
 
 			try {
-				String result = DataDownload
+				String result = g.toJson(DataDownload
 						.retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase(
-								jsonString.split(","));
+								jsonString.split(",")));
 				
 				// delete later
 //				writeStringUsingBufferedWriter(path, result);
 				
 				response.setContentType("application/json");
 				response.getWriter()
-						.write(result.toString());
+						.write(result);
 			} catch (Exception e) {
 				logger.error(e.getMessage());
 				throw new JPSRuntimeException(

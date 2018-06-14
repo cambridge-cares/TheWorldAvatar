@@ -26,21 +26,25 @@
 						<label>
 							Flow-rate of Crude Palm Oil(CPO):
 							<input id="flowrateCPO" type="text" required value="24220.0656"/>
-						</label>
-						<!--<label>-->
-							<!--Input B:-->
-							<!--<input id="textInputB" type="text" required value="B" />-->
-						<!--</label>-->
-						<!--<label>-->
-							<!--Input C:-->
-							<!--<input id="textInputC" type="text" required />-->
-						<!--</label><br />-->
+						</label><br />
+						<label>
+							Cost of cooling water:
+							<input id="costCoolingWater" type="text" required />
+						</label><br />
+						<label>
+							Cost of fuel gas:
+							<input id="costFuelGas" type="text" required />
+						</label><br />
+                        <label>
+                            Cost of electricity:
+                            <input id="costElectricity" type="text" required />
+                        </label>
 					</div>
 	            </form>
 			</div>
 			<div id="plantTypes" style="display: inline-block">
 				<label for="plantSelection">Plant: </label>
-				<select name="plantSelection" id="plantSelection">
+				<select name="plantSelection" id="plantSelection" onchange="retrieveSelectedPlantParams()">
 					<option value="biodiesel" selected="selected">Biodiesel</option>
 					<option value="naturalGas">Natural Gas</option>
 				</select>

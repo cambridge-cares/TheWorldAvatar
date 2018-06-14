@@ -31,7 +31,7 @@ svg.line-chart {
 
 .centered {
     margin: 2rem;
-    position: absolute;
+    /*position: absolute;*/
 }
 
 .centered h2 {

@@ -1,10 +1,6 @@
 /**
  * 
  */
-const retrieveInputParams = () => {
-	return $.getJSON('/JPS_Arbitrage/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase');
-};
-
 const downloadAndSaveMarketData = () => {
 	return $.getJSON('/JPS_Arbitrage/downloadingAndSavingMarketDataInTheKnowledgeBase');
 };
@@ -70,6 +66,11 @@ const processExchangeRates = (exchangeRates) => {
     }
 };
 
+const retrieveSelectedPlantParams = () => {
+	let choicePlant = $("#plantSelection option:selected").text();
+	console.log(choicePlant);
+};
+
 const processInputs = () => {
 	console.log("Begin processing input");
 	$.when(downloadAndSaveMarketData(), downloadAndSaveExchangeRates()).done(function(responseOne, responseTwo){
@@ -104,10 +105,17 @@ const processInputs = () => {
 };
 
 $(document).ready(function(){
-	let promise = retrieveInputParams();
-	promise.done(function(response){
-		console.log(response);
-	})
+	$.getJSON('/JPS_Arbitrage/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase',
+			{
+				individuals: "V_Price_CoolingWater_001,V_Price_FuelGas_001,V_Price_Electricity_001"
+			},
+			function(data){
+				console.log(data);
+				let dataArray = data.split(',');
+				$('input#costCoolingWater').val(dataArray[1]);
+				$('input#costFuelGas').val(dataArray[3]);
+				$('input#costElectricity').val(dataArray[5]);
+			});
 });
 
 //API to fetch historical data of Bitcoin Price Index
