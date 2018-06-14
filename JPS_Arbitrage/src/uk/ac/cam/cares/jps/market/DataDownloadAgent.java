@@ -1,7 +1,7 @@
 package uk.ac.cam.cares.jps.market;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+//import java.io.BufferedWriter;
+//import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -23,6 +23,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 @WebServlet(urlPatterns = {
 		"/downloadingAndSavingMarketDataInTheKnowledgeBase",
 		"/downloadingAndSavingExchangeRatesInTheKnowledgeBase",
+		"/retrieveUtilityPrices",
 		"/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase" })
 public class DataDownloadAgent extends HttpServlet {
 	private static Logger logger = LoggerFactory
@@ -91,6 +92,31 @@ public class DataDownloadAgent extends HttpServlet {
 						e.getMessage(), e);
 			}
 
+		} else if ("/retrieveUtilityPrices"
+				.equals(path)) {
+
+			// -- Get String formatted in Array of Strings
+			// -- //
+			request.setCharacterEncoding("UTF-8");
+			String jsonString = request
+					.getParameter("individuals");
+
+			try {
+				String result = g.toJson(DataDownload
+						.retrieveUtilityPrices(
+								jsonString.split(",")));
+				
+				// delete later
+//				writeStringUsingBufferedWriter(path, result);
+				
+				response.setContentType("application/json");
+				response.getWriter()
+						.write(result);
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+				throw new JPSRuntimeException(
+						e.getMessage(), e);
+			}
 		} else if ("/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase"
 				.equals(path)) {
 

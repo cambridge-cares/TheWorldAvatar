@@ -105,16 +105,16 @@ const processInputs = () => {
 };
 
 $(document).ready(function(){
-	$.getJSON('/JPS_Arbitrage/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase',
+	$.getJSON('/JPS_Arbitrage/retrieveUtilityPrices',
 			{
 				individuals: "V_Price_CoolingWater_001,V_Price_FuelGas_001,V_Price_Electricity_001"
 			},
 			function(data){
 				console.log(data);
 				let dataArray = data.split(',');
-				$('input#costCoolingWater').val(dataArray[1]);
-				$('input#costFuelGas').val(dataArray[3]);
-				$('input#costElectricity').val(dataArray[5]);
+				$('input#priceCoolingWater').val(dataArray[1]);
+				$('input#priceFuelGas').val(dataArray[3]);
+				$('input#priceElectricity').val(dataArray[5]);
 			});
 });
 

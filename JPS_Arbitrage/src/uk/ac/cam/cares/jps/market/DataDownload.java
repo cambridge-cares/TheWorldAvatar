@@ -334,18 +334,14 @@ public class DataDownload {
 	/**
 	 * this function receives names of individuals, which
 	 * are to be found in JPS knowledge base, and retrieves
-	 * data under numericalValue associated with them; in
-	 * addition, market prices for crude palm oil (CPO) and
-	 * biodiesel (FAME) are retrieved; the names and the
+	 * data under numericalValue associated with them; the names and the
 	 * data are converted into a string and returned
 	 * 
 	 * @param headers
 	 * @return
 	 * @throws Exception
 	 */
-	public static String retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase(
-			String[] headers) throws Exception {
-
+	public static String retrieveUtilityPrices(String[] headers) throws Exception {
 		/**
 		 * URIs of ontologies used to define KBs in which
 		 * market data will be stored
@@ -391,6 +387,26 @@ public class DataDownload {
 			data += headers[i] + ",";
 			data += name + ",";
 		}
+		
+		return data;
+	}
+	
+	/**
+	 * this function receives names of individuals, which
+	 * are to be found in JPS knowledge base, and retrieves
+	 * data under numericalValue associated with them; in
+	 * addition, market prices for crude palm oil (CPO) and
+	 * biodiesel (FAME) are retrieved; the names and the
+	 * data are converted into a string and returned
+	 * 
+	 * @param headers
+	 * @return
+	 * @throws Exception
+	 */
+	public static String retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase(
+			String[] headers) throws Exception {
+
+		String data = retrieveUtilityPrices(headers);
 
 		/** ontology addresses */
 		String ontoPath3 = "http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl";
