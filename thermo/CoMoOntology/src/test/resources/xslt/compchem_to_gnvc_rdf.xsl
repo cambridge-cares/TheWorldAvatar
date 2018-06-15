@@ -186,14 +186,14 @@
 						<rdf:type rdf:resource="http://purl.org/gc/Atom" />
 
 						<gc:isElement
-							rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable#{$velementType}" />
+							rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#{$velementType}" />
 
 					</owl:NamedIndividual>
 
 					<owl:NamedIndividual
-						rdf:about="http://www.daml.org/2003/01/periodictable/PeriodicTable#{$velementType}">
+						rdf:about="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#{$velementType}">
 						<rdf:type
-							rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable#Element" />
+							rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Element" />
 					</owl:NamedIndividual>
 
 				</xsl:for-each>
@@ -313,22 +313,21 @@
 
 					<xsl:if test="@dictRef='cc:geometry_type'">
 
-
 						<xsl:variable name="gdictRef_value">
-							<xsl:value-of select="@dictRef" />
+							<xsl:value-of select="@dictRef"/>
 						</xsl:variable>
 
 						<xsl:variable name="gdictRef_value_no_namespace">
-							<xsl:value-of select="substring-after($gdictRef_value,'cc:')" />
+							<xsl:value-of select="substring-after($gdictRef_value,'cc:')"/>
 						</xsl:variable>
 
 						<owl:NamedIndividual
 							rdf:about="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_parent_of_parent_no_namespace}_{$vmodule}_molecular_methоdology_{$id}">
 
-							<rdf:type rdf:resource="https://como.cheng.cam.ac.uk/kb/ontokin/G09" />
+							<rdf:type rdf:resource="https://como.cheng.cam.ac.uk/kb/ontokin/G09"/>
 
 							<gc:isCalculationOn
-								rdf:resource="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_no_namespace}_{$vmodule}_{$gdictRef_value_no_namespace}_{generate-id()}_{$id}" />
+								rdf:resource="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_no_namespace}_{$vmodule}_{$gdictRef_value_no_namespace}_{generate-id()}_{$id}"/>
 
 						</owl:NamedIndividual>
 
@@ -339,7 +338,6 @@
 								<xsl:value-of select="." />
 							</ontokin:hasGeometryTypeValue>
 						</owl:NamedIndividual>
-
 
 					</xsl:if>
 
@@ -405,7 +403,6 @@
 							</xsl:if>
 
 						</xsl:for-each>
-
 
 					</xsl:if>
 
@@ -538,7 +535,7 @@
 							rdf:about="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_no_namespace}_{$vmodule}_has_atom_{$velementType}{$vid}_{generate-id()}_{$id}">
 							<rdf:type rdf:resource="http://purl.org/gc/Atom" />
 							<gc:isElement
-								rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable#{$velementType}" />
+								rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#{$velementType}" />
 							<gc:hasAtomCoordinateX
 								rdf:resource="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_no_namespace}_{$vmodule}_has_coordinate_x3_{$velementType}{$vid}_{generate-id()}_{$id}" />
 							<gc:hasAtomCoordinateY
@@ -562,7 +559,7 @@
 								<xsl:value-of select="$y3" />
 							</gc:hasValue>
 						</owl:NamedIndividual>
-
+						
 						<owl:NamedIndividual
 							rdf:about="https://como.cheng.cam.ac.uk/kb/ontokin/{$vdictRef_no_namespace}_{$vmodule}_has_coordinate_z3_{$velementType}{$vid}_{generate-id()}_{$id}">
 							<rdf:type rdf:resource="http://purl.org/gc/FloatValue" />
@@ -571,11 +568,10 @@
 							</gc:hasValue>
 						</owl:NamedIndividual>
 
-
 						<owl:NamedIndividual
-							rdf:about="http://www.daml.org/2003/01/periodictable/PeriodicTable#{$velementType}">
+							rdf:about="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#{$velementType}">
 							<rdf:type
-								rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable#Element" />
+								rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Element" />
 						</owl:NamedIndividual>
 
 					</xsl:for-each>
