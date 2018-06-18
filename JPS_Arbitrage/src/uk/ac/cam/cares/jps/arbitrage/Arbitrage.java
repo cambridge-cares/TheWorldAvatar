@@ -189,8 +189,7 @@ public class Arbitrage {
 			String input) throws Exception {
 
 		String[] sim_address = {
-				AgentLocator.getCurrentJpsAppDirectory(
-						new Arbitrage())
+				AgentLocator.getCurrentJpsAppDirectory(new Arbitrage())
 						+ "/MoDS/HDMR_0%2E01_001",
 				"HDMR_Alg_1" };
 		Double[] raw_materials = {

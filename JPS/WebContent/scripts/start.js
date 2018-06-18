@@ -24,8 +24,8 @@ $(function(){
         var ymin = parseInt($('#ylower').val());
 //        console.log(xmin +" "+xmax + " " + ymin + " " + ymax)
     
-        //approximate becasue texture only work on power2(has to be 1:1,1:2,1:4...)
-        {xmin, xmax, ymin, ymax} = appro2ratio(xmin, xmax, ymin , ymax)
+        // approximate becasue texture only work on power2(has to be 1:1,1:2,1:4...)
+        {xmin, xmax, ymin, ymax} = appro2ratio(xmin, xmax, ymin , ymax);
         
         
         $.ajax('http://www.theworldavatar.com/JPS/ADMSCoordinationAgent?coordinates='+encodeURIComponent(JSON.stringify({'xmin':xmin,'xmax':xmax, 'ymin':ymin, 'ymax':ymax}).replaceAll('"',"'"))).done(function (bdnlist) {
