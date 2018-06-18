@@ -18,63 +18,62 @@
 		</a>
 	</div>
 	
-	<div class="content">
-		<div id="electricityPriceParams">
-			<form id="inputParams">
-				<div class="container params">
-					<div class="row">
-						<div class="col-lg-4 input-label">
-							<label>
-								Flow-rate of Crude Palm Oil (kg/hour):
-								<input id="flowrateCPO" type="text" required value="24220.0656"/>
-							</label>
-						</div>
-						<div class="col-lg-4 input-label">
-							<label>
-								Price of cooling water (USD/kg):
-								<input id="priceCoolingWater" type="text" required />
-							</label>
-						</div>
-						<div class="col-lg-4 input-label">
-							<label>
-								Price of fuel gas (USD/mmBTU):
-								<input id="priceFuelGas" type="text" required />
-							</label>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-lg-4 input-label">
-							<label>
-								Price of electricity (SGD/kJ):
-								<input id="priceElectricity" type="text" required />
-							</label>
-						</div>
-					</div>
-				</div>
-			</form>
+	<div class="content container">
+		<div class="row" id="plantTypes">
+			<div class="col-lg-4">
+				<label for="plantSelection">Plant: </label>
+				<select name="plantSelection" id="plantSelection" onchange="retrieveSelectedPlantParams()">
+					<option value="biodiesel" selected="selected">Biodiesel</option>
+					<option value="methanol">Methanol</option>
+				</select>
+			</div>
+			<div class="col-lg-4 input-label" id="cpo">
+				<label id="label-cpo">
+					Flow-rate of Crude Palm Oil (kg/hour):
+					<input id="flowrateCPO" type="text" required value="24220.0656"/>
+				</label>
+			</div>
+			<div class="col-lg-4">
+
+			</div>
 		</div>
-		<div id="plantTypes" style="display: inline-block">
-			<label for="plantSelection">Plant: </label>
-			<select name="plantSelection" id="plantSelection" onchange="retrieveSelectedPlantParams()">
-				<option value="biodiesel" selected="selected">Biodiesel</option>
-				<option value="naturalGas">Natural Gas</option>
-			</select>
+		<div class="row" id="generalParams">
+			<div class="col-lg-4 input-label">
+				<label>
+					Price of cooling water (USD/kg):
+					<input id="priceCoolingWater" type="text" required />
+				</label>
+			</div>
+			<div class="col-lg-4 input-label">
+				<label>
+					Price of fuel gas (USD/mmBTU):
+					<input id="priceFuelGas" type="text" required />
+				</label>
+			</div>
+			<div class="col-lg-4 input-label">
+				<label>
+					Price of electricity (SGD/kJ):
+					<input id="priceElectricity" type="text" required />
+				</label>
+			</div>
 		</div>
-		<div id="analysis" style="display: inline-block">
+		<div class="row" id="analysis" style="display: inline-block">
 			<label for="analysisSelection">Run MoDS Analysis Using: </label>
 			<select name="analysisSelection" id="analysisSelection">
 				<option value="Market Data from CSV files">Market Data from CSV files</option>
 				<option value="Market Data from DataDownload Agent">Market Data from DataDownload Agent</option>
 			</select>
+			<input type="submit" value="Start Simulation" onclick="processInputs(); return false"/>
 		</div>
-		<input type="submit" value="Start Simulation" onclick="processInputs(); return false"/>
-		<div id="marketPrices">
-			<svg class="line-chart"></svg>
-		</div>
-
-		<div>
-			<h2>Recommendation</h2>
-			<p id="MoDSOutput"></p>
+		<div class="row" id="analysisOutput">
+			<div class="col-lg-6">
+				<h2>Market Price of</h2>
+				<svg class="line-chart"></svg>
+			</div>
+			<div class="col-lg-6">
+				<h2>Recommendation</h2>
+				<p id="MoDSOutput"></p>
+			</div>
 		</div>
     </div>
 </body>

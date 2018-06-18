@@ -8,6 +8,7 @@ from lxml import html
 from re import sub
 import requests, sys
 from selenium import webdriver
+import json
 
 # takes in a time period e.g. MA809 and returns a string denoting the month and year SEP 2018
 def convertMarketTimePeriods(stringTimePeriod):
@@ -43,15 +44,36 @@ def ZCE(url_address, driver):
 		delivery.append(convertMarketTimePeriods(str(data[(i+1)*7])))
 		price.append(float(sub(',','',data[(i+1)*7+6])))
 	
-	string = '&MeOH,Date,Price type,Size (tonne)'
-	for i in range(len(delivery)):
-		string += "," + str(delivery[i])
+	# string = '&MeOH,Date,Price type,Size (tonne)'
+	# for i in range(len(delivery)):
+	# 	string += "," + str(delivery[i])
+    #
+	# string += '&'+page.headers['Date']+ ',Prior Settlement (CNY per tonne),1.0'
+	# for i in range(len(price)):
+	# 	string += "," + str(price[i])
+	#
+	# print(string)
 
-	string += '&'+page.headers['Date']+ ',Prior Settlement (CNY per tonne),1.0'
+	arrayHeader = ["MeOH", "Date", "Price type", "Size (tonne)"]
+
+	arrayMonths = []
+	for i in range(len(delivery)):
+		arrayMonths.append(str(delivery[i]))
+
+	arrayDatetime = ["{}".format(page.headers['Date']), "Prior Settlement (CNY per tonne)", "1.0"]
+
+	arrayPrices = []
 	for i in range(len(price)):
-		string += "," + str(price[i])
-	
-	print(string)	
+		arrayPrices.append(str(price[i]))
+
+	results = {
+		"arrayHeader": arrayHeader,
+		"arrayMonths": arrayMonths,
+		"arrayDatetime": arrayDatetime,
+		"arrayPrices": arrayPrices
+	}
+
+	print(json.dumps(results))
 
 
 def run(url_address):		

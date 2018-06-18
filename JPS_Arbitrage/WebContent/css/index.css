@@ -9,15 +9,15 @@ svg.line-chart {
 }
 
 
-.content {
+.content.container {
     height: 100%;
     margin: 2rem;
     padding: 0px;
 }
 
 .container {
-    margin-left: 0rem;
-    margin-right: 0rem;
+    margin-left: auto;
+    margin-right: auto;
     padding: 0px;
     width: 100%;
 }
@@ -25,8 +25,33 @@ svg.line-chart {
 .row {
     margin-left: auto;
     margin-right: auto;
+    padding-bottom: 10px;
+}
+
+.row#analysis {
+    padding-bottom: 20px;
 }
 
 .input-label {
     padding-left: 0px;
+}
+
+select#plantSelection {
+    height: 26px;
+}
+
+select#analysisSelection {
+    height: 26px;
+}
+
+input[type="submit"] {
+    margin-left: 5px;
+}
+
+.col-lg-4 {
+    padding-left: 0px;
+}
+
+label {
+    margin-bottom: 0px;
 }

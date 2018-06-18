@@ -7,8 +7,9 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +24,10 @@ import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
+import java.lang.reflect.Type;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 public class DataDownload {
 	private static Logger logger = LoggerFactory
@@ -162,10 +166,11 @@ public class DataDownload {
 //		return results[0];
 		// maybe return array of Strings?
 		
-		
+		Gson g = new Gson();
 		// delete later
 		// returns single String of joined elements in an Array
-		return StringUtils.join(results, "\r\n");
+//		return StringUtils.join(results, "\r\n");
+		return g.toJson(results);
 	}
 
 	/**
@@ -194,12 +199,21 @@ public class DataDownload {
 		 * split the console output into headers and
 		 * exchange rates
 		 */
-		int results_size = result.split(",").length;
-		String[] headers = Arrays.copyOfRange(
-				result.split(","), 0, results_size / 2);
-		String[] rates = Arrays.copyOfRange(
-				result.split(","), results_size / 2,
-				results_size);
+		Gson objGson = new GsonBuilder().setPrettyPrinting().create();
+		Type listType = new TypeToken<Map<String, String>>(){}.getType();
+		
+		Map<String, String> mapHeadersRates = objGson.fromJson(result, listType);
+		String[] headers = mapHeadersRates.keySet().toArray(new String[0]);
+		String[] rates = mapHeadersRates.values().toArray(new String[0]);
+		
+		System.out.println(Arrays.toString(headers));
+		System.out.println(Arrays.toString(rates));
+//		int results_size = result.split(",").length;
+//		String[] headers = Arrays.copyOfRange(
+//				result.split(","), 0, results_size / 2);
+//		String[] rates = Arrays.copyOfRange(
+//				result.split(","), results_size / 2,
+//				results_size);
 
 		/**
 		 * URIs of ontologies used to define KBs in which
@@ -224,20 +238,15 @@ public class DataDownload {
 		 * knowledge base from an owl file in a jenaOWL
 		 * model; rates are stored in KB one by one
 		 */
-		String filePath = AgentLocator
-				.getPathToWorkingDir(new DataDownload())
+		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload())
 				+ "/OntoArbitrage_PlantInfo_KB.owl";
-		FileInputStream inFile = new FileInputStream(
-				filePath);
+		FileInputStream inFile = new FileInputStream(filePath);
 		Reader in = new InputStreamReader(inFile, "UTF-8");
-		JenaOWLModel jenaOwlModel = ProtegeOWL
-				.createJenaOWLModelFromReader(in);
+		JenaOWLModel jenaOwlModel = ProtegeOWL.createJenaOWLModelFromReader(in);
 
 		for (int i = 0; i < addresses.length; i++) {
-			RDFProperty property = jenaOwlModel
-					.getRDFProperty(addresses[i][0]);
-			RDFIndividual individual = jenaOwlModel
-					.getRDFIndividual(addresses[i][1]);
+			RDFProperty property = jenaOwlModel.getRDFProperty(addresses[i][0]);
+			RDFIndividual individual = jenaOwlModel.getRDFIndividual(addresses[i][1]);
 			individual.setPropertyValue(property, rates[i]);
 		}
 
@@ -249,8 +258,7 @@ public class DataDownload {
 		jenaOwlModel.save(new URI("file:/" + filePath),
 				FileUtils.langXMLAbbrev, errors,
 				jenaOwlModel.getOntModel());
-		logger.info("File saved with " + errors.size()
-				+ " errors.");
+		logger.info("File saved with " + errors.size() + " errors.");
 
 //		return headers[0];
 		
@@ -258,12 +266,13 @@ public class DataDownload {
 //		String[] headersAndRates = Stream.of(headers, rates).flatMap(Stream::of).toArray(String[]::new);
 //		return StringUtils.join(headersAndRates, "\r\n");
 		
-		String[][] headersAndRates = {headers, rates};
-		
-		Gson g = new Gson();
-		String headersAndRatesString = g.toJson(headersAndRates);
-		
-		return headersAndRatesString;
+//		String[][] headersAndRates = {headers, rates};
+//		
+//		Gson g = new Gson();
+//		String headersAndRatesString = g.toJson(headersAndRates);
+//		
+//		return headersAndRatesString;
+		return result;
 	}
 	
 	/**
@@ -447,8 +456,6 @@ public class DataDownload {
 		String ontoPath = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15"; // KB
 		String ontoPath2 = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl";
 
-		String data = "";
-
 		/**
 		 * URIs of relevant individuals and their properties
 		 * are defined
@@ -473,20 +480,27 @@ public class DataDownload {
 		} catch (OntologyLoadException e1) {
 			logger.warn(e1.getMessage());
 		}
-
+		
+		Gson objGson = new GsonBuilder().setPrettyPrinting().create();
+		Map<String, String> mapHeaderName = new HashMap<>();
+//		String data = "";
+		
 		for (int i = 0; i < addresses.length; i++) {
 			RDFIndividual individual = owlModel
 					.getRDFIndividual(addresses[i][1]);
+			
 			String name = individual
 					.getPropertyValueLiteral(
 							owlModel.getRDFProperty(
 									addresses[i][0]))
 					.getString();
-			data += headers[i] + ",";
-			data += name + ",";
+			
+			mapHeaderName.put(headers[i], name);
+//			data += headers[i] + ",";
+//			data += name + ",";
 		}
 		
-		return data;
+		return objGson.toJson(mapHeaderName);
 	}
 
 	
@@ -546,7 +560,8 @@ public class DataDownload {
 	 */
 	public static String retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase(
 			String[] headers) throws Exception {
-
+		
+		// return as a json-serialized string of a 1d array of length 3
 		String data = retrieveUtilityPrices(headers);		
 		data += retrieveCPOMarketPricesFromKnowledgeBase() + "," + 
 				retrieveBiodieselPricesFromKnowledgeBase() + ",";

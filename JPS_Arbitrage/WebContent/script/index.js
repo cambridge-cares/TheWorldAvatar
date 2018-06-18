@@ -11,48 +11,48 @@ const downloadAndSaveMarketData = () => {
 	return $.getJSON('/JPS_Arbitrage/downloadingAndSavingMarketDataInTheKnowledgeBase');
 };
 
-const processMarketData = (marketData) => {
-	console.log("In processMarketData function");
-	console.log(marketData);
-    // -- Process HTTP response in the form of a string -- //
-	let splitStrings = marketData.split('&');
-	splitStrings.shift(); // remove first element which is an empty string
-	let stringSize = splitStrings.length;
-	let i = 0;
-	let parsedDataArray = [];
-
-	console.log(splitStrings);
-
-	while(i < stringSize) {
-
-		let stringHeaderAndXVal = splitStrings[i];
-		let stringDatetimeAndYVal = splitStrings[i+1];
-
-        // -- Splits individual strings which are comma-separated into array of strings -- //
-        let arrayHeaderAndXVal = stringHeaderAndXVal.split(',');
-        let arrayDatetimeAndYVal = stringDatetimeAndYVal.split(',');
-
-        // -- Separates arrays into its constituents -- //
-        let arrayHeader = arrayHeaderAndXVal.slice(0, 4);
-        let arrayXVal = arrayHeaderAndXVal.slice(4);
-
-        let arrayDatetime = arrayDatetimeAndYVal.slice(0, 4);
-        let arrayYVal = arrayDatetimeAndYVal.slice(4);
-
-
-		// -- arrayDatetime and arrayXVal must have equal length i.e. each datetime must have a corresponding xval -- //
-		if (arrayYVal.length > 0 && arrayXVal.length > 0) {
-			let parsedData = parseData(arrayYVal, arrayXVal);
-			parsedDataArray.push(parsedData);
-		} else {
-			console.log("NO MARKET DATA FOR CPO RETRIEVED");
-		}
-
-        i = i + 2;
-    }
-
-    drawChart(parsedDataArray);
-};
+//const processMarketData = (marketData) => {
+//	console.log("In processMarketData function");
+//	console.log(marketData);
+//    // -- Process HTTP response in the form of a string -- //
+//	let splitStrings = marketData.split('&');
+//	splitStrings.shift(); // remove first element which is an empty string
+//	let stringSize = splitStrings.length;
+//	let i = 0;
+//	let parsedDataArray = [];
+//
+//	console.log(splitStrings);
+//
+//	while(i < stringSize) {
+//
+//		let stringHeaderAndXVal = splitStrings[i];
+//		let stringDatetimeAndYVal = splitStrings[i+1];
+//
+//        // -- Splits individual strings which are comma-separated into array of strings -- //
+//        let arrayHeaderAndXVal = stringHeaderAndXVal.split(',');
+//        let arrayDatetimeAndYVal = stringDatetimeAndYVal.split(',');
+//
+//        // -- Separates arrays into its constituents -- //
+//        let arrayHeader = arrayHeaderAndXVal.slice(0, 4);
+//        let arrayXVal = arrayHeaderAndXVal.slice(4);
+//
+//        let arrayDatetime = arrayDatetimeAndYVal.slice(0, 4);
+//        let arrayYVal = arrayDatetimeAndYVal.slice(4);
+//
+//
+//		// -- arrayDatetime and arrayXVal must have equal length i.e. each datetime must have a corresponding xval -- //
+//		if (arrayYVal.length > 0 && arrayXVal.length > 0) {
+//			let parsedData = parseData(arrayYVal, arrayXVal);
+//			parsedDataArray.push(parsedData);
+//		} else {
+//			console.log("NO MARKET DATA FOR CPO RETRIEVED");
+//		}
+//
+//        i = i + 2;
+//    }
+//
+//    drawChart(parsedDataArray);
+//};
 
 const downloadAndSaveExchangeRates = () => {
 	return $.getJSON('/JPS_Arbitrage/downloadingAndSavingExchangeRatesInTheKnowledgeBase');
@@ -73,8 +73,23 @@ const processExchangeRates = (exchangeRates) => {
 };
 
 const retrieveSelectedPlantParams = () => {
-	let choicePlant = $("#plantSelection option:selected").text();
-	console.log(choicePlant);
+	let plantSelectionElement = $("#plantSelection");
+	let choicePlant = plantSelectionElement.find("option:selected").text();
+
+	// Alternative to the two lines above
+	// let choicePlant = $("#plantSelection option:selected").text();
+
+	let cpoElement = document.getElementById("cpo");
+
+	if (choicePlant == "Biodiesel") {
+		if (cpoElement.style.display === "none") {
+			cpoElement.style.display = "block";
+		}
+	} else {
+		if (cpoElement.style.display === "block") {
+			cpoElement.style.display = "none";
+		}
+	}
 };
 
 const processInputs = () => {
@@ -96,12 +111,19 @@ const processInputs = () => {
 		let prices = [inputPriceCoolingWater, inputPriceFuelGas, inputPriceElectricity];
 		arrayHeaderPrices = [header, prices];
 		
+//		$.when(downloadAndSaveMarketData()).done(function(response){
+//			console.log(JSON.parse(response));
+//			// have to loop and then json parse again
+//		})
+		
 		$.when(downloadAndSaveMarketData(), downloadAndSaveExchangeRates(), storeUtilityPricesInKnowledgeBase(arrayHeaderPrices)).done(function(responseOne, responseTwo, responseThree){
 			let marketData = responseOne[0];
-			processMarketData(marketData);
+//			processMarketData(marketData);
+			console.log(marketData);
 		
 			let exchangeRates = responseTwo[0];
-			processExchangeRates(exchangeRates);
+//			processExchangeRates(exchangeRates);
+			console.log(exchangeRates);
 			
 			let storeUtilityPricesInKnowledgeBaseResults = responseThree[0];
 			console.log(storeUtilityPricesInKnowledgeBaseResults);
@@ -133,16 +155,18 @@ const processInputs = () => {
 };
 
 $(document).ready(function(){
+    let cpoElement = document.getElementById("cpo");
+	cpoElement.style.display = "block";
+
 	$.getJSON('/JPS_Arbitrage/retrieveUtilityPrices',
 			{
 				individuals: "V_Price_CoolingWater_001,V_Price_FuelGas_001,V_Price_Electricity_001"
 			},
 			function(data){
-				console.log(data);
-				let dataArray = data.split(',');
-				$('input#priceCoolingWater').val(dataArray[1]);
-				$('input#priceFuelGas').val(dataArray[3]);
-				$('input#priceElectricity').val(dataArray[5]);
+				let dataObj = JSON.parse(data);
+				$('input#priceCoolingWater').val(dataObj['V_Price_CoolingWater_001']);
+				$('input#priceFuelGas').val(dataObj['V_Price_FuelGas_001']);
+				$('input#priceElectricity').val(dataObj['V_Price_Electricity_001']);
 			});
 //	$.getJSON('/JPS_Arbitrage/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase',
 //			{

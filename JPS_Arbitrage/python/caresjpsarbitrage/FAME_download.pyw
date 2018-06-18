@@ -8,6 +8,7 @@ from lxml import html
 from re import sub
 import requests, sys
 from selenium import webdriver
+import json
 
 
 	
@@ -29,15 +30,36 @@ def FAME(url_address, driver):
 	price = tree.xpath("//td[re:test(@id, 'quotesFuturesProductTable1_FBD[A-Z][0-9]_priorSettle')]/text()", namespaces={'re': "http://exslt.org/regular-expressions"})
 	delivery = remove_duplicates(tree.xpath('//span[@class="cmeNoWrap"]/text()'))
 
-	string = '&FAME,Date,Price type,Size (tonne)'
+	# string = '&FAME,Date,Price type,Size (tonne)'
+	# for i in range(len(delivery)):
+	# 	string += "," + delivery[i]
+	#
+	# string += '&'+page.headers['Date']+ ',Prior Settlement (USD per tonne),100.0'
+	# for i in range(len(price)):
+	# 	string += "," + price[i]
+	#
+	# print(string)
+
+	arrayHeader = ["FAME", "Date", "Price type", "Size (tonne)"]
+
+	arrayMonths = []
 	for i in range(len(delivery)):
-		string += "," + delivery[i]
-	
-	string += '&'+page.headers['Date']+ ',Prior Settlement (USD per tonne),100.0'
+		arrayMonths.append(str(delivery[i]))
+
+	arrayDatetime = ["{}".format(page.headers['Date']), "Prior Settlement (USD per tonne)", "100.0"]
+
+	arrayPrices = []
 	for i in range(len(price)):
-		string += "," + price[i]
-	
-	print(string)
+		arrayPrices.append(str(price[i]))
+
+	results = {
+		"arrayHeader": arrayHeader,
+		"arrayMonths": arrayMonths,
+		"arrayDatetime": arrayDatetime,
+		"arrayPrices": arrayPrices
+	}
+
+	print(json.dumps(results))
 
 
 		

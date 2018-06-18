@@ -150,11 +150,9 @@ public class Arbitrage {
 		String path = "/JPS_Arbitrage/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase";
 		String key = "individuals";
 		String value = "V_Price_CoolingWater_001,V_Price_Storage_Biodiesel_001,V_Price_Storage_CrudePalmOil_001,V_Price_Transport_Malaysia-SG_CrudePalmOil_001,V_Price_Electricity_001,V_USD_to_SGD,V_Price_ProcessWater_001,V_Price_HighPressureSteam_001,V_Price_MediumPressureSteam_001,V_Price_Transport_SEA-SC_Biodiesel_001,V_Price_FuelGas_001";
-		String actual = g.fromJson(AgentCaller.executeGet(path, key,
-				value), String.class);
+		String actual = g.fromJson(AgentCaller.executeGet(path, key, value), String.class);
 		logger.info(actual);
 		logger.info(result);
-		
 		
 		String CPO_to_FAME_analysis = new String(
 				"caresjpsarbitrage/CPO_to_FAME_MoDS2.py");

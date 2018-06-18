@@ -268,10 +268,10 @@ def run(MoDS_data, data):
         
     # Read in and process data into an appripriate format
     dates, prices, u_prices, t_prices, ex_rates, s_prices = preprocessing(data)
-    u_prices['V_Price_Electricity_001'] *= ex_rates['V_USD_to_SGD']
+    u_prices['V_Price_Electricity_001'] /= ex_rates['V_USD_to_SGD']
     
     for i in range(3,len(prices["MeOH"])):
-        prices["MeOH"][i] *= ex_rates['V_USD_to_CNY']
+        prices["MeOH"][i] /= ex_rates['V_USD_to_CNY']
     prices["MeOH"][1] = 'Prior Settlement (USD per tonne)'
     
     # Adjust prices to include the transport cost
