@@ -266,8 +266,8 @@ public class DataDownloadAgent extends HttpServlet {
 			request.setCharacterEncoding("UTF-8");
 			String jsonString = request.getParameter("arrayHeaderPrices");
 			
-			System.out.println("In SERVLET");
-			System.out.println(jsonString);
+//			System.out.println("In SERVLET");
+//			System.out.println(jsonString);
 			
 			try {
 				String result = g.toJson(DataDownload.savingDataInTheKnowledgeBase(jsonString));

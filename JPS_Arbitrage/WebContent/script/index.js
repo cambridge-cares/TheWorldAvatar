@@ -113,7 +113,16 @@ const processInputs = () => {
 		
 //		$.when(downloadAndSaveMarketData()).done(function(response){
 //			console.log(JSON.parse(response));
-//			// have to loop and then json parse again
+////			// have to loop and then json parse again
+//			let arrayObj = JSON.parse(response);
+//			for (let i = 0; i < arrayObj.length; i++) {
+//				console.log(JSON.parse(arrayObj[i]));
+//			}
+//		})
+//		
+//		$.when(downloadAndSaveExchangeRates()).done(function(response){
+//			console.log(response);
+//			console.log(JSON.parse(response));
 //		})
 		
 		$.when(downloadAndSaveMarketData(), downloadAndSaveExchangeRates(), storeUtilityPricesInKnowledgeBase(arrayHeaderPrices)).done(function(responseOne, responseTwo, responseThree){
@@ -132,12 +141,22 @@ const processInputs = () => {
 			let choiceAnalysis = $("#analysisSelection option:selected").text();
 			
 			if(choiceAnalysis === "Market Data from DataDownload Agent") {
+				console.log("Running Arbitrage Analysis");
 		        $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent',
 		            {
 		                MoDS_input: JSON.stringify([inputA])
 		            },
 		            function (data) {
-		                $('#MoDSOutput').text(data);
+		            	let modsAnalysisResults = JSON.parse(data);
+		            	let textModsAnalysisResults = "The highest marginal profit per tonne of biodiesel FAME is " + 
+		            		modsAnalysisResults['marginal profit per tonne of biodiesel FAME (in USD)'] + " USD. The futures contracts " +
+		            				"need to be accepted at the following ratio of reagent to product: " +
+		            		modsAnalysisResults['ratio of reagent to product'] + ". Buy crude palm oil futures contracts with delivery in " +
+		            		modsAnalysisResults['month to buy crude palm oil futures contracts'] + " and sell biodiesel FAME futures contracts with delivery in " +
+		            		modsAnalysisResults['month to sell biodiesel FAME futures contract'] + ". " + modsAnalysisResults['note'];
+		            		
+		                $('#MoDSOutput').text(textModsAnalysisResults);
+//		            	$('#MoDSOutput').text(data);
 		            });
 		    } else {
 		        $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles',

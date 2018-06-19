@@ -1,5 +1,8 @@
 package uk.ac.cam.cares.jps.arbitrage;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,6 +21,18 @@ public class Arbitrage {
 	private static Logger logger = LoggerFactory
 			.getLogger(Arbitrage.class);
 
+	public static void writeStringUsingBufferedWriter(String
+			 function, String... results) throws IOException {
+		 BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\jps\\jps_arbitrage\\consoleOutputArbitrage.txt", true));
+		 writer.append(function);
+		 writer.newLine();
+		 
+		 for(String result : results) {
+			 writer.append(result);
+			 writer.newLine();
+		 }
+		 writer.close();
+		}
 	/**
 	 * this function calls cmd to execute a Python script
 	 * which uses market prices of crude palm oil (CPO) and
@@ -154,11 +169,25 @@ public class Arbitrage {
 		logger.info(actual);
 		logger.info(result);
 		
-		String CPO_to_FAME_analysis = new String(
-				"caresjpsarbitrage/CPO_to_FAME_MoDS2.py");
-		String result1 = PythonHelper.callPython(
-				CPO_to_FAME_analysis, result, actual,
-				new Arbitrage());
+		String[] arrayActual = g.fromJson(actual, String[].class);
+		String miscCosts = arrayActual[0];
+		String cpoPrices = arrayActual[1];
+		String famePrices = arrayActual[2];
+		
+		writeStringUsingBufferedWriter("result", result);
+		writeStringUsingBufferedWriter("miscCosts", miscCosts);
+		writeStringUsingBufferedWriter("cpoPrices", cpoPrices);
+		writeStringUsingBufferedWriter("famePrices", famePrices);
+		
+		String CPO_to_FAME_analysis = new String("caresjpsarbitrage/CPO_to_FAME_MoDS2.py");
+		
+//		String result1 = PythonHelper.callPython(
+//				CPO_to_FAME_analysis, result, actual,
+//				new Arbitrage());
+		
+//		writeStringUsingBufferedWriter("running arb analysis using mods with market data", result1);
+		String result1 = PythonHelper.callPython(CPO_to_FAME_analysis, result, g.toJson(miscCosts), g.toJson(cpoPrices), g.toJson(famePrices), new Arbitrage());
+
 		logger.info(result1);
 
 		return result1;

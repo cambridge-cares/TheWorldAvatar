@@ -1,6 +1,9 @@
 package uk.ac.cam.cares.jps.market;
 
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URI;
@@ -21,6 +24,7 @@ import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import javafx.beans.value.WritableStringValue;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
@@ -32,6 +36,16 @@ import com.google.gson.reflect.TypeToken;
 public class DataDownload {
 	private static Logger logger = LoggerFactory
 			.getLogger(DataDownload.class);
+	
+	public static void writeStringUsingBufferedWriter(String
+		 function, String result) throws IOException {
+	 BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\jps\\jps_arbitrage\\consoleOutputDataDownload.txt", true));
+	 writer.append(function);
+	 writer.newLine();
+	 writer.append(result);
+	 writer.newLine();
+	 writer.close();
+	}
 	
 	public static String downloadMarketData(String script, String source) throws Exception {
 		return PythonHelper.callPython(script, source, new DataDownload());
@@ -206,8 +220,9 @@ public class DataDownload {
 		String[] headers = mapHeadersRates.keySet().toArray(new String[0]);
 		String[] rates = mapHeadersRates.values().toArray(new String[0]);
 		
-		System.out.println(Arrays.toString(headers));
-		System.out.println(Arrays.toString(rates));
+//		System.out.println(Arrays.toString(headers));
+//		System.out.println(Arrays.toString(rates));
+		
 //		int results_size = result.split(",").length;
 //		String[] headers = Arrays.copyOfRange(
 //				result.split(","), 0, results_size / 2);
@@ -481,7 +496,7 @@ public class DataDownload {
 			logger.warn(e1.getMessage());
 		}
 		
-		Gson objGson = new GsonBuilder().setPrettyPrinting().create();
+		Gson objGson = new GsonBuilder().create();
 		Map<String, String> mapHeaderName = new HashMap<>();
 //		String data = "";
 		
@@ -500,6 +515,7 @@ public class DataDownload {
 //			data += name + ",";
 		}
 		
+		writeStringUsingBufferedWriter("retrieveUtilityPrices", objGson.toJson(mapHeaderName));
 		return objGson.toJson(mapHeaderName);
 	}
 
@@ -531,10 +547,12 @@ public class DataDownload {
 	}
 	
 	public static String retrieveCPOMarketPricesFromKnowledgeBase() throws Exception {
+		writeStringUsingBufferedWriter("retrieveCPO", retrieveMarketPricesFromKnowledgeBase("CMECrudePalmOil_001"));
 		return retrieveMarketPricesFromKnowledgeBase("CMECrudePalmOil_001");		
 	}
 	
 	public static String retrieveBiodieselPricesFromKnowledgeBase() throws Exception {
+		writeStringUsingBufferedWriter("retrieveBiodiesel", retrieveMarketPricesFromKnowledgeBase("CMEBiodiesel_001"));
 		return retrieveMarketPricesFromKnowledgeBase("CMEBiodiesel_001");
 	}
 	
@@ -561,11 +579,16 @@ public class DataDownload {
 	public static String retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase(
 			String[] headers) throws Exception {
 		
+		Gson g = new Gson();
 		// return as a json-serialized string of a 1d array of length 3
-		String data = retrieveUtilityPrices(headers);		
-		data += retrieveCPOMarketPricesFromKnowledgeBase() + "," + 
-				retrieveBiodieselPricesFromKnowledgeBase() + ",";
-
-		return data;
+//		String data = retrieveUtilityPrices(headers);		
+//		data += retrieveCPOMarketPricesFromKnowledgeBase() + "," + 
+//				retrieveBiodieselPricesFromKnowledgeBase() + ",";
+		String[] data = {
+				retrieveUtilityPrices(headers),
+				retrieveCPOMarketPricesFromKnowledgeBase(),
+				retrieveBiodieselPricesFromKnowledgeBase()
+		};
+		return g.toJson(data);
 	}
 }

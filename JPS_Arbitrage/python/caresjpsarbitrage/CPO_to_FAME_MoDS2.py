@@ -9,16 +9,9 @@ import sys
 from math import inf
 #import matplotlib.pyplot as plt
 from csv_funcs import RCSV, ACSV
+import json
 
-
-def preprocessing(data):
-
-    data = data.split('&')
-
-    for i in range(len(data)):
-        if data[i][-1] == ",":
-            data[i] = data[i][:-1]
-        
+def preprocessing(miscCosts, cpo, fame):
     dates = {}
     prices = {}
     u_prices = {}
@@ -26,17 +19,12 @@ def preprocessing(data):
     ex_rates = {}
     s_prices = {}
 
-    data[1] = data[1].split(",")
-    dates[data[1][0]] = data[1][1:]
 
-    data[3] = data[3].split(",")
-    dates[data[3][0]] = data[3][1:]
+    dates[cpo['arrayHeader'][0]] =  cpo['arrayHeader'][1:] + cpo['arrayMonths']
+    dates[fame['arrayHeader'][0]] = fame['arrayHeader'][1:] + fame['arrayMonths']
 
-    data[2] = data[2].split(",")
-    prices[data[1][0]] = data[2][1:]
-
-    data[4] = data[4].split(",")
-    prices[data[3][0]] = data[4][1:]
+    prices[cpo['arrayHeader'][0]] = [cpo['arrayDatetime'][0][5:]] + cpo['arrayDatetime'][1:] + cpo['arrayPrices']
+    prices[fame['arrayHeader'][0]] = [fame['arrayDatetime'][0][5:]] + fame['arrayDatetime'][1:] + fame['arrayPrices']
 
 
     for key in prices:
@@ -49,22 +37,15 @@ def preprocessing(data):
             except:
                 prices[key][j] = None
 
-                
-    data[0] = data[0].split(",")
-    for i in range(len(data[0])):
-        if data[0][i].rfind('USD') != -1:
-            ex_rates[data[0][i]] = float(data[0][i+1])
-            continue
-        if data[0][i].rfind('Storage') != -1:
-            s_prices[data[0][i]] = float(data[0][i+1])
-            continue
-        if data[0][i].rfind('Transport') != -1:
-            t_prices[data[0][i]] = float(data[0][i+1])
-            continue
-        try:
-            float(data[0][i])
-        except:
-            u_prices[data[0][i]] = float(data[0][i+1])
+    for key in miscCosts:
+        if key.rfind('USD') != -1:
+            ex_rates[key] = float(miscCosts[key])
+        elif key.rfind('Storage') != -1:
+            s_prices[key] = float(miscCosts[key])
+        elif key.rfind('Transport') != -1:
+            t_prices[key] = float(miscCosts[key])
+        else:
+            u_prices[key] = float(miscCosts[key])
     
     
     return dates, prices, u_prices, t_prices, ex_rates, s_prices
@@ -192,7 +173,19 @@ def look_for_munnies(MoDS_data, prices, dates,s_prices,u_prices):
             #print(diff)
             if diff > lowest_diff['price difference']: lowest_diff = {'price difference': diff, 'month_CPO':dates['CPO'][i], 'month_FAME':dates['CPO'][j-1], 'note':'Note that all crude palm oil was instantaneously converted on arrival and biodiesel FAME was stored until delivery date.'}
     
-    print('The highest marginal profit per tonne of  biodiesel FAME is', round(lowest_diff['price difference'],2), 'USD. The futures contracts need to be accepted at the following ratio of reagent to product:',CPO_FAME/prices['CPO'][2]*prices['FAME'][2], '. Buy crude palm oil futures contracts with delivery in', lowest_diff['month_CPO'], 'and sell biodiesel FAME futures contracts with delivery in', lowest_diff['month_FAME'],'.', lowest_diff['note'])
+    resultsDict = {
+        "marginal profit per tonne of biodiesel FAME (in USD)": str(round(lowest_diff['price difference'],2)),
+        "ratio of reagent to product": str(CPO_FAME/prices['CPO'][2]*prices['FAME'][2]),
+        "month to buy crude palm oil futures contracts": lowest_diff['month_CPO'],
+        "month to sell biodiesel FAME futures contract": lowest_diff['month_FAME'],
+        "note": lowest_diff['note']
+    }
+    
+    print(json.dumps(resultsDict))
+#     print('The highest marginal profit per tonne of  biodiesel FAME is', round(lowest_diff['price difference'],2), 
+#           'USD. The futures contracts need to be accepted at the following ratio of reagent to product:', CPO_FAME/prices['CPO'][2]*prices['FAME'][2], 
+#           '. Buy crude palm oil futures contracts with delivery in', lowest_diff['month_CPO'], 
+#           'and sell biodiesel FAME futures contracts with delivery in', lowest_diff['month_FAME'],'.', lowest_diff['note'])
 
 def plotting_prices(dates, prices, labels):
 
@@ -253,16 +246,15 @@ def plotting_prices(dates, prices, labels):
     #plt.savefig(plot_address)
 
 #def run(plot_address, data):
-def run(MoDS_data, data):
-
+def run(MoDS_data, miscCosts, cpo, fame):
     MoDS_data = MoDS_data.split(',')
     for i in range(len(MoDS_data)):
         MoDS_data[i] = float(MoDS_data[i])
-        
+
     # Read in and process data into an appropriate format
-    dates, prices, u_prices, t_prices, ex_rates, s_prices = preprocessing(data)
+    dates, prices, u_prices, t_prices, ex_rates, s_prices = preprocessing(miscCosts, cpo, fame)
     u_prices['V_Price_Electricity_001'] /= ex_rates['V_USD_to_SGD']
-    
+
     # Adjust prices to include the transport cost
     prices = transport_costs(prices, t_prices)
 
@@ -276,7 +268,8 @@ def run(MoDS_data, data):
 
 
 if __name__ == "__main__":
-    # run(str(sys.argv[1]), str(sys.argv[2]))
-    run("24220.0656,24334.440322240484,4.458421599656575,22.296794453326125,0.0,0.0,10034.322882179931,29191.613776154845,3062.5976",
-        "V_Price_CoolingWater_001,0.00174,V_Price_Storage_Biodiesel_001,0.2075,V_Price_Storage_CrudePalmOil_001,0.2075,V_Price_Transport_Malaysia-SG_CrudePalmOil_001,5.0,V_Price_Electricity_001,0.0000385833,V_USD_to_SGD,0.74934896187518,V_Price_ProcessWater_001,0.00033,V_Price_HighPressureSteam_001,0.00349,V_Price_MediumPressureSteam_001,0.01264,V_Price_Transport_SEA-SC_Biodiesel_001,40.0,V_Price_FuelGas_001,9.8,&CPO,Date,Price type,Size (tonne),JUN 2018,JUL 2018,AUG 2018,SEP 2018,OCT 2018,NOV 2018,DEC 2018,JAN 2019,FEB 2019,MAR 2019,APR 2019,MAY 2019,JUN 2019,JUL 2019,AUG 2019,SEP 2019,OCT 2019,NOV 2019,DEC 2019,JAN 2020,FEB 2020,MAR 2020,APR 2020,MAY 2020,JUN 2020,JUL 2020,AUG 2020,SEP 2020,OCT 2020,NOV 2020,DEC 2020,JAN 2021,FEB 2021,MAR 2021,APR 2021,MAY 2021,JUN 2021,JUL 2021,AUG 2021,SEP 2021,OCT 2021,NOV 2021,DEC 2021,JAN 2022,FEB 2022,MAR 2022,APR 2022,MAY 2022,JUN 2022,JUL 2022,AUG 2022,SEP 2022,OCT 2022,NOV 2022,DEC 2022,JAN 2023,FEB 2023,MAR 2023,APR 2023,MAY 2023,JUN 2023&Thu, 14 Jun 2018 08:27:43 GMT,Prior Settlement (USD per tonne),25.0,589.50,583.75,584.00,587.25,592.75,600.25,605.25,608.00,613.00,617.25,617.00,617.00,617.25,617.50,617.25,617.00,618.25,619.75,619.00,618.50,618.00,617.25,616.75,616.25,615.50,615.00,614.25,613.75,613.00,612.50,612.00,611.25,610.75,610.25,609.50,608.75,608.00,607.25,606.50,605.75,605.00,604.25,603.50,602.75,602.00,601.25,600.50,599.75,599.00,598.25,597.50,596.75,596.00,595.25,594.50,593.75,593.00,592.25,591.50,590.75,-,&FAME,Date,Price type,Size (tonne),JUN 2018,JUL 2018,AUG 2018,SEP 2018,OCT 2018,NOV 2018,DEC 2018,JAN 2019,FEB 2019,MAR 2019,APR 2019,MAY 2019,JUN 2019,JUL 2019,AUG 2019,SEP 2019,OCT 2019,NOV 2019,DEC 2019,JAN 2020,FEB 2020,MAR 2020,APR 2020,MAY 2020,JUN 2020&Thu, 14 Jun 2018 08:27:52 GMT,Prior Settlement (USD per tonne),100.0,850.500,854.932,854.402,854.088,832.859,831.057,830.013,843.068,842.188,840.417,854.286,853.826,853.750,842.263,842.263,842.263,842.263,842.263,0.000,0.000,0.000,0.000,0.000,0.000,-,")
-
+    miscCosts = json.loads(sys.argv[2])
+    cpo = json.loads(sys.argv[3])
+    fame = json.loads(sys.argv[4])
+    
+    run(str(sys.argv[1]), miscCosts, cpo, fame)
