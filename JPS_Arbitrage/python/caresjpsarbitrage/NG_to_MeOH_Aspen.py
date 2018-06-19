@@ -261,7 +261,7 @@ def plotting_prices(dates, prices, labels):
     x_labels = labels['x']['label'][lower_bound:upper_bound]
 
     # Changing font size
-    #plt.rcParams.update({'font.size': 22})
+    plt.rcParams.update({'font.size': 22})
     
     # The lines below put together a figure containing two plots, one for each commodity. Labels and titles come from the user-defined dictionary.
     plt.figure(1)

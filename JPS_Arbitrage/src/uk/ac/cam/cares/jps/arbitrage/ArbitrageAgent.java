@@ -21,7 +21,6 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * Servlet implementation class ArbitrageAgent
  */
 @WebServlet(urlPatterns = {
-		"/runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles",
 		"/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent",
 		"/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2"})
 
@@ -68,27 +67,7 @@ public class ArbitrageAgent extends HttpServlet {
 		
 		Gson g = new Gson();
 
-		if ("/runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles"
-				.equals(path)) {
-
-			// -- Get String formatted in Array of Strings
-			// -- //
-			request.setCharacterEncoding("UTF-8");
-			String jsonString = request
-					.getParameter("MoDS_input");
-
-			try {
-				String result = g.toJson(Arbitrage
-						.runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles(
-								jsonString));
-				response.setContentType("application/json");
-				response.getWriter().write(result);
-			} catch (Exception e) {
-				logger.error(e.getMessage());
-				throw new JPSRuntimeException(
-						e.getMessage(), e);
-			}
-		} else if ("/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent"
+		if ("/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent"
 				.equals(path)) {
 			// -- Get String formatted in Array of Strings
 			// -- //
