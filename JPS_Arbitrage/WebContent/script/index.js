@@ -159,13 +159,36 @@ const processInputs = () => {
 //		            	$('#MoDSOutput').text(data);
 		            });
 		    } else {
-		        $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles',
+				console.log("Running Arbitrage Analysis 2");
+		        $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2',
 		            {
 		                MoDS_input: JSON.stringify([inputA])
 		            },
 		            function (data) {
-		                $('#MoDSOutput').text(data);
+		            	let modsAnalysisResults = JSON.parse(data);
+		            	// HAVE TO CHANGE THE TEXT		     
+		            	let textModsAnalysisResults = "The highest marginal profit per tonne of methanol is " +
+		            		modsAnalysisResults['marginal profit per tonne of methanol (in USD)'] + 
+		            		" USD. The futures contracts need to be accepted at the following ratio" +
+		            		" of reagent to product: " +
+		            		modsAnalysisResults['ratio of reagent to product'] + 
+		            		". Buy natural gas futures contracts with delivery in " +
+		            		modsAnalysisResults['month to buy natural gas futures contracts'] + 
+		            		" and sell methanol futures contracts with delivery in " +
+		            		modsAnalysisResults['month to sell methanol futures contract'] + 
+		            		". " + 
+		            		modsAnalysisResults['note'];
+
+		                $('#MoDSOutput').text(textModsAnalysisResults);
+//		            	$('#MoDSOutput').text(data);
 		            });
+		        // $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles',
+		        //     {
+		        //         MoDS_input: JSON.stringify([inputA])
+		        //     },
+		        //     function (data) {
+		        //         $('#MoDSOutput').text(data);
+		        //     });
 			}
 		})
 	} else {

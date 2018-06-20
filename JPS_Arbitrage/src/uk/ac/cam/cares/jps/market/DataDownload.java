@@ -515,7 +515,7 @@ public class DataDownload {
 //			data += name + ",";
 		}
 		
-		writeStringUsingBufferedWriter("retrieveUtilityPrices", objGson.toJson(mapHeaderName));
+//		writeStringUsingBufferedWriter("retrieveUtilityPrices", objGson.toJson(mapHeaderName));
 		return objGson.toJson(mapHeaderName);
 	}
 
@@ -547,20 +547,20 @@ public class DataDownload {
 	}
 	
 	public static String retrieveCPOMarketPricesFromKnowledgeBase() throws Exception {
-		writeStringUsingBufferedWriter("retrieveCPO", retrieveMarketPricesFromKnowledgeBase("CMECrudePalmOil_001"));
 		return retrieveMarketPricesFromKnowledgeBase("CMECrudePalmOil_001");		
 	}
 	
 	public static String retrieveBiodieselPricesFromKnowledgeBase() throws Exception {
-		writeStringUsingBufferedWriter("retrieveBiodiesel", retrieveMarketPricesFromKnowledgeBase("CMEBiodiesel_001"));
 		return retrieveMarketPricesFromKnowledgeBase("CMEBiodiesel_001");
 	}
 	
 	public static String retrieveMethanolPricesFromKnowledgeBase() throws Exception {
+		writeStringUsingBufferedWriter("retrieveMethanol", retrieveMarketPricesFromKnowledgeBase("ZCEMethanol_001"));
 		return retrieveMarketPricesFromKnowledgeBase("ZCEMethanol_001");
 	}
 	
 	public static String retrieveNaturalGasPricesFromKnowledgeBase() throws Exception {
+		writeStringUsingBufferedWriter("retrieveNaturalGas", retrieveMarketPricesFromKnowledgeBase("CMENaturalGas_001"));
 		return retrieveMarketPricesFromKnowledgeBase("CMENaturalGas_001");
 	}
 	
@@ -581,13 +581,23 @@ public class DataDownload {
 		
 		Gson g = new Gson();
 		// return as a json-serialized string of a 1d array of length 3
-//		String data = retrieveUtilityPrices(headers);		
-//		data += retrieveCPOMarketPricesFromKnowledgeBase() + "," + 
-//				retrieveBiodieselPricesFromKnowledgeBase() + ",";
 		String[] data = {
 				retrieveUtilityPrices(headers),
 				retrieveCPOMarketPricesFromKnowledgeBase(),
 				retrieveBiodieselPricesFromKnowledgeBase()
+		};
+		return g.toJson(data);
+	}
+	
+	public static String retrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase(
+			String[] headers) throws Exception {
+		
+		Gson g = new Gson();
+		// return as a json-serialized string of a 1d array of length 3
+		String[] data = {
+				retrieveUtilityPrices(headers),
+				retrieveNaturalGasPricesFromKnowledgeBase(),
+				retrieveMethanolPricesFromKnowledgeBase()
 		};
 		return g.toJson(data);
 	}

@@ -29,7 +29,8 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 		"/downloadingAndSavingExchangeRatesInTheKnowledgeBase",
 		"/savingDataInTheKnowledgeBase",
 		"/retrieveUtilityPrices",
-		"/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase" })
+		"/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase",
+		"/retrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase"})
 public class DataDownloadAgent extends HttpServlet {
 	private static Logger logger = LoggerFactory
 			.getLogger(DataDownloadAgent.class);
@@ -203,10 +204,6 @@ public class DataDownloadAgent extends HttpServlet {
 						.retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase(
 								jsonString.split(",")));
 
-				// delete later
-				// writeStringUsingBufferedWriter(path,
-				// result);
-
 				response.setContentType("application/json");
 				response.getWriter().write(result);
 			} catch (Exception e) {
@@ -220,17 +217,12 @@ public class DataDownloadAgent extends HttpServlet {
 			// -- Get String formatted in Array of Strings
 			// -- //
 			request.setCharacterEncoding("UTF-8");
-			String jsonString = request
-					.getParameter("individuals");
+			String jsonString = request.getParameter("individuals");
 
 			try {
 				String result = g.toJson(DataDownload
-						.retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase(
+						.retrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase(
 								jsonString.split(",")));
-
-				// delete later
-				// writeStringUsingBufferedWriter(path,
-				// result);
 
 				response.setContentType("application/json");
 				response.getWriter().write(result);
@@ -266,13 +258,10 @@ public class DataDownloadAgent extends HttpServlet {
 			request.setCharacterEncoding("UTF-8");
 			String jsonString = request.getParameter("arrayHeaderPrices");
 			
-//			System.out.println("In SERVLET");
-//			System.out.println(jsonString);
-			
 			try {
 				String result = g.toJson(DataDownload.savingDataInTheKnowledgeBase(jsonString));
 								
-				// delete later
+//				delete later
 //				writeStringUsingBufferedWriter(path, g.fromJson(result, String.class));
 				
 				response.setContentType("application/json");

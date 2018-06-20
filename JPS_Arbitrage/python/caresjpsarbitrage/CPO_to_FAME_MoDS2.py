@@ -20,7 +20,7 @@ def preprocessing(miscCosts, cpo, fame):
     s_prices = {}
 
 
-    dates[cpo['arrayHeader'][0]] =  cpo['arrayHeader'][1:] + cpo['arrayMonths']
+    dates[cpo['arrayHeader'][0]] = cpo['arrayHeader'][1:] + cpo['arrayMonths']
     dates[fame['arrayHeader'][0]] = fame['arrayHeader'][1:] + fame['arrayMonths']
 
     prices[cpo['arrayHeader'][0]] = [cpo['arrayDatetime'][0][5:]] + cpo['arrayDatetime'][1:] + cpo['arrayPrices']

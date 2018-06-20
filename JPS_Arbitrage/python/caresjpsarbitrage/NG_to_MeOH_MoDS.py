@@ -9,14 +9,9 @@ import requests, sys
 from math import inf
 #import matplotlib.pyplot as plt
 from csv_funcs import RCSV, ACSV
+import json
 
-def preprocessing(data):
-
-    data = data.split('&')
-
-    for i in range(len(data)):
-        if data[i][-1] == ",": data[i] = data[i][:-1]
-        
+def preprocessing(miscCosts, hng, zce):
     dates = {}
     prices = {}
     u_prices = {}
@@ -24,21 +19,14 @@ def preprocessing(data):
     ex_rates = {}
     s_prices = {}
 
-    data[1] = data[1].split(",")
-    dates[data[1][0]] = data[1][1:]
+    dates[hng['arrayHeader'][0]] = hng['arrayHeader'][1:] + hng['arrayMonths']
+    dates[zce['arrayHeader'][0]] = zce['arrayHeader'][1:] + zce['arrayMonths']
 
-    data[3] = data[3].split(",")
-    dates[data[3][0]] = data[3][1:]
-
-    data[2] = data[2].split(",")
-    prices[data[1][0]] = data[2][1:]
-
-    data[4] = data[4].split(",")
-    prices[data[3][0]] = data[4][1:]
-
+    prices[hng['arrayHeader'][0]] = [hng['arrayDatetime'][0][5:]] + hng['arrayDatetime'][1:] + hng['arrayPrices']
+    prices[zce['arrayHeader'][0]] = [zce['arrayDatetime'][0][5:]] + zce['arrayDatetime'][1:] + zce['arrayPrices']
 
     for key in prices:
-        for j in range(2,len(prices[key])):
+        for j in range(2, len(prices[key])):
             try:
                 prices[key][j] = float(prices[key][j])
                 if float(prices[key][j]) == 0.0: 
@@ -46,27 +34,31 @@ def preprocessing(data):
                     continue                
             except:
                 prices[key][j] = None
-
                 
-    data[0] = data[0].split(",")
-    for i in range(len(data[0])):
-        if data[0][i].rfind('USD') != -1:
-            ex_rates[data[0][i]] = float(data[0][i+1])
-            continue
-        if data[0][i].rfind('Storage') != -1:
-            s_prices[data[0][i]] = float(data[0][i+1])
-            continue
-        if data[0][i].rfind('Transport') != -1 and data[0][i].rfind('NaturalGas') != -1:
-            t_prices[data[0][i]] = data[0][i+1]
-            data[0][i+1] = '1.0'
-            continue
-        if data[0][i].rfind('Transport') != -1:
-            t_prices[data[0][i]] = float(data[0][i+1])
-            continue
-        try: float(data[0][i])
-        except: u_prices[data[0][i]] = float(data[0][i+1])
-    
-    
+    # data[0] = data[0].split(",")
+    # for i in range(len(data[0])):
+    #
+    #     if data[0][i].rfind('Transport') != -1 and data[0][i].rfind('NaturalGas') != -1:
+    #         t_prices[data[0][i]] = data[0][i+1]
+    #         data[0][i+1] = '1.0'
+    #         continue
+    #     if data[0][i].rfind('Transport') != -1:
+    #         t_prices[data[0][i]] = float(data[0][i+1])
+    #         continue
+
+    for key in miscCosts:
+        if key.rfind('USD') != -1:
+            ex_rates[key] = float(miscCosts[key])
+        elif key.rfind('Storage') != -1:
+            s_prices[key] = float(miscCosts[key])
+        elif key.rfind('Transport') != -1 and key.rfind('NaturalGas') != -1:
+            t_prices[key] = miscCosts[key]
+            miscCosts[key] = '1.0'
+        elif key.rfind('Transport') != -1:
+            t_prices[key] = float(miscCosts[key])
+        else:
+            u_prices[key] = float(miscCosts[key])
+
     return dates, prices, u_prices, t_prices, ex_rates, s_prices
  
 def transport_costs(prices, t_prices):
@@ -100,7 +92,6 @@ def transport_costs(prices, t_prices):
             prices[key][3:] = tmp
 
     return prices
-
 
 
 def chemical_conversion(complexity = 'simple',MoDS_data=1):
@@ -167,7 +158,7 @@ def conversion_cost(MoDS_data, u_prices):
     return total/consumption['MeOH']['value']
     
  
-def look_for_munnies(MoDS_data, prices, dates,s_prices,u_prices):
+def look_for_munnies(MoDS_data, prices, dates, s_prices, u_prices):
     
     # This function performs puts together all the data and looks for the most profitable arbitrage opportunity using a brute force approach (i.e. checking all possible combintations subject to chronological order constraint).
 
@@ -202,7 +193,26 @@ def look_for_munnies(MoDS_data, prices, dates,s_prices,u_prices):
             diff = prices['MeOH'][j] - NG_MeOH*prices['NG'][i] - storage['MeOH']*(j-i) - conv
             if diff > lowest_diff['price difference']: lowest_diff = {'price difference': diff, 'month_NG':dates['NG'][i], 'month_MeOH':dates['NG'][j-1], 'note':'Note that all natural gas was instantaneously converted on arrival and methanol was stored until delivery date.'}
 
-    print('The highest marginal profit per tonne of methanol is', round(lowest_diff['price difference'],2), 'USD. The futures contracts need to be accepted at the following ratio of reagent to product:',NG_MeOH/prices['NG'][2]*prices['MeOH'][2], '. Buy natural gas futures contracts with delivery in', lowest_diff['month_NG'], 'and sell methanol futures contracts with delivery in', lowest_diff['month_MeOH'],'.', lowest_diff['note'])
+    resultsDict = {
+        "marginal profit per tonne of methanol (in USD)": str(round(lowest_diff['price difference'], 2)),
+        "ratio of reagent to product": str(NG_MeOH/prices['NG'][2]*prices['MeOH'][2]),
+        "month to buy natural gas futures contracts": lowest_diff['month_NG'],
+        "month to sell methanol futures contract": lowest_diff['month_MeOH'],
+        "note": lowest_diff['note']
+    }
+
+    print(json.dumps(resultsDict))
+
+    # print('The highest marginal profit per tonne of methanol is',
+    #       round(lowest_diff['price difference'],2),
+    #       'USD. The futures contracts need to be accepted at the following ratio of reagent to product:',
+    #       NG_MeOH/prices['NG'][2]*prices['MeOH'][2],
+    #       '. Buy natural gas futures contracts with delivery in',
+    #       lowest_diff['month_NG'],
+    #       'and sell methanol futures contracts with delivery in',
+    #       lowest_diff['month_MeOH'],
+    #       '.',
+    #       lowest_diff['note'])
 
 def plotting_prices(dates, prices, labels):
 
@@ -260,17 +270,16 @@ def plotting_prices(dates, prices, labels):
     plt.plot(prices[key_2][lower_bound:upper_bound], 'k', prices[key_2][lower_bound:upper_bound], 'ro')
     plt.show()
 
-def run(MoDS_data, data):
-    
+def run(MoDS_data, miscCosts, hng, zce):
     MoDS_data = MoDS_data.split(',')
     for i in range(len(MoDS_data)):
         MoDS_data[i] = float(MoDS_data[i])
         
     # Read in and process data into an appripriate format
-    dates, prices, u_prices, t_prices, ex_rates, s_prices = preprocessing(data)
+    dates, prices, u_prices, t_prices, ex_rates, s_prices = preprocessing(miscCosts, hng, zce)
     u_prices['V_Price_Electricity_001'] /= ex_rates['V_USD_to_SGD']
     
-    for i in range(3,len(prices["MeOH"])):
+    for i in range(3, len(prices["MeOH"])):
         prices["MeOH"][i] /= ex_rates['V_USD_to_CNY']
     prices["MeOH"][1] = 'Prior Settlement (USD per tonne)'
     
@@ -286,6 +295,13 @@ def run(MoDS_data, data):
     #plotting_prices(dates, prices, labels)
 
 if __name__ == "__main__":
-    run(str(sys.argv[1]),str(sys.argv[2]))
+    # miscCosts = json.loads(sys.argv[2])
+    # hng = json.loads(sys.argv[3])
+    # zce = json.loads(sys.argv[4])
+    #
+    # run(str(sys.argv[1]), miscCosts, hng, zce)
 
-
+    run("0.5527777778,-1.9678704734013681E43,-1.947340493583137E67,-1.3064212763820435E47,3063955.568812896,0.0,-1.312550425729447E46,-1.8126031951762418E54,-1.052184254037493E43",
+        json.loads('{"V_Price_Electricity_001":"0.0000385833","V_Price_Storage_NaturalGas_001":"0.11104","V_Price_FuelGas_001":"9.8","V_USD_to_CNY":"6.4757816642","V_USD_to_SGD":"1.3582620112","V_Price_Transport_USGC-NEA_NaturalGas_001":"6.571428571_1.142857143","V_Price_Transport_SG-SC_Methanol_001":"22.9","V_Price_CoolingWater_001":"0.00174","V_Price_ProcessWater_001":"0.00033","V_Price_MediumPressureSteam_001":"0.01264","V_Price_HighPressureSteam_001":"0.00349","V_Price_Storage_Methanol_001":"0.2075"}'),
+        json.loads('{"arrayHeader": ["NG", "Date", "Price type", "Size (mmBTU)"], "arrayMonths": ["JUL 2018", "AUG 2018", "SEP 2018", "OCT 2018", "NOV 2018", "DEC 2018", "JAN 2019", "FEB 2019", "MAR 2019", "APR 2019", "MAY 2019", "JUN 2019", "JUL 2019", "AUG 2019", "SEP 2019", "OCT 2019", "NOV 2019", "DEC 2019", "JAN 2020", "FEB 2020", "MAR 2020", "APR 2020", "MAY 2020", "JUN 2020", "JUL 2020", "AUG 2020", "SEP 2020", "OCT 2020", "NOV 2020", "DEC 2020", "JAN 2021", "FEB 2021", "MAR 2021", "APR 2021", "MAY 2021", "JUN 2021", "JUL 2021", "AUG 2021", "SEP 2021", "OCT 2021", "NOV 2021", "DEC 2021", "JAN 2022", "FEB 2022", "MAR 2022", "APR 2022", "MAY 2022", "JUN 2022", "JUL 2022", "AUG 2022", "SEP 2022", "OCT 2022", "NOV 2022", "DEC 2022", "JAN 2023", "FEB 2023", "MAR 2023", "APR 2023", "MAY 2023", "JUN 2023", "JUL 2023", "AUG 2023", "SEP 2023", "OCT 2023", "NOV 2023", "DEC 2023", "JAN 2024", "FEB 2024", "MAR 2024", "APR 2024", "MAY 2024", "JUN 2024", "JUL 2024", "AUG 2024", "SEP 2024", "OCT 2024", "NOV 2024", "DEC 2024", "JAN 2025", "FEB 2025", "MAR 2025", "APR 2025", "MAY 2025", "JUN 2025", "JUL 2025", "AUG 2025", "SEP 2025", "OCT 2025", "NOV 2025", "DEC 2025", "JAN 2026", "FEB 2026", "MAR 2026", "APR 2026", "MAY 2026", "JUN 2026", "JUL 2026", "AUG 2026", "SEP 2026", "OCT 2026", "NOV 2026", "DEC 2026", "JAN 2027", "FEB 2027", "MAR 2027", "APR 2027", "MAY 2027", "JUN 2027", "JUL 2027", "AUG 2027", "SEP 2027", "OCT 2027", "NOV 2027", "DEC 2027", "JAN 2028", "FEB 2028", "MAR 2028", "APR 2028", "MAY 2028", "JUN 2028"], "arrayDatetime": ["Tue, 19 Jun 2018 10:48:18 GMT", "Prior Settlement (USD per mmBTU)", "10.0"], "arrayPrices": ["2.951", "2.951", "2.932", "2.944", "2.986", "3.095", "3.183", "3.154", "3.056", "2.677", "2.639", "2.665", "2.694", "2.701", "2.687", "2.702", "2.755", "2.880", "2.979", "2.945", "2.854", "2.547", "2.520", "2.548", "2.579", "2.587", "2.573", "2.595", "2.650", "2.780", "2.879", "2.845", "2.757", "2.512", "2.487", "2.515", "2.545", "2.556", "2.554", "2.580", "2.641", "2.781", "2.889", "2.862", "2.793", "2.556", "2.535", "2.561", "2.589", "2.602", "2.603", "2.631", "2.692", "2.837", "2.953", "2.928", "2.863", "2.633", "2.615", "2.640", "2.667", "2.684", "2.686", "2.714", "2.775", "2.921", "3.037", "3.012", "2.947", "2.707", "2.689", "2.714", "2.743", "2.760", "2.762", "2.790", "2.851", "2.997", "3.113", "3.088", "3.023", "2.783", "2.764", "2.789", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "2.691", "2.821", "2.875"]}'),
+        json.loads('{"arrayHeader": ["MeOH", "Date", "Price type", "Size (tonne)"], "arrayMonths": ["JUL 2018", "AUG 2018", "SEP 2018", "OCT 2018", "NOV 2018", "DEC 2018", "JAN 2019", "FEB 2019", "MAR 2019", "APR 2019", "MAY 2019", "JUN 2019"], "arrayDatetime": ["Tue, 19 Jun 2018 10:48:08 GMT", "Prior Settlement (CNY per tonne)", "1.0"], "arrayPrices": ["2755.0", "2816.0", "2818.0", "2795.0", "2869.0", "2909.0", "2903.0", "2871.0", "2864.0", "2827.0", "2734.0", "2749.0"]}'))
