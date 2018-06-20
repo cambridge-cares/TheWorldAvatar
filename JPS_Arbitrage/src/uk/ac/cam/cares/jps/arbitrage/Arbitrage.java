@@ -56,7 +56,7 @@ public class Arbitrage {
 			throws Exception {
 
 		String CPO_to_FAME_analysis = new String(
-				"caresjpsarbitrage/CPO_to_FAME.py");
+				"caresjpsarbitrage/CPO_to_FAME_Aspen.py");
 
 		String market_data_plot = new String(
 				"C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\workingdir\\arbitrage_CPO.png");
@@ -65,65 +65,6 @@ public class Arbitrage {
 				CPO_to_FAME_analysis, market_data_plot,
 				new Arbitrage());
 		logger.info(result);
-
-	}
-
-	/**
-	 * this function uses MoDS-Java API to evaluate the
-	 * pre-generated MoDS surrogate model stored a location
-	 * defined below, converts MoDS output values into a
-	 * string, which is passed to a Python script, and calls
-	 * cmd to execute the Python script which uses market
-	 * prices of crude palm oil (CPO) and biodiesel (FAME)
-	 * stored in CSV files and hardcoded utility prices and
-	 * exchange rates to conduct the financial analysis,
-	 * result of which is printed to the eclipse console and
-	 * returned as a string
-	 * 
-	 * 
-	 * @param input
-	 * @return
-	 * @throws Exception
-	 */
-	public static String runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles(
-			String input) throws Exception {
-
-		Gson g = new Gson();
-
-		String[] sim_address = {
-				AgentLocator.getCurrentJpsAppDirectory(
-						new Arbitrage())
-						+ "/MoDS/HDMR_50_001",
-				"HDMR_Alg_1" };
-		// String[] sim_address = {
-		// "C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\MoDS\\HDMR_50_001",
-		// "HDMR_Alg_1" };
-		// Double[] inputs = {24220.0656};
-
-//		 Double[] raw_materials = {
-//		 Double.parseDouble(input) };
-		Double[] raw_materials = g.fromJson(input, Double[].class);
-
-		List<Double> data = MoDS(raw_materials,
-				sim_address);
-
-		String result = raw_materials[0].toString();
-		for (int i = 0; i < data.size(); i++) {
-			result += "," + data.get(i).toString();
-		}
-
-		String workingdir = AgentLocator
-				.getCurrentJpsAppDirectory(new Arbitrage())
-				+ "/workingdir";
-		String CPO_to_FAME_analysis = new String(
-				"caresjpsarbitrage/CPO_to_FAME_MoDS.py");
-
-		String result1 = PythonHelper.callPython(
-				CPO_to_FAME_analysis, result, workingdir,
-				new Arbitrage());
-		logger.info(result1);
-		//System.out.println(result1);
-		return result1;
 
 	}
 

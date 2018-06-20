@@ -8,7 +8,7 @@
 import win32api, win32com.client as win32, requests, sys
 from lxml import html
 from math import inf
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from csv_funcs import RCSV, ACSV
 
 def preprocessing(file_addresses):
@@ -115,7 +115,7 @@ def storage_cost(prices = None):
 
     return storage
 
-def chemical_conversion(complexity = 'simple', MoDS_data = 1):
+def chemical_conversion(complexity = 'simple', aspen = None):
     # This function calculates the number of tonnes of crude palm oil required to produce a metric tonne of biodiesel.
     # Two modes are available: 'simple' (based on literature) and complex (based on an Aspen simulation).
     # The former assumes a constant conversion factor between biodiesel production and crude palm oil consumption.
@@ -130,15 +130,15 @@ def chemical_conversion(complexity = 'simple', MoDS_data = 1):
         # This analysis calculates the ratio of tonnes of biodiesel to tonnes of crude palm oil based on the provided Aspen simulation.
         # Both biodiesel and palm oil are provided in kilogrames per hour.
         try:
-            CPO = MoDS_data[0]
-            FAME = MoDS_data[1]
+            CPO = aspen.Tree.FindNode(r"\Data\Streams\OIL\Output\MASSFLMX\MIXED").Value
+            FAME = aspen.Tree.FindNode(r"\Data\Streams\FINALPRD\Output\MASSFLMX\MIXED").Value
         except:
             print('Invalid Aspen Plus address. Simple analysis will be performed.')
             return chemical_conversion()
         
         return CPO/FAME
 
-def conversion_cost(MoDS_data):
+def conversion_cost(aspen):
     
     # This function calculates the cost of producing an additional metric tonne of biodiesel based on the average utility consumption.
     # The pricing data has been taken from Martin's spreadsheets of the biodiesel plant and govermental data.
@@ -158,17 +158,18 @@ def conversion_cost(MoDS_data):
 
     # Read consumption rates from the provided HYSYS simulation
     consumption = {}
-    consumption['FAME'] = {'value':MoDS_data[1], 'unit':'kg/hr'}
+    aspen.Engine.Run2()
+    consumption['FAME'] = {'value':aspen.Tree.FindNode(r"\Data\Streams\FINALPRD\Output\MASSFLMX\MIXED").Value, 'unit':'kg/hr'}
     # kW are converted to kJ/hr
-    consumption['Elec'] = {'value':MoDS_data[2]*3600, 'unit':'kJ/hr'}
-    consumption['COOLING WATER'] = {'value':MoDS_data[7], 'unit':'kg/hr'}
+    consumption['Elec'] = {'value':aspen.Tree.FindNode(r"\Data\Streams\ELECLINE\Output\POWER_OUT").Value*3600, 'unit':'kJ/hr'}
+    consumption['COOLING WATER'] = {'value':aspen.Tree.FindNode(r"\Data\Streams\FCW\Output\MASSFLMX\MIXED").Value, 'unit':'kg/hr'}
     # kmol/hr are converted into l/hr (molar volume of methane at STD was taken from http://chemistry.tutorvista.com/inorganic-chemistry/molar-volume.html)
     # l/hr into Mcft/hr (google.com unit converter; 1 Mcft = 1000 cft)
     # Mcft/hr into mmBTU/hr (https://business.directenergy.com/understanding-energy/energy-tools/conversion-factors)
-    consumption['FUEL GAS'] = {'value':float(MoDS_data[3])*22.4*0.0353147*0.9756, 'unit':'mmBTU/hr'}
-    consumption['HP STEAM'] = {'value':MoDS_data[4], 'unit':'kg/hr'}
-    consumption['MP STEAM'] = {'value':MoDS_data[6], 'unit':'kg/hr'}
-    consumption['PROCESS WATER'] = {'value':MoDS_data[8], 'unit':'kg/hr'}
+    consumption['FUEL GAS'] = {'value':aspen.Tree.FindNode(r"\Data\Streams\FFG\Output\MOLEFLMX\MIXED").Value*22.4*0.0353147*0.9756, 'unit':'mmBTU/hr'}
+    consumption['HP STEAM'] = {'value':0, 'unit':'kg/hr'}
+    consumption['MP STEAM'] = {'value':aspen.Tree.FindNode(r"\Data\Streams\FSTEAM\Output\MASSFLMX\MIXED").Value, 'unit':'kg/hr'}
+    consumption['PROCESS WATER'] = {'value':aspen.Tree.FindNode(r"\Data\Streams\FPW\Output\MASSFLMX\MIXED").Value, 'unit':'kg/hr'}
     
     # Calculate cost per tonne of biodiesel
     total = 0
@@ -177,17 +178,23 @@ def conversion_cost(MoDS_data):
     
     return total/consumption['FAME']['value']
 
-def look_for_munnies(MoDS_data, prices, dates):
+def look_for_munnies(SimAddress, prices, dates):
     
     # This function performs puts together all the data and looks for the most profitable arbitrage opportunity using a brute force approach (i.e. checking all possible combintations subject to chronological order constraint).
 
     # Natural gas to menthanol conversion ratio (mmBTU to tonnes) and the average conversion cost per tonne of methanol are retrieved with the code below.
     # In case this cannot be done a simple analysis will be performed.
-
-    # Retrieve the average conversion cost per tonne of methanol
-    conv = conversion_cost(MoDS_data)
-    #how many NG contracts are needed to fulfill 1 MeoH contract
-    CPO_FAME = chemical_conversion('complex', MoDS_data)
+    try:
+        # Connect to an existing simulation or launch a new instance
+        aspen = win32.GetObject (SimAddress)
+        # Retrieve the average conversion cost per tonne of methanol
+        conv = conversion_cost(aspen)
+        #how many NG contracts are needed to fulfill 1 MeoH contract
+        CPO_FAME = chemical_conversion('complex', aspen)
+    except:
+        print('Incorrect model address or wrong model item address. Simple analysis will be executed.')
+        CPO_FAME = chemical_conversion()
+    
     # The storage cost per month-tonne are retrieved
     storage = storage_cost()
 
@@ -250,7 +257,7 @@ def plotting_prices(dates, prices, labels,plot_address):
     x_labels = labels['x']['label'][lower_bound:upper_bound]
 
     # Changing font size
-    #plt.rcParams.update({'font.size': 22})
+    plt.rcParams.update({'font.size': 22})
     
     # The lines below put together a figure containing two plots, one for each commodity. Labels and titles come from the user-defined dictionary.
     plt.figure(figsize=(20.0, 12.5))
@@ -268,42 +275,38 @@ def plotting_prices(dates, prices, labels,plot_address):
     plt.xticks(range(len(x_labels)),[])
     # The line below defines the style. For more information see Python manual.
     plt.plot(prices[key_2][lower_bound:upper_bound], 'k', prices[key_2][lower_bound:upper_bound], 'ro')
-    #plt.show()
-    #plt.savefig(r'C:\Users\Janusz\Desktop\Commodity_prices\Market_data\arbitrage_CPO.png')
-    plt.savefig(plot_address)
+    plt.show()
+	#plt.savefig(r'C:\Users\Janusz\Desktop\Commodity_prices\Market_data\arbitrage_CPO.png')
+    #plt.savefig(plot_address)
 
-#def run(plot_address, data):
-def run(data, address):
+def run(plot_address):
+	# Define address of a relevant Aspen Plus model
+	SimAddress = win32api.GetLongPathName(r"C:\Users\Janusz\Desktop\Commodity_prices\Biodiesel Final Simulation_20160429\Jbiod_WWHR_23052017.apw") 
+	 
+	#given the simulation address connect to an existing simulation or create a new COM instance
+	aspen = win32.GetObject (SimAddress)
 
-    MoDS_data = data.split(',')
-    for i in range(len(MoDS_data)):
-        MoDS_data[i] = float(MoDS_data[i])
-        
-    #file_addresses = {
-    #'CPO':r'C:\Users\Janusz\Desktop\Commodity_prices\Market_data\CPO_data.csv',
-    #'FAME':r'C:\Users\Janusz\Desktop\Commodity_prices\Market_data\FAME_data.csv'
-    #}
-	
-    file_addresses = {
-    'CPO':address+'/CPO_data.csv',
-    'FAME':address+'/FAME_data.csv'
-    }	
 
-    # Read in and process data into an appripriate format
-    dates, prices = preprocessing(file_addresses)
+	file_addresses = {
+	'CPO':r'C:\Users\Janusz\Desktop\Commodity_prices\Market_data\CPO_data.csv',
+	'FAME':r'C:\Users\Janusz\Desktop\Commodity_prices\Market_data\FAME_data.csv'
+	}
 
-    # Adjust prices to include the transport cost
-    prices = transport_costs(prices)
+	# Read in and process data into an appripriate format
+	dates, prices = preprocessing(file_addresses)
 
-    # Search through the arbitrage opportunities
-    look_for_munnies(MoDS_data, prices, dates)
+	# Adjust prices to include the transport cost
+	prices = transport_costs(prices)
 
-    # Define titles and labels to plot the futures prices data and plot the data
-    #labels = {'FAME':{'title':'Biodiesel FAME futures prices from Chicago Mercantile Exchange', 'label':'Price (USD per tonne)'},'CPO':{'title':'Crude palm oil futures prices from Chicago Mercantile Exchange', 'label':'Price (USD per tonne)'}, 'x':{'title':'Delivery date (-)', 'label':dates['FAME']}}
-    #plotting_prices(dates, prices, labels,plot_address)
+	# Search through the arbitrage opportunities
+	look_for_munnies(SimAddress, prices, dates)
+
+	# Define titles and labels to plot the futures prices data and plot the data
+	labels = {'FAME':{'title':'Biodiesel FAME futures prices from Chicago Mercantile Exchange', 'label':'Price (USD per tonne)'},'CPO':{'title':'Crude palm oil futures prices from Chicago Mercantile Exchange', 'label':'Price (USD per tonne)'}, 'x':{'title':'Delivery date (-)', 'label':dates['FAME']}}
+	plotting_prices(dates, prices, labels,plot_address)
 
 
 
 if __name__ == "__main__":
-    run(str(sys.argv[1]),str(sys.argv[2]))
+	run(str(sys.argv[1]))
 
