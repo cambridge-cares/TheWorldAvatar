@@ -1,0 +1,13 @@
+#Returns rotational constants value, rotational constants size, and rotational constants unit.
+PREFIX ontokin: <https://como.cheng.cam.ac.uk/kb/ontokin/>
+PREFIX gc: <http://purl.org/gc/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT ?rotationalConstantsValue ?rotationalConstantsUnit ?rotationalConstantsSize
+WHERE { 
+?s gc:isCalculationOn ?rc . 
+?rc rdf:type ontokin:RotationalConstants . 
+?rc ontokin:hasRotationalConstantsValue ?rotationalConstantsValue .
+?rc gc:hasUnit ?rotationalConstantsUnit . 
+?rc ontokin:hasRotationalConstantsCount ?rotationalConstantsSize .
+}
