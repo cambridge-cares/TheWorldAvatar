@@ -175,9 +175,7 @@ public class DataDownloadAgent extends HttpServlet {
 					.getParameter("individuals");
 
 			try {
-				String result = g.toJson(DataDownload
-						.retrieveUtilityPrices(
-								jsonString.split(",")));
+				String result = g.toJson(DataDownload.retrieveUtilityPrices(jsonString.split(",")));
 				
 				// delete later
 //				writeStringUsingBufferedWriter(path, result);
