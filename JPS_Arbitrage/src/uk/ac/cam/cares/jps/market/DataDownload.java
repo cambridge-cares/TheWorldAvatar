@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +23,6 @@ import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import javafx.beans.value.WritableStringValue;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
@@ -253,8 +251,7 @@ public class DataDownload {
 		 * knowledge base from an owl file in a jenaOWL
 		 * model; rates are stored in KB one by one
 		 */
-		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload())
-				+ "/OntoArbitrage_PlantInfo_KB.owl";
+		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload()) + "/OntoArbitrage_PlantInfo_KB.owl";
 		FileInputStream inFile = new FileInputStream(filePath);
 		Reader in = new InputStreamReader(inFile, "UTF-8");
 		JenaOWLModel jenaOwlModel = ProtegeOWL.createJenaOWLModelFromReader(in);
@@ -512,4 +509,5 @@ public class DataDownload {
 		};
 		return g.toJson(data);
 	}
+	
 }

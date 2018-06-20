@@ -79,30 +79,36 @@ const retrieveSelectedPlantParams = () => {
 	// Alternative to the two lines above
 	// let choicePlant = $("#plantSelection option:selected").text();
 
-	let cpoElement = document.getElementById("cpo");
+	// let cpoElement = document.getElementById("cpo");
 
 	if (choicePlant == "Biodiesel") {
-		if (cpoElement.style.display === "none") {
-			cpoElement.style.display = "block";
-		}
+		// if (cpoElement.style.display === "none") {
+		// 	cpoElement.style.display = "block";
+		// }
+		$("#labelPlantSpecificParam").find("span").text("Flow-rate of Crude Palm Oil (kg/hour):");
+		$("#plantSpecificParam").val("24220.0656");
 	} else {
-		if (cpoElement.style.display === "block") {
-			cpoElement.style.display = "none";
-		}
+		// if (cpoElement.style.display === "block") {
+		// 	cpoElement.style.display = "none";
+		// }
+        $("#labelPlantSpecificParam").find("span").text("Param of Natural Gas:");
+        $("#plantSpecificParam").val("0.5527777778");
 	}
 };
 
 const processInputs = () => {
 	console.log("Begin processing input");
 	
-	let inputFlowRateCPO = $('input#flowrateCPO').val();	
+	let inputPlantSpecificParam = $('input#plantSpecificParam').val();
 	let inputPriceCoolingWater = $('input#priceCoolingWater').val();
 	let inputPriceFuelGas = $('input#priceFuelGas').val();
 	let inputPriceElectricity = $('input#priceElectricity').val();
 	
 	let pattern = /^\d+(\.\d+)?$/;
+	
+	console.log(inputPlantSpecificParam);
 
-	if (pattern.test(inputFlowRateCPO) && 
+	if (pattern.test(inputPlantSpecificParam) &&
 		pattern.test(inputPriceCoolingWater) && 
 		pattern.test(inputPriceFuelGas) && 
 		pattern.test(inputPriceElectricity)) {
@@ -137,51 +143,53 @@ const processInputs = () => {
 			let storeUtilityPricesInKnowledgeBaseResults = responseThree[0];
 			console.log(storeUtilityPricesInKnowledgeBaseResults);
 		
-			let inputA = parseFloat($('#flowrateCPO').val());
+			let inputA = parseFloat($('#plantSpecificParam').val());
 			let choiceAnalysis = $("#analysisSelection option:selected").text();
+            let choicePlant = $("#plantSelection option:selected").text();
 			
-			if(choiceAnalysis === "Market Data from DataDownload Agent") {
-				console.log("Running Arbitrage Analysis");
-		        $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent',
-		            {
-		                MoDS_input: JSON.stringify([inputA])
-		            },
-		            function (data) {
-		            	let modsAnalysisResults = JSON.parse(data);
-		            	let textModsAnalysisResults = "The highest marginal profit per tonne of biodiesel FAME is " + 
-		            		modsAnalysisResults['marginal profit per tonne of biodiesel FAME (in USD)'] + " USD. The futures contracts " +
-		            				"need to be accepted at the following ratio of reagent to product: " +
-		            		modsAnalysisResults['ratio of reagent to product'] + ". Buy crude palm oil futures contracts with delivery in " +
-		            		modsAnalysisResults['month to buy crude palm oil futures contracts'] + " and sell biodiesel FAME futures contracts with delivery in " +
-		            		modsAnalysisResults['month to sell biodiesel FAME futures contract'] + ". " + modsAnalysisResults['note'];
-		            		
-		                $('#MoDSOutput').text(textModsAnalysisResults);
-//		            	$('#MoDSOutput').text(data);
-		            });
-		    } else {
-				console.log("Running Arbitrage Analysis 2");
-		        $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2',
-		            {
-		                MoDS_input: JSON.stringify([inputA])
-		            },
-		            function (data) {
-		            	let modsAnalysisResults = JSON.parse(data);
-		            	// HAVE TO CHANGE THE TEXT		     
-		            	let textModsAnalysisResults = "The highest marginal profit per tonne of methanol is " +
-		            		modsAnalysisResults['marginal profit per tonne of methanol (in USD)'] + 
-		            		" USD. The futures contracts need to be accepted at the following ratio" +
-		            		" of reagent to product: " +
-		            		modsAnalysisResults['ratio of reagent to product'] + 
-		            		". Buy natural gas futures contracts with delivery in " +
-		            		modsAnalysisResults['month to buy natural gas futures contracts'] + 
-		            		" and sell methanol futures contracts with delivery in " +
-		            		modsAnalysisResults['month to sell methanol futures contract'] + 
-		            		". " + 
-		            		modsAnalysisResults['note'];
+			if(choiceAnalysis === "MoDS") {
+				if(choicePlant === "Biodiesel") {
+                    console.log("Running Arbitrage Analysis");
+                    $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent',
+                        {
+                            MoDS_input: JSON.stringify([inputA])
+                        },
+                        function (data) {
+                            let modsAnalysisResults = JSON.parse(data);
+                            let textModsAnalysisResults = "The highest marginal profit per tonne of biodiesel FAME is " +
+                                modsAnalysisResults['marginal profit per tonne of biodiesel FAME (in USD)'] + " USD. The futures contracts " +
+                                "need to be accepted at the following ratio of reagent to product: " +
+                                modsAnalysisResults['ratio of reagent to product'] + ". Buy crude palm oil futures contracts with delivery in " +
+                                modsAnalysisResults['month to buy crude palm oil futures contracts'] + " and sell biodiesel FAME futures contracts with delivery in " +
+                                modsAnalysisResults['month to sell biodiesel FAME futures contract'] + ". " + modsAnalysisResults['note'];
 
-		                $('#MoDSOutput').text(textModsAnalysisResults);
-//		            	$('#MoDSOutput').text(data);
-		            });
+                            $('#MoDSOutput').text(textModsAnalysisResults);
+                        });
+                } else if (choicePlant === "Methanol") {
+                    console.log("Running Arbitrage Analysis 2");
+                    $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2',
+                        {
+                            MoDS_input: JSON.stringify([inputA])
+                        },
+                        function (data) {
+                            let modsAnalysisResults = JSON.parse(data);
+                            let textModsAnalysisResults = "The highest marginal profit per tonne of methanol is " +
+                                modsAnalysisResults['marginal profit per tonne of methanol (in USD)'] +
+                                " USD. The futures contracts need to be accepted at the following ratio" +
+                                " of reagent to product: " +
+                                modsAnalysisResults['ratio of reagent to product'] +
+                                ". Buy natural gas futures contracts with delivery in " +
+                                modsAnalysisResults['month to buy natural gas futures contracts'] +
+                                " and sell methanol futures contracts with delivery in " +
+                                modsAnalysisResults['month to sell methanol futures contract'] +
+                                ". " +
+                                modsAnalysisResults['note'];
+
+                            $('#MoDSOutput').text(textModsAnalysisResults);
+                        });
+				}
+		    } else {
+				console.log("not done yet");
 		        // $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles',
 		        //     {
 		        //         MoDS_input: JSON.stringify([inputA])
@@ -197,8 +205,8 @@ const processInputs = () => {
 };
 
 $(document).ready(function(){
-    let cpoElement = document.getElementById("cpo");
-	cpoElement.style.display = "block";
+    // let cpoElement = document.getElementById("cpo");
+	// cpoElement.style.display = "block";
 
 	$.getJSON('/JPS_Arbitrage/retrieveUtilityPrices',
 			{

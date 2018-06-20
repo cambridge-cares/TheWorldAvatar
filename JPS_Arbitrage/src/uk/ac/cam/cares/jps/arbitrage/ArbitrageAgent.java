@@ -69,16 +69,10 @@ public class ArbitrageAgent extends HttpServlet {
 
 		if ("/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent"
 				.equals(path)) {
-			// -- Get String formatted in Array of Strings
-			// -- //
+
 			request.setCharacterEncoding("UTF-8");
 			String jsonString = request
 					.getParameter("MoDS_input");
-			
-//			delete later
-//			System.out.println(path);
-//			System.out.println(jsonString);
-//			writeStringUsingBufferedWriter(path, jsonString);
 
 			try {
 				String result = g.toJson(Arbitrage
@@ -93,21 +87,12 @@ public class ArbitrageAgent extends HttpServlet {
 			}
 		} else if ("/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2"
 				.equals(path)) {
-			// -- Get String formatted in Array of Strings
-			// -- //
+			
 			request.setCharacterEncoding("UTF-8");
-			String jsonString = request
-					.getParameter("MoDS_input");
-
-//			delete later
-//			System.out.println(path);
-//			System.out.println(jsonString);
-			writeStringUsingBufferedWriter(path, jsonString);
+			String jsonString = request.getParameter("MoDS_input");
 
 			try {
-				String result = g.toJson(Arbitrage
-						.runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2(
-								jsonString));
+				String result = g.toJson(Arbitrage.runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2(jsonString));
 				response.setContentType("application/json");
 				response.getWriter().write(result);
 			} catch (Exception e) {

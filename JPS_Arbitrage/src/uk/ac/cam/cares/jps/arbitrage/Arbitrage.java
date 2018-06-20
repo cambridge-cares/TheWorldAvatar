@@ -89,10 +89,7 @@ public class Arbitrage {
 	public static String runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent(
 			String input) throws Exception {
 
-		String[] sim_address = {
-				AgentLocator.getCurrentJpsAppDirectory(
-						new Arbitrage())
-						+ "/MoDS/HDMR_50_001",
+		String[] sim_address = {AgentLocator.getCurrentJpsAppDirectory(new Arbitrage())	+ "/MoDS/HDMR_50_001",
 				"HDMR_Alg_1" };
 		
 		Gson g = new Gson();
@@ -147,9 +144,7 @@ public class Arbitrage {
 	public static String runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2(
 			String input) throws Exception {
 
-		String[] sim_address = {
-				AgentLocator.getCurrentJpsAppDirectory(new Arbitrage())
-						+ "/MoDS/HDMR_0%2E01_001",
+		String[] sim_address = {AgentLocator.getCurrentJpsAppDirectory(new Arbitrage())	+ "/MoDS/HDMR_0%2E01_001",
 				"HDMR_Alg_1" };
 		
 		Gson g = new Gson();
@@ -185,7 +180,6 @@ public class Arbitrage {
 		return result1;
 
 	}
-
 	
 	/**
 	 * this function was based on an example provided by
