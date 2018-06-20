@@ -1,0 +1,10 @@
+#Returns geometry type value.
+PREFIX ontokin: <https://como.cheng.cam.ac.uk/kb/ontokin/>
+PREFIX gc: <http://purl.org/gc/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT ?geometryTypeValue
+WHERE { 
+?g09 gc:isCalculationOn ?gt . ?gt a ontokin:GeometryType .
+?gt ontokin:hasGeometryTypeValue ?geometryTypeValue.
+}
