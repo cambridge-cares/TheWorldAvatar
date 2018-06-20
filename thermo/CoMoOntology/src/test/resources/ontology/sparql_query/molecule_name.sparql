@@ -1,0 +1,9 @@
+#Returns molecule name.
+PREFIX ontokin: <https://como.cheng.cam.ac.uk/kb/ontokin/>
+PREFIX gc: <http://purl.org/gc/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?moleculeName  WHERE { 
+?s ontokin:hasInitialization ?o . 
+?o gc:hasMoleculeProperty ?mp . 
+?mp gc:hasName ?moleculeName . 
+}
