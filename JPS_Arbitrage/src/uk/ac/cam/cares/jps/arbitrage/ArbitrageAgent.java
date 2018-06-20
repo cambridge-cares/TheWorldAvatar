@@ -25,8 +25,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 		"/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2"})
 
 public class ArbitrageAgent extends HttpServlet {
-	private static Logger logger = LoggerFactory
-			.getLogger(ArbitrageAgent.class);	
+	private static Logger logger = LoggerFactory.getLogger(ArbitrageAgent.class);	
 	
 	private static final long serialVersionUID = 2L; // ??
 

@@ -54,6 +54,10 @@ def ZCE(url_address, driver):
 	#
 	# print(string)
 
+	if len(price) == 0 or len(delivery) == 0:
+		print("retry")
+		return;
+
 	arrayHeader = ["MeOH", "Date", "Price type", "Size (tonne)"]
 
 	arrayMonths = []

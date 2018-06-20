@@ -28,7 +28,11 @@ def HNG(url_address, driver):
 	#parsing and selecting relevant entries
 	price = tree.xpath("//td[re:test(@id, 'quotesFuturesProductTable1_NG[A-Z][0-9]_priorSettle')]/text()", namespaces={'re': "http://exslt.org/regular-expressions"})
 	delivery = remove_duplicates(tree.xpath('//span[@class="cmeNoWrap"]/text()'))
-	
+
+	if len(price) == 0 or len(delivery) == 0:
+		print("retry")
+		return;
+
 	# string = '&NG,Date,Price type,Size (mmBTU)'
 	# for i in range(len(delivery)):
 	# 	string += "," + delivery[i]

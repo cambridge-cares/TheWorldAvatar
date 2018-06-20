@@ -18,8 +18,7 @@ import uk.ac.cam.cares.jps.base.util.PythonHelper;
 import com.google.gson.Gson;
 
 public class Arbitrage {
-	private static Logger logger = LoggerFactory
-			.getLogger(Arbitrage.class);
+	private static Logger logger = LoggerFactory.getLogger(Arbitrage.class);
 
 	public static void writeStringUsingBufferedWriter(String
 			 function, String... results) throws IOException {

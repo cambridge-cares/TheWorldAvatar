@@ -30,6 +30,10 @@ def FAME(url_address, driver):
 	price = tree.xpath("//td[re:test(@id, 'quotesFuturesProductTable1_FBD[A-Z][0-9]_priorSettle')]/text()", namespaces={'re': "http://exslt.org/regular-expressions"})
 	delivery = remove_duplicates(tree.xpath('//span[@class="cmeNoWrap"]/text()'))
 
+	if len(price) == 0 or len(delivery) == 0:
+		print("retry")
+		return;
+
 	# string = '&FAME,Date,Price type,Size (tonne)'
 	# for i in range(len(delivery)):
 	# 	string += "," + delivery[i]

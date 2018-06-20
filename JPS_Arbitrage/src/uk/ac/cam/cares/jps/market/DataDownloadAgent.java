@@ -32,8 +32,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 		"/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase",
 		"/retrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase"})
 public class DataDownloadAgent extends HttpServlet {
-	private static Logger logger = LoggerFactory
-			.getLogger(DataDownloadAgent.class);
+	private static Logger logger = LoggerFactory.getLogger(DataDownloadAgent.class);
 
 	private static final long serialVersionUID = 2L; // ??
 
@@ -144,18 +143,10 @@ public class DataDownloadAgent extends HttpServlet {
 		} else if ("/downloadingAndSavingMarketDataInTheKnowledgeBase"
 				.equals(path)) {
 
-			// -- Get String formatted in Array of Strings
-			// -- //
 			request.setCharacterEncoding("UTF-8");
 
 			try {
-				String result = g.toJson(DataDownload
-						.downloadingAndSavingMarketDataInTheKnowledgeBase());
-				// String result = DataDownload
-				// .downloadingAndSavingMarketDataInTheKnowledgeBase();
-				// delete later
-				// writeStringUsingBufferedWriter(path,
-				// g.fromJson(result, String.class));
+				String result = g.toJson(DataDownload.downloadingAndSavingMarketDataInTheKnowledgeBase());
 
 				response.setContentType("application/json");
 				response.getWriter().write(result);
@@ -168,17 +159,12 @@ public class DataDownloadAgent extends HttpServlet {
 		} else if ("/retrieveUtilityPrices"
 				.equals(path)) {
 
-			// -- Get String formatted in Array of Strings
-			// -- //
 			request.setCharacterEncoding("UTF-8");
 			String jsonString = request
 					.getParameter("individuals");
 
 			try {
 				String result = g.toJson(DataDownload.retrieveUtilityPrices(jsonString.split(",")));
-				
-				// delete later
-//				writeStringUsingBufferedWriter(path, result);
 				
 				response.setContentType("application/json");
 				response.getWriter()
@@ -191,8 +177,7 @@ public class DataDownloadAgent extends HttpServlet {
 		} else if ("/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase"
 				.equals(path)) {
 
-			// -- Get String formatted in Array of Strings
-			// -- //
+
 			request.setCharacterEncoding("UTF-8");
 			String jsonString = request
 					.getParameter("individuals");
@@ -212,8 +197,6 @@ public class DataDownloadAgent extends HttpServlet {
 		} else if ("/retrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase"
 				.equals(path)) {
 
-			// -- Get String formatted in Array of Strings
-			// -- //
 			request.setCharacterEncoding("UTF-8");
 			String jsonString = request.getParameter("individuals");
 
@@ -232,17 +215,11 @@ public class DataDownloadAgent extends HttpServlet {
 		} else if ("/downloadingAndSavingExchangeRatesInTheKnowledgeBase"
 				.equals(path)) {
 
-			// -- Get String formatted in Array of Strings
-			// -- //
 			request.setCharacterEncoding("UTF-8");
 
 			try {
 				String result = g.toJson(DataDownload
 						.downloadingAndSavingExchangeRatesInTheKnowledgeBase());
-
-				// delete later
-				// writeStringUsingBufferedWriter(path,
-				// g.fromJson(result, String.class));
 
 				response.setContentType("application/json");
 				response.getWriter()
@@ -258,9 +235,6 @@ public class DataDownloadAgent extends HttpServlet {
 			
 			try {
 				String result = g.toJson(DataDownload.savingDataInTheKnowledgeBase(jsonString));
-								
-//				delete later
-//				writeStringUsingBufferedWriter(path, g.fromJson(result, String.class));
 				
 				response.setContentType("application/json");
 				response.getWriter()

@@ -11,6 +11,13 @@ const downloadAndSaveMarketData = () => {
 	return $.getJSON('/JPS_Arbitrage/downloadingAndSavingMarketDataInTheKnowledgeBase');
 };
 
+const consoleLogDownloadAndSaveMarketData = response => {
+	let arrayObj = JSON.parse(response);
+	for (let i = 0; i < arrayObj.length; i++) {
+		console.log(JSON.parse(arrayObj[i]));
+	}
+}
+
 //const processMarketData = (marketData) => {
 //	console.log("In processMarketData function");
 //	console.log(marketData);
@@ -58,6 +65,10 @@ const downloadAndSaveExchangeRates = () => {
 	return $.getJSON('/JPS_Arbitrage/downloadingAndSavingExchangeRatesInTheKnowledgeBase');
 };
 
+const consoleLogDownloadAndSaveExchangeRates = response => {
+	console.log(JSON.parse(response));
+}
+
 /**
  * param exchangeRates is a JSON-serialized 2d-array
  * arrayExchangeRates[0] is an array of strings stating the currencies which are being converted
@@ -75,22 +86,13 @@ const processExchangeRates = (exchangeRates) => {
 const retrieveSelectedPlantParams = () => {
 	let plantSelectionElement = $("#plantSelection");
 	let choicePlant = plantSelectionElement.find("option:selected").text();
-
 	// Alternative to the two lines above
 	// let choicePlant = $("#plantSelection option:selected").text();
 
-	// let cpoElement = document.getElementById("cpo");
-
 	if (choicePlant == "Biodiesel") {
-		// if (cpoElement.style.display === "none") {
-		// 	cpoElement.style.display = "block";
-		// }
 		$("#labelPlantSpecificParam").find("span").text("Flow-rate of Crude Palm Oil (kg/hour):");
 		$("#plantSpecificParam").val("24220.0656");
 	} else {
-		// if (cpoElement.style.display === "block") {
-		// 	cpoElement.style.display = "none";
-		// }
         $("#labelPlantSpecificParam").find("span").text("Param of Natural Gas:");
         $("#plantSpecificParam").val("0.5527777778");
 	}
@@ -117,28 +119,14 @@ const processInputs = () => {
 		let prices = [inputPriceCoolingWater, inputPriceFuelGas, inputPriceElectricity];
 		arrayHeaderPrices = [header, prices];
 		
-//		$.when(downloadAndSaveMarketData()).done(function(response){
-//			console.log(JSON.parse(response));
-////			// have to loop and then json parse again
-//			let arrayObj = JSON.parse(response);
-//			for (let i = 0; i < arrayObj.length; i++) {
-//				console.log(JSON.parse(arrayObj[i]));
-//			}
-//		})
-//		
-//		$.when(downloadAndSaveExchangeRates()).done(function(response){
-//			console.log(response);
-//			console.log(JSON.parse(response));
-//		})
-		
 		$.when(downloadAndSaveMarketData(), downloadAndSaveExchangeRates(), storeUtilityPricesInKnowledgeBase(arrayHeaderPrices)).done(function(responseOne, responseTwo, responseThree){
 			let marketData = responseOne[0];
+			consoleLogDownloadAndSaveMarketData(marketData);
 //			processMarketData(marketData);
-			console.log(marketData);
 		
 			let exchangeRates = responseTwo[0];
+			consoleLogDownloadAndSaveExchangeRates(exchangeRates);
 //			processExchangeRates(exchangeRates);
-			console.log(exchangeRates);
 			
 			let storeUtilityPricesInKnowledgeBaseResults = responseThree[0];
 			console.log(storeUtilityPricesInKnowledgeBaseResults);
@@ -149,7 +137,6 @@ const processInputs = () => {
 			
 			if(choiceAnalysis === "MoDS") {
 				if(choicePlant === "Biodiesel") {
-                    console.log("Running Arbitrage Analysis");
                     $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent',
                         {
                             MoDS_input: JSON.stringify([inputA])
@@ -166,7 +153,6 @@ const processInputs = () => {
                             $('#MoDSOutput').text(textModsAnalysisResults);
                         });
                 } else if (choicePlant === "Methanol") {
-                    console.log("Running Arbitrage Analysis 2");
                     $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2',
                         {
                             MoDS_input: JSON.stringify([inputA])
@@ -205,9 +191,6 @@ const processInputs = () => {
 };
 
 $(document).ready(function(){
-    // let cpoElement = document.getElementById("cpo");
-	// cpoElement.style.display = "block";
-
 	$.getJSON('/JPS_Arbitrage/retrieveUtilityPrices',
 			{
 				individuals: "V_Price_CoolingWater_001,V_Price_FuelGas_001,V_Price_Electricity_001"

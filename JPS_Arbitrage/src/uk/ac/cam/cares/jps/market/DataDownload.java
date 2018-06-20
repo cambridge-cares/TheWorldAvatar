@@ -32,8 +32,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 public class DataDownload {
-	private static Logger logger = LoggerFactory
-			.getLogger(DataDownload.class);
+	private static Logger logger = LoggerFactory.getLogger(DataDownload.class);
 	
 	public static void writeStringUsingBufferedWriter(String
 		 function, String result) throws IOException {
@@ -46,7 +45,12 @@ public class DataDownload {
 	}
 	
 	public static String downloadMarketData(String script, String source) throws Exception {
-		return PythonHelper.callPython(script, source, new DataDownload());
+		String result = "";
+		do {
+			result = PythonHelper.callPython(script, source, new DataDownload());
+		} while(result.equals("retry"));
+		
+		return result;
 	}
 	
 	public static String downloadCPOMarketData() throws Exception {
