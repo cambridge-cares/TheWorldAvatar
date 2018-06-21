@@ -34,6 +34,26 @@ import com.google.gson.reflect.TypeToken;
 public class DataDownload {
 	private static Logger logger = LoggerFactory.getLogger(DataDownload.class);
 	
+	public static final String CPO_DOWNLOAD = "caresjpsarbitrage/CPO_download.pyw";
+	public static final String CPO_PAGE = "http://www.cmegroup.com/trading/agricultural/grain-and-oilseed/usd-malaysian-crude-palm-oil-calendar.html?optionProductId=8075";
+	
+	public static final String FAME_DOWNLOAD = "caresjpsarbitrage/FAME_download.pyw";
+	public static final String FAME_PAGE = "http://www.cmegroup.com/trading/energy/refined-products/fame-0-argus-biodiesel-fob-rdam-red-compliant-swap-futures.html";
+	
+	public static final String ZCE_DOWNLOAD = "caresjpsarbitrage/ZCE_download.pyw";
+	public static final String ZCE_PAGE = "http://english.czce.com.cn/enportal/DFSStaticFiles/Future/EnglishFutureQuotesMA.htm";
+	
+	public static final String HNG_DOWNLOAD = "caresjpsarbitrage/HNG_download.pyw";
+	public static final String HNG_PAGE = "http://www.cmegroup.com/trading/energy/natural-gas/natural-gas.html";
+	
+	// URIs of ontologies used to define KBs in which market data will be stored
+	public static final String ONTO_PATH_ELEC_MARKETS = "http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl";	
+	public static final String ONTO_PATH_KB_MARKETS = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13";
+	
+	// URIs of ontologies used to defined KBs in which utilities and exchange rates will be stored
+	public static final String ONTO_PATH_ONTOCAPE = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl";
+	public static final String ONTO_PATH_KB_UTIL_EXRATES = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15";
+	
 	public static void writeStringUsingBufferedWriter(String
 		 function, String result) throws IOException {
 	 BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\jps\\jps_arbitrage\\consoleOutputDataDownload.txt", true));
@@ -48,49 +68,25 @@ public class DataDownload {
 		String result = "";
 		do {
 			result = PythonHelper.callPython(script, source, new DataDownload());
-		} while(result.equals("retry"));
+		} while (result.equals("retry"));
 		
 		return result;
 	}
 	
 	public static String downloadCPOMarketData() throws Exception {
-		String CPO_download = new String(
-				"caresjpsarbitrage/CPO_download.pyw");
-		
-		String CPO_page = new String(
-				"http://www.cmegroup.com/trading/agricultural/grain-and-oilseed/usd-malaysian-crude-palm-oil-calendar.html?optionProductId=8075");
-		
-		return downloadMarketData(CPO_download, CPO_page);
+		return downloadMarketData(CPO_DOWNLOAD, CPO_PAGE);
 	}
 	
 	public static String downloadFAMEMarketData() throws Exception {
-		String FAME_download = new String(
-				"caresjpsarbitrage/FAME_download.pyw");
-		
-		String FAME_page = new String(
-				"http://www.cmegroup.com/trading/energy/refined-products/fame-0-argus-biodiesel-fob-rdam-red-compliant-swap-futures.html");
-		
-		return downloadMarketData(FAME_download, FAME_page);
+		return downloadMarketData(FAME_DOWNLOAD, FAME_PAGE);
 	}
 	
 	public static String downloadZCEMarketData() throws Exception {
-		String ZCE_download = new String(
-				"caresjpsarbitrage/ZCE_download.pyw");
-		
-		String ZCE_page = new String(
-				"http://english.czce.com.cn/enportal/DFSStaticFiles/Future/EnglishFutureQuotesMA.htm");
-		
-		return downloadMarketData(ZCE_download, ZCE_page);		
+		return downloadMarketData(ZCE_DOWNLOAD, ZCE_PAGE);
 	}
 	
 	public static String downloadHNGMarketData() throws Exception {
-		String HNG_download = new String(
-				"caresjpsarbitrage/HNG_download.pyw");
-		
-		String HNG_page = new String(
-				"http://www.cmegroup.com/trading/energy/natural-gas/natural-gas.html");
-		
-		return downloadMarketData(HNG_download, HNG_page);
+		return downloadMarketData(HNG_DOWNLOAD, HNG_PAGE);
 	}
 
 
@@ -106,26 +102,38 @@ public class DataDownload {
 	 * @return
 	 * @throws Exception
 	 */
-	public static String downloadingAndSavingMarketDataInTheKnowledgeBase()
+	public static String downloadingAndSavingMarketDataInTheKnowledgeBase(String choicePlant)
 			throws Exception {
-
-		String[] results = new String[4];
 		
-		results[0] = downloadCPOMarketData();
-		logger.info(results[0]);
-		results[1] = downloadFAMEMarketData();
-		logger.info(results[1]);
-		results[2] = downloadZCEMarketData();
-		logger.info(results[2]);
-		results[3] = downloadHNGMarketData();
-		logger.info(results[3]);
+		String[] results = new String[2];
+		String[][] addresses = null;
+				
+		if (choicePlant.equals("Biodiesel")) {
+			results[0] = downloadCPOMarketData();
+			logger.info(results[0]);
+			results[1] = downloadFAMEMarketData();
+			logger.info(results[1]);
+			
+			addresses = new String[][] {
+				{ ONTO_PATH_ELEC_MARKETS + "#" + "data",
+				  ONTO_PATH_KB_MARKETS + "#" + "CMECrudePalmOil_001" },
+				{ ONTO_PATH_ELEC_MARKETS + "#" + "data",
+				  ONTO_PATH_KB_MARKETS + "#" + "CMEBiodiesel_001" }
+				  };
+		} else if (choicePlant.equals("Methanol")) {
+			results[0] = downloadZCEMarketData();
+			logger.info(results[0]);
+			results[1] = downloadHNGMarketData();
+			logger.info(results[1]);
+			
+			addresses = new String[][] {
+				{ ONTO_PATH_ELEC_MARKETS + "#" + "data",
+				  ONTO_PATH_KB_MARKETS + "#" + "ZCEMethanol_001" },
+				{ ONTO_PATH_ELEC_MARKETS + "#" + "data", 
+				  ONTO_PATH_KB_MARKETS + "#" + "CMENaturalGas_001" }
+			};
+		}
 
-		/**
-		 * URIs of ontologies used to define KBs in which
-		 * market data will be stored
-		 */
-		String ontoPath = "http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl";
-		String ontoPath2 = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13";
 
 		/**
 		 * knowledge base from an owl file in a jenaOWL
@@ -134,38 +142,18 @@ public class DataDownload {
 		 * files with the market data are stored in KB one
 		 * by one
 		 */
-		String filePath = AgentLocator
-				.getPathToWorkingDir(new DataDownload())
-				+ "/OntoArbitrage_Market_KB.owl";
-		FileInputStream inFile = new FileInputStream(
-				filePath);
+		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload()) + "/OntoArbitrage_Market_KB.owl";
+		FileInputStream inFile = new FileInputStream(filePath);
 		Reader in = new InputStreamReader(inFile, "UTF-8");
-		JenaOWLModel jenaOwlModel = ProtegeOWL
-				.createJenaOWLModelFromReader(in);
-
-		String[][] addresses = {
-				{ ontoPath + "#" + "data",
-						ontoPath2 + "#"
-								+ "CMECrudePalmOil_001" },
-				{ ontoPath + "#" + "data",
-						ontoPath2 + "#"
-								+ "CMEBiodiesel_001" },
-				{ ontoPath + "#" + "data",
-						ontoPath2 + "#"
-								+ "ZCEMethanol_001" },
-				{ ontoPath + "#" + "data", ontoPath2 + "#"
-						+ "CMENaturalGas_001" } };
+		JenaOWLModel jenaOwlModel = ProtegeOWL.createJenaOWLModelFromReader(in);
 
 		for (int i = 0; i < addresses.length; i++) {
 			if (results[i] == null) {
 				continue;
 			}
-			RDFProperty property = jenaOwlModel
-					.getRDFProperty(addresses[i][0]);
-			RDFIndividual individual = jenaOwlModel
-					.getRDFIndividual(addresses[i][1]);
-			individual.setPropertyValue(property,
-					results[i]);
+			RDFProperty property = jenaOwlModel.getRDFProperty(addresses[i][0]);
+			RDFIndividual individual = jenaOwlModel.getRDFIndividual(addresses[i][1]);
+			individual.setPropertyValue(property, results[i]);
 		}
 
 		/**
@@ -173,19 +161,14 @@ public class DataDownload {
 		 * messages are collected and printed
 		 */
 		Collection<Object> errors = new ArrayList<Object>();
-		jenaOwlModel.save(new URI("file:/" + filePath),
-				FileUtils.langXMLAbbrev, errors,
+		jenaOwlModel.save(new URI("file:/" + filePath),	 
+				FileUtils.langXMLAbbrev, 
+				errors,
 				jenaOwlModel.getOntModel());
-		logger.info("File saved with " + errors.size()
-				+ " errors.");
+		logger.info("File saved with " + errors.size() + " errors.");
 
-//		return results[0];
-		// maybe return array of Strings?
-		
+//		return results[0];		
 		Gson g = new Gson();
-		// delete later
-		// returns single String of joined elements in an Array
-//		return StringUtils.join(results, "\r\n");
 		return g.toJson(results);
 	}
 
@@ -221,23 +204,6 @@ public class DataDownload {
 		Map<String, String> mapHeadersRates = objGson.fromJson(result, listType);
 		String[] headers = mapHeadersRates.keySet().toArray(new String[0]);
 		String[] rates = mapHeadersRates.values().toArray(new String[0]);
-		
-//		System.out.println(Arrays.toString(headers));
-//		System.out.println(Arrays.toString(rates));
-		
-//		int results_size = result.split(",").length;
-//		String[] headers = Arrays.copyOfRange(
-//				result.split(","), 0, results_size / 2);
-//		String[] rates = Arrays.copyOfRange(
-//				result.split(","), results_size / 2,
-//				results_size);
-
-		/**
-		 * URIs of ontologies used to define KBs in which
-		 * market data will be stored
-		 */
-		String ontoPath = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15"; // KB
-		String ontoPath2 = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl";
 
 		/**
 		 * URIs of relevant individuals and their properties
@@ -246,8 +212,8 @@ public class DataDownload {
 		String[][] addresses = new String[headers.length][];
 		for (int i = 0; i < addresses.length; i++) {
 			addresses[i] = new String[] {
-					ontoPath2 + "#" + "numericalValue",
-					ontoPath + "#" + "V_" + headers[i] };
+					ONTO_PATH_ONTOCAPE + "#" + "numericalValue",
+					ONTO_PATH_KB_UTIL_EXRATES + "#" + "V_" + headers[i] };
 			logger.info(addresses[i][1]);
 		}
 
@@ -280,13 +246,10 @@ public class DataDownload {
 		
 		// delete later
 //		String[] headersAndRates = Stream.of(headers, rates).flatMap(Stream::of).toArray(String[]::new);
-//		return StringUtils.join(headersAndRates, "\r\n");
-		
+//		return StringUtils.join(headersAndRates, "\r\n");	
 //		String[][] headersAndRates = {headers, rates};
-//		
 //		Gson g = new Gson();
 //		String headersAndRatesString = g.toJson(headersAndRates);
-//		
 //		return headersAndRatesString;
 		return result;
 	}
@@ -311,13 +274,6 @@ public class DataDownload {
 		String[] data = arrayHeaderPrices[1];
 
 		/**
-		 * URIs of ontologies used to define KBs in which
-		 * market data will be stored
-		 */
-		String ontoPath = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15"; // KB
-		String ontoPath2 = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl";
-
-		/**
 		 * URIs of relevant individuals and their properties
 		 * are defined
 		 */
@@ -325,28 +281,22 @@ public class DataDownload {
 
 		for (int i = 0; i < addresses.length; i++) {
 			addresses[i] = new String[] {
-					ontoPath2 + "#" + "numericalValue",
-					ontoPath + "#" + headers[i] };
+					ONTO_PATH_ONTOCAPE + "#" + "numericalValue",
+					ONTO_PATH_KB_UTIL_EXRATES + "#" + headers[i] };
 		}
 
 		/**
 		 * knowledge base from an owl file in a jenaOWL
 		 * model; rates are stored in KB one by one
 		 */
-		String filePath = AgentLocator
-				.getPathToWorkingDir(new DataDownload())
-				+ "/OntoArbitrage_PlantInfo_KB.owl";
-		FileInputStream inFile = new FileInputStream(
-				filePath);
+		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload()) + "/OntoArbitrage_PlantInfo_KB.owl";
+		FileInputStream inFile = new FileInputStream(filePath);
 		Reader in = new InputStreamReader(inFile, "UTF-8");
-		JenaOWLModel jenaOwlModel = ProtegeOWL
-				.createJenaOWLModelFromReader(in);
+		JenaOWLModel jenaOwlModel = ProtegeOWL.createJenaOWLModelFromReader(in);
 
 		for (int i = 0; i < addresses.length; i++) {
-			RDFProperty property = jenaOwlModel
-					.getRDFProperty(addresses[i][0]);
-			RDFIndividual individual = jenaOwlModel
-					.getRDFIndividual(addresses[i][1]);
+			RDFProperty property = jenaOwlModel.getRDFProperty(addresses[i][0]);
+			RDFIndividual individual = jenaOwlModel.getRDFIndividual(addresses[i][1]);
 			individual.setPropertyValue(property, data[i]);
 		}
 
@@ -377,28 +327,19 @@ public class DataDownload {
 	 */
 	public static String retrieveUtilityPrices(String[] headers) throws Exception {
 		/**
-		 * URIs of ontologies used to define KBs in which
-		 * market data will be stored
-		 */
-		String ontoPath = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15"; // KB
-		String ontoPath2 = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl";
-
-		/**
 		 * URIs of relevant individuals and their properties
 		 * are defined
 		 */
 		String[][] addresses = new String[headers.length][];
 		for (int i = 0; i < addresses.length; i++) {
 			addresses[i] = new String[] {
-					ontoPath2 + "#" + "numericalValue",
-					ontoPath + "#" + headers[i] };
+					ONTO_PATH_ONTOCAPE + "#" + "numericalValue",
+					ONTO_PATH_KB_UTIL_EXRATES + "#" + headers[i] };
 			logger.info(addresses[i][1]);
 		}
 
 		/** get model from an owl file */
-		String filePath = AgentLocator
-				.getPathToWorkingDir(new DataDownload())
-				+ "/OntoArbitrage_PlantInfo_KB.owl";
+		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload()) + "/OntoArbitrage_PlantInfo_KB.owl";
 		OWLModel owlModel = null;
 
 		try {
@@ -410,7 +351,6 @@ public class DataDownload {
 		
 		Gson objGson = new GsonBuilder().create();
 		Map<String, String> mapHeaderName = new HashMap<>();
-//		String data = "";
 		
 		for (int i = 0; i < addresses.length; i++) {
 			RDFIndividual individual = owlModel
@@ -423,23 +363,17 @@ public class DataDownload {
 					.getString();
 			
 			mapHeaderName.put(headers[i], name);
-//			data += headers[i] + ",";
-//			data += name + ",";
 		}
 		
-//		writeStringUsingBufferedWriter("retrieveUtilityPrices", objGson.toJson(mapHeaderName));
 		return objGson.toJson(mapHeaderName);
 	}
 
 	
 	
 	public static String retrieveMarketPricesFromKnowledgeBase(String entity) throws Exception {
-		/** ontology addresses */
-		String ontoPath3 = "http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl";
-		String ontoPath4 = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13";
 		
-		String stringIndividual = ontoPath4 + "#" + entity;
-		String stringProperty = ontoPath3 + "#data";
+		String stringIndividual = ONTO_PATH_KB_MARKETS + "#" + entity;
+		String stringProperty = ONTO_PATH_ELEC_MARKETS + "#data";
 
 		/** get model from an owl file */
 		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload())

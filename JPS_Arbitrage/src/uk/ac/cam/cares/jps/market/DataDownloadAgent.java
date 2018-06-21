@@ -144,9 +144,10 @@ public class DataDownloadAgent extends HttpServlet {
 				.equals(path)) {
 
 			request.setCharacterEncoding("UTF-8");
+			String jsonString = request.getParameter("choicePlant");
 
 			try {
-				String result = g.toJson(DataDownload.downloadingAndSavingMarketDataInTheKnowledgeBase());
+				String result = g.toJson(DataDownload.downloadingAndSavingMarketDataInTheKnowledgeBase(jsonString));
 
 				response.setContentType("application/json");
 				response.getWriter().write(result);

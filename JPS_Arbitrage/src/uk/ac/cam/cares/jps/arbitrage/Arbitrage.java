@@ -167,11 +167,6 @@ public class Arbitrage {
 		String hngPrices = arrayActual[1];
 		String zcePrices = arrayActual[2];
 		
-		writeStringUsingBufferedWriter("result", result);
-		writeStringUsingBufferedWriter("miscCosts", miscCosts);
-		writeStringUsingBufferedWriter("hngPrices", hngPrices);
-		writeStringUsingBufferedWriter("zcePrices", zcePrices);
-		
 		String NG_to_MeOH_analysis = new String("caresjpsarbitrage/NG_to_MeOH_MoDS.py");
 		String result1 = PythonHelper.callPython(NG_to_MeOH_analysis, result, g.toJson(miscCosts), g.toJson(hngPrices), g.toJson(zcePrices), new Arbitrage());
 		logger.info(result1);

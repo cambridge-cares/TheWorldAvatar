@@ -7,8 +7,10 @@ const storeUtilityPricesInKnowledgeBase = arrayHeaderPrices => {
 	});
 };
 
-const downloadAndSaveMarketData = () => {
-	return $.getJSON('/JPS_Arbitrage/downloadingAndSavingMarketDataInTheKnowledgeBase');
+const downloadAndSaveMarketData = (choicePlant) => {
+	return $.getJSON('/JPS_Arbitrage/downloadingAndSavingMarketDataInTheKnowledgeBase', {
+		choicePlant
+	});
 };
 
 const consoleLogDownloadAndSaveMarketData = response => {
@@ -16,7 +18,7 @@ const consoleLogDownloadAndSaveMarketData = response => {
 	for (let i = 0; i < arrayObj.length; i++) {
 		console.log(JSON.parse(arrayObj[i]));
 	}
-}
+};
 
 //const processMarketData = (marketData) => {
 //	console.log("In processMarketData function");
@@ -67,7 +69,7 @@ const downloadAndSaveExchangeRates = () => {
 
 const consoleLogDownloadAndSaveExchangeRates = response => {
 	console.log(JSON.parse(response));
-}
+};
 
 /**
  * param exchangeRates is a JSON-serialized 2d-array
@@ -105,36 +107,39 @@ const processInputs = () => {
 	let inputPriceCoolingWater = $('input#priceCoolingWater').val();
 	let inputPriceFuelGas = $('input#priceFuelGas').val();
 	let inputPriceElectricity = $('input#priceElectricity').val();
-	
+
+	let inputA = parseFloat($('#plantSpecificParam').val());
+
+	let choiceAnalysis = $("#analysisSelection option:selected").text();
+	let choicePlant = $("#plantSelection option:selected").text();
+
 	let pattern = /^\d+(\.\d+)?$/;
-	
+
 	console.log(inputPlantSpecificParam);
 
 	if (pattern.test(inputPlantSpecificParam) &&
-		pattern.test(inputPriceCoolingWater) && 
-		pattern.test(inputPriceFuelGas) && 
-		pattern.test(inputPriceElectricity)) {
+		pattern.test(inputPriceCoolingWater) &&
+		pattern.test(inputPriceFuelGas) &&
+		pattern.test(inputPriceElectricity) &&
+		pattern.test(inputA)) {
 
 		let header = ["V_Price_CoolingWater_001", "V_Price_FuelGas_001", "V_Price_Electricity_001"];
 		let prices = [inputPriceCoolingWater, inputPriceFuelGas, inputPriceElectricity];
-		arrayHeaderPrices = [header, prices];
-		
-		$.when(downloadAndSaveMarketData(), downloadAndSaveExchangeRates(), storeUtilityPricesInKnowledgeBase(arrayHeaderPrices)).done(function(responseOne, responseTwo, responseThree){
+		let arrayHeaderPrices = [header, prices];
+
+		$.when(downloadAndSaveMarketData(choicePlant), downloadAndSaveExchangeRates(), storeUtilityPricesInKnowledgeBase(arrayHeaderPrices)).done(function(responseOne, responseTwo, responseThree){
 			let marketData = responseOne[0];
 			consoleLogDownloadAndSaveMarketData(marketData);
 //			processMarketData(marketData);
-		
+
 			let exchangeRates = responseTwo[0];
 			consoleLogDownloadAndSaveExchangeRates(exchangeRates);
 //			processExchangeRates(exchangeRates);
-			
+
 			let storeUtilityPricesInKnowledgeBaseResults = responseThree[0];
 			console.log(storeUtilityPricesInKnowledgeBaseResults);
-		
-			let inputA = parseFloat($('#plantSpecificParam').val());
-			let choiceAnalysis = $("#analysisSelection option:selected").text();
-            let choicePlant = $("#plantSelection option:selected").text();
-			
+
+
 			if(choiceAnalysis === "MoDS") {
 				if(choicePlant === "Biodiesel") {
                     $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent',
