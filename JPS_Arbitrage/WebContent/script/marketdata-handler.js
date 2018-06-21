@@ -16,8 +16,6 @@ const processMarketData = (marketData) => {
 	for (let i = 0; i < marketDataObj.length; i++) {
 	    marketDataObj[i] = JSON.parse(marketDataObj[i]);
     }
-	console.log("INSIDE processMarketData function");
-	console.log(marketData);
     drawChart(marketDataObj);
 		// // -- arrayDatetime and arrayXVal must have equal length i.e. each datetime must have a corresponding xval -- //
 		// if (arrayYVal.length > 0 && arrayXVal.length > 0) {
@@ -46,9 +44,12 @@ function parseData(arrayYVal, arrayXVal) {
 }
 
 const drawChart = (marketDataObj) => {
-    console.log("INSIDE drawChart function");
-    console.log(marketDataObj);
-
+	
+	var svgToClear = document.getElementById("line-chart-output");
+	while(svgToClear.firstChild) {
+		svgToClear.removeChild(svgToClear.firstChild);
+	}
+	
     var data = [
         {
             label: marketDataObj[0]['arrayHeader'][0],
