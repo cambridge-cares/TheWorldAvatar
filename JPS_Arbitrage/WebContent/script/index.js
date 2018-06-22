@@ -49,12 +49,10 @@ const processInputs = (evt) => {
 			processMarketData(marketData);
 
 			let exchangeRates = responseTwo[0];
-			consoleLogDownloadAndSaveExchangeRates(exchangeRates);
-//			processExchangeRates(exchangeRates);
+			// consoleLogDownloadAndSaveExchangeRates(exchangeRates);
+			// processExchangeRates(exchangeRates);
 
 			let storeUtilityPricesInKnowledgeBaseResults = responseThree[0];
-			console.log(storeUtilityPricesInKnowledgeBaseResults);
-
 
 			if(choiceAnalysis === "MoDS") {
 				if(choicePlant === "Biodiesel") {
