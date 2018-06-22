@@ -9,11 +9,6 @@ body {
 	height: 100%;
 }
 
-svg.line-chart {
-    margin-top: 5rem;
-}
-
-
 .content.container {
     height: 100%;
     width: 100%;
@@ -65,6 +60,9 @@ label {
 
 svg {
 	font: 10px sans-serif;
+    margin-top: 0px;
+    width: 600px;
+    height: 350px;
 }
 
 .axis path,

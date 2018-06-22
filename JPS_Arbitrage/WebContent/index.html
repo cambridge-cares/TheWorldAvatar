@@ -7,7 +7,8 @@
     <link rel="stylesheet" type="text/css" href="./css/index.css">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <!--<script src="https://d3js.org/d3.v3.min.js"></script>-->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
 	<script type="module" src="./script/marketdata-handler.js"></script>
 	<script type="module" src="./script/exchangerates-handler.js"></script>
 	<script type="module" src="./script/utilities-handler.js"></script>
@@ -22,6 +23,7 @@
 	</div>
 	
 	<div class="content container">
+
 		<div class="row" id="plantTypes">
 			<div class="col-lg-4">
 				<label for="plantSelection">Plant: </label>
@@ -40,6 +42,7 @@
 
 			</div>
 		</div>
+
 		<div class="row" id="generalParams">
 			<div class="col-lg-4 input-label">
 				<label>
@@ -60,6 +63,7 @@
 				</label>
 			</div>
 		</div>
+
 		<div class="row" id="analysis" style="display: inline-block">
 			<label for="analysisSelection">Run Analysis Using: </label>
 			<select name="analysisSelection" id="analysisSelection">
@@ -68,16 +72,23 @@
 			</select>
 			<input id="startSimButton" type="submit" value="Start Simulation"/>
 		</div>
+
 		<div class="row" id="analysisOutput">
 			<div class="col-lg-6">
-				<h2>Market Price of</h2>
-				<svg id="line-chart-output" class="line-chart"></svg>
+				<svg id="line-chart-output-1" class="line-chart"></svg>
 			</div>
 			<div class="col-lg-6">
 				<h2>Recommendation</h2>
 				<p id="MoDSOutput"></p>
 			</div>
 		</div>
+
+		<div class="row">
+			<div class="col-lg-6">
+				<svg id="line-chart-output-2" class="line-chart"></svg>
+			</div>
+		</div>
+
     </div>
 </body>
 </html>
