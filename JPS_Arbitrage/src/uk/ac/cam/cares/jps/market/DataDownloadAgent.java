@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.market;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 //import java.io.BufferedWriter;
 //import java.io.FileWriter;
 import java.io.IOException;
@@ -44,17 +46,16 @@ public class DataDownloadAgent extends HttpServlet {
 	}
 
 	// delete later
-	// public void writeStringUsingBufferedWriter(String
-	// function, String result) throws IOException {
-	// BufferedWriter writer = new BufferedWriter(new
-	// FileWriter("C:\\jps\\jps_arbitrage\\consoleOutputDataDownloadAgent.txt",
-	// true));
-	// writer.append(function);
-	// writer.newLine();
-	// writer.append(result);
-	// writer.newLine();
-	// writer.close();
-	// }
+	 public void writeStringUsingBufferedWriter(String
+	 function, String result) throws IOException {
+	 BufferedWriter writer = new BufferedWriter(new
+	 FileWriter("C:\\jps\\jps_arbitrage\\consoleOutputDataDownloadAgent.txt",true));
+	 writer.append(function);
+	 writer.newLine();
+	 writer.append(result);
+	 writer.newLine();
+	 writer.close();
+	 }
 
 	/**
 	 * this function is a servlet for calling functions in
@@ -200,7 +201,7 @@ public class DataDownloadAgent extends HttpServlet {
 
 			request.setCharacterEncoding("UTF-8");
 			String jsonString = request.getParameter("individuals");
-
+			
 			try {
 				String result = g.toJson(DataDownload
 						.retrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase(

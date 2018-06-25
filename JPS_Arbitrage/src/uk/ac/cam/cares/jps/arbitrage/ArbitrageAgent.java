@@ -89,7 +89,7 @@ public class ArbitrageAgent extends HttpServlet {
 			
 			request.setCharacterEncoding("UTF-8");
 			String jsonString = request.getParameter("MoDS_input");
-
+			
 			try {
 				String result = g.toJson(Arbitrage.runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2(jsonString));
 				response.setContentType("application/json");

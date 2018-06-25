@@ -156,7 +156,7 @@ public class Arbitrage {
 		for (int i = 0; i < MoDS_data.size(); i++) {
 			result += "," + MoDS_data.get(i).toString();
 		}
-
+		
 		String path = "/JPS_Arbitrage/retrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase";
 		String key = "individuals";
 		String value = "V_Price_CoolingWater_001,V_Price_Storage_NaturalGas_001,V_Price_Storage_Methanol_001,V_Price_Transport_USGC-NEA_NaturalGas_001,V_Price_Electricity_001,V_USD_to_SGD,V_USD_to_CNY,V_Price_ProcessWater_001,V_Price_HighPressureSteam_001,V_Price_MediumPressureSteam_001,V_Price_Transport_SG-SC_Methanol_001,V_Price_FuelGas_001";
@@ -172,7 +172,7 @@ public class Arbitrage {
 		String NG_to_MeOH_analysis = new String("caresjpsarbitrage/NG_to_MeOH_MoDS.py");
 		String result1 = PythonHelper.callPython(NG_to_MeOH_analysis, result, g.toJson(miscCosts), g.toJson(hngPrices), g.toJson(zcePrices), new Arbitrage());
 		logger.info(result1);
-
+		
 		return result1;
 
 	}

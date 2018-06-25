@@ -401,12 +401,10 @@ public class DataDownload {
 	}
 	
 	public static String retrieveMethanolPricesFromKnowledgeBase() throws Exception {
-		writeStringUsingBufferedWriter("retrieveMethanol", retrieveMarketPricesFromKnowledgeBase("ZCEMethanol_001"));
 		return retrieveMarketPricesFromKnowledgeBase("ZCEMethanol_001");
 	}
 	
 	public static String retrieveNaturalGasPricesFromKnowledgeBase() throws Exception {
-		writeStringUsingBufferedWriter("retrieveNaturalGas", retrieveMarketPricesFromKnowledgeBase("CMENaturalGas_001"));
 		return retrieveMarketPricesFromKnowledgeBase("CMENaturalGas_001");
 	}
 	
@@ -439,12 +437,14 @@ public class DataDownload {
 			String[] headers) throws Exception {
 		
 		Gson g = new Gson();
+				
 		// return as a json-serialized string of a 1d array of length 3
 		String[] data = {
 				retrieveUtilityPrices(headers),
 				retrieveNaturalGasPricesFromKnowledgeBase(),
 				retrieveMethanolPricesFromKnowledgeBase()
 		};
+		
 		return g.toJson(data);
 	}
 	

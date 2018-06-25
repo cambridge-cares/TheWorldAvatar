@@ -28,6 +28,7 @@ public class AgentCaller {
 	private static synchronized String getHostPort() {
 		if (hostPort == null) {
 			hostPort = AgentLocator.getProperty("host") + ":" + AgentLocator.getProperty("port");
+//			hostPort = AgentLocator.getProperty("host");
 		}
 		return hostPort;
 	}
@@ -44,6 +45,7 @@ public class AgentCaller {
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(getHostPort())
 				.setPath(path)
 				.setParameter(key, value);
+		
 		try {
 			return executeGet(builder);
 		} catch (Exception e) {
