@@ -53,7 +53,6 @@ def preprocessing(miscCosts, cpo, fame):
     
     return dates, prices, u_prices, t_prices, ex_rates, s_prices
  
-
 def transport_costs(prices, t_prices):
     # This function adds transportation cost to the prices of the reagent and subtracts the transportation cost from the prices of the product. 
     for key in prices:
@@ -268,8 +267,6 @@ def run(MoDS_data, miscCosts, cpo, fame):
     #labels = {'FAME':{'title':'Biodiesel FAME futures prices from Chicago Mercantile Exchange', 'label':'Price (USD per tonne)'},'CPO':{'title':'Crude palm oil futures prices from Chicago Mercantile Exchange', 'label':'Price (USD per tonne)'}, 'x':{'title':'Delivery date (-)', 'label':dates['FAME']}}
     #plotting_prices(dates, prices, labels)
 
-
-
 if __name__ == "__main__":
     pythonLogger = PythonLogger('CPO_to_FAME_MoDS2.py')
     pythonLogger.postInfoToLogServer('start of CPO_to_FAME_MoDS2.py')
@@ -281,7 +278,7 @@ if __name__ == "__main__":
 
     try:
         returnResultsToJava(run(MoDS_data, miscCosts, cpo, fame))
-        pythonLogger.postInfoToLogServer('end of CPO_to_FAME_MoDS2.py')
     except Exception as e:
         returnExceptionToJava(e)
+    finally:
         pythonLogger.postInfoToLogServer('end of CPO_to_FAME_MoDS2.py')

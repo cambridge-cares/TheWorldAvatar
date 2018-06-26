@@ -19,7 +19,6 @@ def remove_duplicates(seq):
 	seen_add = seen.add
 	return [x for x in seq if not (x in seen or seen_add(x))]
 
-
 ##this function downloads natural gas futures prices for a gas delivered by Henry Hub pipeline; it is done by downloading their page source and parsing through it as if it was an XML file
 def FAME(url_address, driver):
 	#url_address = 'http://www.cmegroup.com/trading/energy/refined-products/fame-0-argus-biodiesel-fob-rdam-red-compliant-swap-futures.html'

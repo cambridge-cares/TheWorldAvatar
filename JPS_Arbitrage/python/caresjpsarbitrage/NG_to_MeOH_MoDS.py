@@ -11,6 +11,9 @@ from math import inf
 from csv_funcs import RCSV, ACSV
 import json
  
+from caresjpsutil import returnExceptionToJava, returnResultsToJava
+from caresjpsutil import PythonLogger
+
 def preprocessing(miscCosts, hng, zce):
     dates = {}
     prices = {}
@@ -190,7 +193,7 @@ def look_for_munnies(MoDS_data, prices, dates, s_prices, u_prices):
         "note": lowest_diff['note']
     }
  
-    print(json.dumps(resultsDict))
+    return json.dumps(resultsDict)
  
     # print('The highest marginal profit per tonne of methanol is',
     #       round(lowest_diff['price difference'],2),
@@ -276,19 +279,27 @@ def run(MoDS_data, miscCosts, hng, zce):
     prices = transport_costs(prices, t_prices)
  
     # Search through the arbitrage opportunities
-    look_for_munnies(MoDS_data, prices, dates, s_prices, u_prices)    
- 
+    return look_for_munnies(MoDS_data, prices, dates, s_prices, u_prices)    
  
     # Define titles and labels to plot the futures prices data and plot the data
     #labels = {'NG':{'title':'Natural gas futures prices from Chicago Mercantile Exchange', 'label':'Price (USD per mmBTU)'},'MeOH':{'title':'Methanol futures prices from Zhengzhou Commodity Exchange', 'label':'Price (USD per tonne)'}, 'x':{'title':'Delivery date (-)', 'label':dates['NG']}}
     #plotting_prices(dates, prices, labels)
  
 if __name__ == "__main__":
+    pythonLogger = PythonLogger('NG_to_MeOH_MoDS.py')
+    pythonLogger.postInfoToLogServer('start of NG_to_MeOH_MoDS.py')
+    
+    MoDS_data = str(sys.argv[1])
     miscCosts = json.loads(sys.argv[2])
     hng = json.loads(sys.argv[3])
     zce = json.loads(sys.argv[4])
     
-    run(str(sys.argv[1]), miscCosts, hng, zce)
+    try:
+        returnResultsToJava(run(MoDS_data, miscCosts, hng, zce))
+    except Exception as e:
+        returnExceptionToJava(e)
+    finally:
+        pythonLogger.postInfoToLogServer('end of NG_to_MeOH_MoDS.py')
  
 #     run("0.5527777778,-1.9678704734013681E43,-1.947340493583137E67,-1.3064212763820435E47,3063955.568812896,0.0,-1.312550425729447E46,-1.8126031951762418E54,-1.052184254037493E43",
 #         json.loads('{"V_Price_Electricity_001":"0.0000385833","V_Price_Storage_NaturalGas_001":"0.11104","V_Price_FuelGas_001":"9.8","V_USD_to_CNY":"6.4757816642","V_USD_to_SGD":"1.3582620112","V_Price_Transport_USGC-NEA_NaturalGas_001":"6.571428571_1.142857143","V_Price_Transport_SG-SC_Methanol_001":"22.9","V_Price_CoolingWater_001":"0.00174","V_Price_ProcessWater_001":"0.00033","V_Price_MediumPressureSteam_001":"0.01264","V_Price_HighPressureSteam_001":"0.00349","V_Price_Storage_Methanol_001":"0.2075"}'),
