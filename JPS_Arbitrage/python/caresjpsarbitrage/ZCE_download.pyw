@@ -10,6 +10,9 @@ import requests, sys
 from selenium import webdriver
 import json
 
+from caresjpsutil import returnExceptionToJava, returnResultsToJava
+from caresjpsutil import PythonLogger
+
 # takes in a time period e.g. MA809 and returns a string denoting the month and year SEP 2018
 def convertMarketTimePeriods(stringTimePeriod):
 	dictMonths = {
@@ -44,19 +47,8 @@ def ZCE(url_address, driver):
 		delivery.append(convertMarketTimePeriods(str(data[(i+1)*7])))
 		price.append(float(sub(',','',data[(i+1)*7+6])))
 	
-	# string = '&MeOH,Date,Price type,Size (tonne)'
-	# for i in range(len(delivery)):
-	# 	string += "," + str(delivery[i])
-    #
-	# string += '&'+page.headers['Date']+ ',Prior Settlement (CNY per tonne),1.0'
-	# for i in range(len(price)):
-	# 	string += "," + str(price[i])
-	#
-	# print(string)
-
 	if len(price) == 0 or len(delivery) == 0:
-		print("retry")
-		return;
+		return "retry"
 
 	arrayHeader = ["MeOH", "Date", "Price type", "Size (tonne)"]
 
@@ -77,19 +69,20 @@ def ZCE(url_address, driver):
 		"arrayPrices": arrayPrices
 	}
 
-	print(json.dumps(results))
+	return json.dumps(results)
 
-
-def run(url_address):		
-	driver = webdriver.PhantomJS()
-	try:
-		ZCE(url_address, driver)
-		driver.quit()
-		print('Success')
-		
-	except:
-		driver.quit()
-		print('It seems that the page becomes unresponsive if it is queried too fast. Please wait 5 minutes and try again. Alternatively, the page address is incorrect or format of page\'s code changed')
-		
 if __name__ == "__main__":
-	run(str(sys.argv[1]))
+	pythonLogger = PythonLogger('ZCE_download.pyw')
+	pythonLogger.postInfoToLogServer('start of ZCE_download.pyw')
+ 
+	urlAddress = str(sys.argv[1])
+	driver = webdriver.PhantomJS()
+ 	  
+	try:
+		returnResultsToJava(ZCE(urlAddress, driver))
+		pythonLogger.postInfoToLogServer('Success')
+	except Exception as e:
+		returnExceptionToJava(e)
+		pythonLogger.postInfoToLogServer('It seems that the page becomes unresponsive if it is queried too fast. Please wait 5 minutes and try again. Alternatively, the page address is incorrect or format of page\'s code changed')
+	finally:
+		driver.quit()
