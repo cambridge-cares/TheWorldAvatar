@@ -11,6 +11,9 @@ from math import inf
 from csv_funcs import RCSV, ACSV
 import json
 
+from caresjpsutil import returnExceptionToJava, returnResultsToJava
+from caresjpsutil import PythonLogger
+
 def preprocessing(miscCosts, cpo, fame):
     dates = {}
     prices = {}
@@ -181,7 +184,7 @@ def look_for_munnies(MoDS_data, prices, dates,s_prices,u_prices):
         "note": lowest_diff['note']
     }
     
-    print(json.dumps(resultsDict))
+    return json.dumps(resultsDict)
 #     print('The highest marginal profit per tonne of  biodiesel FAME is', round(lowest_diff['price difference'],2), 
 #           'USD. The futures contracts need to be accepted at the following ratio of reagent to product:', CPO_FAME/prices['CPO'][2]*prices['FAME'][2], 
 #           '. Buy crude palm oil futures contracts with delivery in', lowest_diff['month_CPO'], 
@@ -259,7 +262,7 @@ def run(MoDS_data, miscCosts, cpo, fame):
     prices = transport_costs(prices, t_prices)
 
     # Search through the arbitrage opportunities
-    look_for_munnies(MoDS_data, prices, dates, s_prices, u_prices)
+    return look_for_munnies(MoDS_data, prices, dates, s_prices, u_prices)
 
     # Define titles and labels to plot the futures prices data and plot the data
     #labels = {'FAME':{'title':'Biodiesel FAME futures prices from Chicago Mercantile Exchange', 'label':'Price (USD per tonne)'},'CPO':{'title':'Crude palm oil futures prices from Chicago Mercantile Exchange', 'label':'Price (USD per tonne)'}, 'x':{'title':'Delivery date (-)', 'label':dates['FAME']}}
@@ -268,8 +271,17 @@ def run(MoDS_data, miscCosts, cpo, fame):
 
 
 if __name__ == "__main__":
+    pythonLogger = PythonLogger('CPO_to_FAME_MoDS2.py')
+    pythonLogger.postInfoToLogServer('start of CPO_to_FAME_MoDS2.py')
+
+    MoDS_data = str(sys.argv[1])
     miscCosts = json.loads(sys.argv[2])
     cpo = json.loads(sys.argv[3])
     fame = json.loads(sys.argv[4])
 
-    run(str(sys.argv[1]), miscCosts, cpo, fame)
+    try:
+        returnResultsToJava(run(MoDS_data, miscCosts, cpo, fame))
+        pythonLogger.postInfoToLogServer('end of CPO_to_FAME_MoDS2.py')
+    except Exception as e:
+        returnExceptionToJava(e)
+        pythonLogger.postInfoToLogServer('end of CPO_to_FAME_MoDS2.py')
