@@ -271,5 +271,5 @@ if __name__ == "__main__":
     miscCosts = json.loads(sys.argv[2])
     cpo = json.loads(sys.argv[3])
     fame = json.loads(sys.argv[4])
-    
+
     run(str(sys.argv[1]), miscCosts, cpo, fame)

@@ -1,14 +1,21 @@
+/* top-banner */
 #topBanner {
     background-color: #10616C;
     border-radius: 0px;
     margin: 0px;
 }
 
+/* styles.css */
 body {
 	width: 100%;
 	height: 100%;
 }
 
+label {
+    margin-bottom: 0px;
+}
+
+/* bootstrap */
 .content.container {
     height: 100%;
     width: 100%;
@@ -16,12 +23,9 @@ body {
     padding: 2rem;
 }
 
-/*.container {*/
-    /*margin-left: auto;*/
-    /*margin-right: auto;*/
-    /*padding: 0px;*/
-    /*width: 100%;*/
-/*}*/
+.col-lg-4 {
+    padding-left: 0px;
+}
 
 .row {
     margin-left: auto;
@@ -37,6 +41,7 @@ body {
     padding-left: 0px;
 }
 
+/* dropdown table */
 select#plantSelection {
     height: 26px;
 }
@@ -45,19 +50,12 @@ select#analysisSelection {
     height: 26px;
 }
 
+/* start simulation button */
 input[type="submit"] {
     margin-left: 5px;
 }
 
-.col-lg-4 {
-    padding-left: 0px;
-}
-
-label {
-    margin-bottom: 0px;
-}
-
-
+/* d3-images */
 svg {
 	font: 10px sans-serif;
     margin-top: 0px;
