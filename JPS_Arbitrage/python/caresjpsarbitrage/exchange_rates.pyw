@@ -8,6 +8,9 @@ from lxml import html
 import requests, sys
 import json
 
+from caresjpsutil import returnExceptionToJava, returnResultsToJava
+from caresjpsutil import PythonLogger
+
 ##this function downloads natural gas futures prices for a gas delivered by Henry Hub pipeline; it is done by downloading their page source and parsing through it as if it was an XML file
 def exchange_rates():
 	# This function converts an array of prices from one currency to another. It accepts an array with floats (but skips over non-floats) and an array with two strings. The latter need to be the correct currency codenames as per www.xe.com as this function will download the rates from there.
@@ -41,9 +44,17 @@ def exchange_rates():
 
 	# string2 = string2[:-1]
 	# print(string1 + string2)
-	print(json.dumps(dictHeaderValue))
+	return json.dumps(dictHeaderValue)
 
 
 
 if __name__ == "__main__":
-	exchange_rates()
+	pythonLogger = PythonLogger('exchange_rates.pyw')
+	pythonLogger.postInfoToLogServer('start of exchange_rates.pyw')
+
+	try:
+		returnResultsToJava(exchange_rates())
+		pythonLogger.postInfoToLogServer('end of exchange_rates.pyw')
+	except Exception as e:
+		returnExceptionToJava(e)
+		pythonLogger.postInfoToLogServer('end of exchange_rates.pyw')

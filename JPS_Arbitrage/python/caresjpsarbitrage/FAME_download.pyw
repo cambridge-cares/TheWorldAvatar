@@ -10,7 +10,8 @@ import requests, sys
 from selenium import webdriver
 import json
 
-
+from caresjpsutil import returnExceptionToJava, returnResultsToJava
+from caresjpsutil import PythonLogger
 	
 ##this function removes duplicates while preserving order within an array
 def remove_duplicates(seq):
@@ -31,18 +32,7 @@ def FAME(url_address, driver):
 	delivery = remove_duplicates(tree.xpath('//span[@class="cmeNoWrap"]/text()'))
 
 	if len(price) == 0 or len(delivery) == 0:
-		print("retry")
-		return;
-
-	# string = '&FAME,Date,Price type,Size (tonne)'
-	# for i in range(len(delivery)):
-	# 	string += "," + delivery[i]
-	#
-	# string += '&'+page.headers['Date']+ ',Prior Settlement (USD per tonne),100.0'
-	# for i in range(len(price)):
-	# 	string += "," + price[i]
-	#
-	# print(string)
+		return "retry"
 
 	arrayHeader = ["FAME", "Date", "Price type", "Size (tonne)"]
 
@@ -63,20 +53,20 @@ def FAME(url_address, driver):
 		"arrayPrices": arrayPrices
 	}
 
-	print(json.dumps(results))
-
-
-		
-def run(url_address):		
-	driver = webdriver.PhantomJS()
-	try:
-		FAME(url_address, driver)
-		driver.quit()
-		print('Success')
-		
-	except:
-		driver.quit()
-		print('It seems that the page becomes unresponsive if it is queried too fast. Please wait 5 minutes and try again. Alternatively, the page address is incorrect or format of page\'s code changed')
+	return json.dumps(results)
 
 if __name__ == "__main__":
-	run(str(sys.argv[1]))
+	pythonLogger = PythonLogger('FAME_download.pyw')
+	pythonLogger.postInfoToLogServer('start of FAME_download.pyw')
+ 
+	urlAddress = str(sys.argv[1])
+	driver = webdriver.PhantomJS()
+ 	  
+	try:
+		returnResultsToJava(FAME(urlAddress, driver))
+		pythonLogger.postInfoToLogServer('Success')
+	except Exception as e:
+		returnExceptionToJava(e)
+		pythonLogger.postInfoToLogServer('It seems that the page becomes unresponsive if it is queried too fast. Please wait 5 minutes and try again. Alternatively, the page address is incorrect or format of page\'s code changed')
+	finally:
+		driver.quit()

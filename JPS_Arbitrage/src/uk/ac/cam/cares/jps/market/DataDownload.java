@@ -68,6 +68,7 @@ public class DataDownload {
 		String result = "";
 		do {
 			result = PythonHelper.callPython(script, source, new DataDownload());
+			writeStringUsingBufferedWriter("downloadMarketData", result);
 		} while (result.equals("retry"));
 		
 		return result;

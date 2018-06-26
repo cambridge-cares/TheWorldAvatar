@@ -32,8 +32,7 @@ def CPO(url_address, driver):
 	delivery = remove_duplicates(tree.xpath('//span[@class="cmeNoWrap"]/text()'))
 
 	if len(price) == 0 or len(delivery) == 0:
-		print("retry")
-		return;
+		return "retry"
 
 	# string = '&CPO,Date,Price type,Size (tonne)'
 	# for i in range(len(delivery)):
@@ -77,7 +76,6 @@ def CPO(url_address, driver):
 # 		driver.quit()
 # 		print('It seems that the page becomes unresponsive if it is queried too fast. Please wait 5 minutes and try again. Alternatively, the page address is incorrect or format of page\'s code changed')
 
-		
 if __name__ == "__main__":
 	# run(str(sys.argv[1]))
 	pythonLogger = PythonLogger('CPO_download.pyw')
@@ -92,6 +90,5 @@ if __name__ == "__main__":
 		pythonLogger.postInfoToLogServer('Success')
 	except Exception as e:
 		returnExceptionToJava(e)
+		driver.quit()
 		pythonLogger.postInfoToLogServer('It seems that the page becomes unresponsive if it is queried too fast. Please wait 5 minutes and try again. Alternatively, the page address is incorrect or format of page\'s code changed')
-
-
