@@ -70,34 +70,27 @@ public class ArbitrageAgent extends HttpServlet {
 				.equals(path)) {
 
 			request.setCharacterEncoding("UTF-8");
-			String jsonString = request
-					.getParameter("MoDS_input");
-
+			String modsInput = request.getParameter("MoDS_input");
+			String choicePlant = request.getParameter("choicePlant");
+			
 			try {
-				String result = g.toJson(Arbitrage
-						.runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent(
-								jsonString));
+				String result = "";
+				
+				if (choicePlant.equals("Biodiesel")) {
+					result = g.toJson(Arbitrage
+							.runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent(
+									modsInput));
+				} else if (choicePlant.equals("Methanol")) {
+					result = g.toJson(Arbitrage
+							.runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2(
+									modsInput));
+				}
+				
 				response.setContentType("application/json");
 				response.getWriter().write(result);
 			} catch (Exception e) {
 				logger.error(e.getMessage());
-				throw new JPSRuntimeException(
-						e.getMessage(), e);
-			}
-		} else if ("/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2"
-				.equals(path)) {
-			
-			request.setCharacterEncoding("UTF-8");
-			String jsonString = request.getParameter("MoDS_input");
-			
-			try {
-				String result = g.toJson(Arbitrage.runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2(jsonString));
-				response.setContentType("application/json");
-				response.getWriter().write(result);
-			} catch (Exception e) {
-				logger.error(e.getMessage());
-				throw new JPSRuntimeException(
-						e.getMessage(), e);
+				throw new JPSRuntimeException(e.getMessage(), e);
 			}
 		}
 	}

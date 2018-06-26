@@ -23,10 +23,6 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * Servlet implementation class DataDownloadAgent
  */
 @WebServlet(urlPatterns = {
-		"/downloadCPOMarketData",
-		"/downloadFAMEMarketData",
-		"/downloadZCEMarketData",
-		"/downloadHNGMarketData",
 		"/downloadingAndSavingMarketDataInTheKnowledgeBase",
 		"/downloadingAndSavingExchangeRatesInTheKnowledgeBase",
 		"/savingDataInTheKnowledgeBase",
@@ -78,70 +74,7 @@ public class DataDownloadAgent extends HttpServlet {
 
 		Gson g = new Gson();
 		
-		if ("/downloadCPOMarketData"
-				.equals(path)) {
-			request.setCharacterEncoding("UTF-8");
-
-			try {
-				String result = g.toJson(DataDownload
-						.downloadCPOMarketData());
-				
-				response.setContentType("application/json");
-				response.getWriter().write(result);
-			} catch (Exception e) {
-				logger.error(e.getMessage());
-				throw new JPSRuntimeException(
-						e.getMessage(), e);
-			}
-		} else if ("/downloadFAMEMarketData"
-				.equals(path)) {
-			request.setCharacterEncoding("UTF-8");
-
-			try {
-				String result = g.toJson(DataDownload
-						.downloadFAMEMarketData());
-				
-				response.setContentType("application/json");
-				response.getWriter().write(result);
-			} catch (Exception e) {
-				logger.error(e.getMessage());
-				throw new JPSRuntimeException(
-						e.getMessage(), e);
-			}
-
-		} else if ("/downloadZCEMarketData"
-				.equals(path)) {
-			request.setCharacterEncoding("UTF-8");
-
-			try {
-				String result = g.toJson(DataDownload
-						.downloadZCEMarketData());
-				
-				response.setContentType("application/json");
-				response.getWriter().write(result);
-			} catch (Exception e) {
-				logger.error(e.getMessage());
-				throw new JPSRuntimeException(
-						e.getMessage(), e);
-			}
-
-		} else if ("/downloadHNGMarketData"
-				.equals(path)) {
-			request.setCharacterEncoding("UTF-8");
-
-			try {
-				String result = g.toJson(DataDownload
-						.downloadHNGMarketData());
-				
-				response.setContentType("application/json");
-				response.getWriter().write(result);
-			} catch (Exception e) {
-				logger.error(e.getMessage());
-				throw new JPSRuntimeException(
-						e.getMessage(), e);
-			}
-
-		} else if ("/downloadingAndSavingMarketDataInTheKnowledgeBase"
+		if ("/downloadingAndSavingMarketDataInTheKnowledgeBase"
 				.equals(path)) {
 
 			request.setCharacterEncoding("UTF-8");
@@ -158,6 +91,38 @@ public class DataDownloadAgent extends HttpServlet {
 						e.getMessage(), e);
 			}
 
+		} else if ("/downloadingAndSavingExchangeRatesInTheKnowledgeBase"
+				.equals(path)) {
+
+			request.setCharacterEncoding("UTF-8");
+
+			try {
+				String result = g.toJson(DataDownload
+						.downloadingAndSavingExchangeRatesInTheKnowledgeBase());
+
+				response.setContentType("application/json");
+				response.getWriter()
+						.write(result.toString());
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+				throw new JPSRuntimeException(
+						e.getMessage(), e);
+			}
+		} else if ("/savingDataInTheKnowledgeBase".equals(path)) {
+			request.setCharacterEncoding("UTF-8");
+			String jsonString = request.getParameter("arrayHeaderPrices");
+			
+			try {
+				String result = g.toJson(DataDownload.savingDataInTheKnowledgeBase(jsonString));
+				
+				response.setContentType("application/json");
+				response.getWriter()
+						.write(result);
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+				throw new JPSRuntimeException(
+						e.getMessage(), e);
+			}
 		} else if ("/retrieveUtilityPrices"
 				.equals(path)) {
 
@@ -214,39 +179,6 @@ public class DataDownloadAgent extends HttpServlet {
 				throw new JPSRuntimeException(
 						e.getMessage(), e);
 			}
-		} else if ("/downloadingAndSavingExchangeRatesInTheKnowledgeBase"
-				.equals(path)) {
-
-			request.setCharacterEncoding("UTF-8");
-
-			try {
-				String result = g.toJson(DataDownload
-						.downloadingAndSavingExchangeRatesInTheKnowledgeBase());
-
-				response.setContentType("application/json");
-				response.getWriter()
-						.write(result.toString());
-			} catch (Exception e) {
-				logger.error(e.getMessage());
-				throw new JPSRuntimeException(
-						e.getMessage(), e);
-			}
-		} else if ("/savingDataInTheKnowledgeBase".equals(path)) {
-			request.setCharacterEncoding("UTF-8");
-			String jsonString = request.getParameter("arrayHeaderPrices");
-			
-			try {
-				String result = g.toJson(DataDownload.savingDataInTheKnowledgeBase(jsonString));
-				
-				response.setContentType("application/json");
-				response.getWriter()
-						.write(result);
-			} catch (Exception e) {
-				logger.error(e.getMessage());
-				throw new JPSRuntimeException(
-						e.getMessage(), e);
-			}
 		}
-
 	}
 }

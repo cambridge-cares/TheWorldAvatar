@@ -42,7 +42,8 @@ const processInputs = (evt) => {
                 if(choicePlant === "Biodiesel") {
                     $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent',
                         {
-                            MoDS_input: JSON.stringify([inputA])
+                            MoDS_input: JSON.stringify([inputA]),
+                            choicePlant
                         },
                         function (data) {
                             let modsAnalysisResults = JSON.parse(data);
@@ -56,9 +57,10 @@ const processInputs = (evt) => {
                             $('#MoDSOutput').text(textModsAnalysisResults);
                         });
                 } else if (choicePlant === "Methanol") {
-                    $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2',
+                    $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent',
                         {
-                            MoDS_input: JSON.stringify([inputA])
+                            MoDS_input: JSON.stringify([inputA]),
+                            choicePlant
                         },
                         function (data) {
                             let modsAnalysisResults = JSON.parse(data);
