@@ -50,11 +50,6 @@ select#analysisSelection {
     height: 26px;
 }
 
-/* start simulation button */
-input[type="submit"] {
-    margin-left: 5px;
-}
-
 /* d3-images */
 svg {
 	font: 10px sans-serif;

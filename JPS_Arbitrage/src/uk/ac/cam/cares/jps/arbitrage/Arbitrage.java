@@ -32,40 +32,6 @@ public class Arbitrage {
 		 }
 		 writer.close();
 		}
-	/**
-	 * this function calls cmd to execute a Python script
-	 * which uses market prices of crude palm oil (CPO) and
-	 * biodiesel (FAME) stored in CSV files and hardcoded
-	 * utility prices and exchange rates to conduct the
-	 * financial analysis, result of which is captured from
-	 * cmd and printed to the eclipse console; the script
-	 * also prints a plot of market data to the location
-	 * defined below
-	 * 
-	 * this function is more or less obsolete, but was
-	 * retained in case anyone would like to use Aspen for
-	 * the arbitrage analysis
-	 * 
-	 * @param input
-	 * @return
-	 * @throws Exception
-	 */
-	@SuppressWarnings("unused")
-	private static void runningAnalysisAspen()
-			throws Exception {
-
-		String CPO_to_FAME_analysis = new String(
-				"caresjpsarbitrage/CPO_to_FAME_Aspen.py");
-
-		String market_data_plot = new String(
-				"C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\workingdir\\arbitrage_CPO.png");
-
-		String result = PythonHelper.callPython(
-				CPO_to_FAME_analysis, market_data_plot,
-				new Arbitrage());
-		logger.info(result);
-
-	}
 
 	/**
 	 * this function uses MoDS-Java API to evaluate the

@@ -12,7 +12,6 @@ const processInputs = (evt) => {
 
     let inputA = parseFloat($('#plantSpecificParam').val());
 
-    let choiceAnalysis = $("#analysisSelection option:selected").text();
     let choicePlant = $("#plantSelection option:selected").text();
 
     let pattern = /^\d+(\.\d+)?$/;
@@ -38,56 +37,45 @@ const processInputs = (evt) => {
 
             let storeUtilityPricesInKnowledgeBaseResults = responseThree[0];
 
-            if(choiceAnalysis === "MoDS") {
-                if(choicePlant === "Biodiesel") {
-                    $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent',
-                        {
-                            MoDS_input: JSON.stringify([inputA]),
-                            choicePlant
-                        },
-                        function (data) {
-                            let modsAnalysisResults = JSON.parse(data);
-                            let textModsAnalysisResults = "The highest marginal profit per tonne of biodiesel FAME is " +
-                                modsAnalysisResults['marginal profit per tonne of biodiesel FAME (in USD)'] + " USD. The futures contracts " +
-                                "need to be accepted at the following ratio of reagent to product: " +
-                                modsAnalysisResults['ratio of reagent to product'] + ". Buy crude palm oil futures contracts with delivery in " +
-                                modsAnalysisResults['month to buy crude palm oil futures contracts'] + " and sell biodiesel FAME futures contracts with delivery in " +
-                                modsAnalysisResults['month to sell biodiesel FAME futures contract'] + ". " + modsAnalysisResults['note'];
+            if(choicePlant === "Biodiesel") {
+                $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent',
+                {
+                    MoDS_input: JSON.stringify([inputA]),
+                    choicePlant
+                },
+                function (data) {
+                    let modsAnalysisResults = JSON.parse(data);
+                    let textModsAnalysisResults = "The highest marginal profit per tonne of biodiesel FAME is " +
+                        modsAnalysisResults['marginal profit per tonne of biodiesel FAME (in USD)'] + " USD. The futures contracts " +
+                        "need to be accepted at the following ratio of reagent to product: " +
+                        modsAnalysisResults['ratio of reagent to product'] + ". Buy crude palm oil futures contracts with delivery in " +
+                        modsAnalysisResults['month to buy crude palm oil futures contracts'] + " and sell biodiesel FAME futures contracts with delivery in " +
+                        modsAnalysisResults['month to sell biodiesel FAME futures contract'] + ". " + modsAnalysisResults['note'];
 
-                            $('#MoDSOutput').text(textModsAnalysisResults);
-                        });
-                } else if (choicePlant === "Methanol") {
-                    $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent',
-                        {
-                            MoDS_input: JSON.stringify([inputA]),
-                            choicePlant
-                        },
-                        function (data) {
-                            let modsAnalysisResults = JSON.parse(data);
-                            let textModsAnalysisResults = "The highest marginal profit per tonne of methanol is " +
-                                modsAnalysisResults['marginal profit per tonne of methanol (in USD)'] +
-                                " USD. The futures contracts need to be accepted at the following ratio" +
-                                " of reagent to product: " +
-                                modsAnalysisResults['ratio of reagent to product'] +
-                                ". Buy natural gas futures contracts with delivery in " +
-                                modsAnalysisResults['month to buy natural gas futures contracts'] +
-                                " and sell methanol futures contracts with delivery in " +
-                                modsAnalysisResults['month to sell methanol futures contract'] +
-                                ". " +
-                                modsAnalysisResults['note'];
+                    $('#MoDSOutput').text(textModsAnalysisResults);
+                });
+            } else if (choicePlant === "Methanol") {
+                $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent',
+                {
+                    MoDS_input: JSON.stringify([inputA]),
+                    choicePlant
+                },
+                function (data) {
+                    let modsAnalysisResults = JSON.parse(data);
+                    let textModsAnalysisResults = "The highest marginal profit per tonne of methanol is " +
+                        modsAnalysisResults['marginal profit per tonne of methanol (in USD)'] +
+                        " USD. The futures contracts need to be accepted at the following ratio" +
+                        " of reagent to product: " +
+                        modsAnalysisResults['ratio of reagent to product'] +
+                        ". Buy natural gas futures contracts with delivery in " +
+                        modsAnalysisResults['month to buy natural gas futures contracts'] +
+                        " and sell methanol futures contracts with delivery in " +
+                        modsAnalysisResults['month to sell methanol futures contract'] +
+                        ". " +
+                        modsAnalysisResults['note'];
 
-                            $('#MoDSOutput').text(textModsAnalysisResults);
-                        });
-                }
-            } else {
-                console.log("not done yet");
-                // $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles',
-                //     {
-                //         MoDS_input: JSON.stringify([inputA])
-                //     },
-                //     function (data) {
-                //         $('#MoDSOutput').text(data);
-                //     });
+                    $('#MoDSOutput').text(textModsAnalysisResults);
+                });
             }
         })
     } else {
