@@ -1,14 +1,22 @@
 package uk.ac.cam.cares.jps.arbitragetest;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+
+import uk.ac.cam.cares.jps.arbitrage.Arbitrage;
 
 public class TestMoDSAnalysis extends TestCase {
 	private static Logger logger = LoggerFactory
@@ -25,31 +33,39 @@ public class TestMoDSAnalysis extends TestCase {
 	 * @throws IOException
 	 */
 	public void testRunningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent()
-			throws URISyntaxException,
+			throws URISyntaxException, Exception,
 			ClientProtocolException, IOException {
 
-		String path = "/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent";
-		String key = "MoDS_input";
-		String value = "24220.0656";
-
-		String actual = AgentCaller.executeGet(path, key, value);
-		logger.info(actual);
-		assertTrue(actual.contains(
-				"The highest marginal profit per tonne"));
+		String input = "[24220.0656]";
+		String result = Arbitrage.runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent(input);
+		logger.info(result);
+		
+		Gson g = new Gson();
+		Gson objGson = new GsonBuilder().setPrettyPrinting().create();
+		Type listType = new TypeToken<Map<String, String>>(){}.getType();
+		
+		Map<String, String> resultMap = objGson.fromJson(result, listType);
+		
+		assertTrue(resultMap.containsKey("marginal profit per tonne of biodiesel FAME (in USD)"));
+		assertNotNull(resultMap.get("marginal profit per tonne of biodiesel FAME (in USD)"));
 	}
 	
 	public void testRunningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2()
-			throws URISyntaxException,
+			throws URISyntaxException, Exception,
 			ClientProtocolException, IOException {
 
-		String path = "/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2";
-		String key = "MoDS_input";
-		String value = "0.5527777778";
+		String input = "[0.5527777778]";
+		String result = Arbitrage.runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2(input);
+		logger.info(result);
 
-		String actual = AgentCaller.executeGet(path, key, value);
-		logger.info(actual);
-		assertTrue(actual.contains(
-				"The highest marginal profit per tonne"));
+		Gson g = new Gson();
+		Gson objGson = new GsonBuilder().setPrettyPrinting().create();
+		Type listType = new TypeToken<Map<String, String>>(){}.getType();
+		
+		Map<String, String> resultMap = objGson.fromJson(result, listType);
+		
+		assertTrue(resultMap.containsKey("marginal profit per tonne of methanol (in USD)"));
+		assertNotNull(resultMap.get("marginal profit per tonne of methanol (in USD)"));
 	}
 
 }
