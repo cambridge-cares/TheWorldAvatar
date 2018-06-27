@@ -1,9 +1,6 @@
 package uk.ac.cam.cares.jps.market;
 
-import java.io.BufferedWriter;
 import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URI;
@@ -53,16 +50,6 @@ public class DataDownload {
 	// URIs of ontologies used to defined KBs in which utilities and exchange rates will be stored
 	public static final String ONTO_PATH_ONTOCAPE = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl";
 	public static final String ONTO_PATH_KB_UTIL_EXRATES = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15";
-	
-	public static void writeStringUsingBufferedWriter(String
-		 function, String result) throws IOException {
-	 BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\jps\\jps_arbitrage\\consoleOutputDataDownload.txt", true));
-	 writer.append(function);
-	 writer.newLine();
-	 writer.append(result);
-	 writer.newLine();
-	 writer.close();
-	}
 	
 	public static String downloadMarketData(String script, String source) throws Exception {
 		String result = "";
@@ -407,6 +394,8 @@ public class DataDownload {
 	public static String retrieveNaturalGasPricesFromKnowledgeBase() throws Exception {
 		return retrieveMarketPricesFromKnowledgeBase("CMENaturalGas_001");
 	}
+	
+	
 	
 	/**
 	 * this function receives names of individuals, which

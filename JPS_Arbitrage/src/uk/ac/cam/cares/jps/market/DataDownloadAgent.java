@@ -1,9 +1,5 @@
 package uk.ac.cam.cares.jps.market;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-//import java.io.BufferedWriter;
-//import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -40,18 +36,6 @@ public class DataDownloadAgent extends HttpServlet {
 	public DataDownloadAgent() {
 		super();
 	}
-
-	// delete later
-	 public void writeStringUsingBufferedWriter(String
-	 function, String result) throws IOException {
-	 BufferedWriter writer = new BufferedWriter(new
-	 FileWriter("C:\\jps\\jps_arbitrage\\consoleOutputDataDownloadAgent.txt",true));
-	 writer.append(function);
-	 writer.newLine();
-	 writer.append(result);
-	 writer.newLine();
-	 writer.close();
-	 }
 
 	/**
 	 * this function is a servlet for calling functions in

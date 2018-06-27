@@ -40,7 +40,6 @@ public class TestMoDSAnalysis extends TestCase {
 		String result = Arbitrage.runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent(input);
 		logger.info(result);
 		
-		Gson g = new Gson();
 		Gson objGson = new GsonBuilder().setPrettyPrinting().create();
 		Type listType = new TypeToken<Map<String, String>>(){}.getType();
 		
@@ -58,7 +57,6 @@ public class TestMoDSAnalysis extends TestCase {
 		String result = Arbitrage.runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2(input);
 		logger.info(result);
 
-		Gson g = new Gson();
 		Gson objGson = new GsonBuilder().setPrettyPrinting().create();
 		Type listType = new TypeToken<Map<String, String>>(){}.getType();
 		

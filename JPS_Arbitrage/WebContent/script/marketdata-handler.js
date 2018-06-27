@@ -1,5 +1,5 @@
 const downloadAndSaveMarketData = (choicePlant) => {
-    return $.getJSON('/JPS_Arbitrage/downloadingAndSavingMarketDataInTheKnowledgeBase', {
+    return $.getJSON('/JPS_ARBITRAGE/downloadingAndSavingMarketDataInTheKnowledgeBase', {
         choicePlant
     });
 };

@@ -38,7 +38,7 @@ const processInputs = (evt) => {
             let storeUtilityPricesInKnowledgeBaseResults = responseThree[0];
 
             if(choicePlant === "Biodiesel") {
-                $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent',
+                $.getJSON('/JPS_ARBITRAGE/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent',
                 {
                     MoDS_input: JSON.stringify([inputA]),
                     choicePlant
@@ -55,7 +55,7 @@ const processInputs = (evt) => {
                     $('#MoDSOutput').text(textModsAnalysisResults);
                 });
             } else if (choicePlant === "Methanol") {
-                $.getJSON('/JPS_Arbitrage/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent',
+                $.getJSON('/JPS_ARBITRAGE/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent',
                 {
                     MoDS_input: JSON.stringify([inputA]),
                     choicePlant

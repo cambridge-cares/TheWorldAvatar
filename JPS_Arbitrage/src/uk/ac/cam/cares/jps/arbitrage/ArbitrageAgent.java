@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.arbitrage;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -36,16 +34,6 @@ public class ArbitrageAgent extends HttpServlet {
 		super();
 	}
 	
-	// delete later
-	public void writeStringUsingBufferedWriter(String function, String result) throws IOException {
-		BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\jps\\jps_arbitrage\\consoleOutputArbitrageAgent.txt", true));
-		writer.append(function);
-		writer.newLine();
-		writer.append(result);
-		writer.newLine();
-		writer.close();
-	}
-
 	/**
 	 * 
 	 * this function is a servlet for calling functions in

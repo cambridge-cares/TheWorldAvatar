@@ -1,8 +1,5 @@
 package uk.ac.cam.cares.jps.arbitrage;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,19 +16,6 @@ import com.google.gson.Gson;
 
 public class Arbitrage {
 	private static Logger logger = LoggerFactory.getLogger(Arbitrage.class);
-
-	public static void writeStringUsingBufferedWriter(String
-			 function, String... results) throws IOException {
-		 BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\jps\\jps_arbitrage\\consoleOutputArbitrage.txt", true));
-		 writer.append(function);
-		 writer.newLine();
-		 
-		 for(String result : results) {
-			 writer.append(result);
-			 writer.newLine();
-		 }
-		 writer.close();
-		}
 
 	/**
 	 * this function uses MoDS-Java API to evaluate the
@@ -67,7 +51,7 @@ public class Arbitrage {
 			result += "," + MoDS_data.get(i).toString();
 		}
 		
-		String path = "/JPS_Arbitrage/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase";
+		String path = "/JPS_ARBITRAGE/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase";
 		String key = "individuals";
 		String value = "V_Price_CoolingWater_001,V_Price_Storage_Biodiesel_001,V_Price_Storage_CrudePalmOil_001,V_Price_Transport_Malaysia-SG_CrudePalmOil_001,V_Price_Electricity_001,V_USD_to_SGD,V_Price_ProcessWater_001,V_Price_HighPressureSteam_001,V_Price_MediumPressureSteam_001,V_Price_Transport_SEA-SC_Biodiesel_001,V_Price_FuelGas_001";
 		String actual = g.fromJson(AgentCaller.executeGet(path, key, value), String.class);
@@ -121,7 +105,7 @@ public class Arbitrage {
 			result += "," + MoDS_data.get(i).toString();
 		}
 		
-		String path = "/JPS_Arbitrage/retrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase";
+		String path = "/JPS_ARBITRAGE/retrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase";
 		String key = "individuals";
 		String value = "V_Price_CoolingWater_001,V_Price_Storage_NaturalGas_001,V_Price_Storage_Methanol_001,V_Price_Transport_USGC-NEA_NaturalGas_001,V_Price_Electricity_001,V_USD_to_SGD,V_USD_to_CNY,V_Price_ProcessWater_001,V_Price_HighPressureSteam_001,V_Price_MediumPressureSteam_001,V_Price_Transport_SG-SC_Methanol_001,V_Price_FuelGas_001";
 		String actual = g.fromJson(AgentCaller.executeGet(path, key, value), String.class);
@@ -160,7 +144,7 @@ public class Arbitrage {
 		final String surrogateAlgName = args1[1];
 
 		// final String simDir =
-		// "C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_Arbitrage\\MoDS\\HDMR_50_001";
+		// "C:\\Users\\Janusz\\Desktop\\JParkSimulator-git\\JPS_ARBITRAGE\\MoDS\\HDMR_50_001";
 		// final String surrogateAlgName = "HDMR_Alg_1";
 
 		// Note that IndexOutOfBoundsException is thrown if

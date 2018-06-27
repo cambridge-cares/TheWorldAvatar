@@ -1,5 +1,5 @@
 const downloadAndSaveExchangeRates = () => {
-    return $.getJSON('/JPS_Arbitrage/downloadingAndSavingExchangeRatesInTheKnowledgeBase');
+    return $.getJSON('/JPS_ARBITRAGE/downloadingAndSavingExchangeRatesInTheKnowledgeBase');
 };
 
 const consoleLogDownloadAndSaveExchangeRates = response => {

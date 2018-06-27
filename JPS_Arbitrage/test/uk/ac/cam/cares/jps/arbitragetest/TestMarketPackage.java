@@ -33,7 +33,7 @@ public class TestMarketPackage extends TestCase {
 			throws URISyntaxException,
 			ClientProtocolException, IOException {
 
-		String path = "/JPS_Arbitrage/downloadingAndSavingMarketDataInTheKnowledgeBase";
+		String path = "/JPS_ARBITRAGE/downloadingAndSavingMarketDataInTheKnowledgeBase";
 		String actual = AgentCaller.executeGet(path, "choicePlant", "Biodiesel");
 		logger.info(actual);
 		
@@ -56,7 +56,7 @@ public class TestMarketPackage extends TestCase {
 			throws URISyntaxException,
 			ClientProtocolException, IOException {
 
-		String path = "/JPS_Arbitrage/downloadingAndSavingMarketDataInTheKnowledgeBase";
+		String path = "/JPS_ARBITRAGE/downloadingAndSavingMarketDataInTheKnowledgeBase";
 		String actual = AgentCaller.executeGet(path, "choicePlant", "Methanol");
 		logger.info(actual);
 		
@@ -88,7 +88,7 @@ public class TestMarketPackage extends TestCase {
 			throws URISyntaxException,
 			ClientProtocolException, IOException {
 
-		String path = "/JPS_Arbitrage/downloadingAndSavingExchangeRatesInTheKnowledgeBase";
+		String path = "/JPS_ARBITRAGE/downloadingAndSavingExchangeRatesInTheKnowledgeBase";
 		String actual = AgentCaller.executeGet(path, "whatver", "whatever2");
 		logger.info(actual);
 		
@@ -116,7 +116,7 @@ public class TestMarketPackage extends TestCase {
 			throws URISyntaxException,
 			ClientProtocolException, IOException {
 
-		String path = "/JPS_Arbitrage/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase";
+		String path = "/JPS_ARBITRAGE/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase";
 		String key = "individuals";
 		String value = "V_Price_CoolingWater_001,V_Price_Storage_Biodiesel_001,V_Price_Storage_CrudePalmOil_001,V_Costs_Storage_CrudePalmOil_001,V_Price_Transport_Malaysia-SG_CrudePalmOil_001,V_Price_Electricity_001,V_USD_to_SGD,V_Price_ProcessWater_001,V_Price_HighPressureSteam_001,V_USD_to_CNY,V_Price_MediumPressureSteam_001,V_Price_LowPressureSteam_001,V_Price_Transport_SEA-SC_Biodiesel_001,V_Price_FuelGas_001";
 		String actual = AgentCaller.executeGet(path, key, value);
@@ -154,7 +154,7 @@ public class TestMarketPackage extends TestCase {
 			throws URISyntaxException,
 			ClientProtocolException, IOException {
 
-		String path = "/JPS_Arbitrage/retrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase";
+		String path = "/JPS_ARBITRAGE/retrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase";
 		String key = "individuals";
 		String value = "V_Price_Storage_NaturalGas_001,V_Price_CoolingWater_001,V_Price_Storage_Methanol_001,V_Price_Electricity_001,V_Price_Transport_SG-SC_Methanol_001,V_USD_to_SGD,V_Price_ProcessWater_001,V_Price_Transport_USGC-NEA_NaturalGas_001,V_Price_HighPressureSteam_001,V_USD_to_CNY,V_Price_MediumPressureSteam_001,V_Price_LowPressureSteam_001,V_Price_FuelGas_001";
 		String actual = AgentCaller.executeGet(path, key, value);
