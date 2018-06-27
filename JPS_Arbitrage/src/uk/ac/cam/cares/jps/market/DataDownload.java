@@ -92,9 +92,9 @@ public class DataDownload {
 
 	
 	/**
-	 * this function calls cmd to execute 4 Python scripts
+	 * this function calls cmd to execute 2 Python scripts
 	 * which download market prices for crude palm oil
-	 * (CPO), biodiesel (FAME), natural gas at Henry Hub
+	 * (CPO) and biodiesel (FAME), or natural gas at Henry Hub
 	 * (HNG) and methanol at Zhengzhou exchange (ZCE) and
 	 * stores it JPS knowledge base; prices of CPO are
 	 * captured from cmd and returned for testing purposes
