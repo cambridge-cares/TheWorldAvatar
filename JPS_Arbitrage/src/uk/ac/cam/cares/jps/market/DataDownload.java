@@ -136,13 +136,13 @@ public class DataDownload {
 		logger.info("File saved with " + errors.size()
 				+ " errors.");
 
-//		return results[0];
-		// maybe return array of Strings?
+		return results[0];
+//		 maybe return array of Strings?
 		
 		
 		// delete later
 		// returns single String of joined elements in an Array
-		return StringUtils.join(results, "\r\n");
+//		return StringUtils.join(results, "\r\n");
 	}
 
 	/**

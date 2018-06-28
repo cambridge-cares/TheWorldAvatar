@@ -38,14 +38,14 @@ public class DataDownloadAgent extends HttpServlet {
 	}
 	
 	// delete later
-	public void writeStringUsingBufferedWriter(String function, String result) throws IOException {
-		BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\jps\\jps_arbitrage\\consoleOutputDataDownloadAgent.txt", true));
-		writer.append(function);
-		writer.newLine();
-		writer.append(result);
-		writer.newLine();
-		writer.close();
-	}
+//	public void writeStringUsingBufferedWriter(String function, String result) throws IOException {
+//		BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\jps\\jps_arbitrage\\consoleOutputDataDownloadAgent.txt", true));
+//		writer.append(function);
+//		writer.newLine();
+//		writer.append(result);
+//		writer.newLine();
+//		writer.close();
+//	}
 
 	/**
 	 * this function is a servlet for calling functions in
@@ -68,6 +68,7 @@ public class DataDownloadAgent extends HttpServlet {
 		
 		Gson g = new Gson();
 
+		//condition 1 and write the result in json format and show it
 		if ("/downloadingAndSavingMarketDataInTheKnowledgeBase"
 				.equals(path)) {
 
@@ -81,7 +82,7 @@ public class DataDownloadAgent extends HttpServlet {
 //				String result = DataDownload
 //						.downloadingAndSavingMarketDataInTheKnowledgeBase();
 				// delete later
-				writeStringUsingBufferedWriter(path, g.fromJson(result, String.class));
+				//writeStringUsingBufferedWriter(path, g.fromJson(result, String.class));
 				
 				response.setContentType("application/json");
 				response.getWriter().write(result);
@@ -91,7 +92,8 @@ public class DataDownloadAgent extends HttpServlet {
 						e.getMessage(), e);
 			}
 
-		} else if ("/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase"
+		//condition 2
+		}else if ("/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase"
 				.equals(path)) {
 
 			// -- Get String formatted in Array of Strings
@@ -106,7 +108,7 @@ public class DataDownloadAgent extends HttpServlet {
 								jsonString.split(","));
 				
 				// delete later
-				writeStringUsingBufferedWriter(path, result);
+				//writeStringUsingBufferedWriter(path, result);
 				
 				response.setContentType("application/json");
 				response.getWriter()
@@ -116,6 +118,8 @@ public class DataDownloadAgent extends HttpServlet {
 				throw new JPSRuntimeException(
 						e.getMessage(), e);
 			}
+			
+			//condition 3
 		} else if ("/downloadingAndSavingExchangeRatesInTheKnowledgeBase"
 				.equals(path)) {
 
@@ -128,7 +132,7 @@ public class DataDownloadAgent extends HttpServlet {
 						.downloadingAndSavingExchangeRatesInTheKnowledgeBase());
 								
 				// delete later
-				writeStringUsingBufferedWriter(path, g.fromJson(result, String.class));
+			//	writeStringUsingBufferedWriter(path, g.fromJson(result, String.class));
 				
 				response.setContentType("application/json");
 				response.getWriter()
