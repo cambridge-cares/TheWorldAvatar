@@ -80,7 +80,7 @@ public class AgentLocator {
 		} catch (IOException exc) {
 			// this is no error. jpstest.properties should not be available on production system.
 			logger.info("jpstest.properties not found");
-		}			
+		}
 
 		url = "http://" + getProperty("host") + ":" + getProperty("port");
 		logger.info("created url from properties: " + url);

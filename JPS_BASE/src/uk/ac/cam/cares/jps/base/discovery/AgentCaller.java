@@ -44,6 +44,7 @@ public class AgentCaller {
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(getHostPort())
 				.setPath(path)
 				.setParameter(key, value);
+		
 		try {
 			return executeGet(builder);
 		} catch (Exception e) {

@@ -9,15 +9,12 @@ import sys
 from math import inf
 #import matplotlib.pyplot as plt
 from csv_funcs import RCSV, ACSV
+import json
 
+from caresjpsutil import returnExceptionToJava, returnResultsToJava
+from caresjpsutil import PythonLogger
 
-def preprocessing(data):
-
-    data = data.split('&')
-
-    for i in range(len(data)):
-        if data[i][-1] == ",": data[i] = data[i][:-1]
-        
+def preprocessing(miscCosts, cpo, fame):
     dates = {}
     prices = {}
     u_prices = {}
@@ -25,21 +22,16 @@ def preprocessing(data):
     ex_rates = {}
     s_prices = {}
 
-    data[1] = data[1].split(",")
-    dates[data[1][0]] = data[1][1:]
 
-    data[3] = data[3].split(",")
-    dates[data[3][0]] = data[3][1:]
+    dates[cpo['arrayHeader'][0]] = cpo['arrayHeader'][1:] + cpo['arrayMonths']
+    dates[fame['arrayHeader'][0]] = fame['arrayHeader'][1:] + fame['arrayMonths']
 
-    data[2] = data[2].split(",")
-    prices[data[1][0]] = data[2][1:]
-
-    data[4] = data[4].split(",")
-    prices[data[3][0]] = data[4][1:]
+    prices[cpo['arrayHeader'][0]] = [cpo['arrayDatetime'][0][5:]] + cpo['arrayDatetime'][1:] + cpo['arrayPrices']
+    prices[fame['arrayHeader'][0]] = [fame['arrayDatetime'][0][5:]] + fame['arrayDatetime'][1:] + fame['arrayPrices']
 
 
     for key in prices:
-        for j in range(2,len(prices[key])):
+        for j in range(2, len(prices[key])):
             try:
                 prices[key][j] = float(prices[key][j])
                 if float(prices[key][j]) == 0.0: 
@@ -48,25 +40,19 @@ def preprocessing(data):
             except:
                 prices[key][j] = None
 
-                
-    data[0] = data[0].split(",")
-    for i in range(len(data[0])):
-        if data[0][i].rfind('USD') != -1:
-            ex_rates[data[0][i]] = float(data[0][i+1])
-            continue
-        if data[0][i].rfind('Storage') != -1:
-            s_prices[data[0][i]] = float(data[0][i+1])
-            continue
-        if data[0][i].rfind('Transport') != -1:
-            t_prices[data[0][i]] = float(data[0][i+1])
-            continue
-        try: float(data[0][i])
-        except: u_prices[data[0][i]] = float(data[0][i+1])
+    for key in miscCosts:
+        if key.rfind('USD') != -1:
+            ex_rates[key] = float(miscCosts[key])
+        elif key.rfind('Storage') != -1:
+            s_prices[key] = float(miscCosts[key])
+        elif key.rfind('Transport') != -1:
+            t_prices[key] = float(miscCosts[key])
+        else:
+            u_prices[key] = float(miscCosts[key])
     
     
     return dates, prices, u_prices, t_prices, ex_rates, s_prices
  
-
 def transport_costs(prices, t_prices):
     # This function adds transportation cost to the prices of the reagent and subtracts the transportation cost from the prices of the product. 
     for key in prices:
@@ -189,7 +175,19 @@ def look_for_munnies(MoDS_data, prices, dates,s_prices,u_prices):
             #print(diff)
             if diff > lowest_diff['price difference']: lowest_diff = {'price difference': diff, 'month_CPO':dates['CPO'][i], 'month_FAME':dates['CPO'][j-1], 'note':'Note that all crude palm oil was instantaneously converted on arrival and biodiesel FAME was stored until delivery date.'}
     
-    print('The highest marginal profit per tonne of  biodiesel FAME is', round(lowest_diff['price difference'],2), 'USD. The futures contracts need to be accepted at the following ratio of reagent to product:',CPO_FAME/prices['CPO'][2]*prices['FAME'][2], '. Buy crude palm oil futures contracts with delivery in', lowest_diff['month_CPO'], 'and sell biodiesel FAME futures contracts with delivery in', lowest_diff['month_FAME'],'.', lowest_diff['note'])
+    resultsDict = {
+        "marginal profit per tonne of biodiesel FAME (in USD)": str(round(lowest_diff['price difference'],2)),
+        "ratio of reagent to product": str(CPO_FAME/prices['CPO'][2]*prices['FAME'][2]),
+        "month to buy crude palm oil futures contracts": lowest_diff['month_CPO'],
+        "month to sell biodiesel FAME futures contract": lowest_diff['month_FAME'],
+        "note": lowest_diff['note']
+    }
+    
+    return json.dumps(resultsDict)
+#     print('The highest marginal profit per tonne of  biodiesel FAME is', round(lowest_diff['price difference'],2), 
+#           'USD. The futures contracts need to be accepted at the following ratio of reagent to product:', CPO_FAME/prices['CPO'][2]*prices['FAME'][2], 
+#           '. Buy crude palm oil futures contracts with delivery in', lowest_diff['month_CPO'], 
+#           'and sell biodiesel FAME futures contracts with delivery in', lowest_diff['month_FAME'],'.', lowest_diff['note'])
 
 def plotting_prices(dates, prices, labels):
 
@@ -250,28 +248,37 @@ def plotting_prices(dates, prices, labels):
     #plt.savefig(plot_address)
 
 #def run(plot_address, data):
-def run(MoDS_data, data):
-
+def run(MoDS_data, miscCosts, cpo, fame):
     MoDS_data = MoDS_data.split(',')
     for i in range(len(MoDS_data)):
         MoDS_data[i] = float(MoDS_data[i])
-        
-    # Read in and process data into an appripriate format
-    dates, prices, u_prices, t_prices, ex_rates, s_prices = preprocessing(data)
-    u_prices['V_Price_Electricity_001'] *= ex_rates['V_USD_to_SGD']
-    
+
+    # Read in and process data into an appropriate format
+    dates, prices, u_prices, t_prices, ex_rates, s_prices = preprocessing(miscCosts, cpo, fame)
+    u_prices['V_Price_Electricity_001'] /= ex_rates['V_USD_to_SGD']
+
     # Adjust prices to include the transport cost
     prices = transport_costs(prices, t_prices)
 
     # Search through the arbitrage opportunities
-    look_for_munnies(MoDS_data, prices, dates, s_prices, u_prices)
+    return look_for_munnies(MoDS_data, prices, dates, s_prices, u_prices)
 
     # Define titles and labels to plot the futures prices data and plot the data
     #labels = {'FAME':{'title':'Biodiesel FAME futures prices from Chicago Mercantile Exchange', 'label':'Price (USD per tonne)'},'CPO':{'title':'Crude palm oil futures prices from Chicago Mercantile Exchange', 'label':'Price (USD per tonne)'}, 'x':{'title':'Delivery date (-)', 'label':dates['FAME']}}
     #plotting_prices(dates, prices, labels)
 
-
-
 if __name__ == "__main__":
-    run(str(sys.argv[1]),str(sys.argv[2]))
+    pythonLogger = PythonLogger('CPO_to_FAME_MoDS2.py')
+    pythonLogger.postInfoToLogServer('start of CPO_to_FAME_MoDS2.py')
 
+    MoDS_data = str(sys.argv[1])
+    miscCosts = json.loads(sys.argv[2])
+    cpo = json.loads(sys.argv[3])
+    fame = json.loads(sys.argv[4])
+
+    try:
+        returnResultsToJava(run(MoDS_data, miscCosts, cpo, fame))
+    except Exception as e:
+        returnExceptionToJava(e)
+    finally:
+        pythonLogger.postInfoToLogServer('end of CPO_to_FAME_MoDS2.py')

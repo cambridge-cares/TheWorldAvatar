@@ -1,40 +1,82 @@
+/* top-banner */
 #topBanner {
     background-color: #10616C;
     border-radius: 0px;
     margin: 0px;
 }
 
-svg.line-chart {
-    margin-top: 5rem;
+/* styles.css */
+body {
+	width: 100%;
+	height: 100%;
 }
 
+label {
+    margin-bottom: 0px;
+}
 
-.split {
+/* bootstrap */
+.content.container {
     height: 100%;
-    /*width: 50%;*/
-    position: fixed;
-    z-index: 1;
-    top: inherit;
-    overflow-x: hidden;
-    /*padding-top: 20px;*/
+    width: 100%;
+    margin: 0px;
+    padding: 2rem;
 }
 
-.left {
-    left: 0;
-    width: 40%;
+.col-lg-4 {
+    padding-left: 0px;
 }
 
-.right {
-    right: 0;
-    width: 60%;
+.row {
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 10px;
 }
 
-.centered {
-    margin: 2rem;
-    position: absolute;
+.row#analysis {
+    padding-bottom: 20px;
 }
 
-.centered h2 {
-    vertical-align: top;
-    margin: 0;
+.input-label {
+    padding-left: 0px;
+}
+
+/* dropdown table */
+select#plantSelection {
+    height: 26px;
+}
+
+select#analysisSelection {
+    height: 26px;
+}
+
+/* d3-images */
+svg {
+	font: 10px sans-serif;
+    margin-top: 0px;
+    width: 615px;
+    height: 350px;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.grid path,
+.grid line {
+    fill: none;
+    stroke: rgba(0, 0, 0, 0.25);
+    shape-rendering: crispEdges;
+}
+
+.x.axis path {
+    display: none;
+}
+
+.line {
+    fill: none;
+    stroke-width: 2.5px;
 }

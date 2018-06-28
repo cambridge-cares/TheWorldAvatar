@@ -781,15 +781,23 @@
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_ProcessWater_001">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Storage_Biodiesel_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Storage_Biodiesel_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+        >0.2075</system:numericalValue>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#StoragePrice"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="Price_Transport_USGC-NEA_NaturalGas_001">
+    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#TransportPrice"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Price_Transport_USGC-NEA_NaturalGas_001">
+        <system:hasUnitOfMeasure>
+          <owl:NamedIndividual rdf:about="#USD/mmBTU">
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+          </owl:NamedIndividual>
+        </system:hasUnitOfMeasure>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >6.571428571_1.142857143</system:numericalValue>
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
@@ -1019,15 +1027,44 @@
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Transport_Malaysia-SG_CrudePalmOil_001">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/ton"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">5.0</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Transport_SEA-SC_Biodiesel_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Transport_SEA-SC_Biodiesel_001">
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#TransportCosts"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="NaturalGasInput_001">
+    <chemical_process_system:refersToGeneralizedAmount>
+      <owl:NamedIndividual rdf:ID="GeneralizedAmount_NaturalGasInput_001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem>
+          <j.0:ContinuousMaterialAmount rdf:ID="MaterialAmount_NaturalGasInput_001">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+            <system:hasProperty>
+              <owl:NamedIndividual rdf:ID="moleF_NaturalGasInput_001">
+                <system:hasValue>
+                  <owl:NamedIndividual rdf:ID="V_moleF_NaturalGasInput_001">
+                    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >1</system:numericalValue>
+                    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+                    <system:hasUnitOfMeasure>
+                      <owl:NamedIndividual rdf:about="#kmol/s">
+                        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+                      </owl:NamedIndividual>
+                    </system:hasUnitOfMeasure>
+                  </owl:NamedIndividual>
+                </system:hasValue>
+                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+              </owl:NamedIndividual>
+            </system:hasProperty>
+          </j.0:ContinuousMaterialAmount>
+        </system:hasSubsystem>
+      </owl:NamedIndividual>
+    </chemical_process_system:refersToGeneralizedAmount>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#RawMaterial"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="Costs_Transport_USGC-NEA_NaturalGas_001">
+    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#TransportCosts"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Costs_Transport_USGC-NEA_NaturalGas_001">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/ton"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">40.0</system:numericalValue>

@@ -8,6 +8,31 @@ from lxml import html
 from re import sub
 import requests, sys
 from selenium import webdriver
+import json
+
+from caresjpsutil import returnExceptionToJava, returnResultsToJava
+from caresjpsutil import PythonLogger
+
+# takes in a time period e.g. MA809 and returns a string denoting the month and year SEP 2018
+def convertMarketTimePeriods(stringTimePeriod):
+	dictMonths = {
+        '01': 'JAN',
+        '02': 'FEB',
+        '03': 'MAR',
+        '04': 'APR',
+        '05': 'MAY',
+        '06': 'JUN',
+        '07': 'JUL',
+        '08': 'AUG',
+        '09': 'SEP',
+        '10': 'OCT',
+        '11': 'NOV',
+        '12': 'DEC'
+    }
+	
+	year = "201{}".format(stringTimePeriod[2])
+	return dictMonths['{}'.format(stringTimePeriod[-2:])] + " " + year;
+
 
  ##this function downloads methanol futures prices for a methanol delivered by Zhengzhou Commodity Exchange; it is done by downloading their page source and parsing through it as if it was an XML file
 def ZCE(url_address, driver):
@@ -19,30 +44,45 @@ def ZCE(url_address, driver):
 	price = []
 
 	for i in range(int(len(data)/7-1)):
-		delivery.append(data[(i+1)*7])
+		delivery.append(convertMarketTimePeriods(str(data[(i+1)*7])))
 		price.append(float(sub(',','',data[(i+1)*7+6])))
 	
-	string = '&MeOH,Date,Price type,Size (tonne)'
+	if len(price) == 0 or len(delivery) == 0:
+		return "retry"
+
+	arrayHeader = ["MeOH", "Date", "Price type", "Size (tonne)"]
+
+	arrayMonths = []
 	for i in range(len(delivery)):
-		string += "," + str(delivery[i])
+		arrayMonths.append(str(delivery[i]))
 
-	string += '&'+page.headers['Date']+ ',Prior Settlement (CNY per tonne),1.0'
+	arrayDatetime = ["{}".format(page.headers['Date']), "Prior Settlement (CNY per tonne)", "1.0"]
+
+	arrayPrices = []
 	for i in range(len(price)):
-		string += "," + str(price[i])
-	
-	print(string)	
+		arrayPrices.append(str(price[i]))
 
+	results = {
+		"arrayHeader": arrayHeader,
+		"arrayMonths": arrayMonths,
+		"arrayDatetime": arrayDatetime,
+		"arrayPrices": arrayPrices
+	}
 
-def run(url_address):		
-	driver = webdriver.PhantomJS()
-	try:
-		ZCE(url_address, driver)
-		driver.quit()
-		print('Success')
-		
-	except:
-		driver.quit()
-		print('It seems that the page becomes unresponsive if it is queried too fast. Please wait 5 minutes and try again. Alternatively, the page address is incorrect or format of page\'s code changed')
-		
+	return json.dumps(results)
+
 if __name__ == "__main__":
-	run(str(sys.argv[1]))
+	pythonLogger = PythonLogger('ZCE_download.pyw')
+	pythonLogger.postInfoToLogServer('start of ZCE_download.pyw')
+ 
+	urlAddress = str(sys.argv[1])
+	driver = webdriver.PhantomJS()
+ 	  
+	try:
+		returnResultsToJava(ZCE(urlAddress, driver))
+		pythonLogger.postInfoToLogServer('Success')
+	except Exception as e:
+		returnExceptionToJava(e)
+		pythonLogger.postInfoToLogServer('It seems that the page becomes unresponsive if it is queried too fast. Please wait 5 minutes and try again. Alternatively, the page address is incorrect or format of page\'s code changed')
+	finally:
+		driver.quit()

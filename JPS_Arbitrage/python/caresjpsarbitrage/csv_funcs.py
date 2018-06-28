@@ -59,5 +59,3 @@ def find_index(headers,k,recursions=0):
         print(type[k])
     
     return index
-
-    

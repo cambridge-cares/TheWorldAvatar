@@ -15,7 +15,7 @@ $(function(){
         })
     })
     $('#start').click(function(){
-//        console.log("start simulation")
+//        console.log("start simulation");
         //$('#start').attr("disabled", true);
         
         var xmax = parseInt($('#xupper').val());
@@ -24,8 +24,8 @@ $(function(){
         var ymin = parseInt($('#ylower').val());
 //        console.log(xmin +" "+xmax + " " + ymin + " " + ymax)
     
-        //approximate becasue texture only work on power2(has to be 1:1,1:2,1:4...)
-        {xmin, xmax, ymin, ymax} = appro2ratio(xmin, xmax, ymin , ymax)
+//        approximate becasue texture only work on power2(has to be 1:1,1:2,1:4...)
+        [xmin, xmax, ymin, ymax] = appro2ratio(xmin, xmax, ymin, ymax);
         
         
         $.ajax('http://www.theworldavatar.com/JPS/ADMSCoordinationAgent?coordinates='+encodeURIComponent(JSON.stringify({'xmin':xmin,'xmax':xmax, 'ymin':ymin, 'ymax':ymax}).replaceAll('"',"'"))).done(function (bdnlist) {
@@ -46,7 +46,7 @@ $(function(){
 });
 
 //approximate to ratio 1:1 or 1:2
-function appro2ratio(xmin, xmax, ymin , ymax){
+function appro2ratio(xmin, xmax, ymin, ymax){
     x = xmax - xmin;
     y = ymax - ymin;
     ratio = x/y;
@@ -60,7 +60,7 @@ function appro2ratio(xmin, xmax, ymin , ymax){
         xmax = xmin + y /2;
     }
     
-    return {xmin, xmax, ymin, ymax}
+    return [xmin, xmax, ymin, ymax];
     
 }
 

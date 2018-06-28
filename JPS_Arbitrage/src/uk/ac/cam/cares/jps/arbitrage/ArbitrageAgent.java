@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.arbitrage;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -21,12 +19,11 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * Servlet implementation class ArbitrageAgent
  */
 @WebServlet(urlPatterns = {
-		"/runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles",
-		"/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent" })
+		"/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent",
+		"/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2"})
 
 public class ArbitrageAgent extends HttpServlet {
-	private static Logger logger = LoggerFactory
-			.getLogger(ArbitrageAgent.class);	
+	private static Logger logger = LoggerFactory.getLogger(ArbitrageAgent.class);	
 	
 	private static final long serialVersionUID = 2L; // ??
 
@@ -37,16 +34,6 @@ public class ArbitrageAgent extends HttpServlet {
 		super();
 	}
 	
-	// delete later
-	public void writeStringUsingBufferedWriter(String function, String result) throws IOException {
-		BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\jps\\jps_arbitrage\\consoleOutputArbitrageAgent.txt", true));
-		writer.append(function);
-		writer.newLine();
-		writer.append(result);
-		writer.newLine();
-		writer.close();
-	}
-
 	/**
 	 * 
 	 * this function is a servlet for calling functions in
@@ -67,49 +54,31 @@ public class ArbitrageAgent extends HttpServlet {
 		
 		Gson g = new Gson();
 
-		if ("/runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles"
+		if ("/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent"
 				.equals(path)) {
 
-			// -- Get String formatted in Array of Strings
-			// -- //
 			request.setCharacterEncoding("UTF-8");
-			String jsonString = request
-					.getParameter("MoDS_input");
-
-			try {
-				String result = Arbitrage
-						.runningArbitrageAnalysisUsingMoDSWithMarketDataFromCSVFiles(
-								jsonString);
-				response.setContentType("application/json");
-				response.getWriter().write(result);
-			} catch (Exception e) {
-				logger.error(e.getMessage());
-				throw new JPSRuntimeException(
-						e.getMessage(), e);
-			}
-		} else if ("/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent"
-				.equals(path)) {
-			// -- Get String formatted in Array of Strings
-			// -- //
-			request.setCharacterEncoding("UTF-8");
-			String jsonString = request
-					.getParameter("MoDS_input");
+			String modsInput = request.getParameter("MoDS_input");
+			String choicePlant = request.getParameter("choicePlant");
 			
-//			delete later
-//			System.out.println(path);
-//			System.out.println(jsonString);
-			writeStringUsingBufferedWriter(path, jsonString);
-
 			try {
-				String result = g.toJson(Arbitrage
-						.runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent(
-								jsonString));
+				String result = "";
+				
+				if (choicePlant.equals("Biodiesel")) {
+					result = g.toJson(Arbitrage
+							.runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent(
+									modsInput));
+				} else if (choicePlant.equals("Methanol")) {
+					result = g.toJson(Arbitrage
+							.runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent2(
+									modsInput));
+				}
+				
 				response.setContentType("application/json");
 				response.getWriter().write(result);
 			} catch (Exception e) {
 				logger.error(e.getMessage());
-				throw new JPSRuntimeException(
-						e.getMessage(), e);
+				throw new JPSRuntimeException(e.getMessage(), e);
 			}
 		}
 	}
