@@ -243,9 +243,7 @@ public class DataDownload {
 	
 	/**
 	 * this function accepts an array and stored in JPS
-	 * knowledge base; the currencies are defined within the
-	 * script; first currency-pair header is returned for
-	 * testing purposes
+	 * knowledge base
 	 * 
 	 * @throws Exception
 	 */
@@ -254,8 +252,7 @@ public class DataDownload {
 		String[][] arrayHeaderPrices = g.fromJson(receivedData, String[][].class);
 		
 		/**
-		 * split the console output into headers and
-		 * exchange rates
+		 * split the console output into headers and data
 		 */
 		String[] headers = arrayHeaderPrices[0];
 		String[] data = arrayHeaderPrices[1];
@@ -298,8 +295,7 @@ public class DataDownload {
 		logger.info("File saved with " + errors.size()
 				+ " errors.");
 		
-		String[] inputHeaders = {"V_Price_CoolingWater_001", "V_Price_FuelGas_001", "V_Price_Electricity_001"};
-		return retrieveUtilityPrices(inputHeaders);
+		return retrievePrices(headers);
 	}
 
 	/**
@@ -312,7 +308,7 @@ public class DataDownload {
 	 * @return
 	 * @throws Exception
 	 */
-	public static String retrieveUtilityPrices(String[] headers) throws Exception {
+	public static String retrievePrices(String[] headers) throws Exception {
 		/**
 		 * URIs of relevant individuals and their properties
 		 * are defined
@@ -344,9 +340,7 @@ public class DataDownload {
 					.getRDFIndividual(addresses[i][1]);
 			
 			String name = individual
-					.getPropertyValueLiteral(
-							owlModel.getRDFProperty(
-									addresses[i][0]))
+					.getPropertyValueLiteral(owlModel.getRDFProperty(addresses[i][0]))
 					.getString();
 			
 			mapHeaderName.put(headers[i], name);
@@ -415,7 +409,7 @@ public class DataDownload {
 		Gson g = new Gson();
 		// return as a json-serialized string of a 1d array of length 3
 		String[] data = {
-				retrieveUtilityPrices(headers),
+				retrievePrices(headers),
 				retrieveCPOMarketPricesFromKnowledgeBase(),
 				retrieveBiodieselPricesFromKnowledgeBase()
 		};
@@ -429,7 +423,7 @@ public class DataDownload {
 				
 		// return as a json-serialized string of a 1d array of length 3
 		String[] data = {
-				retrieveUtilityPrices(headers),
+				retrievePrices(headers),
 				retrieveNaturalGasPricesFromKnowledgeBase(),
 				retrieveMethanolPricesFromKnowledgeBase()
 		};

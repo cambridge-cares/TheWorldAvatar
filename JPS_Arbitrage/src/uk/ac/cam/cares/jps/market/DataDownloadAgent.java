@@ -22,6 +22,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 		"/downloadingAndSavingMarketDataInTheKnowledgeBase",
 		"/downloadingAndSavingExchangeRatesInTheKnowledgeBase",
 		"/savingDataInTheKnowledgeBase",
+		"/retrievePlantSpecificParam",
 		"/retrieveUtilityPrices",
 		"/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase",
 		"/retrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase"})
@@ -81,57 +82,58 @@ public class DataDownloadAgent extends HttpServlet {
 			request.setCharacterEncoding("UTF-8");
 
 			try {
+				
 				String result = g.toJson(DataDownload
 						.downloadingAndSavingExchangeRatesInTheKnowledgeBase());
 
 				response.setContentType("application/json");
-				response.getWriter()
-						.write(result.toString());
+				response.getWriter().write(result.toString());
+				
 			} catch (Exception e) {
+				
 				logger.error(e.getMessage());
-				throw new JPSRuntimeException(
-						e.getMessage(), e);
+				throw new JPSRuntimeException(e.getMessage(), e);
+				
 			}
 		} else if ("/savingDataInTheKnowledgeBase".equals(path)) {
 			request.setCharacterEncoding("UTF-8");
 			String jsonString = request.getParameter("arrayHeaderPrices");
 			
 			try {
-				String result = g.toJson(DataDownload.savingDataInTheKnowledgeBase(jsonString));
 				
+				String result = g.toJson(DataDownload.savingDataInTheKnowledgeBase(jsonString));				
 				response.setContentType("application/json");
-				response.getWriter()
-						.write(result);
+				response.getWriter().write(result);
+				
 			} catch (Exception e) {
+				
 				logger.error(e.getMessage());
-				throw new JPSRuntimeException(
-						e.getMessage(), e);
+				throw new JPSRuntimeException(e.getMessage(), e);
+				
 			}
-		} else if ("/retrieveUtilityPrices"
-				.equals(path)) {
+		} else if ("/retrieveUtilityPrices".equals(path) 
+				|| "/retrievePlantSpecificParam".equals(path)) {
 
 			request.setCharacterEncoding("UTF-8");
-			String jsonString = request
-					.getParameter("individuals");
+			String jsonString = request.getParameter("individuals");
 
 			try {
-				String result = g.toJson(DataDownload.retrieveUtilityPrices(jsonString.split(",")));
 				
+				String result = g.toJson(DataDownload.retrievePrices(jsonString.split(",")));
 				response.setContentType("application/json");
-				response.getWriter()
-						.write(result);
+				response.getWriter().write(result);
+				
 			} catch (Exception e) {
+				
 				logger.error(e.getMessage());
-				throw new JPSRuntimeException(
-						e.getMessage(), e);
+				throw new JPSRuntimeException(e.getMessage(), e);
+				
 			}
 		} else if ("/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase"
 				.equals(path)) {
 
-
 			request.setCharacterEncoding("UTF-8");
-			String jsonString = request
-					.getParameter("individuals");
+			String jsonString = request.getParameter("individuals");
 
 			try {
 				String result = g.toJson(DataDownload

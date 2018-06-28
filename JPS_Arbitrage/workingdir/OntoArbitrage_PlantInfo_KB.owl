@@ -589,7 +589,7 @@
                 <system:hasValue>
                   <owl:NamedIndividual rdf:ID="V_moleF_NaturalGasInput_001">
                     <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                    >1</system:numericalValue>
+                    >0.5527777778</system:numericalValue>
                     <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
                     <system:hasUnitOfMeasure>
                       <owl:NamedIndividual rdf:about="#kmol/s">
