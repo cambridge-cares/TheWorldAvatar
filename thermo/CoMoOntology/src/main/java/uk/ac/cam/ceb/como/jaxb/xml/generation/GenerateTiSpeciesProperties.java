@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package uk.ac.cam.ceb.como.jaxb.xml.generation;
 
 import java.io.File;
@@ -11,23 +14,30 @@ import uk.ac.cam.ceb.como.io.chem.file.parser.formula.EmpiricalFormulaParser;
 import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingGeometry;
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.FormulaUtility;
 
+// TODO: Auto-generated Javadoc
 /**
- * 
+ * The Class GenerateTiSpeciesProperties.
+ *
  * @author nk510
  * This class implements methods for generating the following properties of species:
- *1. File name.
- *2. Number of Ti-species observed in g09 file.
- *3. Spin multiplicity.
- *
+ * 1. File name.
+ * 2. Number of Ti-species observed in g09 file.
+ * 3. Spin multiplicity.
  */
 
 public class GenerateTiSpeciesProperties {
 	
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws Exception the exception
+	 */
 	public static void main(String[] args) throws Exception {
 		
 		/**
 		 * @author nk510
-		 * Resulting csv file path
+		 * <p>Resulting csv file path</p>
 		 */
 		
 		String csvFilePath = "src/test/resources/Ti-g09/Ti-g09.csv";
@@ -58,15 +68,14 @@ public class GenerateTiSpeciesProperties {
 		}
 		
 		pWriter.close();
-	}	
+	}
 	
-
 	/**
-	 * 
+	 * Gets the file list.
+	 *
 	 * @author nk510
-	 * @param folderPath
-	 * @return Read all files which end with '.g09'. Returns array of these files.
-	 * 
+	 * @param folderPath the folder path
+	 * @return <p>Read all files which end with '.g09'. Returns array of these files.</p>
 	 */
 	
 	public static File[] getFileList(String folderPath) {
@@ -83,11 +92,10 @@ public class GenerateTiSpeciesProperties {
 	}
 	
 	/**
-	 * 
-	 * @param filePath
-	 * @return
-	 * Returns object variable of PrintWriter. It creates csv file where all results of parsing g09 files will be saved.
-	 * 
+	 * Gets the prints the writer.
+	 *
+	 * @param filePath the file path
+	 * @return <p>Returns object variable of PrintWriter. It creates csv file where all results of parsing g09 files will be saved.</p>
 	 */
 	
 	public static PrintWriter getPrintWriter(String filePath) {
@@ -103,11 +111,11 @@ public class GenerateTiSpeciesProperties {
 	}
 	
 	/**
-	 * 
+	 * Gets the ti species atom numbers.
+	 *
 	 * @author nk510
-	 * @param formula
-	 * @return Returns the number of Ti species atoms for each species (g09).
-	 * 
+	 * @param formula the formula
+	 * @return <p>Returns the number of Ti species atoms for each species (g09).</p>
 	 */
 	
 	public static  String getTiSpeciesAtomNumbers(String formula) {

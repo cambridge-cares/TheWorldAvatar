@@ -1,0 +1,19 @@
+{
+  "head": {
+    "vars": [ "moleculeName" , "atomName" , "atomNumber" , "frequenciesSize" , "frequenciesValue" , "frequenciesUnit" , "spinMultiplicityValue" , "coordinateX" , "coordinateY" , "coordinateZ" , "geometryTypeValue" , "rotationalConstantsSize" , "rotationalConstantsUnit" , "rotationalConstantsValue" , "rotationalSymmetryNumber" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "moleculeName": { "type": "literal" , "value": "Cl 1 " }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Cl" } ,
+        "atomNumber": { "type": "literal" , "value": "1" }
+      } ,
+      {
+        "geometryTypeValue": { "type": "literal" , "value": "atomic" }
+      }
+    ]
+  }
+}

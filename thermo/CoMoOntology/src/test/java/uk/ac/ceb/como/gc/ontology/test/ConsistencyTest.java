@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package uk.ac.ceb.como.gc.ontology.test;
 
 import java.io.File;
@@ -10,11 +13,13 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
+// TODO: Auto-generated Javadoc
 /**
- * 
- * @author nk510
+ * The Class ConsistencyTest.
  *
- *         Tests Gainesville Core Ontology (GNVC) ver. 0.7, for consistency.
+ * @author nk510
+ * 
+ *      <p>Tests for consistency Compchem ontology that extends Gainesville Core Ontology (GNVC) ver. 0.7.
  *         Hermit reasoner 1.3.8.4 is used for testing consistency of a
  *         Gainesville Core Ontology (GNVC) ver 0.7. The ontology is taken from:
  *         http://ontologies.makolab.com/gc06/gc.html#sec-crossref Resolved
@@ -22,38 +27,44 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
  *         https://github.com/BFO-ontology/BFO
  * 
  *         Ontology is available in folder:
- *         /CoMoOntology/src/test/resources/ontology/
- * 
+ *         /CoMoOntology/src/test/resources/ontology/ </p>
  */
 
 public class ConsistencyTest {
 
+	/** The model. */
 	static OWLOntologyManager model = OWLManager.createOWLOntologyManager();
 
 	/**
-	 * @author nk510 This file path shows that ontologies are stored in
-	 *         CoMoOnotology's folder: '/src/test/resources/ontology/'.
-	 * 
+	 * Check consistency.
+	 *
+	 * @author nk510
+	 * @throws OWLOntologyCreationException <p>This file path shows that ontologies are stored in
+	 *         CoMoOnotology project folder: '/src/test/resources/ontology/compchem_ontology/'.</p>
 	 */
 
 	@Test
-	public void checkConsistency() throws OWLOntologyCreationException {
-
+    public void checkConsistency() throws OWLOntologyCreationException {
 		/**
-		 * @author nk510 Line below creates HermiT's object variable.It creates an
-		 *         instance of the Reasoner class in the package 'org.semanticweb.HermiT'.
+		 * @author nk510 
+		 * <p>Line below creates HermiT's object variable.It creates an
+		 *         instance of the Reasoner class in the package 'org.semanticweb.HermiT'.</p>
 		 */
 
-		Reasoner hermit = new Reasoner(getOntology(new File("src/test/resources/ontology/gc07.owl")));
+		Reasoner hermit = new Reasoner(getOntology(new File("src/test/resources/ontology/compchem_ontology/compchem.spin.rdf")));
 
-		System.out.println("GNVC ontology consistecy: " + hermit.isConsistent());
+		System.out.println("Compchem ontology consistecy: " + hermit.isConsistent());
 
 	}
 
 	/**
-	 * 
-	 * @author nk510 Load single ontology from local file
-	 * 
+	 * Gets the ontology.
+	 *
+	 * @author nk510
+	 * <p>Load single ontology from local file. </p>
+	 * @param file the file
+	 * @return the ontology
+	 * @throws OWLOntologyCreationException the OWL ontology creation exception
 	 */
 
 	public static OWLOntology getOntology(File file) throws OWLOntologyCreationException {

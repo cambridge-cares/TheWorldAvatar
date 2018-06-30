@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package uk.ac.cam.ceb.como.jaxb.parser.g09;
 
 import java.io.File;
@@ -14,34 +17,46 @@ import uk.ac.cam.ceb.como.io.chem.file.jaxb.Array;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.Property;
 import uk.ac.cam.ceb.como.io.chem.file.parser.g09.FrequencyParser;
 
+// TODO: Auto-generated Javadoc
 /**
+ * The Class ParsingFrequencies.
+ *
+ * @author nk510
  * 
- * @author nk510 This class implements method for generating CompChem XML file
+ * <p>This class implements method for generating CompChem XML file
  *         by parsing 'Frequencies' data from g09 files. Parser class
  *         'FrequencyParser' of {@author pb556} is used to extract 'Frequencies'
- *         data (information).
- * 
+ *         data (information).</p>
  */
 
 public class ParsingFrequencies {
 
+	/**
+	 * Generate frequencies from G 09.
+	 *
+	 * @param file the file
+	 * @return the property
+	 * @throws Exception the exception
+	 */
 	public Property generateFrequenciesFromG09(File file) throws Exception {
 
 		/**
 		 * 
-		 * @author nk510 'fr_property' is object variable of a Property jxb class. The
+		 * @author nk510 
+		 * <p>'fr_property' is object variable of a Property jxb class. The
 		 *         Property class is generated from CompChem XML schema (see the
 		 *         implementation of Property class in package
-		 *         {@link uk.ac.cam.ceb.como.io.chem.file.jaxb.Property Property}).
+		 *         {@link uk.ac.cam.ceb.como.io.chem.file.jaxb.Property Property}).</p>
 		 * 
 		 */
 
 		Property fr_property = new Property();
 
 		/**
-		 * @author nk510 Here we use {@author pb556} 'FrequencyParser' to parser g09
+		 * @author nk510 
+		 * <p>Here we use {@author pb556} 'FrequencyParser' to parser g09
 		 *         file and to access to {@link org.xmlcml.cml.element.CMLProperty
-		 *         CMLProperty} object variable such as DictRef ('cc:frequencies').
+		 *         CMLProperty} object variable such as DictRef ('cc:frequencies').</p>
 		 */
 		FrequencyParser parser = new FrequencyParser();
 
@@ -69,8 +84,9 @@ public class ParsingFrequencies {
 					if (array.getDictRef().equals("cc:frequencies")) {
 
 						/**
-						 * @author nk510 Creating object variable of Array JAXB class that contains
-						 *         information about frequencies.
+						 * @author nk510 
+						 * <p>Creating object variable of Array JAXB class that contains
+						 *         information about frequencies.</p>
 						 */
 						Array arrayXML = new Array();
 						
@@ -79,9 +95,10 @@ public class ParsingFrequencies {
 
 
 						/**
-						 * @author nk510 CompChem XML schema does not allow units to have character '^'.
+						 * @author nk510 
+						 * <p>CompChem XML schema does not allow units to have character '^'.
 						 *         Line below removes that character in a string that remembers the
-						 *         units for 'Frequencies'.
+						 *         units for 'Frequencies'.</p>
 						 * 
 						 */
 						arrayXMLUnits = arrayXMLUnits.replace("^", "");
@@ -89,15 +106,16 @@ public class ParsingFrequencies {
 						System.out.println(array.getSize());
 
 						/**
-						 * @author nk510 An Array JAXB object variable contains DictRef, Units, Value
-						 *         and DataType taken from CMLArray's object variable 'array' .
+						 * @author nk510 
+						 * <p>An Array JAXB object variable contains DictRef, Units, Value
+						 *         and DataType taken from CMLArray's object variable 'array' .</p>
 						 */
 						arrayXML.setDictRef(array.getDictRef());
 						arrayXML.setUnits(arrayXMLUnits);
 						arrayXML.setValue(array.getValue());
 						/**
 						 * @author nk510
-						 * Adds the number of frequeny data (size).
+						 * <p>Adds the number of frequeny data (size).</p>
 						 */
 						arrayXML.setSize(BigInteger.valueOf(array.getSize()));
 						

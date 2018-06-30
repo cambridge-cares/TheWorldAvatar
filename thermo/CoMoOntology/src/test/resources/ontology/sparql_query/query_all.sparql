@@ -1,0 +1,66 @@
+PREFIX ontokin: <https://como.cheng.cam.ac.uk/kb/ontokin/>
+PREFIX gc: <http://purl.org/gc/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT distinct ?moleculeName ?atomName ?atomNumber ?frequenciesSize ?frequenciesValue ?frequenciesUnit ?spinMultiplicityValue  ?coordinateX ?coordinateY ?coordinateZ ?geometryTypeValue ?rotationalConstantsSize ?rotationalConstantsUnit ?rotationalConstantsValue ?rotationalSymmetryNumber
+WHERE { 
+{
+?g09 ontokin:hasInitialization ?mn0 . 
+?mn0 gc:hasMoleculeProperty ?mp0 . 
+?mp0 gc:hasName ?moleculeName . 
+}
+UNION
+{
+?g09 ontokin:hasInitialization ?mn1 . 
+?mn1 gc:hasMoleculeProperty ?mp1 .  
+?mp1 gc:hasMolecule ?mol0 .
+?mol0 gc:hasNumberOfAtoms ?atomNumber.
+?mol0 gc:hasAtom ?at0 . 
+?at0 gc:isElement ?atomName . 
+}
+UNION
+{
+?g09 gc:isCalculationOn ?go. 
+?go rdf:type gc:GeometryOptimization .
+?go gc:hasMolecule ?mol1.
+?mol1 gc:hasAtom ?at1 .
+?at1 gc:isElement ?atomName . 
+?at1 gc:hasAtomCoordinateX ?x . ?x gc:hasValue ?coordinateX.
+?at1 gc:hasAtomCoordinateY ?y . ?y gc:hasValue ?coordinateY.
+?at1 gc:hasAtomCoordinateX ?z . ?z gc:hasValue ?coordinateZ.
+}
+UNION
+{
+?g09 gc:isCalculationOn ?go. 
+?go rdf:type gc:GeometryOptimization .
+?go gc:hasMolecule ?mol2.
+?mol2 ontokin:hasSpinMultiplicityValue ?spinMultiplicityValue .
+
+}
+UNION
+{
+?go rdf:type gc:VibrationalAnalysis. 
+?go gc:hasResult ?r . 
+?r rdf:type gc:Frequency .
+?r gc:hasVibrationCount ?frequenciesSize .
+?r ontokin:hasFrequenciesValue ?frequenciesValue .
+?r gc:hasUnit ?frequenciesUnit. 
+}
+UNION
+{ 
+?go a ontokin:GeometryType .
+?go ontokin:hasGeometryTypeValue ?geometryTypeValue.
+ }
+ UNION
+ {
+?go rdf:type ontokin:RotationalConstants . 
+?go ontokin:hasRotationalConstantsValue ?rotationalConstantsValue .
+?go gc:hasUnit ?rotationalConstantsUnit . 
+?go ontokin:hasRotationalConstantsCount ?rotationalConstantsSize .
+}
+UNION
+{ 
+?go rdf:type ontokin:RotationalSymmetry . 
+?go ontokin:hasRotationalSymmetryNumber ?rotationalSymmetryNumber .
+}
+}

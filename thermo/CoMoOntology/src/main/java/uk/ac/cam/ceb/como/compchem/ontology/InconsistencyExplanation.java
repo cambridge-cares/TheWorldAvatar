@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package uk.ac.cam.ceb.como.compchem.ontology;
 
 import java.io.File;
@@ -22,31 +25,44 @@ import com.clarkparsia.owlapi.explanation.HSTExplanationGenerator;
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.FileUtility;
 
 /**
- * 
- * @author nk510 This class implements the inconsistency explanation for Compchem
+ * The Class InconsistencyExplanation.
+ *
+ * @author nk510 <p>This class implements the inconsistency explanation for Compchem
  *         ontology given in'src/test/resources/compchem-ontology/' folder . We use
  *         Hermit API and OWL API. It checks consistency, and in case of
- *         inconsistency it returns inconsistency explanation.
+ *         inconsistency it returns inconsistency explanation.</p>
  * 
- *         Hermit reasoner licence type is: 'GNU Lesser General Public License'
+ *         <p>Hermit reasoner licence type is: 'GNU Lesser General Public License'
  *         Hermit reasoner licence is available at:
- *         http://www.hermit-reasoner.com/download/1.3.8/readme.txt
- * 
+ *         http://www.hermit-reasoner.com/download/1.3.8/readme.txt</p>
  */
 
 public class InconsistencyExplanation {
 
+	/** The compchem iri path. */
 	static String compchemIriPath = "https://como.cheng.cam.ac.uk/kb/ontokin/";
+	
+	/** The abox file path. */
 	static String aboxFilePath = "src/test/resources/ontology/compchem_abox/";
+	
+	/** The compchem file path. */
 	static String compchemFilePath = "src/test/resources/ontology/compchem_ontology/";
 
+	/** The file utility. */
 	static FileUtility fileUtility = new FileUtility();
 
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws OWLOntologyCreationException the OWL ontology creation exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public static void main(String[] args) throws OWLOntologyCreationException, IOException {
 
 		/**
 		 * 
-		 * @author nk510 File list where all ontologies are saved.
+		 * @author nk510 <p>Array of ontology files.</p>
 		 * 
 		 */
 
@@ -54,8 +70,8 @@ public class InconsistencyExplanation {
 
 		/**
 		 * 
-		 * @author nk510 Checks consistency, and in case of inconsistency it provides
-		 *         explanation.
+		 * @author nk510 <p>Checks consistency, and in case of inconsistency it provides
+		 *         explanation. </p>
 		 * 
 		 */
 		
@@ -64,18 +80,18 @@ public class InconsistencyExplanation {
 	}
 
 	/**
+	 * Gets the inconsistency explanation.
+	 *
 	 * @author nk510
-	 * @param reasoner
-	 * @param factory
-	 * @param dataFactory
-	 * @param ontology
-	 * @throws IOException
-	 * 
-	 *             Returns all the explanations for the given unsatisfiable ontology
+	 * @param reasoner the reasoner
+	 * @param factory the factory
+	 * @param dataFactory the data factory
+	 * @param ontology the ontology
+	 * @return the inconsistency explanation
+	 * @throws IOException             <p>Returns all the explanations for the given unsatisfiable ontology
 	 *             class (owl:Thing). To provide explanation of inconsistencies in
 	 *             Abox one needs to define all individuals to be instance of
-	 *             owl:Thing.
-	 * 
+	 *             owl:Thing. </p>
 	 */
 
 	public static void getInconsistencyExplanation(OWLReasoner reasoner, ReasonerFactory factory,
@@ -96,10 +112,12 @@ public class InconsistencyExplanation {
 	}
 
 	 /**
-	 * @param ontology
-	 * @param factory
-	 * @return factory
-	 */
+ 	 * Gets the ontology reasoner factory for hermit.
+ 	 *
+ 	 * @param ontology the ontology
+ 	 * @param factory the factory
+ 	 * @return factory
+ 	 */
 
 	public static ReasonerFactory getOntologyReasonerFactoryForHermit(
 				OWLOntology ontology, ReasonerFactory factory) {
@@ -111,8 +129,8 @@ public class InconsistencyExplanation {
 
 					/**
 					 * 
-					 * @author nk510 Should not throw an exception in case of inconsistency, and set
-					 *         configuration's exception to be false.
+					 * @author nk510 <p>Should not throw an exception in case of inconsistency, and set
+					 *         configuration's exception to be false.</p>
 					 * 
 					 */
 
@@ -126,18 +144,21 @@ public class InconsistencyExplanation {
 	 }
 	 
 	/**
-	 * @param fileList
-	 * @throws OWLOntologyCreationException
-	 * @throws IOException
+	 * Gets the reasoning explanation.
+	 *
+	 * @param fileList the file list
+	 * @return the reasoning explanation
+	 * @throws OWLOntologyCreationException the OWL ontology creation exception
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	
 	public static void getReasoningExplanation(File[] fileList) throws OWLOntologyCreationException, IOException {
 
 		/**
 		 * 
-		 * @author nk510 Iterates over list of files given in folder
+		 * @author nk510 <p>Iterates over list of files given in folder
 		 *         'src/test/resources/ontology/compchem_ontology' and checks
-		 *         consistency of each ontology.
+		 *         consistency of each ontology.</p>
 		 *         
 		 */
 
@@ -145,8 +166,8 @@ public class InconsistencyExplanation {
 
 			/**
 			 * 
-			 * @author nk510 Instance of OWLOntologyManager will be used to load and save
-			 *         ontologies from local file.
+			 * @author nk510 <p>Instance of OWLOntologyManager will be used to load and save
+			 *         ontologies from local file.</p>
 			 * 
 			 */
 
@@ -154,7 +175,7 @@ public class InconsistencyExplanation {
 
 			/**
 			 * 
-			 * @author nk510 An instance of the data factory used in inference explanation.
+			 * @author nk510 <p>An instance of the data factory used in inference explanation.</p>
 			 * 
 			 */
 
@@ -162,7 +183,7 @@ public class InconsistencyExplanation {
 
 			/**
 			 * 
-			 * @author nk510 We use the OWL API to load ontologies from local file.
+			 * @author nk510 <p>We use the OWL API to load ontologies from local file.</p>
 			 * 
 			 */
 
@@ -172,7 +193,7 @@ public class InconsistencyExplanation {
 
 			/**
 			 * 
-			 * @author nk510 Does not throw an exception in case of inconsistency
+			 * @author nk510 <p>Does not throw an exception in case of inconsistency. </p>
 			 * 
 			 */
 
@@ -180,9 +201,9 @@ public class InconsistencyExplanation {
 
 			/**
 			 * 
-			 * @author nk510 Hermit reasoner does not support explanation for inconsistency.
+			 * @author nk510 <p>Hermit reasoner does not support explanation for inconsistency.
 			 *         To do that, we have to instantiate Hermit reasoner as an owl reasoner
-			 *         (OWLReasoner). For that reason, we instantiate ReasonerFactory.
+			 *         (OWLReasoner). For that reason, we instantiate ReasonerFactory. </p>
 			 *
 			 */
 
@@ -190,8 +211,8 @@ public class InconsistencyExplanation {
 
 			/**
 			 * 
-			 * @author nk510 A line below uses an instance of ReasonerFactory to obtain an
-			 *         instance of HermiT as an OWLReasoner.
+			 * @author nk510 <p>A line below uses an instance of ReasonerFactory to obtain an
+			 *         instance of HermiT as an OWLReasoner. </p>
 			 * 
 			 */
 
@@ -201,8 +222,8 @@ public class InconsistencyExplanation {
 
 			/**
 			 * 
-			 * @author nk510 If inconsistency is detected then code generates inconsistency
-			 *         explanation.
+			 * @author nk510 <p>If inconsistency is detected then code generates inconsistency
+			 *         explanation. </p>
 			 * 
 			 */
 
@@ -216,11 +237,13 @@ public class InconsistencyExplanation {
 	}	
 
 	/**
-	 * @param reasoner
-	 * @param factory
-	 * @param dataFactory
-	 * @param ontology
-	 * @return
+	 * Gets the hst explanation generator.
+	 *
+	 * @param reasoner the reasoner
+	 * @param factory the factory
+	 * @param dataFactory the data factory
+	 * @param ontology the ontology
+	 * @return the hst explanation generator
 	 */
 	
 	public static HSTExplanationGenerator getHstExplanationGenerator(OWLReasoner reasoner, ReasonerFactory factory,
@@ -228,7 +251,7 @@ public class InconsistencyExplanation {
 
 		/**
 		 * 
-		 * @author nk510 Instantiation of explanation classes.
+		 * @author nk510 <p>Instantiation of explanation (BlackBoxExplanation) classes.</p>
 		 * 
 		 */
 
@@ -239,16 +262,18 @@ public class InconsistencyExplanation {
 	}
 
 	/**
-	 * @param multExplanator
-	 * @param dataFactory
+	 * Prints the explanation.
+	 *
+	 * @param multExplanator the mult explanator
+	 * @param dataFactory the data factory
 	 */
 	
 	public static void printExplanation(HSTExplanationGenerator multExplanator, OWLDataFactory dataFactory) {
 
 		/**
 		 * 
-		 * @author nk510 Inconsistency sources are OWL axioms, and we save inconsistency
-		 *         cases as a set of OWLAxiom.
+		 * @author nk510 <p>Inconsistency sources are OWL axioms, and we save inconsistency
+		 *         cases as a set of OWLAxiom. </p>
 		 * 
 		 */
 
@@ -256,8 +281,8 @@ public class InconsistencyExplanation {
 
 		/**
 		 * 
-		 * @author nk510 Iteration over set of OWLAxiom in order to list inconsistency
-		 *         explanation.
+		 * @author nk510 <p>Iteration over set of OWLAxiom in order to list inconsistency
+		 *         explanation. </p>
 		 * 
 		 */
 
@@ -266,8 +291,8 @@ public class InconsistencyExplanation {
 			for (OWLAxiom axioms : explanation) {
 
 				/**
-				 * @author nk510 Inconsistency explanation report is generated on System.out
-				 *         (console).
+				 * @author nk510 <p>Inconsistency explanation report is generated on System.out
+				 *         (console).</p>
 				 */
 
 				System.out.println(axioms);
@@ -277,9 +302,11 @@ public class InconsistencyExplanation {
 	}
 	
 	/**
-	 * @param reasoner
-	 * @param factory
-	 * @return
+	 * Gets the reasoner factory.
+	 *
+	 * @param reasoner the reasoner
+	 * @param factory the factory
+	 * @return the reasoner factory
 	 */
 	
 	public static ReasonerFactory getReasonerFactory(OWLReasoner reasoner, ReasonerFactory factory) {		
@@ -293,8 +320,8 @@ public class InconsistencyExplanation {
 
 					/**
 					 * 
-					 * @author nk510 Should not throw an exception in case of inconsistency, and set
-					 *         configuration's exception to be false.
+					 * @author nk510 <p>Should not throw an exception in case of inconsistency, and set
+					 *         configuration's exception to be false.</p>
 					 * 
 					 */
 

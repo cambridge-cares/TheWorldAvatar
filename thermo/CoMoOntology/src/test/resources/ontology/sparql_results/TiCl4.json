@@ -1,0 +1,69 @@
+{
+  "head": {
+    "vars": [ "moleculeName" , "atomName" , "atomNumber" , "frequenciesSize" , "frequenciesValue" , "frequenciesUnit" , "spinMultiplicityValue" , "coordinateX" , "coordinateY" , "coordinateZ" , "geometryTypeValue" , "rotationalConstantsSize" , "rotationalConstantsUnit" , "rotationalConstantsValue" , "rotationalSymmetryNumber" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "moleculeName": { "type": "literal" , "value": "Cl 4 Ti 1 " }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Ti" } ,
+        "atomNumber": { "type": "literal" , "value": "1" }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Cl" } ,
+        "atomNumber": { "type": "literal" , "value": "4" }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Cl" } ,
+        "coordinateX": { "type": "literal" , "value": "-1.81756" } ,
+        "coordinateY": { "type": "literal" , "value": "-1.04628" } ,
+        "coordinateZ": { "type": "literal" , "value": "-1.81756" }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Cl" } ,
+        "coordinateX": { "type": "literal" , "value": "0.56107" } ,
+        "coordinateY": { "type": "literal" , "value": "1.49734" } ,
+        "coordinateZ": { "type": "literal" , "value": "0.56107" }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Cl" } ,
+        "coordinateX": { "type": "literal" , "value": "0.07915" } ,
+        "coordinateY": { "type": "literal" , "value": "-1.16904" } ,
+        "coordinateZ": { "type": "literal" , "value": "0.07915" }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Ti" } ,
+        "coordinateX": { "type": "literal" , "value": "-0.90475" } ,
+        "coordinateY": { "type": "literal" , "value": "0.14582" } ,
+        "coordinateZ": { "type": "literal" , "value": "-0.90475" }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Cl" } ,
+        "coordinateX": { "type": "literal" , "value": "-2.44155" } ,
+        "coordinateY": { "type": "literal" , "value": "1.30134" } ,
+        "coordinateZ": { "type": "literal" , "value": "-2.44155" }
+      } ,
+      {
+        "spinMultiplicityValue": { "type": "literal" , "value": "1" }
+      } ,
+      {
+        "frequenciesSize": { "type": "literal" , "value": "9" } ,
+        "frequenciesValue": { "type": "literal" , "value": "113.5631 113.5948 133.5656 133.5848 133.6283 385.5929 496.0852 496.247 496.3118" } ,
+        "frequenciesUnit": { "type": "uri" , "value": "http://purl.org/gc/cm-1" }
+      } ,
+      {
+        "geometryTypeValue": { "type": "literal" , "value": "nonlinear" }
+      } ,
+      {
+        "rotationalConstantsSize": { "type": "literal" , "value": "3" } ,
+        "rotationalConstantsUnit": { "type": "uri" , "value": "http://data.nasa.gov/qudt/owl/unit#GigaHertz" } ,
+        "rotationalConstantsValue": { "type": "literal" , "value": "1.14488 1.14487 1.14483" }
+      } ,
+      {
+        "rotationalSymmetryNumber": { "type": "literal" , "value": "1" }
+      }
+    ]
+  }
+}

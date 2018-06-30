@@ -1,37 +1,37 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/" xmlns:targetNamespace="http://www.xml-cml.org/schema">
-   <module dictRef="cc:jobList">
-      <module dictRef="cc:job">
-         <module dictRef="cc:initialization">
-            <molecule>
-               <atomArray>
-                  <atom count="2.0" elementType="Cl"/>
-               </atomArray>
-               <formula concise="Cl 2 "/>
-            </molecule>
-         </module>
-         <module dictRef="cc:finalization">
-            <propertyList>
-               <property dictRef="cc:vibrations">
-                  <array dataType="xsd:double" dictRef="cc:frequencies" size="1" units="nonSi:cm-1">538.0696</array>
-               </property>
-               <property dictRef="cc:rotational_symmetry">
-                  <scalar units="si:none" dataType="xsd:integer">1</scalar>
-               </property>
-               <property dictRef="cc:rotational_constants">
-                  <array size="3" units="nonSi:GHZ">0.0000000 6.9301677 6.9301677</array>
-               </property>
-               <property dictRef="cc:geometry_type">
-                  <scalar dataType="xsd:string">linear</scalar>
-               </property>
-            </propertyList>
-            <molecule id="mol-final-2" convention="convention:molecular" spinMultiplicity="1">
-               <atomArray>
-                  <atom z3="1.02113" id="a1" x3="0.0" y3="0.0" elementType="Cl"/>
-                  <atom z3="-1.02113" id="a2" x3="0.0" y3="0.0" elementType="Cl"/>
-               </atomArray>
-            </molecule>
-         </module>
-      </module>
-   </module>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<module xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/" xmlns:targetNamespace="http://www.xml-cml.org/schema">
+    <module dictRef="cc:jobList">
+        <module dictRef="cc:job">
+            <module dictRef="cc:initialization">
+                <molecule>
+                    <atomArray>
+                        <atom count="2.0" elementType="Cl"/>
+                    </atomArray>
+                    <formula concise="Cl 2 "/>
+                </molecule>
+            </module>
+            <module dictRef="cc:finalization">
+                <propertyList>
+                    <property dictRef="cc:vibrations">
+                        <array dataType="xsd:double" dictRef="cc:frequencies" size="1" units="nonSi:cm-1">538.0696</array>
+                    </property>
+                    <property dictRef="cc:rotational_symmetry">
+                        <scalar units="si:none" dataType="xsd:integer">1</scalar>
+                    </property>
+                    <property dictRef="cc:rotational_constants">
+                        <array size="3" units="nonSi:GHZ">0.0000000 6.9301677 6.9301677</array>
+                    </property>
+                    <property dictRef="cc:geometry_type">
+                        <scalar dataType="xsd:string">linear</scalar>
+                    </property>
+                </propertyList>
+                <molecule id="mol-final-2" convention="convention:molecular" spinMultiplicity="1">
+                    <atomArray>
+                        <atom z3="1.02113" id="a1" x3="0.0" y3="0.0" elementType="Cl"/>
+                        <atom z3="-1.02113" id="a2" x3="0.0" y3="0.0" elementType="Cl"/>
+                    </atomArray>
+                </molecule>
+            </module>
+        </module>
+    </module>
 </module>
