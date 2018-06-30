@@ -32,9 +32,9 @@
      </action>
 
     <action name="upload" class="uk.ac.ceb.como.molhub.upload.UploadAction">
-            <result name="input">/upload.jsp</result>
+    <result name="input">/upload.jsp</result>
     </action>
-        
+    
    </package>
    
 </struts>

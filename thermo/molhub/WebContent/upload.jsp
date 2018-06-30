@@ -14,19 +14,9 @@
     <s:submit/>
 </s:form>
 
-<!--<s:iterator value="upload" var="u">
-    <s:property value="u"/><br/>
-</s:iterator>
-
-<s:iterator value="uploadContentType" var="ct">
-    <s:property value="ct"/><br/>
-</s:iterator> --> 
-
 <s:iterator value="uploadFileName" var="fn">
-    <s:property value="fn"/><br/>
+ <h4>Uploaded file is:</h4><s:property value="fn"/><br/>
 </s:iterator>
-
-<s:property value="filesPath"/>
 
 </body>
 </html>

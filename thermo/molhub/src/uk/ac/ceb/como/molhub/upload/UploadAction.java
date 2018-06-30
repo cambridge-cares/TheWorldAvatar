@@ -21,25 +21,26 @@ package uk.ac.ceb.como.molhub.upload;
 
 import com.opensymphony.xwork2.ActionSupport;
 
+import uk.ac.cam.ceb.como.compchem.ontology.query.CompChemQuery;
+import uk.ac.cam.ceb.como.compchem.xslt.Transformation;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.Module;
 import uk.ac.cam.ceb.como.jaxb.xml.generation.GenerateCompChemXML;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import javax.servlet.ServletContext;
+import javax.xml.transform.stream.StreamSource;
 
-import org.apache.struts2.util.ServletContextAware;
+//implements ServletContextAware
+public class UploadAction extends ActionSupport {
 
-public class UploadAction extends ActionSupport implements ServletContextAware{
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private File[] files;
@@ -58,26 +59,31 @@ public class UploadAction extends ActionSupport implements ServletContextAware{
 		for(File f: files) {
 		
 		Module rootModule = new Module();
-	
-		String fileName = f.getName().replaceAll(".tmp","");
-		
-		File inputFile = new File(catalicaFolderPath + "/conf/Catalina/" + fileName + ".g09");
-		
-		System.out.println("outputFile.getAbsolutePath() : " +  inputFile.getAbsolutePath());
+				
+		File inputG09File = new File(catalicaFolderPath + "/conf/Catalina//g09/" + uploadFileName[0]);
 		
 		Path path = Paths.get(f.getAbsolutePath());
 		
 		byte[] data = Files.readAllBytes(path);
 		
-		BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(inputFile));
+		BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(inputG09File));
 		
 		stream.write(data);
         stream.close();
         
-		File outputFile = new File(catalicaFolderPath + "/conf/Catalina/" + uploadFileName[0] + ".xml");
+		File outputXMLFile = new File(catalicaFolderPath + "/conf/Catalina/xml/" + uploadFileName[0].replaceAll(".g09", "") + ".xml");
         
-        GenerateCompChemXML.generateRootModule(inputFile, outputFile, rootModule);	
+        GenerateCompChemXML.generateRootModule(inputG09File, outputXMLFile, rootModule);	
         
+        InputStream xmlSource = new FileInputStream(outputXMLFile.getPath());
+
+		StreamSource xsltSource = new StreamSource(catalicaFolderPath+"/conf/Catalina/xslt/compchem_to_gnvc_rdf.xsl");
+		
+		String outputPath =catalicaFolderPath+ "/conf/Catalina/compchem_ontology/" + uploadFileName[0].replaceAll(".g09", "").toString() + ".rdf";
+
+		FileOutputStream outputStream = new FileOutputStream(new File(outputPath));
+		
+        Transformation.trasnformation(xmlSource, outputStream, xsltSource);
 		
 		}  
 		return INPUT;
@@ -123,12 +129,4 @@ public class UploadAction extends ActionSupport implements ServletContextAware{
 	public void setContext(ServletContext context) {
 		this.context = context;
 	}
-
-
-	@Override
-	public void setServletContext(ServletContext arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
