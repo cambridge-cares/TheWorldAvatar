@@ -11,8 +11,9 @@
 		value="ApplicationResources" />
 
 	<package name="default" extends="struts-default" namespace="/">
+	
 	<action name="login"
-			class="uk.ac.ceb.como.molhub.LoginAction">	
+		class="uk.ac.ceb.como.molhub.action.LoginAction">	
 
     <!--<result name="success">Welcome.jsp</result>-->
 
@@ -23,16 +24,15 @@
     </result>
         		
 	<result name="error">Login.jsp</result>
-	</action>
-	
-    <action name="index">
-            <result type="redirectAction">
-                <param name="actionName">upload</param>
-            </result>
-     </action>
 
-    <action name="upload" class="uk.ac.ceb.como.molhub.upload.UploadAction">
+	</action>
+
+    <action name="upload" class="uk.ac.ceb.como.molhub.action.UploadAction">
+    
     <result name="input">/upload.jsp</result>
+    
+    <result name="error">upload.jsp</result>
+    
     </action>
     
    </package>
