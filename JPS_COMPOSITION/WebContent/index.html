@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flow Builder</title>
+    <meta name="description"
+          content="An editor of flow diagrams that supports deletion by dropping onto a particular node and relinking by dragging a link."/>
+    <!-- Copyright 1998-2018 by Northwoods Software Corporation. -->
+    <meta charset="UTF-8">
+    <script src="go.js"></script>
+    <link rel="stylesheet" type="text/css" href="semantic.min.css">
+    <script
+            src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+            crossorigin="anonymous"></script>
+    <script src="semantic.min.js"></script>
+    <script src="hashId.min.js"></script>
+    <script src="util.js"></script>
+    <script src="constants.js"></script>
+    <script src="componentFunctions.js"></script>
+    <script src="nativeSemanticUI.js"></script>
+
+
+    <style>
+        .ui .label {
+            width: 150px;
+        }
+
+        .prompt {
+            width: 400px;
+        }
+
+        .ui .left .icon .input {
+            width: 70%;
+        }
+
+        .search .results {
+            overflow-y: auto;
+            max-height: 300px;
+        }
+
+    </style>
+</head>
+<body onload="init()">
+
+<div id="general_modal" class="ui small modal">
+    <i class="close icon"></i>
+    <div class="header">
+        Agent Editor
+    </div>
+    <div class="ui labeled fluid action input">
+        <div class="ui label right aligned">
+            IRI: http://
+        </div>
+        <input id="inputIRI" type="text" placeholder="www.theworldavatar.com/" value="www.theworldavatar.com/">
+        <button id="btnRandom" class="ui icon button">
+            <i class="random icon"></i>
+        </button>
+    </div>
+
+
+    <div id="httpInput" class="ui labeled fluid action input">
+        <div class="ui label">
+            Url: http://
+        </div>
+        <input id="inputHTTPUrl" type="text" placeholder="www.theworldavatar.com/" value="www.theworldavatar.com/">
+    </div>
+
+
+    <div class="ui selection dropdown">
+        <input type="hidden" name="gender">
+        <i class="dropdown icon"></i>
+        <div class="default text">Gender</div>
+        <div class="menu">
+            <div class="item" data-value="1">Male</div>
+            <div class="item" data-value="0">Female</div>
+        </div>
+    </div>
+
+
+    <div class="actions">
+        <div class="ui black deny button">
+            Cancel
+        </div>
+        <div class="ui positive right labeled icon button">
+            Submit
+        </div>
+    </div>
+</div>
+
+
+<div id="message_part_modal" class="ui small modal">
+    <i class="close icon"></i>
+    <div class="header">
+        Parameter Editor
+    </div>
+
+
+    <div id="classSearch" class="ui labeled search">
+        <div class="ui label">modelReference</div>
+        <div class="ui left icon input">
+            <input class="prompt" type="text" placeholder="&nbsp;&nbsp;&nbsp;Search for the IRI&nbsp;&nbsp;&nbsp;">
+            <i class="search icon"></i>
+        </div>
+    </div>
+
+
+    <div id="instanceSearch" class="ui labeled search">
+        <div class="ui label">hasValue</div>
+        <div class="ui left icon input">
+            <input class="prompt" type="text" placeholder="&nbsp;&nbsp;&nbsp;Search for the IRI&nbsp;&nbsp;&nbsp;">
+            <i class="search icon"></i>
+        </div>
+    </div>
+
+    <div id="datatypeSearch" class="ui labeled search">
+        <div class="ui label">hasDatatypeValue</div>
+        <div class="ui left icon input">
+            <input class="prompt" type="text" placeholder="&nbsp;&nbsp;&nbsp;Search for the type&nbsp;&nbsp;&nbsp;">
+            <i class="search icon"></i>
+        </div>
+    </div>
+
+
+    <div class="actions">
+        <div class="ui black deny button">
+            Cancel
+        </div>
+        <div class="ui positive right labeled icon button">
+            Submit
+        </div>
+    </div>
+</div>
+
+
+<div id="sample">
+    <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:500px"></div>
+    <button id="SaveButton" onclick="save()">Save</button>
+    <button onclick="clear_content()">Clear</button>
+    <button onclick="convertTOJSON()">Convert To JSON</button>
+    <button onclick="layout()">Organize</button>
+    <button onclick="convertJSONToOWL()">Convert to Owl</button>
+    <button onclick="composeService()">Compose Service</button>
+
+    <br/>
+    <textarea id="mySavedModel" style="width:100%;height:300px">
+{ "class": "go.GraphLinksModel",
+  "nodeDataArray": [ 
+{"key":1, "text":"Composite_Service_hjRWtMG", "category":"Service", "fullIRI":"http://www.theworldavatar.com/Composite_Service_hjRWtMG"},
+{"text":"Operation_GIP6n2s", "category":"Operation", "fullIRI":"http://www.theworldavatar.com/Operation_GIP6n2s", "httpUrl":"http://www.theworldavatar.com/ADMS/CompositeAgentXYZ123", "key":-2},
+{"text":"MessageContent_Input_Hi8UGWG", "category":"MessageContent_Input", "fullIRI":"http://www.theworldavatar.com/MessageContent_Input_Hi8UGWG", "key":-3},
+{"text":"Mandatory_MessagePart_f5C1p2P", "category":"Mandatory_MessagePart", "fullIRI":"http://www.theworldavatar.com/Mandatory_MessagePart_f5C1p2P", "key":-4, "params":{"hasValue":"http://www.theworldavatar.com/Plant-001.owl#Plant-001", "hasDatatype":"xsd:anyURI", "modelReference":"http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Plant"}},
+{"text":"Mandatory_MessagePart_rSLRxwK", "category":"Mandatory_MessagePart", "fullIRI":"http://www.theworldavatar.com/Mandatory_MessagePart_rSLRxwK", "key":-5, "params":{"hasValue":"", "hasDatatype":"xsd:anyURI", "modelReference":"http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#Coordinate"}},
+{"text":"MessageContent_Output_17ZweQMl", "category":"MessageContent_Output", "fullIRI":"http://www.theworldavatar.com/MessageContent_Output_17ZweQMl", "key":-6},
+{"text":"Mandatory_MessagePart_13XYEDwP", "category":"Mandatory_MessagePart", "fullIRI":"http://www.theworldavatar.com/Mandatory_MessagePart_13XYEDwP", "key":-7, "params":{"hasValue":"", "hasDatatype":"xsd:anyURI", "modelReference":"http://www.theworldavatar.com/VisualizationOfConcentrationWithBuildings"}}
+ ],
+  "linkDataArray": [
+{"from":1, "to":-2},
+{"from":-2, "to":-3},
+{"from":-3, "to":-4},
+{"from":-3, "to":-5},
+{"from":-2, "to":-6},
+{"from":-6, "to":-7}
+ ]}
+   </textarea>
+</div>
+</body>
+</html>
