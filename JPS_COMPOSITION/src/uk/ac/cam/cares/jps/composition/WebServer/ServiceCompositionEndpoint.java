@@ -52,6 +52,7 @@ public class ServiceCompositionEndpoint extends HttpServlet {
 	            String AgentInString = jsonObject.getString("Method").toString();
 	            Service agent = FormatTranslator.convertJSONTOJavaClass(AgentInString);
 	            ServiceCompositionEngine myCompositionEngine = new ServiceCompositionEngine(agent);
+	            
 	            boolean met = false;
 	    		int index = 0;
 	    		while(!met) {

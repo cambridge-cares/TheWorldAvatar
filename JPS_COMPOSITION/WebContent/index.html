@@ -19,6 +19,7 @@
     <script src="constants.js"></script>
     <script src="componentFunctions.js"></script>
     <script src="nativeSemanticUI.js"></script>
+    <script src="visualizeComposition.js"></script>
 
 
     <style>
@@ -134,11 +135,14 @@
 
 
 <div id="sample">
-    <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:500px"></div>
+    <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:700px"></div>
+    <div id="myDiagramDiv2"  style="hidden: true; border: solid 1px black; width:100%; height:1000px"></div>
+
     <button id="SaveButton" onclick="save()">Save</button>
     <button onclick="clear_content()">Clear</button>
     <button onclick="convertTOJSON()">Convert To JSON</button>
     <button onclick="layout()">Organize</button>
+    <button onclick="addToServicePool()">Add Service To Pool</button>
     <button onclick="convertJSONToOWL()">Convert to Owl</button>
     <button onclick="composeService()">Compose Service</button>
 

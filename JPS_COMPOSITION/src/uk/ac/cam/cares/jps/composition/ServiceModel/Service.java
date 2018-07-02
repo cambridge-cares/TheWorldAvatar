@@ -21,8 +21,7 @@ public class Service{
 	public Service() {
 		
 	}
-	
-	
+	 
 	public Service(URI uri) {
 		this.setUri(uri);
         this.operations = new ArrayList<Operation>();

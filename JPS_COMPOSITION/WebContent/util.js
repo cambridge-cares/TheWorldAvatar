@@ -183,31 +183,153 @@ function sendRequest(agentInJSON, RequestUrl) {
 
 }
 
+// Add a newly defined service to the pool of candidate services
+function addToServicePool() {
+    $.ajax({
+        method: "POST",
+        url: "http://localhost:8080/JPS_COMPOSITION/AddToServicePool",
+        data: convertNodeObjToMSMObj(myDiagram.model)
+    }).done(function () {
+       alert("Added another service to the pool");
+    });
 
+}
+
+
+// Send out a service in the form of JSON to the server, ServiceWriter will be used to translate it into rdf(s) format
 function convertJSONToOWL() {
     $.ajax({
         method: "POST",
         url: "http://localhost:8080/JPS_COMPOSITION/ServiceConvertToOWL",
-        data: convertNodeObjToMSMObj(myDiagram.model)
+        data: convertNodeObjToMSMObj(myDiagram.model),
+        timeout: 3000
     })
         .done(function (msg) {
             document.getElementById("mySavedModel").value = msg;
-        });
+        })();
 }
 
 
-
+// The compose a composite
 function composeService() {
     $.ajax({
         method: "POST",
         url: "http://localhost:8080/JPS_COMPOSITION/ServiceCompositionEndpoint",
-        data: convertNodeObjToMSMObj(myDiagram.model)
+        data: convertNodeObjToMSMObj(myDiagram.model),
+        timeout: 5000
+
     })
         .done(function (msg) {
-            document.getElementById("mySavedModel").value = msg;
-        });
+            visualizeComposition(convertComposition(JSON.parse(msg)));
+        })
+        .fail(function (error) {
+            alert('This might not be a valid composite service')
+        })
+    
+    
+    
+    ;
 }
 
 function replaceAll(text, search, replacement) {
     return text.replace(new RegExp(search, 'g'), replacement);
-};
+}
+
+
+
+function convertComposition(result) {
+
+    console.log(result.initialInputs);
+
+    var visualizationObject = {
+        linkFromPortIdProperty: "fromPort",
+        linkToPortIdProperty: "toPort",
+        nodeDataArray: [],
+        linkDataArray: []
+    };
+
+    var initOutputs = [];
+    result.initialInputs.forEach(function (initInput) {
+       initOutputs.push({name: IRIProcessor(initInput.modelReference)});
+    });
+
+    var initObject = {key: "Inputs",inputs:[], outputs: initOutputs.sort(dynamicSort("name")), loc: "200 0"};
+    visualizationObject.nodeDataArray.push(initObject);
+
+   var initLayer = {services: [{operations: [{outputs:[{mandatoryParts: result.initialInputs}]}], uri: 'Inputs'}]};
+
+
+    var previousLayers = [initLayer];
+    var layers = result.layers;
+    layers.forEach(function (layer, layerIndex) {
+        previousLayers.push(layer);
+        console.log(previousLayers);
+
+
+        layer.services.forEach(function (service, serviceIndex) {
+            var serviceObject = {key: IRIProcessor(service.uri), inputs: [], outputs: [], loc: ""};
+            var inputs = [];
+            var outputs = [];
+
+            var extra_indent = 0;
+
+            service.operations[0].inputs.forEach(function (input) {
+                input.mandatoryParts.forEach(function (model) {
+                    // Go and find outputs in the all previous layer and make the connection
+                    previousLayers.forEach(function (previousLayer, previousLayerIndex) {
+                        previousLayer.services.forEach(function (previousService) {
+                            previousService.operations[0].outputs.forEach(function (previousOutput) {
+                                previousOutput.mandatoryParts.forEach(function (previousOutputPart) {
+                                    if(previousOutputPart.modelReference === model.modelReference){
+                                        var newConnection = {from: IRIProcessor(previousService.uri), to: IRIProcessor(service.uri),
+                                            fromPort: IRIProcessor(previousOutputPart.modelReference), toPort: IRIProcessor(model.modelReference)};
+                                        visualizationObject.linkDataArray.push(newConnection);
+                                        if(layerIndex === previousLayerIndex){
+                                            extra_indent = 400;
+                                        }
+
+                                    }
+                                })
+                            })
+                        });
+                    });
+                    inputs.push({name: IRIProcessor(model.modelReference)})
+                });
+            });
+            service.operations[0].outputs.forEach(function (output) {
+                output.mandatoryParts.forEach(function (model) {
+                    outputs.push({name: IRIProcessor(model.modelReference)})
+                })
+            });
+            serviceObject.inputs = inputs.sort(dynamicSort("name"));
+            serviceObject.outputs = outputs.sort(dynamicSort("name"));
+            serviceObject.loc = (layerIndex + 1) * 500 + extra_indent + " " + serviceIndex * 200;
+            visualizationObject.nodeDataArray.push(serviceObject);
+        });
+
+    });
+
+    return visualizationObject;
+}
+
+function IRIProcessor(IRI) {
+    console.log('IRI', IRI);
+    if (IRI.includes("#")){
+        return IRI.split("#").slice(-1)[0]
+    }
+    else{
+        return IRI.split("/").slice(-1)[0]
+    }
+}
+
+function dynamicSort(property) {
+    var sortOrder = 1;
+    if(property[0] === "-") {
+        sortOrder = -1;
+        property = property.substr(1);
+    }
+    return function (a,b) {
+        var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+        return result * sortOrder;
+    }
+}

@@ -13,73 +13,87 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5">
-      <split-first>
-        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="util.js" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/util.js">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="429">
-                  <caret line="184" lean-forward="true" selection-start-line="184" selection-end-line="184" />
-                  <folding>
-                    <element signature="n#!!block;n#toHex#0" />
-                    <element signature="n#!!block;n#IRIGenerator#0" />
-                    <element signature="n#!!block;n#DropdownDataGenerator#0" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/index.html">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="521">
-                  <caret line="141" column="29" selection-start-line="141" selection-start-column="21" selection-end-line="141" selection-end-column="37" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="componentFunctions.js" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/componentFunctions.js">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="332">
-                  <caret line="17" column="22" lean-forward="true" selection-start-line="17" selection-start-column="22" selection-end-line="17" selection-end-column="22" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="nativeSemanticUI.js" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/nativeSemanticUI.js">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="845">
-                  <caret line="226" column="19" lean-forward="true" selection-start-line="226" selection-start-column="19" selection-end-line="226" selection-end-column="19" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-first>
-      <split-second>
-        <leaf>
-          <file leaf-file-name="nativeSemanticUI.js" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/nativeSemanticUI.js">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="247">
-                  <caret line="200" column="4" selection-start-line="200" selection-start-column="4" selection-end-line="200" selection-end-column="49" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-second>
-    </splitter>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="nativeSemanticUI.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/nativeSemanticUI.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="730">
+              <caret line="123" column="17" selection-start-line="123" selection-start-column="17" selection-end-line="123" selection-end-column="31" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="util.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/util.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-2455">
+              <caret line="160" column="37" lean-forward="true" selection-start-line="160" selection-start-column="37" selection-end-line="160" selection-end-column="37" />
+              <folding>
+                <element signature="n#!!block;n#toHex#0" />
+                <element signature="n#!!block;n#IRIGenerator#0" />
+                <element signature="n#!!block;n#DropdownDataGenerator#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="componentFunctions.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/componentFunctions.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="184">
+              <caret line="77" column="51" lean-forward="true" selection-start-line="77" selection-start-column="51" selection-end-line="77" selection-end-column="51" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="visualizeComposition.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/visualizeComposition.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="408">
+              <caret line="112" column="77" selection-start-line="112" selection-start-column="77" selection-end-line="112" selection-end-column="77" />
+              <folding>
+                <element signature="n#style#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#textarea#0;n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="visualizeComposition.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/visualizeComposition.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="408">
+              <caret line="114" column="59" selection-start-line="114" selection-start-column="53" selection-end-line="114" selection-end-column="59" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="553">
+              <caret line="147" lean-forward="true" selection-start-line="147" selection-end-line="147" />
+              <folding>
+                <element signature="n#style#0;n#div#0;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#1;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#textarea#0;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+        <option value="JavaScript File" />
+      </list>
+    </option>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>convertNodeObjToMSMObj</find>
-      <find>operation</find>
-      <find>console.</find>
-      <find>JSON.</find>
       <find>console.l</find>
       <find>console.log</find>
       <find>replace</find>
@@ -97,14 +111,30 @@
       <find>c</find>
       <find>clear</find>
       <find>convertJSONToOWL</find>
+      <find>\&lt;\!DOCTYPE html\&gt;\n\&lt;html\&gt;\n\&lt;head\&gt;\n    \&lt;meta name\=\&quot;viewport\&quot; content\=\&quot;width\=device\-width\, initial\-scale\=1\&quot;\&gt;\n    \&lt;title\&gt;Record Mapper\&lt;\/title\&gt;\n    \&lt;meta name\=\&quot;description\&quot; content\=\&quot;A diagram for displaying and editing the N to M relationships from one set of objects to another set of objects\.\&quot; \/\&gt;\n    \&lt;meta charset\=\&quot;UTF\-8\&quot;\&gt;\n    \&lt;script src\=\&quot;go\.js\&quot;\&gt;\&lt;\/script\&gt;\n    \&lt;script id\=\&quot;code\&quot;\&gt;\n        function init\(\) \{\n            if \(window\.goSamples\) goSamples\(\)\;  \/\/ init for these samples \-\- you don\'t need to call this\n            var \$ \= go\.GraphObject\.make\;  \/\/ for conciseness in defining templates\n\n            myDiagram \=\n                \$\(go\.Diagram\, \&quot;myDiagramDiv\&quot;\,\n                    \{\n                        initialContentAlignment\: go\.Spot\.Center\,\n                        validCycle\: go\.Diagram\.CycleNotDirected\,  \/\/ don\'t allow loops\n                        \/\/ For this sample\, automatically show the state of the diagram\'s model on the page\n                        \&quot;ModelChanged\&quot;\: function\(e\) \{\n                            if \(e\.isTransactionFinished\) showModel\(\)\;\n                        \}\,\n                        \&quot;undoManager\.isEnabled\&quot;\: true\n                    \}\)\;\n\n            \/\/ This template is a Panel that is used to represent each item in a Panel\.itemArray\.\n            \/\/ The Panel is data bound to the item object\.\n            var fieldTemplate \=\n                \$\(go\.Panel\, \&quot;TableRow\&quot;\,  \/\/ this Panel is a row in the containing Table\n                    new go\.Binding\(\&quot;portId\&quot;\, \&quot;name\&quot;\)\,  \/\/ this Panel is a \&quot;port\&quot;\n                    \{\n                        background\: \&quot;transparent\&quot;\,  \/\/ so this port\'s background can be picked by the mouse\n                        fromSpot\: go\.Spot\.Right\,  \/\/ links only go from the right side to the left side\n                        toSpot\: go\.Spot\.Left\,\n                        \/\/ allow drawing links from or to this port\:\n                        fromLinkable\: true\, toLinkable\: true\n                    \}\,\n                    \$\(go\.Shape\,\n                        \{ width\: 12\, height\: 12\, column\: 0\, strokeWidth\: 2\, margin\: 4\,\n                            \/\/ but disallow drawing links from or to this shape\:\n                            fromLinkable\: false\, toLinkable\: false \}\,\n                        new go\.Binding\(\&quot;figure\&quot;\, \&quot;figure\&quot;\)\,\n                        new go\.Binding\(\&quot;fill\&quot;\, \&quot;color\&quot;\)\)\,\n                    \$\(go\.TextBlock\,\n                        \{ margin\: new go\.Margin\(0\, 5\)\, column\: 1\, font\: \&quot;bold 13px sans\-serif\&quot;\,\n                            alignment\: go\.Spot\.Left\,\n                            \/\/ and disallow drawing links from or to this text\:\n                            fromLinkable\: false\, toLinkable\: false \}\,\n                        new go\.Binding\(\&quot;text\&quot;\, \&quot;name\&quot;\)\)\,\n                    \$\(go\.TextBlock\,\n                        \{ margin\: new go\.Margin\(0\, 5\)\, column\: 2\, font\: \&quot;13px sans\-serif\&quot;\, alignment\: go\.Spot\.Left \}\,\n                        new go\.Binding\(\&quot;text\&quot;\, \&quot;info\&quot;\)\)\n                \)\;\n\n            \/\/ This template represents a whole \&quot;record\&quot;\.\n            myDiagram\.nodeTemplate \=\n                \$\(go\.Node\, \&quot;Auto\&quot;\,\n                    \{ movable\: false\,\n                        copyable\: false\,\n                        deletable\: false \}\,\n                    new go\.Binding\(\&quot;location\&quot;\, \&quot;loc\&quot;\, go\.Point\.parse\)\.makeTwoWay\(go\.Point\.stringify\)\,\n                    \/\/ this rectangular shape surrounds the content of the node\n                    \$\(go\.Shape\,\n                        \{ fill\: \&quot;\#EEEEEE\&quot; \}\)\,\n                    \/\/ the content consists of a header and a list of items\n                    \$\(go\.Panel\, \&quot;Vertical\&quot;\,\n                        \/\/ this is the header for the whole node\n                        \$\(go\.Panel\, \&quot;Auto\&quot;\,\n                            \{ stretch\: go\.GraphObject\.Horizontal \}\,  \/\/ as wide as the whole node\n                            \$\(go\.Shape\,\n                                \{ fill\: \&quot;\#1570A6\&quot;\, stroke\: null \}\)\,\n                            \$\(go\.TextBlock\,\n                                \{\n                                    alignment\: go\.Spot\.Center\,\n                                    margin\: 3\,\n                                    stroke\: \&quot;white\&quot;\,\n                                    textAlign\: \&quot;center\&quot;\,\n                                    font\: \&quot;bold 12pt sans\-serif\&quot;\n                                \}\,\n                                new go\.Binding\(\&quot;text\&quot;\, \&quot;key\&quot;\)\)\)\,\n                        \/\/ this Panel holds a Panel for each item object in the itemArray\;\n                        \/\/ each item Panel is defined by the itemTemplate to be a TableRow in this Table\n                        \$\(go\.Panel\, \&quot;Table\&quot;\,\n                            \{\n                                padding\: 2\,\n                                minSize\: new go\.Size\(100\, 10\)\,\n                                defaultStretch\: go\.GraphObject\.Horizontal\,\n                                itemTemplate\: fieldTemplate\n                            \}\,\n                            new go\.Binding\(\&quot;itemArray\&quot;\, \&quot;fields\&quot;\)\n                        \)  \/\/ end Table Panel of items\n                    \)  \/\/ end Vertical Panel\n                \)\;  \/\/ end Node\n\n            myDiagram\.linkTemplate \=\n                \$\(go\.Link\,\n                    \{\n                        relinkableFrom\: true\, relinkableTo\: true\, \/\/ let user reconnect links\n                        toShortLength\: 4\,  fromShortLength\: 2\n                    \}\,\n                    \$\(go\.Shape\, \{ strokeWidth\: 1\.5 \}\)\,\n                    \$\(go\.Shape\, \{ toArrow\: \&quot;Standard\&quot;\, stroke\: null \}\)\n                \)\;\n\n            myDiagram\.model \=\n                \$\(go\.GraphLinksModel\,\n                    \{\n                        linkFromPortIdProperty\: \&quot;fromPort\&quot;\,\n                        linkToPortIdProperty\: \&quot;toPort\&quot;\,\n                        nodeDataArray\: \[\n                            \{ key\: \&quot;Record1\&quot;\,\n                                fields\: \[\n                                    \{ name\: \&quot;field1\&quot;\, info\: \&quot;\&quot;\, color\: \&quot;\#F7B84B\&quot;\, figure\: \&quot;Ellipse\&quot; \}\,\n                                    \{ name\: \&quot;field2\&quot;\, info\: \&quot;the second one\&quot;\, color\: \&quot;\#F25022\&quot;\, figure\: \&quot;Ellipse\&quot; \}\,\n                                    \{ name\: \&quot;fieldThree\&quot;\, info\: \&quot;3rd\&quot;\, color\: \&quot;\#00BCF2\&quot; \}\n                                \]\,\n                                loc\: \&quot;0 0\&quot; \}\,\n                            \{ key\: \&quot;Record2\&quot;\,\n                                fields\: \[\n                                    \{ name\: \&quot;fieldA\&quot;\, info\: \&quot;\&quot;\,       color\: \&quot;\#FFB900\&quot;\, figure\: \&quot;Diamond\&quot; \}\,\n                                    \{ name\: \&quot;fieldB\&quot;\, info\: \&quot;\&quot;\,       color\: \&quot;\#F25022\&quot;\, figure\: \&quot;Rectangle\&quot; \}\,\n                                    \{ name\: \&quot;fieldC\&quot;\, info\: \&quot;\&quot;\,       color\: \&quot;\#7FBA00\&quot;\, figure\: \&quot;Diamond\&quot; \}\,\n                                    \{ name\: \&quot;fieldD\&quot;\, info\: \&quot;fourth\&quot;\, color\: \&quot;\#00BCF2\&quot;\,  figure\: \&quot;Rectangle\&quot; \}\n                                \]\,\n                                loc\: \&quot;250 0\&quot; \}\n                        \]\,\n                        linkDataArray\: \[\n                            \{ from\: \&quot;Record1\&quot;\, fromPort\: \&quot;field1\&quot;\, to\: \&quot;Record2\&quot;\, toPort\: \&quot;fieldA\&quot; \}\,\n                            \{ from\: \&quot;Record1\&quot;\, fromPort\: \&quot;field2\&quot;\, to\: \&quot;Record2\&quot;\, toPort\: \&quot;fieldD\&quot; \}\,\n                            \{ from\: \&quot;Record1\&quot;\, fromPort\: \&quot;fieldThree\&quot;\, to\: \&quot;Record2\&quot;\, toPort\: \&quot;fieldB\&quot; \}\n                        \]\n                    \}\)\;\n\n            showModel\(\)\;  \/\/ show the diagram\'s initial model\n\n            function showModel\(\) \{\n                document\.getElementById\(\&quot;mySavedModel\&quot;\)\.textContent \= myDiagram\.model\.toJson\(\)\;\n            \}\n        \}\n    \&lt;\/script\&gt;\n\&lt;\/head\&gt;\n\&lt;body onload\=\&quot;init\(\)\&quot;\&gt;\n\&lt;div id\=\&quot;sample\&quot;\&gt;\n    \&lt;div id\=\&quot;myDiagramDiv\&quot; style\=\&quot;border\: solid 1px black\; width\:100\%\; height\:500px\&quot;\&gt;\&lt;\/div\&gt;\n    \&lt;div\&gt;\n        \&lt;textarea id\=\&quot;mySavedModel\&quot; style\=\&quot;width\:100\%\;height\:250px\&quot;\&gt;\&lt;\/textarea\&gt;\n    \&lt;\/div\&gt;\n\&lt;\/div\&gt;\n\&lt;\/body\&gt;\n\&lt;\/html\&gt;\n</find>
+      <find>init</find>
+      <find>myDiagramDiv</find>
+      <find>figure</find>
+      <find>\/\/ This function creates a hashcode basing on the current date in milliseconds\nfunction toHex\(input\) \{\n    var hash \= \&quot;\&quot;\,\n        alphabet \= \&quot;0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHICKLMPOPQRSTUVWXWYZ\&quot;\, \/\/ alphanumeric pool\n        alphabetLength \= alphabet\.length\;\n    do \{\n        hash \= alphabet\[input \% alphabetLength\] \+ hash\;\n        input \= parseInt\(input \/ alphabetLength\, 10\)\;\n    \} while \(input\)\;\n    return hash\;\n\}\n\n\/\/ This function levers the hashcode function to gibe create instances unique ids\nfunction IRIGenerator\(category\) \{\n    var d \= new Date\(\)\;\n    d \= d\.getMilliseconds\(\) \* 5155265999\;\n    return category \+ \'_\' \+ toHex\(d\)\;\n\n\}\n\n\/\/ This function provides the user options of classes to create basing to what the instance\'s parent class is\.\nfunction DropdownDataGenerator\(parentCategory\) \{\n    var currentCategories \= classMap\[parentCategory\]\;\n    var result \= \[\]\;\n    if \(Array\.isArray\(currentCategories\)\) \{\n        for \(var idx in currentCategories\) \{\n            var category \= currentCategories\[idx\]\;\n            result\.push\(\{name\: category\, value\: category\, selected\: \(idx \=\=\= \'0\'\)\}\)\; \/\/ by default\, select the first element in the dropdown list\n        \}\n        return result\;\n    \} else \{\n        return false\; \/\/ indicates that there is no alternatives\, only one option available\n    \}\n\}\n\n\/\/ This function translate the gojs object to msm json format \.\nfunction convertNodeObjToMSMObj\(testObj\) \{\n    var nodeDataArray \= testObj\.nodeDataArray\;\n    var linkDataArray \= testObj\.linkDataArray\;\n\n    var mandatory_messageParts \= \[\]\;\n    var optional_messageParts \= \[\]\;\n    var inputs \= \[\]\;\n    var outputs \= \[\]\;\n    var operations \= \[\]\;\n    var service \= locateElement\(1\)\;\n    appendToMainObject\(service\)\;\n\n    function locateAllChildren\(key\) \{\n        \/\/ given the key of a node\, find all children connected to the node\.\n        var result \= \[\]\;\n        var currentElement \= locateElement\(key\)\;\n\n        \/\/ Here you create part of the object\n\n\n        for \(var idx in linkDataArray\) \{\n            var element \= linkDataArray\[idx\]\;\n\n            if \(element\.from \=\=\= parseInt\(key\.toString\(\)\)\) \{\n                result\.push\(element\.to\)\;\n            \}\n        \}\n\n        for \(var idx in result\) \{\n            var element \= result\[idx\]\;\n            locateAllChildren\(element\)\;\n        \}\n        if \(currentElement\.category\.includes\(\'MessagePart\'\)\) \{\n            \/\/ create object of a parameter \{\'uri\'\: \'http\:\/\/\.\.\.\'\, \'value\'\: \'xxx\'\, \'datatypeValue\'\: \'xxx\'\, \'modelReference\'\: \'xxx\'\}\n\n            var uri \= currentElement\.fullIRI\;\n            var params \= currentElement\.params\;\n            var hasValue \= params\.hasValue\;\n            var hasDatatype \= params\.hasDatatype\;\n            var modelReference \= params\.modelReference\;\n\n            var newParameter \= \{\n                \'uri\'\: uri\,\n                \'value\'\: hasValue\,\n                \'datatypeValue\'\: hasDatatype\,\n                \'modelReference\'\: modelReference\n            \}\;\n\n\n            if \(currentElement\.category \=\=\= \'Mandatory_MessagePart\'\) \{\n                mandatory_messageParts\.push\(JSON\.stringify\(newParameter\)\)\;\n            \}\n            else \{\n                optional_messageParts\.push\(JSON\.stringify\(newParameter\)\)\;\n            \}\n        \}\n\n        if \(currentElement\.category\.includes\(\'MessageContent\'\)\) \{\n\n            var new_optional_messageParts \= \[\]\;\n            var new_mandatory_messageParts \= \[\]\;\n            for \(var idx_part_mandatory in mandatory_messageParts\) \{\n                new_mandatory_messageParts\.push\(JSON\.parse\(mandatory_messageParts\[idx_part_mandatory\]\)\)\;\n            \}\n\n            for \(var idx_part_optional in optional_messageParts\) \{\n                new_optional_messageParts\.push\(JSON\.parse\(optional_messageParts\[idx_part_optional\]\)\)\;\n            \}\n\n            var newMessageContent \= \{\n                \'uri\'\: currentElement\.fullIRI\,\n                \'mandatoryParts\'\: new_mandatory_messageParts\,\n                \'optionalParts\'\: new_optional_messageParts\n            \}\;\n\n\n            mandatory_messageParts \= \[\]\;\n            optional_messageParts \= \[\]\;\n\n\n            if \(currentElement\.category \=\=\= \'MessageContent_Input\'\) \{\n                inputs\.push\(JSON\.stringify\(newMessageContent\)\)\;\n            \} else \{\n                outputs\.push\(JSON\.stringify\(newMessageContent\)\)\;\n            \}\n\n        \}\n\n        if \(currentElement\.category\.includes\(\'Operation\'\)\) \{\n\n            var newOperation \= \{\n                \'uri\'\: currentElement\.fullIRI\,\n                \'inputs\'\: inputs\,\n                \'outputs\'\: outputs\,\n                \'httpUrl\'\: currentElement\.httpUrl\n            \}\;\n            inputs \= \[\]\;\n            outputs \= \[\]\;\n\n            var opt \= replaceAll\(JSON\.stringify\(newOperation\)\, \&quot;\'\&quot;\, \&quot;\&quot;\)\;\n            opt \= replaceAll\(opt\, \&quot;\\\&quot;\{\&quot;\, \&quot;\{\&quot;\)\;\n            opt \= replaceAll\(opt\, \&quot;\}\\\&quot;\&quot;\, \&quot;\}\&quot;\)\;\n            opt \= opt\.replace\(\/\\\\\/g\, \&quot;\&quot;\)\;\n            operations\.push\(opt\)\;\n        \}\n\n\n    \}\n\n\n    function locateElement\(key\) \{\n        \/\/ give the key\, find the node in the nodeDataArray\n        for \(var idx in nodeDataArray\) \{\n            var element \= nodeDataArray\[idx\]\;\n            if \(element\.key \=\=\= parseInt\(key\.toString\(\)\)\) \{\n                return element\n            \}\n        \}\n    \}\n\n    function appendToMainObject\(element\) \{\n        var children \= locateAllChildren\(element\.key\)\;\n        for \(var idx in children\) \{\n            var child \= children\[idx\]\;\n            locateAllChildren\(child\)\;\n        \}\n\n    \}\n\n    var operationsString \= JSON\.stringify\(operations\)\;\n    operationsString \= replaceAll\(operationsString\, \&quot;\\\&quot;\{\&quot;\, \&quot;\{\&quot;\)\;\n    operationsString \= replaceAll\(operationsString\, \&quot;\}\\\&quot;\&quot;\, \&quot;\}\&quot;\)\;\n    operationsString \= operationsString\.replace\(\/\\\\\/g\, \&quot;\&quot;\)\;\n\n    var serviceString \= JSON\.stringify\(\{\'uri\'\: service\.fullIRI\, \'operations\'\: operationsString\}\, 4\)\;\n    serviceString \= replaceAll\(serviceString\, \&quot;\\\&quot;\{\&quot;\, \&quot;\{\&quot;\)\;\n    serviceString \= replaceAll\(serviceString\, \&quot;\}\\\&quot;\&quot;\, \&quot;\}\&quot;\)\; \/\/\&quot;\[\n    serviceString \= replaceAll\(serviceString\, \&quot;\]\\\&quot;\&quot;\, \&quot;\]\&quot;\)\.replace\(\/\&quot;\\\[\/g\,\&quot;\[\&quot;\)\;\n    serviceString \= serviceString\.replace\(\/\\\\\/g\, \&quot;\&quot;\)\;\n    return serviceString\n\n\}\n\n\n\/\/ This function send out a request in the form of JSON object\nfunction sendRequest\(agentInJSON\, RequestUrl\) \{\n\n\}\n\nfunction addToServicePool\(\) \{\n    \$\.ajax\(\{\n        method\: \&quot;POST\&quot;\,\n        url\: \&quot;http\:\/\/localhost\:8080\/JPS_COMPOSITION\/AddToServicePool\&quot;\,\n        data\: convertNodeObjToMSMObj\(myDiagram\.model\)\n    \}\)\.done\(function \(\) \{\n       alert\(\&quot;Added another service to the pool\&quot;\)\;\n    \}\)\;\n\n\}\n\n\n\nfunction convertJSONToOWL\(\) \{\n    \$\.ajax\(\{\n        method\: \&quot;POST\&quot;\,\n        url\: \&quot;http\:\/\/localhost\:8080\/JPS_COMPOSITION\/ServiceConvertToOWL\&quot;\,\n        data\: convertNodeObjToMSMObj\(myDiagram\.model\)\n    \}\)\n        \.done\(function \(msg\) \{\n            document\.getElementById\(\&quot;mySavedModel\&quot;\)\.value \= msg\;\n        \}\)\;\n\}\n\n\n\nfunction composeService\(\) \{\n    \$\.ajax\(\{\n        method\: \&quot;POST\&quot;\,\n        url\: \&quot;http\:\/\/localhost\:8080\/JPS_COMPOSITION\/ServiceCompositionEndpoint\&quot;\,\n        data\: convertNodeObjToMSMObj\(myDiagram\.model\)\n    \}\)\n        \.done\(function \(msg\) \{\n            visualizeCompositeService\(JSON\.parse\(msg\)\)\n        \}\)\;\n\}\n\nfunction replaceAll\(text\, search\, replacement\) \{\n    return text\.replace\(new RegExp\(search\, \'g\'\)\, replacement\)\;\n\}\;\n\n\n\nfunction visualizeCompositeService\(result\) \{\n\n    var visualizationObject \= \{\n        linkFromPortIdProperty\: \&quot;fromPort\&quot;\,\n        linkToPortIdProperty\: \&quot;toPort\&quot;\,\n        nodeDataArray\: \[\]\n    \}\;\n\n\n    var layers \= result\.layers\;\n    layers\.forEach\(function \(v\,k\) \{\n    var previousLayer \= null\;\n\n        console\.log\(k\)\;\n        if\(k\!\=\= 0\)\{\n            previousLayer \= layers\[k\-1\]\;\n        \}\n        \n        \n        v\.services\.forEach\(function \(service\) \{\n            var serviceObject \= \{key\: IRIProcessor\(service\.uri\)\, inputs\: \[\]\, outputs\: \[\]\}\;\n            var inputs \= \[\]\;\n            var outputs \= \[\]\;\n            var loc \= \&quot;\&quot;\;\n\n            service\.operations\[0\]\.inputs\.forEach\(function \(input\) \{\n                input\.mandatoryParts\.forEach\(function \(model\) \{\n                    \/\/ Go and find outputs in the previous layer and make the connection\n                    if \(previousLayer\)\{\n                        \n                    \}\n                    \n                    \n                    \n                    inputs\.push\(\{name\: model\.modelReference\}\)\n                \}\)\;\n            \}\)\;\n\n            service\.operations\[0\]\.outputs\.forEach\(function \(output\) \{\n                output\.mandatoryParts\.forEach\(function \(model\) \{\n                    outputs\.push\(\{name\: model\.modelReference\}\)\n                \}\)\n            \}\)\;\n\n            serviceObject\.inputs \= inputs\;\n            serviceObject\.outputs \= outputs\;\n        \}\)\n    \}\)\n\}\n\nfunction IRIProcessor\(IRI\) \{\n    if \(IRI\.includes\(\&quot;\#\&quot;\)\)\{\n        return IRI\.split\(\&quot;\#\&quot;\)\.slice\(\-1\)\[0\]\n    \}\n    else\{\n        return IRI\.split\(\&quot;\/\&quot;\)\.slice\(\-1\)\[0\]\n    \}\n\}\n\n</find>
+      <find>visualizeCompositeService</find>
+      <find>layout</find>
+      <find>linkDataArray</find>
+      <find>link</find>
+      <find>808008</find>
+      <find>808080</find>
+      <find>inputs</find>
+      <find>dynamicSort</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/componentFunctions.js" />
-        <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/WEB-INF/visualizeComposition.html" />
         <option value="$PROJECT_DIR$/nativeSemanticUI.js" />
+        <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/visualizeComposition.html" />
+        <option value="$PROJECT_DIR$/visualizeComposition.js" />
         <option value="$PROJECT_DIR$/util.js" />
       </list>
     </option>
@@ -125,17 +155,16 @@
     <packageJsonPaths />
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="2811" />
-    <option name="y" value="206" />
-    <option name="width" value="1396" />
-    <option name="height" value="1012" />
+    <option name="x" value="2795" />
+    <option name="y" value="394" />
+    <option name="width" value="1392" />
+    <option name="height" value="996" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -143,13 +172,20 @@
               <item name="WebContent" type="b2602c69:ProjectViewProjectNode" />
               <item name="WebContent" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="WebContent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="WebContent" type="462c0819:PsiDirectoryNode" />
+              <item name="WEB-INF" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
@@ -171,14 +207,17 @@
   </component>
   <component name="RunManager" selected="JavaScript Debug.index.html">
     <configuration name="index.html" type="JavascriptDebugType" factoryName="JavaScript Debug" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/WebContent/index.html" />
+    <configuration name="visualizeComposition.html" type="JavascriptDebugType" factoryName="JavaScript Debug" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/WebContent/visualizeComposition.html" />
     <configuration name="util.js" type="NodeJSConfigurationType" factoryName="Node.js" nameIsGenerated="true" path-to-js-file="util.js" working-dir="$PROJECT_DIR$" />
     <list>
       <item itemvalue="Node.js.util.js" />
       <item itemvalue="JavaScript Debug.index.html" />
+      <item itemvalue="JavaScript Debug.visualizeComposition.html" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="JavaScript Debug.index.html" />
+        <item itemvalue="JavaScript Debug.visualizeComposition.html" />
       </list>
     </recent_temporary>
   </component>
@@ -196,20 +235,23 @@
       <workItem from="1529569522416" duration="5524000" />
       <workItem from="1529575057079" duration="23343000" />
       <workItem from="1530153530287" duration="8180000" />
+      <workItem from="1530501319436" duration="2447000" />
+      <workItem from="1530504142295" duration="17505000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="37733000" />
+    <option name="totallyTimeSpent" value="57685000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="2560" y="-28" width="2560" height="1468" extended-state="6" />
+    <frame x="2625" y="-4" width="2495" height="1444" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.0921875" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.09218437" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5002004" side_tool="true" weight="0.3295964" />
+      <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.3128621" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -222,7 +264,6 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Find" order="1" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -237,6 +278,70 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/util.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4807">
+          <caret line="235" column="35" selection-start-line="235" selection-start-column="35" selection-end-line="235" selection-end-column="35" />
+          <folding>
+            <element signature="n#!!block;n#toHex#0" />
+            <element signature="n#!!block;n#IRIGenerator#0" />
+            <element signature="n#!!block;n#DropdownDataGenerator#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3243">
+          <caret line="141" column="60" selection-start-line="141" selection-start-column="60" selection-end-line="141" selection-end-column="60" />
+          <folding>
+            <element signature="n#style#0;n#div#0;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#1;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#textarea#0;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nativeSemanticUI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4968">
+          <caret line="216" column="1" lean-forward="true" selection-start-line="216" selection-start-column="1" selection-end-line="216" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3634">
+          <caret line="184" selection-start-line="184" selection-end-line="184" />
+          <folding>
+            <element signature="n#!!block;n#toHex#0" />
+            <element signature="n#!!block;n#IRIGenerator#0" />
+            <element signature="n#!!block;n#DropdownDataGenerator#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/componentFunctions.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="17" column="22" lean-forward="true" selection-start-line="17" selection-start-column="22" selection-end-line="17" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3243">
+          <caret line="141" column="29" selection-start-line="141" selection-start-column="21" selection-end-line="141" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nativeSemanticUI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5198">
+          <caret line="226" column="19" lean-forward="true" selection-start-line="226" selection-start-column="19" selection-end-line="226" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/util.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3749">
@@ -302,36 +407,70 @@
     <entry file="file://$PROJECT_DIR$/hashId.min.js">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/componentFunctions.js">
+    <entry file="file://$PROJECT_DIR$/WEB-INF/visualizeComposition.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="332">
-          <caret line="17" column="22" lean-forward="true" selection-start-line="17" selection-start-column="22" selection-end-line="17" selection-end-column="22" />
+        <state relative-caret-position="138">
+          <caret line="6" column="85" selection-start-line="6" selection-start-column="85" selection-end-line="6" selection-end-column="85" />
+          <folding>
+            <element signature="n#style#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#textarea#0;n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/nativeSemanticUI.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="845">
-          <caret line="226" column="19" lean-forward="true" selection-start-line="226" selection-start-column="19" selection-end-line="226" selection-end-column="19" />
+        <state relative-caret-position="730">
+          <caret line="123" column="17" selection-start-line="123" selection-start-column="17" selection-end-line="123" selection-end-column="31" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/util.js">
+    <entry file="file://$PROJECT_DIR$/componentFunctions.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="429">
-          <caret line="184" lean-forward="true" selection-start-line="184" selection-end-line="184" />
+        <state relative-caret-position="184">
+          <caret line="77" column="51" lean-forward="true" selection-start-line="77" selection-start-column="51" selection-end-line="77" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/visualizeComposition.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="112" column="77" selection-start-line="112" selection-start-column="77" selection-end-line="112" selection-end-column="77" />
           <folding>
-            <element signature="n#!!block;n#toHex#0" />
-            <element signature="n#!!block;n#IRIGenerator#0" />
-            <element signature="n#!!block;n#DropdownDataGenerator#0" />
+            <element signature="n#style#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#textarea#0;n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/visualizeComposition.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="114" column="59" selection-start-line="114" selection-start-column="53" selection-end-line="114" selection-end-column="59" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="521">
-          <caret line="141" column="29" selection-start-line="141" selection-start-column="21" selection-end-line="141" selection-end-column="37" />
+        <state relative-caret-position="553">
+          <caret line="147" lean-forward="true" selection-start-line="147" selection-end-line="147" />
+          <folding>
+            <element signature="n#style#0;n#div#0;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#1;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#textarea#0;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2455">
+          <caret line="160" column="37" lean-forward="true" selection-start-line="160" selection-start-column="37" selection-end-line="160" selection-end-column="37" />
+          <folding>
+            <element signature="n#!!block;n#toHex#0" />
+            <element signature="n#!!block;n#IRIGenerator#0" />
+            <element signature="n#!!block;n#DropdownDataGenerator#0" />
+          </folding>
         </state>
       </provider>
     </entry>

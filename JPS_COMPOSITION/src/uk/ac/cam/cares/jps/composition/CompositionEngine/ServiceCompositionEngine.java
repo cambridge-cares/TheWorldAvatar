@@ -21,10 +21,11 @@ public class ServiceCompositionEngine {
 	public Graph newGraph;
 	private ServiceDiscovery serviceDiscovery;
 	private ArrayList<MessagePart> inputsToAppend;
-	private ArrayList<URI> outputsRequired; 
+	private ArrayList<URI> outputsRequired;
 
 	public ServiceCompositionEngine(Service compositeAgent) throws JSONException, IOException, URISyntaxException {
 		this.newGraph = new Graph();
+		this.newGraph.initialInputs = (ArrayList<MessagePart>) compositeAgent.getAllInputs();
 		this.serviceDiscovery = new ServiceDiscovery();
 		this.inputsToAppend = new ArrayList<MessagePart>();
 		this.outputsRequired = new ArrayList<URI>();
@@ -56,7 +57,7 @@ public class ServiceCompositionEngine {
 		newLayer.setServices(servicesToAppend);
 		this.newGraph.addLayer(newLayer);
 
-		boolean metRequirement = true; // If one of the requirement is not me, the boolean value will be set to false. 
+		boolean metRequirement = true; // If one of the requirement is not me, the boolean value will be set to false.
 
 		for (URI required : this.outputsRequired) {
 			boolean atLeastOneHit = false;
@@ -89,10 +90,10 @@ public class ServiceCompositionEngine {
 								leadToNoInput = false; // Do not eliminate the agent
 							}
 							for (URI output : this.outputsRequired) {
-								if (MatchingTool.compareURI(service_part.getModelReference(), output)) { 
+								if (MatchingTool.compareURI(service_part.getModelReference(), output)) {
 									leadToNoInput = false; // Do not eliminate the agent
 								}
-							}// As long as there is one match, the service will survive. 
+							} // As long as there is one match, the service will survive.
 						}
 					}
 				}
@@ -107,20 +108,20 @@ public class ServiceCompositionEngine {
 			}
 		}
 
-		executionList.forEach((layer, services) -> { // iterate through the executionList map, where Layers are keys and an ArrayList of services is the value.
+		executionList.forEach((layer, services) -> { // iterate through the executionList map, where Layers are keys and
+														// an ArrayList of services is the value.
 			for (Service s : services) {
-				layer.removeService(s);// for each layer, remove the redundant services. 
+				layer.removeService(s);// for each layer, remove the redundant services.
 			}
 		});
-		
-		
 	}
 
 	public void optimalSearch() {
-		// This function will select out the optimal path when there is multiple paths available
-		OptimalPathSearcher searcher = new OptimalPathSearcher();
+		// This function will select out the optimal path when there is multiple paths
+		// available
+		OptimalPathSearcher searcher = new OptimalPathSearcher(this.newGraph);
 		searcher.searchForTheOptimalPath();
-	
+
 	}
 
 	public void visualizeGraph() {

@@ -207,6 +207,8 @@ function load() {
 
 function init_load() {
 
+    document.getElementById("myDiagramDiv2").hidden = true;
+    document.getElementById("myDiagramDiv").hidden = false;
     var jsonObj = JSON.parse(document.getElementById("mySavedModel").value);
     var IRI = IRIGenerator('Composite_Service');
     jsonObj.nodeDataArray[0].text = IRI;
@@ -225,6 +227,7 @@ function clear_content() {
 
 
 function layout() {
+    console.log('doing layout');
     myDiagram.layoutDiagram(true);
 }
 
