@@ -78,6 +78,20 @@
 </dependency>
   
   
+  <!-- https://mvnrepository.com/artifact/org.apache.jena/jena-core -->
+<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-core</artifactId>
+    <version>3.7.0</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-arq--> 
+<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-arq</artifactId>
+    <version>3.7.0</version>
+</dependency>
+
  <!-- makes problem during Tomcat deployment -->
 <!-- https://mvnrepository.com/artifact/ognl/ognl -->
 <!-- 
