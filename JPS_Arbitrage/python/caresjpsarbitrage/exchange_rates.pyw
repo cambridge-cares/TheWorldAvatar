@@ -6,6 +6,10 @@
 
 from lxml import html
 import requests, sys
+import json
+
+from caresjpsutil import returnExceptionToJava, returnResultsToJava
+from caresjpsutil import PythonLogger
 
 ##this function downloads natural gas futures prices for a gas delivered by Henry Hub pipeline; it is done by downloading their page source and parsing through it as if it was an XML file
 def exchange_rates():
@@ -17,9 +21,11 @@ def exchange_rates():
 	headers = []
 	string1 = ""
 	string2=""
+	dictHeaderValue = {}
+
 	for currencies in currency_pairs:
 		# Url is being formulated
-		url_address = 'http://www.xe.com/currencyconverter/convert/?Amount=1&From='+currencies[0]+'&To='+currencies[1]
+		url_address = 'http://www.xe.com/currencyconverter/convert/?Amount=1&From='+currencies[1]+'&To='+currencies[0]
 		
 		# requests library is used to download the source code of the page with exchange rates. The code is then parsed as html.
 		page = requests.get(url_address)
@@ -28,17 +34,27 @@ def exchange_rates():
 		
 		# lxml library is used to search through the html file using its structure and attributes
 		exchange_rate = float(tree.xpath('//span[@class="uccResultUnit"]')[0].attrib['data-amount'])
-		rates.append(str(exchange_rate))
-		headers.append(currencies[1]+'_to_'+currencies[0])
-		string1 = string1 + currencies[1]+'_to_'+currencies[0]+ ","
-		string2 = string2 + str(exchange_rate)+ ","
-	
-	
-	string2 = string2[:-1]
-	print(string1 + string2)
+		# rates.append(str(exchange_rate))
+		# headers.append(currencies[1]+'_to_'+currencies[0])
+        #
+		# string1 = string1 + currencies[1] + '_to_' + currencies[0]+ ","
+		# string2 = string2 + str(exchange_rate)+ ","
 
+		dictHeaderValue['{}_to_{}'.format(currencies[1], currencies[0])] = str(exchange_rate)
+
+	# string2 = string2[:-1]
+	# print(string1 + string2)
+	return json.dumps(dictHeaderValue)
 
 
 
 if __name__ == "__main__":
-	exchange_rates()
+	pythonLogger = PythonLogger('exchange_rates.pyw')
+	pythonLogger.postInfoToLogServer('start of exchange_rates.pyw')
+
+	try:
+		returnResultsToJava(exchange_rates())
+		pythonLogger.postInfoToLogServer('end of exchange_rates.pyw')
+	except Exception as e:
+		returnExceptionToJava(e)
+		pythonLogger.postInfoToLogServer('end of exchange_rates.pyw')

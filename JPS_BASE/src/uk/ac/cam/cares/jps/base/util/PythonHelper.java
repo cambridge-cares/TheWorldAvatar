@@ -57,4 +57,14 @@ public class PythonHelper {
 		
 		return processCommand(cmd);
 	}
+	
+	public static String callPython(String pythonScriptName, String parameter1, String parameter2, String parameter3, String parameter4, Object thisObject) throws IOException {
+		String pathPythonScript = AgentLocator.getNewPathToPythonScript(pythonScriptName, thisObject);		
+		
+		logger.info(pathPythonScript, parameter1, parameter2, parameter3, parameter4);
+		
+		String[] cmd = { "python", pathPythonScript, parameter1, parameter2, parameter3, parameter4 };
+		
+		return processCommand(cmd);
+	}
 }

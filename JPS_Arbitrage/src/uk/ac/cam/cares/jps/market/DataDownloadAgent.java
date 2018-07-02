@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.market;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -23,10 +21,12 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 @WebServlet(urlPatterns = {
 		"/downloadingAndSavingMarketDataInTheKnowledgeBase",
 		"/downloadingAndSavingExchangeRatesInTheKnowledgeBase",
-		"/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase" })
+		"/savingDataInTheKnowledgeBase",
+		"/retrieveUtilityPrices",
+		"/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase",
+		"/retrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase"})
 public class DataDownloadAgent extends HttpServlet {
-	private static Logger logger = LoggerFactory
-			.getLogger(DataDownloadAgent.class);
+	private static Logger logger = LoggerFactory.getLogger(DataDownloadAgent.class);
 
 	private static final long serialVersionUID = 2L; // ??
 
@@ -35,16 +35,6 @@ public class DataDownloadAgent extends HttpServlet {
 	 */
 	public DataDownloadAgent() {
 		super();
-	}
-	
-	// delete later
-	public void writeStringUsingBufferedWriter(String function, String result) throws IOException {
-		BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\jps\\jps_arbitrage\\consoleOutputDataDownloadAgent.txt", true));
-		writer.append(function);
-		writer.newLine();
-		writer.append(result);
-		writer.newLine();
-		writer.close();
 	}
 
 	/**
@@ -65,24 +55,18 @@ public class DataDownloadAgent extends HttpServlet {
 			throws ServletException, IOException {
 
 		String path = request.getServletPath();
-		
-		Gson g = new Gson();
 
+		Gson g = new Gson();
+		
 		if ("/downloadingAndSavingMarketDataInTheKnowledgeBase"
 				.equals(path)) {
 
-			// -- Get String formatted in Array of Strings
-			// -- //
 			request.setCharacterEncoding("UTF-8");
+			String jsonString = request.getParameter("choicePlant");
 
 			try {
-				String result = g.toJson(DataDownload
-						.downloadingAndSavingMarketDataInTheKnowledgeBase());
-//				String result = DataDownload
-//						.downloadingAndSavingMarketDataInTheKnowledgeBase();
-				// delete later
-				writeStringUsingBufferedWriter(path, g.fromJson(result, String.class));
-				
+				String result = g.toJson(DataDownload.downloadingAndSavingMarketDataInTheKnowledgeBase(jsonString));
+
 				response.setContentType("application/json");
 				response.getWriter().write(result);
 			} catch (Exception e) {
@@ -91,23 +75,15 @@ public class DataDownloadAgent extends HttpServlet {
 						e.getMessage(), e);
 			}
 
-		} else if ("/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase"
+		} else if ("/downloadingAndSavingExchangeRatesInTheKnowledgeBase"
 				.equals(path)) {
 
-			// -- Get String formatted in Array of Strings
-			// -- //
 			request.setCharacterEncoding("UTF-8");
-			String jsonString = request
-					.getParameter("individuals");
 
 			try {
-				String result = DataDownload
-						.retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase(
-								jsonString.split(","));
-				
-				// delete later
-				writeStringUsingBufferedWriter(path, result);
-				
+				String result = g.toJson(DataDownload
+						.downloadingAndSavingExchangeRatesInTheKnowledgeBase());
+
 				response.setContentType("application/json");
 				response.getWriter()
 						.write(result.toString());
@@ -116,29 +92,77 @@ public class DataDownloadAgent extends HttpServlet {
 				throw new JPSRuntimeException(
 						e.getMessage(), e);
 			}
-		} else if ("/downloadingAndSavingExchangeRatesInTheKnowledgeBase"
-				.equals(path)) {
-
-			// -- Get String formatted in Array of Strings
-			// -- //
+		} else if ("/savingDataInTheKnowledgeBase".equals(path)) {
 			request.setCharacterEncoding("UTF-8");
-
+			String jsonString = request.getParameter("arrayHeaderPrices");
+			
 			try {
-				String result = g.toJson(DataDownload
-						.downloadingAndSavingExchangeRatesInTheKnowledgeBase());
-								
-				// delete later
-				writeStringUsingBufferedWriter(path, g.fromJson(result, String.class));
+				String result = g.toJson(DataDownload.savingDataInTheKnowledgeBase(jsonString));
 				
 				response.setContentType("application/json");
 				response.getWriter()
-						.write(result.toString());
+						.write(result);
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+				throw new JPSRuntimeException(
+						e.getMessage(), e);
+			}
+		} else if ("/retrieveUtilityPrices"
+				.equals(path)) {
+
+			request.setCharacterEncoding("UTF-8");
+			String jsonString = request
+					.getParameter("individuals");
+
+			try {
+				String result = g.toJson(DataDownload.retrieveUtilityPrices(jsonString.split(",")));
+				
+				response.setContentType("application/json");
+				response.getWriter()
+						.write(result);
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+				throw new JPSRuntimeException(
+						e.getMessage(), e);
+			}
+		} else if ("/retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase"
+				.equals(path)) {
+
+
+			request.setCharacterEncoding("UTF-8");
+			String jsonString = request
+					.getParameter("individuals");
+
+			try {
+				String result = g.toJson(DataDownload
+						.retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase(
+								jsonString.split(",")));
+
+				response.setContentType("application/json");
+				response.getWriter().write(result);
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+				throw new JPSRuntimeException(
+						e.getMessage(), e);
+			}
+		} else if ("/retrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase"
+				.equals(path)) {
+
+			request.setCharacterEncoding("UTF-8");
+			String jsonString = request.getParameter("individuals");
+			
+			try {
+				String result = g.toJson(DataDownload
+						.retrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase(
+								jsonString.split(",")));
+
+				response.setContentType("application/json");
+				response.getWriter().write(result);
 			} catch (Exception e) {
 				logger.error(e.getMessage());
 				throw new JPSRuntimeException(
 						e.getMessage(), e);
 			}
 		}
-
 	}
 }
