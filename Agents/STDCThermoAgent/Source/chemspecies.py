@@ -6,6 +6,7 @@ import utilities as utl
 import lmfit as lmf
 from lxml import etree
 import csv
+import json
 
 #======================================================
 #                 Chemical species class
@@ -381,13 +382,83 @@ def readSpecXML(xmlfile):
     return rSpec
 
 
-def RunThermoScriptFromCmd(xml_file,out_datfile,out_csvfile,tfit_range,tcsv_range,href):
+def readSpecJSON(jsonfile):
+    with open(jsonfile) as f:
+        data = json.load(f)
 
-    Sp = readSpecXML(xml_file)
-    if len(out_datfile.strip())==0:
-        out_datfile = xml_file.replace('.xml','.dat')
-    if len(out_csvfile.strip())==0:
-        out_csvfile = xml_file.replace('.xml','.csv')
+    Name = ""
+    Formula = ""
+    Composition = []
+    VibFreq = []
+    SymNr = 1.0
+    Geom = []
+    GeomType = 2
+    InertiaMom = []
+    SpinMult = 1.0
+
+    results = {}
+    results = data['results']['bindings']
+    for ritems in results:
+        for key, values in ritems.items():
+            if key == 'moleculeName':
+                Name = values['value'].replace(' ','')
+                Formula = Name
+            elif key == 'atomName':
+                atom = ritems['atomName']['value']
+                atom = atom.split('#')[1]
+                if 'coordinateX' in ritems:
+                    x = float(ritems['coordinateX']['value'])
+                    y = float(ritems['coordinateY']['value'])
+                    z = float(ritems['coordinateZ']['value'])
+                    Geom.append([atom,x,y,z])
+                else:
+                    Composition.append(atom)
+                    Composition.append(str(int(float(ritems['atomNumber']['value']))))
+
+            elif key == 'spinMultiplicityValue':
+                SpinMult = float(ritems['spinMultiplicityValue']['value'])
+            elif key == 'frequenciesValue':
+                if 'frequenciesUnit' in ritems:
+                    VibFreqUnit = ritems['frequenciesUnit']['value'].split('/')[-1].upper()
+                    if 'M-1' in VibFreqUnit:
+                        VibFreqUnit = VibFreqUnit.replace('-1','^-1')
+                u_fact = utl.convertFrequencyUnitsToSI(VibFreqUnit)
+                VibFreq = [float(f)*u_fact for f in ritems['frequenciesValue']['value'].split()]
+            elif key == 'geometryTypeValue':
+                if ritems['geometryTypeValue']['value'] == 'nonlinear':
+                    GeomType=2
+                elif ritems['geometryTypeValue']['value'] == 'linear':
+                    GeomType=1
+                else:
+                    GeomType = 0
+            elif key == 'rotationalConstantsValue':
+                if 'rotationalConstantsUnit' in ritems:
+                    RotConstUnit = ritems['rotationalConstantsUnit']['value'].split('#')[-1].upper()
+                    if RotConstUnit == 'GIGAHERTZ': RotConstUnit = 'GHZ'
+                    u_fact1 = utl.convertEnergyMoleculeUnitsToSI(RotConstUnit,1.0) # 1/TIME,Hz,1/cm => J
+                    u_fact2 = utl.convertEnergyMoleculeUnitsToSI('1/M',-1.0) # J => 1/m
+                    u_fact = u_fact1*u_fact2
+                    RotConst = [float(f)*u_fact for f in ritems['rotationalConstantsValue']['value'].split()]
+                    InertiaMom = getImomFromRotConstant(RotConst)
+            elif key == 'rotationalSymmetryNumber':
+                SymNr = float(ritems['rotationalSymmetryNumber']['value'])
+
+    rSpec = ChemSpecies(aName=Name,aFormula=Formula,aComp=Composition,aVibFreq=VibFreq,aSymNr=SymNr, \
+                        aGeom=Geom,aGeomType=GeomType,aImom=InertiaMom,aSpinMult=SpinMult)
+    return rSpec
+
+
+
+def RunThermoScriptFromCmd(use_file,inp_file,out_datfile,out_csvfile,tfit_range,tcsv_range,href):       
+    if use_file == 1:
+        Sp = readSpecXML(inp_file)
+        if len(out_datfile.strip())==0:
+            out_datfile = inp_file.replace('.xml','.dat')
+    else:
+        Sp = readSpecJSON(inp_file)
+        if len(out_datfile.strip())==0:
+            out_datfile = inp_file.replace('.json','_nasa.json')
+
     if len(href)>0:
         Sp.EnthRefTemp = href[0]
         Sp.EnthRef = href[1]
@@ -398,9 +469,27 @@ def RunThermoScriptFromCmd(xml_file,out_datfile,out_csvfile,tfit_range,tcsv_rang
     if len(tcsv_range)==0:
         tcsv_range = [298,300,400,500,600,700,800,900,1000,1200,1500,1700,2000,2500,3000]
 
+    #fit and write nasa polyn by default
     Sp = fitThermoDataNASA(Sp,tfit_range)
-    writeNasaDatFile(Sp,out_datfile)
-    writeThermoDatCsvFile(Sp,out_csvfile,T=tcsv_range,inclFitNasa=True,inclNasa=False)
+
+    if use_file == 2:
+        #create dictionary with Nasa polynomials data
+        nasaDict = {}
+        nasaDict['Name'] = Sp.Name
+        nasaDict['Comment'] = 'STHD'
+        nasaDict['Composition'] = Sp.Composition
+        nasaDict['Trange'] = Sp.FitTrangeNasa
+        nasaDict['LowTcoeff'] = Sp.FitLowNasa
+        nasaDict['highTcoeff'] = Sp.FitHighNasa
+
+        with open(out_datfile, 'w') as outfile:
+            json.dump(nasaDict, outfile)
+    else:
+        writeNasaDatFile(Sp,out_datfile)
+
+    if len(out_csvfile.strip())!=0:
+        #write csv if user provides a file name
+        writeThermoDatCsvFile(Sp,out_csvfile,T=tcsv_range,inclFitNasa=True,inclNasa=False)
 
 def writeThermoDatCsvFile(Sp,outfile,T=[298,300,400,600,800,1000,1500,2000,2500,3000],inclFitNasa=True,inclNasa=False):
     unit=1
