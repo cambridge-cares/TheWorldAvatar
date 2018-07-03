@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
-	<wb-module deploy-name="JPS">
+    <wb-module deploy-name="JPS_COMPOSITION">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/test"/>
-        <wb-resource deploy-path="/python" source-path="/python"/>
-        <wb-resource deploy-path="/workingdir" source-path="/workingdir"/>
-		<property name="context-root" value="JPS"/>
-		<property name="java-output-path" value="/JPS/build/classes"/>
-	</wb-module>
+        <property name="context-root" value="JPS_COMPOSITION"/>
+        <property name="java-output-path" value="/JPS_COMPOSITION/build/classes"/>
+    </wb-module>
 </project-modules>
