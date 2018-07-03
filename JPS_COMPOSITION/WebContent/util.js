@@ -220,6 +220,7 @@ function composeService() {
 
     })
         .done(function (msg) {
+            console.log(msg);
             visualizeComposition(convertComposition(JSON.parse(msg)));
         })
         .fail(function (error) {
@@ -235,11 +236,8 @@ function replaceAll(text, search, replacement) {
     return text.replace(new RegExp(search, 'g'), replacement);
 }
 
-
-
 function convertComposition(result) {
 
-    console.log(result.initialInputs);
 
     var visualizationObject = {
         linkFromPortIdProperty: "fromPort",
@@ -263,9 +261,6 @@ function convertComposition(result) {
     var layers = result.layers;
     layers.forEach(function (layer, layerIndex) {
         previousLayers.push(layer);
-        console.log(previousLayers);
-
-
         layer.services.forEach(function (service, serviceIndex) {
             var serviceObject = {key: IRIProcessor(service.uri), inputs: [], outputs: [], loc: ""};
             var inputs = [];
@@ -313,7 +308,6 @@ function convertComposition(result) {
 }
 
 function IRIProcessor(IRI) {
-    console.log('IRI', IRI);
     if (IRI.includes("#")){
         return IRI.split("#").slice(-1)[0]
     }

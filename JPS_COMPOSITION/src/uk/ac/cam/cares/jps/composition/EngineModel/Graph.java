@@ -14,13 +14,14 @@ public class Graph {
 	public ArrayList<Service> servicePool; // ignored in serialization
 	public ArrayList<Layer> layers; 
 	public ArrayList<MessagePart> initialInputs;
-	
+	public ArrayList<Edge> edges;
 	
 	public Graph() {
 		this.initialInputs = new ArrayList<MessagePart>();
 		this.inputPool = new ArrayList<MessagePart>();
 		this.layers = new ArrayList<Layer>();
 		this.servicePool = new ArrayList<Service>();
+		this.edges = new ArrayList<Edge>();
 	}
 	
 	public void addLayer(Layer newLayer) {

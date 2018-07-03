@@ -17,6 +17,7 @@ public class Layer {
 	private List<Resource> outputs; // ignored in serialization 
 	private int index; 
 	
+	
 	public Layer(int index) {
 		this.setIndex(index); 
 		this.services = new ArrayList<Service>();		
@@ -75,9 +76,6 @@ public class Layer {
 		}
 		return result;
 	}
-
-	
-	
 	
 	public List<Resource> getOutputs() { // ignored in serialization 
 		return outputs;

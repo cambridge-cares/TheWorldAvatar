@@ -15,6 +15,7 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.composition.CompositionEngine.ServiceCompositionEngine;
 import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
+import uk.ac.cam.cares.jps.composition.util.ConnectionBuilder;
 import uk.ac.cam.cares.jps.composition.util.FormatTranslator;
 
 /**
@@ -60,6 +61,8 @@ public class ServiceCompositionEndpoint extends HttpServlet {
 	    			met = myCompositionEngine.appendLayerToGraph(index);
 	    		}
 	    		myCompositionEngine.eliminateRedundantAgent();
+	    		ConnectionBuilder connectionBuilder = new ConnectionBuilder();
+	    		connectionBuilder.buildEdge(myCompositionEngine.getGraph()); // build the connection between services 
 	    		JSONObject graphInJSON = FormatTranslator.convertGraphJavaClassTOJSON(myCompositionEngine.getGraph());
 	    		response.getWriter().write(graphInJSON.toString());
 	    		
@@ -68,5 +71,4 @@ public class ServiceCompositionEndpoint extends HttpServlet {
 			  
 		  }
 	}
-
 }

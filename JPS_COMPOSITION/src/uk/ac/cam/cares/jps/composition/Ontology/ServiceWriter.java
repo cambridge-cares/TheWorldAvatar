@@ -34,9 +34,9 @@ public class ServiceWriter {
 			addOperationToModel(model, op);
 
 		}
-
-		//FileOutputStream fos = new FileOutputStream("/home/zhouxiaochi/Documents/test.rdf");
-		//model.write(fos);
+		// Write the result to file
+		// FileOutputStream fos = new FileOutputStream("/home/zhouxiaochi/Documents/test.rdf");
+		// model.write(fos);
 		String syntax = "RDF/XML"; // also try "N-TRIPLE" and "TURTLE"
 		StringWriter out = new StringWriter();
 		model.write(out, syntax);
@@ -48,13 +48,11 @@ public class ServiceWriter {
 		Resource current = model.createResource(operation.getUri().toASCIIString());
 		current.addProperty(RDF.type, MSM.Operation.Node());
 		for (MessageContent input : operation.getInputs()) {
-			// System.out.println("input uri: " + input.uri.toASCIIString());
 			current.addProperty(MSM.hasInput.Property(), model.createResource(input.uri.toASCIIString()));
 			addMessageContent(model, input);
 		}
 
 		for (MessageContent output : operation.getOutputs()) {
-			// System.out.println("output uri: " + output.uri.toASCIIString());
 			current.addProperty(MSM.hasOutput.Property(), model.createResource(output.uri.toASCIIString()));
 			addMessageContent(model, output);
 		}

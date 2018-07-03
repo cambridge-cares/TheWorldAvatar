@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.composition.util;
 
 import uk.ac.cam.cares.jps.composition.EngineModel.Graph;
+import uk.ac.cam.cares.jps.composition.EngineModel.Layer;
 
 public class OptimalPathSearcher {
 	
@@ -11,13 +12,19 @@ public class OptimalPathSearcher {
 	}
 	
 	public void searchForTheOptimalPath() {
-		// The graph reaching this stage contains no redundant agents
-		// Implement a path searching algorithm, state all the avaliable paths
-		// composIT has an algorithm ... 
-		
+		// Rule: Start from the last layer, get all the inputs, if for a certain input there is only one provider, label it as a 
+		Layer lastLayer = theGraph.layers.get(theGraph.layers.size() -1);
+ 		
 		
 	}
 
+	public void identifyTheSingleProviders() {
+		// get all edges to the final services, identify the single providers, iterate on them
+		
+		
+	}
+	
+	
 	public Graph getTheGraph() {
 		return theGraph;
 	}

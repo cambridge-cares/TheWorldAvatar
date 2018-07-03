@@ -36,6 +36,7 @@ public class ServiceCompositionEngineTest {
 		for (Layer layer : engine.newGraph.layers) {
 			System.out.println(layer.getServices());
 		}
+		
 		// now start to visualize the graph ... 
 		// convert it to a 
 	}
