@@ -57,9 +57,8 @@ public class UploadAction extends ActionSupport {
 	@Override
 	public String execute() throws Exception {
 		 
-		String catalicaFolderPath = System.getProperty("catalina.home");
+		String catalicaFolderPath = System.getProperty("catalina.home");		
 		
-	
 		for(File f: files) {
 		
 		Module rootModule = new Module();
@@ -89,27 +88,12 @@ public class UploadAction extends ActionSupport {
 		
         Transformation.trasnformation(xmlSource, outputStream, xsltSource);
         
-        File sparqlFile = new File(catalicaFolderPath +"/conf/Catalina/sparql_query/query_all.sparql");
-        
-        File[] aboxFiles =  CompChemQuery.getFileList(catalicaFolderPath+ "/conf/Catalina/compchem_ontology/");
-        
-        String sparqlResulFolder = catalicaFolderPath +"/conf/Catalina/sparql_results/";
-        
-        for(File af : aboxFiles) {
-        	
-            	OntModel model = CompChemQuery.getOntModel(af.getAbsolutePath());
-            	
-            	String q = FileUtils.readFileToString(sparqlFile, "UTF-8");
-        		
-            	CompChemQuery.performQuery(model, q, af.getName().toString(), sparqlResulFolder);
-        }
-        
 		}
+		
 		return INPUT;
 		
-		
-		
 	}
+	
 	
 	public File[] getUpload() {
 		return files;
