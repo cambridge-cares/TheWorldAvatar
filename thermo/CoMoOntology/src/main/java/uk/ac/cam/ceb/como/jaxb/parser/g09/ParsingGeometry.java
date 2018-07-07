@@ -6,6 +6,7 @@ package uk.ac.cam.ceb.como.jaxb.parser.g09;
 import java.io.File;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.xmlcml.cml.element.CMLAtom;
 import org.xmlcml.cml.element.CMLMolecule;
@@ -17,7 +18,6 @@ import uk.ac.cam.ceb.como.io.chem.file.jaxb.Molecule;
 import uk.ac.cam.ceb.como.io.chem.file.parser.g09.FrequencyParser;
 import uk.ac.cam.ceb.como.thermo.calculator.rotation.internal.util.IRCompChemWrapper;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ParsingGeometry.
  *
@@ -27,6 +27,7 @@ import uk.ac.cam.ceb.como.thermo.calculator.rotation.internal.util.IRCompChemWra
  *         'FrequencyParser' of {@author pb556} is used to extract 'Geometry'
  *         data (information). </p>
  */
+
 public class ParsingGeometry {
 
 	/**
@@ -36,6 +37,7 @@ public class ParsingGeometry {
 	 * @return the geometry from G 09
 	 * @throws Exception the exception
 	 */
+
 	public Molecule getGeometryFromG09(File file) throws Exception {
 
 		Molecule molecule = new Molecule();
@@ -58,18 +60,28 @@ public class ParsingGeometry {
 		molecule.setSpinMultiplicity(BigInteger.valueOf(cml_m.getSpinMultiplicity()));
 
 		List<CMLAtom> atom = cml_m.getAtoms();
+		
+		StringTokenizer weightTokenizer = ParsingAtomicMass.getAtomicWeightString(file);
 
+		List<String> atomicWeightList = ParsingAtomicMass.getListOfAtomicMass(weightTokenizer);
+		
+		int i =0;
+		
 		for (CMLAtom a : atom) {
 
-			Atom atom_jxb = new Atom();
+			Atom atomJxb = new Atom();
 
-			atom_jxb.setId(a.getId());
-			atom_jxb.setElementType(a.getElementType());
-			atom_jxb.setX3(a.getX3());
-			atom_jxb.setY3(a.getY3());
-			atom_jxb.setZ3(a.getZ3());
-
-			atom_array_jxb.getAtom().add(atom_jxb);
+			atomJxb.setId(a.getId());
+			atomJxb.setElementType(a.getElementType());
+			atomJxb.setX3(a.getX3());
+			atomJxb.setY3(a.getY3());
+			atomJxb.setZ3(a.getZ3());
+			
+			atomJxb.setAtomMass(atomicWeightList.get(i));
+			
+			atom_array_jxb.getAtom().add(atomJxb);
+			
+			i++;
 
 		}
 
@@ -88,6 +100,7 @@ public class ParsingGeometry {
 	 *             information about Geometry, this methods collects information
 	 *             about Geometry that is given in final molecule.</p>
 	 */
+	
 	public CMLMolecule getFinalCMLMolecule(File file) throws Exception {
 
 		FrequencyParser parser = new FrequencyParser();
