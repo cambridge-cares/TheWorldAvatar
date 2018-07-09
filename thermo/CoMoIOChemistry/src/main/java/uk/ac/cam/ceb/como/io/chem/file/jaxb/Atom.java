@@ -20,7 +20,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
  * <p>Java class for anonymous complex type.
  * 
@@ -48,6 +47,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attGroup ref="{http://www.xml-cml.org/schema}pointGroupMultiplicity"/>
  *       &lt;attGroup ref="{http://www.xml-cml.org/schema}ref"/>
  *       &lt;attGroup ref="{http://www.xml-cml.org/schema}spinMultiplicity"/>
+ *       &lt;attGroup ref="{http://www.xml-cml.org/schema}atomicMass"/>
  *       &lt;attGroup ref="{http://www.xml-cml.org/schema}z3"/>
  *       &lt;attGroup ref="{http://www.xml-cml.org/schema}y2"/>
  *       &lt;attGroup ref="{http://www.xml-cml.org/schema}formalCharge"/>
@@ -108,6 +108,8 @@ public class Atom {
     @XmlAttribute(name = "spinMultiplicity")
     @XmlSchemaType(name = "positiveInteger")
     protected BigInteger spinMultiplicity;
+    @XmlAttribute(name = "atomicMass")
+    protected java.lang.String atomicMass;
     @XmlAttribute(name = "z3")
     protected Double z3;
     @XmlAttribute(name = "y2")
@@ -272,6 +274,7 @@ public class Atom {
      *     {@link BigInteger }
      *     
      */
+    
     public BigInteger getSpinMultiplicity() {
         return spinMultiplicity;
     }
@@ -301,6 +304,33 @@ public class Atom {
     }
 
     /**
+     * Sets the value of the atomMass property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link java.lang.String }
+     *     
+     */
+    public void setAtomicMass(java.lang.String atomicMass) {
+        this.atomicMass = atomicMass;
+    }
+    
+    /**
+     * 
+     */
+    /**
+     * Gets the value of the atomMass property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link java.lang.String }
+     *     
+     */
+    public java.lang.String  getAtomicMass() {
+        return atomicMass;
+    }
+
+    /**
      * Sets the value of the z3 property.
      * 
      * @param value
@@ -311,6 +341,17 @@ public class Atom {
     public void setZ3(Double value) {
         this.z3 = value;
     }
+    
+    /**
+     * 
+     */
+    
+    
+    
+    
+    
+    
+    
 
     /**
      * Gets the value of the y2 property.
