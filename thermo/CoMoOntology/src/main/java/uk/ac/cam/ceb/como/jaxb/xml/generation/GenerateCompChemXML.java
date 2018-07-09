@@ -231,6 +231,11 @@ public class GenerateCompChemXML {
 			 */
 			propertyList.getPropertyOrPropertyListOrObservation()
 			.add(pgt.getGeometryTypeFromG09(file.getAbsoluteFile()));
+			
+            Parameter parameterLevelOfTheory = ParsingLevelOfTheory.getLevelOfTheryParameter(file, sumOfAtoms);
+			
+			parameterList.getParameterOrParameterList().add(parameterLevelOfTheory);
+			
 
 			geometryMolecule = pg.getGeometryFromG09(file);
 
@@ -238,6 +243,8 @@ public class GenerateCompChemXML {
 
 			finalModule.getAny().add(geometryMolecule);
 
+			initialModule.getAny().add(parameterList);
+			
 			getRootModule(initialModule, finalModule, rootModule);
 
 		} else {
