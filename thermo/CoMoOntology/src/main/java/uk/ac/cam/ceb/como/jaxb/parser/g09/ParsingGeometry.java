@@ -42,7 +42,13 @@ public class ParsingGeometry {
 
 		Molecule molecule = new Molecule();
 
-		AtomArray atom_array_jxb = new AtomArray();
+		AtomArray atomArrayJxb = new AtomArray();
+		
+		StringTokenizer weightTokenizer = ParsingAtomicMass.getAtomicWeightString(file);
+
+		List<String> atomicWeightList = ParsingAtomicMass.getListOfAtomicMass(weightTokenizer);
+		
+		if(atomicWeightList.size()>1) {
 
 		CMLMolecule cml_m = getFinalCMLMolecule(file);
 
@@ -54,16 +60,14 @@ public class ParsingGeometry {
 		 *         files. </p>
 		 * 
 		 */
-
+        
 		molecule.setId(cml_m.getId());
 		molecule.setConvention(cml_m.getConvention());
 		molecule.setSpinMultiplicity(BigInteger.valueOf(cml_m.getSpinMultiplicity()));
 
 		List<CMLAtom> atom = cml_m.getAtoms();
 		
-		StringTokenizer weightTokenizer = ParsingAtomicMass.getAtomicWeightString(file);
-
-		List<String> atomicWeightList = ParsingAtomicMass.getListOfAtomicMass(weightTokenizer);
+		
 		
 		int i =0;
 		
@@ -77,19 +81,58 @@ public class ParsingGeometry {
 			atomJxb.setY3(a.getY3());
 			atomJxb.setZ3(a.getZ3());
 			
-			atomJxb.setAtomMass(atomicWeightList.get(i));
+			atomJxb.setAtomicMass(atomicWeightList.get(i));
 			
-			atom_array_jxb.getAtom().add(atomJxb);
+			atomArrayJxb.getAtom().add(atomJxb);
 			
 			i++;
 
 		}
 
-		molecule.getAngleOrArgOrArray().add(atom_array_jxb);
-
+		molecule.getAngleOrArgOrArray().add(atomArrayJxb);
+		
+		}
+		
 		return molecule;
 	}
+	/**
+	 * 
+	 * @param file
+	 * @return Molecule that contains atomic mass for one atom, and set all geometry coordinate to 0.00. 
+	 * @throws Exception
+	 */
 
+	public Molecule getGeometryFromG09OneAtomMolecule(File file) throws Exception {
+		
+		Molecule molecule = new Molecule();
+
+		AtomArray atomArrayJxb = new AtomArray();
+		
+		StringTokenizer weightTokenizer = ParsingAtomicMass.getAtomicWeightString(file);
+
+		List<String> atomicWeightList = ParsingAtomicMass.getListOfAtomicMass(weightTokenizer);
+		
+		Atom atomJxb = new Atom();
+		
+		atomJxb.setId("a1");
+		
+		atomJxb.setX3(0.00);
+		atomJxb.setY3(0.00);
+		atomJxb.setZ3(0.00);
+		
+		atomJxb.setAtomicMass(atomicWeightList.get(0));
+		
+		atomArrayJxb.getAtom().add(atomJxb);
+		
+		molecule.setId("mol-final-2");
+		molecule.setConvention("convention:molecular");
+		
+		molecule.getAngleOrArgOrArray().add(atomArrayJxb);
+		
+		return molecule;
+		
+		
+	}
 	/**
 	 * Gets the final CML molecule.
 	 *
