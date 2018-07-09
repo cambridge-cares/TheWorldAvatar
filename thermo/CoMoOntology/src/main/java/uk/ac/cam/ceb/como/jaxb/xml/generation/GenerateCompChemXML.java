@@ -17,11 +17,14 @@ import org.eclipse.persistence.exceptions.JAXBException;
 
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.Module;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.Molecule;
+import uk.ac.cam.ceb.como.io.chem.file.jaxb.Parameter;
+import uk.ac.cam.ceb.como.io.chem.file.jaxb.ParameterList;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.PropertyList;
 import uk.ac.cam.ceb.como.io.chem.file.parser.formula.EmpiricalFormulaParser;
 import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingFrequencies;
 import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingGeometry;
 import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingGeometryType;
+import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingLevelOfTheory;
 import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingRotationalConstants;
 import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingRotationalSymmetry;
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.FormulaUtility;
@@ -48,6 +51,7 @@ public class GenerateCompChemXML {
 	 * @throws XMLStreamException the XML stream exception
 	 * @throws FactoryConfigurationError the factory configuration error
 	 */
+	
 	public static void main(String[] args)
 
 			throws Exception, javax.xml.bind.JAXBException, IOException, XMLStreamException, FactoryConfigurationError {
@@ -106,6 +110,7 @@ public class GenerateCompChemXML {
 	 * @return <p>Returns object variable of Module JAXB class. It contains information
 	 *         (DictRef) about job lists, and job.</p>
 	 */
+	
 	public static Module getRootModule(Module in_module, Module f_module, Module rootModule) {
 
 		Module jobListModule = new Module();
@@ -154,19 +159,24 @@ public class GenerateCompChemXML {
 	 *             Composition, Frequencies, Symmetry Nr, Geometry, Geometry type,
 	 *             Rotational Constants, Spin Multiplicity.</p>
 	 */
+
 	public static Module generateRootModule(File file, File  outputfile, Module rootModule) throws Exception {
 
-		Module i_module = new Module();
-		i_module.setDictRef("cc:initialization");
+		Module initialModule = new Module();
+		
+		initialModule.setDictRef("cc:initialization");
 
-		Module f_module = new Module();
-		f_module.setDictRef("cc:finalization");
+		Module finalModule = new Module();
+		
+		finalModule.setDictRef("cc:finalization");
 
-		Molecule g_molecule = new Molecule();
+		Molecule geometryMolecule = new Molecule();
 
-		Molecule i_molecule = new Molecule();
+		Molecule initialMolecule = new Molecule();
 
 		PropertyList propertyList = new PropertyList();
+		
+		ParameterList parameterList = new ParameterList();
 
 		FormulaUtility fp = new FormulaUtility();
 
@@ -180,15 +190,15 @@ public class GenerateCompChemXML {
 
 		ParsingGeometryType pgt = new ParsingGeometryType();
 
-		i_molecule = getEmpiricalParser(fp.extractFormulaName(file));
+		initialMolecule = getEmpiricalParser(fp.extractFormulaName(file));
 
-		i_module.getAny().add(i_molecule);
+		initialModule.getAny().add(initialMolecule);
 
-		int atoms_sum = fp.getSumOfAllAtomNumbers(fp.extractFormulaName(file));
+		int sumOfAtoms = fp.getSumOfAllAtomNumbers(fp.extractFormulaName(file));
 
-		System.out.println("Summ of all atoms is: " + atoms_sum);
+		System.out.println("Summ of all atoms is: " + sumOfAtoms);
 
-		if (atoms_sum > 1) {
+		if (sumOfAtoms > 1) {
 			/**
 			 * @author nk510 
 			 * <p>Generates 'Frequencies'.</p>
@@ -203,7 +213,7 @@ public class GenerateCompChemXML {
 			 * 
 			 */
 			propertyList.getPropertyOrPropertyListOrObservation()
-					.add(prs.generateRotationalSymmetryFromG09(file.getAbsoluteFile()));
+			.add(prs.generateRotationalSymmetryFromG09(file.getAbsoluteFile()));
 
 			/**
 			 * @author nk510 
@@ -211,35 +221,60 @@ public class GenerateCompChemXML {
 			 * 
 			 */
 			propertyList.getPropertyOrPropertyListOrObservation()
-					.add(rcp.generateRotationalConstantsFromG09(file.getAbsoluteFile()));
+			.add(rcp.generateRotationalConstantsFromG09(file.getAbsoluteFile()));
 
 			/**
+			 * 
 			 * @author nk510 
 			 * <p>Generates 'Geometry type'.</p>
+			 * 
 			 */
 			propertyList.getPropertyOrPropertyListOrObservation()
-					.add(pgt.getGeometryTypeFromG09(file.getAbsoluteFile()));
+			.add(pgt.getGeometryTypeFromG09(file.getAbsoluteFile()));
 
-			g_molecule = pg.getGeometryFromG09(file);
+			geometryMolecule = pg.getGeometryFromG09(file);
 
-			f_module.getAny().add(propertyList);
+			finalModule.getAny().add(propertyList);
 
-			f_module.getAny().add(g_molecule);
+			finalModule.getAny().add(geometryMolecule);
 
-			getRootModule(i_module, f_module, rootModule);
+			getRootModule(initialModule, finalModule, rootModule);
 
 		} else {
+			
+			Parameter parameterLevelOfTheory = ParsingLevelOfTheory.getLevelOfTheryParameter(file, sumOfAtoms);
+			
+			parameterList.getParameterOrParameterList().add(parameterLevelOfTheory);
+			
+			
 
 			/**
+			 * 
 			 * @author nk510 
 			 * <p>Adds 'Geometry type' value in PropertyList as a value of
 			 *         Property.</p>
+			 *         
 			 */
+			
 			propertyList.getPropertyOrPropertyListOrObservation()
 					.add(pgt.getGeometryTypeFromG09(file.getAbsoluteFile()));
-			f_module.getAny().add(propertyList);
-
-			getRootModule(i_module, f_module, rootModule);
+			
+			/**
+			 * 
+			 * @author nk510
+			 * Returns a Molecule instance that contains atomic mass number of one atom.
+			 *  
+			 */
+			
+			geometryMolecule = pg.getGeometryFromG09OneAtomMolecule(file);
+			
+			finalModule.getAny().add(geometryMolecule);
+			
+			finalModule.getAny().add(propertyList);
+			
+			initialModule.getAny().add(parameterList);
+			
+			getRootModule(initialModule, finalModule, rootModule);
 
 		}
 
