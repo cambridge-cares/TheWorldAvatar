@@ -9,17 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.xmlcml.cml.element.CMLMolecule;
-
-import uk.ac.cam.ceb.como.compchem.CompChem;
-import uk.ac.cam.ceb.como.io.chem.file.parser.g09.FrequencyParser;
-import uk.ac.cam.ceb.como.thermo.calculator.rotation.internal.util.IRCompChemWrapper;
-
 public class ParsingAtomicMass {
 
 	public static StringTokenizer getAtomicWeightString(File file) throws FileNotFoundException, IOException {
 
-		String rc_line = "";
+		String atomicMassLine = "";
 
 		/**
 		 * 
@@ -47,46 +41,25 @@ public class ParsingAtomicMass {
 
 				line = line.substring(line.lastIndexOf("= ") + 1);
 
-				rc_line = rc_line + line;
+				atomicMassLine = atomicMassLine + line;
 			}
 		}
 
 		br.close();
 
-		StringTokenizer st = new StringTokenizer(rc_line);
+		StringTokenizer stringTokenizer = new StringTokenizer(atomicMassLine);
 
-		return st;
+		return stringTokenizer;
 
 	}
-
 	
 	/**
-	 * @param f
-	 * @return a number of atoms in geometry optimization module.
-	 * @throws Exception
-	 */
-	public static int getNumberOfAtomsInGeometryOptimization(File f) throws Exception {
-
-		FrequencyParser parser = new FrequencyParser();
-
-		parser.set(f);
-		parser.parse();
-
-		CompChem cc = (CompChem) parser.get();
-
-		IRCompChemWrapper irccw = new IRCompChemWrapper(cc);
-
-		CMLMolecule m = irccw.getFinalMolecule();
-
-		return m.getAtomCount();
-
-	}
-
-	/**
+	 * 
 	 * @author nk510
 	 * @param weightTokenizer
 	 * @return list of strings that represent atomic masses of each atom appearing in
-	 *         geometry optimization module.
+	 *         geometry optimisation module.
+	 *         
 	 */
 
 	public static List<String> getListOfAtomicMass(StringTokenizer weightTokenizer) {
