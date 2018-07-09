@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:h="http://www.w3.org/1999/xhtml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:targetNamespace="http://www.xml-cml.org/schema"><xsd:simpleType id="st.actionOrderType" name="actionOrderType">
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema targetNamespace="http://www.xml-cml.org/schema" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.xml-cml.org/schema"><xsd:simpleType id="st.actionOrderType" name="actionOrderType">
         <xsd:annotation>
             <xsd:documentation>
                 <h:div class="summary">Describes whether child elements are sequential or parallel.</h:div>
@@ -64,7 +64,7 @@
          It is also useful if the prefix is the ID for the molecule
          (though this clearly has its limitation). Atom IDs should not
          be typed as XML IDs since they may not validate.</h:p></h:div>
-            <h:div class="example" href="atomIDType1.xml"></h:div>
+            <h:div class="example" href="atomIDType1.xml"/>
         </xsd:documentation>
         <xsd:appinfo/>
     </xsd:annotation>
@@ -80,7 +80,7 @@
          be used in array-style representation of bonds and atomParitys.
          It can also be used for arrays of atomIDTypes such as in complex stereochemistry,
          geometrical definitions, atom groupings, etc.</h:div>
-            <h:div class="example" href="atomRefArrayType1.xml"></h:div>
+            <h:div class="example" href="atomRefArrayType1.xml"/>
         </xsd:documentation>
         <xsd:appinfo/>
     </xsd:annotation>
@@ -89,7 +89,7 @@
     <xsd:annotation>
         <xsd:documentation>
             <h:div class="summary">A reference to two distinct existing atoms in order.</h:div>
-            <h:div class="example" href="atomRefs21.xml"></h:div>
+            <h:div class="example" href="atomRefs21.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction>
@@ -102,7 +102,7 @@
     <xsd:annotation>
         <xsd:documentation>
             <h:div class="summary">A reference to three distinct existing atoms in order.</h:div>
-            <h:div class="example" href="atomRefs31.xml"></h:div>
+            <h:div class="example" href="atomRefs31.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction>
@@ -115,7 +115,7 @@
     <xsd:annotation>
         <xsd:documentation>
             <h:div class="summary">A reference to four distinct existing atoms in order.</h:div>
-            <h:div class="example" href="atomRefs41.xml"></h:div>
+            <h:div class="example" href="atomRefs41.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction>
@@ -128,7 +128,7 @@
     <xsd:annotation>
         <xsd:documentation>
             <h:div class="summary">A reference to an existing atom.</h:div>
-            <h:div class="example" href="atomRefType1.xml"></h:div>
+            <h:div class="example" href="atomRefType1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="atomIDType"/>
@@ -150,7 +150,7 @@
         <xsd:documentation>
             <h:div class="summary">A reference to an existing bond.</h:div>
             <h:div class="general">A reference to a bond may be made by atoms (e.g. for multicentre or pi-bonds), electrons (for annotating reactions or describing electronic properties) or possibly other bonds (no examples yet). The semantics are relatively flexible.</h:div>
-            <h:div class="example" href="bond1.xml"></h:div>
+            <h:div class="example" href="bond1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:string">
@@ -166,7 +166,7 @@
             of specifying oblique axes (e.g. crystallographic cell) the box may be a 
             parallelipiped. The components are grouped in threes ans separated by a semicolon 
             to avoid problems of guessing the convention.</h:div>
-            <h:div class="example" href="box31.xml"></h:div>
+            <h:div class="example" href="box31.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction>
@@ -179,8 +179,8 @@
     <xsd:annotation>
         <xsd:documentation>
             <h:div class="summary">enumerated type of cellParameter</h:div>
-            <h:div class="description"></h:div>
-            <h:div class="example" href="cellParameterType1.xml"></h:div>
+            <h:div class="description"/>
+            <h:div class="example" href="cellParameterType1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 		<xsd:restriction base="xsd:string">
@@ -204,7 +204,7 @@
     <xsd:annotation>
         <xsd:documentation>
             <h:div class="summary">A pair of floats representing a complex number.</h:div>
-            <h:div class="example" href="complex1.xml"></h:div>
+            <h:div class="example" href="complex1.xml"/>
             <h:div class="example" href="complex.bad.xml">
                 <h:p>This example is schema-invalid as it has three floats</h:p></h:div>
         </xsd:documentation>
@@ -222,7 +222,7 @@
             <h:div class="description">An x/y coordinate pair consisting of 
          two real numbers, separated by whitespace or a comma.
          In arrays and matrices, it may be useful to set a separate delimiter</h:div>
-            <h:div class="example" href="coordinate2Type1.xml"></h:div>
+            <h:div class="example" href="coordinate2Type1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction>
@@ -239,7 +239,7 @@
             numbers, separated by whitespace or commas. In arrays and matrices, it may be 
             useful to set a separate delimiter.</h:div>
 
-            <h:div class="example" href="coordinate3Type1.xml"></h:div>
+            <h:div class="example" href="coordinate3Type1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction>
@@ -256,7 +256,7 @@
             where these all refer to an X-coordinate (NOT x,y,z).Instances of this type will be 
             used in array-style representation of 2-D or 3-D coordinates. Currently no machine 
             validation. Currently not used in STMML, but re-used by CML (see example).</h:div>
-            <h:div class="example" href="coordinateComponentArrayType1.xml"></h:div>
+            <h:div class="example" href="coordinateComponentArrayType1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:list itemType="xsd:double"/>
@@ -283,7 +283,7 @@
             <h:div class="summary">A count multiplier for an object.</h:div>
             <h:div class="description">Many elements represent objects which can occur an arbitrary number of times in a scientific context. Examples are <h:tt>action</h:tt>, <h:tt>object</h:tt> or <h:tt>molecule</h:tt>s.</h:div>
             <h:div class="curation">2005-10-16. Changed to positiveNumerType.</h:div>
-            <h:div class="example" href="countType1.xml"></h:div>
+            <h:div class="example" href="countType1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="positiveNumberType"/>
@@ -299,13 +299,13 @@
                tools for validation without major implementation problems.
             </h:p>
                 <h:p>It will often be used an an attribute on 
-            <h:a href="http://www.xml-cml.org/schema/schema24/el.scalar">scalar</h:a>,
-            <h:a href="http://www.xml-cml.org/schema/schema24/el.array">array</h:a> or
-            <h:a href="http://www.xml-cml.org/schema/schema24/el.matrix">matrix</h:a> 
+            <h:a href="el.scalar">scalar</h:a>,
+            <h:a href="el.array">array</h:a> or
+            <h:a href="el.matrix">matrix</h:a> 
             elements.</h:p></h:div>
             <h:div class="description">Note: the attribute xsi:type might be used to enforce the type-checking but I haven't worked this through yet.</h:div>
 
-            <h:div class="example" href="dataTypeType1.xml"></h:div>
+            <h:div class="example" href="dataTypeType1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:union>
@@ -370,7 +370,7 @@
         <xsd:documentation>
             <h:div class="summary">A single non-whitespace character to separate components in arrays.</h:div>
             <h:div class="description">
-                <h:p>Some STMML elements (such as <h:a href="http://www.xml-cml.org/schema/schema24/el.array">array</h:a>) have
+                <h:p>Some STMML elements (such as <h:a href="el.array">array</h:a>) have
         content representing concatenated values. The default separator is
         whitespace (which can be normalised) and this should be used whenever
         possible. However in some cases the values are empty, or contain whitespace or other
@@ -429,7 +429,7 @@
          in many cases.</h:p>
                 <h:p>Used for constructing entries in a dictionary of units</h:p></h:div>
 
-            <h:div class="example" href="dimensionType1.xml"></h:div>
+            <h:div class="example" href="dimensionType1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -493,7 +493,7 @@
         <xsd:documentation>
             <h:div class="summary">An array of elementTypes.</h:div>
             <h:div class="description">Instances of this type will be used in array-style representation of atoms.</h:div>
-            <h:div class="example" href="elementTypeArrayType1.xml"></h:div>
+            <h:div class="example" href="elementTypeArrayType1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:list itemType="elementTypeType"/>
@@ -511,7 +511,7 @@
                             <h:tt>R</h:tt>. ("R-group") This indicates that an atom or group of atoms could be attached at this point. </h:li>
                     </h:ul>
                 </h:p></h:div>
-            <h:div class="example" href="elementTypeType1.xml"></h:div>
+            <h:div class="example" href="elementTypeType1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:union>
@@ -682,7 +682,7 @@
             <h:div class="description">Errors in values can be of several types and this simpleType
          provides a small controlled vocabulary.</h:div>
 
-            <h:div class="example" href="scalar1.xml"></h:div>
+            <h:div class="example" href="scalar1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:union>
@@ -704,7 +704,7 @@
         <xsd:documentation>
             <h:div class="summary">Array of error estimate values.</h:div>
             <h:div class="description">An observed or calculated estimate of the error in the value of a numeric quantity. It should be ignored for dataTypes such as URL, date or string. The statistical basis of the errorValueType is not defined - it could be a range, an estimated standard deviation, an observed standard error, etc. This information can be added through _errorBasisType_.</h:div>
-            <h:div class="example" href="scalar1.xml"></h:div>
+            <h:div class="example" href="scalar1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:list itemType="errorValueType"/>
@@ -713,7 +713,7 @@
         <xsd:documentation>
             <h:div class="summary">An estimate of the error in the value of a quantity.</h:div>
             <h:div class="description">An observed or calculated estimate of the error in the value of a numeric quantity. It should be ignored for dataTypes such as URL, date or string. The statistical basis of the errorValueType is not defined - it could be a range, an estimated standard deviation, an observed standard error, etc. This information can be added through _errorBasisType_.</h:div>
-            <h:div class="example" href="scalar1.xml"></h:div>
+            <h:div class="example" href="scalar1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:double"/>
@@ -723,7 +723,7 @@
             <h:div class="summary">OBSOLETE An array of floats.</h:div>
             <h:div class="description">An array of floats or other real numbers. 
             Not used in STM Schema, but re-used by CML and other languages.</h:div>
-            <h:div class="example" href="floatArrayType1.xml"></h:div>
+            <h:div class="example" href="floatArrayType1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:list itemType="xsd:double"/>
@@ -732,7 +732,7 @@
         <xsd:documentation>
             <h:div class="summary">Array of formalCharges.</h:div>
             <h:div class="description">Used for electron-bookeeping. This has no relation to its calculated (fractional) charge or oxidation state.</h:div>
-            <h:div class="example" href="formalChargeType1.xml"></h:div>
+            <h:div class="example" href="formalChargeType1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:list itemType="formalChargeType"/>
@@ -741,7 +741,7 @@
         <xsd:documentation>
             <h:div class="summary">The formal charge on an object.</h:div>
             <h:div class="description">Used for electron-bookeeping. This has no relation to its calculated (fractional) charge or oxidation state.</h:div>
-            <h:div class="example" href="formalChargeType1.xml"></h:div>
+            <h:div class="example" href="formalChargeType1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:integer"/>
@@ -795,7 +795,7 @@ Data are represented by a single symmetric _matrix_ with both axes identical (i.
             machine-parsable. Each element is followed by its count (which may be decimal), 
             and the string is optionally ended by a formal charge (of form d or -d, i.e. no '+')
             NO brackets or other nesting is allowed.</h:div>
-            <h:div class="example" href="formulaType1.xml"></h:div>
+            <h:div class="example" href="formulaType1.xml"/>
             <h:div class="curation">2005-08-30: allowed decimal points</h:div>
         </xsd:documentation>
         <xsd:appinfo/>
@@ -854,7 +854,7 @@ Data are represented by a single symmetric _matrix_ with both axes identical (i.
                 id (normally on an atom of elementType="R") which acts as the head</h:p>
                 </h:div>
             <h:div class="curation">2006-05-20: PMR added</h:div> 
-            <h:div class="example" href="headType1.xml"></h:div>
+            <h:div class="example" href="headType1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:string">
@@ -865,7 +865,7 @@ Data are represented by a single symmetric _matrix_ with both axes identical (i.
         <xsd:documentation>
             <h:div class="summary">Array of hydrogenCounts.</h:div>
             <h:div class="description">The total number of hydrogen atoms bonded to an atom or contained in a molecule, whether explicitly included as atoms or not. It is an error to have hydrogen count less than the explicit hydrogen count. There is no default value and no assumptions about hydrogen Count can be made if it is not given. If hydrogenCount is given on every atom, then the values can be summed to give the total hydrogenCount for the (sub)molecule. Because of this hydrogenCount should not be used where hydrogen atoms bridge 2 or more atoms.</h:div>
-            <h:div class="example" href="atom1.xml"></h:div>
+            <h:div class="example" href="atom1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:list itemType="hydrogenCountType"/>
@@ -874,7 +874,7 @@ Data are represented by a single symmetric _matrix_ with both axes identical (i.
         <xsd:documentation>
             <h:div class="summary">The total number of hydrogen atoms bonded to an object.</h:div>
             <h:div class="description">The total number of hydrogen atoms bonded to an atom or contained in a molecule, whether explicitly included as atoms or not. It is an error to have hydrogen count less than the explicit hydrogen count. There is no default value and no assumptions about hydrogen Count can be made if it is not given. If hydrogenCount is given on every atom, then the values can be summed to give the total hydrogenCount for the (sub)molecule. Because of this hydrogenCount should not be used where hydrogen atoms bridge 2 or more atoms.</h:div>
-            <h:div class="example" href="atom1.xml"></h:div>
+            <h:div class="example" href="atom1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:nonNegativeInteger"/>
@@ -972,7 +972,7 @@ Data are represented by a single symmetric _matrix_ with both axes identical (i.
         <xsd:documentation>
             <h:div class="summary">An array of integers.</h:div>
             <h:div class="description">An array of integers; for re-use by other schemas. Not machine-validatable.</h:div>
-            <h:div class="example" href="integerArrayType1.xml"></h:div>
+            <h:div class="example" href="integerArrayType1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:list itemType="xsd:integer"/>
@@ -985,7 +985,7 @@ Data are represented by a single symmetric _matrix_ with both axes identical (i.
          combined proton/neutron count or a more accurate estimate of the 
          nuclear mass. This is admittedly fuzzy, and requires a more complex
          object (which can manage conventions, lists of isotopic masses, etc.)
-         See <h:a href="http://www.xml-cml.org/schema/schema24/el.isotope">isotope</h:a>.</h:p>
+         See <h:a href="el.isotope">isotope</h:a>.</h:p>
                 <h:p>The default is "natural abundance" - whatever that can be interpreted
          as.</h:p>
                 <h:p>Delta values (i.e. deviations from the most abundant istopic mass)
@@ -1009,8 +1009,8 @@ Data are represented by a single symmetric _matrix_ with both axes identical (i.
     <xsd:annotation>
         <xsd:documentation>
             <h:div class="summary">Allowed lattice types.</h:div>
-            <h:div class="description"></h:div>
-            <h:div class="example" href="lattice3.xml"></h:div>
+            <h:div class="description"/>
+            <h:div class="example" href="lattice3.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:union>
@@ -1048,7 +1048,7 @@ Data are represented by a single symmetric _matrix_ with both axes identical (i.
             (i.e. it is not the "end of the line")  and there are an infinite number of 
             ways of representing the line. DANGER. Line3 now uses the point3 and vector3 attributes
             and the line3Type may be OBSOLETED.</h:div>
-            <h:div class="example" href="line31.xml"></h:div>
+            <h:div class="example" href="line31.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction>
@@ -1129,7 +1129,7 @@ Data are represented by a single symmetric _matrix_ with both axes identical (i.
             <h:div class="description">
                 <h:p>Many are square matrices. By default all elements must be included. For symmetric, antisymmetric and diagonal matrices some compression is possible by not reporting the identical or forced zero elements. These have their own subtypes, usually with UT or LT appended. Use these with caution as there is chance of confusion and you cannot rely on standard software to read these.</h:p>
                 <h:p>The matrix type fixes the order and semantics of the elements in the XML element but does not mandate any local syntax. Thus an application may insert newline characters after each row or use a &lt;row&gt; element.</h:p></h:div>
-            <h:div class="example" href="matrix1.xml"></h:div>
+            <h:div class="example" href="matrix1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:union>
@@ -1419,7 +1419,7 @@ is equivalent to
        maxExclusive</h:tt> type in a dictionary should be used.</h:p>
                 <h:p>The type of the maximum is the same as the quantity to which it refers - numeric,
        date and string are currently allowed</h:p></h:div>
-            <h:div class="example" href="maxType1.xml"></h:div>
+            <h:div class="example" href="maxType1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:string"/>
@@ -1761,7 +1761,7 @@ is equivalent to
          minExclusive</h:tt> type in a dictionary should be used.</h:p>
                 <h:p>The type of the minimum is the same as the quantity to which it refers - numeric,
          date and string are currently allowed</h:p></h:div>
-            <h:div class="example" href="maxType1.xml"></h:div>
+            <h:div class="example" href="maxType1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:string"/>
@@ -1782,7 +1782,7 @@ is equivalent to
          (though this clearly has its limitation). molecule IDs should not
          be typed as XML IDs since they may not validate.</h:p></h:div>
             <h:div class="curation">2006-11-24: PMR created.</h:div>
-            <h:div class="example" href="moleculeIDType1.xml"></h:div>
+            <h:div class="example" href="moleculeIDType1.xml"/>
         </xsd:documentation>
         <xsd:appinfo/>
     </xsd:annotation>
@@ -1807,7 +1807,7 @@ is equivalent to
             <h:div class="summary">A reference to two distinct existing molecules in order.</h:div>
             <h:div class="summary">At present used for joining molecules or fragments(with join).</h:div>
             <h:div class="curation">2006-11-24: PMR created</h:div>
-            <h:div class="example" href="moleculeRefs21.xml"></h:div>
+            <h:div class="example" href="moleculeRefs21.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction>
@@ -1845,7 +1845,7 @@ is equivalent to
                 their own namespaces without altering the schema. 
                 The prefix is mandatory. This convention is only used within 
                 CML and related languages; it is NOT a generic URI. </h:p></h:div>
-            <h:div class="example" href="namespaceRefType1.xml"></h:div>
+            <h:div class="example" href="namespaceRefType1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:string">
@@ -1868,7 +1868,7 @@ is equivalent to
          <h:p>used to identify a dictionary, units, convention or other metadata.
          Not yet confirmant with XSD</h:p>
                 </h:div>
-            <h:div class="example" href="namespaceRefType1.xml"></h:div>
+            <h:div class="example" href="namespaceRefType1.xml"/>
             <h:div class="curation">2005-12-10: PMR. Added for use with dictionary</h:div>
         </xsd:documentation>
     </xsd:annotation>
@@ -1896,7 +1896,7 @@ is equivalent to
             <h:div class="summary">A non-signed angle.</h:div>
             <h:div class="description">Re-used by _angle_.  Note that we also provide 
             positiveAngleType (e.g. for cell angles) and torsionAngleType for _torsion_.</h:div>
-            <h:div class="example" href="nonNegativeAngleType.xml"></h:div>
+            <h:div class="example" href="nonNegativeAngleType.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:double">
@@ -1919,7 +1919,7 @@ is equivalent to
         <xsd:documentation>
             <h:div class="summary">Array of atomic occupancies.</h:div>
             <h:div class="description">Primarily for crystallography. Values outside 0-1 are not allowed.</h:div>
-            <h:div class="example" href="atom1.xml"></h:div>
+            <h:div class="example" href="atom1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:list itemType="occupancyType"/>
@@ -1929,7 +1929,7 @@ is equivalent to
             <h:div class="summary">A floating point number between 0 and 1 inclusive</h:div>
             <h:div class="description">Originally for crystallographic occupancy but re-usable 
             for fractional yield, etc.</h:div>
-            <h:div class="example" href="atom1.xml"></h:div>
+            <h:div class="example" href="atom1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:double">
@@ -2238,7 +2238,7 @@ is equivalent to
         <xsd:documentation>
             <h:div class="summary">A point in 3-space.</h:div>
             <h:div class="description">The 3 components can have any signed value.</h:div>
-            <h:div class="example" href="point31.xml"></h:div>
+            <h:div class="example" href="point31.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction>
@@ -2253,7 +2253,7 @@ is equivalent to
             <h:div class="summary">A non-signed angle such as a cell angle.</h:div> 
             <h:div class="description">Re-used by _crystal_. Note that we also provide 
             nonNegativeAngleType (e.g. for bond angles).</h:div>
-            <h:div class="example" href="positiveAngleType.xml"></h:div>
+            <h:div class="example" href="positiveAngleType.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:double">
@@ -2535,7 +2535,7 @@ IUPAC Compendium of Chemical Terminology 2nd Edition (1997)
             would be replaced by the value of i. EXPERIMENTAL. It can also have variables 
             as the values.</h:div>
             <h:div class="curation">2006-05-20: PMR added.</h:div>
-	        <h:div class="example" href="repeatType1.xml"></h:div>
+	        <h:div class="example" href="repeatType1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:string">
@@ -2591,7 +2591,7 @@ IUPAC Compendium of Chemical Terminology 2nd Edition (1997)
             <h:div class="summary">Allowed shapes of arrayList.</h:div>
             <h:div class="description">
                 <h:p>Rectangular, triangular or irregular.</h:p></h:div>
-            <h:div class="example" href="arrayList1.xml"></h:div>
+            <h:div class="example" href="arrayList1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:union>
@@ -2651,7 +2651,7 @@ IUPAC Compendium of Chemical Terminology 2nd Edition (1997)
         <xsd:documentation>
             <h:div class="summary">Signifies real or reciprocal space.</h:div>
             <h:div class="description">Likely to be used on types such as lattice, plane, point.</h:div>
-            <h:div class="example" href="space1.xml"></h:div>
+            <h:div class="example" href="space1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:union>
@@ -2675,7 +2675,7 @@ IUPAC Compendium of Chemical Terminology 2nd Edition (1997)
                 <xsd:enumeration value="reciprocal">
                     <xsd:annotation>
                         <xsd:documentation>
-                            <h:div class="description"></h:div>
+                            <h:div class="description"/>
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:enumeration>
@@ -2745,7 +2745,7 @@ IUPAC Compendium of Chemical Terminology 2nd Edition (1997)
             <h:div class="summary">A sphere in 3-space.</h:div>
             <h:div class="description">Defined by 4 real numbers, conventionally a point3 at 
             the centre of the sphere and a nonNegative scalar for the radius.</h:div>
-            <h:div class="example" href="sphere31.xml"></h:div>
+            <h:div class="example" href="sphere31.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction>
@@ -2759,7 +2759,7 @@ IUPAC Compendium of Chemical Terminology 2nd Edition (1997)
         <xsd:documentation>
             <h:div class="summary">State of a substance or property.</h:div>
             <h:div class="description">The state(s) of matter appropriate to a substance or property. It follows a partially controlled vocabulary. It can be extended through namespace codes to dictionaries.</h:div>
-            <h:div class="example" href="stateType1.xml"></h:div>
+            <h:div class="example" href="stateType1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:union>
@@ -2846,7 +2846,7 @@ IUPAC Compendium of Chemical Terminology 2nd Edition (1997)
       unknown or unspecified type. The interpretation of this is outside
       the scope of CML-based algorithms. It may be accompanied by a <h:tt>convention</h:tt>
       attribute  which links to a dictionary.</h:div>
-         <h:div class="example" href="bond1.xml"></h:div>
+         <h:div class="example" href="bond1.xml"/>
       </xsd:documentation>
    </xsd:annotation>
    <xsd:restriction base="xsd:string">
@@ -2891,7 +2891,7 @@ IUPAC Compendium of Chemical Terminology 2nd Edition (1997)
         <xsd:documentation>
             <h:div class="summary">An array of strings, separated by whitespace.</h:div>
             <h:div class="description">An array of strings, separated by whitespace. If the strings have embedded whitespace or may be empty (zero-length), a non-whitespace single-character delimiter must be used. At present no machine validation</h:div>
-            <h:div class="example" href="stringArrayType1.xml"></h:div>
+            <h:div class="example" href="stringArrayType1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:list itemType="xsd:string"/>
@@ -2913,7 +2913,7 @@ IUPAC Compendium of Chemical Terminology 2nd Edition (1997)
             <h:div class="summary">Allowed types of table.</h:div>
             <h:div class="description">
                 <h:p>rowBased, arrayBased, contentBased.</h:p></h:div>
-            <h:div class="example" href="arrayList1.xml"></h:div>
+            <h:div class="example" href="arrayList1.xml"/>
             <h:div class="curation">2006-11-03: formlized 3 table types</h:div>
         </xsd:documentation>
     </xsd:annotation>
@@ -2964,7 +2964,7 @@ IUPAC Compendium of Chemical Terminology 2nd Edition (1997)
                 id (normally on an atom of elementType="R") which acts as the tail</h:p>
                 </h:div>
             <h:div class="curation">2006-05-20: PMR added</h:div> 
-            <h:div class="example" href="tailType1.xml"></h:div>
+            <h:div class="example" href="tailType1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:string">
@@ -3014,7 +3014,7 @@ IUPAC Compendium of Chemical Terminology 2nd Edition (1997)
             (e.g. <h:tt>si:m</h:tt>). Distinguish carefully from _unitType_ 
             which is an element describing a type of a unit in a 
             _unitList_.</h:div>
-            <h:div class="example" href="unit2.xml"></h:div>
+            <h:div class="example" href="unit2.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="namespaceRefType"/>
@@ -3023,7 +3023,7 @@ IUPAC Compendium of Chemical Terminology 2nd Edition (1997)
         <xsd:documentation>
             <h:div class="summary">A vector in 3-space.</h:div>
             <h:div class="description">No constraints on magnitude (i.e. could be zero.</h:div>
-            <h:div class="example" href="vector31.xml"></h:div>
+            <h:div class="example" href="vector31.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction>
@@ -3037,7 +3037,7 @@ IUPAC Compendium of Chemical Terminology 2nd Edition (1997)
         <xsd:documentation>
             <h:div class="summary">Version of a document or code.</h:div>
             <h:div class="description">Forms include 1, 0.9, 1.1.3, 1.2alpha, etc.</h:div>
-            <h:div class="example" href="version1.xml"></h:div>
+            <h:div class="example" href="version1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:string">
@@ -3090,7 +3090,7 @@ IUPAC Compendium of Chemical Terminology 2nd Edition (1997)
     <xsd:annotation>
       <xsd:documentation>
         <h:div class="summary">Restricts units to radians or degrees.</h:div> 
-        <h:div class="description"></h:div> 
+        <h:div class="description"/> 
       </xsd:documentation>
     </xsd:annotation>
   </xsd:attribute>
@@ -3351,7 +3351,7 @@ so that a convention for <h:tt>molecule</h:tt> would by default extend to its <h
     caution. We would expect that conventions prefixed with "ISO" would be useful,
     such as ISO8601 for dateTimes.</h:p>
                     <h:p>There is no default, but the conventions of STMML or the related language (e.g. CML) will be assumed.</h:p></h:div>
-                <h:div class="example" id="ex" href="convGroup1.xml"></h:div>
+                <h:div class="example" id="ex" href="convGroup1.xml"/>
             </xsd:documentation>
         </xsd:annotation>
     </xsd:attribute>
@@ -3463,7 +3463,7 @@ so that a convention for <h:tt>molecule</h:tt> would by default extend to its <h
                     <h:p>Where there is concern about the dictionary becoming separated from the document the dictionary entries can be physically included as part of the data instance and the normal XPointer addressing mechanism can be used.</h:p>
                     <h:p>This attribute can also be used on _dictionary_ elements to define the namespace prefix</h:p></h:div>
 
-                <h:div class="example" href="dictRefGroup1.xml"></h:div>
+                <h:div class="example" href="dictRefGroup1.xml"/>
 <!--                
                 <h:div class="example" href="dictRefGroup2.xml"></h:div>
 -->
@@ -3568,7 +3568,7 @@ so that a convention for <h:tt>molecule</h:tt> would by default extend to its <h
         <xsd:annotation>
             <xsd:documentation>
                 <h:div class="summary">Basis of the error estimate.</h:div>
-                <h:div class="description"></h:div>
+                <h:div class="description"/>
             </xsd:documentation>
         </xsd:annotation>
     </xsd:attribute>
@@ -3841,7 +3841,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
                 with the "convention" attribute. For example it could be used to represent IUPAC formula, 
                 SMILES strings, TeX equations, etc. Characters should conforma to the XML character set,
                 and XML markup (lt and amp) should be escaped. <h:b>IT SHOULD NEVER BE USED FOR INLINE XML</h:b></h:div>
-                <h:div class="example" href="attributeGroups/inline.xml"></h:div>
+                <h:div class="example" href="attributeGroups/inline.xml"/>
             </xsd:documentation>
         </xsd:annotation>
     </xsd:attribute>
@@ -3879,7 +3879,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
             <xsd:documentation>
                 <h:div class="summary">Reference to a description of the isotopic composition of an atom.</h:div>
                 <h:div class="description">Used when more than one atom shares the same isotopic composition (e.g. when H/D have been scrambled over some or all of the atoms in a molecule..</h:div>
-                <h:div class="example" href="isotope1.xml"></h:div>
+                <h:div class="example" href="isotope1.xml"/>
             </xsd:documentation>
         </xsd:annotation>
     </xsd:attribute>
@@ -3898,7 +3898,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
             <xsd:documentation>
                 <h:div class="summary">Reference to a fuller description of the isotope.</h:div>
                 <h:div class="general">The description may be found in an external collection (e.g. IUPAC) or within the current document.</h:div>
-                <h:div class="example" href="isotope2.xml"></h:div>
+                <h:div class="example" href="isotope2.xml"/>
             </xsd:documentation>
         </xsd:annotation>
     </xsd:attribute>
@@ -4030,7 +4030,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         <xsd:annotation>
             <xsd:documentation>
                 <h:div class="summary">Maximum value allowed for an element or attribute.</h:div>
-                <h:div class="description"></h:div>
+                <h:div class="description"/>
             </xsd:documentation>
         </xsd:annotation>
     </xsd:attribute>
@@ -4096,7 +4096,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         <xsd:annotation>
             <xsd:documentation>
                 <h:div class="summary">The minimum value allowed for an element or attribute.</h:div>
-                <h:div class="description"></h:div>
+                <h:div class="description"/>
             </xsd:documentation>
         </xsd:annotation>
     </xsd:attribute>
@@ -4319,7 +4319,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
                 and be accessible through the dictRef mechanism. This attribute is forbidden 
                 for SI Units themselves. The mechanism holds for base SI units (7) and 
                 all compound (derived) units made by combinations of base Units.</h:div>
-                <h:div class="example" href="unit3.xml"></h:div>
+                <h:div class="example" href="unit3.xml"/>
             </xsd:documentation>
         </xsd:annotation>
     </xsd:attribute>
@@ -4545,7 +4545,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
                 <h:div class="description"><h:tt>ref</h:tt> modifies an element into a reference to an existing element of that type within the document. This is similar to a pointer and it can be thought of a strongly typed hyperlink. It may also be used for "subclassing" or "overriding" elements.<br xmlns=""/>
 								When referring to an element most of the "data" such as attribute values and element content will be on the full instantiated element.  Therefore ref (and possibly id) will normally be the only attributes on the pointing element. However there may be some attributes (title, count, etc.) which have useful semantics, but these are element-specific</h:div>
 
-                <h:div class="example" href="refGroup1.xml"></h:div>
+                <h:div class="example" href="refGroup1.xml"/>
             </xsd:documentation>
         </xsd:annotation>
     </xsd:attribute>
@@ -4699,7 +4699,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
             <xsd:documentation>
                 <h:div class="summary">The spin of a system.</h:div>
                 <h:div class="description">Supports fractional values. Currently the spin of a nucleus. The normal fraction representing the spin of the isotope.</h:div>
-                <h:div class="example" href="spin1.xml"></h:div>
+                <h:div class="example" href="spin1.xml"/>
             </xsd:documentation>
         </xsd:annotation>
     </xsd:attribute>
@@ -4838,7 +4838,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
             <xsd:documentation>
                 <h:div class="summary">A title on an element.</h:div>
                 <h:div class="description">No controlled value.</h:div>
-                <h:div class="example" href="title1.xml"></h:div>
+                <h:div class="example" href="title1.xml"/>
             </xsd:documentation>
         </xsd:annotation>
     </xsd:attribute>
@@ -5256,6 +5256,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
             </xsd:documentation>
         </xsd:annotation>
     </xsd:attribute>
+
 </xsd:attributeGroup><xsd:attributeGroup id="attGp.z3" name="z3">
     <xsd:attribute id="att.z3" name="z3" type="xsd:double">
         <xsd:annotation>
@@ -5267,7 +5268,21 @@ This attribute should only be used for simple formulae (i.e. without brackets or
             </xsd:documentation>
         </xsd:annotation>
     </xsd:attribute>
-</xsd:attributeGroup><xsd:attributeGroup id="attGp.z3Array" name="z3Array">
+</xsd:attributeGroup>
+
+<xsd:attributeGroup id="attGp.atomicMass" name="atomicMass">
+    <xsd:attribute id="att.atomicMass" name="atomicMass" type="xsd:string">
+        <xsd:annotation>
+        	<xsd:documentation>
+                <h:div class="summary">Atomic weight of one atom</h:div>
+                <h:div class="description">Mass of an element in gaussian is given in unified atomic mass untis. These are usually represented with a symbol 'u' or 'Da' as another name of that unit is Dalton. Definition given by Dr Daniel Nurkowski.</h:div>
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:attribute>
+</xsd:attributeGroup>
+
+
+<xsd:attributeGroup id="attGp.z3Array" name="z3Array">
 <!-- Note: name differs from attributeGroup name -->
     <xsd:attribute id="att.z3Array" name="z3" type="coordinateComponentArrayType">
         <xsd:annotation>
@@ -5304,7 +5319,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
             <h:div class="summary">The abundance of an isotope.</h:div>
             <h:div class="description">The abundance of an isotope in an isotopeList. 
             Values are expressed in percentages.</h:div>
-            <h:div class="example" href="isotope1.xml"></h:div>
+            <h:div class="example" href="isotope1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -5343,7 +5358,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
       actionLists are indicated through the count attribute.</h:p>
             </h:div>
 
-            <h:div class="example" href="action1.xml"></h:div>
+            <h:div class="example" href="action1.xml"/>
 <!--
             <h:div class="example" href="action2.xml"></h:div>
 -->
@@ -5383,7 +5398,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
             <h:div class="summary">A container for a group of actions.</h:div>
             <h:div class="description"><h:tt>ActionList</h:tt> contains a series of<h:tt>action</h:tt>s or 
         nested<h:tt>actionList</h:tt>s.</h:div>
-            <h:div class="example" href="actionList1.xml"></h:div>
+            <h:div class="example" href="actionList1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -5417,7 +5432,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
                 </h:ul>
                 </h:div>
 
-            <h:div class="example" href="alternative1.xml"></h:div>
+            <h:div class="example" href="alternative1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -5436,7 +5451,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
       <h:div class="description">The <h:tt>units</h:tt> attribute is mandatory and 
       can be customised to support mass, volumes, moles, percentages, or ratios 
       (e.g. ppm).</h:div>
-      <h:div class="example" href="amount1.xml"></h:div>
+      <h:div class="example" href="amount1.xml"/>
     </xsd:documentation>
   </xsd:annotation>
   <xsd:complexType>
@@ -5462,7 +5477,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
                     <h:li>Providing the angle component for internal coordinates (e.g.
         z-matrix).</h:li>
                 </h:ul></h:div>
-            <h:div class="example" href="angle1.xml"></h:div>
+            <h:div class="example" href="angle1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -5491,7 +5506,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         <h:p>It is possible that this may develop as a useful tool for annotating components
         of complex objects such as molecules. </h:p></h:div>
 
-      <h:div class="example" href="annotation1.xml"></h:div>
+      <h:div class="example" href="annotation1.xml"/>
     </xsd:documentation>
   </xsd:annotation>
 	 
@@ -5537,7 +5552,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
             <h:div class="curation">2006-02-14: PMR. Added atomType as child</h:div>
             <h:div class="curation">2006-05-21: PMR. Added substitute and delete 
             attributes</h:div>
-            <h:div class="example" href="potential1.xml"></h:div>
+            <h:div class="example" href="potential1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -5580,7 +5595,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
          can be contained in a dictionary and software could decide to retrieve this
          and use it for validation.</h:p>
                 <h:p>When the elements of the <h:tt>array</h:tt> are not simple scalars
-         (e.g. <h:a href="http://www.xml-cml.org/schema/schema24/el.scalar">scalar</h:a>s with a value and an error, the 
+         (e.g. <h:a href="el.scalar">scalar</h:a>s with a value and an error, the 
          <h:tt>scalar</h:tt>s should be used as the elements. Although this is 
          verbose, it is simple to understand. If there is a demand for
          more compact representations, it will be possible to define the
@@ -5653,7 +5668,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
               to assert rectangularity. </h:p>
               
                </h:div>
-            <h:div class="example" href="arrayList1.xml"></h:div>
+            <h:div class="example" href="arrayList1.xml"/>
             <h:div class="curation">2006-11-03: created</h:div>
         </xsd:documentation>
     </xsd:annotation>
@@ -5673,7 +5688,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         <xsd:documentation>
             <h:div class="summary">An atom.</h:div>
             <h:div documentation="general">Atoms can only be chosen from the periodic table and superatoms such as "Phe" or "Tyr" are not allowed. The elementType of an atom is identified by that attribute. There are two additional elementTypes, "Du" (for an object which does not have an identifiable nucleus but is useful in calculations and definitions (such as a centroid); and "R" which describes a generic fragment. Although atoms have an elementType, they do not, by default, support arbitrary atomTypes for which the &lt;atomType&gt; element should be used.</h:div>
-            <h:div class="example" href="atom1.xml"></h:div>
+            <h:div class="example" href="atom1.xml"/>
             <h:div class="curation">2006-01-12: PMR. Added vector3 child to support
             accelerations, velocities, dipole, etc.</h:div>
             <h:div class="curation">2006-06-01: PMR. Added documentation.</h:div>
@@ -5720,6 +5735,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         <xsd:attributeGroup ref="id"/>
         <xsd:attributeGroup ref="convention"/>
         <xsd:attributeGroup ref="dictRef"/>
+         <xsd:attributeGroup ref="atomicMass"/>
         <xsd:attributeGroup ref="ref"/>
         <xsd:attributeGroup ref="count">
             <xsd:annotation>
@@ -5741,7 +5757,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         <xsd:attributeGroup ref="y2"/>
         <xsd:attributeGroup ref="x3"/>
         <xsd:attributeGroup ref="y3"/>
-        <xsd:attributeGroup ref="z3"/>
+        <xsd:attributeGroup ref="z3"/>      
         <xsd:attributeGroup ref="xFract"/>
         <xsd:attributeGroup ref="yFract"/>
         <xsd:attributeGroup ref="zFract"/>
@@ -5827,7 +5843,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
                 in the program and so it may be necessary to generate <h:tt>basisSet</h:tt> 
                 information for some programs before XML technology can be automatically used 
                 to link the components of the CCML document.</h:p></h:div>
-            <h:div class="example" href="atomicBasisFunction1.xml"></h:div>
+            <h:div class="example" href="atomicBasisFunction1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -5904,7 +5920,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         </h:pre>
                 <h:p>Note that <h:tt>atomParity</h:tt> cannot be used with the
                  *Array syntax for atoms.</h:p></h:div>
-            <h:div class="example" href="atomParity1.xml"></h:div>
+            <h:div class="example" href="atomParity1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -5932,7 +5948,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
                 </h:p>
                 <h:p>The atomSet may be referenced from elsewhere in the document and you are encouraged to use locally unique id attributes on atomSets.
          </h:p></h:div>
-            <h:div class="example" href="atomSet1.xml"></h:div>
+            <h:div class="example" href="atomSet1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -5975,7 +5991,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
                 <h:p>atomTypes are referred to by their mandatory <h:tt>name</h:tt> 
                 attribute. An atom refers to one or more atomTypes through 
                 atomType/@ref children</h:p></h:div>
-            <h:div class="example" href="atomType1.xml"></h:div>
+            <h:div class="example" href="atomType1.xml"/>
             <h:div class="note">examples not yet teste.</h:div>
         </xsd:documentation>
     </xsd:annotation>
@@ -6014,7 +6030,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         <xsd:documentation>
             <h:div class="summary">A container for one or more atomTypes.</h:div>
             <h:div class="description">It can contain several atomTypes.</h:div>
-            <h:div class="example" href="atomTypeList1.xml"></h:div>
+            <h:div class="example" href="atomTypeList1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -6035,7 +6051,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         <xsd:documentation>
             <h:div class="summary">A band or Brillouin zone.</h:div>
             <h:div class="description">Not yet finalised.</h:div>
-            <h:div class="example" href="band1.xml"></h:div>
+            <h:div class="example" href="band1.xml"/>
             <h:div class="curation">2006-01-21: PMR. added kpointRef and deprecated kpointList.</h:div>
         </xsd:documentation>
     </xsd:annotation>
@@ -6072,7 +6088,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         <xsd:documentation>
             <h:div class="summary">A container for bands.</h:div>
             <h:div class="description">Experimental.</h:div>
-            <h:div class="example" href="band1.xml"></h:div>
+            <h:div class="example" href="band1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -6092,7 +6108,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         <xsd:documentation>
             <h:div class="summary">A container for one or more atomicBasisFunctions.</h:div>
             <h:div class="description">This can contain several orbitals.</h:div>
-            <h:div class="example" href="basisSet1.xml"></h:div>
+            <h:div class="example" href="basisSet1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -6116,13 +6132,13 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         <xsd:documentation>
             <h:div class="summary">A bond between atoms, or between atoms and bonds.</h:div>
             <h:div class="description">_bond_ is a child of _bondArray_ and contains bond information. Bond must refer to at least two atoms (normally using _atomRefs2_) but may also refer to more for multicentre bonds. Bond is often EMPTY but may contain _electron_, _length_ or _bondStereo_ elements.</h:div>
-            <h:div class="example" href="bond1.xml"></h:div>
+            <h:div class="example" href="bond1.xml"/>
 <!--            
             <h:div class="example" href="bond2.xml"></h:div>
 -->            
         </xsd:documentation>
         <xsd:documentation>
-            <h:div class="validation" href="cmlCore.val.bond.xml"></h:div>
+            <h:div class="validation" href="cmlCore.val.bond.xml"/>
         </xsd:documentation>
         <xsd:appinfo>
             <comment xmlns="">Validate Bonds</comment>
@@ -6246,7 +6262,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
                 </h:p>
                 <h:p>The bondSet may be referenced from elsewhere in the document and you are encouraged to use locally unique id attributes on bondSets.
          </h:p></h:div>
-            <h:div class="example" href="bondSet1.xml"></h:div>
+            <h:div class="example" href="bondSet1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -6293,7 +6309,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
                 </h:ul>
                 <h:p>the <h:tt>atomRefs</h:tt> and <h:tt>atomRefs4</h:tt> attributes cannot be used
         simultaneously.</h:p></h:div>
-            <h:div class="example" href="bondStereo1.xml"></h:div>
+            <h:div class="example" href="bondStereo1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -6318,7 +6334,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
             domains. They are not as well formalised as atomTypes and we provide 
             less semantic support. BondTypes are referred to by their mandatory 
             _name_ attribute.</h:div>
-            <h:div class="example" href="bondType1.xml"></h:div>
+            <h:div class="example" href="bondType1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -6354,7 +6370,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         <xsd:documentation>
             <h:div class="summary">A container for one or more bondTypes.</h:div>
             <h:div class="description">_bondTypeList_ can contain several bondTypes.</h:div>
-            <h:div class="example" href="bondTypeList1.xml"></h:div>
+            <h:div class="example" href="bondTypeList1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -6404,7 +6420,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
             Can contain any content, but usually a list of molecules and other 
             CML components. The fileId attribute can be used to preserve the origin
             of the information, though metadat should also be used. Can be nested.</h:div>
-            <h:div class="example" href="cml1.xml"></h:div>
+            <h:div class="example" href="cml1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -6429,7 +6445,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
             <h:div class="summary">An element to hold any combination of heterogeneous element children</h:div>
             <h:div class="description">complexObject can be used as it stands but will often be extended by
             schema definitions in dictionary entries.</h:div>
-            <h:div class="example" href="complexObject1.xml"></h:div>
+            <h:div class="example" href="complexObject1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -6452,7 +6468,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
              apparatus (test-tube, rotary evaporator, etc.). 
              Actions can be represented elsewhere by actionList and solvents or other 
              substances by substanceList.</h:div>
-            <h:div class="example" href="conditionList1.xml"></h:div>
+            <h:div class="example" href="conditionList1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -6483,7 +6499,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
 				spacegroup is also included. This is now deprecated and replaced by cellParameter
 			</h:div>
             <h:div class="curation">2006-03-06 PMR: added cellParameter child</h:div>
-            <h:div class="example" href="crystal1.xml"></h:div>
+            <h:div class="example" href="crystal1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -6521,7 +6537,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
 
             <h:div class="example" href="definition1.xml">
                 <h:em>From the IUPAC Dictionary of Medicinal Chemistry</h:em>
-                <h:br /></h:div>
+                <h:br/></h:div>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -6535,12 +6551,12 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         <xsd:documentation>
             <h:div class="summary">Descriptive information.</h:div>
             <h:div class="description">This can occur in objects which require textual comment such as entry.
-                <h:p>Entries should have at least one separate <h:a href="http://www.xml-cml.org/schema/schema24/el.definition">definition</h:a>s.
+                <h:p>Entries should have at least one separate <h:a href="el.definition">definition</h:a>s.
          <h:tt>description</h:tt> is then used for most of the other information, including 
          examples. The <h:tt>class</h:tt> attribute has an uncontrolled vocabulary and
          can be used to clarify the purposes of the <h:tt>description</h:tt>
          elements.</h:p></h:div>
-            <h:div class="example" href="description1.xml"></h:div>
+            <h:div class="example" href="description1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -6566,7 +6582,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
             namespace-like prefix allowing the dictionary to be referenced 
             from within the document. In general dictionaries are referenced 
             from an element using the __dictRef__ attribute.</h:div>
-            <h:div class="example" href="dictionary1.xml"></h:div>
+            <h:div class="example" href="dictionary1.xml"/>
 <!--            
             <h:div class="example" href="dictionary2.xml">
                 <h:p>
@@ -6617,8 +6633,8 @@ This attribute should only be used for simple formulae (i.e. without brackets or
               </unitType>
             </h:pre>
             </h:div>
-            <h:div class="example" href="dimension1.xml"></h:div>
-            <h:div class="example" href="dimension2.xml"></h:div>
+            <h:div class="example" href="dimension1.xml"/>
+            <h:div class="example" href="dimension2.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -6641,7 +6657,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
                 <h:p>If will probably only be used when there is significant appinfo
         in the entry or where the entry defines an XSD-like datatype of an element in the document.</h:p></h:div>
 
-            <h:div class="example" href="documentation1.xml"></h:div>
+            <h:div class="example" href="documentation1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -6658,7 +6674,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         <xsd:documentation>
             <h:div class="summary">An element to hold eigenstuff.</h:div>
             <h:div class="description">Holds an array of eigenvalues and a matrix of eigenvectors.</h:div>
-            <h:div class="example" href="eigen1.xml"></h:div>
+            <h:div class="example" href="eigen1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -6689,7 +6705,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         <xsd:documentation>
             <h:div class="summary">An electron.</h:div>
             <h:div class="description">Since there is very little use of electrons in current chemical information this is a fluid concept. I expect it to be used for electron counting, input and output of theochem operations, descriptions of orbitals, spin states, oxidation states, etc. Electrons can be associated with atoms, bonds and combinations of these. At present there is no hardcoded semantics. However, _atomRef_ and similar attributes can be used to associate electrons with atoms or bond.</h:div>
-            <h:div class="example" href="electron1.xml"></h:div>
+            <h:div class="example" href="electron1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -6711,7 +6727,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
             <h:div class="summary">A dictionary entry.</h:div>
             <h:div class="desacription">The original design for validation with attribute-based constraints is ponderous and fragile. In future constraints will be added through <h:tt>appinfo</h:tt> in <h:tt>annotation</h:tt>.  We shall develop this further in the near future.</h:div>
             <h:div class="curation">2003-03-30: added metadataList to content mode.</h:div>
-            <h:div class="example" href="entry1.xml"></h:div>
+            <h:div class="example" href="entry1.xml"/>
 <!--            
             <h:div class="example" href="entry2.xml"></h:div>
 -->            
@@ -6757,7 +6773,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
             <h:div class="summary">An enumeration of value.</h:div>
             <h:div class="description">An enumeration of string values. Used where a dictionary entry constrains the possible values in a document instance. The dataTypes (if any) must all be identical and are defined by the dataType of the containing element.</h:div>
 
-            <h:div class="example" href="enumeration1.xml"></h:div>
+            <h:div class="example" href="enumeration1.xml"/>
 
         </xsd:documentation>
     </xsd:annotation>
@@ -6776,7 +6792,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         <xsd:documentation>
             <h:div class="summary">An expression that can be evaluated.</h:div>
             <h:div class="description">Experimental. This is essentially a mathematical function, expressed currently in reverse Polish notation but we expect to move to MathML.</h:div>
-            <h:div class="example" href="potential1.xml"></h:div>
+            <h:div class="example" href="potential1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -6797,8 +6813,8 @@ This attribute should only be used for simple formulae (i.e. without brackets or
   <xsd:annotation>
     <xsd:documentation>
       <h:div class="summary">CML-1 dataType DEPRECATED.</h:div>
-      <h:div class="description"></h:div>
-      <h:div class="example" href="../../examples/cmlone.xml"></h:div>
+      <h:div class="description"/>
+      <h:div class="example" href="../../examples/cmlone.xml"/>
     </xsd:documentation>
   </xsd:annotation>
   <xsd:complexType>
@@ -6820,8 +6836,8 @@ This attribute should only be used for simple formulae (i.e. without brackets or
   <xsd:annotation>
     <xsd:documentation>
       <h:div class="summary">CML-1 dataType DEPRECATED.</h:div>
-      <h:div class="description"></h:div>
-      <h:div class="example" href="../../examples/cmlone.xml"></h:div>
+      <h:div class="description"/>
+      <h:div class="example" href="../../examples/cmlone.xml"/>
     </xsd:documentation>
   </xsd:annotation>
   <xsd:complexType>
@@ -6877,7 +6893,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
 	        to use are application dependent.
 	        </h:p>
 	        </h:div>
-            <h:div class="example" href="formula1.xml"></h:div>
+            <h:div class="example" href="formula1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -6927,7 +6943,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
                     to other fragments. In addition there may be fragmentLists which represent branches
                     from the molecule. There may also be a join child which is normally only found
                     if there is a @countExpression.</h:p></h:div>
-            <h:div class="example" href="fragment1.xml"></h:div>
+            <h:div class="example" href="fragment1.xml"/>
             <h:div class="curation">2006-11-23: created</h:div>
         </xsd:documentation>
     </xsd:annotation>
@@ -6990,7 +7006,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
                       join fragment join fragment...
                     </h:pre>
         </h:p></h:div>
-            <h:div class="example" href="fragmentList1.xml"></h:div>
+            <h:div class="example" href="fragmentList1.xml"/>
             <h:div class="curation">2006-07-20: PMR Added</h:div>
             <h:div class="curation">2007-01-03: PMR Added role attribute</h:div>
         </xsd:documentation>
@@ -7021,7 +7037,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
             <h:div class="summary">A gradient.</h:div>
             <h:div class="description">A container for a quantity or quantities representing the 
             gradient of other quantities. At present just takes a scalar child.</h:div>
-            <h:div class="example" href="gradient1.xml"></h:div>
+            <h:div class="example" href="gradient1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -7049,7 +7065,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
                 For simple scalar values the value attribute can be used with empty content. Where an identifier has several components a series of label elements can be used.</h:div>
             <h:div class="curation">2003-07-10: Fixed count on identifier children..</h:div>
             <h:div class="curation">2003-03-12: Added isotopic and atoms..</h:div>
-            <h:div class="example" href="identifier1.xml"></h:div>
+            <h:div class="example" href="identifier1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -7070,8 +7086,8 @@ This attribute should only be used for simple formulae (i.e. without brackets or
   <xsd:annotation>
     <xsd:documentation>
       <h:div class="summary">CML-1 dataType DEPRECATED.</h:div>
-      <h:div class="description"></h:div>
-      <h:div class="example" href="../../examples/cmlone.xml"></h:div>
+      <h:div class="description"/>
+      <h:div class="example" href="../../examples/cmlone.xml"/>
     </xsd:documentation>
   </xsd:annotation>
   <xsd:complexType>
@@ -7093,8 +7109,8 @@ This attribute should only be used for simple formulae (i.e. without brackets or
   <xsd:annotation>
     <xsd:documentation>
       <h:div class="summary">CML-1 dataType DEPRECATED.</h:div>
-      <h:div class="description"></h:div>
-      <h:div class="example" href="../../examples/cmlone.xml"></h:div>
+      <h:div class="description"/>
+      <h:div class="example" href="../../examples/cmlone.xml"/>
     </xsd:documentation>
   </xsd:annotation>
   <xsd:complexType>
@@ -7118,7 +7134,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         <xsd:documentation>
             <h:div class="summary">A specific isotope.</h:div>
             <h:div class="description">Defines an isotope in terms of exact mass and spin. Differentiate from isotopeList which defines a mixture of isotope.</h:div>
-            <h:div class="example" href="isotope1.xml"></h:div>
+            <h:div class="example" href="isotope1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -7139,7 +7155,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         <xsd:documentation>
             <h:div class="summary">A container for one or more isotopes.</h:div>
             <h:div class="description">Can contain several isotopes. These may be related in several ways. This allows the definition of natural abundance and averged enrichment.</h:div>
-            <h:div class="example" href="isotopeList1.xml"></h:div>
+            <h:div class="example" href="isotopeList1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -7174,7 +7190,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
     <xsd:complexType>
         <xsd:annotation>
             <xsd:documentation>
-                <h:div class="summary"></h:div>
+                <h:div class="summary"/>
             </xsd:documentation>
         </xsd:annotation>
 
@@ -7206,7 +7222,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         <xsd:documentation>
             <h:div class="summary">A kpoint.</h:div>
             <h:div class="description">Not yet finalised.</h:div>
-            <h:div class="example" href="kpoint1.xml"></h:div>
+            <h:div class="example" href="kpoint1.xml"/>
             <h:div class="curation">2006-01-21: PMR. Created</h:div>
         </xsd:documentation>
     </xsd:annotation>
@@ -7228,7 +7244,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         <xsd:documentation>
             <h:div class="summary">A container for kpoints.</h:div>
             <h:div class="description">Experimental.</h:div>
-            <h:a href="http://www.xml-cml.org/examples/schema24/kpoint1.xml"></h:a>
+            <h:a href="/examples/schema24/kpoint1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -7275,7 +7291,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
                 _lattice_ is more general than _crystal_ in cmlCore which is used primarily for reporting 
                 crystallographic experiments.`A lattice can be described by latticeVectors, cell axes 
                 and angles, or metric tensors, etc. (only axes/angles are allowed under <h:tt>crystal</h:tt>). The dimensionality is enforced through a _system_ parent element.</h:div>
-            <h:div class="example" href="lattice3.xml"></h:div>
+            <h:div class="example" href="lattice3.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -7328,7 +7344,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
             the coordinates in the surface, perhaps representing lattice vectors of a 3D crystal or 
             2D layer. The third vector is orthogonal and represents coordinates normal to the surface. 
             In this case only the direction, not the magnitude of the vector is important.</h:div>
-            <h:div class="example" href="latticeVector1.xml"></h:div>
+            <h:div class="example" href="latticeVector1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -7348,7 +7364,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         <xsd:documentation>
             <h:div class="summary">A length between two atoms.</h:div>
             <h:div class="general">This is either an experimental measurement or used to build up internal coordinates (as in a z-matrix)  (only one allowed). We expect to move length as a child of _molecule_ and remove it from here.</h:div>
-            <h:div class="example" href="length1.xml"></h:div>
+            <h:div class="example" href="length1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -7424,7 +7440,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         attributes on <h:tt>arc</h:tt>s refer to IDs (<h:em>without</h:em> the '#' syntax).</h:li>
                         </h:ul>
 
-                        <h:p>Note: several other specific linking mechanisms are defined elsewhere in STM. <h:a href="http://www.xml-cml.org/schema/schema24/el.relatedEntry">relatedEntry</h:a> should be used in dictionaries, and <h:a href="http://www.xml-cml.org/schema/schema24/st.dictRef">dictRef</h:a>
+                        <h:p>Note: several other specific linking mechanisms are defined elsewhere in STM. <h:a href="el.relatedEntry">relatedEntry</h:a> should be used in dictionaries, and <h:a href="st.dictRef">dictRef</h:a>
         should be used to link to dictionaries. There are no required uses of <h:tt>link</h:tt> in STMML
         but we have used it to map atoms, electrons and bonds in reactions in CML</h:p>
                     </h:li>
@@ -7533,7 +7549,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
         <xsd:documentation>
             <h:div class="summary">A generic container with no implied semantics.</h:div>
             <h:div class="description">A generic container with no implied semantics. It just contains things and can have attributes which bind conventions to it. It could often act as the root element in an STM document.</h:div>
-            <h:div class="example" href="list1.xml"></h:div>
+            <h:div class="example" href="list1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -7624,7 +7640,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
      ...V[rows,1],V[rows,2],...V[rows,columns]</h:tt>
                 </h:p>
                 <h:p>By default whitespace is used to separate matrix elements; see 
-     <h:a href="http://www.xml-cml.org/schema/schema24/el.array">array</h:a> for details. There are NO characters or markup 
+     <h:a href="el.array">array</h:a> for details. There are NO characters or markup 
      delimiting the end of rows; authors must be careful!. The <h:tt>columns</h:tt>
      and <h:tt>rows</h:tt> attributes have no default values; a row vector requires
      a <h:tt>rows</h:tt> attribute of 1.</h:p>
@@ -7633,7 +7649,7 @@ This attribute should only be used for simple formulae (i.e. without brackets or
      require all elements to be given, even if the matrix is symmetric, antisymmetric
      or banded diagonal. The <h:tt>matrixType</h:tt> attribute allows software to 
      validate and process the type of matrix.</h:p></h:div>
-            <h:div class="example" href="matrix1.xml"></h:div>
+            <h:div class="example" href="matrix1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -7690,7 +7706,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
 </h:p>
 <h:p>CMLReact provides reactionScheme and annotions to describe the reaction sequence and both it and <h:tt>mechanism</h:tt> could co-occur within a reactionScheme container.</h:p></h:div>
             <h:div class="curation">2006-02-28 PMR: changed content model to choice.</h:div>
-            <h:div class="example" href="mechanism1.xml"></h:div>
+            <h:div class="example" href="mechanism1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -7713,7 +7729,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
             <h:div class="description">
             <h:p>Information components can represent both physical constituents of the reaction or abstract concepts (types of bond cleavage, thermodynamics, etc.). There are several ways that components of the reaction can be annotated and/or quantified.  One approach will be to refer to specific bonds and atoms through their ids and use mechanismComponent to describe their role, properties, etc. Another is to use mechanismComponent to identify types of bond formed/broken without reference to actual atoms and bonds (initially through the <h:tt>name</h:tt> element). Yet another will be to include information on the reaction profile.</h:p>
             <h:p> This is still experimental.</h:p></h:div>
-            <h:div class="example" href="mechanismComponent1.xml"></h:div>
+            <h:div class="example" href="mechanismComponent1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -7737,7 +7753,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
                 <h:p>In its simple form each element provides a name and content in a similar
       fashion to the <h:tt>meta</h:tt> element in HTML. <h:tt>metadata</h:tt> may have simpleContent
       (i.e. a string for adding further information - this is not controlled).</h:p></h:div>
-            <h:div class="example" href="metadata1.xml"></h:div>
+            <h:div class="example" href="metadata1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -7758,7 +7774,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
         <xsd:documentation>
             <h:div class="summary">A general container for metadata elements.</h:div>
             <h:div class="description">MetadataLists can have local roles (e.g. a bibliographic reference could be a single meteadatList with, say, 3-6 components). The role attribute is used in an uncontrolled manner for this. MetadataLists can also be nested, but metadata and metadataList children should not occur on the same level of the hierarchy.</h:div>
-            <h:div class="example" href="metadata1.xml"></h:div>
+            <h:div class="example" href="metadata1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -7781,7 +7797,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
             <h:div class="description">
                 <h:p>Many programs are based on discrete modules which produce chunks of output. There are also conceptual chunks such as initialisation, calculation and summary/final which often have finer submodules such as cycle, iteration, snapshot, etc. There is no controlled vocabulary but a typical structure is shown in the example. One of the challenges of CCML is to find communality between different programs and to use agreed abstractions for the modules.
         </h:p></h:div>
-            <h:div class="example" href="module1.xml"></h:div>
+            <h:div class="example" href="module1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -7821,7 +7837,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
         related to the molecule.
         Within this can be string/float/integer and other nested lists</h:p></h:div>
         <h:div><h:p>Normally molecule will not contain fragment or fragmentList</h:p></h:div>
-            <h:div class="example" href="molecule1.xml"></h:div>
+            <h:div class="example" href="molecule1.xml"/>
             <h:div class="curation">Revised content model to allow any order of lengths, angles, torsions 2003-01-01..</h:div>
             <h:div class="curation">Added role attribute 2003-03-19..</h:div>
             <h:div class="curation">2006-05-21. PMR changed content model to (A|B|C...)*</h:div>
@@ -7898,7 +7914,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
                     should be used.
           A moleculeList can contain nested moleculeLists.
         </h:p></h:div>
-            <h:div class="example" href="moleculeList1.xml"></h:div>
+            <h:div class="example" href="moleculeList1.xml"/>
             <h:div class="curation">2006-07-20: PMR Added</h:div>
         </xsd:documentation>
     </xsd:annotation>
@@ -7931,7 +7947,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
             <h:div class="description">
                     <h:tt>name</h:tt> is used for chemical names (formal and trivial) for molecules and also for identifiers such as CAS registry and RTECS. It can also be used for labelling atoms. It should be used in preference to the <h:tt>title</h:tt> attribute because it is repeatable and can be linked to a dictionary. 
                     <h:p>Constraining patterns can be described in the dictionary and used to validate <h:tt>name</h:tt>s.</h:p></h:div>
-            <h:div class="example" href="name1.xml"></h:div>
+            <h:div class="example" href="name1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -7948,7 +7964,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
         <xsd:documentation>
             <h:div class="summary">An object which might occur in scientific data or narrative.</h:div>
             <h:div class="description">Deliberately vague. Thus an instrument might be built from sub component objects, or a program could be composed of smaller modules (objects). <h:tt>object</h:tt> could be used to encapsulate graphical primitives (e.g. in reaction schemes, drawings of apparatus, etc.). Unrestricted content model.</h:div>
-            <h:div class="example" href="object1.xml"></h:div>
+            <h:div class="example" href="object1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -7969,7 +7985,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
         <xsd:documentation>
             <h:div class="summary">An observation or occurrence.</h:div>
             <h:div class="description">A container for any events that need to be recorded, whether planned or not. They can include notes,  measurements, conditions that may be referenced elsewhere, etc. There are no controlled semantics.</h:div>
-                <h:div class="example" href="observation1.xml"></h:div>
+                <h:div class="example" href="observation1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -7989,7 +8005,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
         <xsd:documentation>
             <h:div class="summary">An operator within an expression.</h:div>
             <h:div class="description">Experimental. An operator acts on one or more arguments (at present the number is fixed by the type). The formulation is reverse Polish so the result (with its dataType) is put on a stack for further use.</h:div>
-            <h:div class="example" href="potential1.xml"></h:div>
+            <h:div class="example" href="potential1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -8031,7 +8047,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
                 it can take. </h:p>
                 <h:p>The allowable content of <h:tt>parameter</h:tt>s may be shown by a "template" 
                 in the <h:tt>appinfo</h:tt>; this is stil experimental.</h:p></h:div>
-            <h:div class="example" href="parameter1.xml"></h:div>
+            <h:div class="example" href="parameter1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -8083,7 +8099,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
         <xsd:documentation>
             <h:div class="summary">A container for one or more parameters.</h:div>
             <h:div class="description">parameterList can contain several parameters.</h:div>
-            <h:div class="example" href="parameterList1.xml"></h:div>
+            <h:div class="example" href="parameterList1.xml"/>
             <h:div class="curation">2006-02-16:PMR. Added parameterList as child</h:div>
         </xsd:documentation>
     </xsd:annotation>
@@ -8163,7 +8179,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
             <h:div class="description">The content model includes atom, bond, molecule, but these
             are deprecated and should be replaced by atomRefs, etc.</h:div>
             <h:div class="curation">2005-11-22: PMR. Added moleculeRefs</h:div>
-            <h:div class="example" href="peak1.xml"></h:div>
+            <h:div class="example" href="peak1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     
@@ -8279,7 +8295,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
             <h:div class="description">Distinguish between <h:tt>peakList</h:tt> (primarily a navigational container) and <h:tt>peakGroup</h:tt> where the peaks (or groups) have some close relation not shared by all peaks. All descendants must use consistent units.</h:div>
             <h:div class="curation">2005-11-22. added atomRefs, bondRefs and moleculeRefs and deprecated 
             atom, bond, molecule children</h:div>
-            <h:div class="example" href="peakGroup1.xml"></h:div>
+            <h:div class="example" href="peakGroup1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -8384,7 +8400,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
         <xsd:documentation>
             <h:div class="summary">A list of peaks or peakGroups.</h:div>
             <h:div class="description">Distinguish between <h:tt>peakList</h:tt> (primarily a navigational container) and <h:tt>peakGroup</h:tt> where the peaks (or groups) have some close relation not shared by all peaks. All peaks and peakGroups should use the same units.</h:div>
-            <h:div class="example" href="peakList1.xml"></h:div>
+            <h:div class="example" href="peakList1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -8513,8 +8529,8 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
 &lt;/cml&gt;
 </h:pre>            
 </h:div>
-            <h:div class="example" href="peakStructure1.xml"></h:div>
-            <h:div class="example" href="peakStructure2.xml"></h:div>
+            <h:div class="example" href="peakStructure1.xml"/>
+            <h:div class="example" href="peakStructure2.xml"/>
             
         </xsd:documentation>
     </xsd:annotation>
@@ -8596,7 +8612,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
     <xsd:annotation>
         <xsd:documentation>
             <h:div class="summary">A point in 3-space.</h:div>
-            <h:div class="description"></h:div>
+            <h:div class="description"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -8615,7 +8631,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
         <xsd:documentation>
             <h:div class="summary">An explicit potential.</h:div>
             <h:div class="description">This represents the actual function for the potential (i.e. with explicit values) rather than the functional form, which will normally be referenced from this.</h:div>
-            <h:div class="example" href="potential1.xml"></h:div>
+            <h:div class="example" href="potential1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -8636,7 +8652,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
         <xsd:documentation>
             <h:div class="summary">The functional form of a potential.</h:div>
             <h:div class="description">This has generic arguments and parameters rather than explicit ones. It is essentially a mathematical function, expressed currently in reverse Polish notation.</h:div>
-            <h:div class="example" href="potential1.xml"></h:div>
+            <h:div class="example" href="potential1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -8668,7 +8684,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
         <xsd:documentation>
             <h:div class="summary">A container for explicit potentials.</h:div>
             <h:div class="description">Experimental.</h:div>
-            <h:div class="example" href="potential1.xml"></h:div>
+            <h:div class="example" href="potential1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -8688,7 +8704,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
         <xsd:documentation>
             <h:div class="summary">A product within a productList.</h:div>
             <h:div class="description"><h:tt>product</h:tt> describes a product species which is produced in a reaction. See <h:tt>reactant</h:tt> for discussion of catalysis and solvents.</h:div>
-            <h:div class="example" href="product1.xml"></h:div>
+            <h:div class="example" href="product1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -8736,7 +8752,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
                     </h:ul>.
           A productList can contain nested productLists. The semantics of this are currently undefined.
         </h:p></h:div>
-            <h:div class="example" href="productList1.xml"></h:div>
+            <h:div class="example" href="productList1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -8775,7 +8791,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
                     mechanism.
                 <h:p>Properties may have a <h:tt>state</h:tt> attribute to distinguish the state of 
                 matter</h:p></h:div>
-            <h:div class="example" href="property1.xml"></h:div>
+            <h:div class="example" href="property1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -8810,7 +8826,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
             <h:div class="summary">A container for one or more properties.</h:div>
             <h:div class="description"><h:tt>propertyList</h:tt> can contain several properties. 
             These include (but are not limited to) observations, or numeric quantities.</h:div>
-            <h:div class="example" href="propertyList1.xml"></h:div>
+            <h:div class="example" href="propertyList1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -8838,7 +8854,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
             <h:div class="summary">A reactant within a reactantList.</h:div>
             <h:div class="description">
                     <h:tt>reactant</h:tt> describes a reactant species which takes part in a reaction. Catalysts and supports are not normally classified as reactants, but this is subjective.  Enzymes (or parts of enzymes) may well be reactants, as could be substances which underwent chemical change but were restored to their original state. <h:tt>reactant</h:tt> is a powerful concept as it can support stoichiometry (atom and molecule counting), mapping (for mechanisms), etc. Solvents are best contained within substanceList.</h:div>
-            <h:div class="example" href="reactant1.xml"></h:div>
+            <h:div class="example" href="reactant1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -8898,7 +8914,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
                     </h:ul>.
           A reactantList can contain nested reactantLists. The semantics of this are currently undefined.
         </h:p></h:div>
-            <h:div class="example" href="reactantList1.xml"></h:div>
+            <h:div class="example" href="reactantList1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -8944,12 +8960,12 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
                 </h:p></h:div>
             <h:div>
                 <h:p>Reaction normally refers to an overall reaction or a step within a reactionList. For a complex "reaction", such as in enzymes or chain reactions, it may be best to use <h:tt>reactionScheme</h:tt> to hold the overall <h:tt>reaction</h:tt> and a <h:tt>reactionList</h:tt> of the individual <h:tt>reaction</h:tt> steps.</h:p></h:div>
-            <h:div class="example" href="reaction1.xml"></h:div>
-						<h:div class="example" href="reaction9a.xml"></h:div>
-						<h:div class="example" href="reaction9b.xml"></h:div>
-						<h:div class="example" href="reaction10a.xml"></h:div>
-						<h:div class="example" href="reaction10b.xml"></h:div>
-						<h:div class="example" href="reaction11.xml"></h:div>
+            <h:div class="example" href="reaction1.xml"/>
+						<h:div class="example" href="reaction9a.xml"/>
+						<h:div class="example" href="reaction9b.xml"/>
+						<h:div class="example" href="reaction10a.xml"/>
+						<h:div class="example" href="reaction10b.xml"/>
+						<h:div class="example" href="reaction11.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -9024,14 +9040,14 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
         <xsd:documentation>
             <h:div class="summary">A container for one or more reactions or reactionSchemes with no interrelations.</h:div>
             <h:div class="description">A reactionList aggregates reactions and reactionSchemes but implies no semantics. The most common uses are to create small collections of reactions (e.g. databases or publications).</h:div>
-            <h:div class="example" href="reactionList1.xml"></h:div>
+            <h:div class="example" href="reactionList1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
     <xsd:complexType>
         <xsd:annotation>
             <xsd:documentation>
-                <h:div></h:div>
+                <h:div/>
             </xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
@@ -9062,10 +9078,10 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
 				<h:p>This design is general because "reaction" is used in several ways. A biochemical pathway (e.g. oxidation of glucose to CO2 and water) involves many coupled enzyme reactions proceeding both in parallel and in sequence. Each of these steps ("reactions" in their own right) is itself complex and can include several mechanistics steps which are themselves reactions with products, reactants, etc. <h:tt>reactionScheme</h:tt> can therefore include reactionStepLists (with more reactionScheme children) which provide a more detailed view of the individual components.</h:p>
 				<h:p>Where a set of reactions are primitives...</h:p>
 			</h:div>
-			<h:div class="example" href="reactionScheme1.xml"></h:div>
-			<h:div class="example" href="reactionScheme3.xml"></h:div>
-			<h:div class="example" href="reactionScheme4a.xml"></h:div>
-			<h:div class="example" href="reactionScheme4b.xml"></h:div>
+			<h:div class="example" href="reactionScheme1.xml"/>
+			<h:div class="example" href="reactionScheme3.xml"/>
+			<h:div class="example" href="reactionScheme4a.xml"/>
+			<h:div class="example" href="reactionScheme4b.xml"/>
 		</xsd:documentation>
 	</xsd:annotation>
 
@@ -9125,9 +9141,9 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
           A reactionStep normally contains a single reaction or reactionScheme. It can have attributes such as yield and ratio which can be used by the parent reactionStepList.
         </h:p>
 				</h:div>
-						<h:div class="example" href="reactionStepList4.xml"></h:div>
-						<h:div class="example" href="reactionStepList5a.xml"></h:div>
-						<h:div class="example" href="reactionStepList5b.xml"></h:div>
+						<h:div class="example" href="reactionStepList4.xml"/>
+						<h:div class="example" href="reactionStepList5a.xml"/>
+						<h:div class="example" href="reactionStepList5b.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -9201,8 +9217,8 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
 </h:li>
 </h:ul>
 </h:p></h:div>
-						<h:div class="example" href="reactionStepList1.xml"></h:div>
-						<h:div class="example" href="reactionStepList3.xml"></h:div>
+						<h:div class="example" href="reactionStepList1.xml"/>
+						<h:div class="example" href="reactionStepList3.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -9237,7 +9253,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
         <xsd:documentation>
             <h:div class="summary">The reactiveCentre in a reaction.</h:div>
             <h:div class="description">This describes the set(s) of bonds and atoms involved in the reaction. The semantics are flexible, but a common usage would be to create atomSet(s) and bondSet(s) mapping to groups which undergo changes.</h:div>
-            <h:div class="example" href="reactiveCentre1.xml"></h:div>
+            <h:div class="example" href="reactiveCentre1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -9269,7 +9285,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
             Semantics yet to be determined.</h:div>
             <h:div>Regions can be created by the unions of two or more regions. This allows a region 
             to be built from a series of (say) spheres or boxes filling space.</h:div>
-            <h:div class="example" href="region1.xml"></h:div>
+            <h:div class="example" href="region1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -9289,7 +9305,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
         <xsd:documentation>
             <h:div class="summary">An entry related in some way to a dictionary entry.</h:div>
             <h:div class="description">The range of relationships is not restricted but should include parents, aggregation, seeAlso and so on.  DataCategories from ISO12620 can be referenced through the namespaced mechanism.</h:div>
-            <h:div class="example" href="relatedEntry1.xml"></h:div>
+            <h:div class="example" href="relatedEntry1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -9307,7 +9323,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
         <xsd:documentation>
             <h:div class="summary">An analytical or spectral sample.</h:div>
             <h:div class="description">The <h:tt>sample</h:tt> should contain information on what things were in the sample and their roles. It can include <h:tt>molecule</h:tt>, <h:tt>substance</h:tt> and <h:tt>substanceList</h:tt>.  Typical rolos include solvent, mulling agents, salt disks, molecular supports, etc. but should not cover apparatus or conditions.</h:div>
-            <h:div class="example" href="sample1.xml"></h:div>
+            <h:div class="example" href="sample1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -9357,7 +9373,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
              has attributes which affect the type.
                 <h:p>
                     <h:tt>scalar</h:tt> does not necessarily reflect a physical object (for which
-         <h:a href="http://www.xml-cml.org/schema/schema24/el.object">object</h:a> should be used). It may reflect a property of an object
+         <h:a href="el.object">object</h:a> should be used). It may reflect a property of an object
          such as temperature, size, etc. </h:p>
                 <h:p>Note that normal Schema validation tools cannot validate the data type 
          of <h:b>scalar</h:b> (it is defined as <h:tt>string</h:tt>), but that a temporary schema 
@@ -9365,7 +9381,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
          can be contained in a dictionary and software could decide to retrieve this
          and use it for validation.</h:p></h:div>
 
-            <h:div class="example" href="scalar1.xml"></h:div>
+            <h:div class="example" href="scalar1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -9417,7 +9433,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
         <xsd:documentation>
             <h:div class="summary">A spectator object in a reaction.</h:div>
             <h:div class="description">Objects are often present during a reaction which are not formally involved in bond breaking/formation and which are not modified during the reaction. They may be catalysts, but may also be objects which in some way constrain or help the reaction to take place (surfaces, micelles, groups in enzyme active sites, etc.).  In some cases molecules present in a reaction mixture may act as spectators in steps in which they are not transformed.</h:div>
-            <h:div class="example" href="spectator1.xml"></h:div>
+            <h:div class="example" href="spectator1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -9446,8 +9462,8 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
     <xsd:annotation>
         <xsd:documentation>
             <h:div class="summary">A container for spectators in a reaction.</h:div>
-            <h:div class="description"></h:div>
-            <h:div class="example" href="spectatorList1.xml"></h:div>
+            <h:div class="description"/>
+            <h:div class="example" href="spectatorList1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -9465,7 +9481,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
         <xsd:documentation>
             <h:div class="summary">A spectrum and relevant data or metadata.</h:div>
             <h:div class="description">The <h:tt>spectrum</h:tt> construct can hold <h:tt>metadataList</h:tt>, <h:tt>sample</h:tt> (which can contain molecule), <h:tt>conditionList</h:tt> (mainly for physical/chemical conditions, not instrumental), <h:tt>spectrumData</h:tt> for the actual data and instrumental settings/procedure and <h:tt>peakList</h:tt> for the assigned peaks. This approach puts the spectrum as the primary object of interest. It could also be possible to make <h:tt>spectrum</h:tt> a child of <h:tt>molecule</h:tt> (although a reference using <h:tt>ref</h:tt> might be preferable).</h:div>
-            <h:div class="example" href="spectrum1.xml"></h:div>
+            <h:div class="example" href="spectrum1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -9531,7 +9547,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
             <h:div class="summary">Data for the spectrum.</h:div>
             <h:div class="description">This is primarily to record the data in interchangeable format and machine and manufacturers settings and can include other MLs in this area (AniML, SpectroML, etc.). We recommend ASCII representations of data and this is the only format that CMLSpect implementers have to support, but we also allow for the carriage of JCAMP and other data (in ML wrappers such as AniML). All numeric data should carry units and dictionary references if possible to allow for semantic interoperability.</h:div>
 
-            <h:div class="example" href="spectrumData1.xml"></h:div>
+            <h:div class="example" href="spectrumData1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -9575,7 +9591,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
                     </h:ul>.
           A spectrumList can contain nested spectrumLists.
         </h:p></h:div>
-            <h:div class="example" href="spectrumList1.xml"></h:div>
+            <h:div class="example" href="spectrumList1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -9605,7 +9621,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
     <xsd:annotation>
         <xsd:documentation>
             <h:div class="summary">A sphere in 3-space.</h:div>
-            <h:div class="description"></h:div>
+            <h:div class="description"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -9626,7 +9642,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
             <h:div class="description"><h:tt>stmml</h:tt> holds stmml data under a single
             generic container. Other namespaces may be present as children.
             No semantics implied.</h:div>
-            <h:div class="example" href="stmml1.xml"></h:div>
+            <h:div class="example" href="stmml1.xml"/>
 <!--            
             <h:div class="example" href="bad.stmml.xml">
                 <h:p>Note attribute (mistake) not in schema</h:p></h:div>
@@ -9648,8 +9664,8 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
   <xsd:annotation>
     <xsd:documentation>
       <h:div class="summary">CML-1 dataType (DEPRECATED).</h:div>
-      <h:div class="description"></h:div>
-      <h:div class="example" href="../../examples/cmlone.xml"></h:div>
+      <h:div class="description"/>
+      <h:div class="example" href="../../examples/cmlone.xml"/>
     </xsd:documentation>
   </xsd:annotation>
   <xsd:complexType>
@@ -9667,8 +9683,8 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
   <xsd:annotation>
     <xsd:documentation>
       <h:div class="summary">CML-1 dataType DEPRECATED.</h:div>
-      <h:div class="description"></h:div>
-      <h:div class="example" href="../../examples/cmlone.xml"></h:div>
+      <h:div class="description"/>
+      <h:div class="example" href="../../examples/cmlone.xml"/>
     </xsd:documentation>
   </xsd:annotation>
   <xsd:complexType>
@@ -9691,7 +9707,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
         <xsd:documentation>
             <h:div class="summary">A chemical substance.</h:div>
             <h:div class="description"><h:tt>substance</h:tt> represents a <h:i>chemical substance</h:i> which is deliberately very general. It can represent things that may or may not be molecules, can and cannot be stored in bottles and may or may not be microscopic. Solutions and mixtures  can be described by _substanceList_s of substances. The <h:tt>type</h:tt> attribute can be used to give qualitative information characterising the substance ("granular", "90%", etc.) and _role_ to describe the role in process ("desiccant", "support", etc.). There is currently no controlled vocabulary. Note that <h:tt>reaction</h:tt> is likely to have more precise semantics. The amount of a substance is controlled by the optional _amount_ child.</h:div>
-            <h:div class="example" href="substance1.xml"></h:div>
+            <h:div class="example" href="substance1.xml"/>
         </xsd:documentation>
         <xsd:documentation>
             <h:div class="curation">
@@ -9731,7 +9747,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
             <h:div class="description">Deliberately very general - see substance. substanceList is designed to manage solutions, mixtures, etc. and there is a small enumerated controlled vocabulary, but this can be extended through dictionaries.
                 <h:p>substanceList can have an amount child. This can indicate the amount of a solution or mixture; this example describes 100 ml of 0.1M NaOH(aq). Although apparently longwinded it is precise and fully machine-interpretable</h:p></h:div>
             <h:div class="curation">Added role attribute, 2003-03-12.</h:div>
-            <h:div class="example" href="substanceList1.xml"></h:div>
+            <h:div class="example" href="substanceList1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -9791,7 +9807,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
          <h:p>It may be better to use transform3 to hold the symmetry as they have fixed shape and
          have better defined mathematical operators.</h:p>
          </h:div>
-            <h:div class="example" href="symmetry1.xml"></h:div>
+            <h:div class="example" href="symmetry1.xml"/>
             <h:div class="curation">2005-11-03 PMR. Added transform3 as children. </h:div>
         </xsd:documentation>
     </xsd:annotation>
@@ -9846,8 +9862,8 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
                be given explicitly.
                <ul xmlns="">
                <li>columns:  
-               There is a single <h:a href="http://www.xml-cml.org/schema/schema24/el.arrayList">arrayList</h:a> child containing (homogeneous) child
-               elements (<h:a href="http://www.xml-cml.org/schema/schema24/el.array">array</h:a> or <h:a href="http://www.xml-cml.org/schema/schema24/el.list">list</h:a>of 
+               There is a single <h:a href="el.arrayList">arrayList</h:a> child containing (homogeneous) child
+               elements (<h:a href="el.array">array</h:a> or <h:a href="el.list">list</h:a>of 
                size <h:tt>rows</h:tt> data. This is the "normal" orientation of data tables
                but the table display could be transposed by XSLT transformation if required.
 	       Access is to columns, and thence to the data within them. DataTyping, delimiters,
@@ -9917,9 +9933,9 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
 				</h:tr>
                </h:table>
                </h:div>
-            <h:div class="example" href="table1.xml"></h:div>
-            <h:div class="example" href="table2.xml"></h:div>
-            <h:div class="example" href="table3.xml"></h:div>
+            <h:div class="example" href="table1.xml"/>
+            <h:div class="example" href="table2.xml"/>
+            <h:div class="example" href="table3.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -9962,9 +9978,9 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
             content here to allow either text or element content, but not both.).
             The metadata for tableCells must be declared in a tableHeader/tableHeaderCell
             system</h:div>
-            <h:div class="example" href="table5.xml"></h:div>
-            <h:div class="example" href="table6.xml"></h:div>
-            <h:div class="example" href="tabler.xml"></h:div>
+            <h:div class="example" href="table5.xml"/>
+            <h:div class="example" href="table6.xml"/>
+            <h:div class="example" href="tabler.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -9995,7 +10011,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
             strings or XML elements, tableContent can only hold strings.
             </h:p>
                </h:div>
-            <h:div class="example" href="table7.xml"></h:div>
+            <h:div class="example" href="table7.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -10019,8 +10035,8 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
              in number and semantic type. It is forbidden for arrayList tables as each
              array/list contains the metadata.</h:p>
                </h:div>
-            <h:div class="example" href="table6.xml"></h:div>
-            <h:div class="example" href="table7.xml"></h:div>
+            <h:div class="example" href="table6.xml"/>
+            <h:div class="example" href="table7.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -10043,9 +10059,9 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
             and/or semantics for each column. These are similar to the attributes in <h:tt>array</h:tt>
             but without the lsist of minValue, errors etc. However they can (and should)
             carry all the units metadata.</h:div>
-            <h:div class="example" href="table5.xml"></h:div>
-            <h:div class="example" href="table6.xml"></h:div>
-            <h:div class="example" href="tabler.xml"></h:div>
+            <h:div class="example" href="table5.xml"/>
+            <h:div class="example" href="table6.xml"/>
+            <h:div class="example" href="tabler.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -10096,9 +10112,9 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
             and there is no spanning of cells. There is no need for a size attribute as the count is simply
             <h:tt> count(tableCell)</h:tt>. 
             </h:div>
-            <h:div class="example" href="table5.xml"></h:div>
-            <h:div class="example" href="table6.xml"></h:div>
-            <h:div class="example" href="tabler.xml"></h:div>
+            <h:div class="example" href="table5.xml"/>
+            <h:div class="example" href="table6.xml"/>
+            <h:div class="example" href="tabler.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -10117,7 +10133,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
             <h:div class="description">
             <h:p>Metadata for rows must be defined in tableHeader.</h:p>
                </h:div>
-            <h:div class="example" href="table2.xml"></h:div>
+            <h:div class="example" href="table2.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -10137,9 +10153,9 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
             for a column OR be a dat container of the table. Normally it contains
             simpleContent, but may also contain a single child element. It should
             NOT contain multiple children of any sort.</h:div>
-            <h:div class="example" href="table5.xml"></h:div>
-            <h:div class="example" href="table6.xml"></h:div>
-            <h:div class="example" href="tabler.xml"></h:div>
+            <h:div class="example" href="table5.xml"/>
+            <h:div class="example" href="table6.xml"/>
+            <h:div class="example" href="tabler.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -10166,7 +10182,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
      z-matrix).</h:li>
                 </h:ul>
                 <h:p>Note that the order of atoms is important.</h:p></h:div>
-            <h:div class="example" href="torsion1.xml"></h:div>
+            <h:div class="example" href="torsion1.xml"/>
             <h:div class="curation">2006-02-07: PMR. Fixed torsionAngleUnits</h:div>
         </xsd:documentation>
     </xsd:annotation>
@@ -10213,7 +10229,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
                 <h:p>Although spectators may stabilise or otherwise interact with the transitionState they are not contained within it.</h:p>
                 <h:p>A <h:tt>propertyList</h:tt> is provided to capture transitionState properties.</h:p>
                 <h:p>Still experimental.</h:p></h:div>
-            <h:div class="example" href="transitionState1.xml"></h:div>
+            <h:div class="example" href="transitionState1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -10234,9 +10250,9 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
             <h:div class="description">trow may either carry all the header information,
             OR be a row of the table. In both cases it must contain tcells.
                            </h:div>
-            <h:div class="example" href="table5.xml"></h:div>
-            <h:div class="example" href="table6.xml"></h:div>
-            <h:div class="example" href="tabler.xml"></h:div>
+            <h:div class="example" href="table5.xml"/>
+            <h:div class="example" href="table6.xml"/>
+            <h:div class="example" href="tabler.xml"/>
         </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType>
@@ -10309,7 +10325,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
                 </h:p>
                 </h:div>
                 
-            <h:div class="example" href="unit1.xml"></h:div>
+            <h:div class="example" href="unit1.xml"/>
             <h:div class="curation">2003:04-09 Description or parentSI attribute enhanced.</h:div>
             <h:div class="curation">2006:03-21 Added metadata and metadataList to content.</h:div>
         </xsd:documentation>
@@ -10409,7 +10425,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
             (though in separate files). This was unwieldy and unitTypeList has been
             created to hold unitTypes. Implementers are recommended to change
             any unitList/unitType to unitTypeList/unitType</h:div>
-            <h:div class="example" href="unitList1.xml"></h:div>
+            <h:div class="example" href="unitList1.xml"/>
             <h:div class="curation">2005-12-15. PMR. added namespace 
             and dictionaryPrefix.</h:div>
             <h:div class="curation">2005-12-17. PMR. added siNamespace .</h:div>
@@ -10458,13 +10474,13 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
             <h:div class="description">
                 <h:p>Mandatory for SI Units, optional for nonSI units since they should be able to obtain this from their parent. For complex derived units without parents it may be useful.</h:p>
                 <h:p>Used within a unitList</h:p>
-                <h:p>Distinguish carefully from <h:a href="http://www.xml-cml.org/schema/schema24/st.unitsType">unitsType</h:a>
+                <h:p>Distinguish carefully from <h:a href="st.unitsType">unitsType</h:a>
           which is primarily used for attributes describing the units that elements 
           carry</h:p></h:div>
 <!--          
             <h:div class="example" href="unit2.xml"></h:div>
 -->            
-            <h:div class="example" href="unitType1.xml"></h:div>
+            <h:div class="example" href="unitType1.xml"/>
 <!--            
             <h:div class="example" href="unitType2.xml"></h:div>
 -->            
@@ -10495,7 +10511,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
             (along with metadata). Note: unitTypes used to be held under unitList, but
             this was complicated to implement and unitTypeList makes a clean separation.
             </h:div>
-            <h:div class="example" href="unitTypeList1.xml"></h:div>
+            <h:div class="example" href="unitTypeList1.xml"/>
             <h:div class="curation">2006-01-28. PMR. created.</h:div>
         </xsd:documentation>
     </xsd:annotation>
@@ -10549,7 +10565,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
             <h:div class="summary">The x-axis.</h:div>
             <h:div class="description">A container for all information relating to the x-axis (including scales, offsets, etc.) and the data themselves (in an <h:tt>array</h:tt>). Note: AniML uses "xValues" so avoid confusion with this.</h:div>
 
-            <h:div class="example" href="xaxis1.xml"></h:div>
+            <h:div class="example" href="xaxis1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -10576,7 +10592,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
         <xsd:documentation>
             <h:div class="summary">The y-axis.</h:div>
             <h:div class="description">A container for all information relating to the y-axis (including scales, offsets, etc.) and the data themselves (in an <h:tt>array</h:tt>).</h:div>
-            <h:div class="example" href="yaxis1.xml"></h:div>
+            <h:div class="example" href="yaxis1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
@@ -10604,7 +10620,7 @@ should be referred to as a reaction sequence, and not a mechanism.</h:blockquote
         <xsd:documentation>
             <h:div class="summary">A zMatrix.</h:div>
             <h:div class="description">A container for <h:tt>length</h:tt>, <h:tt>angle</h:tt> and <h:tt>torsion</h:tt>, which must be arranged in the conventional zMatrix format.</h:div>
-            <h:div class="example" href="zMatrix1.xml"></h:div>
+            <h:div class="example" href="zMatrix1.xml"/>
         </xsd:documentation>
     </xsd:annotation>
 
