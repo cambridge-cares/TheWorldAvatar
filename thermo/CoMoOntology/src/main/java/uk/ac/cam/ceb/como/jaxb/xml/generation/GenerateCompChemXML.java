@@ -35,7 +35,7 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.FormulaUtility;
  * <p>Generates CompChem XML files by parsing Gaussian (g09) files
  *         which are stored in folder 'src/test/resources/g09/' of CoMoOntology
  *         project. In CoMoOntology project, we use parser implemented by
- *         {@author pb556} in CoMoIOChemistry project.</p>
+ *         {@author pb556} in CoMoIOChemistry, and CoMoEnthalpyEstimation projects.</p>
  */
 
 public class GenerateCompChemXML {
