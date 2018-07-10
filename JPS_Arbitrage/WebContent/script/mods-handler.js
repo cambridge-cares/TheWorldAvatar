@@ -31,6 +31,7 @@ const processInputs = (evt) => {
             headerUtilParam.push("V_moleF_NaturalGasInput_001");
         }
         let arrayHeaderPricesUtilParam = [headerUtilParam, pricesUtilParam];
+        console.log(arrayHeaderPricesUtilParam);
 
         $.when(downloadAndSaveMarketData(choicePlant),
             downloadAndSaveExchangeRates(),
@@ -49,15 +50,11 @@ const processInputs = (evt) => {
                     function (data) {
                         let modsAnalysisResults = JSON.parse(data);
                         let textModsAnalysisResults = "The highest marginal profit per tonne of biodiesel FAME is " +
-                            parseFloat(modsAnalysisResults['marginal profit per tonne of biodiesel FAME (in USD)']).toFixed(2) + 
-                            " USD. The futures contracts need to be accepted at the following ratio of reagent to product: " +
-                            parseFloat(modsAnalysisResults['ratio of reagent to product']).toFixed(2) + 
-                            ". Buy crude palm oil futures contracts with delivery in " +
-                            modsAnalysisResults['month to buy crude palm oil futures contracts'] + 
-                            " and sell biodiesel FAME futures contracts with delivery in " +
-                            modsAnalysisResults['month to sell biodiesel FAME futures contract'] + 
-                            ". " +
-                            modsAnalysisResults['note'];
+                            modsAnalysisResults['marginal profit per tonne of biodiesel FAME (in USD)'] + " USD. The futures contracts " +
+                            "need to be accepted at the following ratio of reagent to product: " +
+                            modsAnalysisResults['ratio of reagent to product'] + ". Buy crude palm oil futures contracts with delivery in " +
+                            modsAnalysisResults['month to buy crude palm oil futures contracts'] + " and sell biodiesel FAME futures contracts with delivery in " +
+                            modsAnalysisResults['month to sell biodiesel FAME futures contract'] + ". " + modsAnalysisResults['note'];
 
                         $('#MoDSOutput').text(textModsAnalysisResults);
                     });
@@ -70,9 +67,10 @@ const processInputs = (evt) => {
                     function (data) {
                         let modsAnalysisResults = JSON.parse(data);
                         let textModsAnalysisResults = "The highest marginal profit per tonne of methanol is " +
-                            parseFloat(modsAnalysisResults['marginal profit per tonne of methanol (in USD)']).toFixed(2) +
-                            " USD. The futures contracts need to be accepted at the following ratio of reagent to product: " +
-                            parseFloat(modsAnalysisResults['ratio of reagent to product']).toFixed(2) +
+                            modsAnalysisResults['marginal profit per tonne of methanol (in USD)'] +
+                            " USD. The futures contracts need to be accepted at the following ratio" +
+                            " of reagent to product: " +
+                            modsAnalysisResults['ratio of reagent to product'] +
                             ". Buy natural gas futures contracts with delivery in " +
                             modsAnalysisResults['month to buy natural gas futures contracts'] +
                             " and sell methanol futures contracts with delivery in " +

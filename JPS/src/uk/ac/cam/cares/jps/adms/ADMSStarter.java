@@ -54,7 +54,7 @@ public class ADMSStarter extends HttpServlet {
 		// ServletContext context = getServletContext();
 		String startADMSCommand = "\"C:\\Program Files (x86)\\CERC\\ADMS 5\\ADMSModel.exe\" /e2 /ADMS \"test.apl\"";
 		ServletContext context = getServletContext();
-		String targetFolder  =  "C:/TOMCAT/webapps/JPS/workingdir/ADMS";   // execute adms within the target folder where the input file is generated in the previous step
+		String targetFolder  =  AgentLocator.getPathToWorkingDir(this) + "/" + "ADMS";   // execute adms within the target folder where the input file is generated in the previous step
 		CommandHelper.executeSingleCommand(targetFolder, startADMSCommand);
 		return "Started ADMS"; 
 	}

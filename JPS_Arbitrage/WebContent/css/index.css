@@ -15,15 +15,6 @@ label {
     margin-bottom: 0px;
 }
 
-h1#title, p#description {
-    color: white;
-    padding: 0 200px;
-}
-
-.input-blank {
-	width: 100px;
-}
-
 /* bootstrap */
 .content.container {
     height: 100%;
