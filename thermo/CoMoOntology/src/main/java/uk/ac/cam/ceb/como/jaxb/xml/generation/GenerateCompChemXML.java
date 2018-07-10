@@ -1,6 +1,3 @@
-/*
- * 
- */
 package uk.ac.cam.ceb.como.jaxb.xml.generation;
 
 import java.io.File;
@@ -21,6 +18,8 @@ import uk.ac.cam.ceb.como.io.chem.file.jaxb.Parameter;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.ParameterList;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.PropertyList;
 import uk.ac.cam.ceb.como.io.chem.file.parser.formula.EmpiricalFormulaParser;
+import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingBasisSet;
+import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingEnvironment;
 import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingFrequencies;
 import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingGeometry;
 import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingGeometryType;
@@ -111,7 +110,7 @@ public class GenerateCompChemXML {
 	 *         (DictRef) about job lists, and job.</p>
 	 */
 	
-	public static Module getRootModule(Module in_module, Module f_module, Module rootModule) {
+	public static Module getRootModule(Module in_module, Module f_module, Module env_module, Module rootModule) {
 
 		Module jobListModule = new Module();
 
@@ -128,6 +127,8 @@ public class GenerateCompChemXML {
 		jobModule.getAny().add(in_module);
 
 		jobModule.getAny().add(f_module);
+		
+		jobModule.getAny().add(env_module);
 
 		return jobModule;
 	}
@@ -162,22 +163,26 @@ public class GenerateCompChemXML {
 
 	public static Module generateRootModule(File file, File  outputfile, Module rootModule) throws Exception {
 
-		Module initialModule = new Module();
+		Module initialModule = GenerateCompChemModule.generateInitialModule();
+		Module finalModule = GenerateCompChemModule.generateFinalModule();
 		
-		initialModule.setDictRef("cc:initialization");
-
-		Module finalModule = new Module();
+		Module environmentModule = GenerateCompChemModule.getEnvironmentModule();
 		
-		finalModule.setDictRef("cc:finalization");
-
 		Molecule geometryMolecule = new Molecule();
 
 		Molecule initialMolecule = new Molecule();
 
-		PropertyList propertyList = new PropertyList();
+		PropertyList propertyListFinalModule = new PropertyList();
 		
-		ParameterList parameterList = new ParameterList();
-
+		ParameterList parameterListInitialModule = new ParameterList();
+		ParameterList parameterListEnvironmentModule = new ParameterList();
+		
+		parameterListEnvironmentModule.getParameterOrParameterList().add(ParsingEnvironment.getProgramName(file));
+        parameterListEnvironmentModule.getParameterOrParameterList().add(ParsingEnvironment.getProgramVersion(file));
+        parameterListEnvironmentModule.getParameterOrParameterList().add(ParsingEnvironment.getRunDateStamp(file));
+        
+        environmentModule.getAny().add(parameterListEnvironmentModule);
+        
 		FormulaUtility fp = new FormulaUtility();
 
 		ParsingFrequencies pf = new ParsingFrequencies();
@@ -204,7 +209,7 @@ public class GenerateCompChemXML {
 			 * <p>Generates 'Frequencies'.</p>
 			 * 
 			 */
-			propertyList.getPropertyOrPropertyListOrObservation()
+			propertyListFinalModule.getPropertyOrPropertyListOrObservation()
 					.add(pf.generateFrequenciesFromG09(file.getAbsoluteFile()));
 
 			/**
@@ -212,7 +217,7 @@ public class GenerateCompChemXML {
 			 * <p>Generates 'Rotational symmetry'.</p>
 			 * 
 			 */
-			propertyList.getPropertyOrPropertyListOrObservation()
+			propertyListFinalModule.getPropertyOrPropertyListOrObservation()
 			.add(prs.generateRotationalSymmetryFromG09(file.getAbsoluteFile()));
 
 			/**
@@ -220,7 +225,7 @@ public class GenerateCompChemXML {
 			 * <p>Generates 'Rotational constants'.</p>
 			 * 
 			 */
-			propertyList.getPropertyOrPropertyListOrObservation()
+			propertyListFinalModule.getPropertyOrPropertyListOrObservation()
 			.add(rcp.generateRotationalConstantsFromG09(file.getAbsoluteFile()));
 
 			/**
@@ -229,32 +234,34 @@ public class GenerateCompChemXML {
 			 * <p>Generates 'Geometry type'.</p>
 			 * 
 			 */
-			propertyList.getPropertyOrPropertyListOrObservation()
+			propertyListFinalModule.getPropertyOrPropertyListOrObservation()
 			.add(pgt.getGeometryTypeFromG09(file.getAbsoluteFile()));
 			
             Parameter parameterLevelOfTheory = ParsingLevelOfTheory.getLevelOfTheryParameter(file, sumOfAtoms);
-			
-			parameterList.getParameterOrParameterList().add(parameterLevelOfTheory);
+            Parameter parameterBasisSet = ParsingBasisSet.getBasisSetParameter(file, sumOfAtoms);
+            
+			parameterListInitialModule.getParameterOrParameterList().add(parameterLevelOfTheory);
+			parameterListInitialModule.getParameterOrParameterList().add(parameterBasisSet);
 			
 
 			geometryMolecule = pg.getGeometryFromG09(file);
 
-			finalModule.getAny().add(propertyList);
+			finalModule.getAny().add(propertyListFinalModule);
 
 			finalModule.getAny().add(geometryMolecule);
 
-			initialModule.getAny().add(parameterList);
+			initialModule.getAny().add(parameterListInitialModule);
 			
-			getRootModule(initialModule, finalModule, rootModule);
+			getRootModule(initialModule, finalModule, environmentModule,rootModule);
 
 		} else {
 			
 			Parameter parameterLevelOfTheory = ParsingLevelOfTheory.getLevelOfTheryParameter(file, sumOfAtoms);
+			Parameter parameterBasisSet = ParsingBasisSet.getBasisSetParameter(file, sumOfAtoms);
 			
-			parameterList.getParameterOrParameterList().add(parameterLevelOfTheory);
+			parameterListInitialModule.getParameterOrParameterList().add(parameterLevelOfTheory);
+			parameterListInitialModule.getParameterOrParameterList().add(parameterBasisSet);
 			
-			
-
 			/**
 			 * 
 			 * @author nk510 
@@ -263,13 +270,13 @@ public class GenerateCompChemXML {
 			 *         
 			 */
 			
-			propertyList.getPropertyOrPropertyListOrObservation()
+			propertyListFinalModule.getPropertyOrPropertyListOrObservation()
 					.add(pgt.getGeometryTypeFromG09(file.getAbsoluteFile()));
 			
 			/**
 			 * 
 			 * @author nk510
-			 * Returns a Molecule instance that contains atomic mass number of one atom.
+			 * Returns an instance of Molecule class that contains atomic mass number of one atom.
 			 *  
 			 */
 			
@@ -277,15 +284,13 @@ public class GenerateCompChemXML {
 			
 			finalModule.getAny().add(geometryMolecule);
 			
-			finalModule.getAny().add(propertyList);
+			finalModule.getAny().add(propertyListFinalModule);
 			
-			initialModule.getAny().add(parameterList);
+			initialModule.getAny().add(parameterListInitialModule);
 			
-			getRootModule(initialModule, finalModule, rootModule);
+			getRootModule(initialModule, finalModule, environmentModule ,rootModule);
 
-		}
-
-		try {
+		} try {
 			
 			JAXBContext context = JAXBContext.newInstance(Module.class);
 			Marshaller marshaller = context.createMarshaller();
@@ -298,7 +303,7 @@ public class GenerateCompChemXML {
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
-
+		
 		return rootModule;
 	}
 }
