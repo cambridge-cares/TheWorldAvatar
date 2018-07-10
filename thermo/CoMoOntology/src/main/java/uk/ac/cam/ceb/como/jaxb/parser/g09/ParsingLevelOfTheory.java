@@ -11,25 +11,14 @@ import org.xmlcml.cml.element.CMLParameter;
 
 import uk.ac.cam.ceb.como.compchem.CompChem;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.Parameter;
-import uk.ac.cam.ceb.como.io.chem.file.jaxb.ParameterList;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.Scalar;
 import uk.ac.cam.ceb.como.io.chem.file.parser.compchem.CompChemParser;
 import uk.ac.cam.ceb.como.io.chem.file.parser.g09.FrequencyParser;
 import uk.ac.cam.ceb.como.thermo.calculator.rotation.internal.util.IRCompChemWrapper;
 
-public class ParsingLevelOfTheory {
-
-	public static void main(String[] args) throws IOException {
-		
-		 String path = "src/test/resources/g09/Cl.g09";
-
-		 File f = new File(path);
-		 
-		 getLevelOfTheory(f);
-
-	}
+public class ParsingLevelOfTheory {	
 	
-	public static String getLevelOfTheory(File f) throws IOException {
+	public static String getLevelOfTheoryString(File f) throws IOException {
 		
 		String levelOfTheory= "";	
 		
@@ -100,25 +89,22 @@ public class ParsingLevelOfTheory {
 			 	
 			    	/**
 					 *
-					 *  finds level of theory when parameter's dictRef value is equal to 'cc:method'
+					 *  Finds level of theory when attribute dictRef has value that is equal to 'cc:method'
 					 *
 					 */
 				 if(p.getDictRef().equals("cc:method")) {
 					 
-					 	parameter.setDictRef(p.getDictRef());
+					 	parameter.setDictRef("cc:method");
 					 	scalar.setValue(p.getValue());
 					 	scalar.setDataType("xsd:string");
 					 	
 					 	parameter.getScalarOrArrayOrMatrix().add(scalar);
 				 }
-				 
-				 
 			}
-		
 		}else {
 			
 		 	parameter.setDictRef("cc:method");
-		 	scalar.setValue(getLevelOfTheory(f));
+		 	scalar.setValue(getLevelOfTheoryString(f));
 		 	scalar.setDataType("xsd:string");
 		 	
 		 	parameter.getScalarOrArrayOrMatrix().add(scalar);
