@@ -2,7 +2,7 @@ PREFIX ontokin: <https://como.cheng.cam.ac.uk/kb/ontokin/>
 PREFIX gc: <http://purl.org/gc/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-SELECT distinct ?moleculeName ?atomName ?atomNumber ?frequenciesSize ?frequenciesValue ?frequenciesUnit ?spinMultiplicityValue  ?coordinateX ?coordinateY ?coordinateZ ?geometryTypeValue ?rotationalConstantsSize ?rotationalConstantsUnit ?rotationalConstantsValue ?rotationalSymmetryNumber
+SELECT ?moleculeName ?atomName ?atomNumber ?frequenciesSize ?frequenciesValue ?frequenciesUnit ?spinMultiplicityValue  ?coordinateX ?coordinateY ?coordinateZ ?geometryTypeValue ?rotationalConstantsSize ?rotationalConstantsUnit ?rotationalConstantsValue ?rotationalSymmetryNumber
 WHERE { 
 {
 ?g09 ontokin:hasInitialization ?mn0 . 
@@ -27,7 +27,7 @@ UNION
 ?at1 gc:isElement ?atomName . 
 ?at1 gc:hasAtomCoordinateX ?x . ?x gc:hasValue ?coordinateX.
 ?at1 gc:hasAtomCoordinateY ?y . ?y gc:hasValue ?coordinateY.
-?at1 gc:hasAtomCoordinateX ?z . ?z gc:hasValue ?coordinateZ.
+?at1 gc:hasAtomCoordinateZ ?z . ?z gc:hasValue ?coordinateZ.
 }
 UNION
 {

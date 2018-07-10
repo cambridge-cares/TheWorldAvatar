@@ -49,46 +49,46 @@ public class ParsingTestExamples {
 
 public static void main(String[] args) throws Exception {
 
-		String path = "src/test/resources/g09/Cl2O10Ti3.g09";
-//		String path = "src/test/resources/g09/Cl2O6.g09";
+		 String path = "src/test/resources/g09/Cl2.g09";
+//		 String path = "src/test/resources/g09/Cl2O6.g09";
 
-		File f = new File(path);
+		 File f = new File(path);
 		
-//		GaussianParser parser  = new FrequencyParser();
+//		 GaussianParser parser  = new FrequencyParser();
 
-//		FrequencyParser parser = new FrequencyParser();
-//		GeometryParser parser = new GeometryParser();
-//      GaussianHRParser parser = new GaussianHRParser();
+//		 FrequencyParser parser = new FrequencyParser();
+//		 GeometryParser parser = new GeometryParser();
+//       GaussianHRParser parser = new GaussianHRParser();
 		
-//		parser.set(f);
-//		parser.parse();
+//		 parser.set(f);
+//		 parser.parse();
 		
-//		parser.parseSection();
-//		CompChem cc = (CompChem) parser.get();
-//		CompChemWrapper ccw = new CompChemWrapper(cc);
-//		CompChemIOUtils.write(System.out, ccw.getCompchem());
-//		IRCompChemWrapper irccw = new IRCompChemWrapper(cc);	
-//		CompChemIOUtils.write(System.out, irccw.getCompchem()); //	
-//		List<CMLProperty> prop = irccw.getProperties();//
+//		 parser.parseSection();
+//		 CompChem cc = (CompChem) parser.get();
+//		 CompChemWrapper ccw = new CompChemWrapper(cc);
+//		 CompChemIOUtils.write(System.out, ccw.getCompchem());
+//		 IRCompChemWrapper irccw = new IRCompChemWrapper(cc);
+//		 CompChemIOUtils.write(System.out, irccw.getCompchem()); 	
+//		 List<CMLProperty> prop = irccw.getProperties();//
 		
-//		for (CMLProperty cmlp : prop) {
+//		 for (CMLProperty cmlp : prop) {
 			
-//		System.out.println("+ " + cmlp.getLocalName() + "" + cmlp);
+//		 System.out.println("+ " + cmlp.getLocalName() + "" + cmlp);
 			
-//		List<CMLElement> child_elem = cmlp.getDescendants();
+//		 List<CMLElement> child_elem = cmlp.getDescendants();
 			
-//		for(CMLElement c_elem: child_elem ) {
+//		 for(CMLElement c_elem: child_elem ) {
 			
-//		System.out.println("  :" + c_elem);
+//		 System.out.println("  :" + c_elem);
 			
-//			}
-//		}
+//		 	}
+//		 }
 
-//		CompChemIOUtils.write(System.out, irccw.getCompchem());
+//		 CompChemIOUtils.write(System.out, irccw.getCompchem());
 		
-//		CMLMoleculeParser parser = new CMLMoleculeParser();	
+//		 CMLMoleculeParser parser = new CMLMoleculeParser();	
 		
-//		m.getConvention();
+//		 m.getConvention();
 		
 		 FrequencyParser parser = new FrequencyParser();
 		 parser.set(f);
@@ -106,22 +106,23 @@ public static void main(String[] args) throws Exception {
 		 
          IRCompChemWrapper irccw = new IRCompChemWrapper(cc);
          
-         CompChemWrapper ccw = new CompChemWrapper(cc);
-         CompChemIOUtils.write(System.out, ccw.getCompchem());
+//       CompChemWrapper ccw = new CompChemWrapper(cc);
+         
+//       CompChemIOUtils.write(System.out, ccw.getCompchem());
          
 		 List<CMLParameter> cmlP = irccw.getParameters();
 
 		 for(CMLParameter p: cmlP) {
-				
-				/**
-				 * 
+		 	
+		    	/**
+				 *
 				 * Generate : basis set, level of theory,
 				 *
 				 */
-		
-				System.out.println("feature: " + p.getDictRef() + ",  value : " + p.getValue());
+			 
+			 System.out.println("feature: " + p.getDictRef() + ",  value : " + p.getValue());
 				
-		 }
+		}
 
 //		 CMLMolecule m = irccw.getFinalMolecule();
 		 

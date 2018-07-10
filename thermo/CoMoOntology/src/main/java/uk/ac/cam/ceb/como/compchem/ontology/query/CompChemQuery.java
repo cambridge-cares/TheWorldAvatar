@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -42,6 +41,7 @@ public class CompChemQuery {
 	public static final String TBOX_SOURCE = "./src/test/resources/ontology/compchem_ontology/compchem.spin.rdf";
 	
 	public static final String TRAGET_FOLDER="./src/test/resources/ontology/sparql_results/";
+
 	/**
 	 * The main method.
 	 *
@@ -57,20 +57,20 @@ public class CompChemQuery {
 		
 		File[] aboxFileList = getFileList("src/test/resources/ontology/compchem_abox/");
 
-		for (File abox_file : aboxFileList) {
+		for (File aboxFile : aboxFileList) {
 			
-			for(File sparql_file: sparqlFileList) {
+			for(File sparqlFile: sparqlFileList) {
 				
-			OntModel model = getOntModel(TBOX_SOURCE, abox_file.getAbsolutePath());
+			OntModel model = getOntModel(TBOX_SOURCE, aboxFile.getAbsolutePath());
 			
-			String q = FileUtils.readFileToString(sparql_file);
+			String q = FileUtils.readFileToString(sparqlFile);
 			
-			performQuery(model, q, abox_file.getName(), TRAGET_FOLDER); 
+			performQuery(model, q, aboxFile.getName(), TRAGET_FOLDER);
 			
-			}	
+			}
 		}
 		
-		long endT = System.nanoTime();		
+		long endT = System.nanoTime();
 		System.out.println("time: " + (endT-startT)/1000000000 + " sec.");
 		
 	}
@@ -95,6 +95,23 @@ public class CompChemQuery {
 	}
 
 	/**
+	 * Gets the ont model.
+	 *
+	 * @param aboxSource the compchem data assertions (abox source)
+	 * @return model Gets instance of OntModel.
+	 */
+
+	public static OntModel getOntModel(String aboxSource) {
+
+		OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM_TRANS_INF);
+
+		FileManager.get().readModel(model, aboxSource);
+		
+		return model;
+
+	}
+	
+	/**
 	 * Perform query.
 	 *
 	 * @param model the instance of OntModel
@@ -116,7 +133,8 @@ public class CompChemQuery {
 			ResultSet resultSet = qexec.execSelect();
 			
 			while(resultSet.hasNext()) {
-			    
+			 
+		    //StringUtils.substringBefore(fileName, ".")  +".json") -> fileName
 		    fileOutputStream=new FileOutputStream(new File(targetFolder+ StringUtils.substringBefore(fileName, ".")  +".json"),false);
 	       		
 			ResultSetFormatter.outputAsJSON(fileOutputStream, resultSet);
@@ -151,4 +169,28 @@ public class CompChemQuery {
 
 		return fileList;		
 	}
+	
+	/**
+	 * Gets json file list.
+	 *
+	 * @author nk510
+	 * @param folderPath the folder path
+	 * @return the file list
+	 */
+	
+	public static File[] getJSONFileList(String folderPath) {
+
+		File dir = new File(folderPath);
+		
+		File[] fileList = dir.listFiles(new FilenameFilter(){
+			
+			public boolean accept(File dir, String name) {
+				
+			return (name.endsWith(".json"));			
+			}
+		});
+
+		return fileList;		
+	}
+	
 }

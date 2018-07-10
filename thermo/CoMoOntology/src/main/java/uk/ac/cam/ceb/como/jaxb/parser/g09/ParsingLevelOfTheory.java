@@ -46,7 +46,7 @@ public class ParsingLevelOfTheory {
 				 */
 
 			
-				line=  line.substring(line.indexOf("#p ")+2 , line.indexOf("/"));
+				line=  line.substring(line.indexOf("#p ")+3, line.indexOf("/"));
 
 				levelOfTheory = levelOfTheory + line;
 				

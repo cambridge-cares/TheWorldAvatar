@@ -110,8 +110,9 @@ public class ParsingRotationalConstants {
 
 				}
 			}
-
+			br.close();
 			return rc_line;
+			
 //		}
 	 	
 	}

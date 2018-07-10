@@ -21,93 +21,93 @@
       } ,
       {
         "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
-        "coordinateX": { "type": "literal" , "value": "-0.132893" } ,
-        "coordinateY": { "type": "literal" , "value": "1.670316" } ,
-        "coordinateZ": { "type": "literal" , "value": "-0.132893" }
+        "coordinateX": { "type": "literal" , "value": "-2.988313" } ,
+        "coordinateY": { "type": "literal" , "value": "2.635964" } ,
+        "coordinateZ": { "type": "literal" , "value": "-4.182546" }
       } ,
       {
         "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
         "coordinateX": { "type": "literal" , "value": "-2.853015" } ,
         "coordinateY": { "type": "literal" , "value": "1.370536" } ,
-        "coordinateZ": { "type": "literal" , "value": "-2.853015" }
-      } ,
-      {
-        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
-        "coordinateX": { "type": "literal" , "value": "2.702919" } ,
-        "coordinateY": { "type": "literal" , "value": "0.391997" } ,
-        "coordinateZ": { "type": "literal" , "value": "2.702919" }
-      } ,
-      {
-        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
-        "coordinateX": { "type": "literal" , "value": "2.466203" } ,
-        "coordinateY": { "type": "literal" , "value": "0.764047" } ,
-        "coordinateZ": { "type": "literal" , "value": "2.466203" }
-      } ,
-      {
-        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Ti" } ,
-        "coordinateX": { "type": "literal" , "value": "-1.940025" } ,
-        "coordinateY": { "type": "literal" , "value": "1.433559" } ,
-        "coordinateZ": { "type": "literal" , "value": "-1.940025" }
+        "coordinateZ": { "type": "literal" , "value": "-4.899252" }
       } ,
       {
         "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
         "coordinateX": { "type": "literal" , "value": "2.334692" } ,
         "coordinateY": { "type": "literal" , "value": "3.499343" } ,
-        "coordinateZ": { "type": "literal" , "value": "2.334692" }
-      } ,
-      {
-        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
-        "coordinateX": { "type": "literal" , "value": "-2.988313" } ,
-        "coordinateY": { "type": "literal" , "value": "2.635964" } ,
-        "coordinateZ": { "type": "literal" , "value": "-2.988313" }
-      } ,
-      {
-        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Cl" } ,
-        "coordinateX": { "type": "literal" , "value": "3.863792" } ,
-        "coordinateY": { "type": "literal" , "value": "4.192063" } ,
-        "coordinateZ": { "type": "literal" , "value": "3.863792" }
+        "coordinateZ": { "type": "literal" , "value": "-3.273168" }
       } ,
       {
         "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Ti" } ,
-        "coordinateX": { "type": "literal" , "value": "1.657632" } ,
-        "coordinateY": { "type": "literal" , "value": "1.839146" } ,
-        "coordinateZ": { "type": "literal" , "value": "1.657632" }
+        "coordinateX": { "type": "literal" , "value": "-1.940025" } ,
+        "coordinateY": { "type": "literal" , "value": "1.433559" } ,
+        "coordinateZ": { "type": "literal" , "value": "-3.350857" }
       } ,
       {
         "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
         "coordinateX": { "type": "literal" , "value": "-3.035396" } ,
         "coordinateY": { "type": "literal" , "value": "0.397816" } ,
-        "coordinateZ": { "type": "literal" , "value": "-3.035396" }
+        "coordinateZ": { "type": "literal" , "value": "1.166671" }
       } ,
       {
         "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
-        "coordinateX": { "type": "literal" , "value": "-4.33069" } ,
-        "coordinateY": { "type": "literal" , "value": "0.86269" } ,
-        "coordinateZ": { "type": "literal" , "value": "-4.33069" }
-      } ,
-      {
-        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Cl" } ,
-        "coordinateX": { "type": "literal" , "value": "-4.755734" } ,
-        "coordinateY": { "type": "literal" , "value": "-3.068084" } ,
-        "coordinateZ": { "type": "literal" , "value": "-4.755734" }
-      } ,
-      {
-        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
-        "coordinateX": { "type": "literal" , "value": "-2.609538" } ,
-        "coordinateY": { "type": "literal" , "value": "0.533782" } ,
-        "coordinateZ": { "type": "literal" , "value": "-2.609538" }
-      } ,
-      {
-        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Ti" } ,
-        "coordinateX": { "type": "literal" , "value": "-3.447423" } ,
-        "coordinateY": { "type": "literal" , "value": "-0.20337" } ,
-        "coordinateZ": { "type": "literal" , "value": "-3.447423" }
+        "coordinateX": { "type": "literal" , "value": "2.466203" } ,
+        "coordinateY": { "type": "literal" , "value": "0.764047" } ,
+        "coordinateZ": { "type": "literal" , "value": "-4.872839" }
       } ,
       {
         "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
         "coordinateX": { "type": "literal" , "value": "-3.913213" } ,
         "coordinateY": { "type": "literal" , "value": "-1.969524" } ,
-        "coordinateZ": { "type": "literal" , "value": "-3.913213" }
+        "coordinateZ": { "type": "literal" , "value": "-0.694955" }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Cl" } ,
+        "coordinateX": { "type": "literal" , "value": "3.863792" } ,
+        "coordinateY": { "type": "literal" , "value": "4.192063" } ,
+        "coordinateZ": { "type": "literal" , "value": "-3.423854" }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Ti" } ,
+        "coordinateX": { "type": "literal" , "value": "1.657632" } ,
+        "coordinateY": { "type": "literal" , "value": "1.839146" } ,
+        "coordinateZ": { "type": "literal" , "value": "-3.684695" }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
+        "coordinateX": { "type": "literal" , "value": "-0.132893" } ,
+        "coordinateY": { "type": "literal" , "value": "1.670316" } ,
+        "coordinateZ": { "type": "literal" , "value": "-3.409217" }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
+        "coordinateX": { "type": "literal" , "value": "-4.33069" } ,
+        "coordinateY": { "type": "literal" , "value": "0.86269" } ,
+        "coordinateZ": { "type": "literal" , "value": "0.666176" }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
+        "coordinateX": { "type": "literal" , "value": "2.702919" } ,
+        "coordinateY": { "type": "literal" , "value": "0.391997" } ,
+        "coordinateZ": { "type": "literal" , "value": "-3.476595" }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Ti" } ,
+        "coordinateX": { "type": "literal" , "value": "-3.447423" } ,
+        "coordinateY": { "type": "literal" , "value": "-0.20337" } ,
+        "coordinateZ": { "type": "literal" , "value": "-0.476006" }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
+        "coordinateX": { "type": "literal" , "value": "-2.609538" } ,
+        "coordinateY": { "type": "literal" , "value": "0.533782" } ,
+        "coordinateZ": { "type": "literal" , "value": "-1.913171" }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Cl" } ,
+        "coordinateX": { "type": "literal" , "value": "-4.755734" } ,
+        "coordinateY": { "type": "literal" , "value": "-3.068084" } ,
+        "coordinateZ": { "type": "literal" , "value": "0.266397" }
       } ,
       {
         "spinMultiplicityValue": { "type": "literal" , "value": "1" }

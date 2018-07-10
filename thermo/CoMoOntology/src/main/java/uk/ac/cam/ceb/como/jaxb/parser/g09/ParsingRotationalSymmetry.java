@@ -59,6 +59,7 @@ public class ParsingRotationalSymmetry {
 		 * <p>Iterates of List<CMLProperty> members in order extract
 		 *         'Rotational Symmetry' value.</p>
 		 */
+		
 		for (CMLProperty cmlp : prop) {
 
 			List<CMLElement> child_elem = cmlp.getChildCMLElements();

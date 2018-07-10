@@ -135,20 +135,20 @@ public class ParsingGeometryType {
 
 				System.out.println("Rotational Constants string: " + rc.toString());
 
-				String rc_string = rc.toString();
-				String rc_value = ParsingRotationalConstants.getRotationalContantsValue(rc_string);
+				String rotationalConstantsString = rc.toString();
+				String rc_value = ParsingRotationalConstants.getRotationalContantsValue(rotationalConstantsString);
 
-				int rc_size_value = prc.getRotationalConstantsSize(rc_value);
+				int rotationalConstantsSizeValue = prc.getRotationalConstantsSize(rc_value);
 
-				System.out.println("The size of RC: " + rc_size_value);
+				System.out.println("The size of RC: " + rotationalConstantsSizeValue);
 				/**
 				 * @author nk510 
-				 * <p>In size of 'Rotational Constants' is equal three then 'Geometry
+				 * <p>If size of 'Rotational Constants' is equal three then 'Geometry
 				 *         type' could be 'nonlinear' or 'linear'. If all three 'Rotational
 				 *         Constants' values are different than zero then 'Geometry type' is
 				 *         'nonlinear'. Otherwise is 'linear'.</p>
 				 */
-				if (rc_size_value == 3) {
+				if (rotationalConstantsSizeValue == 3) {
 
 					if (rc.getValue(0) != 0 && rc.getValue(1) != 0 && rc.getValue(2) != 0) {
 

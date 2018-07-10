@@ -12,6 +12,10 @@
         "atomNumber": { "type": "literal" , "value": "1" }
       } ,
       {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Cl" } ,
+        "atomNumber": { "type": "literal" , "value": "1" }
+      } ,
+      {
         "geometryTypeValue": { "type": "literal" , "value": "atomic" }
       }
     ]

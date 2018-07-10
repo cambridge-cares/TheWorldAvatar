@@ -44,7 +44,6 @@ public class FormulaUtility {
 		 *         Try block works under JavaSE 1.7</p>
 		 * 
 		 */
-
 		
 //		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 		BufferedReader br = new BufferedReader(new FileReader(file));
@@ -72,7 +71,7 @@ public class FormulaUtility {
 			}
 //		}
 	
-
+        br.close();
 		return formulaName;
 
 	}

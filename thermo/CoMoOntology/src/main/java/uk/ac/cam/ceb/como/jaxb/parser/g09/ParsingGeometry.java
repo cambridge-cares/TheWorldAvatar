@@ -98,7 +98,7 @@ public class ParsingGeometry {
 	/**
 	 * 
 	 * @param file
-	 * @return Molecule that contains atomic mass for one atom, and set all geometry coordinate to 0.00. 
+	 * @return Molecule that contains atomic mass for one atom. All geometry coordinates are set to 0.00. 
 	 * @throws Exception
 	 */
 
@@ -129,8 +129,7 @@ public class ParsingGeometry {
 		
 		molecule.getAngleOrArgOrArray().add(atomArrayJxb);
 		
-		return molecule;
-		
+		return molecule;		
 		
 	}
 	/**

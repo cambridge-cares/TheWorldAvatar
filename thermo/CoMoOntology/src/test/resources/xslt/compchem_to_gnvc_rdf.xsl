@@ -576,9 +576,7 @@
 						<xsl:variable name="z3">
 							<xsl:value-of select="@z3" />
 						</xsl:variable>
-
-
-
+						
 						<owl:NamedIndividual
 							rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_no_namespace}_{$vmodule}_has_molecule_{$id}">
 							<gc:hasAtom

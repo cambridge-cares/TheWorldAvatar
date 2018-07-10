@@ -50,7 +50,7 @@ public class ParsingFrequencies {
 		 * 
 		 */
 
-		Property fr_property = new Property();
+		Property frequencyProperty = new Property();
 
 		/**
 		 * @author nk510 
@@ -125,7 +125,7 @@ public class ParsingFrequencies {
 						 * @author nk510 JAXB Property class sets DictRef value by using CMLProperty's
 						 *         DictRef.
 						 */
-						fr_property.setDictRef(cmlp.getDictRef());
+						frequencyProperty.setDictRef(cmlp.getDictRef());
 
 						/**
 						 * @author nk510 Based on CompChem XML Schema, any property may contain one or
@@ -133,13 +133,13 @@ public class ParsingFrequencies {
 						 *         Property JAXB object variable 'fr_property'.
 						 */
 
-						fr_property.getScalarOrArrayOrMatrix().add(arrayXML);
+						frequencyProperty.getScalarOrArrayOrMatrix().add(arrayXML);
 
 					}
 				}
 			}
 		}
 
-		return fr_property;
+		return frequencyProperty;
 	}
 }
