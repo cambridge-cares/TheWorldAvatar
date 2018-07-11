@@ -8,7 +8,7 @@
 /**
  * @author nk510
  * date: MAY-10th-2018.
- * To avoid appearing ns0, ns1, ns2, ns3 etc. in resulting xml file, we define namespace annotation. 
+ * To avoid appearing ns0, ns1, ns2, ns3 etc. In resulting xml file, we define namespace annotation. 
  * We do not need the NamespacePrefixmanager setting to the Marshaller. 
  */
 
@@ -16,7 +16,7 @@
 		namespace = "",
         elementFormDefault = XmlNsForm.QUALIFIED,
 xmlns={
-		@XmlNs(prefix="", namespaceURI="http://www.xml-cml.org/schema"),
+//		@XmlNs(prefix="", namespaceURI="http://www.xml-cml.org/schema"),
 		@XmlNs(prefix="cc", namespaceURI="http://www.xml-cml.org/dictionary/compchem/"),
 		@XmlNs(prefix="nonSi", namespaceURI="http://www.xml-cml.org/unit/nonSi/"),
 		@XmlNs(prefix="conventions", namespaceURI="http://www.xml-cml.org/convention/")
