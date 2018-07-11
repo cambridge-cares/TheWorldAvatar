@@ -2,7 +2,7 @@
 
 <xsl:transform version="2.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xd="http://www.pnp-software.com/XSLTdoc"
-	xmlns:targetNamespace="http://www.xml-cml.org/schema" xmlns:cc="http://www.xml-cml.org/dictionary/compchem/"
+	xmlns="http://www.xml-cml.org/schema" xmlns:cc="http://www.xml-cml.org/dictionary/compchem/"
 	xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/"
 	xmlns:gc="http://purl.org/gc/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:ontokin="https://como.cheng.cam.ac.uk/kb/ontokin/"
@@ -16,12 +16,20 @@
 	-->
 
 	<!-- This xslt transforms of CompChem XML files to rdf graph as instance 
-		of Gainesville Core Ontology (GNVC) ver 0.7. At the moment it covers the 
-		transformation of the following features: 1. formula name 2. atom counts 
-		and atom element type. 3. frequency unit, frequency values. 4. rotational 
-		symmetry value, rotational symmetry unit. 5. rotational constants value, 
-		rotational constants units, rotational constants size. 6. geometry type, 
-		spin multiplicity. 
+		of CompChem ontology (An extension of Gainesville Core Ontology (GNVC) ver 0.7.). At the moment it covers the 
+		transformation of the following features: 
+		1.  formula name, 
+		2.  atom counts, 
+		3.  atom element type, 
+		4.  frequency unit, 
+		5.  frequency values, 
+		6.  rotational symmetry value, 
+		7.  rotational symmetry unit,
+		8.  rotational constants value, 
+		9.  rotational constants units, 
+		10. rotational constants size. 
+		11. geometry type, 
+		12. spin multiplicity. 
 	-->
 
 	<!-- Applying all templates -->
@@ -93,6 +101,8 @@
 
 			<ontokin:hasInitialization
 				rdf:resource="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_no_namespace}_{$vmodule}_has_initilization_module_{$id}" />
+				
+		    <ontokin:hasEnvironment rdf:resource="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_no_namespace}_{$vmodule}_has_environment_module_{$id}"/>
 
 		</owl:NamedIndividual>
 
@@ -140,6 +150,49 @@
 
 		<xsl:choose>
 
+
+    	
+            <xsl:when test="$module_type='cc:environment'">
+            
+
+		    
+			<xsl:for-each select="parameterList/parameter/*[local-name() = 'scalar']">
+			
+		    
+			<xsl:if test="../@dictRef='cc:program'">
+			<owl:NamedIndividual
+					rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_no_namespace}_{$vmodule}_has_environment_module_{$id}">
+			<rdf:type rdf:resource="http://purl.org/gc/SourcePackage"/>
+			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+			<ontokin:hasProgram><xsl:value-of select="."/></ontokin:hasProgram>		
+		    </owl:NamedIndividual>
+			</xsl:if>
+			
+			<xsl:if test="../@dictRef='cc:programVersion'">
+			<owl:NamedIndividual
+					rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_no_namespace}_{$vmodule}_has_environment_module_{$id}">
+			<rdf:type rdf:resource="http://purl.org/gc/SourcePackage"/>
+			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+			<ontokin:hasProgramVersion><xsl:value-of select="."/></ontokin:hasProgramVersion>		
+		    </owl:NamedIndividual>
+			</xsl:if>
+			
+			<xsl:if test="../@dictRef='cc:runDate'">
+			<owl:NamedIndividual
+					rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_no_namespace}_{$vmodule}_has_environment_module_{$id}">
+			<rdf:type rdf:resource="http://purl.org/gc/SourcePackage"/>
+			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+			<ontokin:hasRunDate><xsl:value-of select="."/></ontokin:hasRunDate>		
+		    </owl:NamedIndividual>
+			</xsl:if>
+			
+			
+			</xsl:for-each>
+			
+			
+			</xsl:when>
+			
+ 
 			<!-- Transformation of information about molecule stored in initialization 
 				module of CompChem xml file. -->
 
@@ -148,11 +201,14 @@
 				<!-- -->
 				<owl:NamedIndividual
 					rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_no_namespace}_{$vmodule}_has_initilization_module_{$id}">
-					<rdf:type rdf:resource="http://purl.org/gc/MethodologyFeature" />
-					<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+					<rdf:type rdf:resource="https://como.cheng.cam.ac.uk/kb/ontokin/InitializationModule"/>
+					
+					<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
 
 					<gc:hasMoleculeProperty
 						rdf:resource="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_no_namespace}_{$vmodule}_has_molecule_property_{$id}" />
+						
+					
 
 				</owl:NamedIndividual>
 
@@ -161,12 +217,60 @@
 					<rdf:type rdf:resource="http://purl.org/gc/MoleculeProperty" />
 					<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 				</rdf:Description>
+				
+				
+				<xsl:for-each select="parameterList/parameter/*[local-name() = 'scalar']">
+				
+				<xsl:if test="../@dictRef='cc:method'">
+				<owl:NamedIndividual
+					rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_no_namespace}_{$vmodule}_has_initilization_module_{$id}">
+				<gc:hasParameter rdf:resource="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_no_namespace}_{$vmodule}_has_level_of_theory_parameter_{$id}"/>	
+				</owl:NamedIndividual>
+			    <owl:NamedIndividual
+					rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_no_namespace}_{$vmodule}_has_level_of_theory_parameter_{$id}">
+				<rdf:type rdf:resource="https://como.cheng.cam.ac.uk/kb/ontokin/LevelOfTheory"/>
+				<rdf:type rdf:resource="http://purl.org/gc/MethodologyFeature"/>
+				<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+				
+				<ontokin:hasLevelOfTheoryValue><xsl:value-of select="."/></ontokin:hasLevelOfTheoryValue>		
+			    
+			    		
+		        </owl:NamedIndividual>
+			    </xsl:if>
+				
+				<xsl:if test="../@dictRef='cc:basis'">
+				
+			    <xsl:variable name="vbasis_set">
+			    <xsl:value-of select="." />
+		        </xsl:variable>
+		
+		        <owl:NamedIndividual
+					rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_no_namespace}_{$vmodule}_has_initilization_module_{$id}">
+				<gc:hasParameter rdf:resource="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_no_namespace}_{$vmodule}_has_basis_set_parameter_{$id}"/>	
+				</owl:NamedIndividual>
+					    
+			    <owl:NamedIndividual
+				rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_no_namespace}_{$vmodule}_has_basis_set_parameter_{$id}">
+				<xsl:if test="$vbasis_set='6-311+G(d,p)'">	
+				<rdf:type rdf:resource="http://purl.org/gc/6-311pGS"/>
+				</xsl:if>
+				<rdf:type rdf:resource="http://purl.org/gc/BasisSet"/>
+				<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+				<gc:hasBasisSet><xsl:value-of select="."/></gc:hasBasisSet>
+		        </owl:NamedIndividual>
+			    </xsl:if>
+				
+				
+				</xsl:for-each>
+
 
 				<!-- 
 				Read value of 'count' and 'elementType' attributes for a molecule 
 				as attribute values of tag 'atom' and creates rdf graph for each atom by 
 				using Periodic Table ontology. 
 				-->
+				
+				
 
 				<xsl:for-each select="molecule/atomArray/*[local-name() = 'atom']">
 
@@ -545,15 +649,18 @@
 					Creates rdf node that is instance of gc:Molecule class. The node 
 					contains spin multiplicity value over data type property relation 'hasSpinMultiplicityValue'. 
 					-->
-
+					
+					<xsl:choose>
+                    <xsl:when test="string-length($spin_multiplicity_variable)>0">
 					<owl:NamedIndividual
 						rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_no_namespace}_{$vmodule}_has_molecule_{$id}">
 						<rdf:type rdf:resource="http://purl.org/gc/Molecule" />
 						<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 						<ontokin:hasSpinMultiplicityValue>
-							<xsl:value-of select="$spin_multiplicity_variable" />
-						</ontokin:hasSpinMultiplicityValue>
+							<xsl:value-of select="$spin_multiplicity_variable" /></ontokin:hasSpinMultiplicityValue>
 					</owl:NamedIndividual>
+					</xsl:when>
+					</xsl:choose>
 
 
 					<!-- Iterates over atom tags in order to transform atom's attribute 
@@ -577,6 +684,10 @@
 							<xsl:value-of select="@z3" />
 						</xsl:variable>
 						
+						<xsl:variable name="atomicMass">
+							<xsl:value-of select="@atomicMass" />
+						</xsl:variable>
+						
 						<owl:NamedIndividual
 							rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_no_namespace}_{$vmodule}_has_molecule_{$id}">
 							<gc:hasAtom
@@ -598,7 +709,22 @@
 								rdf:resource="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_no_namespace}_{$vmodule}_has_coordinate_y3_{$velementType}{$vid}_{generate-id()}_{$id}" />
 							<gc:hasAtomCoordinateZ
 								rdf:resource="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_no_namespace}_{$vmodule}_has_coordinate_z3_{$velementType}{$vid}_{generate-id()}_{$id}" />
+							
+							<gc:hasMass rdf:resource="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_no_namespace}_{$vmodule}_has_mass_{$velementType}{$vid}_{generate-id()}_{$id}"/>
+							
 						</owl:NamedIndividual>
+						
+						
+						<owl:NamedIndividual
+							rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_no_namespace}_{$vmodule}_has_mass_{$velementType}{$vid}_{generate-id()}_{$id}">
+							<rdf:type rdf:resource="http://purl.org/gc/FloatValue" />
+							<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+							<gc:hasValue>
+								<xsl:value-of select="$atomicMass"/>
+							</gc:hasValue>
+							<gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Dalton"/>
+						</owl:NamedIndividual>
+						
 
 						<owl:NamedIndividual
 							rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_no_namespace}_{$vmodule}_has_coordinate_x3_{$velementType}{$vid}_{generate-id()}_{$id}">
