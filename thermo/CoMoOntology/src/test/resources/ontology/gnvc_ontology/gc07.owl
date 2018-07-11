@@ -23,8 +23,11 @@
      xmlns:foaf="http://xmlns.com/foaf/0.1/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="http://purl.org/gc/">
+        <owl:imports rdf:resource="http://data.qudt.org/qudt/owl/1.0.0/unit.owl"/>
         <owl:imports rdf:resource="file:/C:/Users/nk510/git/thermochemistry/CoMoOntology/src/test/resources/ontology/import_ontology/PeriodicTable.owl.rdf"/>
         <owl:imports rdf:resource="file:/C:/Users/nk510/git/thermochemistry/CoMoOntology/src/test/resources/ontology/import_ontology/bfo.owl"/>
+        <owl:imports rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable"/>
+        <owl:imports rdf:resource="http://purl.obolibrary.org/obo/bfo/2.0/bfo.owl"/>
         <owl:imports rdf:resource="file:/C:/Users/nk510/git/thermochemistry/CoMoOntology/src/test/resources/ontology/import_ontology/unit.owl"/>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">0.7.0</owl:versionInfo>
         <rdfs:comment xml:lang="en">An ontology for publishing results of computational chemistry.</rdfs:comment>
@@ -73,6 +76,42 @@
         <rdfs:label xml:lang="en">Description</rdfs:label>
         <skos:note xml:lang="en">A second property with the same name as this property has been declared in the dcterms: namespace (http://purl.org/dc/terms/).  See the Introduction to the document &quot;DCMI Metadata Terms&quot; (http://dublincore.org/documents/dcmi-terms/) for an explanation.</skos:note>
     </rdf:Description>
+    
+
+
+    <!-- http://purl.org/dc/terms/description -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/description"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/hasVersion -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/hasVersion"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/issued -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/issued"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/modified -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/modified"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/publisher -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/publisher"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/title -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/title"/>
     
 
 
@@ -146,6 +185,12 @@
     
 
 
+    <!-- http://www.w3.org/2004/02/skos/core#note -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#note"/>
+    
+
+
     <!-- http://www.xml-cml.org/dictionary/compchem/hasFormulaConcis -->
 
     <owl:AnnotationProperty rdf:about="http://www.xml-cml.org/dictionary/compchem/hasFormulaConcis">
@@ -159,6 +204,23 @@
     <owl:AnnotationProperty rdf:about="http://www.xml-cml.org/dictionary/compchem/hasFormulaConcise">
         <rdfs:domain rdf:resource="http://purl.org/gc/Molecule"/>
     </owl:AnnotationProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#date -->
+
+    <rdfs:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#date"/>
     
 
 
@@ -5570,6 +5632,8 @@
     <owl:Class rdf:about="http://www.daml.org/2003/01/periodictable/PeriodicTable#Element">
         <rdfs:subClassOf rdf:resource="http://purl.org/gc/MolecularConcept"/>
     </owl:Class>
+    
+
 
     <!-- http://www.w3.org/2000/01/rdf-schema#Class -->
 

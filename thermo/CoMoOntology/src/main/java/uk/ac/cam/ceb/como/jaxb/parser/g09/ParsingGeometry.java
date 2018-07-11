@@ -15,7 +15,9 @@ import uk.ac.cam.ceb.como.compchem.CompChem;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.Atom;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.AtomArray;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.Molecule;
+import uk.ac.cam.ceb.como.io.chem.file.parser.formula.EmpiricalFormulaParser;
 import uk.ac.cam.ceb.como.io.chem.file.parser.g09.FrequencyParser;
+import uk.ac.cam.ceb.como.jaxb.parsing.utils.FormulaUtility;
 import uk.ac.cam.ceb.como.thermo.calculator.rotation.internal.util.IRCompChemWrapper;
 
 /**
@@ -108,6 +110,8 @@ public class ParsingGeometry {
 
 		AtomArray atomArrayJxb = new AtomArray();
 		
+		FormulaUtility futility = new FormulaUtility();
+		
 		StringTokenizer weightTokenizer = ParsingAtomicMass.getAtomicWeightString(file);
 
 		List<String> atomicWeightList = ParsingAtomicMass.getListOfAtomicMass(weightTokenizer);
@@ -119,6 +123,13 @@ public class ParsingGeometry {
 		atomJxb.setX3(0.00);
 		atomJxb.setY3(0.00);
 		atomJxb.setZ3(0.00);
+		
+		String atomName= futility.extractFormulaName(file);
+		/**
+		 * @author nk510
+		 * set element type as atom name from a molecule that has only one atom.
+		 */
+		atomJxb.setElementType(atomName);
 		
 		atomJxb.setAtomicMass(atomicWeightList.get(0));
 		
@@ -159,4 +170,5 @@ public class ParsingGeometry {
 		return cml_molecule;
 
 	}
+	
 }

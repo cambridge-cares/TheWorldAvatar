@@ -1,6 +1,6 @@
 {
   "head": {
-    "vars": [ "moleculeName" , "atomName" , "atomNumber" , "frequenciesSize" , "frequenciesValue" , "frequenciesUnit" , "spinMultiplicityValue" , "coordinateX" , "coordinateY" , "coordinateZ" , "geometryTypeValue" , "rotationalConstantsSize" , "rotationalConstantsUnit" , "rotationalConstantsValue" , "rotationalSymmetryNumber" ]
+    "vars": [ "moleculeName" , "atomName" , "atomNumber" , "levelOfTheory" , "basisSetValue" , "frequenciesSize" , "frequenciesValue" , "frequenciesUnit" , "spinMultiplicityValue" , "coordinateX" , "coordinateY" , "coordinateZ" , "massValue" , "masUnit" , "geometryTypeValue" , "rotationalConstantsSize" , "rotationalConstantsUnit" , "rotationalConstantsValue" , "rotationalSymmetryNumber" , "programName" , "programVersion" , "runDate" ]
   } ,
   "results": {
     "bindings": [
@@ -8,15 +8,19 @@
         "moleculeName": { "type": "literal" , "value": "Cl 1 O 1 Ti 1 " }
       } ,
       {
-        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
-        "atomNumber": { "type": "literal" , "value": "1" }
-      } ,
-      {
-        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Ti" } ,
         "atomNumber": { "type": "literal" , "value": "1" }
       } ,
       {
         "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Ti" } ,
+        "atomNumber": { "type": "literal" , "value": "1" }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
+        "atomNumber": { "type": "literal" , "value": "1" }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
         "atomNumber": { "type": "literal" , "value": "1" }
       } ,
       {
@@ -28,26 +32,32 @@
         "atomNumber": { "type": "literal" , "value": "1" }
       } ,
       {
-        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Ti" } ,
-        "atomNumber": { "type": "literal" , "value": "1" }
+        "levelOfTheory": { "type": "literal" , "value": "UB971" } ,
+        "basisSetValue": { "type": "literal" , "value": "6-311+G(d,p)" }
       } ,
       {
         "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Cl" } ,
         "coordinateX": { "type": "literal" , "value": "-0.81052" } ,
         "coordinateY": { "type": "literal" , "value": "-1.14085" } ,
-        "coordinateZ": { "type": "literal" , "value": "2.974036" }
+        "coordinateZ": { "type": "literal" , "value": "2.974036" } ,
+        "massValue": { "type": "literal" , "value": "34.9688527" } ,
+        "masUnit": { "type": "uri" , "value": "http://data.nasa.gov/qudt/owl/unit#Dalton" }
       } ,
       {
         "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
         "coordinateX": { "type": "literal" , "value": "-1.864795" } ,
         "coordinateY": { "type": "literal" , "value": "1.352996" } ,
-        "coordinateZ": { "type": "literal" , "value": "0.610239" }
+        "coordinateZ": { "type": "literal" , "value": "0.610239" } ,
+        "massValue": { "type": "literal" , "value": "15.9949146" } ,
+        "masUnit": { "type": "uri" , "value": "http://data.nasa.gov/qudt/owl/unit#Dalton" }
       } ,
       {
         "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Ti" } ,
         "coordinateX": { "type": "literal" , "value": "-1.062496" } ,
         "coordinateY": { "type": "literal" , "value": "0.004354" } ,
-        "coordinateZ": { "type": "literal" , "value": "0.984725" }
+        "coordinateZ": { "type": "literal" , "value": "0.984725" } ,
+        "massValue": { "type": "literal" , "value": "47.9479467" } ,
+        "masUnit": { "type": "uri" , "value": "http://data.nasa.gov/qudt/owl/unit#Dalton" }
       } ,
       {
         "spinMultiplicityValue": { "type": "literal" , "value": "2" }
@@ -67,6 +77,11 @@
       } ,
       {
         "rotationalSymmetryNumber": { "type": "literal" , "value": "1" }
+      } ,
+      {
+        "programName": { "type": "literal" , "value": "Gaussian" } ,
+        "programVersion": { "type": "literal" , "value": "09" } ,
+        "runDate": { "type": "literal" , "value": "Tue Jul 19 06:28:46 2016." }
       }
     ]
   }

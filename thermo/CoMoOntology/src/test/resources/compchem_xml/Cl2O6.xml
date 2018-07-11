@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module xmlns="http://www.xml-cml.org/schema" xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/">
+<module xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/">
    <module dictRef="cc:jobList">
       <module dictRef="cc:job">
-         <module id="jobInitialization" dictRef="cc:initialization">
+         <module dictRef="cc:initialization">
             <molecule>
                <atomArray>
                   <atom count="2.0" elementType="Cl"/>
@@ -19,7 +19,7 @@
                </parameter>
             </parameterList>
          </module>
-         <module id="finalization" dictRef="cc:finalization">
+         <module dictRef="cc:finalization">
             <propertyList>
                <property dictRef="cc:vibrations">
                   <array dataType="xsd:double" dictRef="cc:frequencies" size="18" units="nonSi:cm-1">34.3014 41.1936 95.3693 203.578 215.9875 333.8134 374.2213 446.1444 497.7222 512.9317 527.9276 572.0791 644.9055 921.2212 1006.3497 1115.8451 1139.9607 1169.4585</array>
@@ -47,7 +47,7 @@
                </atomArray>
             </molecule>
          </module>
-         <module id="environment" dictRef="cc:environment">
+         <module dictRef="cc:environment">
             <parameterList>
                <parameter dictRef="cc:program">
                   <scalar dataType="xsd:string">Gaussian</scalar>

@@ -168,7 +168,7 @@ public class GenerateCompChemXML {
 		
 		Module environmentModule = GenerateCompChemModule.getEnvironmentModule();
 		
-		Molecule geometryMolecule = new Molecule();
+		
 
 		Molecule initialMolecule = new Molecule();
 
@@ -244,6 +244,7 @@ public class GenerateCompChemXML {
 			parameterListInitialModule.getParameterOrParameterList().add(parameterBasisSet);
 			
 
+			Molecule geometryMolecule = new Molecule();
 			geometryMolecule = pg.getGeometryFromG09(file);
 
 			finalModule.getAny().add(propertyListFinalModule);
@@ -279,7 +280,7 @@ public class GenerateCompChemXML {
 			 * Returns an instance of Molecule class that contains atomic mass number of one atom.
 			 *  
 			 */
-			
+			Molecule geometryMolecule = new Molecule();
 			geometryMolecule = pg.getGeometryFromG09OneAtomMolecule(file);
 			
 			finalModule.getAny().add(geometryMolecule);

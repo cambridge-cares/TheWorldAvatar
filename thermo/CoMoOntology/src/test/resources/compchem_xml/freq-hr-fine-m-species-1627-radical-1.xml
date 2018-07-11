@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module xmlns="http://www.xml-cml.org/schema" xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/">
+<module xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/">
    <module dictRef="cc:jobList">
       <module dictRef="cc:job">
-         <module id="jobInitialization" dictRef="cc:initialization">
+         <module dictRef="cc:initialization">
             <molecule>
                <atomArray>
                   <atom count="6.0" elementType="C"/>
@@ -28,7 +28,7 @@
                </parameter>
             </parameterList>
          </module>
-         <module id="finalization" dictRef="cc:finalization">
+         <module dictRef="cc:finalization">
             <propertyList>
                <property dictRef="cc:vibrations">
                   <array dataType="xsd:double" dictRef="cc:frequencies" size="66" units="nonSi:cm-1">5.8481 12.5752 25.8817 39.5846 46.1401 50.0653 58.1849 79.4735 153.3502 157.2054 167.6688 188.1244 194.9823 200.9569 231.2047 262.0472 287.407 338.4521 359.968 435.4556 454.8107 469.2591 488.3684 505.1712 526.3239 574.3393 674.6057 726.1697 733.6143 796.9595 831.1232 885.3475 925.2278 959.1651 1002.3296 1010.5675 1054.3494 1057.557 1074.8837 1270.0399 1290.1128 1342.407 1390.9425 1395.2736 1400.0186 1414.3086 1457.6248 1465.5833 1469.6752 1471.9995 1481.2685 1487.1881 1669.8188 2964.7227 2970.0983 3018.6652 3047.1869 3054.1637 3074.3768 3106.8358 3115.8868 3118.0539 3150.7326 3244.5423 3923.6694 3939.3796</array>
@@ -72,7 +72,7 @@
                </atomArray>
             </molecule>
          </module>
-         <module id="environment" dictRef="cc:environment">
+         <module dictRef="cc:environment">
             <parameterList>
                <parameter dictRef="cc:program">
                   <scalar dataType="xsd:string">Gaussian</scalar>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module xmlns="http://www.xml-cml.org/schema" xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/">
+<module xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/">
    <module dictRef="cc:jobList">
       <module dictRef="cc:job">
-         <module id="jobInitialization" dictRef="cc:initialization">
+         <module dictRef="cc:initialization">
             <molecule>
                <atomArray>
                   <atom count="3.0" elementType="C"/>
@@ -21,7 +21,7 @@
                </parameter>
             </parameterList>
          </module>
-         <module id="finalization" dictRef="cc:finalization">
+         <module dictRef="cc:finalization">
             <propertyList>
                <property dictRef="cc:vibrations">
                   <array dataType="xsd:double" dictRef="cc:frequencies" size="48" units="nonSi:cm-1">15.572 26.147 42.0864 125.4584 164.1975 178.606 190.0894 213.8459 219.467 224.1991 244.0796 261.4719 282.3035 322.3117 413.3672 432.885 443.7119 451.8867 469.1831 613.6769 701.8506 729.63 750.2117 862.4081 923.4653 936.504 1043.1221 1141.6551 1155.6493 1181.2299 1355.1666 1357.3925 1389.7296 1405.4699 1474.8222 1480.7955 1487.335 1502.4313 2987.3867 3019.3448 3023.8634 3091.6832 3098.7324 3101.0222 3104.8988 3933.7808 3938.871 3943.2299</array>
@@ -59,7 +59,7 @@
                </atomArray>
             </molecule>
          </module>
-         <module id="environment" dictRef="cc:environment">
+         <module dictRef="cc:environment">
             <parameterList>
                <parameter dictRef="cc:program">
                   <scalar dataType="xsd:string">Gaussian</scalar>

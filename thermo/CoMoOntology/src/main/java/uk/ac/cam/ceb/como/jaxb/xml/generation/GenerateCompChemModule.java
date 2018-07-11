@@ -9,7 +9,7 @@ public class GenerateCompChemModule {
 		Module module = new Module();
 		
 		module.setDictRef("cc:initialization");
-		module.setId("jobInitialization");
+//		module.setId("jobInitialization");
 		
 		return module;
 	}
@@ -19,7 +19,7 @@ public class GenerateCompChemModule {
 		Module module = new Module();
 		
 		module.setDictRef("cc:finalization");
-		module.setId("finalization");
+//		module.setId("finalization");
 		
 		return module;
 	}
@@ -29,7 +29,7 @@ public class GenerateCompChemModule {
 		Module module = new Module();
 		
 		module.setDictRef("cc:environment");
-		module.setId("environment");
+//		module.setId("environment");
 		
     	return module;
 	}

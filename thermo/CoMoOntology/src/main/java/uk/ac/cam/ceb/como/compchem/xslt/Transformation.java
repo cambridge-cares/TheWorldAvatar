@@ -77,7 +77,7 @@ public class Transformation {
 			 * 
 			 */
 
-			String outputPath = "src/test/resources/ontology/compchem_abox/" + f.getName().replace(".xml", "").toString() + ".rdf";
+			String outputPath = "src/test/resources/ontology/compchem_abox/" + f.getName().replace(".xml", "").toString() + ".owl";
 
 			FileOutputStream outputStream = new FileOutputStream(new File(outputPath));
 

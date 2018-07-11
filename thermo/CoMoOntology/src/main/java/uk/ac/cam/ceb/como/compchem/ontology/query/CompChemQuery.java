@@ -163,7 +163,7 @@ public class CompChemQuery {
 			
 			public boolean accept(File dir, String name) {
 				
-			return (name.endsWith(".sparql") || name.endsWith(".rdf"));			
+			return (name.endsWith(".sparql") || name.endsWith(".owl"));			
 			}
 		});
 

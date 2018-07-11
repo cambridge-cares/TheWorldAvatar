@@ -1,6 +1,6 @@
 {
   "head": {
-    "vars": [ "moleculeName" , "atomName" , "atomNumber" , "frequenciesSize" , "frequenciesValue" , "frequenciesUnit" , "spinMultiplicityValue" , "coordinateX" , "coordinateY" , "coordinateZ" , "geometryTypeValue" , "rotationalConstantsSize" , "rotationalConstantsUnit" , "rotationalConstantsValue" , "rotationalSymmetryNumber" ]
+    "vars": [ "moleculeName" , "atomName" , "atomNumber" , "levelOfTheory" , "basisSetValue" , "frequenciesSize" , "frequenciesValue" , "frequenciesUnit" , "spinMultiplicityValue" , "coordinateX" , "coordinateY" , "coordinateZ" , "massValue" , "masUnit" , "geometryTypeValue" , "rotationalConstantsSize" , "rotationalConstantsUnit" , "rotationalConstantsValue" , "rotationalSymmetryNumber" , "programName" , "programVersion" , "runDate" ]
   } ,
   "results": {
     "bindings": [
@@ -16,7 +16,24 @@
         "atomNumber": { "type": "literal" , "value": "1" }
       } ,
       {
+        "levelOfTheory": { "type": "literal" , "value": "uB971" } ,
+        "basisSetValue": { "type": "literal" , "value": "6-311+G(d,p)" }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Cl(2)" } ,
+        "coordinateX": { "type": "literal" , "value": "0.0" } ,
+        "coordinateY": { "type": "literal" , "value": "0.0" } ,
+        "coordinateZ": { "type": "literal" , "value": "0.0" } ,
+        "massValue": { "type": "literal" , "value": "34.9688527" } ,
+        "masUnit": { "type": "uri" , "value": "http://data.nasa.gov/qudt/owl/unit#Dalton" }
+      } ,
+      {
         "geometryTypeValue": { "type": "literal" , "value": "atomic" }
+      } ,
+      {
+        "programName": { "type": "literal" , "value": "Gaussian" } ,
+        "programVersion": { "type": "literal" , "value": "09" } ,
+        "runDate": { "type": "literal" , "value": "Mon Oct 19 21:14:21 2015." }
       }
     ]
   }

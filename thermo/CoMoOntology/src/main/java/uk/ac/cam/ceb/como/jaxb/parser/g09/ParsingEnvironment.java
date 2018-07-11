@@ -15,13 +15,6 @@ public class ParsingEnvironment {
 
 private static BufferedReader br;
 
-public static void main(String[] args) throws IOException {
-	
-	File f = new File("src/test/resources/g09/Cl.g09");
-	
-
-}
-
 public static String getLastLineInG09File(File f) throws IOException {
 	
 	String lastLine="";
