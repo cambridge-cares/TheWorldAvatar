@@ -15,6 +15,11 @@
     margin-left: 20%;
 }
 
+#location {
+    padding: 2px 1px 2px 0px;
+    height: 26px;
+}
+
 div#inputFields {
 	margin-left: 15px;
 }

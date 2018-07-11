@@ -1,6 +1,15 @@
-var initadms3dmap  = function (list) {
+var initadms3dmap  = function (list, location) {
 
-		proj4.defs("EPSG:28992","+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.417,50.3319,465.552,-0.398957,0.343988,-1.8774,4.0725 +units=m +no_defs");
+    proj4.defs("EPSG:28992","+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.417,50.3319,465.552,-0.398957,0.343988,-1.8774,4.0725 +units=m +no_defs");
+
+    const position = {};
+	if(location === "The Hague"){
+        position.latitude = 52.07690;
+        position.longitude = 4.29089;
+    } else if (location === "Berlin"){
+    	position.latitude = 52.51461;
+    	position.longitude = 13.23966;
+    }
 
     var osmb = new OSMBuildings({
         baseURL: './OSMBuildings',
@@ -9,8 +18,7 @@ var initadms3dmap  = function (list) {
         maxZoom: 25,
         rotation: 0.6,
         tilt: 45.0,
-        // change to variable latitude and longitude
-        position: { latitude: 52.07690, longitude: 4.29089 }, // around The Hague
+        position: position,
         state: true, // stores map position/rotation in url
         effects: [], // effects: ['shadows']
         attribution: '� 3D <a href="https://osmbuildings.org/copyright/">OSM Buildings</a>'
@@ -73,18 +81,18 @@ var initadms3dmap  = function (list) {
 
                 var longitude = coordinates["longitude"].toFixed(5);
                 var latitude = coordinates["latitude"].toFixed(5);
-
+                
                 var coordinatesArray = []
 
                 if (!isNaN(latitude) && !isNaN(longitude)) {
 
-										var convertedCoordinates = proj4('EPSG:28992', [parseFloat(longitude), parseFloat(latitude)]);
+					var convertedCoordinates = proj4('EPSG:28992', [parseFloat(longitude), parseFloat(latitude)]);
 
-										coordinatesArray.push(convertedCoordinates[0]); // latitude
-										coordinatesArray.push(convertedCoordinates[1]); // longitude
-
-										document.getElementById("longitude").innerHTML = convertedCoordinates[1];
-										document.getElementById("latitude").innerHTML = convertedCoordinates[0];
+					coordinatesArray.push(convertedCoordinates[0]); // latitude
+					coordinatesArray.push(convertedCoordinates[1]); // longitude
+					
+					document.getElementById("longitude").innerHTML = convertedCoordinates[1];
+					document.getElementById("latitude").innerHTML = convertedCoordinates[0];
 
                     $.getJSON('/JPS/ADMSOutput',
                         {

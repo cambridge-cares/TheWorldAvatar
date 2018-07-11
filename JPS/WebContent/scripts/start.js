@@ -14,6 +14,7 @@ $(function(){
             console.log("error")
         })
     })
+
     $('#start').click(function(){
 //        console.log("start simulation");
         //$('#start').attr("disabled", true);
@@ -26,22 +27,32 @@ $(function(){
     
 //        approximate becasue texture only work on power2(has to be 1:1,1:2,1:4...)
         [xmin, xmax, ymin, ymax] = appro2ratio(xmin, xmax, ymin, ymax);
-        
-        
+
+        const location = $("#location option:selected").text();
         $.ajax('http://www.theworldavatar.com/JPS/ADMSCoordinationAgent?coordinates='+encodeURIComponent(JSON.stringify({'xmin':xmin,'xmax':xmax, 'ymin':ymin, 'ymax':ymax}).replaceAll('"',"'"))).done(function (bdnlist) {
             //todo: init building
 //            console.log(JSON.parse(bdnlist))
-            initadms3dmap(JSON.parse(bdnlist))
+            initadms3dmap(JSON.parse(bdnlist), location);
             
         }).fail(function () {
             console.log("error")
         })
-        
-        
-        
-        
-        
-        
+    })
+
+    $("#location").on("change", () => {
+        const location = $("#location option:selected").text();
+
+        if(location === "Berlin"){
+            $("#xlower").val("");
+            $("#xupper").val("");
+            $("#ylower").val("");
+            $("#yupper").val("");
+        }else if(location === "The Hague"){
+            $("#xlower").val("79480");
+            $("#xupper").val("85000");
+            $("#ylower").val("454670");
+            $("#yupper").val("460000");
+        }
     })
 });
 
