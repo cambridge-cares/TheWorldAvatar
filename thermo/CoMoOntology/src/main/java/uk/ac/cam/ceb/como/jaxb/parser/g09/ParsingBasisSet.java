@@ -75,6 +75,13 @@ public class ParsingBasisSet {
 
 	}
 
+	/**
+	 * 
+	 * @param f
+	 * @param numberOfAtoms
+	 * @return Jaxb Parameter instance that contains information about basis set value.
+	 * @throws Exception
+	 */
 	public static Parameter getBasisSetParameter(File f, int numberOfAtoms) throws Exception {
 
 		Parameter parameter = new Parameter();

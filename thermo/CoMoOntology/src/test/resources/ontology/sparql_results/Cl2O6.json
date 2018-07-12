@@ -21,9 +21,49 @@
       } ,
       {
         "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
+        "coordinateX": { "type": "literal" , "value": "-1.54458" } ,
+        "coordinateY": { "type": "literal" , "value": "1.1063" } ,
+        "coordinateZ": { "type": "literal" , "value": "-0.93053" } ,
+        "massValue": { "type": "literal" , "value": "15.9949146" } ,
+        "masUnit": { "type": "uri" , "value": "http://data.nasa.gov/qudt/owl/unit#Dalton" }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Cl" } ,
+        "coordinateX": { "type": "literal" , "value": "-1.40483" } ,
+        "coordinateY": { "type": "literal" , "value": "0.00178" } ,
+        "coordinateZ": { "type": "literal" , "value": "0.00529" } ,
+        "massValue": { "type": "literal" , "value": "34.9688527" } ,
+        "masUnit": { "type": "uri" , "value": "http://data.nasa.gov/qudt/owl/unit#Dalton" }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Cl" } ,
+        "coordinateX": { "type": "literal" , "value": "1.7266" } ,
+        "coordinateY": { "type": "literal" , "value": "-0.01308" } ,
+        "coordinateZ": { "type": "literal" , "value": "0.30056" } ,
+        "massValue": { "type": "literal" , "value": "34.9688527" } ,
+        "masUnit": { "type": "uri" , "value": "http://data.nasa.gov/qudt/owl/unit#Dalton" }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
         "coordinateX": { "type": "literal" , "value": "0.01834" } ,
         "coordinateY": { "type": "literal" , "value": "-0.78386" } ,
         "coordinateZ": { "type": "literal" , "value": "-0.40307" } ,
+        "massValue": { "type": "literal" , "value": "15.9949146" } ,
+        "masUnit": { "type": "uri" , "value": "http://data.nasa.gov/qudt/owl/unit#Dalton" }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
+        "coordinateX": { "type": "literal" , "value": "2.60691" } ,
+        "coordinateY": { "type": "literal" , "value": "-1.01735" } ,
+        "coordinateZ": { "type": "literal" , "value": "-0.29538" } ,
+        "massValue": { "type": "literal" , "value": "15.9949146" } ,
+        "masUnit": { "type": "uri" , "value": "http://data.nasa.gov/qudt/owl/unit#Dalton" }
+      } ,
+      {
+        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
+        "coordinateX": { "type": "literal" , "value": "1.81668" } ,
+        "coordinateY": { "type": "literal" , "value": "1.33709" } ,
+        "coordinateZ": { "type": "literal" , "value": "-0.25547" } ,
         "massValue": { "type": "literal" , "value": "15.9949146" } ,
         "masUnit": { "type": "uri" , "value": "http://data.nasa.gov/qudt/owl/unit#Dalton" }
       } ,
@@ -40,46 +80,6 @@
         "coordinateX": { "type": "literal" , "value": "-2.39204" } ,
         "coordinateY": { "type": "literal" , "value": "-1.05109" } ,
         "coordinateZ": { "type": "literal" , "value": "-0.15395" } ,
-        "massValue": { "type": "literal" , "value": "15.9949146" } ,
-        "masUnit": { "type": "uri" , "value": "http://data.nasa.gov/qudt/owl/unit#Dalton" }
-      } ,
-      {
-        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Cl" } ,
-        "coordinateX": { "type": "literal" , "value": "-1.40483" } ,
-        "coordinateY": { "type": "literal" , "value": "0.00178" } ,
-        "coordinateZ": { "type": "literal" , "value": "0.00529" } ,
-        "massValue": { "type": "literal" , "value": "34.9688527" } ,
-        "masUnit": { "type": "uri" , "value": "http://data.nasa.gov/qudt/owl/unit#Dalton" }
-      } ,
-      {
-        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
-        "coordinateX": { "type": "literal" , "value": "-1.54458" } ,
-        "coordinateY": { "type": "literal" , "value": "1.1063" } ,
-        "coordinateZ": { "type": "literal" , "value": "-0.93053" } ,
-        "massValue": { "type": "literal" , "value": "15.9949146" } ,
-        "masUnit": { "type": "uri" , "value": "http://data.nasa.gov/qudt/owl/unit#Dalton" }
-      } ,
-      {
-        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
-        "coordinateX": { "type": "literal" , "value": "1.81668" } ,
-        "coordinateY": { "type": "literal" , "value": "1.33709" } ,
-        "coordinateZ": { "type": "literal" , "value": "-0.25547" } ,
-        "massValue": { "type": "literal" , "value": "15.9949146" } ,
-        "masUnit": { "type": "uri" , "value": "http://data.nasa.gov/qudt/owl/unit#Dalton" }
-      } ,
-      {
-        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Cl" } ,
-        "coordinateX": { "type": "literal" , "value": "1.7266" } ,
-        "coordinateY": { "type": "literal" , "value": "-0.01308" } ,
-        "coordinateZ": { "type": "literal" , "value": "0.30056" } ,
-        "massValue": { "type": "literal" , "value": "34.9688527" } ,
-        "masUnit": { "type": "uri" , "value": "http://data.nasa.gov/qudt/owl/unit#Dalton" }
-      } ,
-      {
-        "atomName": { "type": "uri" , "value": "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O" } ,
-        "coordinateX": { "type": "literal" , "value": "2.60691" } ,
-        "coordinateY": { "type": "literal" , "value": "-1.01735" } ,
-        "coordinateZ": { "type": "literal" , "value": "-0.29538" } ,
         "massValue": { "type": "literal" , "value": "15.9949146" } ,
         "masUnit": { "type": "uri" , "value": "http://data.nasa.gov/qudt/owl/unit#Dalton" }
       } ,

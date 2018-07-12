@@ -15,9 +15,19 @@ import uk.ac.cam.ceb.como.io.chem.file.jaxb.Scalar;
 import uk.ac.cam.ceb.como.io.chem.file.parser.compchem.CompChemParser;
 import uk.ac.cam.ceb.como.io.chem.file.parser.g09.FrequencyParser;
 import uk.ac.cam.ceb.como.thermo.calculator.rotation.internal.util.IRCompChemWrapper;
-
+/**
+ * 
+ * @author nk510
+ * This class implements method for parsing level of theory in Gaussian file. 
+ */
 public class ParsingLevelOfTheory {	
 	
+	/**
+	 * 
+	 * @param f
+	 * @return A String instance/object that contains information about level of theory for given Gaussian file. The string starts with "#p" and ends with first appearing "/" character.
+	 * @throws IOException
+	 */
 	public static String getLevelOfTheoryString(File f) throws IOException {
 		
 		String levelOfTheory= "";	
@@ -61,7 +71,13 @@ public class ParsingLevelOfTheory {
 	return levelOfTheory;
 	
 	}
-	
+	/**
+	 * 
+	 * @param f
+	 * @param numberOfAtoms
+	 * @return Jaxb Parametar instance that contains information about level of theory. Parameter contains one scalar.
+	 * @throws Exception
+	 */
 	public static Parameter getLevelOfTheryParameter(File f, int numberOfAtoms) throws Exception {
 		
 		

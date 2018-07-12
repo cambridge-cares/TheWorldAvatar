@@ -65,11 +65,13 @@ public class GenerateCompChemXML {
 			String fileName = f.getName().replaceAll(".g09","");
 
 			/**
+			 * 
 			 * @author nk510
 			 * <p>Folder where we save all generated CompChem XML files.</p>
+			 * 
 			 */
 			
-			File outputFile = new File("src/test/resources/compchem_xml/" + fileName + ".xml");
+			File outputFile = new File("src/test/resources/ontochem_xml/" + fileName + ".xml");
 
 			generateRootModule(f, outputFile, rootModule);
 
@@ -98,40 +100,7 @@ public class GenerateCompChemXML {
 
 		return fileList;
 	}
-
-	/**
-	 * Gets the root module.
-	 *
-	 * @author nk510
-	 * @param in_module the in module
-	 * @param f_module the f module
-	 * @param rootModule the root module
-	 * @return <p>Returns object variable of Module JAXB class. It contains information
-	 *         (DictRef) about job lists, and job.</p>
-	 */
 	
-	public static Module getRootModule(Module in_module, Module f_module, Module env_module, Module rootModule) {
-
-		Module jobListModule = new Module();
-
-		rootModule.getAny().add(jobListModule);
-
-		jobListModule.setDictRef("cc:jobList");
-
-		Module jobModule = new Module();
-
-		jobListModule.getAny().add(jobModule);
-
-		jobModule.setDictRef("cc:job");
-
-		jobModule.getAny().add(in_module);
-
-		jobModule.getAny().add(f_module);
-		
-		jobModule.getAny().add(env_module);
-
-		return jobModule;
-	}
 
 	/**
 	 * Gets the empirical parser.
@@ -168,8 +137,6 @@ public class GenerateCompChemXML {
 		
 		Module environmentModule = GenerateCompChemModule.getEnvironmentModule();
 		
-		
-
 		Molecule initialMolecule = new Molecule();
 
 		PropertyList propertyListFinalModule = new PropertyList();
@@ -253,7 +220,7 @@ public class GenerateCompChemXML {
 
 			initialModule.getAny().add(parameterListInitialModule);
 			
-			getRootModule(initialModule, finalModule, environmentModule,rootModule);
+			GenerateCompChemModule.getRootModule(initialModule, finalModule, environmentModule,rootModule);
 
 		} else {
 			
@@ -281,6 +248,7 @@ public class GenerateCompChemXML {
 			 *  
 			 */
 			Molecule geometryMolecule = new Molecule();
+			
 			geometryMolecule = pg.getGeometryFromG09OneAtomMolecule(file);
 			
 			finalModule.getAny().add(geometryMolecule);
@@ -289,7 +257,7 @@ public class GenerateCompChemXML {
 			
 			initialModule.getAny().add(parameterListInitialModule);
 			
-			getRootModule(initialModule, finalModule, environmentModule ,rootModule);
+			GenerateCompChemModule.getRootModule(initialModule, finalModule, environmentModule ,rootModule);
 
 		} try {
 			

@@ -6,10 +6,10 @@ package uk.ac.cam.ceb.como.jaxb.parsing.utils;
 import java.io.File;
 import java.io.FilenameFilter;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class FileUtility.
  */
+
 public class FileUtility {
 
 	/**
@@ -35,6 +35,6 @@ public class FileUtility {
 		});
 
 		return fileList;
-	}
+	}	
 	
 }

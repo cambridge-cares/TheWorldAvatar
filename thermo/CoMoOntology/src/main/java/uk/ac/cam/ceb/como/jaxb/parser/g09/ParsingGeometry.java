@@ -110,7 +110,7 @@ public class ParsingGeometry {
 
 		AtomArray atomArrayJxb = new AtomArray();
 		
-		FormulaUtility futility = new FormulaUtility();
+		FormulaUtility formulaUtility = new FormulaUtility();
 		
 		StringTokenizer weightTokenizer = ParsingAtomicMass.getAtomicWeightString(file);
 
@@ -124,12 +124,11 @@ public class ParsingGeometry {
 		atomJxb.setY3(0.00);
 		atomJxb.setZ3(0.00);
 		
-		String atomName= futility.extractFormulaName(file);
 		/**
 		 * @author nk510
 		 * set element type as atom name from a molecule that has only one atom.
 		 */
-		atomJxb.setElementType(atomName);
+		atomJxb.setElementType(getAtoNameOfOneAtomMolecule(formulaUtility.extractFormulaName(file)));
 		
 		atomJxb.setAtomicMass(atomicWeightList.get(0));
 		
@@ -169,6 +168,13 @@ public class ParsingGeometry {
 
 		return cml_molecule;
 
+	}
+	
+	public String getAtoNameOfOneAtomMolecule(String formula) {
+		
+		EmpiricalFormulaParser parser = new EmpiricalFormulaParser();
+		
+		return parser.getAtomName(formula);
 	}
 	
 }

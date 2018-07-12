@@ -57,7 +57,7 @@ public class ParsingAtomicMass {
 	 * 
 	 * @author nk510
 	 * @param weightTokenizer
-	 * @return list of strings that represent atomic masses of each atom appearing in
+	 * @return List of strings that represent atomic masses of each atom appearing in
 	 *         geometry optimisation module.
 	 *         
 	 */
