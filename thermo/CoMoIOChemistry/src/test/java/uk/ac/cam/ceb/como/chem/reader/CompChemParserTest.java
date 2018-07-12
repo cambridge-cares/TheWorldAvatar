@@ -1,6 +1,7 @@
 package uk.ac.cam.ceb.como.chem.reader;
 
 import uk.ac.cam.ceb.como.io.chem.file.parser.compchem.CompChemParser;
+import uk.ac.cam.ceb.como.io.chem.file.parser.g09.GaussianParser;
 import uk.ac.cam.ceb.como.compchem.CompChem;
 import java.io.File;
 import org.junit.Test;
@@ -9,8 +10,9 @@ import org.junit.Test;
  *
  * @author pb556
  */
-public class CompChemParserTest {
 
+public class CompChemParserTest {
+	
 //    /**
 //     * Test of read method, of class CompChemReader.
 //     * @throws Exception

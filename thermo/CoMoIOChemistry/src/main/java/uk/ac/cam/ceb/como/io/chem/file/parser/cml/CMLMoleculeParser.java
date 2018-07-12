@@ -14,6 +14,7 @@ import org.xmlcml.cml.element.CMLMolecule;
  *
  * @author pb556
  */
+
 public class CMLMoleculeParser extends ChemFileParser<CMLMolecule> {
 
     protected CMLMolecule obj = null;

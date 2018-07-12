@@ -100,9 +100,10 @@ public class EthanolThermoCalc {
         RRHOThermoCalculator calculatorRRHO = new RRHOThermoCalculator();
         calculatorRRHO.setUseInternalRotor(true);
         
-//        RotorRule rule = new PitzerReducedMOIFunction(compound, , r.keySet(), true);
-//        rule.setInternalRotorType(RotorRule.InternalRotorType.NONE);
-//        calculatorRRHO.setInternalRotorRule(rule, null);
+//      RotorRule rule = new PitzerReducedMOIFunction(compound, , r.keySet(), true);
+//      rule.setInternalRotorType(RotorRule.InternalRotorType.NONE);
+//      calculatorRRHO.setInternalRotorRule(rule, null);
+        
         calculatorRRHO.setCMLMolecule(mol);
         calculatorRRHO.setCheckForNegativeFrequecy(true);
         calculatorRRHO.setContributions(true, true, true, true);

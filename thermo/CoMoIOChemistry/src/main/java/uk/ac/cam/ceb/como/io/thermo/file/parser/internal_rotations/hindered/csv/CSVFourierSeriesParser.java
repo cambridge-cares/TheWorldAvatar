@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
+
 import uk.ac.cam.ceb.como.math.fourier.series.FourierSeries;
 import uk.ac.cam.ceb.como.math.fourier.series.FourierSeriesCoefficient;
 import uk.ac.cam.ceb.como.math.fourier.series.FourierSeriesCoefficients;
@@ -25,6 +26,7 @@ import uk.ac.cam.ceb.como.math.fourier.series.onedimensional.classical.Classical
  *
  * @author pb556
  */
+
 public class CSVFourierSeriesParser extends FileParser<Map<String, FourierSeries>> {
 
     private final Map<String, FourierSeries> series = new HashMap<>();

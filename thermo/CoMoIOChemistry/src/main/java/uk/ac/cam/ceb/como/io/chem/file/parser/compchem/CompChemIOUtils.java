@@ -10,6 +10,7 @@ import java.util.Map;
 import nu.xom.Document;
 import nu.xom.Nodes;
 import org.apache.commons.io.IOUtils;
+
 import org.xmlcml.cml.base.CMLElement;
 import org.xmlcml.cml.base.CMLNamespace;
 import org.xmlcml.cml.element.CMLModule;
@@ -22,6 +23,7 @@ import uk.ac.cam.ceb.como.extra.xom.XMLTools;
  *
  * @author pb556
  */
+
 public class CompChemIOUtils {
 
     /**
@@ -33,6 +35,7 @@ public class CompChemIOUtils {
      * @return
      * @throws Exception
      */
+	
     public static CompChem read(File file) throws Exception {
         Document doc = CMLTools.readCML(file);
         Nodes mods = doc.query("//cml:module[@convention]", CMLNamespace.CML_XPATH);
@@ -51,7 +54,7 @@ public class CompChemIOUtils {
             }
         }
         return null;
-    }
+    } 
 
     private static Map<String, String> findInUsePrefixNamespaceMap(CMLModule el) {
         // need to deal with all declare namespace prefix

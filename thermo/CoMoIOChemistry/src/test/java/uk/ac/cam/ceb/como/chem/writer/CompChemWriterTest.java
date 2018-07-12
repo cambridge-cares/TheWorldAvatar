@@ -3,9 +3,12 @@ package uk.ac.cam.ceb.como.chem.writer;
 import org.junit.Ignore;
 import uk.ac.cam.ceb.como.io.chem.file.writer.compchem.CompChemWriter;
 import org.junit.Test;
+
+import uk.ac.cam.ceb.como.chem.structure.Compound;
 import uk.ac.cam.ceb.como.chem.structure.util.CompoundConverter;
 import uk.ac.cam.ceb.como.compchem.CompChem;
 import uk.ac.cam.ceb.como.compchem.CompChemWrapper;
+import uk.ac.cam.ceb.como.io.chem.file.parser.ChemFileParser;
 import uk.ac.cam.ceb.como.io.chem.file.parser.g09.FrequencyParser;
 import uk.ac.cam.ceb.como.io.chem.file.parser.g09.GaussianParser;
 
@@ -13,19 +16,26 @@ import uk.ac.cam.ceb.como.io.chem.file.parser.g09.GaussianParser;
  *
  * @author pb556
  */
+
 public class CompChemWriterTest {
-    /**
+    
+	/**
      * Test of write method, of class CMLWriter.
      * @throws Exception
      */
+	
     @Test
     @Ignore
     public void testWrite() throws Exception {
+    	
         GaussianParser gauReader =  new FrequencyParser();
-        String filename = "src/test/resources/uk/ac/cam/ceb/como/gaussian/C2H5OH.g03";
+//      GaussianParser<String> gParser = new GaussianParser<String>();
+        
+    	String filename = "src/test/resources/uk/ac/cam/ceb/como/gaussian/C2H5OH.g03";
         gauReader.set(filename);
+        
         gauReader.parse();
-//        Compound compound = gauReader.get()
+//        Compound compound = gauReader.get();
         CompChemWriter cmlWriter = new CompChemWriter();
         cmlWriter.set("target/C2H5OH.cml");
         cmlWriter.setContent(CompoundConverter.convert(new CompChemWrapper((CompChem) gauReader.get()).getFinalMolecule()));
@@ -53,5 +63,4 @@ public class CompChemWriterTest {
 //        doc2 = XMLTools.readXML("target/C2H5OH-3.cml");
 //        XOMTestCase.assertEquals(doc1, doc2);
 //    }
-
 }

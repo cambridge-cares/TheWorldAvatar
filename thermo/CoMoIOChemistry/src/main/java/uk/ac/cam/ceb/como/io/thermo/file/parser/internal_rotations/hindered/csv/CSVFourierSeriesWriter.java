@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.log4j.Logger;
+
 import uk.ac.cam.ceb.como.math.fourier.series.FourierSeries;
 import uk.ac.cam.ceb.como.math.fourier.series.FourierSeriesCoefficient;
 import uk.ac.cam.ceb.como.math.fourier.series.FourierSeriesCoefficients;
@@ -23,6 +24,7 @@ import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
  *
  * @author pb556
  */
+
 public class CSVFourierSeriesWriter extends FileWriter<Map<String, FourierSeries>> implements ExtendedWriterIntf<Map<String, FourierSeries>> {
 
     // period (lower and upper limit)
