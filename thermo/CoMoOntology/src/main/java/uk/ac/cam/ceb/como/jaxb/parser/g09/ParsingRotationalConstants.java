@@ -92,7 +92,6 @@ public class ParsingRotationalConstants {
 		 * <p>try block works under JavaSE 1.7</p>
 		 */
 		
-//	 	try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 	 		BufferedReader br = new BufferedReader(new FileReader(file));
 			for (String line; (line = br.readLine()) != null;) {
 
@@ -112,8 +111,6 @@ public class ParsingRotationalConstants {
 			}
 			br.close();
 			return rc_line;
-			
-//		}
 	 	
 	}
 

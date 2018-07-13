@@ -13,7 +13,6 @@ public class GenerateCompChemModule {
 		Module module = new Module();
 		
 		module.setDictRef("cc:initialization");
-
 		
 		return module;
 	}
@@ -28,7 +27,6 @@ public class GenerateCompChemModule {
 		Module module = new Module();
 		
 		module.setDictRef("cc:finalization");
-
 		
 		return module;
 	}
@@ -43,7 +41,6 @@ public class GenerateCompChemModule {
 		Module module = new Module();
 		
 		module.setDictRef("cc:environment");
-
 		
     	return module;
 	}

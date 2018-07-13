@@ -10,7 +10,6 @@ import java.io.IOException;
 
 import uk.ac.cam.ceb.como.io.chem.file.parser.formula.EmpiricalFormulaParser;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class FormulaUtility.
  *
@@ -45,7 +44,6 @@ public class FormulaUtility {
 		 * 
 		 */
 		
-//		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 		BufferedReader br = new BufferedReader(new FileReader(file));
 			for (String line; (line = br.readLine()) != null;) {
 
@@ -69,7 +67,6 @@ public class FormulaUtility {
 
 				}
 			}
-//		}
 	
         br.close();
 		return formulaName;
@@ -82,7 +79,7 @@ public class FormulaUtility {
 	 * @author nk510
 	 * @param formula the formula
 	 * @return <p>Calculates the sum of all atom numbers in one formula.This number
-	 *         should be equal to the number of atoms listed in geometry.</p>
+	 *         should be equal to the number of atoms listed in geometry field.</p>
 	 */
 	public int getSumOfAllAtomNumbers(String formula) {
 

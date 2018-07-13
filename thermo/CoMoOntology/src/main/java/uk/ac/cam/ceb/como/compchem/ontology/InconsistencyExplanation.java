@@ -4,6 +4,7 @@
 package uk.ac.cam.ceb.como.compchem.ontology;
 
 import java.io.File;
+
 import java.io.IOException;
 import java.util.Set;
 
@@ -23,34 +24,28 @@ import com.clarkparsia.owlapi.explanation.BlackBoxExplanation;
 import com.clarkparsia.owlapi.explanation.HSTExplanationGenerator;
 
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.FileUtility;
+import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
 
 /**
+ * 
  * The Class InconsistencyExplanation.
  *
- * @author nk510 <p>This class implements the inconsistency explanation for Compchem
- *         ontology given in'src/test/resources/compchem-ontology/' folder . We use
+ * @author nk510 <p>This class implements the inconsistency explanation for Ontochem
+ *         ontology given in'src/test/resources/ontochem-ontology/' folder . We use
  *         Hermit API and OWL API. It checks consistency, and in case of
  *         inconsistency it returns inconsistency explanation.</p>
  * 
  *         <p>Hermit reasoner licence type is: 'GNU Lesser General Public License'
  *         Hermit reasoner licence is available at:
  *         http://www.hermit-reasoner.com/download/1.3.8/readme.txt</p>
+ *         
  */
 
-public class InconsistencyExplanation {
-
-	/** The compchem iri path. */
-	static String compchemIriPath = "https://como.cheng.cam.ac.uk/kb/ontokin/";
+public class InconsistencyExplanation {	
 	
-	/** The abox file path. */
-	static String aboxFilePath = "src/test/resources/ontology/compchem_abox/";
+	/** The ontochem file path. */
+	static String ontochemFilePath = "src/test/resources/ontology/ontochem_ontology/";
 	
-	/** The compchem file path. */
-	static String compchemFilePath = "src/test/resources/ontology/compchem_ontology/";
-
-	/** The file utility. */
-	static FileUtility fileUtility = new FileUtility();
-
 	/**
 	 * The main method.
 	 *
@@ -59,18 +54,20 @@ public class InconsistencyExplanation {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static void main(String[] args) throws OWLOntologyCreationException, IOException {
-
+		
+		Utility utility = new FileUtility();
+		
 		/**
 		 * 
-		 * @author nk510 <p>Array of ontology files.</p>
+		 * @author nk510 <p>list of ontology files. Allowed format are owl, rdf, and ttl.</p>
 		 * 
 		 */
 
-		File[] fileList = fileUtility.getOntologyFileList(compchemFilePath);
+		File[] fileList = utility.getFileList(ontochemFilePath,".owl", ".rdf", ".ttl");
 
 		/**
 		 * 
-		 * @author nk510 <p>Checks consistency, and in case of inconsistency it provides
+		 * @author nk510 <p>Checks consistency. In case of inconsistency it provides
 		 *         explanation. </p>
 		 * 
 		 */
@@ -88,7 +85,7 @@ public class InconsistencyExplanation {
 	 * @param dataFactory the data factory
 	 * @param ontology the ontology
 	 * @return the inconsistency explanation
-	 * @throws IOException             <p>Returns all the explanations for the given unsatisfiable ontology
+	 * @throws IOException <p>Returns all the explanations for the given unsatisfiable ontology
 	 *             class (owl:Thing). To provide explanation of inconsistencies in
 	 *             Abox one needs to define all individuals to be instance of
 	 *             owl:Thing. </p>

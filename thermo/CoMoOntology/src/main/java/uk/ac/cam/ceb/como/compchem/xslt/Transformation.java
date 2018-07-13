@@ -6,7 +6,6 @@ package uk.ac.cam.ceb.como.compchem.xslt;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -16,12 +15,17 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import uk.ac.cam.ceb.como.jaxb.parsing.utils.FileUtility;
+import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
+
 /**
+ * 
  * The Class Transformation.
  *
  * @author <p>nk510 This class implements methods for xslt transformations from
  *         ontochem XML files to RDF graph as Abox assertions of CoMo ontochem
  *         ontology ver 0.1.</p>
+ *         
  */
 
 public class Transformation {
@@ -29,10 +33,11 @@ public class Transformation {
 	/**
 	 * The folder path.
 	 *
-	 * @author nk510 <p>Folder path where generated ontochem XML files are saved.</p>
+	 * @author nk510 <p>Folder path where generated Compchem XML files are saved.</p>
+	 * 
 	 */
 
-	static String folderPath = "src/test/resources/ontochem_xml/";
+	static String xmlFolderPath = "src/test/resources/ontochem_xml/";
 
 	/**
 	 * The xslt path.
@@ -40,7 +45,7 @@ public class Transformation {
 	 * @author nk510 Path to XSLT file.
 	 */
 
-	static String xsltPath = "src/test/resources/xslt/ontochem_rdf.xsl"; 
+	static String xsltPath = "src/test/resources/xslt/ontochem_rdf.xsl";
 
 	/**
 	 * The main method.
@@ -49,22 +54,28 @@ public class Transformation {
 	 * @throws TransformerException the transformer exception
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
+	
 	public static void main(String[] args) throws TransformerException, IOException {
 
+		Utility utility = new FileUtility();
+		
 		/**
-		 * 
-		 * @author nk510 <p>File list of all ontochem xml files stored in folder path.</p>
-		 * 
-		 */
+		 * Gets the file list.
+		 *
+		 * @author nk510
+		 * @param folderPath <p>File list of all ontochem xml files stored in folder path.</p>
+		 * @return <p>Method reads all ontochem XML files in given folder path. Supported
+		 *         file extension is '.xml'.</p>
+		 */		
 
-		File[] fileList = getFileList(folderPath);
+		File[] fileList = utility.getFileList(xmlFolderPath,".xml");
 
 		/**
 		 * 
 		 * @author nk510 <p>Iterates over file list given in folder 'src/test/resources/ontochem_xml/' </p>
 		 * 
 		 */
-
+        
 		for (File f : fileList) {
 
 			InputStream xmlSource = new FileInputStream(f.getPath());
@@ -112,28 +123,5 @@ public class Transformation {
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		Transformer transformer = transformerFactory.newTransformer(xsltSource);
 		transformer.transform(new StreamSource(XmlSource), new StreamResult(outputStream));
-	}
-
-	/**
-	 * Gets the file list.
-	 *
-	 * @author nk510
-	 * @param folderPath the folder path
-	 * @return <p>Method reads all ontochem XML files in given folder path. Supported
-	 *         file extension is '.xml'.</p>
-	 */
-
-	public static File[] getFileList(String folderPath) {
-
-		File dir = new File(folderPath);
-
-		File[] fileList = dir.listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return (name.endsWith(".xml"));
-
-			}
-		});
-
-		return fileList;
-	}
+	}	
 }

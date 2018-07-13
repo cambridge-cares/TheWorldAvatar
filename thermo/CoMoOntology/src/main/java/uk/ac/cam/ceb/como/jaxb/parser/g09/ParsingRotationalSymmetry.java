@@ -15,7 +15,6 @@ import uk.ac.cam.ceb.como.io.chem.file.jaxb.Property;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.Scalar;
 import uk.ac.cam.ceb.como.io.chem.file.parser.g09.FrequencyParser;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ParsingRotationalSymmetry.
  *
@@ -37,11 +36,11 @@ public class ParsingRotationalSymmetry {
 
 		/**
 		 * @author nk510 
-		 * <p>property_jaxb is object variable of Property jxb class.
+		 * <p>propertyJaxb is object variable of Property jxb class.
 		 *         Property class is generated from CompChem XML schema.</p>
 		 */
 
-		Property property_jaxb = new Property();
+		Property propertyJaxb = new Property();
 
 		FrequencyParser parser = new FrequencyParser();
 
@@ -66,30 +65,30 @@ public class ParsingRotationalSymmetry {
 
 			if (cmlp.getDictRef().equals("cc:rotational_symmetry")) {
 
-				for (CMLElement c_elem : child_elem) {
+				for (CMLElement cElem : child_elem) {
 
-					if (c_elem.getLocalName().equals("scalar")) {
+					if (cElem.getLocalName().equals("scalar")) {
 
-						Scalar scalar_jxb = new Scalar();
+						Scalar scalarJxb = new Scalar();
 
-						org.xmlcml.cml.element.CMLScalar scalar = (org.xmlcml.cml.element.CMLScalar) c_elem;
+						org.xmlcml.cml.element.CMLScalar scalar = (org.xmlcml.cml.element.CMLScalar) cElem;
 
 						System.out.println(scalar.getDataType() + ", " + scalar.getUnits() + ", " + scalar.getValue());
 
-						scalar_jxb.setDataType(scalar.getDataType());
-						scalar_jxb.setUnits(scalar.getUnits());
-						scalar_jxb.setValue(scalar.getValue());
+						scalarJxb.setDataType(scalar.getDataType());
+						scalarJxb.setUnits(scalar.getUnits());
+						scalarJxb.setValue(scalar.getValue());
 
-						property_jaxb.setDictRef(cmlp.getDictRef());
+						propertyJaxb.setDictRef(cmlp.getDictRef());
 
-						property_jaxb.getScalarOrArrayOrMatrix().add(scalar_jxb);
+						propertyJaxb.getScalarOrArrayOrMatrix().add(scalarJxb);
 
 					}
 				}
 			}
 		}
 
-		return property_jaxb;
+		return propertyJaxb;
 
 	}
 }

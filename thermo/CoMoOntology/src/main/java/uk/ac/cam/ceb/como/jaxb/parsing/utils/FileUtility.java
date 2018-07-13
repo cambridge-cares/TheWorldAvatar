@@ -10,18 +10,20 @@ import java.io.FilenameFilter;
  * The Class FileUtility.
  */
 
-public class FileUtility {
+public class FileUtility implements Utility {
 
 	/**
-	 * Gets the ontology file list.
+	 * 
+	 * Gets file list.
 	 *
 	 * @author nk510
 	 * @param folderPath the folder path
-	 * @return <p>Method reads all ontology files in given folder path. Supported file
-	 *         extensions are '.owl', '.rdf', '.ttl'.</p>
+	 * @return <p>Method reads all files in given folder path. Supported file
+	 *         extensions are '.owl', '.rdf', '.ttl', '.sparql', '.xml', '.json'. </p>
+	 *         
 	 */
 	
-	public File[] getOntologyFileList(String folderPath) {
+	public File[] getFileList(String folderPath, final String ...format) {
 
 		File dir = new File(folderPath);
 
@@ -30,11 +32,10 @@ public class FileUtility {
 			
 			public boolean accept(File dir, String name) {
 				
-				return (name.endsWith(".owl") || name.endsWith(".rdf") || name.endsWith(".ttl"));
+				return (name.endsWith(format[0]) || name.endsWith(format[1]) || name.endsWith(format[2]));
 			}
 		});
 
 		return fileList;
 	}	
-	
 }

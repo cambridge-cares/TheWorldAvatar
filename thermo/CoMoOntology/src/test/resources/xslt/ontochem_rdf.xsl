@@ -9,13 +9,14 @@
 	xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:math="java.lang.Math"
 	exclude-result-prefixes="math">
 
-	<!-- Author: Nenad B. Krdzavac, e-mail: nk510(at)cam.ac.uk -->
+	<!--Author: Nenad B. Krdzavac, e-mail: nk510(at)cam.ac.uk -->
 
-	<!-- Copyright: Department of Chemical Engineering and Biotechnology, University 
-		of Cambrdige, United Kingdom, 2018 
+	<!-- 
+	    Copyright: Department of Chemical Engineering and Biotechnology, University 
+	    of Cambrdige, United Kingdom, 2018 
 	-->
 
-	<!-- This xslt transforms of CompChem XML files to rdf graph as instance 
+	<!--This xslt transforms of CompChem XML files to rdf graph as instance 
 		of CompChem ontology (An extension of Gainesville Core Ontology (GNVC) ver 0.7.). At the moment it covers the 
 		transformation of the following features: 
 		
@@ -36,8 +37,7 @@
 		15. level of theory.
 		16. program name.
 		17. program version.
-		18. run date.
-	
+		18. run date.	
 	  -->
 
 	<!-- Applying all templates -->
@@ -796,6 +796,3 @@
 	</xsl:template>
 	
 </xsl:transform>
-
-
-

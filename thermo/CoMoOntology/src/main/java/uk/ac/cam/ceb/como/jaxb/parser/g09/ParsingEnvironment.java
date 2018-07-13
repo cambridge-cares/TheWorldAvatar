@@ -10,16 +10,26 @@ import org.apache.commons.lang3.StringUtils;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.Parameter;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.Scalar;
 
-
+/**
+ * The Class ParsingEnvironment.
+ */
 public class ParsingEnvironment {
 
+/** The br. */
 private static BufferedReader br;
 
-public static String getLastLineInG09File(File f) throws IOException {
+/**
+ * Gets the last line in G 09 file.
+ *
+ * @param file the file
+ * @return the last line in G09 file
+ * @throws IOException Signals that an I/O exception has occurred.
+ */
+public static String getLastLineInG09File(File file) throws IOException {
 	
 	String lastLine="";
 			
-	br = new BufferedReader(new FileReader(f));
+	br = new BufferedReader(new FileReader(file));
 	
 	for (String line; (line = br.readLine()) != null;) {
 		
@@ -30,14 +40,21 @@ public static String getLastLineInG09File(File f) throws IOException {
 	return lastLine;
 }
 
-public static Parameter getProgramVersion(File f) throws IOException {
+/**
+ * Gets the program version.
+ *
+ * @param file the file
+ * @return the program version
+ * @throws IOException Signals that an I/O exception has occurred.
+ */
+public static Parameter getProgramVersion(File file) throws IOException {
 	
 	Parameter parameter = new Parameter();
 	Scalar scalar = new Scalar();
 	
 	String programVersion="";
 	
-	String lastLine = getLastLineInG09File(f);
+	String lastLine = getLastLineInG09File(file);
 	
 	programVersion = StringUtils.substringBetween(lastLine,"Gaussian ", " at");
 	
@@ -51,7 +68,13 @@ public static Parameter getProgramVersion(File f) throws IOException {
 
 }
 
-public static Parameter getProgramName(File f) {
+/**
+ * Gets the program name.
+ *
+ * @param file the file
+ * @return the program name
+ */
+public static Parameter getProgramName(File file) {
 	
 	Parameter parameter = new Parameter();
 	Scalar scalar = new Scalar();
@@ -66,7 +89,14 @@ public static Parameter getProgramName(File f) {
 	
 }
 
-public static Parameter getRunDateStamp(File f) throws IOException {
+/**
+ * Gets the run date stamp.
+ *
+ * @param file the file
+ * @return the run date stamp
+ * @throws IOException Signals that an I/O exception has occurred.
+ */
+public static Parameter getRunDateStamp(File file) throws IOException {
 
 	Parameter parameter = new Parameter();
 	Scalar scalar = new Scalar();
@@ -74,7 +104,7 @@ public static Parameter getRunDateStamp(File f) throws IOException {
 	
 	String dateStamp ="";
 	
-	String lastLine = getLastLineInG09File(f);
+	String lastLine = getLastLineInG09File(file);
 	
 	dateStamp = StringUtils.substringAfter(lastLine," at ");
 	

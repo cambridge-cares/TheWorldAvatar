@@ -15,9 +15,23 @@ import uk.ac.cam.ceb.como.io.chem.file.parser.compchem.CompChemParser;
 import uk.ac.cam.ceb.como.io.chem.file.parser.g09.FrequencyParser;
 import uk.ac.cam.ceb.como.thermo.calculator.rotation.internal.util.IRCompChemWrapper;
 
+/**
+ * 
+ * The Class ParsingBasisSet.
+ * 
+ */
 public class ParsingBasisSet {
 
-	public static String getBasisSetString(File f) throws IOException {
+	/**
+	 * Gets the basis set string.
+	 *
+	 * @param file
+	 *            the file
+	 * @return the basis set string extracted from the file (G09)
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred
+	 */
+	public static String getBasisSetString(File file) throws IOException {
 
 		String basisSetString = "";
 
@@ -30,7 +44,7 @@ public class ParsingBasisSet {
 		 * 
 		 */
 
-		BufferedReader br = new BufferedReader(new FileReader(f));
+		BufferedReader br = new BufferedReader(new FileReader(file));
 
 		for (String line; (line = br.readLine()) != null;) {
 
@@ -41,14 +55,10 @@ public class ParsingBasisSet {
 				 * @author nk510
 				 *         <p>
 				 *         Returns substring that starts with "/" string and ends with first
-				 *         appearing " " character.
+				 *         appearing space (" ") character. Split string that starts with '#p '
+				 *         on two substrings before and after character '/'.
 				 *         </p>
 				 * 
-				 */
-
-				/**
-				 * Split string that starts with '#p ' on two substrings before and after
-				 * charatcter '/'.
 				 */
 
 				String splitOne[] = line.split("/");
@@ -56,7 +66,7 @@ public class ParsingBasisSet {
 
 				/**
 				 * Split second substring into two strings before white space and after white
-				 * space.
+				 * space (" ").
 				 */
 
 				String splitTwo[] = line.split(" ");
@@ -76,13 +86,18 @@ public class ParsingBasisSet {
 	}
 
 	/**
-	 * 
-	 * @param f
+	 * Gets the basis set parameter.
+	 *
+	 * @param file
+	 *            the G09 file.
 	 * @param numberOfAtoms
-	 * @return Jaxb Parameter instance that contains information about basis set value.
+	 *            number of atoms in one species extracted by parsing the file (G09)
+	 * @return Jaxb Parameter instance that contains information about basis set
+	 *         value.
 	 * @throws Exception
+	 *             the exception
 	 */
-	public static Parameter getBasisSetParameter(File f, int numberOfAtoms) throws Exception {
+	public static Parameter getBasisSetParameter(File file, int numberOfAtoms) throws Exception {
 
 		Parameter parameter = new Parameter();
 		Scalar scalar = new Scalar();
@@ -90,7 +105,7 @@ public class ParsingBasisSet {
 		if (numberOfAtoms > 1) {
 
 			FrequencyParser parser = new FrequencyParser();
-			parser.set(f);
+			parser.set(file);
 			parser.parse();
 
 			CompChem cc = (CompChem) parser.get();
@@ -121,9 +136,9 @@ public class ParsingBasisSet {
 			}
 
 		} else {
-			
+
 			parameter.setDictRef("cc:basis");
-			scalar.setValue(getBasisSetString(f));
+			scalar.setValue(getBasisSetString(file));
 			scalar.setDataType("xsd:string");
 
 			parameter.getScalarOrArrayOrMatrix().add(scalar);
