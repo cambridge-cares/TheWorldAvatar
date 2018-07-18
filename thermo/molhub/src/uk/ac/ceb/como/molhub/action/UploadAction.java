@@ -21,10 +21,10 @@ package uk.ac.ceb.como.molhub.action;
 
 import com.opensymphony.xwork2.ActionSupport;
 
-import uk.ac.cam.ceb.como.compchem.ontology.query.CompChemQuery;
+
 import uk.ac.cam.ceb.como.compchem.xslt.Transformation;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.Module;
-import uk.ac.cam.ceb.como.jaxb.xml.generation.GenerateCompChemXML;
+import uk.ac.cam.ceb.como.jaxb.xml.generation.GenerateXml;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -35,12 +35,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.apache.commons.io.FileUtils;
 
 import javax.servlet.ServletContext;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.jena.ontology.OntModel;
+
 
 public class UploadAction extends ActionSupport {
 
@@ -76,13 +75,13 @@ public class UploadAction extends ActionSupport {
         
 		File outputXMLFile = new File(catalicaFolderPath + "/conf/Catalina/xml/" + uploadFileName[0].replaceAll(".g09", "") + ".xml");
         
-        GenerateCompChemXML.generateRootModule(inputG09File, outputXMLFile, rootModule);	
+        GenerateXml.generateRootModule(inputG09File, outputXMLFile, rootModule);	
         
         InputStream xmlSource = new FileInputStream(outputXMLFile.getPath());
 
-		StreamSource xsltSource = new StreamSource(catalicaFolderPath+"/conf/Catalina/xslt/compchem_to_gnvc_rdf.xsl");
+		StreamSource xsltSource = new StreamSource(catalicaFolderPath+"/conf/Catalina/xslt/ontochem_rdf.xsl");
 		
-		String outputPath =catalicaFolderPath+ "/conf/Catalina/compchem_ontology/" + uploadFileName[0].replaceAll(".g09", "").toString() + ".rdf";
+		String outputPath =catalicaFolderPath+ "/conf/Catalina/compchem_ontology/" + uploadFileName[0].replaceAll(".g09", "").toString() + ".owl";
 
 		FileOutputStream outputStream = new FileOutputStream(new File(outputPath));
 		
@@ -93,7 +92,6 @@ public class UploadAction extends ActionSupport {
 		return INPUT;
 		
 	}
-	
 	
 	public File[] getUpload() {
 		return files;

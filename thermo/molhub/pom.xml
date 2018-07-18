@@ -124,41 +124,6 @@
     <version>1.1</version>
 </dependency>
 
-<!-- from here  -->
-  
-  <!-- https://mvnrepository.com/artifact/com.carrotsearch/junit-benchmarks -->
-<dependency>
-    <groupId>com.carrotsearch</groupId>
-    <artifactId>junit-benchmarks</artifactId>
-    <version>0.7.2</version>
-    <scope>test</scope>
-</dependency>
-  
-  <!-- https://mvnrepository.com/artifact/junit/junit -->
-<dependency>
-    <groupId>junit</groupId>
-    <artifactId>junit</artifactId>
-    <version>4.12</version>
-    <scope>test</scope>
-</dependency>
-  
-  
-  <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
-<dependency>
-    <groupId>com.h2database</groupId>
-    <artifactId>h2</artifactId>
-    <version>1.4.197</version>
-    <scope>test</scope>
-</dependency>
-  
-  <!-- https://mvnrepository.com/artifact/org.easymock/easymock -->
-<dependency>
-    <groupId>org.easymock</groupId>
-    <artifactId>easymock</artifactId>
-    <version>3.6</version>
-    <scope>test</scope>
-</dependency>
-  <!--  to here -->
   
 <dependency>
             <groupId>uk.ac.cam.ceb.como</groupId>
@@ -191,6 +156,28 @@
     <version>1.4.01</version>
 </dependency>
 
-  
+<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-core</artifactId>
+    <version>5.3.2.Final</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
+<dependency>
+    <groupId>org.hibernate.validator</groupId>
+    <artifactId>hibernate-validator</artifactId>
+    <version>6.0.10.Final</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-entitymanager -->
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-entitymanager</artifactId>
+    <version>5.3.2.Final</version>
+</dependency>
+
+
+
   </dependencies>
 </project>
