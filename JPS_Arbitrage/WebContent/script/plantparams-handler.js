@@ -5,11 +5,25 @@ const retrieveSelectedPlantParams = () => {
     // let choicePlant = $("#plantSelection option:selected").text();
 
     if (choicePlant === "Biodiesel") {
-        $("#labelPlantSpecificParam").find("span").text("Flow-rate of Crude Palm Oil (kg/hour):");
-        $("#plantSpecificParam").val("24220.0656");
+        $("#labelPlantSpecificParam").find("span").text("Flow-rate of Crude Palm Oil (kg/hr):");
+        $("#plantSpecificParam").val("");
+        $.getJSON('/JPS_ARBITRAGE/retrievePlantSpecificParam',
+            {
+                individuals: "V_massF_CrudePalmOilInput_001"
+            }, data => {
+                let dataObj = JSON.parse(data);
+                $("#plantSpecificParam").val(dataObj['V_massF_CrudePalmOilInput_001']);
+            });
     } else {
-        $("#labelPlantSpecificParam").find("span").text("Param of Natural Gas:");
-        $("#plantSpecificParam").val("0.5527777778");
+        $("#labelPlantSpecificParam").find("span").text("Flow-rate of Natural Gas (kmol/s):");
+        $("#plantSpecificParam").val("");
+        $.getJSON('/JPS_ARBITRAGE/retrievePlantSpecificParam',
+            {
+                individuals: "V_moleF_NaturalGasInput_001"
+            }, data => {
+                let dataObj = JSON.parse(data);
+                $("#plantSpecificParam").val(dataObj['V_moleF_NaturalGasInput_001']);
+            });
     }
 };
 
