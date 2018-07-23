@@ -66,7 +66,7 @@ public class Transformation {
 		 * @param folderPath <p>File list of all ontochem xml files stored in folder path.</p>
 		 * @return <p>Method reads all ontochem XML files in given folder path. Supported
 		 *         file extension is '.xml'.</p>
-		 */		
+		 */
 
 		File[] fileList = utility.getFileList(xmlFolderPath,".xml");
 

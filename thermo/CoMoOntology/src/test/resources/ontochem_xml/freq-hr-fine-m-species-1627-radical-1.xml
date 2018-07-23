@@ -11,13 +11,6 @@
                   <atom count="1.0" elementType="Ti"/>
                </atomArray>
                <formula concise="C 6 H 13 O 4 Ti 1 "/>
-               <atomArray>
-                  <atom count="6.0" elementType="C"/>
-                  <atom count="13.0" elementType="H"/>
-                  <atom count="4.0" elementType="O"/>
-                  <atom count="1.0" elementType="Ti"/>
-               </atomArray>
-               <formula concise="C 6 H 13 O 4 Ti 1 "/>
             </molecule>
             <parameterList>
                <parameter dictRef="cc:method">

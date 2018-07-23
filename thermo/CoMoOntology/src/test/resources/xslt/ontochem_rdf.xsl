@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <xsl:transform version="2.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xd="http://www.pnp-software.com/XSLTdoc"
-	xmlns="http://www.xml-cml.org/schema" xmlns:cc="http://www.xml-cml.org/dictionary/compchem/"
+	xmlns="http://como.cheng.cam.ac.uk/molhub/compchem/" xmlns:cc="http://www.xml-cml.org/dictionary/compchem/"
 	xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/"
 	xmlns:gc="http://purl.org/gc/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:kb="http://ontochem.theworldavatar.com/kb/OntoChem.owl#"
+	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:ontochem="http://ontochem.theworldavatar.com/kb/OntoChem.owl#"
 	xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:math="java.lang.Math"
 	exclude-result-prefixes="math">
 
@@ -46,12 +45,12 @@
 
 		<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 			xmlns:unit="http://data.nasa.gov/qudt/owl/unit#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-			xmlns:kb="http://ontochem.theworldavatar.com/kb/OntoChem.owl#" xmlns:spin="http://spinrdf.org/spin#"
+			xmlns:ontochem="http://ontochem.theworldavatar.com/kb/OntoChem.owl#" xmlns:spin="http://spinrdf.org/spin#"
 			xmlns:arg="http://spinrdf.org/arg#" xmlns:obo="http://purl.obolibrary.org/obo/"
 			xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:gc="http://purl.org/gc/"
 			xmlns:qudt="http://data.nasa.gov/qudt/owl/qudt#" xmlns:sp="http://spinrdf.org/sp#"
 			xmlns:spl="http://spinrdf.org/spl#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-			xmlns:molhub="http://como.cheng.cam.ac.uk/molhub/compchem/"
+			xmlns:compchem="http://como.cheng.cam.ac.uk/molhub/compchem/"
 			xmlns:table="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#">
 
 			<owl:Ontology rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/">
@@ -97,9 +96,11 @@
 		</xsl:variable>
 
 		<!-- 
+		
 		Creates root rdf node that is instance of 'G09' ontology class. It 
 		also creates property relation between root node and node that has a tree 
 		structure of information stored in initialisation module. 
+		
 		-->
         
         <!-- 
@@ -118,10 +119,10 @@
 			<rdf:type rdf:resource="http://ontochem.theworldavatar.com/kb/OntoChem.owl#G09"/>
 			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
 
-			<kb:hasInitialization
+			<ontochem:hasInitialization
 				rdf:resource="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_no_namespace}_{$vmodule}_has_initilization_module_{$id}"/>
 				
-		    <kb:hasEnvironment rdf:resource="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_no_namespace}_{$vmodule}_has_environment_module_{$id}"/>
+		    <ontochem:hasEnvironment rdf:resource="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_no_namespace}_{$vmodule}_has_environment_module_{$id}"/>
 
 		</owl:NamedIndividual>
 
@@ -177,7 +178,7 @@
 					rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_no_namespace}_{$vmodule}_has_environment_module_{$id}">
 			<rdf:type rdf:resource="http://purl.org/gc/SourcePackage"/>
 			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-			<kb:hasProgram><xsl:value-of select="."/></kb:hasProgram>		
+			<ontochem:hasProgram><xsl:value-of select="."/></ontochem:hasProgram>		
 		    </owl:NamedIndividual>
 			</xsl:if>
 			
@@ -186,7 +187,7 @@
 					rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_no_namespace}_{$vmodule}_has_environment_module_{$id}">
 			<rdf:type rdf:resource="http://purl.org/gc/SourcePackage"/>
 			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-			<kb:hasProgramVersion><xsl:value-of select="."/></kb:hasProgramVersion>		
+			<ontochem:hasProgramVersion><xsl:value-of select="."/></ontochem:hasProgramVersion>		
 		    </owl:NamedIndividual>
 			</xsl:if>
 			
@@ -195,7 +196,7 @@
 					rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_no_namespace}_{$vmodule}_has_environment_module_{$id}">
 			<rdf:type rdf:resource="http://purl.org/gc/SourcePackage"/>
 			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-			<kb:hasRunDate><xsl:value-of select="."/></kb:hasRunDate>		
+			<ontochem:hasRunDate><xsl:value-of select="."/></ontochem:hasRunDate>		
 		    </owl:NamedIndividual>
 			</xsl:if>
 			
@@ -206,7 +207,7 @@
 			</xsl:when>
 			
  
-			<!-- Transformation of information about molecule stored in initialization 
+			<!-- Transformation of information about molecule stored in initialisation 
 				module of CompChem xml file. -->
 
 			<xsl:when test="$module_type='cc:initialization'">
@@ -243,7 +244,7 @@
 				<rdf:type rdf:resource="http://purl.org/gc/MethodologyFeature"/>
 				<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
 				
-				<kb:hasLevelOfTheoryValue><xsl:value-of select="."/></kb:hasLevelOfTheoryValue>		
+				<ontochem:hasLevelOfTheoryValue><xsl:value-of select="."/></ontochem:hasLevelOfTheoryValue>		
 			    
 			    		
 		        </owl:NamedIndividual>
@@ -433,9 +434,9 @@
 									<rdf:type rdf:resource="http://purl.org/gc/Frequency"/>
 									<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
 
-									<kb:hasFrequenciesValue>
+									<ontochem:hasFrequenciesValue>
 										<xsl:value-of select="."/>
-									</kb:hasFrequenciesValue>
+									</ontochem:hasFrequenciesValue>
 
 									<gc:hasUnit rdf:resource="http://purl.org/gc/{$funit_value_no_namespace}"/>
 
@@ -488,7 +489,7 @@
 							rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_no_namespace}_{$vmodule}_{$gdictRef_value_no_namespace}_{generate-id()}_{$id}">
 							<rdf:type rdf:resource="http://ontochem.theworldavatar.com/kb/OntoChem.owl#GeometryType" />
 							<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-							<kb:hasGeometryTypeValue><xsl:apply-templates select="*[local-name() = 'scalar']"/></kb:hasGeometryTypeValue>
+							<ontochem:hasGeometryTypeValue><xsl:apply-templates select="*[local-name() = 'scalar']"/></ontochem:hasGeometryTypeValue>
 						</owl:NamedIndividual>
 
 					</xsl:if>
@@ -534,9 +535,9 @@
 								<rdf:type
 									rdf:resource="http://ontochem.theworldavatar.com/kb/OntoChem.owl#RotationalSymmetry" />
 								<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
-								<kb:hasRotationalSymmetryNumber>
+								<ontochem:hasRotationalSymmetryNumber>
 									<xsl:value-of select="." />
-								</kb:hasRotationalSymmetryNumber>
+								</ontochem:hasRotationalSymmetryNumber>
 
 								<!--if value of unit is 'none' then do not transform it into Abox 
 									assertion -->
@@ -604,13 +605,13 @@
 									rdf:resource="http://ontochem.theworldavatar.com/kb/OntoChem.owl#RotationalConstants"/>
 								<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
 
-								<kb:hasRotationalConstantsValue>
+								<ontochem:hasRotationalConstantsValue>
 									<xsl:value-of select="."/>
-								</kb:hasRotationalConstantsValue>
+								</ontochem:hasRotationalConstantsValue>
 
-								<kb:hasRotationalConstantsCount>
+								<ontochem:hasRotationalConstantsCount>
 									<xsl:value-of select="$rotational_constants_size" />
-								</kb:hasRotationalConstantsCount>
+								</ontochem:hasRotationalConstantsCount>
 
 								<xsl:if test="$rconst_unit_value_no_namespace='GHZ'">
 									<gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#GigaHertz"/>
@@ -667,8 +668,8 @@
 						rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_no_namespace}_{$vmodule}_has_molecule_{$id}">
 						<rdf:type rdf:resource="http://purl.org/gc/Molecule" />
 						<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
-						<kb:hasSpinMultiplicityValue>
-							<xsl:value-of select="$spin_multiplicity_variable" /></kb:hasSpinMultiplicityValue>
+						<ontochem:hasSpinMultiplicityValue>
+							<xsl:value-of select="$spin_multiplicity_variable" /></ontochem:hasSpinMultiplicityValue>
 					</owl:NamedIndividual>
 					</xsl:when>
 					</xsl:choose>

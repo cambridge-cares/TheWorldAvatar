@@ -47,11 +47,10 @@ public class GenerateXml {
 	 * @throws FactoryConfigurationError the factory configuration error
 	 * 
 	 */
-	
+
 	public static void main(String[] args)
 
 			throws Exception, javax.xml.bind.JAXBException, IOException, XMLStreamException, FactoryConfigurationError {
-
 
 		Utility utility = new  FileUtility();
 		
@@ -63,7 +62,7 @@ public class GenerateXml {
 		 * @return <p>Read all files which end with '.g09'. Returns array of these files.</p>
 		 */
 		
-		File[] fileList = utility.getFileList("src/test/resources/g09/",".g09",null,null);
+		File[] fileList = utility.getFileList("src/test/resources/g09/",".g09");
 
 		for (File f : fileList) {
 
@@ -93,6 +92,7 @@ public class GenerateXml {
 	 * @return <p>Parses formula name and return Composition values of that formula,
 	 *         including formula name. It uses EmpiricalFormulaParser class.</p>
 	 */
+	
 	public static Molecule getEmpiricalParser(String formulaName) {
 
 		EmpiricalFormulaParser empParser = new EmpiricalFormulaParser();
@@ -195,6 +195,5 @@ public class GenerateXml {
 		}
 		
 		return rootModule;
-	}
-	
+	}	
 }

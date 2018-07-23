@@ -1,17 +1,17 @@
-PREFIX kb: <http://ontochem.theworldavatar.com/kb/OntoChem.owl#>
+PREFIX ontochem: <http://ontochem.theworldavatar.com/kb/OntoChem.owl#>
 PREFIX gc: <http://purl.org/gc/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-SELECT ?moleculeName ?atomName ?atomNumber ?levelOfTheory ?basisSetValue ?frequenciesSize ?frequenciesValue ?frequenciesUnit ?spinMultiplicityValue  ?coordinateX ?coordinateY ?coordinateZ ?massValue ?masUnit ?geometryTypeValue ?rotationalConstantsSize ?rotationalConstantsUnit ?rotationalConstantsValue ?rotationalSymmetryNumber ?programName ?programVersion  ?runDate 
+SELECT ?moleculeName ?atomName ?atomNumber ?levelOfTheory ?basisSetValue ?frequenciesSize ?frequenciesValue ?frequenciesUnit ?spinMultiplicityValue  ?coordinateX ?coordinateY ?coordinateZ ?massValue ?massUnit ?geometryTypeValue ?rotationalConstantsSize ?rotationalConstantsUnit ?rotationalConstantsValue ?rotationalSymmetryNumber ?programName ?programVersion  ?runDate 
 WHERE { 
 {
-?g09 kb:hasInitialization ?mn0 . 
+?g09 ontochem:hasInitialization ?mn0 . 
 ?mn0 gc:hasMoleculeProperty ?mp0 . 
 ?mp0 gc:hasName ?moleculeName . 
 }
 UNION
 {
-?g09 kb:hasInitialization ?mn1 . 
+?g09 ontochem:hasInitialization ?mn1 . 
 ?mn1 gc:hasMoleculeProperty ?mp1 .  
 ?mp1 gc:hasMolecule ?mol0 .
 ?mol0 gc:hasNumberOfAtoms ?atomNumber.
@@ -20,10 +20,10 @@ UNION
 }
 UNION
 {
-?g09 kb:hasInitialization ?mn2 .
+?g09 ontochem:hasInitialization ?mn2 .
 ?mn2 gc:hasParameter ?p1 .
 ?p1 rdf:type <http://ontochem.theworldavatar.com/kb/OntoChem.owl#LevelOfTheory> .
-?p1 kb:hasLevelOfTheoryValue ?levelOfTheory .
+?p1 ontochem:hasLevelOfTheoryValue ?levelOfTheory .
 ?mn2 gc:hasParameter ?p2 .
 ?p2 rdf:type <http://purl.org/gc/BasisSet> .
 ?p2 gc:hasBasisSet ?basisSetValue .
@@ -40,14 +40,14 @@ UNION
 ?at1 gc:hasAtomCoordinateY ?y . ?y gc:hasValue ?coordinateY.
 ?at1 gc:hasAtomCoordinateZ ?z . ?z gc:hasValue ?coordinateZ.
 ?at1 gc:hasMass ?mass . ?mass gc:hasValue ?massValue . 
-?mass gc:hasUnit ?masUnit .
+?mass gc:hasUnit ?massUnit .
 }
 UNION
 {
 ?g09 gc:isCalculationOn ?go1. 
 ?go1 rdf:type gc:GeometryOptimization .
 ?go1 gc:hasMolecule ?mol2.
-?mol2 kb:hasSpinMultiplicityValue ?spinMultiplicityValue .
+?mol2 ontochem:hasSpinMultiplicityValue ?spinMultiplicityValue .
 
 }
 UNION
@@ -57,34 +57,34 @@ UNION
 ?go2 gc:hasResult ?r . 
 ?r rdf:type gc:Frequency .
 ?r gc:hasVibrationCount ?frequenciesSize .
-?r kb:hasFrequenciesValue ?frequenciesValue .
+?r ontochem:hasFrequenciesValue ?frequenciesValue .
 ?r gc:hasUnit ?frequenciesUnit. 
 }
 UNION
 { 
 ?g09 gc:isCalculationOn ?go3. 
-?go3 a kb:GeometryType .
-?go3 kb:hasGeometryTypeValue ?geometryTypeValue.
+?go3 a ontochem:GeometryType .
+?go3 ontochem:hasGeometryTypeValue ?geometryTypeValue.
  }
  UNION
  {
- ?g09 gc:isCalculationOn ?go4. 
-?go4 rdf:type kb:RotationalConstants . 
-?go4 kb:hasRotationalConstantsValue ?rotationalConstantsValue .
+ ?g09 gc:isCalculationOn ?go4.
+?go4 rdf:type ontochem:RotationalConstants .
+?go4 ontochem:hasRotationalConstantsValue ?rotationalConstantsValue .
 ?go4 gc:hasUnit ?rotationalConstantsUnit . 
-?go kb:hasRotationalConstantsCount ?rotationalConstantsSize .
-}
-UNION
-{ 
-?g09 gc:isCalculationOn ?go5. 
-?go5 rdf:type kb:RotationalSymmetry . 
-?go5 kb:hasRotationalSymmetryNumber ?rotationalSymmetryNumber .
+?go ontochem:hasRotationalConstantsCount ?rotationalConstantsSize .
 }
 UNION
 {
-?g09 kb:hasEnvironment ?env .
-?env kb:hasProgram ?programName . 
-?env kb:hasProgramVersion ?programVersion .
-?env kb:hasRunDate ?runDate .
+?g09 gc:isCalculationOn ?go5.
+?go5 rdf:type ontochem:RotationalSymmetry .
+?go5 ontochem:hasRotationalSymmetryNumber ?rotationalSymmetryNumber .
+}
+UNION
+{
+?g09 ontochem:hasEnvironment ?env .
+?env ontochem:hasProgram ?programName . 
+?env ontochem:hasProgramVersion ?programVersion .
+?env ontochem:hasRunDate ?runDate .
 }
 }

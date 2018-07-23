@@ -10,12 +10,6 @@
                   <atom count="1.0" elementType="Ti"/>
                </atomArray>
                <formula concise="Cl 1 O 1 Ti 1 "/>
-               <atomArray>
-                  <atom count="1.0" elementType="Cl"/>
-                  <atom count="1.0" elementType="O"/>
-                  <atom count="1.0" elementType="Ti"/>
-               </atomArray>
-               <formula concise="Cl 1 O 1 Ti 1 "/>
             </molecule>
             <parameterList>
                <parameter dictRef="cc:method">

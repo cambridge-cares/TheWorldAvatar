@@ -8,10 +8,6 @@
                   <atom count="1.0" elementType="Cl"/>
                </atomArray>
                <formula concise="Cl 1 "/>
-               <atomArray>
-                  <atom count="1.0" elementType="Cl"/>
-               </atomArray>
-               <formula concise="Cl 1 "/>
             </molecule>
             <parameterList>
                <parameter dictRef="cc:method">

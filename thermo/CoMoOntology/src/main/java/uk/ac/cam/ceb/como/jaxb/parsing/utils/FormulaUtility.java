@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import org.apache.commons.lang.StringUtils;
+
 import uk.ac.cam.ceb.como.io.chem.file.parser.formula.EmpiricalFormulaParser;
 
 /**
@@ -33,6 +35,7 @@ public class FormulaUtility {
 	public String extractFormulaName(File file) throws IOException {
 
 		String formulaName = null;
+		String finalFormulaName = null;
 
 		/**
 		 * @author nk510 
@@ -59,9 +62,18 @@ public class FormulaUtility {
 					 *         string and before character '('.</p>
 					 */
 
-					line = line.substring(line.lastIndexOf(" ") + 1);
+					line = line.substring(line.lastIndexOf(" ") + 1);				
 
 					formulaName = line;
+					
+					/**
+					 * @author nk510
+					 * Removes all appearing substrings which have brackets and number between brackets.
+					 */
+					formulaName = formulaName.replaceAll("\\(([0-9])+\\)", "");
+				
+					System.out.println("formula name:  " +  formulaName);
+					
 
 					break;
 
@@ -69,6 +81,7 @@ public class FormulaUtility {
 			}
 	
         br.close();
+        
 		return formulaName;
 
 	}
