@@ -16,6 +16,7 @@ import com.google.gson.reflect.TypeToken;
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 
+
 public class TestMarketPackage extends TestCase {
 	private static Logger logger = LoggerFactory
 			.getLogger(TestMarketPackage.class);

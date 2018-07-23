@@ -46,6 +46,7 @@ public class Arbitrage {
 		Double[] raw_materials = g.fromJson(input, Double[].class);
 		List<Double> MoDS_data = MoDS(raw_materials, sim_address);
 		
+		//parameter1
 		String result = raw_materials[0].toString();
 		for (int i = 0; i < MoDS_data.size(); i++) {
 			result += "," + MoDS_data.get(i).toString();
@@ -58,11 +59,13 @@ public class Arbitrage {
 		logger.info(actual);
 		logger.info(result);
 		
+		//parameters
 		String[] arrayActual = g.fromJson(actual, String[].class);
 		String miscCosts = arrayActual[0];
 		String cpoPrices = arrayActual[1];
 		String famePrices = arrayActual[2];
 		
+		//path of the pythonscript
 		String CPO_to_FAME_analysis = new String("caresjpsarbitrage/CPO_to_FAME_MoDS2.py");
 		String result1 = PythonHelper.callPython(CPO_to_FAME_analysis, result, g.toJson(miscCosts), g.toJson(cpoPrices), g.toJson(famePrices), new Arbitrage());
 		logger.info(result1);
@@ -77,8 +80,8 @@ public class Arbitrage {
 	 * defined below, converts MoDS output values into a
 	 * string, which is passed to a Python script, calls
 	 * DataDownloadAgent via Tomcat server to retrieve
-	 * market prices of crude palm oil (CPO) and biodiesel
-	 * (FAME), utility prices and exchange rates from JPS
+	 * market prices of natural gas (HNG) and methanol
+	 * (ZCE), utility prices and exchange rates from JPS
 	 * knowledge base, which are passed to the Python script
 	 * as a string, and calls cmd to execute the Python
 	 * script which conducts the financial analysis, result
