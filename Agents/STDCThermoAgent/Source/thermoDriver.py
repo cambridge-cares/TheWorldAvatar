@@ -8,6 +8,7 @@ def codexit():
     sys.exit()
 
 def usage():
+    #hidden usage:  -m read from species molecular data file
     usagemsg = """ Usage:
     thermoDriver.py -x <xml_file> [OPTIONS] or
     thermoDriver.py -j <json_file> [OPTIONS]
@@ -33,7 +34,7 @@ def printErrorCode(id, **kwargs):
 
 def main(argv):
     try:
-        opts, args = getopt.getopt(argv,"hx:j:d:c:",["help", "xml_file=", "json_file", "out_datfile=", "out_csvfile=", "tfit=", \
+        opts, args = getopt.getopt(argv,"hx:j:m:d:c:",["help", "xml_file=", "json_file", "mol_file", "out_datfile=", "out_csvfile=", "tfit=", \
             "tcsv=", "href="])
     except getopt.GetoptError:
         usage()
@@ -42,6 +43,7 @@ def main(argv):
     else:
         xml_file = ''
         json_file = ''
+        mol_file = ''
         out_datfile=''
         out_csvfile=''
         tfit_range=[]
@@ -57,6 +59,9 @@ def main(argv):
             elif opt in ("-j", "--json_file"):
                 json_file = arg
                 if use_file < 0:  use_file = 2
+            elif opt in ("-m", "--mol_file"):
+                mol_file = arg
+                if use_file < 0:  use_file = 3
             elif opt in ("-d", "--out_datfile"):
                 out_datfile = arg
             elif opt in ("-c", "--out_csvfile"):
@@ -74,6 +79,8 @@ def main(argv):
             inp_file = xml_file
         elif use_file ==2:
             inp_file = json_file
+        elif use_file ==3:
+            inp_file = mol_file
         else:
             inp_file = ''
 
