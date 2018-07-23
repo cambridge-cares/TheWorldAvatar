@@ -1,9 +1,12 @@
 package uk.ac.cam.cares.jps.base.discovery.test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import com.google.gson.Gson;
 
@@ -11,8 +14,14 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.Parameter;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.util.MatrixToJsonConverter;
 
 public class TestDiscovery extends TestCase {
+	
+	public class MonthPriceMatrix {
+		String[] months = null;
+		List<Double> prices = new ArrayList<Double>();
+	}
 	
 	public void testSerializeAgentReqestWithJson() {
 		
@@ -144,5 +153,115 @@ public class TestDiscovery extends TestCase {
 			excCaught = true;
 		}
 		assertTrue(excCaught);
+	}
+	
+	/**
+	 * There are several possibilities to serialize a matrix:<br>
+	 * <br>
+	 * 1. A matrix with only two columns can be represented as map. But usually the map is not serialized as sorted key value pairs. 
+	 * Also any desciption of the columns is missing<br>
+	 * <br>
+	 * 2. Each column of the matrix is represented as a list and saved an own Java attribute. 
+	 * This makes serialization with GSON very easy. GSON uses the attribute name as key but this key has no semantic meaning (it is not an IRI).<br>
+	 * <br> 
+	 * 3. As in 2. each column of the matrix is represented as a list. Each list is saved as part of a key value pair in a map where the value is the list 
+	 * and the key is an IRI describing the column. 
+	 */
+	public void testSerializeMatrix1WithTwoColumnsAsMap() {
+		
+		// TreeMap implements the interface SortedMap but doesn't seem to keep the order of pairs
+		// But then we can just use HashMap
+		//TreeMap<String, Double> data = new TreeMap<String, Double>();
+		Map<String, Double> data = new HashMap<String, Double>();
+		
+		
+		String[] months = new String[] {"JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"};
+		for (int i=0; i<12; i++) {
+			double price = i / 10.;
+			data.put(months[i], price);
+		}
+		
+		String s = new Gson().toJson(data);
+		System.out.println("serialized = \n" + s);
+		
+		//TreeMap<String, Double> actual = new Gson().fromJson(s, TreeMap.class);
+		Map<String, Double> actual = new Gson().fromJson(s, HashMap.class);
+		assertEquals(0.4, actual.get(months[4]));
+	}
+	
+	public void testSerializeMatrix2WithColumnlists() {
+		
+		MonthPriceMatrix data = new MonthPriceMatrix();
+		data.months = new String[] {"JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"};
+		for (int i=0; i<12; i++) {
+			data.prices.add(i / 10.);
+		}
+		
+		String s = new Gson().toJson(data);
+		System.out.println("serialized = \n" + s);
+		
+		MonthPriceMatrix actual = new Gson().fromJson(s, MonthPriceMatrix.class);
+		
+		assertEquals("MAY", actual.months[4]);
+		assertEquals(0.4, actual.prices.get(4));
+	}
+	
+	public void testSerializeMatrix3AsMapOfColumns() {
+		
+		Map<String, List<Object>> data = new HashMap<String, List<Object>>();
+		
+		List<Object> monthList = new ArrayList<Object>();
+		List<Object> priceList = new ArrayList<Object>();
+		
+		String[] months = new String[] {"JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"};
+		for (int i=0; i<12; i++) {
+			monthList.add(months[i]);
+			double price = i / 10.;
+			priceList.add(price);
+		}
+		
+		String monthIRI = "months"; //"http://www.theworldavatar.com/ontology/Time.owl#Month";
+		data.put(monthIRI, monthList);
+		String priceIRI = "prices"; //"http://www.theworldavatar.com/ontology/Economy.owl#Price";
+		data.put(priceIRI, priceList);
+		
+		String s = new Gson().toJson(data);
+		System.out.println("serialized = \n" + s);
+		
+		Map<String, List<Object>> actual = new Gson().fromJson(s, HashMap.class);
+		String actualMonth = (String) actual.get(monthIRI).get(4);
+		assertEquals("MAY", actualMonth);
+		Double actualPrice = (Double) actual.get(priceIRI).get(4);
+		assertEquals(0.4, actualPrice);
+	}
+	
+	public void testSerializeMatrix4AsMapOfColumns() {
+		
+		
+		List<Object> monthList = new ArrayList<Object>();
+		List<Object> priceList = new ArrayList<Object>();
+		
+		String[] months = new String[] {"JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"};
+		for (int i=0; i<12; i++) {
+			monthList.add(months[i]);
+			double price = i / 10.;
+			priceList.add(price);
+		}
+		
+		MatrixToJsonConverter converter = new MatrixToJsonConverter();
+
+		String monthIRI = "months"; //"http://www.theworldavatar.com/ontology/Time.owl#Month";
+		converter.putColumn(monthIRI, monthList);
+		String priceIRI = "prices"; //"http://www.theworldavatar.com/ontology/Economy.owl#Price";
+		converter.putColumn(priceIRI, priceList);
+		
+		String s = converter.toJson();
+		System.out.println("serialized = \n" + s);
+		
+		Map<String, List<Object>> actual = converter.fromJson(s);
+		String actualMonth = (String) actual.get(monthIRI).get(4);
+		assertEquals("MAY", actualMonth);
+		Double actualPrice = (Double) actual.get(priceIRI).get(4);
+		assertEquals(0.4, actualPrice);
 	}
 }

@@ -91,65 +91,61 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-lang-2.0.jar">
+	<classpathentry kind="lib" path="D:/JPS/JParkSimulator-git/JPS_Arbitrage/WebContent/WEB-INF/lib/commons-lang-2.0.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/converter/icu4j_3.4.4.jar">
+	<classpathentry kind="lib" path="D:/JPS/JParkSimulator-git/JPS_Arbitrage/WebContent/WEB-INF/lib/icu4j_3.4.4.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/converter/iri.jar">
+	<classpathentry kind="lib" path="D:/JPS/JParkSimulator-git/JPS_Arbitrage/WebContent/WEB-INF/lib/iri.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/converter/jena.jar">
+	<classpathentry kind="lib" path="D:/JPS/JParkSimulator-git/JPS_Arbitrage/WebContent/WEB-INF/lib/jena.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/converter/log4j-1.2.12.jar">
+	<classpathentry kind="lib" path="D:/JPS/JParkSimulator-git/JPS_Arbitrage/WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/log4j-1.2.12.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/converter/orphanNodesAlg.jar">
+	<classpathentry kind="lib" path="D:/JPS/JParkSimulator-git/JPS_Arbitrage/WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/orphanNodesAlg.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/converter/protege-owl.jar">
+	<classpathentry kind="lib" path="D:/JPS/JParkSimulator-git/JPS_Arbitrage/WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/protege-owl.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/converter/protege.jar">
+	<classpathentry kind="lib" path="D:/JPS/JParkSimulator-git/JPS_Arbitrage/WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/slf4j-api-1.5.8.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/converter/slf4j-api-1.5.8.jar">
+	<classpathentry kind="lib" path="D:/JPS/JParkSimulator-git/JPS_Arbitrage/WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/slf4j-log4j12-1.5.8.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/converter/slf4j-log4j12-1.5.8.jar">
+	<classpathentry kind="lib" path="D:/JPS/JParkSimulator-git/JPS_Arbitrage/WebContent/WEB-INF/lib/edu.stanford.smi.protegex.owl/xercesImpl.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/converter/xercesImpl.jar">
+	<classpathentry kind="lib" path="D:/JPS/JParkSimulator-git/JPS_BASE/workingdir/jps_base.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jps_base.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="lib" path="D:/JPS/JParkSimulator-git/JPS_Arbitrage/WebContent/WEB-INF/lib/protege.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

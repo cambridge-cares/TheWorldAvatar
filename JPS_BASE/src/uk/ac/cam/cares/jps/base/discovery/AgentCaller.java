@@ -85,19 +85,20 @@ public class AgentCaller {
 		
 		Gson gson = new Gson();
 		
-		logger.debug("callAgent start ");
+		logger.info("callAgent start ");
 		
 		String serializedAgentRequest = gson.toJson(agentRequest);
 		
-		logger.debug("SerAgRequ " + serializedAgentRequest);
+		logger.info("SerAgRequ " + serializedAgentRequest);
 		
 		try {
 			String serializedAgentResponse = executeGet(contextPath, "agentrequest", serializedAgentRequest);
 			
-			logger.debug("SerAgResp " + serializedAgentResponse);
+			logger.info("SerAgResp " + serializedAgentResponse);
 						
 			return gson.fromJson(serializedAgentResponse, AgentResponse.class);
 		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			throw new JPSRuntimeException(e.getMessage(), e);
 		}
 	}

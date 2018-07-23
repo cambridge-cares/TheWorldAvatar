@@ -59,6 +59,7 @@ public class DataDownloadAgent extends HttpServlet {
 
 		Gson g = new Gson();
 		
+		//condition 1 and write the result in json format and show it
 		if ("/downloadingAndSavingMarketDataInTheKnowledgeBase"
 				.equals(path)) {
 

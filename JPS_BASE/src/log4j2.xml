@@ -5,9 +5,9 @@
 		<RollingFile name="JPSROLLING" fileName="C:/jps/temp/logs/jps.log" filePattern="C:/jps/temp/logs/rolling/jps-%i.log">
 			<PatternLayout pattern="%d %p [%t] %C{1} %m%n"/>
 			<Policies>
-				<SizeBasedTriggeringPolicy size="10KB"/>
+				<SizeBasedTriggeringPolicy size="10MB"/>
 			</Policies>
-			<DefaultRolloverStrategy max="2"/>
+			<DefaultRolloverStrategy max="10"/>
 		</RollingFile>
 	</Appenders>
 	
@@ -17,4 +17,4 @@
 		</Root>
 	</Loggers>
 	
-</Configuration>
+</Configuration> 

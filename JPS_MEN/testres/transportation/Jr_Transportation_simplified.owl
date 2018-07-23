@@ -12,6 +12,7 @@
     <owl:Ontology rdf:about="http://www.jparksimulator.com/Jr_Transportation_simplified.owl">
         <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl"/>
         <owl:imports rdf:resource="http://www.jparksimulator.com/transportation_simple.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo.owl"/>
     </owl:Ontology>
     
 
@@ -66,7 +67,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#InstallationCostOfLT_01 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#InstallationCostOfLT_01">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#InstallationCostsForSystemsRealization"/>
         <system:hasValue rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#V_InstallationCostOfLT_01"/>
     </owl:NamedIndividual>
     
@@ -75,7 +76,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#InstallationCostOfLT_02 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#InstallationCostOfLT_02">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#InstallationCostsForSystemsRealization"/>
         <system:hasValue rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#V_InstallationCostOfLT_02"/>
     </owl:NamedIndividual>
     
@@ -84,7 +85,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#InstallationCostOfSST_01 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#InstallationCostOfSST_01">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#InstallationCostsForSystemsRealization"/>
         <system:hasValue rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#V_InstallationCostOfSST_01"/>
     </owl:NamedIndividual>
     
@@ -93,7 +94,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#InstallationCostOfSST_02 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#InstallationCostOfSST_02">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#InstallationCostsForSystemsRealization"/>
         <system:hasValue rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#V_InstallationCostOfSST_02"/>
     </owl:NamedIndividual>
     
@@ -150,7 +151,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#TransportationCostOfLT_01 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#TransportationCostOfLT_01">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo.owl#TransportCosts"/>
         <system:hasValue rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#V_TransportationCostOfLT_01"/>
     </owl:NamedIndividual>
     
@@ -159,7 +160,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#TransportationCostOfLT_02 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#TransportationCostOfLT_02">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo.owl#TransportCosts"/>
         <system:hasValue rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#V_TransportationCostOfLT_02"/>
     </owl:NamedIndividual>
     
@@ -168,7 +169,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#TransportationCostOfSST_01 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#TransportationCostOfSST_01">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo.owl#TransportCosts"/>
         <system:hasValue rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#V_TransportationCostOfSST_01"/>
     </owl:NamedIndividual>
     
@@ -177,7 +178,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#TransportationCostOfSST_02 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#TransportationCostOfSST_02">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo.owl#TransportCosts"/>
         <system:hasValue rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#V_TransportationCostOfSST_02"/>
     </owl:NamedIndividual>
     
