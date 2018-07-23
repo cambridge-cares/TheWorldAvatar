@@ -552,7 +552,9 @@ def writeJsonOutFile(Sp,out_datfile):
     nasaDict['Name'] = Sp.Name
     nasaDict['Comment'] = 'STHD'
     nasaDict['Composition'] = Sp.Composition
-    nasaDict['Trange'] = Sp.FitTrangeNasa
+    nasaDict['Tmin'] = Sp.FitTrangeNasa[0]
+    nasaDict['Tmid'] = Sp.FitTrangeNasa[1]
+    nasaDict['Tmax'] = Sp.FitTrangeNasa[2]
     nasaDict['LowTcoeff'] = Sp.FitLowNasa
     nasaDict['highTcoeff'] = Sp.FitHighNasa
     nasaDict['Phase'] = 'G'
