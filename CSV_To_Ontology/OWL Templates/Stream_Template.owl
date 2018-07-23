@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.jparksimulator.com/Pipe_340002.owl#"
+     xml:base="http://www.jparksimulator.com/Pipe_340002.owl"
+     xmlns:p1="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#"
+     xmlns:p2="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#"
+     xmlns:p3="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/OntoCAPE.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:behavior="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#"
+     xmlns:space_and_time_extended="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+     xmlns:topology="http://www.theworldavatar.com/OntoCAPE/meta_model/topology/topology.owl#"
+     xmlns:network_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/network_system.owl#"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:chemical_process_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#"
+     xmlns:j.1="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#"
+     xmlns:j.0="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#"
+     xmlns:system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:machine="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/machine.owl#"
+     xmlns:coordinate_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#"
+     xmlns:plant="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#"
+     xmlns:technical_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/technical_system.owl#"
+	 xmlns:material="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/material.owl#"
+	 xmlns:state="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#">
+    <owl:Ontology rdf:about="http://www.jparksimulator.com/Pipe_340002.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/OntoCAPE.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.jparksimulator.com/Pipe_340002.owl#Convective_Mass_Flowrate_F_340002 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Pipe_340002.owl#Convective_Mass_Flowrate_F_340002">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveTransportRate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Pipe_340002.owl#Value_of_Convective_Mass_Flowrate_F_340002"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Pipe_340002.owl#Convective_Molar_Flowrate_F_340002 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Pipe_340002.owl#Convective_Molar_Flowrate_F_340002">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveTransportRate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Pipe_340002.owl#Value_of_Convective_Molar_Flowrate_F_340002"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Pipe_340002.owl#Generalized_Amount_340002 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Pipe_340002.owl#Generalized_Amount_340002">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Pipe_340002.owl#Material_Amount_340002"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Pipe_340002.owl#Material_340002 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Pipe_340002.owl#Material_340002">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+		<material:thermodynamicBehavior rdf:resource="http://www.jparksimulator.com/Pipe_340002.owl#Single_Phase_340002"/>
+    </owl:NamedIndividual>
+	
+    <!-- http://www.jparksimulator.com/Pipe_340002.owl#Single_Phase_340002-->
+	
+	<owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Pipe_340002.owl#Single_Phase_340002">
+	<rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+	<state:hasStateOfAggregation rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#gaseous"/>
+	<state:has_temperature rdf:resource="http://www.jparksimulator.com/Pipe_340002.owl#Temperature_340002"/>
+	<state:has_pressure rdf:resource="http://www.jparksimulator.com/Pipe_340002.owl#Pressure_340002"/>
+	</owl:NamedIndividual>
+	
+	
+	<!-- http://www.jparksimulator.com/Pipe_340002.owl#Temperature_340002 -->
+	
+	<owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Pipe_340002.owl#Temperature_340002">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+		 <system:hasValue rdf:resource="http://www.jparksimulator.com/Pipe_340002.owl#Value_of_Temperature_340002"/>
+      </owl:NamedIndividual>
+	  
+	<!-- http://www.jparksimulator.com/Pipe_340002.owl#Value_of_Temperature_340002 -->
+	
+	<owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Pipe_340002.owl#Value_of_Temperature_340002">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+		<system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">30.7447</system:numericalValue>
+      </owl:NamedIndividual>
+	  
+	<!-- http://www.jparksimulator.com/Pipe_340002.owl#Pressure_340002 -->
+	
+	<owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Pipe_340002.owl#Pressure_340002">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+		 <system:hasValue rdf:resource="http://www.jparksimulator.com/Pipe_340002.owl#Value_of_Pressure_340002"/>
+      </owl:NamedIndividual>
+	  
+	<!-- http://www.jparksimulator.com/Pipe_340002.owl#Value_of_Pressure_340002 -->
+	
+	<owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Pipe_340002.owl#Value_of_Pressure_340002">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+		<system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">40.7447</system:numericalValue>
+      </owl:NamedIndividual>
+
+	
+	
+
+    <!-- http://www.jparksimulator.com/Pipe_340002.owl#Material_Amount_340002 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Pipe_340002.owl#Material_Amount_340002">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+        <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/Pipe_340002.owl#Material_340002"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Pipe_340002.owl#Convective_Mass_Flowrate_F_340002"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Pipe_340002.owl#Convective_Molar_Flowrate_F_340002"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Pipe_340002.owl#ProcessStream_340002 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Pipe_340002.owl#ProcessStream_340002">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#ProcessStream"/> 
+		<network_system:enters rdf:resource="http://www.jparksimulator.com/Pipe_340002.owl#Pipe_340002"/>
+		 <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/Pipe_340002.owl#Generalized_Amount_340002"/>
+		<network_system:enters rdf:resource="http://www.jparksimulator.com/Pipe_340002.owl#Pipe_340002"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Pipe_340002.owl#Pipe_340002 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Pipe_340002.owl#Pipe_340002">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Pipe"/>
+		<network_system:hasInput rdf:resource="http://www.jparksimulator.com/Pipe_340002.owl#ProcessStream_340002"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Pipe_340002.owl#Value_of_Convective_Mass_Flowrate_F_340002 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Pipe_340002.owl#Value_of_Convective_Mass_Flowrate_F_340002">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">35.7447</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Pipe_340002.owl#Value_of_Convective_Molar_Flowrate_F_340002 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Pipe_340002.owl#Value_of_Convective_Molar_Flowrate_F_340002">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">36.7447</system:numericalValue>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+
