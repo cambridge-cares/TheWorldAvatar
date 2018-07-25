@@ -1,10 +1,7 @@
 package uk.ac.cam.cares.jps.adms;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -13,19 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.*;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.ParseException;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
-
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.util.*;
-
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
 
 /**
  * Servlet implementation class ADMSWrapper
@@ -34,63 +20,63 @@ import uk.ac.cam.cares.jps.base.util.*;
 public class ADMSWrapper extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-    /**
-     * Default constructor. 
-     */
-    public ADMSWrapper() {
-        // TODO Auto-generated constructor stub
-    }
+	/**
+	 * Default constructor.
+	 */
+	public ADMSWrapper() {
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		
+
 		String selectedSource = request.getParameter("selectedSource");
 		String buildingTopNode = request.getParameter("buildingTopNode");
 		String coordinates = request.getParameter("coordinates");
 		String[] substances = request.getParameterValues("substances");
 		Integer buildingLimit = 2;
-		if (request.getParameter("buildingLimit")!=null) {
+		if (request.getParameter("buildingLimit") != null) {
 			buildingLimit = Integer.parseInt(request.getParameter("buildingLimit"));
 		}
-		
+
 		Integer buildingNumber = 25;
-		if (request.getParameter("buildingLimit")!=null) {
+		if (request.getParameter("buildingLimit") != null) {
 			buildingNumber = Integer.parseInt(request.getParameter("buildingLimit"));
 		}
-		
-		Boolean filterSource = (request.getParameter("filterSource").equals("true"));
-		
 
-		// ====================   Start admsMain to create input files for ADMS ===================
-		ArrayList<String> args  = new ArrayList<String>();
+		Boolean filterSource = (request.getParameter("filterSource").equals("true"));
+
+		// ==================== Start admsMain to create input files for ADMS
+		// ===================
+		ArrayList<String> args = new ArrayList<String>();
 		args.add("python");
-		args.add("admsMain.py"); 		//python admsMain.py %1 %2
+		args.add("admsMain.py"); // python admsMain.py %1 %2
 		args.add(selectedSource.toString());
 		args.add(coordinates.toString().replaceAll(",", "#"));
 		ServletContext context = getServletContext();
 		String fullPath = AgentLocator.getPathToWorkingDir(this) + "/" + "ADMS";
-		args.add(fullPath); // this extra parameter tells the python script where to put the input files, in this case, working dir
-		String targetFolder = "C:/TOMCAT/webapps/JPS/python/caresjpsadmsinputs";
+		args.add(fullPath); // this extra parameter tells the python script where to put the input files, in
+							// this case, working dir
+		String targetFolder = AgentLocator.getNewPathToPythonScript("/caresjpsadmsinputs", this);
 		CommandHelper.executeCommands(targetFolder, args);
 		response.getWriter().write("Success");
 		// =========================================================================================
- 
-		
-		
+
 	}
- 
+
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
-	
-	
- 
 
 }
