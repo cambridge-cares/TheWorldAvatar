@@ -91,6 +91,7 @@ public class GenerateXml {
 	 * @param formulaName the formula name
 	 * @return <p>Parses formula name and return Composition values of that formula,
 	 *         including formula name. It uses EmpiricalFormulaParser class.</p>
+	 *         
 	 */
 	
 	public static Molecule getEmpiricalParser(String formulaName) {
