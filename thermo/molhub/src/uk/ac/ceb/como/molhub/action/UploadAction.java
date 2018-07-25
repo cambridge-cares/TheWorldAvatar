@@ -21,78 +21,87 @@ package uk.ac.ceb.como.molhub.action;
 
 import com.opensymphony.xwork2.ActionSupport;
 
-
 import uk.ac.cam.ceb.como.compchem.xslt.Transformation;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.Module;
 import uk.ac.cam.ceb.como.jaxb.xml.generation.GenerateXml;
+import uk.ac.ceb.como.molhub.model.FolderManager;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
-
-import javax.servlet.ServletContext;
 import javax.xml.transform.stream.StreamSource;
-
-
 
 public class UploadAction extends ActionSupport {
 
 	private static final long serialVersionUID = 1L;
-	
+	private String catalicaFolderPath = System.getProperty("catalina.home");
+	private String xslt = catalicaFolderPath + "/conf/Catalina/xslt/ontochem_rdf.xsl";
+
 	private File[] files;
 	private String[] uploadFileName;
-	private String[] uploadContentType;
-
-	private String filesPath;
 	
-	private ServletContext context;
 
 	@Override
 	public String execute() throws Exception {
-		 
-		String catalicaFolderPath = System.getProperty("catalina.home");		
-		
-		for(File f: files) {
-		
-		Module rootModule = new Module();
-				
-		File inputG09File = new File(catalicaFolderPath + "/conf/Catalina/g09/" + uploadFileName[0]);
-		
-		Path path = Paths.get(f.getAbsolutePath());
-		
-		byte[] data = Files.readAllBytes(path);
-		
-		BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(inputG09File));
-		
-		stream.write(data);
-        stream.close();
-        
-		File outputXMLFile = new File(catalicaFolderPath + "/conf/Catalina/xml/" + uploadFileName[0].replaceAll(".g09", "") + ".xml");
-        
-        GenerateXml.generateRootModule(inputG09File, outputXMLFile, rootModule);	
-        
-        InputStream xmlSource = new FileInputStream(outputXMLFile.getPath());
 
-		StreamSource xsltSource = new StreamSource(catalicaFolderPath+"/conf/Catalina/xslt/ontochem_rdf.xsl");
-		
-		String outputPath =catalicaFolderPath+ "/conf/Catalina/compchem_ontology/" + uploadFileName[0].replaceAll(".g09", "").toString() + ".owl";
+		int fileNumber = 0;
 
-		FileOutputStream outputStream = new FileOutputStream(new File(outputPath));
-		
-        Transformation.trasnformation(xmlSource, outputStream, xsltSource);
-        
+		/**
+		 * @author nk510 Iterates over selected file names.
+		 */
+
+		for (File f : files) {
+
+			Module rootModule = new Module();
+
+			/**
+			 * @author nk510 Creates unique folder name for each uploaded Gaussian file
+			 *         (g09).
+			 */
+			String folderName = FolderManager.generateUniqueFolderName(f.getName(), catalicaFolderPath);
+			File inputG09File = new File(folderName + "/" + uploadFileName[fileNumber]);
+			File outputXMLFile = new File(
+					folderName + "/" + uploadFileName[fileNumber].replaceAll(".g09", "") + ".xml");
+
+			String outputOwlFile = folderName + "/" + uploadFileName[fileNumber].replaceAll(".g09", "").toString()
+					+ ".owl";
+
+			FolderManager.createFolder(folderName);
+
+			FolderManager.saveFileInFolder(inputG09File, f.getAbsolutePath());
+
+			GenerateXml.generateRootModule(inputG09File, outputXMLFile, rootModule);
+
+			/**
+			 * @author nk510 Runs Xslt transformation.
+			 */
+			Transformation.trasnformation(new FileInputStream(outputXMLFile.getPath()),
+					new FileOutputStream(new File(outputOwlFile)), new StreamSource(xslt));
+
+			fileNumber++;
+
 		}
-		
+
+		addActionMessage("Uploading Gaussian files successfully completed.");
+
 		return INPUT;
-		
 	}
-	
+
+	public void validate() {
+
+		setUpload(files);
+		setUploadFileName(uploadFileName);
+		/**
+		 * @author nk510 Checks whether there are no selected Gaussian files (g09) for parsing.
+		 */
+
+		if (this.getUploadFileName().length==0) {
+
+			addFieldError("uploadFileName.length", "No Gaussian files (g09) are selected.");
+		}
+	}
+
 	public File[] getUpload() {
 		return files;
 	}
@@ -107,29 +116,5 @@ public class UploadAction extends ActionSupport {
 
 	public void setUploadFileName(String[] uploadFileName) {
 		this.uploadFileName = uploadFileName;
-	}
-
-	public String[] getUploadContentType() {
-		return uploadContentType;
-	}
-
-	public void setUploadContentType(String[] uploadContentType) {
-		this.uploadContentType = uploadContentType;
-	}
-	
-	public String getFilesPath() {
-		return filesPath;
-	}
-
-	public void setFilesPath(String filesPath) {
-		this.filesPath = filesPath;
-	}
-
-	public ServletContext getContext() {
-		return context;
-	}
-
-	public void setContext(ServletContext context) {
-		this.context = context;
 	}
 }
