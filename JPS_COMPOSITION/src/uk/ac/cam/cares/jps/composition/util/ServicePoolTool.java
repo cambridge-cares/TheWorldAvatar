@@ -9,15 +9,16 @@ import java.io.IOException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
+
 public class ServicePoolTool {
-	
-	public static final String filename = "/home/zhouxiaochi/Documents/service_pool.txt"; 
-	
+
+	public static final String filename = AgentLocator.getAbsolutePath("service_pool.txt", ServicePoolTool.class);
+
 	public static JSONObject readTheServicePool() throws JSONException, IOException {
 		String wholeContent = "";
 		File thefile = new File(filename);
-		if (!thefile.exists())
-		{
+		if (!thefile.exists()) {
 			writeToTheServicePool("");
 		}
 
@@ -36,11 +37,11 @@ public class ServicePoolTool {
 			return new JSONObject(wholeContent);
 		}
 	}
-	
+
 	public static void writeToTheServicePool(String content) throws IOException {
 		FileWriter fw = new FileWriter(filename);
 		fw.write(content);
 		fw.close();
 	}
-	
+
 }

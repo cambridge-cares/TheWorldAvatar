@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.composition.Vocabulary;
+package uk.ac.cam.cares.jps.composition.vocabulary;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -20,7 +20,6 @@ public enum MSM {
 
 		@Override
 		public com.hp.hpl.jena.rdf.model.Property Property() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -39,7 +38,6 @@ public enum MSM {
 
 		@Override
 		public com.hp.hpl.jena.rdf.model.Property Property() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -58,7 +56,6 @@ public enum MSM {
 
 		@Override
 		public com.hp.hpl.jena.rdf.model.Property Property() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -86,7 +83,6 @@ public enum MSM {
 
 		@Override
 		public String IRI() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -108,7 +104,6 @@ public enum MSM {
 
 		@Override
 		public String IRI() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -129,7 +124,6 @@ public enum MSM {
 
 		@Override
 		public String IRI() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -150,7 +144,6 @@ public enum MSM {
 
 		@Override
 		public String IRI() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -171,7 +164,6 @@ public enum MSM {
 
 		@Override
 		public String IRI() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -192,7 +184,6 @@ public enum MSM {
 
 		@Override
 		public String IRI() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -213,7 +204,6 @@ public enum MSM {
 
 		@Override
 		public String IRI() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -229,13 +219,11 @@ public enum MSM {
 			return model.createProperty(twa + this.name());
 		}
 
-	}
-	,
+	},
 	hasDatatypeValue() {
 
 		@Override
 		public String IRI() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -256,7 +244,9 @@ public enum MSM {
 	;
 
 	public abstract String IRI();
+
 	public abstract Resource Node();
+
 	public abstract com.hp.hpl.jena.rdf.model.Property Property();
 
 	private MSM() {
