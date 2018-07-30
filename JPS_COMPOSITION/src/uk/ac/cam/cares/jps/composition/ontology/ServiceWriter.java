@@ -1,24 +1,18 @@
-package uk.ac.cam.cares.jps.composition.Ontology;
+package uk.ac.cam.cares.jps.composition.ontology;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.StringWriter;
 
-import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.datatypes.TypeMapper;
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.rdf.model.*;
-import com.hp.hpl.jena.vocabulary.DCTerms;
-import com.hp.hpl.jena.vocabulary.OWL2;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
 
-import uk.ac.cam.cares.jps.composition.ServiceModel.MessageContent;
-import uk.ac.cam.cares.jps.composition.ServiceModel.MessagePart;
-import uk.ac.cam.cares.jps.composition.ServiceModel.Operation;
-import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
-import uk.ac.cam.cares.jps.composition.Vocabulary.MSM;
+import uk.ac.cam.cares.jps.composition.servicemodel.MessageContent;
+import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
+import uk.ac.cam.cares.jps.composition.servicemodel.Operation;
+import uk.ac.cam.cares.jps.composition.servicemodel.Service;
+import uk.ac.cam.cares.jps.composition.vocabulary.MSM;
 
 public class ServiceWriter {
 
@@ -34,8 +28,9 @@ public class ServiceWriter {
 			addOperationToModel(model, op);
 
 		}
-		// Write the result to file
-		// FileOutputStream fos = new FileOutputStream("/home/zhouxiaochi/Documents/test.rdf");
+
+		// FileOutputStream fos = new
+		// FileOutputStream("/home/zhouxiaochi/Documents/test.rdf");
 		// model.write(fos);
 		String syntax = "RDF/XML"; // also try "N-TRIPLE" and "TURTLE"
 		StringWriter out = new StringWriter();
@@ -48,11 +43,13 @@ public class ServiceWriter {
 		Resource current = model.createResource(operation.getUri().toASCIIString());
 		current.addProperty(RDF.type, MSM.Operation.Node());
 		for (MessageContent input : operation.getInputs()) {
+			// System.out.println("input uri: " + input.uri.toASCIIString());
 			current.addProperty(MSM.hasInput.Property(), model.createResource(input.uri.toASCIIString()));
 			addMessageContent(model, input);
 		}
 
 		for (MessageContent output : operation.getOutputs()) {
+			// System.out.println("output uri: " + output.uri.toASCIIString());
 			current.addProperty(MSM.hasOutput.Property(), model.createResource(output.uri.toASCIIString()));
 			addMessageContent(model, output);
 		}

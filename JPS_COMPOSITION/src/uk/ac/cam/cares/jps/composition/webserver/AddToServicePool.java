@@ -1,9 +1,5 @@
-package uk.ac.cam.cares.jps.composition.WebServer;
+package uk.ac.cam.cares.jps.composition.webserver;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -16,6 +12,7 @@ import org.json.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.composition.util.ServicePoolTool;
 
 /**
@@ -24,19 +21,12 @@ import uk.ac.cam.cares.jps.composition.util.ServicePoolTool;
 @WebServlet("/AddToServicePool")
 public class AddToServicePool extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	public static final String filename = "/home/zhouxiaochi/Documents/service_pool.txt";
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
+	public static final String filename = AgentLocator.getAbsolutePath("./service_pool.txt", AddToServicePool.class);
+
 	public AddToServicePool() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -59,13 +49,13 @@ public class AddToServicePool extends HttpServlet {
 			service_pool_in_JSON.put(newAgentInJSON.getString("uri"), newAgentInJSON);
 			ServicePoolTool.writeToTheServicePool(service_pool_in_JSON.toString());
 			response.getWriter().write(service_pool_in_JSON.toString());
-		} catch (Exception ex) {}
+		} catch (Exception ex) {
+		}
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 

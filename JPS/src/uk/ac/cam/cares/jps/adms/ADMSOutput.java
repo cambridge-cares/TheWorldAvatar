@@ -19,27 +19,30 @@ import uk.ac.cam.cares.jps.base.util.PythonHelper;
 @WebServlet("/ADMSOutput")
 public class ADMSOutput extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public ADMSOutput() {
-        super();
-    }
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#HttpServlet()
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public ADMSOutput() {
+		super();
+	}
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		String jsonString = request.getParameter("coordinatesLonLat");
-		
+
 		Gson g = new Gson();
-		
-		String outputFile = "C:/TOMCAT/webapps/JPS/workingdir/test.levels.gst";
-		
-		String result = PythonHelper.callPython("caresjpsadmsinputs/ADMSOutput.py", outputFile , g.toJson(jsonString), this);
-		
+
+		String outputFile = AgentLocator.getPathToJpsWorkingDir() + "/test.levels.gst";
+
+		String result = PythonHelper.callPython("caresjpsadmsinputs/ADMSOutput.py", outputFile, g.toJson(jsonString),
+				this);
+
 		response.setContentType("application/json");
 		response.getWriter().write(result);
 	}
