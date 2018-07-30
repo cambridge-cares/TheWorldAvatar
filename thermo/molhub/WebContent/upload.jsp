@@ -1,38 +1,40 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@ taglib prefix="sj" uri="/struts-jquery-tags" %> 
+<!DOCTYPE html>
 <html>
 <head>
-    <title>Upload Gaussian file</title>
+<title>Upload Gaussian file</title>
+<link rel="stylesheet" type="text/css" href="css/search/search.css">
 </head>
-
 <body>
 
-<h3>Upload Gaussian (g09) file:</h3>
+<h3>Upload Gaussian (g09) files:</h3>
 
- <s:actionerror />    
+<s:actionerror />
 <s:form action="upload" method="post" enctype="multipart/form-data">
-    <s:file name="upload"/>
-    <s:submit/>
+    <s:file name="upload" label="Select files" multiple="multiple"/>
+    <s:submit value="Upload selected files"/>
 </s:form>
-
+<s:actionmessage />  
+<h4>Uploaded (g09) files are: </h4>
 <s:iterator value="uploadFileName" var="fn">
- <h4>Uploaded (g09) file is: </h4><s:property value="fn"/><br/>
+<s:property value="fn"/><br/>
 </s:iterator>
 
 <h3>Run thermodynamic calculations:</h3>
 
 <p><a href="<s:url action="calculation"/>">Thermodynamic calculations</a></p>
 
-
 <h3>Search molecule properties by using atoms</h3>
 
 <s:form action="termValidationAction">
-
- 	  <s:textfield name="term.name" label="Query string" />
-   	  <s:submit/>
+      
+ 	  <s:textfield name="term.name" placeholder="(cl2 or (h2 and o1))"/>
    	  
-</s:form>	
+   	  <s:submit value="Molhub Search" align="center"/>
+      
+</s:form>
 
 </body>
 </html>
