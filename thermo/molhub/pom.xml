@@ -48,6 +48,20 @@
     <version>2.5.16</version>
 </dependency>
   
+  <!-- https://mvnrepository.com/artifact/org.apache.struts/struts2-convention-plugin -->
+<dependency>
+    <groupId>org.apache.struts</groupId>
+    <artifactId>struts2-convention-plugin</artifactId>
+    <version>2.5.16</version>
+</dependency>
+  
+ <!-- https://mvnrepository.com/artifact/com.jgeppert.struts2.jquery/struts2-jquery-plugin -->
+<dependency>
+    <groupId>com.jgeppert.struts2.jquery</groupId>
+    <artifactId>struts2-jquery-plugin</artifactId>
+    <version>4.0.3</version>
+</dependency>
+  
   <!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
 <dependency>
     <groupId>commons-fileupload</groupId>
@@ -177,6 +191,49 @@
     <version>5.3.2.Final</version>
 </dependency>
 
+<!-- https://mvnrepository.com/artifact/asm/asm -->
+<dependency>
+    <groupId>asm</groupId>
+    <artifactId>asm</artifactId>
+    <version>3.3.1</version>
+</dependency>
+
+<dependency>
+    <groupId>com.googlecode.aima-java</groupId>
+    <artifactId>aima-core</artifactId>
+    <version>3.0.0</version>
+</dependency>
+
+<!-- RDF4J Dependencies -->
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-runtime -->
+
+<dependency>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-runtime</artifactId>
+    <version>2.4.0-M2</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-repository-http -->
+<dependency>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-repository-http</artifactId>
+    <version>2.4.0-M2</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-repository-sparql -->
+<dependency>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-repository-sparql</artifactId>
+    <version>2.4.0-M2</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-sail-nativerdf -->
+<dependency>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-sail-nativerdf</artifactId>
+    <version>2.4.0-M2</version>
+</dependency>
 
 
   </dependencies>
