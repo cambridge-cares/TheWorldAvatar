@@ -3,22 +3,21 @@ import params as p
 import numpy as np
 import thermochemistry as sthd
 import utilities as utl
-import lmfit as lmf
-from lxml import etree
-import csv
-import json
-
 #======================================================
 #                 Chemical species class
 #======================================================
+# default temperature ranges
+ToutCsv = [298,300,400,500,600,700,800,900,1000,1200,1500,1700,2000,2500,3000]
+TfitNasa = [298.15,1000,2500]
+
 class ChemSpecies:
     #--------------------------------------------------
     #            Constructor
     #--------------------------------------------------
     def __init__(self,aName="",aFormula="",aComp=[],aMolWt=0.0,aElMolWt=[],aVibFreq=[],aVibScale=1.0,aSymNr=1.0,aGeom=[],
                 aGeomType=2,aImom=[],aElecEn=0.0,aZPE=0.0,aSpinMult=1.0,aElecLvL=[[1.0,0.0]],aLowNasa=[],
-                ahighNasa=[],aTrangeNasa=[],aEnthRefSource='#None',aEnthRefTemp=298.15,aEnthRef=0.0,aFitLowNasa=[],
-                aFitHighNasa=[],aFitTrangeNasa=[],aMetaData={}):
+                aHighNasa=[],aTrangeNasa=[],aEnthRefSource='#None',aEnthRefTemp=298.15,aEnthRef=0.0,aFitLowNasa=[],
+                aFitHighNasa=[],aFitTrangeNasa=TfitNasa,aToutCsv=ToutCsv,aMetaData={}):
         #   properties set based on constructor arguments
         #--------------------------------------------------
         # attribute name                               SI units
@@ -38,7 +37,7 @@ class ChemSpecies:
         self.SpinMult = aSpinMult                #     [-]
         self.ElecLvL = aElecLvL                  #     [-,J]
         self.LowNasa = aLowNasa                  #     [7x-]
-        self.HighNasa = ahighNasa                #     [7x-]
+        self.HighNasa = aHighNasa                #     [7x-]
         self.TrangeNasa = aTrangeNasa            #     [K,K,K]
         self.EnthRefSource = aEnthRefSource      #     [-]
         self.EnthRef = aEnthRef                  #     [J/mol]
@@ -47,6 +46,7 @@ class ChemSpecies:
         self.FitHighNasa = aFitHighNasa
         self.FitTrangeNasa = aFitTrangeNasa
         self.ElMolWt = aElMolWt                  #     [kg]
+        self.ToutCsv = aToutCsv                  #     [n2 x K]
         self.MetaData = aMetaData                #     [-]
         #   properties set based on other properties
         #--------------------------------------------------
@@ -57,9 +57,9 @@ class ChemSpecies:
         self.EnthRefCorr = 0.0                   #     [J/mol]
         self = self.setDerivedProperties()
 
-    #--------------------------------------------------
-    #                 Methods
-    #--------------------------------------------------
+    #======================================================
+    #            Methods
+    #======================================================
 
     #---------------------------------
     # Methods to set/get other fields
@@ -303,635 +303,57 @@ class ChemSpecies:
 #======================================================
 #            Utility functions
 #======================================================
+def getDefaultProps():
+    # Returns default properties of a chemical species
+    defaultProps = {}
+    defaultProps['Name']=""
+    defaultProps['Formula']=""
+    defaultProps['Comp']=[]
+    defaultProps['MolWt']=0.0
+    defaultProps['ElMolWt']=[]
+    defaultProps['VibFreq']=[]
+    defaultProps['VibScale']=1.0
+    defaultProps['SymNr']=1.0
+    defaultProps['Geom']=[]
+    defaultProps['GeomType']=2
+    defaultProps['Imom']=[]
+    defaultProps['ElecEn']=0.0
+    defaultProps['ZPE']=0.0
+    defaultProps['SpinMult']=1.0
+    defaultProps['ElecLvL']=[[1.0,0.0]]
+    defaultProps['LowNasa']=[]
+    defaultProps['HighNasa']=[]
+    defaultProps['TrangeNasa']=[]
+    defaultProps['EnthRefSource']='#None'
+    defaultProps['EnthRefTemp']=298.15
+    defaultProps['EnthRef']=0.0
+    defaultProps['FitLowNasa']=[]
+    defaultProps['FitHighNasa']=[]
+    defaultProps['FitTrangeNasa']=TfitNasa
+    defaultProps['ToutCsv']=ToutCsv
+    defaultProps['MetaData']={}
+    return defaultProps
 
-def readSpecXML(xmlfile):
-    tree = etree.parse(xmlfile)
-    root = tree.getroot()    
-    nsm = root.nsmap
+def CreateChemSpecFromDict(dict):
+    # Get defaults
+    def_dict = getDefaultProps()
 
+    # Update dict with any missing keys
+    for key, value in def_dict.items():
+        if key not in dict:
+            dict[key] = value
 
-    Name = ""
-    Formula = ""
-    Composition = []
-    VibFreq = []
-    SymNr = 1.0
-    Geom = []
-    GeomType = 2
-    InertiaMom = []
-    SpinMult = 1.0
-    ElMolWt = []
-    MetaData = {}
-    MetaData['runDate'] = ''
-    MetaData['programName'] = ''
-    MetaData['programVersion'] = ''
-    MetaData['levelOfTheory'] = ''
-    MetaData['basisSetValue'] = ''
-
-    nsm['def'] = nsm[None]
-    del nsm[None]
-
-    moduleInit = root.find(".//def:module[@dictRef='cc:initialization']",nsm)
-    moleculeInit = moduleInit.find('.//def:molecule',nsm)
-    paramListInit = moduleInit.find('.//def:parameterList',nsm)
-    moduleEnv= root.find(".//def:module[@dictRef='cc:environment']",nsm)
-    paramListEnv = moduleEnv.find('.//def:parameterList',nsm)
-    for property in moleculeInit.iterchildren():
-        if 'atomArray' in property.tag:
-            for elem in property.iterchildren():
-                Composition.append(elem.attrib['elementType'] )
-                Composition.append(str(int(float(elem.attrib['count']))))
-        elif 'formula' in property.tag:
-            Formula = ''.join(property.attrib['concise'].split())
-            Name = Formula
-
-    moduleFinit = root.find(".//def:module[@dictRef='cc:finalization']",nsm)
-    for property in moduleFinit.iterchildren():
-        if 'propertyList' in property.tag:
-            for subprop in property.iterchildren():
-                if 'vibrations' in subprop.attrib['dictRef']:
-                    propchild = subprop.getchildren()[0]
-                    VibFreqUnit = propchild.attrib['units'].split(':')[1].upper()
-                    if 'M-1' in VibFreqUnit:
-                        VibFreqUnit = VibFreqUnit.replace('-1','^-1')
-                    u_fact = utl.convertFrequencyUnitsToSI(VibFreqUnit)
-                    VibFreq = [float(f)*u_fact for f in propchild.text.split()]
-                elif 'rotational_symmetry' in subprop.attrib['dictRef']:
-                    propchild = subprop.getchildren()[0]
-                    SymNr = float(propchild.text)
-                elif 'rotational_constants' in subprop.attrib['dictRef']:
-                    propchild = subprop.getchildren()[0]
-                    RotConstUnit = propchild.attrib['units'].split(':')[1].upper()
-                    u_fact1 = utl.convertEnergyMoleculeUnitsToSI(RotConstUnit,1.0) # 1/TIME,Hz,1/cm => J
-                    u_fact2 = utl.convertEnergyMoleculeUnitsToSI('1/M',-1.0) # J => 1/m
-                    u_fact = u_fact1*u_fact2
-                    RotConst = [float(f)*u_fact for f in propchild.text.split()]
-                    InertiaMom = getImomFromRotConstant(RotConst)
-                elif 'geometry_type' in subprop.attrib['dictRef']:
-                    propchild = subprop.getchildren()[0]
-                    GeomTypeTxt =propchild.text
-                    if GeomTypeTxt == 'nonlinear':
-                        GeomType = 2
-                    elif GeomTypeTxt == 'linear':
-                        GeomType = 1
-                    else:
-                        GeomType = 0
-        elif 'molecule' in property.tag:
-            SpinMult = float(property.attrib['spinMultiplicity'])
-            for subprop in property.iterchildren():
-                if 'atomArray' in subprop.tag:
-                    u_fact = utl.convertLengthUnitsToSI('A')
-                    for subsubprop in subprop.iterchildren():
-                        atom = subsubprop.attrib['elementType']
-                        x = float(subsubprop.attrib['x3'])*u_fact
-                        y = float(subsubprop.attrib['y3'])*u_fact
-                        z = float(subsubprop.attrib['z3'])*u_fact
-                        ElMolWt.append(float(subsubprop.attrib['atomicMass']))
-                        Geom.append([atom,x,y,z])
-
-    for property in paramListEnv.iterchildren():
-        dictRef = property.attrib['dictRef']
-        if 'program' in dictRef and not 'programVersion' in dictRef:
-            propchild = property.getchildren()[0]
-            program = propchild.text
-            MetaData['program'] = program
-        elif 'programVersion' in dictRef:
-            propchild = property.getchildren()[0]
-            programVersion = propchild.text
-            MetaData['programVersion'] = programVersion
-        elif 'runDate' in dictRef:
-            propchild = property.getchildren()[0]
-            runDate = propchild.text
-            MetaData['runDate'] = runDate
-
-    for property in paramListInit.iterchildren():
-        dictRef = property.attrib['dictRef']
-        if 'method' in dictRef:
-            propchild = property.getchildren()[0]
-            method = propchild.text
-            MetaData['levelOfTheory'] = method
-
-        elif 'basis' in dictRef:
-            propchild = property.getchildren()[0]
-            basis = propchild.text
-            MetaData['basisSetValue'] = basis
-
-    rSpec = ChemSpecies(aName=Name,aFormula=Formula,aElMolWt=ElMolWt,aComp=Composition,aVibFreq=VibFreq,aSymNr=SymNr, \
-                        aGeom=Geom,aGeomType=GeomType,aImom=InertiaMom,aSpinMult=SpinMult,aMetaData=MetaData)
-
+    # Create species
+    rSpec = ChemSpecies(aName=dict['Name'],aFormula=dict['Formula'],aComp=dict['Comp'],
+            aMolWt=dict['MolWt'],aElMolWt=dict['ElMolWt'],aVibFreq=dict['VibFreq'],
+            aVibScale=dict['VibScale'],aSymNr=dict['SymNr'],aGeom=dict['Geom'],
+            aGeomType=dict['GeomType'],aImom=dict['Imom'],aElecEn=dict['ElecEn'],
+            aZPE=dict['ZPE'],aSpinMult=dict['SpinMult'],aElecLvL=dict['ElecLvL'],
+            aLowNasa=dict['LowNasa'],aHighNasa=dict['HighNasa'],aTrangeNasa=dict['TrangeNasa'],
+            aEnthRefSource=dict['EnthRefSource'],aEnthRefTemp=dict['EnthRefTemp'],
+            aEnthRef=dict['EnthRef'],aFitLowNasa=dict['FitLowNasa'],aFitHighNasa=dict['FitHighNasa'],
+            aFitTrangeNasa=dict['FitTrangeNasa'],aToutCsv=dict['ToutCsv'],aMetaData=dict['MetaData'])
     return rSpec
-
-
-def readSpecJSON(jsonfile):
-    with open(jsonfile) as f:
-        data = json.load(f)
-
-    Name = ""
-    Formula = ""
-    Composition = []
-    VibFreq = []
-    SymNr = 1.0
-    Geom = []
-    GeomType = 2
-    InertiaMom = []
-    SpinMult = 1.0
-    ElMolWt = []
-    MetaData = {}
-    MetaData['runDate'] = ''
-    MetaData['programName'] = ''
-    MetaData['programVersion'] = ''
-    MetaData['levelOfTheory'] = ''
-    MetaData['basisSetValue'] = ''
-
-    results = {}
-    results = data['results']['bindings']
-    for ritems in results:
-        for key, values in ritems.items():
-            if key == 'moleculeName':
-                Name = values['value'].replace(' ','')
-                Formula = Name
-            elif key == 'atomName':
-                atom = ritems['atomName']['value']
-                atom = atom.split('#')[1]
-                if 'coordinateX' in ritems:
-                    x = float(ritems['coordinateX']['value'])
-                    y = float(ritems['coordinateY']['value'])
-                    z = float(ritems['coordinateZ']['value'])
-                    ElMolWt.append(float(ritems['massValue']['value']))
-                    Geom.append([atom,x,y,z])
-                else:
-                    Composition.append(atom)
-                    Composition.append(str(int(float(ritems['atomNumber']['value']))))
-
-            elif key == 'spinMultiplicityValue':
-                SpinMult = float(ritems['spinMultiplicityValue']['value'])
-            elif key == 'frequenciesValue':
-                if 'frequenciesUnit' in ritems:
-                    VibFreqUnit = ritems['frequenciesUnit']['value'].split('/')[-1].upper()
-                    if 'M-1' in VibFreqUnit:
-                        VibFreqUnit = VibFreqUnit.replace('-1','^-1')
-                u_fact = utl.convertFrequencyUnitsToSI(VibFreqUnit)
-                VibFreq = [float(f)*u_fact for f in ritems['frequenciesValue']['value'].split()]
-            elif key == 'geometryTypeValue':
-                if ritems['geometryTypeValue']['value'] == 'nonlinear':
-                    GeomType=2
-                elif ritems['geometryTypeValue']['value'] == 'linear':
-                    GeomType=1
-                else:
-                    GeomType = 0
-            elif key == 'rotationalConstantsValue':
-                if 'rotationalConstantsUnit' in ritems:
-                    RotConstUnit = ritems['rotationalConstantsUnit']['value'].split('#')[-1].upper()
-                    if RotConstUnit == 'GIGAHERTZ': RotConstUnit = 'GHZ'
-                    u_fact1 = utl.convertEnergyMoleculeUnitsToSI(RotConstUnit,1.0) # 1/TIME,Hz,1/cm => J
-                    u_fact2 = utl.convertEnergyMoleculeUnitsToSI('1/M',-1.0) # J => 1/m
-                    u_fact = u_fact1*u_fact2
-                    RotConst = [float(f)*u_fact for f in ritems['rotationalConstantsValue']['value'].split()]
-                    InertiaMom = getImomFromRotConstant(RotConst)
-            elif key == 'rotationalSymmetryNumber':
-                SymNr = float(ritems['rotationalSymmetryNumber']['value'])
-            elif key == 'programName':
-                MetaData['programName'] = ritems['programName']['value']
-                MetaData['programVersion'] = ritems['programVersion']['value']
-                MetaData['runDate'] = ritems['runDate']['value']
-            elif key == 'levelOfTheory':
-                MetaData['levelOfTheory'] = ritems['levelOfTheory']['value']
-                MetaData['basisSetValue'] = ritems['basisSetValue']['value']
-
-    rSpec = ChemSpecies(aName=Name,aFormula=Formula,aElMolWt=ElMolWt,aComp=Composition,aVibFreq=VibFreq,aSymNr=SymNr, \
-                        aGeom=Geom,aGeomType=GeomType,aImom=InertiaMom,aSpinMult=SpinMult,aMetaData=MetaData)
-    return rSpec
-
-
-
-def RunThermoScriptFromCmd(use_file,inp_file,out_datfile,out_csvfile,tfit_range,tcsv_range,href):       
-    if use_file == 1:
-        Sp = readSpecXML(inp_file)
-        if len(out_datfile.strip())==0:
-            out_datfile = inp_file.replace('.xml','.dat')
-    elif use_file == 2:
-        Sp = readSpecJSON(inp_file)
-        if len(out_datfile.strip())==0:
-            out_datfile = inp_file.replace('.json','_nasa.json')
-    else:
-        Sp_list = readChemSpeciesFile(inp_file,spName='ALL')
-        out_datfile = inp_file.replace('.txt','dat')
-        Sp = Sp_list[0]
-
-    if len(href)>0:
-        Sp.EnthRefTemp = href[0]
-        Sp.EnthRef = href[1]
-        Sp.EnthRefCorr = Sp.getSpHcorrSTHD()
-
-    if len(tfit_range)==0:
-        tfit_range = [298.15,1000,2500]
-    if len(tcsv_range)==0:
-        tcsv_range = [298,300,400,500,600,700,800,900,1000,1200,1500,1700,2000,2500,3000]
-
-    #fit and write nasa polyn by default
-    Sp = fitThermoDataNASA(Sp,tfit_range)
-
-    if use_file == 2:
-        #create dictionary with Nasa polynomials data
-        writeJsonOutFile(Sp,out_datfile)
-    else:
-        writeNasaDatFile(Sp,out_datfile)
-
-    if len(out_csvfile.strip())!=0:
-        #write csv if user provides a file name
-        writeThermoDatCsvFile(Sp,out_csvfile,T=tcsv_range,inclFitNasa=True,inclNasa=False)
-
-def writeJsonOutFile(Sp,out_datfile):
-    #create dictionary with Nasa polynomials data
-    nasaDict = {}
-    nasaDict['runDate'] = ''
-    nasaDict['programName'] = ''
-    nasaDict['programVersion'] = ''
-    nasaDict['levelOfTheory'] = ''
-    nasaDict['basisSetValue'] = ''
-
-    nasaDict['Name'] = Sp.Name
-    nasaDict['Comment'] = 'STHD'
-    nasaDict['Composition'] = Sp.Composition
-    nasaDict['Tmin'] = Sp.FitTrangeNasa[0]
-    nasaDict['Tmid'] = Sp.FitTrangeNasa[1]
-    nasaDict['Tmax'] = Sp.FitTrangeNasa[2]
-    nasaDict['LowTcoeff'] = Sp.FitLowNasa
-    nasaDict['highTcoeff'] = Sp.FitHighNasa
-    nasaDict['Phase'] = 'G'
-    if 'runDate' in Sp.MetaData : nasaDict['runDate'] = Sp.MetaData['runDate']
-    if 'programName' in Sp.MetaData: nasaDict['programName'] = Sp.MetaData['programName']
-    if 'programVersion' in Sp.MetaData: nasaDict['programVersion'] = Sp.MetaData['programVersion']
-    if 'levelOfTheory' in Sp.MetaData: nasaDict['levelOfTheory'] = Sp.MetaData['levelOfTheory']
-    if 'basisSetValue' in Sp.MetaData: nasaDict['basisSetValue'] = Sp.MetaData['basisSetValue']
-
-    atomicMasses = []
-    atoms = []
-    for i,el in enumerate(Sp.ElMolWt):
-        atoms.append(Sp.Geometry[i][0])
-        atomicMasses.append(el)
-    nasaDict['atomicMasses'] = [atoms, atomicMasses]
-
-    with open(out_datfile, 'w') as outfile:
-        json.dump(nasaDict, outfile)
-
-
-def writeThermoDatCsvFile(Sp,outfile,T=[298,300,400,600,800,1000,1500,2000,2500,3000],inclFitNasa=True,inclNasa=False):
-    unit=1
-    ThData, ThDataHeaders = GetThermoData(T,Sp,unit,inclNasa,inclFitNasa)
-    with open(outfile, 'w', newline='') as csvfile:
-        wrt = csv.writer(csvfile, delimiter=',')
-        wrt.writerow(ThDataHeaders)
-        for row in ThData:
-            wrt.writerow(row)
-    csvfile.close()
-
-def writeNasaDatFile(Sp,datfile):
-    with open(datfile, 'w', newline='') as thdfile:
-        thdfile.write("{:16}".format(Sp.Formula))    
-        thdfile.write("{:8}".format('STHD'))
-        for i in range(0,8):
-            if (i+1)%2==0:
-                if i>len(Sp.Composition)-1:
-                    thdfile.write("{:2}".format(' '))
-                else:                
-                    thdfile.write("{0:3d}".format(int(Sp.Composition[i])))
-            else:
-                if i>len(Sp.Composition)-1:
-                    thdfile.write("{:3}".format(' '))
-                else:
-                    thdfile.write("{:2}".format(Sp.Composition[i]))
-        
-        thdfile.write("{:1}".format('G'))
-        thdfile.write("{0:10.2f}".format(Sp.FitTrangeNasa[0]))
-        thdfile.write("{0:10.2f}".format(Sp.FitTrangeNasa[2]))    
-        thdfile.write("{0:8.2f}".format(Sp.FitTrangeNasa[1]))    
-        thdfile.write("{:6}".format(' '))
-        thdfile.write("{:1}".format('1\n'))
-        
-        for i in range(0,5):
-            thdfile.write("{0:15.8e}".format(Sp.FitHighNasa[i]))
-        thdfile.write("{:4}".format(' '))
-        thdfile.write("{:1}".format('2\n'))
-        thdfile.write("{0:15.8e}".format(Sp.FitHighNasa[5]))
-        thdfile.write("{0:15.8e}".format(Sp.FitHighNasa[6]))
-        for i in range(0,3):
-            thdfile.write("{0:15.8e}".format(Sp.FitLowNasa[i]))
-        thdfile.write("{:4}".format(' '))
-        thdfile.write("{:1}".format('3\n'))
-        for i in range(3,7):
-            thdfile.write("{0:15.8e}".format(Sp.FitLowNasa[i]))
-        thdfile.write("{:19}".format(' '))
-        thdfile.write("{:1}".format('4\n'))
-    thdfile.close()
-
-
-# Read chemspecies list from a file
-#--------------------------------------------------
-def readChemSpeciesFile(spFile,spName='ALL'):
-    # Parse Frequency section in a file
-    #--------------------------
-    def readFrequencies(rf,key,parseVars):
-        runit = getUnit(key,parseVars)
-        u_fact = utl.convertFrequencyUnitsToSI(runit)
-        freq = []
-        while True:
-            line = rf.readline()
-            stop_parsing ,skip_line, line = checkLine(line,'EndFrequencies',
-                                  parseVars['comment_char'],['r','s'],0)
-            if stop_parsing: break
-            if skip_line == False:
-                if line[-1] == parseVars['data_delim']:
-                    line = line[:-1]
-                if line[0] == parseVars['data_delim']:
-                    line = line[1:]
-                line = line.split(parseVars['data_delim'])
-                for items in line:
-                    freq.append(float(items)*u_fact)
-        return rf,freq
-    # Parse Geometry section in a file
-    #--------------------------
-    def readGeometry(rf,key,parseVars):
-        runit = getUnit(key,parseVars)
-        u_fact = utl.convertLengthUnitsToSI(runit)
-        geom = []
-        while True:
-            line = rf.readline()
-            stop_parsing,skip_line,line = checkLine(line,'EndGeometry',
-                                  parseVars['comment_char'],['r','s'],4)
-            if stop_parsing: break
-            if skip_line == False:
-                geom.append([line[0], float(line[1])*u_fact,float(line[2])*u_fact,float(line[3])*u_fact])
-        return rf,geom
-
-    # Parse Electronic levels section in a file
-    #--------------------------    
-    def readElecLevels(rf,key,parseVars):
-        runit = getUnit(key,parseVars)
-        u_fact = utl.convertEnergyMoleculeUnitsToSI(runit)
-        ElecLvl = []
-        while True:
-            #skip_line = False
-            line = rf.readline()
-
-            stop_parsing,skip_line,line = checkLine(line,'EndElecLevels',
-                                  parseVars['comment_char'],['r','l','s'],2)
-            if stop_parsing: break
-            if skip_line == False:
-                ElecLvl.append([float(line[0]),float(line[1])*u_fact])
-        return rf,ElecLvl
-    # Parse NASA thermdata section in a file
-    #--------------------------    
-    def readNasaThermCoeffs(rf,parseVars):
-        nc = 0
-        alow= []
-        ahigh= []
-        Trange=[]
-        while True:
-            line = rf.readline()
-            stop_parsing,skip_line,line = checkLine(line,'EndNasaThermCoeffs',
-                                  parseVars['comment_char'],['r','l','s'],0)
-            if stop_parsing: break
-            if skip_line == False:
-                nc = nc + 1
-                if nc == 1:
-                    Trange.append(float(line[45:55]))
-                    Trange.append(float(line[65:73]))
-                    Trange.append(float(line[55:65]))
-                else:
-                    if line[0]!='-':
-                        line = ' '+line
-                    if nc == 2:
-                        ahigh.append(float(line[0:15]))
-                        ahigh.append(float(line[15:30]))
-                        ahigh.append(float(line[30:45]))
-                        ahigh.append(float(line[45:60]))
-                        ahigh.append(float(line[60:75]))            
-                    elif nc == 3:
-                        ahigh.append(float(line[0:15]))
-                        ahigh.append(float(line[15:30]))
-                        alow.append(float(line[30:45]))
-                        alow.append(float(line[45:60]))
-                        alow.append(float(line[60:75]))
-                    elif nc == 4:
-                        alow.append(float(line[0:15]))
-                        alow.append(float(line[15:30]))
-                        alow.append(float(line[30:45]))
-                        alow.append(float(line[45:60]))
-        return rf,alow,ahigh,Trange
-    # Parse Enthalpy Source section in a file
-    #--------------------------    
-    def readEnthalpyRef(rf,val,parseVars):
-        EnthRefTemp = 298.15
-        EnthRef = 0.0
-        EnthSource = val
-        while True:
-            line = rf.readline()
-            stop_parsing,skip_line,line = checkLine(line,'EndEnhtalpyRef',
-                                  parseVars['comment_char'],['r','s'],2)
-            if stop_parsing: break
-            if skip_line == False:
-                key = line[0]
-                value = line[1]
-                if key == 'EnthRefSource':
-                    EnthSource = value
-                elif 'EnthRefTemp' in key:
-                    runit = getUnit(key,parseVars)
-                    u_fact = utl.convertTemperatureUnitsToSI(runit)
-                    EnthRefTemp = float(value)*u_fact
-                elif 'EnthRef' in key and EnthSource!='#NASA':
-                    runit = getUnit(key,parseVars)
-                    u_fact = utl.convertEnergyMoleUnitsToSI(runit)
-                    EnthRef = float(value)*u_fact
-        return rf,EnthSource,EnthRefTemp,EnthRef
-    # Get unit from a keyword
-    #--------------------------
-    def getUnit(key,parseVars):
-        key = key.split(parseVars['start_bracket'])
-        key = key[1].split(parseVars['end_bracket'])
-        key = key[0]
-        runit = key.upper()
-        return runit
-    # check and prepare file line
-    #--------------------------
-    def checkLine(line,token,com_char,line_op,check_len):
-        skip_line = False
-        stop_parsing = False
-        if not line: stop_parsing = True
-        if token in line: stop_parsing = True
-
-        if stop_parsing==False:
-            if utl.compareList('s',line_op):
-                line = line.strip()
-            if utl.compareList('l',line_op):
-                line = line.lstrip()
-            if utl.compareList('r',line_op):
-                line = line.rstrip('\n')
-
-            if len(line)==0:
-                skip_line = True
-            elif line[0] == com_char:
-                skip_line = True
-
-            if check_len>0:
-                line = line.split()
-                if len(line)<check_len:
-                    skip_line = True
-        return stop_parsing,skip_line,line
-    #--------------------------
-
-    #----------------------------------------------------
-    # main body of the "readChemSpeciesFile" function
-    #----------------------------------------------------
-    parseVars={} 
-    parseVars['data_delim']      = ','
-    parseVars['start_bracket']  = '['
-    parseVars['end_bracket']  = ']'
-    parseVars['comment_char']    = '!'
-    
-    #set default values
-    Name = ""
-    Formula = ""
-    Composition = []
-    MolWt = 0.0
-    ElMolWt=[]
-    VibFreq = []
-    VibScale = 1.0
-    SymNr = 1.0
-    Geom = []
-    GeomType = 2
-    InertiaMom = []
-    RotConst = []
-    ElecEn = 0.0
-    ZPE = 0.0
-    SpinMult = 1.0
-    ElecLvL = [[1.0,0.0]]
-    lowNasa = []
-    highNasa = []
-    TrangeNasa = []
-
-    rSpecList= []
-    stop_parsing = False
-    with open(spFile, 'r') as f:
-        while True:
-            line = f.readline()
-            if not line: break
-            skip_line = False
-            line = line.rstrip('\n')
-            line = line.strip()
-            if len(line) == 0:
-                skip_line = True
-            elif line[0] == parseVars['comment_char']:
-                skip_line = True
-            if skip_line == False:
-                line = line.split()
-                key = line[0]
-                if len(line)>1:
-                    value = line[1]
-                if 'SPECIES' in key:
-                    Name = value
-                    if spName.upper() !='ALL':
-                        if spName.upper()!=Name.upper():
-                            while True:
-                                line = f.readline()
-                                if not line: break
-                                line = line.rstrip('\n')
-                                line = line.strip()
-                                if line =='END':
-                                    break
-                        else:
-                            stop_parsing = True
-                elif 'Formula' in key:
-                    Formula = value
-                elif 'Composition' in key:
-                    value = value.split(parseVars['data_delim'])
-                    Composition = value
-                elif 'Frequencies[' in key:
-                    f,VibFreq = readFrequencies(f,key,parseVars)
-                elif 'FreqScalingFactor' in key:
-                    VibScale = float(value)
-                elif 'SymmetryNr' in key:
-                    SymNr = float(value)
-                elif 'GeomType' in key:
-                    if value == 'atomic':
-                        GeomType = 0
-                    elif value == 'linear':
-                        GeomType = 1
-                    else:
-                        GeomType = 2
-                elif 'Geometry[' in key:
-                    f,Geom = readGeometry(f,key,parseVars)
-                elif 'SpinMultiplicity' in key:
-                    SpinMult = float(value)
-                elif 'ElecEnergy' in key:
-                    runit = getUnit(key,parseVars)
-                    u_fact = utl.convertEnergyMoleUnitsToSI(runit)
-                    ElecEn = float(value)*u_fact
-                elif 'InertiaMom' in key:
-                    InertiaMom= []
-                    if len(RotConst) == 0:
-                        runit = getUnit(key,parseVars)
-                        u_fact = utl.convertInertiaUnitsToSI(runit)
-                        value = value.split(parseVars['data_delim'])
-                        InertiaMom = [float(value[0])*u_fact,float(value[1])*u_fact,float(value[2])*u_fact]
-                        #get units right
-                    else:
-                        print('Ignoring InertiaMom input as RotConsts already given')
-                elif 'RotConstants' in key:
-                    RotConst = []
-                    if len(InertiaMom) == 0:
-                        runit = getUnit(key,parseVars)
-                        u_fact1 = utl.convertEnergyMoleculeUnitsToSI(runit,1.0) # 1/TIME,Hz,1/cm => J
-                        u_fact2 = utl.convertEnergyMoleculeUnitsToSI('1/M',-1.0) # J => 1/m
-                        u_fact = u_fact1*u_fact2
-                        value = value.split(parseVars['data_delim'])
-                        for v in value:
-                            RotConst.append(float(v)*u_fact)
-                        InertiaMom = getImomFromRotConstant(RotConst)
-                        #get units right
-                    else:
-                        print('Ignoring RotConstants input as InertiaMom already given')
-                elif 'ZeroPointEnergy' in key:
-                    runit = getUnit(key,parseVars)
-                    u_fact = utl.convertEnergyMoleculeUnitsToSI(runit)
-                    ZPE = float(value)*u_fact
-                elif 'ElecLevels' in key:
-                    f,ElecLvL = readElecLevels(f,key,parseVars)
-                elif 'NasaThermCoeffs' in key:
-                    Nasa = []
-                    f,lowNasa,highNasa,TrangeNasa = readNasaThermCoeffs(f,parseVars)
-                elif 'EnhtalpyRef' in key:
-                    f,EnthSource,EnthRefTemp,EnthRef = readEnthalpyRef(f,value,parseVars)
-                elif 'END' in key:
-
-                    rSpec = ChemSpecies(aName=Name,aFormula=Formula,aMolWt=MolWt,aComp=Composition,aVibFreq=VibFreq,aSymNr=SymNr, \
-                                        aGeom=Geom,aGeomType=GeomType,aImom=InertiaMom,aSpinMult=SpinMult)
-
-                    #rSpec = ChemSpecies(aName,aFormula,aComposition,aMolWt,aVibFreq,aVibScale,aSymNr,aGeom,
-                    #        aGeomType,aInertiaMom,aElecEn,aZPE,aSpinMult,aElecLvL,alowNasa,ahighNasa,aTrangeNasa,
-                    #        aEnthSource,aEnthRefTemp,aEnthRef)
-                    #add species to a list
-                    rSpecList.append(rSpec)
-                    if stop_parsing:
-                        break
-                    #set keywords to defaults
-                    aName = ""
-                    aFormula = ""
-                    aComposition = []
-                    aMolWt = 0.0
-                    aVibFreq = []
-                    aVibScale = 1.0
-                    aSymNr = 1.0
-                    aGeom = []
-                    aGeomType = 2
-                    aInertiaMom = []
-                    aElecEn = 0.0
-                    aZPE = 0.0
-                    aSpinMult = 1.0
-                    aElecLvL = [[1.0,0.0]]
-                    alowNasa = []
-                    ahighNasa = []
-                    aTrangeNasa = []
-    return rSpecList
 
 def getRotConstFromImom(aImom):
     RotConst = [] # B in 1/m
@@ -994,78 +416,10 @@ def GetThermoData(T,Spec,unit=1.0,inclNasa=False,inclFitNasa=True):
             Data[i][nc+6] = Spec.getSpGibbsEnergyNASA(Ti,inclFitNasa)*unit
     return Data,DataHeaders
 
-
-def fitThermoDataNASA(Spec,Trange=[298.15,1000,2500]):
-    def f(params,x,y):
-        a=[]
-        a.append(params['a0'])
-        a.append(params['a1'])
-        a.append(params['a2'])
-        a.append(params['a3'])
-        a.append(params['a4'])
-        a.append(params['a5'])
-        a.append(params['a6'])
-
-        Cp_eq = a[0]           + a[1]*x     + a[2]*x**2     + a[3]*x**3     + a[4]*x**4
-        H_eq  = a[0]           + a[1]/2.0*x + a[2]/3.0*x**2 + a[3]/4.0*x**3 + a[4]/5.0*x**4 + a[5]/x
-        S_eq  = a[0]*np.log(x) + a[1]*x     + a[2]/2.0*x**2 + a[3]/3.0*x**3 + a[4]/4.0*x**4 + a[6]
-
-        residual = np.zeros([3,len(x)])
-        residual[0][:] = y[0][:]-Cp_eq
-        residual[1][:] = y[1][:]-H_eq
-        residual[2][:] = y[2][:]-S_eq
-        return residual
-
-    def findNASACoeffs(Spec,xdata):
-        x0= [1.0e+00, 1.0e-03, 1.0e-07, 1.0e-10, 1.0e-14, 1.0e+03, 1.0e+01]
-        #x0= [1.0e+00, 1.0e+00, 1.0e+00, 1.0e+00, 1.0e+00, 1.0e+00, 1.0e+00]
-        params = lmf.Parameters()
-        params.add('a0',x0[0])
-        params.add('a1',x0[1])
-        params.add('a2',x0[2])
-        params.add('a3',x0[3])
-        params.add('a4',x0[4])
-        params.add('a5',x0[5])
-        params.add('a6',x0[6])
-        ydata = np.zeros([3,len(xdata)])
-        for i,xi in enumerate(xdata):
-            Cpi = Spec.getSpHeatCapacityCpSTHD(xi)/p.R
-            Hi = Spec.getSpEnthalpySTHD(xi)/p.R/xi
-            Si = Spec.getSpEntropySTHD(xi)/p.R
-            ydata[0][i] = Cpi
-            ydata[1][i] = Hi
-            ydata[2][i] = Si
-        result = lmf.minimize(f, params, args=(xdata, ydata))
-        aa= result.residual
-        fitParams = []
-        fitParams.append(result.params['a0'].value)
-        fitParams.append(result.params['a1'].value)
-        fitParams.append(result.params['a2'].value)
-        fitParams.append(result.params['a3'].value)
-        fitParams.append(result.params['a4'].value)
-        fitParams.append(result.params['a5'].value)
-        fitParams.append(result.params['a6'].value)
-        return fitParams
-
-    nT = 20
-    Trange1 = np.linspace(Trange[0],Trange[1],nT)
-    Trange2 = np.linspace(Trange[1],Trange[2],nT)
-    
-    resultLow = findNASACoeffs(Spec,Trange1)
-    resultHigh = findNASACoeffs(Spec,Trange2)
-
-    Spec.FitLowNasa = resultLow
-    Spec.FitHighNasa = resultHigh
-    Spec.FitTrangeNasa = Trange
-
-    return Spec
-
-
 def getSpByNameFromList(SpList,aName):
     rsp = SpList[0]
     for sp in SpList:
         if sp.Name == aName:
             rsp = sp
             break
-
     return rsp
