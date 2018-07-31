@@ -3,7 +3,6 @@ import utilities as utl
 
 # Parse dat file with molecular data
 #--------------------------------------------------
-warnings = True
 def readChemSpeciesFile(spFile,spName='ALL'):
     #----------------------------------------------------
     # main body of the "readChemSpeciesFile" function
@@ -31,6 +30,9 @@ def readChemSpeciesFile(spFile,spName='ALL'):
             elif line[0] == parseVars['comment_char']:
                 skip_line = True
             if skip_line == False:
+                if parseVars['comment_char'] in line:
+                    line = line.split(parseVars['comment_char'])
+                    line = line[0]
                 line = line.split()
                 key = line[0]
                 if len(line)>1:
@@ -80,29 +82,28 @@ def readChemSpeciesFile(spFile,spName='ALL'):
                     u_fact = utl.convertEnergyMoleUnitsToSI(runit)
                     dfPs['ElecEn'] = float(value)*u_fact
                 elif 'InertiaMom' in key:
-                    InertiaMom= []
-                    if len(RotConst) == 0:
-                        runit = getUnit(key,parseVars)
-                        u_fact = utl.convertInertiaUnitsToSI(runit)
-                        value = value.split(parseVars['data_delim'])
-                        dfPs['Imom'] = [float(value[0])*u_fact,float(value[1])*u_fact,float(value[2])*u_fact]
-                        #get units right
-                    else:
-                        print('Ignoring InertiaMom input as RotConsts already given')
+                    if len(dfPs['Imom']) != 0:
+                        print('Warning: Multiple definition of moments of inertia.')
+                    value = ''.join(line[1:])
+                    runit = getUnit(key,parseVars)
+                    u_fact = utl.convertInertiaUnitsToSI(runit)
+                    value = value.split(parseVars['data_delim'])
+                    dfPs['Imom'] = [float(value[0])*u_fact,float(value[1])*u_fact,float(value[2])*u_fact]
+                    #get units right
                 elif 'RotConstants' in key:
                     RotConst = []
-                    if len(InertiaMom) == 0:
-                        runit = getUnit(key,parseVars)
-                        u_fact1 = utl.convertEnergyMoleculeUnitsToSI(runit,1.0) # 1/TIME,Hz,1/cm => J
-                        u_fact2 = utl.convertEnergyMoleculeUnitsToSI('1/M',-1.0) # J => 1/m
-                        u_fact = u_fact1*u_fact2
-                        value = value.split(parseVars['data_delim'])
-                        for v in value:
-                            RotConst.append(float(v)*u_fact)
-                        dfPs['Imom'] = chs.getImomFromRotConstant(RotConst)
-                        #get units right
-                    else:
-                        print('Ignoring RotConstants input as InertiaMom already given')
+                    if len(dfPs['Imom']) != 0:
+                        print('Warning: Multiple definition of moments of inertia.')
+                    value = ''.join(line[1:])
+                    runit = getUnit(key,parseVars)
+                    u_fact1 = utl.convertEnergyMoleculeUnitsToSI(runit,1.0) # 1/TIME,Hz,1/cm => J
+                    u_fact2 = utl.convertEnergyMoleculeUnitsToSI('1/M',-1.0) # J => 1/m
+                    u_fact = u_fact1*u_fact2
+                    value = value.split(parseVars['data_delim'])
+                    for v in value:
+                        RotConst.append(float(v)*u_fact)
+                    dfPs['Imom'] = chs.getImomFromRotConstant(RotConst)
+                    #get units right
                 elif 'ZeroPointEnergy' in key:
                     runit = getUnit(key,parseVars)
                     u_fact = utl.convertEnergyMoleculeUnitsToSI(runit)
@@ -115,20 +116,6 @@ def readChemSpeciesFile(spFile,spName='ALL'):
                 elif 'EnhtalpyRef' in key:
                     f,dfPs['EnthRefSource'],dfPs['EnthRefTemp'],dfPs['EnthRef'] = readEnthalpyRef(f,value,parseVars)
                 elif 'END' in key:
-
-                    if warnings:
-                        if dfPs['GeomType']==0 and len(dfPs['VibFreq'])>0:
-                            print('Warning: Frequencies defined for atomic species: '+ dfPs['Name'])
-                        if dfPs['GeomType']==1:
-                            if len(dfPs['VibFreq'])<3*len(dfPs['Geom'])-5:
-                                print('Warning: Species ' + dfPs['Name'] + ' has too few frequencies: ' + len(dfPs['VibFreq']) + '/' + 3*len(dfPs['Geom'])-5)
-                            elif len(dfPs['VibFreq'])>3*len(dfPs['Geom'])-5:
-                                print('Warning: Species ' + dfPs['Name'] + ' has too many frequencies: ' + len(dfPs['VibFreq']) + '/' + 3*len(dfPs['Geom'])-5)
-                        if dfPs['GeomType']==2:
-                            if len(dfPs['VibFreq'])<3*len(dfPs['Geom'])-6:
-                                print('Warning: Species ' + dfPs['Name'] + ' has too few frequencies: ' + len(dfPs['VibFreq']) + '/' + 3*len(dfPs['Geom'])-6)
-                            elif len(dfPs['VibFreq'])>3*len(dfPs['Geom'])-6:
-                                print('Warning: Species ' + dfPs['Name'] + ' has too many frequencies: ' + len(dfPs['VibFreq']) + '/' + 3*len(dfPs['Geom'])-6)
 
                     rSpec = chs.CreateChemSpecFromDict(dfPs)
                     #add species to a list

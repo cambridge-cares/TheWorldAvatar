@@ -16,15 +16,25 @@ def RunThermoScriptFromCmd(use_file,inp_file,spec_name,out_datfile,out_csvfile,t
     if use_file == 1:
         Sp = xmlparser.readSpecXML(inp_file)
         if len(out_datfile.strip())==0:
-            out_datfile = inp_file.replace('.xml','.dat')
+            if '.xml' in inp_file:
+                out_datfile = inp_file.replace('.xml','.dat')
+            else:
+                out_datfile = inp_file + '.dat'
     elif use_file == 2:
         Sp = jsonparser.readSpecJSON(inp_file)
         if len(out_datfile.strip())==0:
-            out_datfile = inp_file.replace('.json','_nasa.json')
+            if '.json' in inp_file:
+                out_datfile = inp_file.replace('.json','_nasa.json')
+            else:
+                out_datfile = inp_file + '_nasa.json'
     else:
         Sp_list = datparser.readChemSpeciesFile(inp_file,spName=spec_name)
         Sp = Sp_list[0]
-        out_datfile = inp_file.replace('.dat','_nasa.dat')
+        if len(out_datfile.strip())==0:
+            if '.dat' in inp_file:
+                out_datfile = inp_file.replace('.dat','_nasa.dat')
+            else:
+                out_datfile = inp_file + '_nasa.dat'
 
     # Check if enthalpy reference point is provided
     if len(href)>0:
@@ -39,7 +49,7 @@ def RunThermoScriptFromCmd(use_file,inp_file,spec_name,out_datfile,out_csvfile,t
     if len(tcsv_range)!=0:
         Sp.ToutCsv = tcsv_range
 
-    # Fit and write nasa polynomials (all file formats)
+    # Fit nasa polynomials (all file formats)
     Sp = nasafitter.fitThermoDataNASA(Sp,tfit_range)
 
     if use_file == 2:
@@ -50,6 +60,7 @@ def RunThermoScriptFromCmd(use_file,inp_file,spec_name,out_datfile,out_csvfile,t
         nasawriter.writeNasaDatFile(Sp,out_datfile)
 
     if len(out_csvfile.strip())!=0:
+        # all file formats
         # write csv file with calculated thermodynamic properties
         # compared to properties from existing Nasa polynomials 
         # (if provided) and with fitted Nasa polynomials

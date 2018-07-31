@@ -9,7 +9,7 @@ import utilities as utl
 # default temperature ranges
 ToutCsv = [298,300,400,500,600,700,800,900,1000,1200,1500,1700,2000,2500,3000]
 TfitNasa = [298.15,1000,2500]
-
+warnings = True
 class ChemSpecies:
     #--------------------------------------------------
     #            Constructor
@@ -334,6 +334,25 @@ def getDefaultProps():
     defaultProps['MetaData']={}
     return defaultProps
 
+def checkDataConsistency(dict):
+    if warnings:
+        currentFreqNr = len(dict['VibFreq'])
+        requiredFreqNr1 = int(3*getElementsNr(dict['Comp'])-5)
+        requiredFreqNr2 = int(3*getElementsNr(dict['Comp'])-6)
+        # Check nr of frequencies
+        if dict['GeomType']==0 and currentFreqNr>0:
+            print('Warning: Frequencies should not be defined for atomic species: '+ dict['Name'])
+        if dict['GeomType']==1:
+            if currentFreqNr < requiredFreqNr1:
+                print('Warning: Species ' + dict['Name'] + ' has too few frequencies: ' + str(currentFreqNr) + '/' + str(requiredFreqNr1))
+            elif currentFreqNr > requiredFreqNr1:
+                print('Warning: Species ' + dict['Name'] + ' has too many frequencies: ' + str(currentFreqNr) + '/' + str(requiredFreqNr1))
+        if dict['GeomType']==2:
+            if currentFreqNr < requiredFreqNr2:
+                print('Warning: Species ' + dict['Name'] + ' has too few frequencies: ' + str(currentFreqNr) + '/' + str(requiredFreqNr2))
+            elif currentFreqNr > requiredFreqNr2:
+                print('Warning: Species ' + dict['Name'] + ' has too many frequencies: ' + str(currentFreqNr) + '/' + str(requiredFreqNr2))
+
 def CreateChemSpecFromDict(dict):
     # Get defaults
     def_dict = getDefaultProps()
@@ -343,6 +362,7 @@ def CreateChemSpecFromDict(dict):
         if key not in dict:
             dict[key] = value
 
+    # checkDataConsistency(dict)
     # Create species
     rSpec = ChemSpecies(aName=dict['Name'],aFormula=dict['Formula'],aComp=dict['Comp'],
             aMolWt=dict['MolWt'],aElMolWt=dict['ElMolWt'],aVibFreq=dict['VibFreq'],
@@ -423,3 +443,9 @@ def getSpByNameFromList(SpList,aName):
             rsp = sp
             break
     return rsp
+
+def getElementsNr(Comp):
+    nEl = 0
+    for i in range(1,len(Comp),2):
+        nEl = nEl + int(Comp[i])
+    return nEl

@@ -273,6 +273,8 @@ def convertEnergyMoleUnitsToSI(aunit_in,exponent=1.0):
 
 def convertInertiaUnitsToSI(aunit_in,exponent=1.0):
     # SI: kg*m^2
+    SI_unit = 'KG*M^2'
+    mult_factor = 1.0
     if aunit_in == 'KG*M^2':
         mult_factor = 1.0
     elif checkUnitType(aunit_in,'MASS,LENGTH^2'):
@@ -347,21 +349,32 @@ def getUnitType(aunit_in):
 
 def checkUnitType(aunit_in,aunit_check):
     flag = True
-    # extract units and exponents    
+    # extract units and exponents
+    # e.g. aunit_in = G*A^2
+    # unit_intokens = G, A
+    # unit_inexp = 1, 2
     unit_intokens, unit_inexp = extractUnits(aunit_in)
     # tokenize and sort aunit_check
+    # e.g. aunit_check = MASS,LENGTH^2
+    # unit_checktokens = TIME
+    #
     if ',' in aunit_check:
+        # unit_checktokens = MASS, LENGTH^2
         unit_checktokens=aunit_check.split(',')
+        # indices store an alphabetical order of items in array unit_checktokens
+        # unit_check_ind = 1 (MASS), 0 (LENGTH) (because [L]ENGTH comes before [M]ASS)
         unit_check_ind = sorted(range(len(unit_checktokens)), key=lambda k: unit_checktokens[k])
+        # sorts array unit_checktokens = LENGTH^2, MASS
         unit_checktokens =  [unit_checktokens[x] for x in unit_check_ind]
     else:
         unit_checktokens = []
-        unit_checktokens.append(aunit_check)                
+        unit_checktokens.append(aunit_check)
     
     # construct final aunit_in strings
-    unit_in1 = []
-    unit_in2 = []
-    unit_in3 = []
+    # different ways of writing the same unit information in case of ^1 power
+    unit_in1 = []  # UNIT1^1, UNIT2^2 e.g. MASS^1, LENGTH^2
+    unit_in2 = []  # UNIT1, UNIT2^2   e.g. MASS, LENGTH^2
+    unit_in3 = []  # UNIT1^n, UNIT2^n e.g. MASS^n, LENGTH^n
     for i,ut in enumerate(unit_intokens):
         unit_in1.append(getUnitType(ut)+'^'+unit_inexp[i])
         unit_in3.append(getUnitType(ut)+'^n')
@@ -373,9 +386,9 @@ def checkUnitType(aunit_in,aunit_check):
     unit_in1_ind = sorted(range(len(unit_in1)), key=lambda k: unit_in1[k])
     unit_in2_ind = sorted(range(len(unit_in2)), key=lambda k: unit_in2[k])
     unit_in3_ind = sorted(range(len(unit_in3)), key=lambda k: unit_in3[k])
-    unit_in1 = [unit_in1[x] for x in unit_in1_ind]
-    unit_in2 =  [unit_in2[x] for x in unit_in2_ind]
-    unit_in3 =  [unit_in3[x] for x in unit_in3_ind]
+    unit_in1 = [unit_in1[x] for x in unit_in1_ind]   # LENGTH^2, MASS^1
+    unit_in2 =  [unit_in2[x] for x in unit_in2_ind]  # LENGTH^2, MASS
+    unit_in3 =  [unit_in3[x] for x in unit_in3_ind]  # LENGTH^n, MASS^n
     
     # compare aunit_in strings with aunit_check
     if len(unit_checktokens)!=len(unit_in1):
