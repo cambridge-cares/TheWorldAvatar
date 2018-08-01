@@ -1,18 +1,17 @@
 package uk.ac.ceb.como.molhub.action;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.jline.utils.Log;
 
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -40,6 +39,8 @@ import uk.ac.ceb.como.molhub.model.SentenceManager;
  */
 public class TermValidationAction extends ActionSupport {
 
+	private static final Logger log = Logger.getLogger(TermValidationAction.class);
+
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1222255700658500383L;
 
@@ -58,10 +59,6 @@ public class TermValidationAction extends ActionSupport {
 	/** The server url. */
 	private String serverUrl = "http://localhost:8080/rdf4j-server/";
 
-	
-
-	
-
 	Map<String, MoleculeProperty> finalSearchResultMap = new HashMap<String, MoleculeProperty>();
 
 	/*
@@ -75,9 +72,9 @@ public class TermValidationAction extends ActionSupport {
 		PLParser parser = new PLParser();
 
 		DPLL dpll = new DPLLSatisfiable();
-		
+
 		EmpiricalFormulaParser empiricalFormulaParser = new EmpiricalFormulaParser();
-		
+
 		try {
 
 			Sentence sentence = parser.parse(getSearchTerm(term));
@@ -100,50 +97,31 @@ public class TermValidationAction extends ActionSupport {
 
 				Set<PropositionSymbol> ps = c.getSymbols();
 
-				for (PropositionSymbol symbol : ps) {
-
-				
-					
-					/**
-					 * @author nk510 Parses given symbol in one clause and gets atom name.
-					 */
-//					String atomName = empiricalFormulaParser.getAtomName(symbol.getSymbol());
-
+				for (PropositionSymbol ppSymbol : ps) {
 					/**
 					 * 
 					 * @author nk510 Extracts each propositional letter (propositional symbol) in
 					 *         each clause and checks whether that symbol is member of periodic
-					 *         table. For example, Cl, Fe, H, O etc.
+					 *         table. To check whether propositional symbol belongs to period table
+					 *         we use <b>{@author pb556}</b> parser.
 					 * 
 					 */
-					
-					Element elementSymbol = PeriodicTable.getElementBySymbol(symbol.getSymbol().replaceAll("[0-9]+$", ""));
-					
-//					System.out.println("elementSymbol.getSymbol() " + elementSymbol.getSymbol());
 
-					setPeriodicTableElement(elementSymbol.getSymbol());
+					Element elementSymbol = PeriodicTable
+							.getElementBySymbol(empiricalFormulaParser.getAtomName(ppSymbol.getSymbol().toString()));
 
-					if ((elementSymbol.getSymbol().isEmpty()) ||(elementSymbol.getSymbol()==null) ) {
+					log.info("ppSymbol.getSymbol() : " + ppSymbol.getSymbol());
 
-						addFieldError("term.name", "There is at least one propositional letter (" + symbol.getSymbol()
+					if (elementSymbol.getSymbol() == null) {
+
+						addFieldError("term.name", "There is at least one propositional letter (" + ppSymbol.getSymbol()
 								+ ") that is not member of periodic table.");
-						return ERROR;
-
-					}
-
-					/**
-					 * @author nk510 Checks whether each clause starts with one or more letter and
-					 *         ends with one or more numbers.
-					 */
-					if (!symbol.getSymbol().matches("([A-Za-z])+([0-9])+")) {
-
-						addFieldError("term.name", "Query string is not valid sentence.");
 
 						return ERROR;
 
 					}
-
 				}
+
 			}
 
 			/**
@@ -159,107 +137,6 @@ public class TermValidationAction extends ActionSupport {
 
 				setFormula(getSearchTerm(term));
 
-				try (RepositoryConnection connection = ConnectionToTripleStore.getRepositoryConnection(serverUrl,
-						"compchemkb")) {
-
-					/**
-					 * @author nk510 Algorithm for search compchem grah database based on query
-					 *         string:
-					 * 
-					 *         1. Iterates over set of all clauses.
-					 * 
-					 *         2. If a clause is empty then return empty results set (empty map)
-					 *         because the truth evaluation of empty clause is always false.
-					 * 
-					 *         3. Otherwise we check whether clause is tautology.
-					 * 
-					 *         4. If clause is tautology we skip query of rdf4j graph database for
-					 *         that clause.
-					 * 
-					 *         5. If propositional symbol (literal) is not positive (negative) then
-					 *         we perform query that returns all molecules that do not have given
-					 *         atom name and number of atoms. Otherwise returns a set of molecules
-					 *         which have given atom name and number of atoms.
-					 * 
-					 */
-					for (Clause c : clauseSet) {
-
-						Map<String, MoleculeProperty> searchResultClauseMap = new HashMap<String, MoleculeProperty>();
-
-						if (c.isEmpty()) {
-
-							finalSearchResultMap.clear();
-
-							break;
-
-						} else {
-
-							/**
-							 * @author nk510 If clause is a tautology then we skip search compchem rdf graph
-							 *         for each atomic sentence in that clause.
-							 */
-							if (!c.isTautology()) {
-
-								Set<Literal> literalSet = c.getLiterals();
-								
-								for (Literal literalSentence : literalSet) {
-									
-									Map<String, MoleculeProperty> searchResultLiteralMap = new HashMap<String, MoleculeProperty>();
-									
-//									EmpiricalFormulaParser empiricalFormulaParser = new EmpiricalFormulaParser();
-									
-									String atomName = empiricalFormulaParser
-											.getAtomName(literalSentence.getAtomicSentence().toString());
-									int numberOfAtoms = empiricalFormulaParser
-											.getNumberOfAllAtoms(literalSentence.getAtomicSentence().toString());
-
-									if (literalSentence.isNegativeLiteral()) {
-
-										String queryString = QueryManager.getQueryForNegativeLiteral(atomName,
-												numberOfAtoms);
-
-										TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL,
-												queryString);
-
-										TupleQueryResult result = tupleQuery.evaluate();
-
-										try (TupleQueryResult resultSet = tupleQuery.evaluate()) {
-
-											while (resultSet.hasNext()) { // iterate over the result
-												
-												BindingSet bindingSet = result.next();
-												
-												Value valueOfG09 = bindingSet.getValue("g09");
-												Value valueOfMoleculeName = bindingSet.getValue("moleculeName");												
-									
-												MoleculeProperty moleculeProperty = new MoleculeProperty(
-														valueOfG09.toString(), valueOfMoleculeName.toString());
-
-												searchResultLiteralMap.put(valueOfG09.toString(), moleculeProperty);
-
-											}
-										}
-
-									}
-
-									searchResultClauseMap.putAll(searchResultLiteralMap);
-								
-								}
-
-							}
-
-						}
-
-						Set<String> searchResultSet = searchResultClauseMap.keySet();
-						
-						finalSearchResultMap.keySet().addAll(searchResultSet);
-					}
-
-				} catch (Exception e) {
-
-					e.getMessage();
-				}
-				
 				return SUCCESS;
 
 			} else {
@@ -280,7 +157,7 @@ public class TermValidationAction extends ActionSupport {
 			 * 
 			 */
 
-			addFieldError("term.name", getText("error.term") + "Explanation: " + e.getMessage());
+			addFieldError("term.name", "Query string is not propositionally valid sentence. Please try again.");
 
 			return ERROR;
 		}
@@ -389,9 +266,8 @@ public class TermValidationAction extends ActionSupport {
 		/**
 		 * @author nk510 Converts all letter into lower case.
 		 */
-		formula = term.getName().toLowerCase();
 
-		formula = formula.replaceAll("and", "&");
+		formula = term.getName().replaceAll("and", "&");
 		formula = formula.replaceAll("or", "|");
 		formula = formula.replaceAll("not", "~");
 		formula = formula.replaceAll("implies", "=>");
@@ -417,6 +293,6 @@ public class TermValidationAction extends ActionSupport {
 	 */
 	public void setPeriodicTableElement(String periodicTableElement) {
 		this.periodicTableElement = periodicTableElement;
-	}	
+	}
 
 }
