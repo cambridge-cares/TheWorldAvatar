@@ -27,7 +27,7 @@ $(document).ready(function () {
     function enterPercentage() {
         let percent = $('#input-percentage').val();
         cleanMsg();
-        if(percent === "" || percent === lastPercentInput){
+        if(percent === "" ){//percent === lastPercentInput
             console.log("have not enter any percentage or same as last, just return")
             return;//return without doing anything
         }

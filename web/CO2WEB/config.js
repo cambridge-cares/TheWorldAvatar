@@ -26,6 +26,8 @@ config.bmsNode = path.join(config.bmsFolder , "CARES_Lab.owl");
 config.bmsplotnode = path.join(config.bmsFolder, "BCA_RT_sensor1.owl");
 config.semakauNode = path.join(config.root , "SemakauIsland.owl");
 config.landLotNode=path.join(config.root , "JParkLandLots.owl");
+config.ontochemNode=path.join(config.root , "ontochemkb.owl");
+
 //TODO: this later should be wrapped in owl file
 config.heatWasteScript = path.join(__dirname, "agents/WHR_network_optimization_trim.py")
 config.heatWasteNode = path.join(config.root, "wasteheatnetwork.owl")

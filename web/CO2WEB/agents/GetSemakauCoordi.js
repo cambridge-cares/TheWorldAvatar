@@ -44,5 +44,3 @@ function  getSemakauCoordi(callback) {
 
 
 module.exports = getSemakauCoordi
-
-
