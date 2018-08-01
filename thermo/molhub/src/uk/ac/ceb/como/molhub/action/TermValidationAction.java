@@ -1,24 +1,18 @@
 package uk.ac.ceb.como.molhub.action;
 
-import java.util.HashMap;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.query.BindingSet;
-import org.eclipse.rdf4j.query.QueryLanguage;
-import org.eclipse.rdf4j.query.TupleQuery;
-import org.eclipse.rdf4j.query.TupleQueryResult;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.RDF4JException;
 
 import com.opensymphony.xwork2.ActionSupport;
 
 import aima.core.logic.propositional.inference.DPLL;
 import aima.core.logic.propositional.inference.DPLLSatisfiable;
 import aima.core.logic.propositional.kb.data.Clause;
-import aima.core.logic.propositional.kb.data.Literal;
 import aima.core.logic.propositional.parsing.PLParser;
 import aima.core.logic.propositional.parsing.ast.PropositionSymbol;
 import aima.core.logic.propositional.parsing.ast.Sentence;
@@ -28,9 +22,7 @@ import uk.ac.cam.ceb.como.chem.periodictable.PeriodicTable;
 import uk.ac.cam.ceb.como.io.chem.file.parser.formula.EmpiricalFormulaParser;
 import uk.ac.ceb.como.molhub.bean.MoleculeProperty;
 import uk.ac.ceb.como.molhub.bean.Term;
-import uk.ac.ceb.como.molhub.controler.ConnectionToTripleStore;
 import uk.ac.ceb.como.molhub.model.QueryManager;
-
 import uk.ac.ceb.como.molhub.model.SentenceManager;
 
 // TODO: Auto-generated Javadoc
@@ -38,8 +30,6 @@ import uk.ac.ceb.como.molhub.model.SentenceManager;
  * The Class TermValidationAction.
  */
 public class TermValidationAction extends ActionSupport {
-
-	private static final Logger log = Logger.getLogger(TermValidationAction.class);
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1222255700658500383L;
@@ -56,10 +46,11 @@ public class TermValidationAction extends ActionSupport {
 	/** The periodic table element. */
 	private String periodicTableElement;
 
-	/** The server url. */
-	private String serverUrl = "http://localhost:8080/rdf4j-server/";
 
-	Map<String, MoleculeProperty> finalSearchResultMap = new HashMap<String, MoleculeProperty>();
+
+	Set<MoleculeProperty> finalSearchResultSet = new HashSet<MoleculeProperty>();
+	
+	List<MoleculeProperty> queryResult;
 
 	/*
 	 * (non-Javadoc)
@@ -109,8 +100,7 @@ public class TermValidationAction extends ActionSupport {
 
 					Element elementSymbol = PeriodicTable
 							.getElementBySymbol(empiricalFormulaParser.getAtomName(ppSymbol.getSymbol().toString()));
-
-					log.info("ppSymbol.getSymbol() : " + ppSymbol.getSymbol());
+					
 
 					if (elementSymbol.getSymbol() == null) {
 
@@ -119,7 +109,12 @@ public class TermValidationAction extends ActionSupport {
 
 						return ERROR;
 
-					}
+					} else {
+						
+						setPeriodicTableElement(elementSymbol.getName());
+						
+					}				
+					
 				}
 
 			}
@@ -136,8 +131,36 @@ public class TermValidationAction extends ActionSupport {
 			if (dpll.dpllSatisfiable(sentence)) {
 
 				setFormula(getSearchTerm(term));
+				
+				try {
+				
+//					setFinalSearchResultSet(QueryManager.performQuery(sentence));
+					
+//					setQueryResult(QueryManager.performListQuery(sentence));
+					
+					queryResult = new ArrayList<MoleculeProperty>();
+					
+					List<MoleculeProperty> listTemp = QueryManager.performListQuery(sentence);
+					
+					for(MoleculeProperty mpp: listTemp) {
+						
+						queryResult.add(new MoleculeProperty(mpp.getMoleculeId(),mpp.getMoleculeName()));
+					}
+					
+					MoleculeProperty mp = new MoleculeProperty("1", "Chlorine");
+					queryResult.add(mp);
+					
+//					setQueryResult(QueryManager.performListQuery(sentence));
+				
+				}catch(RDF4JException e) {
+					
+					addFieldError("term.name", "Query result failed. Explanation: " + e.getMessage());
 
-				return SUCCESS;
+					return ERROR;
+					
+				}
+				
+				return SUCCESS;		
 
 			} else {
 
@@ -145,6 +168,7 @@ public class TermValidationAction extends ActionSupport {
 
 				return ERROR;
 			}
+			
 
 		} catch (Exception e) {
 
@@ -163,15 +187,7 @@ public class TermValidationAction extends ActionSupport {
 		}
 
 	}
-
-	public Map<String, MoleculeProperty> getFinalSearchResultMap() {
-		return finalSearchResultMap;
-	}
-
-	public void setFinalSearchResultMap(Map<String, MoleculeProperty> finalSearchResultMap) {
-		this.finalSearchResultMap = finalSearchResultMap;
-	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -294,5 +310,25 @@ public class TermValidationAction extends ActionSupport {
 	public void setPeriodicTableElement(String periodicTableElement) {
 		this.periodicTableElement = periodicTableElement;
 	}
+
+	public Set<MoleculeProperty> getFinalSearchResultSet() {
+		return finalSearchResultSet;
+	}
+
+	public void setFinalSearchResultSet(Set<MoleculeProperty> finalSearchResultSet) {
+		this.finalSearchResultSet = finalSearchResultSet;
+	}
+
+	public List<MoleculeProperty> getQueryResult() {
+		return queryResult;
+	}
+
+	public void setQueryResult(List<MoleculeProperty> queryResult) {
+		this.queryResult = queryResult;
+	}
+
+	
+
+
 
 }

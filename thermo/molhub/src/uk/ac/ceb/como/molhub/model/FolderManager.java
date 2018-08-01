@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public class FolderManager {
 
-	public static String generateUniqueFolderName(String fileName, String catalicaFolderPath)
+	public static String generateUniqueFolderName(String fileName, String catalinaFolderPath)
 			throws UnsupportedEncodingException {
 
 		// To create UUID by using encoded content of given file.
@@ -30,8 +30,10 @@ public class FolderManager {
 		datetime = datetime.replace(":", "");
 
 		/**
+		 * 
 		 * @author nk510 Generates source for universally unique identifier (uuid) based
 		 *         on file name, date, time, and milliseconds.
+		 * 
 		 */
 
 		String source = fileName + datetime + milliseconds;
@@ -39,13 +41,15 @@ public class FolderManager {
 		byte[] bytes = source.getBytes("UTF-8");
 
 		UUID uuid = UUID.nameUUIDFromBytes(bytes);
-
-		folderName = catalicaFolderPath + "/conf/Catalina/" + uuid.toString();
+		
+		folderName = catalinaFolderPath + "/conf/Catalina/" + uuid.toString();
 
 		return folderName;
+		
 	}
 
 	public static void createFolder(String folderName) {
+		
 		Path folderPath = Paths.get(folderName);
 
 		if (!Files.exists(folderPath)) {
@@ -62,7 +66,6 @@ public class FolderManager {
 
 	public static void saveFileInFolder(File inputFile, String absoluteFilePath) throws IOException {
 
-
 		Path path = Paths.get(absoluteFilePath);
 		
 		byte[] data = Files.readAllBytes(path);
@@ -74,4 +77,6 @@ public class FolderManager {
         stream.close();
         
 	}
+	
+	
 }

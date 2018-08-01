@@ -2,12 +2,14 @@
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
   
   <display-name>molhub</display-name>
+	
 	<filter>
 		<filter-name>struts2</filter-name>
 		<filter-class>
 			org.apache.struts2.dispatcher.filter.StrutsPrepareAndExecuteFilter
 		</filter-class>
 	</filter>
+	
 	<filter-mapping>
 		<filter-name>struts2</filter-name>
 		<url-pattern>/*</url-pattern>
@@ -18,6 +20,13 @@
 		<welcome-file>Login.jsp</welcome-file>
 	</welcome-file-list>
 	
+   <jsp-config>
+    <jsp-property-group > 
+        <url-pattern>*.jsp</url-pattern>
+        <page-encoding>UTF-8</page-encoding>
+    </jsp-property-group>
+   </jsp-config>
+
   <!-- 
   <welcome-file-list>
   <welcome-file>index.html</welcome-file>

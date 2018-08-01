@@ -24,13 +24,15 @@ public class CalculationAction extends ActionSupport {
 	private static final long serialVersionUID = 1L;
 
 	String catalicaFolderPath = System.getProperty("catalina.home");
+	
+	String sparql = catalicaFolderPath + "/conf/Catalina/sparql_query/query_all.sparql";
 
 	@Override
 	public String execute() throws Exception {
 
 		Utility utility = new FileUtility();
 
-		File sparqlFile = new File(catalicaFolderPath + "/conf/Catalina/sparql_query/query_all.sparql");
+		File sparqlFile = new File(sparql);
 
 		/**
 		 * 
@@ -38,7 +40,7 @@ public class CalculationAction extends ActionSupport {
 		 *
 		 * @author nk510
 		 * @param aboxFiles
-		 *            the list of owl or rdf files. These files are Abox for Ontochem ontology.
+		 *            the list of owl or rdf files. These files are Abox for Compchem ontology.
 		 * @return
 		 *         <p>
 		 * 		Method reads all files in given folder path. Supported file
@@ -46,10 +48,12 @@ public class CalculationAction extends ActionSupport {
 		 *         </p>
 		 * 
 		 */
-
+		
+		//TODO: SPARQL on triple store. Update XSLT: CUID, Output file name, inChiKey, search based on InChiKey and file name.
+		
 		File[] aboxFiles = utility.getFileList(catalicaFolderPath + "/conf/Catalina/compchem_ontology/", ".owl", ".rdf");
 
-		String sparqlResulFolder = catalicaFolderPath + "/conf/Catalina/sparql_results/";
+		String sparqlResultFolder = catalicaFolderPath + "/conf/Catalina/sparql_results/";
 
 		for (File af : aboxFiles) {
 
@@ -57,7 +61,7 @@ public class CalculationAction extends ActionSupport {
 
 			String q = FileUtils.readFileToString(sparqlFile, "UTF-8");
 
-			CompChemQuery.performQuery(model, q, af.getName().toString(), sparqlResulFolder);
+			CompChemQuery.performQuery(model, q, af.getName().toString(), sparqlResultFolder);
 		}
 
 		/**

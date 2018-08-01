@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <%@ taglib prefix="s" uri="/struts-tags" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<!DOCTYPE html>    
+<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <title>Query submission notification</title>
 </head>
 <body>
@@ -21,14 +20,18 @@
 
 <p>Your periodic table element is: <s:property value="periodicTableElement" /> </p>
 
-<p>Your propositional formula in conjunctive normal form (CNF) form is: <s:property value="#termBean.name" /> </p>
-
-
 <p>Is propositional formula satisfiable (true in at least one valuation)? : <s:property value="satisfiable" /></p>
 
+<h3> Search Results: </h3>
 
-<!-- change with struts2 action.-->
-<s:a href="http://localhost:8080/molhub/upload.jsp">Back to upload page</s:a>
+<!--<s:property value="%{finalSearchResultSet.{moleculeName}[0]}" />-->
+
+<s:iterator value="queryResult">
+<tr>
+<td><s:property value="moleculeId"/></td>
+<td><s:property value="moleculeName"/></td>
+</tr>
+</s:iterator>
 
 </body>
 </html>
