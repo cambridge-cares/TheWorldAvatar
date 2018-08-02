@@ -90,8 +90,8 @@ $(function(){
                     coordinatesArray.push(convertedCoordinates[0]); // latitude
                     coordinatesArray.push(convertedCoordinates[1]); // longitude
 
-                    document.getElementById("longitude").innerHTML = convertedCoordinates[1];
-                    document.getElementById("latitude").innerHTML = convertedCoordinates[0];
+                    document.getElementById("longitude").innerHTML = longitude; // convertedCoordinates[1];
+                    document.getElementById("latitude").innerHTML = latitude; // convertedCoordinates[0];
 
                     // $.getJSON('/JPS/ADMSOutput',
                     //     {
@@ -191,12 +191,14 @@ $(function(){
         const coordinatesMid = getMidPoint(coordinatesMin, coordinatesMax);
 
         const location = $("#location option:selected").text();
+         
         $.ajax('http://www.theworldavatar.com/JPS/ADMSCoordinationAgent?coordinates='+encodeURIComponent(JSON.stringify({'xmin':xmin,'xmax':xmax, 'ymin':ymin, 'ymax':ymax}).replaceAll('"',"'"))).done(function (bdnlist) {
             //todo: init building
             initadms3dmap(JSON.parse(bdnlist), osmb, location, coordinatesMid);
             
-        }).fail(function () {
-            console.log("error")
+        }).fail(function (xhr, testStatus, errorThrown) {
+//            console.log("error")
+        	console.log(xhr.responseText);
         })
     });
     //***************************************************************************

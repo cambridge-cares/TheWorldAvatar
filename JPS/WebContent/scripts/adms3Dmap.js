@@ -38,6 +38,21 @@ const initadms3dmap  = (list, osmb, location, coordinatesMid) => {
     // 	position.latitude = 52.51461;
     // 	position.longitude = 13.23966;
     // }
+        
+    $.getJSON('/JPS/ADMSPowerPlantCentrePointGetter',
+    	{
+    		location
+    	},
+    	data => {
+    		const geojson = data;
+    		try {
+    			console.log(JSON.stringify(geojson, null, 4));
+    			osmb.addGeoJSON(geojson);
+    		} catch (err) {
+    			console.log(err.name);
+    		}
+    	});
+    	
     position.latitude = coordinatesMid[0];
     position.longitude = coordinatesMid[1];
 
@@ -59,6 +74,7 @@ const initadms3dmap  = (list, osmb, location, coordinatesMid) => {
 
                 try {
                     osmb.addGeoJSON(geojson[i]);
+//                    console.log(JSON.stringify(geojson[i], null, 4));
                 }
                 catch(err) {
                     console.log(err.name)
