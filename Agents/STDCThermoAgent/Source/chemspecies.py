@@ -15,7 +15,7 @@ class ChemSpecies:
     #            Constructor
     #--------------------------------------------------
     def __init__(self,aName="",aFormula="",aComp=[],aMolWt=0.0,aElMolWt=[],aVibFreq=[],aVibScale=1.0,aSymNr=1.0,aGeom=[],
-                aGeomType=2,aImom=[],aElecEn=0.0,aZPE=0.0,aSpinMult=1.0,aElecLvL=[[1.0,0.0]],aLowNasa=[],
+                aGeomType=2,aImom=[],aElecEn=0.0,aZPE=0.0,aSpinMult=1.0,aElecLvL=[],aLowNasa=[],
                 aHighNasa=[],aTrangeNasa=[],aEnthRefSource='#None',aEnthRefTemp=298.15,aEnthRef=0.0,aFitLowNasa=[],
                 aFitHighNasa=[],aFitTrangeNasa=TfitNasa,aToutCsv=ToutCsv,aMetaData={}):
         #   properties set based on constructor arguments
@@ -69,6 +69,8 @@ class ChemSpecies:
     #---------------------------------
     def setDerivedProperties(self):
         # get molecular mass and elements mass vector
+        if not self.ElecLvL:
+            self.ElecLvL = [[self.SpinMult, 0.0]]
         if not self.ElMolWt:
             self.ElMolWt = self.getElMolWt()
         if self.MolWt<=0:
@@ -320,7 +322,7 @@ def getDefaultProps():
     defaultProps['ElecEn']=0.0
     defaultProps['ZPE']=0.0
     defaultProps['SpinMult']=1.0
-    defaultProps['ElecLvL']=[[1.0,0.0]]
+    defaultProps['ElecLvL']=[]
     defaultProps['LowNasa']=[]
     defaultProps['HighNasa']=[]
     defaultProps['TrangeNasa']=[]
@@ -391,49 +393,93 @@ def getImomFromRotConstant(aRotConst):
                 InertiaMom.append(p.BI_pref/B)
     return InertiaMom
 
-def GetThermoData(T,Spec,unit=1.0,inclNasa=False,inclFitNasa=True):
+def GetThermoData(T,Spec,unit,inclNasa=True,inclFitNasa=True,inclSthdNasaDiff=True,inclFitNasaNasaDiff=True,
+                  inclSthdNasaFitNasaDiff = True):
     ncols = 6
-    if unit==1:
-        unitlabel1 = '[J/mol]'
-        unitlabel2 = '[J/mol/K]'
-    else:
-        unitlabel1 = ''
-        unitlabel2 = ''
-    DataHeaders = ['T [K]','S sthd '+unitlabel2, 'H sthd '+unitlabel1, 'Cp sthd '+unitlabel2, 'Cv sthd '+unitlabel2, 'U sthd '+unitlabel1, 'G sthd '+unitlabel1]
+    dataitems = ['S', 'H', 'Cp', 'Cv', 'U', 'G']
+    dataunits = ['Entropy', 'Energy', 'HeatCap', 'HeatCap', 'Energy', 'Energy']
+    DataHeaders = ['T ' + unit['Temperature'][0]]
+    for i,item in enumerate(dataitems):
+        DataHeaders.append(item + ' sthd ' + unit[dataunits[i]][0])
+
     if inclNasa:
-        ncols = ncols + 6
-        DataHeaders =  DataHeaders + ['S nasa '+unitlabel2, 'H nasa '+unitlabel1, 'Cp nasa '+unitlabel2, 'Cv nasa '+unitlabel2, 'U nasa '+unitlabel1, 'G nasa '+unitlabel1]
+        for i,item in enumerate(dataitems):
+            DataHeaders.append(item + ' nasa ' + unit[dataunits[i]][0])
+
     if inclFitNasa:
-        ncols = ncols + 6
-        DataHeaders =  DataHeaders + ['S fitnasa '+unitlabel2, 'H fitnasa '+unitlabel1, 'Cp fitnasa '+unitlabel2, 'Cv fitnasa '+unitlabel2, 'U fitnasa '+unitlabel1, 'G fitnasa '+unitlabel1]
-    
-    Data = np.zeros([len(T),ncols+1])
+        for i,item in enumerate(dataitems):
+            DataHeaders.append(item + ' fitnasa ' + unit[dataunits[i]][0])
+
+    if inclSthdNasaDiff and inclNasa:
+        for i,item in enumerate(dataitems):
+            DataHeaders.append(item + ' abs sthd nasa diff ' + unit[dataunits[i]][0])
+
+    if inclFitNasaNasaDiff and inclFitNasa:
+        for i,item in enumerate(dataitems):
+            DataHeaders.append(item + ' abs fitnasa nasa diff ' + unit[dataunits[i]][0])
+
+    if inclSthdNasaFitNasaDiff and inclFitNasa:
+        for i,item in enumerate(dataitems):
+            DataHeaders.append(item + ' abs sthd fitnasa diff ' + unit[dataunits[i]][0])
+
+
+    Data = np.zeros([len(T),len(DataHeaders)])
     for i,Ti in enumerate(T):
         nc = 6
-        Data[i][0] = Ti
-        Data[i][1] = Spec.getSpEntropySTHD(Ti)*unit
-        Data[i][2] = Spec.getSpEnthalpySTHD(Ti)*unit
-        Data[i][3] = Spec.getSpHeatCapacityCpSTHD(Ti)*unit
-        Data[i][4] = Spec.getSpHeatCapacityCvSTHD(Ti)*unit
-        Data[i][5] = Spec.getSpInternalEnergySTHD(Ti)*unit
-        Data[i][6] = Spec.getSpGibbsEnergySTHD(Ti)*unit
+        Data[i][0] = Ti*unit['Temperature'][1]+unit['Temperature'][2]
+        Data[i][1] = Spec.getSpEntropySTHD(Ti)*unit['Entropy'][1]+unit['Entropy'][2]
+        Data[i][2] = Spec.getSpEnthalpySTHD(Ti)*unit['Energy'][1]+unit['Energy'][2]
+        Data[i][3] = Spec.getSpHeatCapacityCpSTHD(Ti)*unit['HeatCap'][1]+unit['HeatCap'][2]
+        Data[i][4] = Spec.getSpHeatCapacityCvSTHD(Ti)*unit['HeatCap'][1]+unit['HeatCap'][2]
+        Data[i][5] = Spec.getSpInternalEnergySTHD(Ti)*unit['Energy'][1]+unit['Energy'][2]
+        Data[i][6] = Spec.getSpGibbsEnergySTHD(Ti)*unit['Energy'][1]+unit['Energy'][2]
 
         if inclNasa:
-            Data[i][nc+1] = Spec.getSpEntropyNASA(Ti)*unit
-            Data[i][nc+2] = Spec.getSpEnthalpyNASA(Ti)*unit
-            Data[i][nc+3]  = Spec.getSpHeatCapacityCpNASA(Ti)*unit
-            Data[i][nc+4]  = Spec.getSpHeatCapacityCvNASA(Ti)*unit
-            Data[i][nc+5]  = Spec.getSpInternalEnergyNASA(Ti)*unit
-            Data[i][nc+6]  = Spec.getSpGibbsEnergyNASA(Ti)*unit
+            Data[i][nc+1] = Spec.getSpEntropyNASA(Ti)*unit['Entropy'][1]+unit['Entropy'][2]
+            Data[i][nc+2] = Spec.getSpEnthalpyNASA(Ti)*unit['Energy'][1]+unit['Energy'][2]
+            Data[i][nc+3]  = Spec.getSpHeatCapacityCpNASA(Ti)*unit['HeatCap'][1]+unit['HeatCap'][2]
+            Data[i][nc+4]  = Spec.getSpHeatCapacityCvNASA(Ti)*unit['HeatCap'][1]+unit['HeatCap'][2]
+            Data[i][nc+5]  = Spec.getSpInternalEnergyNASA(Ti)*unit['Energy'][1]+unit['Energy'][2]
+            Data[i][nc+6]  = Spec.getSpGibbsEnergyNASA(Ti)*unit['Energy'][1]+unit['Energy'][2]
             nc = nc + 6
 
         if inclFitNasa:
-            Data[i][nc+1] = Spec.getSpEntropyNASA(Ti,inclFitNasa)*unit
-            Data[i][nc+2] = Spec.getSpEnthalpyNASA(Ti,inclFitNasa)*unit
-            Data[i][nc+3] = Spec.getSpHeatCapacityCpNASA(Ti,inclFitNasa)*unit
-            Data[i][nc+4] = Spec.getSpHeatCapacityCvNASA(Ti,inclFitNasa)*unit
-            Data[i][nc+5] = Spec.getSpInternalEnergyNASA(Ti,inclFitNasa)*unit
-            Data[i][nc+6] = Spec.getSpGibbsEnergyNASA(Ti,inclFitNasa)*unit
+            Data[i][nc+1] = Spec.getSpEntropyNASA(Ti,inclFitNasa)*unit['Entropy'][1]+unit['Entropy'][2]
+            Data[i][nc+2] = Spec.getSpEnthalpyNASA(Ti,inclFitNasa)*unit['Energy'][1]+unit['Energy'][2]
+            Data[i][nc+3] = Spec.getSpHeatCapacityCpNASA(Ti,inclFitNasa)*unit['HeatCap'][1]+unit['HeatCap'][2]
+            Data[i][nc+4] = Spec.getSpHeatCapacityCvNASA(Ti,inclFitNasa)*unit['HeatCap'][1]+unit['HeatCap'][2]
+            Data[i][nc+5] = Spec.getSpInternalEnergyNASA(Ti,inclFitNasa)*unit['Energy'][1]+unit['Energy'][2]
+            Data[i][nc+6] = Spec.getSpGibbsEnergyNASA(Ti,inclFitNasa)*unit['Energy'][1]+unit['Energy'][2]
+            nc = nc + 6
+
+        if inclSthdNasaDiff and inclNasa:
+            Data[i][nc+1] = abs(Data[i][1]-Data[i][7])
+            Data[i][nc+2] = abs(Data[i][2]-Data[i][8])
+            Data[i][nc+3] = abs(Data[i][3]-Data[i][9])
+            Data[i][nc+4] = abs(Data[i][4]-Data[i][10])
+            Data[i][nc+5] = abs(Data[i][5]-Data[i][11])
+            Data[i][nc+6] = abs(Data[i][6]-Data[i][12])
+            nc = nc + 6
+
+        if inclFitNasaNasaDiff and inclFitNasa and inclNasa:
+            Data[i][nc+1] = abs(Data[i][13]-Data[i][7])
+            Data[i][nc+2] = abs(Data[i][14]-Data[i][8])
+            Data[i][nc+3] = abs(Data[i][15]-Data[i][9])
+            Data[i][nc+4] = abs(Data[i][16]-Data[i][10])
+            Data[i][nc+5] = abs(Data[i][17]-Data[i][11])
+            Data[i][nc+6] = abs(Data[i][18]-Data[i][12])
+            nc = nc + 6
+
+        if inclSthdNasaFitNasaDiff and inclFitNasa:
+            shift = 0
+            if inclNasa: shift = 6
+            Data[i][nc+1] = abs(Data[i][1]-Data[i][7+shift])
+            Data[i][nc+2] = abs(Data[i][2]-Data[i][8+shift])
+            Data[i][nc+3] = abs(Data[i][3]-Data[i][9+shift])
+            Data[i][nc+4] = abs(Data[i][4]-Data[i][10+shift])
+            Data[i][nc+5] = abs(Data[i][5]-Data[i][11+shift])
+            Data[i][nc+6] = abs(Data[i][6]-Data[i][12+shift])
+
     return Data,DataHeaders
 
 def getSpByNameFromList(SpList,aName):
