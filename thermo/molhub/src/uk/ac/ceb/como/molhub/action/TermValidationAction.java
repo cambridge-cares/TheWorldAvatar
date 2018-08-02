@@ -45,9 +45,7 @@ public class TermValidationAction extends ActionSupport {
 
 	/** The periodic table element. */
 	private String periodicTableElement;
-
-
-
+	
 	Set<MoleculeProperty> finalSearchResultSet = new HashSet<MoleculeProperty>();
 	
 	List<MoleculeProperty> queryResult;
@@ -147,8 +145,8 @@ public class TermValidationAction extends ActionSupport {
 						queryResult.add(new MoleculeProperty(mpp.getMoleculeId(),mpp.getMoleculeName()));
 					}
 					
-					MoleculeProperty mp = new MoleculeProperty("1", "Chlorine");
-					queryResult.add(mp);
+//					MoleculeProperty mp = new MoleculeProperty("1", "Chlorine");
+//					queryResult.add(mp);
 					
 //					setQueryResult(QueryManager.performListQuery(sentence));
 				

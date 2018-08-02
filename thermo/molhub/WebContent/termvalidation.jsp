@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
 <!DOCTYPE html>
 <html>
+<style>
+td {width:100%;float:left;clear:left; white-space:pre }
+</style>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <title>Query submission notification</title>
@@ -27,10 +29,9 @@
 <!--<s:property value="%{finalSearchResultSet.{moleculeName}[0]}" />-->
 
 <s:iterator value="queryResult">
-<tr>
-<td><s:property value="moleculeId"/></td>
-<td><s:property value="moleculeName"/></td>
-</tr>
+<s:property value="moleculeId"/>
+<s:property value="moleculeName"/>
+<P/>
 </s:iterator>
 
 </body>

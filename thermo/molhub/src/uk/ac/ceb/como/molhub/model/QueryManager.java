@@ -63,6 +63,7 @@ public class QueryManager {
 							BindingSet bindingSet = result.next();
 							
 							Value valueOfG09 = bindingSet.getValue("x");
+						
 							Value valueOfMoleculeName = bindingSet.getValue("y");   
 							
 							MoleculeProperty moleculeProperty = new MoleculeProperty(valueOfG09.toString(), valueOfMoleculeName.toString());
@@ -119,8 +120,14 @@ public static List<MoleculeProperty> performListQuery(Sentence sentence ) {
 					
 					String atomName = empiricalFormulaParser
 							.getAtomName(literal.getAtomicSentence().toString());
+					
+					/**
+					 * @author nk510
+					 * ova metoda ne vraca broj atoma za dati atomski broj nego daje zbir svih atoma u molekulu.
+					 */
 					int numberOfAtoms = empiricalFormulaParser
 							.getNumberOfAllAtoms(literal.getAtomicSentence().toString());
+					
 					
 					String queryString = QueryManager.getQueryForPositiveLiteral(atomName,numberOfAtoms);
 					
@@ -131,7 +138,6 @@ public static List<MoleculeProperty> performListQuery(Sentence sentence ) {
 					
 					TupleQueryResult result = tupleQuery.evaluate();
 					
-					
 					try (TupleQueryResult resultSet = tupleQuery.evaluate()) {
 						
 						List<String> bindingNames = result.getBindingNames();
@@ -140,18 +146,15 @@ public static List<MoleculeProperty> performListQuery(Sentence sentence ) {
 							
 							BindingSet bindingSet = result.next();
 							
-							
 							Value valueOfG09 = bindingSet.getValue(bindingNames.get(0));						
 							
 							Value valueOfMoleculeName = bindingSet.getValue(bindingNames.get(1));
 							
 							MoleculeProperty moleculeProperty = new MoleculeProperty();
 							
-							
 							moleculeProperty.setMoleculeId(valueOfG09.toString());
 							
 							moleculeProperty.setMoleculeName(valueOfMoleculeName.toString());
-							
 							
 							Set<MoleculeProperty> setOfLiterals = new HashSet<MoleculeProperty>();
 							
@@ -163,14 +166,12 @@ public static List<MoleculeProperty> performListQuery(Sentence sentence ) {
 							
 						}
 						
-						
 					} catch (Exception e) {
 						
 						e.getMessage();
 					}				
 					
 					finalSearchResultSet.retainAll(literalUnionSet);
-					
 				}
 //			}
 			
@@ -182,55 +183,44 @@ public static List<MoleculeProperty> performListQuery(Sentence sentence ) {
 }
 
 public static String getQueryForPositiveLiteral(String atomName, int numberOfAtoms) {
-
-	String queryForPositiveLiteral = "SELECT ?x ?p  WHERE { ?x ?p <http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"+atomName+">.  }  LIMIT 10";
+	
+	String numberOfAtom = String.valueOf(numberOfAtoms);
+	
+	String queryForPositiveLiteral = "SELECT ?numberOfAtoms ?mname  WHERE { ?g <http://ontochem.theworldavatar.com/kb/OntoChem.owl#hasInitialization> ?mn . ?mn <http://purl.org/gc/hasMoleculeProperty> ?mp . ?mp <http://purl.org/gc/hasName> ?mname . ?mp <http://purl.org/gc/hasMolecule> ?mol . ?mol <http://purl.org/gc/hasNumberOfAtoms> ?numberOfAtoms .  ?mol <http://purl.org/gc/hasAtom> ?x . ?x <http://purl.org/gc/isElement> <http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"+atomName+">. FILTER(str(?numberOfAtoms)='"+numberOfAtom+"')} LIMIT 50";
 	
 	return queryForPositiveLiteral;
 }
 
 public static String getQueryForNegativeLiteral(String atomName, int numberOfAtoms) {
 	
-	String queryForNegativeLiteral = "PREFIX ontochem: <http://ontochem.theworldavatar.com/kb/OntoChem.owl#>\r\n" + 
-			"PREFIX gc: <http://purl.org/gc/>\r\n" + 
-			"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\r\n" + 
-			"PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n" + 
-			"SELECT ?g09 ?moleculeName \r\n" + 
-			"WHERE { \r\n" + 
-			"{\r\n" + 
-			"?g09 ontochem:hasInitialization ?mn0 . \r\n" + 
-			"?mn0 gc:hasMoleculeProperty ?mp0 . \r\n" + 
-			"?mp0 gc:hasName ?moleculeName . \r\n" + 
-			"}\r\n" + 
-			"UNION\r\n" + 
-			"{\r\n" + 
-			"?g09 ontochem:hasInitialization ?mn1 . \r\n" + 
-			"?mn1 gc:hasMoleculeProperty ?mp1 .  \r\n" + 
-			"?mp1 gc:hasMolecule ?mol0 .\r\n" + 
-			"?mol0 gc:hasNumberOfAtoms ?numberOfAtoms .\r\n" + 
-			"?mol0 gc:hasAtom ?at0 . \r\n" + 
-			"?at0 gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Cl> . \r\n" + 
-			"}\r\n" +
-
-			"}";
+	atomName= atomName.toString().replaceAll("\\s+","");
+	
+	String queryForNegativeLiteral = "SELECT ?g09 ?mname" 
+			+"WHERE {"   
+			+"?g09 <http://ontochem.theworldavatar.com/kb/OntoChem.owl#hasInitialization> ?mn ."  
+			+"?mn <http://purl.org/gc/hasMoleculeProperty> ?mp .  " 
+			+"?mp <http://purl.org/gc/hasName> ?mname ." 
+			+"?mp <http://purl.org/gc/hasMolecule> ?mol ." 			
+			+"?mol <http://purl.org/gc/hasNumberOfAtoms> ?nAtoms."  
+			+"?mol <http://purl.org/gc/hasAtom> ?at ." 
+			+"?at <http://purl.org/gc/isElement> <http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"+atomName+">."  
+			+"}"
+			+ "LIMIT 10";
 	
 	return queryForNegativeLiteral;
 }
-//"FILTER(regex(str(?atomName),http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"+atomName+"))\r\n" +			 
+//"FILTER(regex(str(?atomName),http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"+atomName+"))\r\n" +
+//"?mp1 gc:hasName ?moleculeName . " + 
+
 public static String getQueryForMoleculeName(String atomName, int atomNumber) {
 	
-	String queryForNegativeLiteral = "PREFIX ontochem: <http://ontochem.theworldavatar.com/kb/OntoChem.owl#>\r\n" + 
-			"PREFIX gc: <http://purl.org/gc/>\r\n" + 
-			"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\r\n" + 
-			"PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n" + 
-			"SELECT ?g09 ?moleculeName \r\n" + 
-			"WHERE { \r\n" + 
-			"{\r\n" + 
-			"?g09 ontochem:hasInitialization ?mn0 . \r\n" + 
-			"?mn0 gc:hasMoleculeProperty ?mp0 . \r\n" + 
-			"?mp0 gc:hasName ?moleculeName . \r\n" + 
-			"}\r\n" + 
-			"}"
-			+ "LIMIT 10";
+	String queryForNegativeLiteral = "SELECT ?g09 ?mname"
+			+ " WHERE { "
+			+ "?g09 <http://ontochem.theworldavatar.com/kb/OntoChem.owl#hasInitialization> ?mn . "
+			+ "?mn <http://purl.org/gc/hasMoleculeProperty> ?mp . "
+			+ "?mp <http://purl.org/gc/hasName> ?mname ."
+			+ "}"
+			+ "LIMIT 20";
 	
 	return queryForNegativeLiteral;
 }
