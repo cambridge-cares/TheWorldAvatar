@@ -33,11 +33,13 @@ import uk.ac.cam.ceb.como.thermo.calculator.rotation.internal.util.IRCompChemWra
 public class ParsingGeometry {
 
 	/**
+	 * 
 	 * Gets the geometry from G 09.
 	 *
 	 * @param file the file
 	 * @return the geometry from G 09
 	 * @throws Exception the exception
+	 * 
 	 */
 
 	public Molecule getGeometryFromG09(File file) throws Exception {
@@ -54,6 +56,7 @@ public class ParsingGeometry {
 
 		CMLMolecule cml_m = getFinalCMLMolecule(file);
 
+		
 		/**
 		 * 
 		 * @author nk510 
@@ -67,6 +70,8 @@ public class ParsingGeometry {
 		molecule.setConvention(cml_m.getConvention());
 		molecule.setSpinMultiplicity(BigInteger.valueOf(cml_m.getSpinMultiplicity()));
 
+		System.out.println("cml_m.getFormalCharge() : " +cml_m.getFormalCharge());
+		
 		List<CMLAtom> atom = cml_m.getAtoms();
 		
 		
@@ -97,6 +102,7 @@ public class ParsingGeometry {
 		
 		return molecule;
 	}
+	
 	/**
 	 * 
 	 * @param file

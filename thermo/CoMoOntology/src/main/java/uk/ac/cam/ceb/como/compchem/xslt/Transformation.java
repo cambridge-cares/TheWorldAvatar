@@ -84,7 +84,7 @@ public class Transformation {
 
 			/**
 			 * 
-			 * @author nk510 <p>Creates output path for each ontochem XML file from file list. Generated files have rdf file extension.</p>
+			 * @author nk510 <p>Creates output path for each compchem XML file from file list. Generated files have rdf file extension.</p>
 			 * 
 			 */
 
@@ -120,8 +120,17 @@ public class Transformation {
 	public static void trasnformation(InputStream XmlSource, FileOutputStream outputStream, StreamSource xsltSource)
 			throws TransformerException {
 
-		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		
+		/**
+		 * In case of using SaxonHE parser, we need to set/add the following System property:
+		 * System.setProperty("javax.xml.transform.TransformerFactory","net.sf.saxon.TransformerFactoryImpl");
+		 */
+		
+		TransformerFactory transformerFactory = TransformerFactory.newInstance();	
 		Transformer transformer = transformerFactory.newTransformer(xsltSource);
 		transformer.transform(new StreamSource(XmlSource), new StreamResult(outputStream));
-	}	
+		
+		
+	
+	}
 }

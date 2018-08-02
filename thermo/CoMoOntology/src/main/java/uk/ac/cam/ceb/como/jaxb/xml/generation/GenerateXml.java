@@ -105,6 +105,7 @@ public class GenerateXml {
 	/**
 	 * Generate root module.
 	 *
+	 * @author nk510
 	 * @param file the file to be parsed. 
 	 * @param rootModule the root module as instance of class <code>Module</code>.
 	 * @return the module as instance of class <code>Module</code>.

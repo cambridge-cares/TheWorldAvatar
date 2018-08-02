@@ -1,48 +1,48 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/">
-   <module dictRef="cc:jobList">
-      <module dictRef="cc:job">
-         <module dictRef="cc:initialization">
-            <molecule>
-               <atomArray>
-                  <atom count="1.0" elementType="Cl"/>
-               </atomArray>
-               <formula concise="Cl 1 "/>
-            </molecule>
-            <parameterList>
-               <parameter dictRef="cc:method">
-                  <scalar dataType="xsd:string">uB971</scalar>
-               </parameter>
-               <parameter dictRef="cc:basis">
-                  <scalar dataType="xsd:string">6-311+G(d,p)</scalar>
-               </parameter>
-            </parameterList>
-         </module>
-         <module dictRef="cc:finalization">
-            <molecule id="mol-final-2" convention="convention:molecular">
-               <atomArray>
-                  <atom atomicMass="34.9688527" z3="0.0" id="a1" x3="0.0" y3="0.0" elementType="Cl"/>
-               </atomArray>
-            </molecule>
-            <propertyList>
-               <property dictRef="cc:geometry_type">
-                  <scalar dataType="xsd:string">atomic</scalar>
-               </property>
-            </propertyList>
-         </module>
-         <module dictRef="cc:environment">
-            <parameterList>
-               <parameter dictRef="cc:program">
-                  <scalar dataType="xsd:string">Gaussian</scalar>
-               </parameter>
-               <parameter dictRef="cc:programVersion">
-                  <scalar dataType="xsd:string">09</scalar>
-               </parameter>
-               <parameter dictRef="cc:runDate">
-                  <scalar dataType="xsd:string">Mon Oct 19 21:14:21 2015.</scalar>
-               </parameter>
-            </parameterList>
-         </module>
-      </module>
-   </module>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<module xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/">
+    <module dictRef="cc:jobList">
+        <module dictRef="cc:job">
+            <module dictRef="cc:initialization">
+                <molecule>
+                    <atomArray>
+                        <atom count="1.0" elementType="Cl"/>
+                    </atomArray>
+                    <formula concise="Cl 1 "/>
+                </molecule>
+                <parameterList>
+                    <parameter dictRef="cc:method">
+                        <scalar dataType="xsd:string">uB971</scalar>
+                    </parameter>
+                    <parameter dictRef="cc:basis">
+                        <scalar dataType="xsd:string">6-311+G(d,p)</scalar>
+                    </parameter>
+                </parameterList>
+            </module>
+            <module dictRef="cc:finalization">
+                <molecule id="mol-final-2" convention="convention:molecular">
+                    <atomArray>
+                        <atom atomicMass="34.9688527" z3="0.0" id="a1" x3="0.0" y3="0.0" elementType="Cl"/>
+                    </atomArray>
+                </molecule>
+                <propertyList>
+                    <property dictRef="cc:geometry_type">
+                        <scalar dataType="xsd:string">atomic</scalar>
+                    </property>
+                </propertyList>
+            </module>
+            <module dictRef="cc:environment">
+                <parameterList>
+                    <parameter dictRef="cc:program">
+                        <scalar dataType="xsd:string">Gaussian</scalar>
+                    </parameter>
+                    <parameter dictRef="cc:programVersion">
+                        <scalar dataType="xsd:string">09</scalar>
+                    </parameter>
+                    <parameter dictRef="cc:runDate">
+                        <scalar dataType="xsd:string">Mon Oct 19 21:14:21 2015.</scalar>
+                    </parameter>
+                </parameterList>
+            </module>
+        </module>
+    </module>
 </module>

@@ -49,19 +49,19 @@ public class ParsingTestExamples {
 
 public static void main(String[] args) throws Exception {
 
-		 String path = "src/test/resources/g09/Cl2.g09";
+		 String path = "src/test/resources/g09/Cl.g09";
 //		 String path = "src/test/resources/g09/Cl2O6.g09";
 
 		 File f = new File(path);
 		
-//		 GaussianParser parser  = new FrequencyParser();
+		 GaussianParser parser  = new FrequencyParser();
 
 //		 FrequencyParser parser = new FrequencyParser();
 //		 GeometryParser parser = new GeometryParser();
 //       GaussianHRParser parser = new GaussianHRParser();
 		
-//		 parser.set(f);
-//		 parser.parse();
+		 parser.set(f);
+		 parser.parse();
 		
 //		 parser.parseSection();
 //		 CompChem cc = (CompChem) parser.get();
@@ -90,39 +90,39 @@ public static void main(String[] args) throws Exception {
 		
 //		 m.getConvention();
 		
-		 FrequencyParser parser = new FrequencyParser();
-		 parser.set(f);
-		 parser.parse();
-		 
-		 CompChem cc = (CompChem) parser.get();
-
-		 CompChemParser ccp = new CompChemParser();
-		 
-		 ccp.parse(cc);
+//		 FrequencyParser parser = new FrequencyParser();
+//		 parser.set(f);
+//		 parser.parse();
+//		 
+//		 CompChem cc = (CompChem) parser.get();
+//
+//		 CompChemParser ccp = new CompChemParser();
+//		 
+//		 ccp.parse(cc);
 		 
 //		 RotationalConstants rc = ccp.get().getRotationalConstants();
 		 
 //		 System.out.println("Rotational Constants: " + rc.getValue(2));
 		 
-         IRCompChemWrapper irccw = new IRCompChemWrapper(cc);
+//         IRCompChemWrapper irccw = new IRCompChemWrapper(cc);
          
 //       CompChemWrapper ccw = new CompChemWrapper(cc);
          
 //       CompChemIOUtils.write(System.out, ccw.getCompchem());
          
-		 List<CMLParameter> cmlP = irccw.getParameters();
-
-		 for(CMLParameter p: cmlP) {
-		 	
-		    	/**
-				 *
-				 * Generate : basis set, level of theory,
-				 *
-				 */
-			 
-			 System.out.println("feature: " + p.getDictRef() + ",  value : " + p.getValue());
-				
-		}
+//		 List<CMLParameter> cmlP = irccw.getParameters();
+//
+//		 for(CMLParameter p: cmlP) {
+//		 	
+//		    	/**
+//				 *
+//				 * Generate : basis set, level of theory,
+//				 *
+//				 */
+//			 
+//			 System.out.println("feature: " + p.getDictRef() + ",  value : " + p.getValue());
+//				
+//		}
 
 //		 CMLMolecule m = irccw.getFinalMolecule();
 		 

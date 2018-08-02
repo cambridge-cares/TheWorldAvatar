@@ -429,6 +429,15 @@ thermodynamics, the symmetry number corrects for any overcounting of equivalent 
     <rdfs:isDefinedBy rdf:resource="http://www.xml-cml.org/dictionary/compchem/#spinMultiplicity"/>
     <rdfs:label xml:lang="en">hasspin multiplicity value</rdfs:label>
   </owl:DatatypeProperty>
+  
+  <owl:DatatypeProperty rdf:about="http://purl.org/gc/hasFile">
+       <rdfs:domain rdf:resource="http://purl.org/gc/MolecularMethodology"/>
+        <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+        <rdfs:comment xml:lang="en">A property that describes the attachment file.</rdfs:comment>
+        <rdfs:label xml:lang="en">has file</rdfs:label>
+        <rdfs:comment xml:lang="en">A property that describes the reference to the attachment file.</rdfs:comment>
+  </owl:DatatypeProperty>
+    
   <owl:DatatypeProperty rdf:ID="hasProgram">
     <rdfs:isDefinedBy rdf:resource="http://www.xml-cml.org/dictionary/compchem/#program"/>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
