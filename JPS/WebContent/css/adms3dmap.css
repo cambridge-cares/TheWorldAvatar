@@ -59,8 +59,9 @@
 
         legend {
             font-size: 1em;
-            color: white;
+            color: #333;
             margin-bottom: .75em;
+            border-bottom: 1px solid #333;
         }
 
         label {

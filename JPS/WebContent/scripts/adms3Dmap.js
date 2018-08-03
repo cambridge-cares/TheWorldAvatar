@@ -28,7 +28,13 @@ const controlButtonsSetter = osmb => {
 };
 
 
-const initadms3dmap  = (list, osmb, location, coordinatesMid) => {
+const initadms3dmap  = (list, range, osmb, location, coordinatesMid) => {
+	
+	proj4.defs("EPSG:28992","+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.417,50.3319,465.552,-0.398957,0.343988,-1.8774,4.0725 +units=m +no_defs");
+    proj4.defs('WGS84', "+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees");
+    
+    const parsedLowLeft = proj4("EPSG:28992", "WGS84", [range[0], range[2]]);
+    const parsedTopRight = proj4("EPSG:28992", "WGS84", [range[1], range[3]]);
 
     const position = {};
     // if(location === "The Hague"){
@@ -46,7 +52,7 @@ const initadms3dmap  = (list, osmb, location, coordinatesMid) => {
     	data => {
     		const geojson = data;
     		try {
-    			console.log(JSON.stringify(geojson, null, 4));
+    			// console.log(JSON.stringify(geojson, null, 4));
     			osmb.addGeoJSON(geojson);
     		} catch (err) {
     			console.log(err.name);
@@ -81,7 +87,59 @@ const initadms3dmap  = (list, osmb, location, coordinatesMid) => {
                 }
             }
         });
+    
+    // --- Rendering 3D layer --- //
+    makeRadios('optionwrapper', POL_LIST, 'Select a pollutant:')
+    
+    var geojson = {
+    		type: 'FeatureCollection',
+            features: [{
+                type: 'Feature',
+                properties: {
+                    //color: '#ff0000',
+                    //roofColor: '#cc0000',
+                    height: 0,
+                    minHeight: 0
+                },
+                geometry: {
+                    type: 'Polygon',
+                    coordinates: [//TODO:　LINK THIS TO USER INPUT
+                        [
+                            [parsedLowLeft[0],parsedTopRight[1]],
+                            [parsedTopRight[0],parsedTopRight[1]],
+                            [parsedTopRight[0],parsedLowLeft[1]],
+                            [parsedLowLeft[0],parsedLowLeft[1]],
+                            [parsedLowLeft[0],parsedTopRight[1]]
+                        ]
+                    ]
+                }
+            }]
+    };
+    
+    getContourMaps('/JPS/ADMSOutputAll').then(dataurls => {
+    	var idxSrc = 0, idxH = 0, preObj;
+    	$(".radiogroup").change(function(){
+    		var radioValue = $("input[name='radio']:checked").val();
+    		idxSrc = POL_LIST.indexOf(radioValue);
+    		console.log('src change to ' + idxSrc)
+    		if(preObj) preObj.destroy();
+    		preObj =  osmb.addGeoJSON(geojson,{ elevation: HEIGHT_INTERVAL * (idxH), hasTexture:dataurls[idxH*POL_NUM +idxSrc]});
+        });
+        
+    	//  var dataurls = data.dataurls, heights =data.heights
+        preObj = osmb.addGeoJSON(geojson,{ elevation: 0, hasTexture:dataurls[0]});
+        
+        //init at zero position
+        makeSlider('sliderwrapper', HEIGHT_NUM, function (event, ui) {
+        	if(preObj) preObj.destroy();
+            idxH = ui.value
+            $( "#height-show" ).val(idxH*10 );
 
+            console.log('sliderto ' + idxH)
+            preObj =  osmb.addGeoJSON(geojson,{ elevation: HEIGHT_INTERVAL * (idxH), hasTexture:dataurls[idxH*POL_NUM +idxSrc]});
+            
+        })
+    }, err => {console.log(err)})
     //***************************************************************************
 
 

@@ -44,7 +44,7 @@ public class ADMSPowerPlantCentrePointGetter extends HttpServlet {
 		String result;
 		try {
 			result = PythonHelper.callPython("caresjpsadmsinputs/ADMSPowerPlantCentrePointGetter.py", powerPlantIRI, epsg, this);
-//			System.out.println("result: " + result);
+			System.out.println("result: " + result);
 			response.setContentType("application/json");
 			response.getWriter().write(result);
 		} catch (PythonException e) {

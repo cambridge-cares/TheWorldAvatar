@@ -1,0 +1,20 @@
+.legend {
+    position: absolute;
+    top: 500px;
+    left: 500px;
+    z-index:1;
+}
+.choice{
+    position: absolute;
+    top: 420px;
+    left: 50px;
+    z-index:1;
+}
+.readonlyinput{
+
+	background-color: transparent;
+	width: 50px;
+}
+body{
+    position: relative;
+}

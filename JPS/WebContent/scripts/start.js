@@ -45,100 +45,100 @@ $(function(){
     
     //***************************************************************************
 
-    const twoDimCheckbox = document.querySelector('input[value="2d"]');
-    let decreaseTiltTimer;
-    let increaseTiltTimer;
+//    const twoDimCheckbox = document.querySelector('input[value="2d"]');
+//    let decreaseTiltTimer;
+//    let increaseTiltTimer;
+//
+//    const decreaseTilt = () => {
+//        let tilt = osmb.getTilt();
+//        tilt--;
+//        if (tilt != 0) {
+//            osmb.setTilt(tilt);
+//        }
+//    };
+//
+//    const increaseTilt = () => {
+//        let tilt = osmb.getTilt();
+//        tilt++;
+//        if (tilt < 45) {
+//            osmb.setTilt(tilt);
+//        }
+//    };
+//
+//    osmb.on('pointerdown', function(e) {
+//        // related to the tilt timers
+//        clearInterval(decreaseTiltTimer);
+//        clearInterval(increaseTiltTimer);
+//
+//        const output = document.getElementById("output");
+//
+//        if (output.style.display !== "none") {
+//
+//            var id = osmb.getTarget(e.detail.x, e.detail.y, function(id) {
+//
+//                var coordinates = osmb.unproject(e.detail.x, e.detail.y);
+//
+//                var longitude = coordinates["longitude"];
+//                var latitude = coordinates["latitude"];
+//
+//                const coordinatesArray = [];
+//
+//                if (!isNaN(latitude) && !isNaN(longitude)) {
+//
+//                    const convertedCoordinates = proj4('EPSG:28992', [parseFloat(longitude), parseFloat(latitude)]);
+//
+//                    coordinatesArray.push(convertedCoordinates[0]); // latitude
+//                    coordinatesArray.push(convertedCoordinates[1]); // longitude
+//
+//                    document.getElementById("longitude").innerHTML = longitude; // convertedCoordinates[1];
+//                    document.getElementById("latitude").innerHTML = latitude; // convertedCoordinates[0];
+//
+//                    // $.getJSON('/JPS/ADMSOutput',
+//                    //     {
+//                    //         coordinatesLonLat: JSON.stringify(coordinatesArray)
+//                    //     },
+//                    //     function(data) {
+//                    //         var concentrations = data;
+//                    //
+//                    //         document.getElementById("concentration0").innerHTML = concentrations[2];
+//                    //         document.getElementById("concentration10").innerHTML = concentrations[3];
+//                    //         document.getElementById("concentration20").innerHTML = concentrations[4];
+//                    //         document.getElementById("concentration30").innerHTML = concentrations[5];
+//                    //
+//                    //     });
+//                }
+//            });
+//        }
+//    });
 
-    const decreaseTilt = () => {
-        let tilt = osmb.getTilt();
-        tilt--;
-        if (tilt != 0) {
-            osmb.setTilt(tilt);
-        }
-    };
-
-    const increaseTilt = () => {
-        let tilt = osmb.getTilt();
-        tilt++;
-        if (tilt < 45) {
-            osmb.setTilt(tilt);
-        }
-    };
-
-    osmb.on('pointerdown', function(e) {
-        // related to the tilt timers
-        clearInterval(decreaseTiltTimer);
-        clearInterval(increaseTiltTimer);
-
-        const output = document.getElementById("output");
-
-        if (output.style.display !== "none") {
-
-            var id = osmb.getTarget(e.detail.x, e.detail.y, function(id) {
-
-                var coordinates = osmb.unproject(e.detail.x, e.detail.y);
-
-                var longitude = coordinates["longitude"];
-                var latitude = coordinates["latitude"];
-
-                const coordinatesArray = [];
-
-                if (!isNaN(latitude) && !isNaN(longitude)) {
-
-                    const convertedCoordinates = proj4('EPSG:28992', [parseFloat(longitude), parseFloat(latitude)]);
-
-                    coordinatesArray.push(convertedCoordinates[0]); // latitude
-                    coordinatesArray.push(convertedCoordinates[1]); // longitude
-
-                    document.getElementById("longitude").innerHTML = longitude; // convertedCoordinates[1];
-                    document.getElementById("latitude").innerHTML = latitude; // convertedCoordinates[0];
-
-                    // $.getJSON('/JPS/ADMSOutput',
-                    //     {
-                    //         coordinatesLonLat: JSON.stringify(coordinatesArray)
-                    //     },
-                    //     function(data) {
-                    //         var concentrations = data;
-                    //
-                    //         document.getElementById("concentration0").innerHTML = concentrations[2];
-                    //         document.getElementById("concentration10").innerHTML = concentrations[3];
-                    //         document.getElementById("concentration20").innerHTML = concentrations[4];
-                    //         document.getElementById("concentration30").innerHTML = concentrations[5];
-                    //
-                    //     });
-                }
-            });
-        }
-    });
-
-    twoDimCheckbox.onchange = function(){
-    	if(twoDimCheckbox.checked) {
-            clearInterval(increaseTiltTimer);
-            decreaseTiltTimer = setInterval(decreaseTilt, 15);
-            decreaseTiltTimer;
-
-            const output = document.getElementById("output");
-
-            output.style.display = "inline";
-        } else {
-            clearInterval(decreaseTiltTimer);
-            increaseTiltTimer = setInterval(increaseTilt, 15);
-            increaseTiltTimer;
-
-            const output = document.getElementById("output");
-
-            if (output.style.display !== "none") {
-                output.style.display = "none";
-
-                document.getElementById("longitude").innerHTML = "";
-                document.getElementById("latitude").innerHTML = "";
-                document.getElementById("concentration0").innerHTML = "";
-                document.getElementById("concentration10").innerHTML = "";
-                document.getElementById("concentration20").innerHTML = "";
-                document.getElementById("concentration30").innerHTML = "";
-            }
-        }
-    };
+//    twoDimCheckbox.onchange = function(){
+//    	if(twoDimCheckbox.checked) {
+//            clearInterval(increaseTiltTimer);
+//            decreaseTiltTimer = setInterval(decreaseTilt, 15);
+//            decreaseTiltTimer;
+//
+//            const output = document.getElementById("output");
+//
+//            output.style.display = "inline";
+//        } else {
+//            clearInterval(decreaseTiltTimer);
+//            increaseTiltTimer = setInterval(increaseTilt, 15);
+//            increaseTiltTimer;
+//
+//            const output = document.getElementById("output");
+//
+//            if (output.style.display !== "none") {
+//                output.style.display = "none";
+//
+//                document.getElementById("longitude").innerHTML = "";
+//                document.getElementById("latitude").innerHTML = "";
+//                document.getElementById("concentration0").innerHTML = "";
+//                document.getElementById("concentration10").innerHTML = "";
+//                document.getElementById("concentration20").innerHTML = "";
+//                document.getElementById("concentration30").innerHTML = "";
+//            }
+//        }
+//    };
     //***************************************************************************
 
     
@@ -194,7 +194,7 @@ $(function(){
          
         $.ajax('http://www.theworldavatar.com/JPS/ADMSCoordinationAgent?coordinates='+encodeURIComponent(JSON.stringify({'xmin':xmin,'xmax':xmax, 'ymin':ymin, 'ymax':ymax}).replaceAll('"',"'"))).done(function (bdnlist) {
             //todo: init building
-            initadms3dmap(JSON.parse(bdnlist), osmb, location, coordinatesMid);
+            initadms3dmap(JSON.parse(bdnlist), [xmin, xmax, ymin, ymax], osmb, location, coordinatesMid);
             
         }).fail(function (xhr, testStatus, errorThrown) {
 //            console.log("error")
