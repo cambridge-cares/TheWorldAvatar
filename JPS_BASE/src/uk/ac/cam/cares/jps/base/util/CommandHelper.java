@@ -63,7 +63,8 @@ public class CommandHelper {
 		logger.info("In folder: " + targetFolder + " Excuted: " + commands);
 		Runtime rt = Runtime.getRuntime();
 		Process pr = null;
-				try {
+		
+		try {
 			pr = rt.exec(commands.toArray(new String[0]), null, new File(targetFolder)); // IMPORTANT: By specifying targetFolder, all the cmds will be executed within such folder.
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
