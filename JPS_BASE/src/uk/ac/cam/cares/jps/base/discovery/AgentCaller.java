@@ -39,7 +39,7 @@ public class AgentCaller {
 	}
 	
 	public static String executeGet(String path, String key, String value) {
-		// TODO-AE maybe use directly class java.net.URI, maybe move this class to JPS_BASE
+		// TODO-AE maybe use directly class java.net.URI
 		// TODO-AE refactor get hostname
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(getHostPort())
 				.setPath(path)
@@ -52,7 +52,8 @@ public class AgentCaller {
 		} 
 	}	
 		
-	private static String executeGet(URIBuilder builder) {
+	// TODO-AE turn from public to private
+	public static String executeGet(URIBuilder builder) {
 		try {
 			HttpGet request = new HttpGet(builder.build());
 			HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
