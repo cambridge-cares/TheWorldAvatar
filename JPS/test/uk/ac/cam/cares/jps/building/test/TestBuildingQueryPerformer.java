@@ -22,8 +22,8 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 	
 	// TODO-AE URGENT switch to new IRI prefix
 	// IRI for old KB of THE Hague
-	public static final String BUILDING_IRI_THE_HAGUE_PREFIX = "http://www.theworldavatar.com/Building/";
-	//public static final String BUILDING_IRI_THE_HAGUE_PREFIX = "http://www.theworldavatar.com/kb/nld/thehague/buildings/";
+	//public static final String BUILDING_IRI_THE_HAGUE_PREFIX = "http://www.theworldavatar.com/Building/";
+	public static final String BUILDING_IRI_THE_HAGUE_PREFIX = "http://www.theworldavatar.com/kb/nld/thehague/buildings/";
 
 	// the following building from The Hague doesn't have any building parts and only contains one ground surface
 	public static final String BUILDING_IRI_THE_HAGUE_WITHOUT_PARTS = BUILDING_IRI_THE_HAGUE_PREFIX + "10_buildings0.owl#BuildingGUID_83EFA0E4-FC06-46B3-8482-E38C8CF602BC";

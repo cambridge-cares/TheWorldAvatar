@@ -50,7 +50,10 @@ public class TestBuildingQueryAgent extends TestCase {
 		//args.add("http://www.theworldavatar.com/Plant-001.owl#Plant-001");
 		args.add("http://www.theworldavatar.com/Plant-001.owl");
 		//args.add(coordinates.toString().replaceAll(",", "#"));
-		args.add("{'xmin':84400, 'xmax':84600, 'ymin':451000, 'ymax':451300}");
+		//args.add("{'xmin':84400, 'xmax':84600, 'ymin':451000, 'ymax':451300}");
+		//args.add("{'xmin':79480, 'xmax':85000, 'ymin':454670, 'ymax':460000}");
+		//args.add("{'xmin':79300, 'xmax':80100, 'ymin':454400, 'ymax':455200}");
+		args.add("{'xmin':79570, 'xmax':79910, 'ymin':454680, 'ymax':455000}");
 		String fullPath = AgentLocator.getPathToWorkingDir(this) + "/" + "ADMS";
 		System.out.println("ADMS working dir =  " + fullPath);
 		args.add(fullPath); // this extra parameter tells the python script where to put the input files, in
@@ -69,7 +72,7 @@ public class TestBuildingQueryAgent extends TestCase {
 	}
 	
 	private String retrieveTheHagueBuildingDataInJSON() {
-		List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryBuildingsFromRegion(BuildingQueryPerformer.THE_HAGUE_IRI, 25, 79000., 454000., 79800., 455200.);
+		List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryBuildingsFromRegion(BuildingQueryPerformer.THE_HAGUE_IRI, 25, 79570., 454680., 79910., 455000.);
 		SimpleBuildingData result = createQueryPerformerForTheHague().performQuerySimpleBuildingData(BuildingQueryPerformer.THE_HAGUE_IRI, buildingIRIs);
 		String argument = new Gson().toJson(result);
 		return argument;
