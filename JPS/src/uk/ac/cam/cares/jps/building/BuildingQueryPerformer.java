@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.building;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -133,7 +134,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			uy = p[1];
 		}
 		
-		String query = getQueryBuildingsFromRegion(buildingLimit, lx, ly, ux, uy);
+		String query = getQueryBuildingsFromRegion(buildingLimit, lx, ly, ux, uy);		
 		String result = performQuery(cityIRI, query);
 		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
 		return map.get("bdn");
@@ -194,12 +195,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		// Ask Kevin: I thought the original idea was to use the calculated weighted and stored center coordinates from the entire building as criterion?
 		// agreed with Kevin: we leave it as it is at the moment; but in the long run it should be changed
 		
-		String query = PREFIX_ONTOCAPE_SYS + PREFIX_ONTOCAPE_SPACE_AND_TIME_EXTENDED + PREFIX_CITYGML + PREFIX_XSD +
-//			"PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>\r\n" + 
-//			"PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>\r\n" + 
-//			"PREFIX citygml:<http://www.theworldavatar.com/CityGMLOntology.owl#>\r\n" + 
-//			"#PREFIX citygml:<file:/D:/citygmllearn/citygmlhandmade.owl#>\r\n" + 
-//			"PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\r\n" +  
+		String query = PREFIX_ONTOCAPE_SYS + PREFIX_ONTOCAPE_SPACE_AND_TIME_EXTENDED + PREFIX_CITYGML + PREFIX_XSD + 
 			"SELECT  distinct ?bdn\r\n" + 
 			"WHERE {\r\n" + 
 			"{\r\n" +                                            				// case1:building has no parts
@@ -238,6 +234,22 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			"Filter(xsd:double(?x) > \"%f\"^^xsd:double && xsd:double(?y) > \"%f\"^^xsd:double && xsd:double(?x) < \"%f\"^^xsd:double && xsd:double(?y) < \"%f\"^^xsd:double) \r\n" + 	
 			"}\r\n" + 
 			"LIMIT %d";	
+
+		return String.format(query, lowerx, lowery, upperx, uppery, buildingLimit);
+	}
+	
+	public String getQueryClosestBuildingsFromRegion(int buildingLimit, double lowerx, double lowery, double upperx, double uppery, int maxBuildingSelection) {
+		
+		// TODO-AE URGENT do we need distinct here. does it only effect buildings or also x and y
+		String query = PREFIX_ONTOCAPE_SYS + PREFIX_ONTOCAPE_SPACE_AND_TIME_EXTENDED + PREFIX_CITYGML + PREFIX_XSD +
+			"SELECT distinct ?bdn ?x ?y\n" + 
+			"WHERE {\n" + 
+			"?bdn a citygml:BuildingType .\n" + 
+			"?bdn space_and_time_extended:hasGISCoordinateSystem ?coordinates .\n" + 
+			CITYGML_HASCOORDINATES_XY +
+			"Filter(xsd:double(?x) > \"%f\"^^xsd:double && xsd:double(?y) > \"%f\"^^xsd:double && xsd:double(?x) < \"%f\"^^xsd:double && xsd:double(?y) < \"%f\"^^xsd:double) \n" + 	
+			"}\n" + 
+			"LIMIT %d";
 
 		return String.format(query, lowerx, lowery, upperx, uppery, buildingLimit);
 	}
@@ -289,12 +301,23 @@ public class BuildingQueryPerformer implements SparqlConstants {
 					
 			String query = getQueryBdnVerticesWithAndWithoutBuildingParts(currentIRI);
 			String queryResult = performQuery(cityIRI, query);
-			List<Polygon> polygons = SimpleShapeConverter.convertTo2DPolygons(queryResult, "groundsurface", "x", "y");
+			Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(queryResult);
+			
+			String sourceCRSName = getCRSName(cityIRI);
+			if (!DEFAULT_CRS_NAME.equals(sourceCRSName)) {
+				logger.info("transforming coordinate from " + sourceCRSName + " to " + DEFAULT_CRS_NAME + " ...");
+				map = transformCoordinates(sourceCRSName, DEFAULT_CRS_NAME, map);
+			}
+					
+			List<Polygon> polygons = SimpleShapeConverter.convertTo2DPolygons(map, "groundsurface", "x", "y");
 			SimpleShape shape = SimpleShapeConverter.simplifyShapes(polygons);
 					
 			// TODO-AE URGENT transformation to CRS coordinates
 			result.BldIRI.add(currentIRI);
 			String name = currentIRI.split("#")[1];
+			if (name.length() > 19) {
+				name = name.substring(name.length()-19);
+			}		
 			result.BldName.add(name);
 			result.BldType.add(shape.shapeType);
 			result.BldX.add(shape.centerX);
@@ -305,11 +328,28 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			
 			String queryHeigt = getQueryBdnHeight(currentIRI);
 			String queryHeightResult = performQuery(cityIRI, queryHeigt);
-			Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(queryHeightResult);
+			map = MatrixToJsonConverter.fromCsv(queryHeightResult);
 			double height = Double.valueOf((String) map.get("h").get(0));
 			result.BldHeight.add(height);
 		}
 		
 		return result;
+	}
+	
+	private Map<String, List<String>> transformCoordinates(String sourceCRSName, String targetCRSName, Map<String, List<String>> coordinateMap) {
+
+		List<String> xColumn = coordinateMap.get("x");
+		List<String> yColumn = coordinateMap.get("y");
+		
+		for (int i=0; i<xColumn.size(); i++) {
+			
+			float x = Float.valueOf(xColumn.get(i));
+			float y = Float.valueOf(yColumn.get(i));
+			double[] p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {x, y});
+			xColumn.set(i, "" + p[0]);
+			yColumn.set(i, "" + p[1]);
+		}
+		
+		return coordinateMap;
 	}
 }

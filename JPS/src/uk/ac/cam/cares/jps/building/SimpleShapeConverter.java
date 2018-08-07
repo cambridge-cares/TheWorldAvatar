@@ -45,14 +45,12 @@ public class SimpleShapeConverter {
 		}
 	}
 	
-	public static Polygon convertTo2DPolygon(String csvCoordinates, String xName, String yName) {
+	public static Polygon convertTo2DPolygon(Map<String, List<String>> coordinateMap, String xName, String yName) {
 		
 		Polygon result = new Polygon();
 		
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(csvCoordinates);
-		
-		List<String> xColumn = map.get(xName);
-		List<String> yColumn = map.get(yName);
+		List<String> xColumn = coordinateMap.get(xName);
+		List<String> yColumn = coordinateMap.get(yName);
 		
 		for (int i=0; i<xColumn.size(); i++) {
 			float x = Float.valueOf(xColumn.get(i));
@@ -63,22 +61,20 @@ public class SimpleShapeConverter {
 		return result;
 	}
 	
-	public static List<Polygon> convertTo2DPolygons(String csvCoordinates, String pName, String xName, String yName) {
+	public static List<Polygon> convertTo2DPolygons(Map<String, List<String>> coordinateMap, String pName, String xName, String yName) {
 		
 		List<Polygon> result = new ArrayList<Polygon>();
 		
 		if ((pName == null) || (pName.isEmpty())) {
 			
-			Polygon polygon = convertTo2DPolygon(csvCoordinates, xName, yName);
+			Polygon polygon = convertTo2DPolygon(coordinateMap, xName, yName);
 			result.add(polygon);
 			
 		} else {
-			
-			Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(csvCoordinates);
-			
-			List<String> pColumn = map.get(pName);
-			List<String> xColumn = map.get(xName);
-			List<String> yColumn = map.get(yName);
+						
+			List<String> pColumn = coordinateMap.get(pName);
+			List<String> xColumn = coordinateMap.get(xName);
+			List<String> yColumn = coordinateMap.get(yName);
 			
 			Map<String, Polygon> polygonMap = new HashMap<String, Polygon>();
 			
