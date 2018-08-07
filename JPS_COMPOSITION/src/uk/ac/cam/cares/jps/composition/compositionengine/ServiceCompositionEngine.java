@@ -1,12 +1,8 @@
 package uk.ac.cam.cares.jps.composition.compositionengine;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import org.json.JSONException;
 
 import uk.ac.cam.cares.jps.composition.enginemodel.Graph;
 import uk.ac.cam.cares.jps.composition.enginemodel.Layer;
@@ -14,20 +10,25 @@ import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 import uk.ac.cam.cares.jps.composition.util.MatchingTool;
 import uk.ac.cam.cares.jps.composition.util.OptimalPathSearcher;
+import uk.ac.cam.cares.jps.composition.webserver.ServiceDiscovery;
 
 public class ServiceCompositionEngine {
 
+	public String fullHostName = "";
 	public Graph newGraph;
 	private ServiceDiscovery serviceDiscovery;
 	private ArrayList<MessagePart> inputsToAppend;
 	private ArrayList<URI> outputsRequired;
 
-	public ServiceCompositionEngine(Service compositeAgent) throws JSONException, IOException, URISyntaxException {
+	public ServiceCompositionEngine(Service compositeAgent, String host) throws Exception {
 		this.newGraph = new Graph();
+		this.fullHostName = host;
 		this.newGraph.initialInputs = (ArrayList<MessagePart>) compositeAgent.getAllInputs();
-		this.serviceDiscovery = new ServiceDiscovery();
+		this.serviceDiscovery = new ServiceDiscovery(this.fullHostName);
 		this.inputsToAppend = new ArrayList<MessagePart>();
 		this.outputsRequired = new ArrayList<URI>();
+
+		System.out.println("Here 002");
 
 		for (MessagePart part : compositeAgent.getAllOutputs()) {
 			this.outputsRequired.add(part.getModelReference());
@@ -74,7 +75,7 @@ public class ServiceCompositionEngine {
 		return metRequirement;
 	}
 
-	public void eliminateRedundantAgent() {
+	public int eliminateRedundantAgent() {
 		// iterate through each agent
 		// get the pool of inputs, if one agent has no outputs connecting to inputs pool
 		// and has no outputs in expected outputs, eliminate it.
@@ -110,9 +111,11 @@ public class ServiceCompositionEngine {
 		executionList.forEach((layer, services) -> { // iterate through the executionList map, where Layers are keys and
 														// an ArrayList of services is the value.
 			for (Service s : services) {
+				System.out.println(s.getUri().toASCIIString());
 				layer.removeService(s);// for each layer, remove the redundant services.
 			}
 		});
+		return executionList.size();
 	}
 
 	public void optimalSearch() {

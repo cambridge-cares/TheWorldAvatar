@@ -205,10 +205,21 @@ function load() {
     myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
 }
 
+function refresh(model){
+    myDiagram.model = go.Model.fromJson(JSON.stringify(model));
+}
+
 function init_load() {
 
     document.getElementById("myDiagramDiv2").hidden = true;
     document.getElementById("myDiagramDiv").hidden = false;
+
+    $('.cards').hide();
+    $('#visualizationSelectionOutput').hide();
+    $('#visualizationSelection').hide();
+    
+    
+    
     var jsonObj = JSON.parse(document.getElementById("mySavedModel").value);
     var IRI = IRIGenerator('Composite_Service');
     jsonObj.nodeDataArray[0].text = IRI;
@@ -227,7 +238,7 @@ function clear_content() {
 
 
 function layout() {
-    console.log('doing layout');
+    document.getElementById("mySavedModel").value = myDiagram.model.toJSON();
     myDiagram.layoutDiagram(true);
 }
 

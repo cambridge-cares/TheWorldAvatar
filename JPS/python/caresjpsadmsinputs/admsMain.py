@@ -43,7 +43,7 @@ if __name__ == "__main__":
     coordinates = str(sys.argv[2]).replace("'", "\"").replace('#',',');
     coordinates = json.loads(coordinates)
 
-    test = admsInputDataRetriever(str(sys.argv[1]),config.bldTopnode, coordinates,  ["CO2"], 2, config.bdnLimit,False  )
+    test = admsInputDataRetriever(str(sys.argv[1]),config.bldTopnode, coordinates,  ["CO2"   ,"CO" ,  "NO2" ,  "HC" ,  "NOx"], 2, config.bdnLimit,False  )
     result = test.get()
 
 

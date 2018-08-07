@@ -59,7 +59,7 @@ SUP = '''
 MET = '''
     &ADMS_PARAMETERS_MET
     MetLatitude               = 1.09e+0
-    MetDataSource             = 1
+    MetDataSource             = 0
     MetDataFileWellFormedPath = "{}"
     MetWindHeight             = 1.0e+1
     MetWindInSectors          = 0
@@ -203,7 +203,7 @@ BKGETC = '''
     /
     &ADMS_PARAMETERS_ETC
     SrcNumSources    = 1
-    PolNumPollutants = 16
+    PolNumPollutants = 18
     PolNumIsotopes   = 0
     /
 '''
@@ -241,7 +241,7 @@ POLD = '''
     PolWetWashout      = 0.0e+0
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 5.2e-1
+    PolConvFactor      = 5.47e-1
     PolBkgLevel        = 0.0e+0
     PolBkgUnits        = "ppb"
     /
@@ -694,9 +694,9 @@ POLD = '''
     PolBkgLevel        = 6.0e+0
     PolBkgUnits        = "ppb"
     /
-
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "CO2"
+	
+	&ADMS_POLLUTANT_DETAILS
+    PolName                  = "HC"
     PolPollutantType         = 0
     PolGasDepVelocityKnown   = 0
     PolGasDepositionVelocity = 0.0e+0
@@ -718,7 +718,7 @@ POLD = '''
     PolWetWashout      = 1.0e-4
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 5.47e-1
+    PolConvFactor      = 0.802e+0
     PolBkgLevel        = 0.0e+0
     PolBkgUnits        = "ppb"
     /
@@ -733,7 +733,7 @@ class admsAplWriter(object):
     #main function
     def write(self):
         #if contains this data, execute the corresponding writing function
-        with open(self.address, 'w') as file:
+        with open('../../workingdir/ADMS/test.apl', 'w') as file:
             self.writeStr(file, HEADER)
             self.writeStr(file,SUP)
             self.writeTemp(file,MET,[self.data['Met']])

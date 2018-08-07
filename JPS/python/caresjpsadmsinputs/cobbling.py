@@ -90,7 +90,7 @@ def run(weather_data = r"weather_data.csv",meteo_data = r"test.met"):
 		headers = ['Date']+weather_conditions[0]
 		data = [page.headers['Date'][5:]]+weather_conditions[1]
 		storage = ['VARIABLES:', '9', 'STATION DCNN', 'YEAR', 'TDAY', 'THOUR', 'T0C', 'U', 'PHI', 'P', 'CL', 'DATA:']
-		date_ref = datetime.strptime('1 Jan 2017 00:00:00 GMT', '%d %b %Y %H:%M:%S %Z')
+		date_ref = datetime.strptime('1 Jan 2018 00:00:00 GMT', '%d %b %Y %H:%M:%S %Z')
 
 		# This code puts data into an appropriate format
 		temp ='4238.0, '

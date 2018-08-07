@@ -47,7 +47,8 @@ public class ServiceComposition extends HttpServlet {
 			JSONObject jsonObject = HTTP.toJSONObject(sb.toString());
 			String AgentInString = jsonObject.getString("Method").toString();
 			Service agent = FormatTranslator.convertJSONTOJavaClass(AgentInString);
-			ServiceCompositionEngine compositionEngine = new ServiceCompositionEngine(agent);
+			ServiceCompositionEngine compositionEngine = new ServiceCompositionEngine(agent,
+					request.getServerName() + ":" + request.getServerPort());
 			boolean met = false;
 			int i = 0;
 			response.getWriter().write("GOOD");

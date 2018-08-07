@@ -9,10 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.HTTP;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.composition.util.ServicePoolTool;
 
 /**
@@ -21,7 +19,6 @@ import uk.ac.cam.cares.jps.composition.util.ServicePoolTool;
 @WebServlet("/AddToServicePool")
 public class AddToServicePool extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	public static final String filename = AgentLocator.getAbsolutePath("./service_pool.txt", AddToServicePool.class);
 
 	public AddToServicePool() {
 		super();
@@ -32,9 +29,11 @@ public class AddToServicePool extends HttpServlet {
 			throws ServletException, IOException {
 		// Receive the service as a JSON, APPEND it to the service pool file
 		JSONObject service_pool_in_JSON = null;
+		ServicePoolTool pool = new ServicePoolTool("http://" + request.getServerName() + ":" + request.getServerPort());
 		try {
-			service_pool_in_JSON = ServicePoolTool.readTheServicePool();
-		} catch (JSONException e) {
+
+			service_pool_in_JSON = pool.readTheServicePool();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		try {
@@ -47,7 +46,7 @@ public class AddToServicePool extends HttpServlet {
 			String AgentInString = jsonObject.getString("Method").toString();
 			JSONObject newAgentInJSON = new JSONObject(AgentInString);
 			service_pool_in_JSON.put(newAgentInJSON.getString("uri"), newAgentInJSON);
-			ServicePoolTool.writeToTheServicePool(service_pool_in_JSON.toString());
+			pool.writeToTheServicePool(service_pool_in_JSON.toString());
 			response.getWriter().write(service_pool_in_JSON.toString());
 		} catch (Exception ex) {
 		}

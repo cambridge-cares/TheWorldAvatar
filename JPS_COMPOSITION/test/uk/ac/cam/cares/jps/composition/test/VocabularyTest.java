@@ -1,10 +1,8 @@
 package uk.ac.cam.cares.jps.composition.test;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
-import uk.ac.cam.cares.jps.composition.Vocabulary.*;
+import uk.ac.cam.cares.jps.composition.vocabulary.MSM;
 
 public class VocabularyTest {
 
