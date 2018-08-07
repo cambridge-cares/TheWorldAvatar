@@ -57,8 +57,8 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			} else if (cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
 				// TODO-AE URGENT switch to new dataset
 				// the old dataset for The Hague with different IRIs
-				myPath = "/damecoolquestion/buildingsLite/query";
-				//myPath = "/damecoolquestion/thehaguebuildings/query";
+				//myPath = "/damecoolquestion/buildingsLite/query";
+				myPath = "/damecoolquestion/thehaguebuildings/query";
 			}
 		}
 		

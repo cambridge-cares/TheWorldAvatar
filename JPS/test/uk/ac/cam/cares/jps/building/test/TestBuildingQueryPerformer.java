@@ -20,34 +20,32 @@ import uk.ac.cam.cares.jps.building.SparqlConstants;
 
 public class TestBuildingQueryPerformer extends TestCase implements SparqlConstants {
 	
-	private boolean queryServer = true;
+	// TODO-AE URGENT switch to new IRI prefix
+	// IRI for old KB of THE Hague
+	public static final String BUILDING_IRI_THE_HAGUE_PREFIX = "http://www.theworldavatar.com/Building/";
+	//public static final String BUILDING_IRI_THE_HAGUE_PREFIX = "http://www.theworldavatar.com/kb/nld/thehague/buildings/";
+
 	// the following building from The Hague doesn't have any building parts and only contains one ground surface
-	public static final String BUILDING_IRI_THE_HAGUE_WITHOUT_PARTS = "http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_83EFA0E4-FC06-46B3-8482-E38C8CF602BC";
-	public static final String BUILDING_IRI_THE_HAGUE_WITH_THREE_PARTS= "http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_E77C9F0F-554A-4986-8332-75EDFF2DCF07";
-	public static final String BUILDING_IRI_THE_HAGUE_PLANT = "http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_E59B86F5-443F-49AE-BD94-BAB9AAAA278A";
+	public static final String BUILDING_IRI_THE_HAGUE_WITHOUT_PARTS = BUILDING_IRI_THE_HAGUE_PREFIX + "10_buildings0.owl#BuildingGUID_83EFA0E4-FC06-46B3-8482-E38C8CF602BC";
+	public static final String BUILDING_IRI_THE_HAGUE_WITH_THREE_PARTS= BUILDING_IRI_THE_HAGUE_PREFIX + "10_buildings0.owl#BuildingGUID_E77C9F0F-554A-4986-8332-75EDFF2DCF07";
+	public static final String BUILDING_IRI_THE_HAGUE_PLANT = BUILDING_IRI_THE_HAGUE_PREFIX + "10_buildings0.owl#BuildingGUID_E59B86F5-443F-49AE-BD94-BAB9AAAA278A";
 	
-	public String performQuery(String city, String query) {
-		
-		String result = null;
-		
-		if (!queryServer) {
-			if (city.equalsIgnoreCase(BuildingQueryPerformer.BERLIN_IRI)) {
-				result = performQueryOnLocalHost("berlinbuildings", query);
-			}
-		} else {
-			result = new BuildingQueryPerformer().performQuery(city, query);
+	
+	public static BuildingQueryPerformer createQueryPerformerForTheHague() {
+	
+		// TODO-AE URGENT remove this as soon as we don't need the old KB for The Hague anymore
+		if (BUILDING_IRI_THE_HAGUE_PREFIX.equals("http://www.theworldavatar.com/Building/")) {
+			return new BuildingQueryPerformer("www.theworldavatar.com", 80, "/damecoolquestion/buildingsLite/query");
 		}
 		
-		System.out.println(result);
-		
-		return result;
+		return new BuildingQueryPerformer();
 	}
 	
 	public String performQueryOnLocalHost(String dataset, String query) {
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost("localhost").setPort(3030)
 				.setPath("/" + dataset + "/query")
 				.setParameter("query", query);
-		return new BuildingQueryPerformer().executeGet(builder);
+		return createQueryPerformerForTheHague().executeGet(builder);
 	}
 	
 	public void testTheHagueTenBuildings() {
@@ -60,7 +58,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 				"}\n" +
 				"LIMIT 10";
 		
-		String result = new BuildingQueryPerformer().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
+		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
 		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
 		assertEquals(10, map.get("building").size());
@@ -81,7 +79,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		
 		System.out.println(query);
 		
-		String result = new BuildingQueryPerformer().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
+		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
 		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
 		assertEquals(1, map.get("x").size());
@@ -90,8 +88,8 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 	
 	public void testTheHagueOneBuildingMeasuredHeight() {
 		
-		String query = new BuildingQueryPerformer().getQueryBdnHeight(BUILDING_IRI_THE_HAGUE_WITHOUT_PARTS);
-		String result = new BuildingQueryPerformer().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
+		String query = createQueryPerformerForTheHague().getQueryBdnHeight(BUILDING_IRI_THE_HAGUE_WITHOUT_PARTS);
+		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
 		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
 		assertEquals(1, map.get("h").size());
@@ -100,8 +98,8 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 	
 	public void testTheHagueOneBuildingOneGroundSurface() {
 				
-		String query = new BuildingQueryPerformer().getQueryBdnVerticesWithAndWithoutBuildingParts(BUILDING_IRI_THE_HAGUE_WITHOUT_PARTS);		
-		String result = new BuildingQueryPerformer().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
+		String query = createQueryPerformerForTheHague().getQueryBdnVerticesWithAndWithoutBuildingParts(BUILDING_IRI_THE_HAGUE_WITHOUT_PARTS);		
+		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
 		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
 		assertEquals(5, map.get("x").size());
@@ -120,18 +118,18 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 				
 		// old plant IRI from The Hague
 		List<String> buildingIRIs = Arrays.asList(BUILDING_IRI_THE_HAGUE_PLANT);
-		SimpleBuildingData data = new BuildingQueryPerformer().performQuerySimpleBuildingData(BuildingQueryPerformer.THE_HAGUE_IRI, buildingIRIs);
+		SimpleBuildingData data = createQueryPerformerForTheHague().performQuerySimpleBuildingData(BuildingQueryPerformer.THE_HAGUE_IRI, buildingIRIs);
 		assertEquals(1, data.BldIRI.size());
 	
-		//<http://www.theworldavatar.com/Building/10_buildings0.owl#V_x_Building_GUID_E59B86F5-443F-49AE-BD94-BAB9AAAA278A>
+		//<http://www.theworldavatar.com/kb/nld/thehague/buildings/10_buildings0.owl#V_x_Building_GUID_E59B86F5-443F-49AE-BD94-BAB9AAAA278A>
 		//"79813.66794742201"^^xsd:double
 		// the next value is the center of the best shrinked box
 		assertEquals(79831., data.BldX.get(0), 0.1);
-		//<http://www.theworldavatar.com/Building/10_buildings0.owl#V_y_Building_GUID_E59B86F5-443F-49AE-BD94-BAB9AAAA278A>
+		//<http://www.theworldavatar.com/kb/nld/thehague/buildings/10_buildings0.owl#V_y_Building_GUID_E59B86F5-443F-49AE-BD94-BAB9AAAA278A>
 		//"454799.0413769716"^^xsd:double
 		// the next value is the center of the best shrinked box
 		assertEquals(454766.375, data.BldY.get(0), 0.1);
-		// <http://www.theworldavatar.com/Building/10_buildings0.owl#V_EstimatedHeight_Building_GUID_E59B86F5-443F-49AE-BD94-BAB9AAAA278A>
+		// <http://www.theworldavatar.com/kb/nld/thehague/buildings/10_buildings0.owl#V_EstimatedHeight_Building_GUID_E59B86F5-443F-49AE-BD94-BAB9AAAA278A>
 		//"83.607"^^xsd:double
 		// the next value was read from the knowledge base
 		assertEquals(83.607, data.BldHeight.get(0), 0.1);
@@ -139,7 +137,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 	
 	public void testTheHaguePerformQueryBuildingsFromRegionAroundPlant() {
 		
-		List<String> buildingIRIs = new BuildingQueryPerformer().performQueryBuildingsFromRegion(BuildingQueryPerformer.THE_HAGUE_IRI, 25, 79000., 454000., 79800., 455200.);
+		List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryBuildingsFromRegion(BuildingQueryPerformer.THE_HAGUE_IRI, 25, 79000., 454000., 79800., 455200.);
 		assertEquals(25, buildingIRIs.size());
 		
 		String[] expectedBuildingNames = new String[] {
@@ -178,19 +176,19 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 				"LIMIT 10";
 		
 		/**
-		http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_E77C9F0F-554A-4986-8332-75EDFF2DCF07
-		http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_E5F7DC6A-59FE-4DC2-A826-0CABEEB70451
-		http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_94405F3C-FB53-4EC8-93A1-5F95FEC74CBD
-		http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_8D251403-40CD-463F-AE65-AC8951A1B2FD
-		http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_24834678-6E28-47A3-8535-7276348DF078
-		http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_885FA69C-CA8B-46CC-8D34-D38FD14B52C8
-		http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_00075B44-10B6-4E22-8AC1-1E212EAB803E
-		http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_55E12A29-6A2E-4032-BEF0-FA55038D04CB
-		http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_0C6D00D2-8473-4801-9787-3ECEE3720B71
-		http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_612BE82E-7A6A-4356-9A18-0434EF6AA180
+		http://www.theworldavatar.com/kb/nld/thehague/buildings/10_buildings0.owl#BuildingGUID_E77C9F0F-554A-4986-8332-75EDFF2DCF07
+		http://www.theworldavatar.com/kb/nld/thehague/buildings/10_buildings0.owl#BuildingGUID_E5F7DC6A-59FE-4DC2-A826-0CABEEB70451
+		http://www.theworldavatar.com/kb/nld/thehague/buildings/10_buildings0.owl#BuildingGUID_94405F3C-FB53-4EC8-93A1-5F95FEC74CBD
+		http://www.theworldavatar.com/kb/nld/thehague/buildings/10_buildings0.owl#BuildingGUID_8D251403-40CD-463F-AE65-AC8951A1B2FD
+		http://www.theworldavatar.com/kb/nld/thehague/buildings/10_buildings0.owl#BuildingGUID_24834678-6E28-47A3-8535-7276348DF078
+		http://www.theworldavatar.com/kb/nld/thehague/buildings/10_buildings0.owl#BuildingGUID_885FA69C-CA8B-46CC-8D34-D38FD14B52C8
+		http://www.theworldavatar.com/kb/nld/thehague/buildings/10_buildings0.owl#BuildingGUID_00075B44-10B6-4E22-8AC1-1E212EAB803E
+		http://www.theworldavatar.com/kb/nld/thehague/buildings/10_buildings0.owl#BuildingGUID_55E12A29-6A2E-4032-BEF0-FA55038D04CB
+		http://www.theworldavatar.com/kb/nld/thehague/buildings/10_buildings0.owl#BuildingGUID_0C6D00D2-8473-4801-9787-3ECEE3720B71
+		http://www.theworldavatar.com/kb/nld/thehague/buildings/10_buildings0.owl#BuildingGUID_612BE82E-7A6A-4356-9A18-0434EF6AA180
 		*/
 		
-		String result = new BuildingQueryPerformer().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
+		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
 		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
 		assertEquals(10, map.get("bdn").size());
@@ -203,9 +201,9 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 	 */
 	public void testTheHagueOneBuildingSeveralParts() {
 		
-		String query = new BuildingQueryPerformer().getQueryBdnVerticesWithAndWithoutBuildingParts(BUILDING_IRI_THE_HAGUE_WITH_THREE_PARTS);
+		String query = createQueryPerformerForTheHague().getQueryBdnVerticesWithAndWithoutBuildingParts(BUILDING_IRI_THE_HAGUE_WITH_THREE_PARTS);
 		
-		String result = new BuildingQueryPerformer().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
+		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
 		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
 		List<String> distinctGroundSurface = new ArrayList<String>();
@@ -228,7 +226,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		
 		List<String> buildingIRIs = Arrays.asList(BUILDING_IRI_THE_HAGUE_WITHOUT_PARTS, BUILDING_IRI_THE_HAGUE_WITH_THREE_PARTS);
 	
-		SimpleBuildingData result = new BuildingQueryPerformer().performQuerySimpleBuildingData(BuildingQueryPerformer.THE_HAGUE_IRI, buildingIRIs);
+		SimpleBuildingData result = createQueryPerformerForTheHague().performQuerySimpleBuildingData(BuildingQueryPerformer.THE_HAGUE_IRI, buildingIRIs);
 		
 		assertEquals(2, result.BldIRI.size());
 		int i = 0;
@@ -249,8 +247,8 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 	
 	public void testSimpleBuildingDataWithoutExceptions() {
 		
-		List<String> buildingIRIs = new BuildingQueryPerformer().performQueryBuildingsFromRegion(BuildingQueryPerformer.THE_HAGUE_IRI, 25, 79000., 454000., 79800., 455200.);
-		SimpleBuildingData result = new BuildingQueryPerformer().performQuerySimpleBuildingData(BuildingQueryPerformer.THE_HAGUE_IRI, buildingIRIs);
+		List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryBuildingsFromRegion(BuildingQueryPerformer.THE_HAGUE_IRI, 25, 79000., 454000., 79800., 455200.);
+		SimpleBuildingData result = createQueryPerformerForTheHague().performQuerySimpleBuildingData(BuildingQueryPerformer.THE_HAGUE_IRI, buildingIRIs);
 		
 		assertEquals(25, result.BldIRI.size());
 		
@@ -345,8 +343,8 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		"SELECT ?polygon ?coordinates ?xval ?yval ?zval\r\n" + 
 		"WHERE {\r\n" + 
 		"                {\r\n" + 
-		"                    <http://www.theworldavatar.com/Building/3940_5818.owl#BuildingBLDG_0003000900350d26> p3:id ?buildingID .\r\n" + 
-		"                    <http://www.theworldavatar.com/Building/3940_5818.owl#BuildingBLDG_0003000900350d26> p3:boundedBy ?groundSurface .\r\n" + 
+		"                    <http://www.theworldavatar.com/kb/nld/thehague/buildings/3940_5818.owl#BuildingBLDG_0003000900350d26> p3:id ?buildingID .\r\n" + 
+		"                    <http://www.theworldavatar.com/kb/nld/thehague/buildings/3940_5818.owl#BuildingBLDG_0003000900350d26> p3:boundedBy ?groundSurface .\r\n" + 
 		"                     ?groundSurface a p3:GroundSurfaceType .\r\n" + 
 		"                     ?groundSurface p3:lod2MultiSurface ?multiSurface .\r\n" + 
 		"                      ?multiSurface p3:surfaceMember ?polygon .\r\n" + 
@@ -365,7 +363,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		"                }\r\n" + 
 		"                UNION\r\n" + 
 		"                {\r\n" + 
-		"                     <http://www.theworldavatar.com/Building/3940_5818.owl#BuildingBLDG_0003000900350d26> p3:consistsOfBuildingPart ?buildingPart .\r\n" + 
+		"                     <http://www.theworldavatar.com/kb/nld/thehague/buildings/3940_5818.owl#BuildingBLDG_0003000900350d26> p3:consistsOfBuildingPart ?buildingPart .\r\n" + 
 		"                     ?buildingPart p3:boundedBy ?groundSurface .\r\n" + 
 		"                     ?groundSurface a p3:GroundSurfaceType .\r\n" + 
 		"                     ?groundSurface p3:lod2MultiSurface ?multiSurfaceType .\r\n" + 
@@ -440,7 +438,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		
 		
 		//double[] p = CRSTransformer.transform(CRSTransformer.EPSG_25833, BuildingQueryPerformer.DEFAULT_CRS_NAME, 390000., 5815000., 396000., 5826000.);
-		//new BuildingQueryPerformer().performQueryFilterBdns(BuildingQueryPerformer.BERLIN, 100, p[0], p[1], p[2], p[3]);
+		//createQueryPerformerForTheHague().performQueryFilterBdns(BuildingQueryPerformer.BERLIN, 100, p[0], p[1], p[2], p[3]);
 		
 		
 		
