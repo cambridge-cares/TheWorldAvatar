@@ -22,14 +22,14 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 	
 	// TODO-AE URGENT switch to new IRI prefix
 	// IRI for old KB of THE Hague
-	public static final String BUILDING_IRI_THE_HAGUE_PREFIX = "http://www.theworldavatar.com/Building/";
-	//public static final String BUILDING_IRI_THE_HAGUE_PREFIX = "http://www.theworldavatar.com/kb/nld/thehague/buildings/";
+	//public static final String BUILDING_IRI_THE_HAGUE_PREFIX = "http://www.theworldavatar.com/Building/";
+	public static final String BUILDING_IRI_THE_HAGUE_PREFIX = "http://www.theworldavatar.com/kb/nld/thehague/buildings/";
 
 	// the following building from The Hague doesn't have any building parts and only contains one ground surface
 	public static final String BUILDING_IRI_THE_HAGUE_WITHOUT_PARTS = BUILDING_IRI_THE_HAGUE_PREFIX + "10_buildings0.owl#BuildingGUID_83EFA0E4-FC06-46B3-8482-E38C8CF602BC";
 	public static final String BUILDING_IRI_THE_HAGUE_WITH_THREE_PARTS= BUILDING_IRI_THE_HAGUE_PREFIX + "10_buildings0.owl#BuildingGUID_E77C9F0F-554A-4986-8332-75EDFF2DCF07";
 	public static final String BUILDING_IRI_THE_HAGUE_PLANT = BUILDING_IRI_THE_HAGUE_PREFIX + "10_buildings0.owl#BuildingGUID_E59B86F5-443F-49AE-BD94-BAB9AAAA278A";
-	
+	public static final String BUILDING_IRI_BERLIN_PLANT = "http://www.theworldavatar.com/kb/deu/berlin/buildings/3920_5819.owl#BuildingDEB_LOD2_UUID_ccf8cd7c-b41b-4c1e-a60c-0a645c6c5c4b";
 	
 	public static BuildingQueryPerformer createQueryPerformerForTheHague() {
 	
@@ -124,11 +124,14 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		//<http://www.theworldavatar.com/kb/nld/thehague/buildings/10_buildings0.owl#V_x_Building_GUID_E59B86F5-443F-49AE-BD94-BAB9AAAA278A>
 		//"79813.66794742201"^^xsd:double
 		// the next value is the center of the best shrinked box
-		assertEquals(79831., data.BldX.get(0), 0.1);
+		// old KB for The Hauge 
+		// assertEquals(79831., data.BldX.get(0), 0.1);
+		assertEquals(79833., data.BldX.get(0), 0.1);
 		//<http://www.theworldavatar.com/kb/nld/thehague/buildings/10_buildings0.owl#V_y_Building_GUID_E59B86F5-443F-49AE-BD94-BAB9AAAA278A>
 		//"454799.0413769716"^^xsd:double
 		// the next value is the center of the best shrinked box
-		assertEquals(454766.375, data.BldY.get(0), 0.1);
+		//assertEquals(454766.375, data.BldY.get(0), 0.1);
+		assertEquals(454816.531, data.BldY.get(0), 0.1);
 		// <http://www.theworldavatar.com/kb/nld/thehague/buildings/10_buildings0.owl#V_EstimatedHeight_Building_GUID_E59B86F5-443F-49AE-BD94-BAB9AAAA278A>
 		//"83.607"^^xsd:double
 		// the next value was read from the knowledge base
@@ -262,8 +265,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 	
 	public void testBerlinPlantBuilding() {
 		
-		// plant IRI from Berlin
-		List<String> buildingIRIs = Arrays.asList("http://www.theworldavatar.com/kb/deu/berlin/buildings/3920_5819.owl#BuildingDEB_LOD2_UUID_ccf8cd7c-b41b-4c1e-a60c-0a645c6c5c4b");
+		List<String> buildingIRIs = Arrays.asList(BUILDING_IRI_BERLIN_PLANT);
 		SimpleBuildingData data = new BuildingQueryPerformer().performQuerySimpleBuildingData(BuildingQueryPerformer.BERLIN_IRI, buildingIRIs);
 		assertEquals(1, data.BldIRI.size());
 	
@@ -283,7 +285,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 	
 	public void testBerlinPerformQueryBuildingsFromRegionAroundPlant() {
 		
-		// tranform the points into the CRS of GUI, BuildingQueryPerformer will translate them back to Berlin CRS
+		// transform the points into the CRS of GUI, BuildingQueryPerformer will translate them back to Berlin CRS
 		String sourceCRS = CRSTransformer.EPSG_25833; // Berlin
 		double[] sourcePoints = new double[]{390000., 5815000., 396000., 5826000.};
 		String targetCRS = CRSTransformer.EPSG_28992; // The Hague
