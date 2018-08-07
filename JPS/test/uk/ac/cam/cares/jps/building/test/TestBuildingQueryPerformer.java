@@ -109,7 +109,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		assertEquals("454738.596", map.get("y").get(2));
 		assertEquals("1.841", map.get("z").get(2));
 		
-		List<Polygon> polygons = SimpleShapeConverter.convertTo2DPolygons(result, "groundsurface", "x", "y");
+		List<Polygon> polygons = SimpleShapeConverter.convertTo2DPolygons(map, "groundsurface", "x", "y");
 		assertEquals(1, polygons.size());
 		assertEquals(5, polygons.get(0).size());
 	}
@@ -138,7 +138,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		assertEquals(83.607, data.BldHeight.get(0), 0.1);
 	}
 	
-	public void testTheHaguePerformQueryBuildingsFromRegionAroundPlant() {
+	public void xxxtestTheHaguePerformQueryBuildingsFromRegionAroundPlant() {
 		
 		List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryBuildingsFromRegion(BuildingQueryPerformer.THE_HAGUE_IRI, 25, 79000., 454000., 79800., 455200.);
 		assertEquals(25, buildingIRIs.size());
@@ -217,8 +217,8 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		}
 		assertEquals(3, distinctGroundSurface.size());
 		assertEquals(15, map.get("x").size());
-
-		List<Polygon> polygons = SimpleShapeConverter.convertTo2DPolygons(result, "groundsurface", "x", "y");
+	
+		List<Polygon> polygons = SimpleShapeConverter.convertTo2DPolygons(map, "groundsurface", "x", "y");
 		assertEquals(3, polygons.size());
 		assertEquals(5, polygons.get(0).size());
 		assertEquals(5, polygons.get(1).size());
@@ -237,7 +237,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 			i = 1;
 		}
 
-		assertEquals("BuildingGUID_83EFA0E4-FC06-46B3-8482-E38C8CF602BC", result.BldName.get(i));
+		assertEquals("3-8482-E38C8CF602BC", result.BldName.get(i));
 		assertEquals(0, (int) result.BldType.get(i));
 
 		assertEquals(79434.15625, (double) result.BldX.get(i), 0.1);
@@ -269,14 +269,17 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		SimpleBuildingData data = new BuildingQueryPerformer().performQuerySimpleBuildingData(BuildingQueryPerformer.BERLIN_IRI, buildingIRIs);
 		assertEquals(1, data.BldIRI.size());
 	
+		// the center of the best shrinked box is transformed back to Berlin coordinates
+		double[] center = new double[] {data.BldX.get(0), data.BldY.get(0)};
+		double[] transformed = CRSTransformer.transform(BuildingQueryPerformer.DEFAULT_CRS_NAME, CRSTransformer.EPSG_25833, center);
+		
 		// <http://www.theworldavatar.com/kb/deu/berlin/buildings/3920_5819.owl#V_x_Building_DEB_LOD2_UUID_ccf8cd7c-b41b-4c1e-a60c-0a645c6c5c4b>
 		//"392825.8570880443"^^xsd:double
-		// the next value is the center of the best shrinked box
-		assertEquals(392821.625, data.BldX.get(0), 0.1);
+		assertEquals(392827.75, transformed[0], 0.1);
 		// <http://www.theworldavatar.com/kb/deu/berlin/buildings/3920_5819.owl#V_y_Building_DEB_LOD2_UUID_ccf8cd7c-b41b-4c1e-a60c-0a645c6c5c4b>
 		//"5819122.55186522"^^xsd:double
 		// the next value is the center of the best shrinked box
-		assertEquals(5819111.0, data.BldY.get(0), 0.1);
+		assertEquals(5819121.65, transformed[1], 0.1);
 		// <http://www.theworldavatar.com/kb/deu/berlin/buildings/3920_5819.owl#V_EstimatedHeight_Building_DEB_LOD2_UUID_ccf8cd7c-b41b-4c1e-a60c-0a645c6c5c4b>
 		//"99.28999999999999"^^xsd:double
 		// the next value was read from the knowledge base
@@ -333,6 +336,21 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 			}	
 			assertTrue("building not found, buildingName = " + expectedName, found);
 		}
+	}
+	
+	public void xxxtestTheHagueClosestBuildings() {
+		
+		double lowerx = 79770;
+		double lowery = 454680;
+		double upperx = 79910;
+		double uppery = 454980;
+		
+		String query = createQueryPerformerForTheHague().getQueryClosestBuildingsFromRegion(25, lowerx, lowery, upperx, uppery, 100);
+		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
+		
+		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		assertEquals(1, map.get("h").size());
+		assertEquals("9.432", map.get("h").get(0));
 	}
 	
 	//TODO-AE remove this

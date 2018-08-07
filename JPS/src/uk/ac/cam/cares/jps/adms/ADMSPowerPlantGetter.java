@@ -7,22 +7,25 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.PythonException;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 /**
- * Servlet implementation class ADMSPowerPlantCentrePointGetter
+ * Servlet implementation class ADMSPowerPlantGetter
  */
-@WebServlet("/ADMSPowerPlantCentrePointGetter")
-public class ADMSPowerPlantCentrePointGetter extends HttpServlet {
+@WebServlet("/ADMSPowerPlantGetter")
+public class ADMSPowerPlantGetter extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ADMSPowerPlantCentrePointGetter() {
+    public ADMSPowerPlantGetter() {
         super();
     }
+    
+    private final String WORKINGDIR_ADMS_PATH = AgentLocator.getPathToWorkingDir(this) + "/ADMS";
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -32,19 +35,25 @@ public class ADMSPowerPlantCentrePointGetter extends HttpServlet {
 		String location = request.getParameter("location");
 		String powerPlantIRI = "";
 		String epsg = "";
+		String powerplantKnowledgeBase = "";
 		
 		if (location.equals("The Hague")) {
 			powerPlantIRI = "http://www.theworldavatar.com/Plant-001.owl#Plant-001";
 			epsg = "epsg:28992";
+			powerplantKnowledgeBase = WORKINGDIR_ADMS_PATH + "/Plant-001.owl";
 		} else if (location.equals("Berlin")) {
 			powerPlantIRI = "http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002";
 			epsg = "epsg:25833";
+			powerplantKnowledgeBase = WORKINGDIR_ADMS_PATH + "/Heizkraftwerk_Mitte.owl";
 		}
 		
 		String result;
+		
 		try {
-			result = PythonHelper.callPython("caresjpsadmsinputs/ADMSPowerPlantCentrePointGetter.py", powerPlantIRI, epsg, this);
-			System.out.println("result: " + result);
+			result = PythonHelper.callPython("caresjpsadmsinputs/ADMSPowerPlantGetter.py", 
+					powerPlantIRI, epsg, powerplantKnowledgeBase,
+					"",
+					this);
 			response.setContentType("application/json");
 			response.getWriter().write(result);
 		} catch (PythonException e) {
