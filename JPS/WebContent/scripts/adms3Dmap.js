@@ -35,6 +35,7 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid) => {
     
     const parsedLowLeft = proj4("EPSG:28992", "WGS84", [range[0], range[2]]);
     const parsedTopRight = proj4("EPSG:28992", "WGS84", [range[1], range[3]]);
+    
 
     const position = {};
     // if(location === "The Hague"){
@@ -44,8 +45,15 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid) => {
     // 	position.latitude = 52.51461;
     // 	position.longitude = 13.23966;
     // }
-        
-    $.getJSON('/JPS/ADMSPowerPlantCentrePointGetter',
+
+    position.latitude = coordinatesMid[0];
+    position.longitude = coordinatesMid[1];
+
+    osmb.setPosition(position);
+    osmb.setZoom(15.7);
+	osmb.setTilt(45.0);
+
+    $.getJSON('/JPS/ADMSPowerPlantGetter',
     	{
     		location
     	},
@@ -58,14 +66,7 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid) => {
     			console.log(err.name);
     		}
     	});
-    	
-    position.latitude = coordinatesMid[0];
-    position.longitude = coordinatesMid[1];
 
-    osmb.setPosition(position);
-    osmb.setZoom(15.7);
-	osmb.setTilt(45.0);
-	
     // --- Rendering 3D building models --- //
 
     $.getJSON('/JPS/ADMSHelper',
@@ -117,6 +118,7 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid) => {
     };
     
     getContourMaps('/JPS/ADMSOutputAll').then(dataurls => {
+    	
     	var idxSrc = 0, idxH = 0, preObj;
     	$(".radiogroup").change(function(){
     		var radioValue = $("input[name='radio']:checked").val();

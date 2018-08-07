@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.config.test;
 
-import static org.junit.Assert.assertNotEquals;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -96,17 +94,17 @@ class Geometry {
 /**
  * 
  * @author WE
- * Validating ADMSPowerPlantCentrePointGetter endpoint when location is set to The Hague
+ * Validating ADMSPowerPlantGetter endpoint when location is set to The Hague
  *
  */
 
-public class TestADMSPowerPlantCentrePointGetter extends TestCase {
+public class TestADMSPowerPlantGetter extends TestCase {
 	
-	public void testADMSPowerPlantCentrePointGetterPythonScript() throws ClientProtocolException, IOException, URISyntaxException {
+	public void testADMSPowerPlantGetterPythonScript() throws ClientProtocolException, IOException, URISyntaxException {
 		
 		// Send HTTP get request to endpoint
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost("localhost:8080")
-				.setPath("/JPS/ADMSPowerPlantCentrePointGetter")
+				.setPath("/JPS/ADMSPowerPlantGetter")
 				.setParameter("location", "The Hague");
 		
 		URI uri = builder.build();

@@ -74,12 +74,11 @@ def getGeoJSON(centrePoint, height, epsg):
     return json.dumps(python_data)
 
 
-def returnPowerPlantCentrePoint(powerPlantIRI, epsg):
+def returnPowerPlantCentrePoint(powerPlantIRI, epsg, knowledgeBaseFile):
     graph = rdflib.Graph()
-    graph.parse(r'C:\Users\WE\Desktop\Plant-001.owl')
+    graph.parse(knowledgeBaseFile)
 
     try:
-        # powerPlantIRI = "http://www.theworldavatar.com/Plant-001.owl#Plant-001"
 
         powerPlantCentrePointAndHeight = sparqlCentrePointAndHeight(graph, powerPlantIRI).bindings
         centrePoint = getPowerPlantCentrePoint(powerPlantCentrePointAndHeight)
@@ -92,4 +91,5 @@ def returnPowerPlantCentrePoint(powerPlantIRI, epsg):
 if __name__ == "__main__":
     powerPlantIRI = sys.argv[1]
     epsg = sys.argv[2]
-    print(returnPowerPlantCentrePoint(powerPlantIRI, epsg))
+    knowledgeBaseFile = sys.argv[3]
+    print(returnPowerPlantCentrePoint(powerPlantIRI, epsg, knowledgeBaseFile))
