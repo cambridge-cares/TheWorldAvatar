@@ -1,19 +1,16 @@
 package uk.ac.cam.cares.jps.composition.test;
 
-import static org.junit.Assert.*;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
-import uk.ac.cam.cares.jps.composition.Ontology.ServiceWriter;
-import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
+import uk.ac.cam.cares.jps.composition.ontology.ServiceWriter;
+import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 import uk.ac.cam.cares.jps.composition.util.FormatTranslator;
 
 public class ServiceWriterTest {

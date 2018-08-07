@@ -20,7 +20,8 @@ public enum MSM {
 
 		@Override
 		public com.hp.hpl.jena.rdf.model.Property Property() {
-			return null;
+			Model model = ModelFactory.createDefaultModel();
+			return (com.hp.hpl.jena.rdf.model.Property) model.createResource(msm + this.name());
 		}
 
 	},

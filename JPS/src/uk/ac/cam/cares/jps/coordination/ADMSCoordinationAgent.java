@@ -15,8 +15,6 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
-
 /**
  * Servlet implementation class ADMSCoordinationAgent
  */
@@ -40,13 +38,13 @@ public class ADMSCoordinationAgent extends HttpServlet {
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		String coordinates = request.getParameter("coordinates");
-		String powerPlantStartUrl = AgentLocator.getProperty("host") + ":" + AgentLocator.getProperty("port")
+		String powerPlantStartUrl = "http://" + request.getServerName() + ":" + request.getServerPort()
 				+ "/JPS/PowerPlantWrapperAgent";
 		HttpUriRequest request1 = new HttpGet(powerPlantStartUrl);
 		HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request1);
 		String responseString = EntityUtils.toString(httpResponse.getEntity());
 
-		String requestToADMSWrapper = AgentLocator.getProperty("host") + ":" + AgentLocator.getProperty("port")
+		String requestToADMSWrapper = "http://" + request.getServerName() + ":" + request.getServerPort()
 				+ "/JPS/ADMSWrapper?selectedSource="
 				+ URLEncoder.encode("http://www.theworldavatar.com/Plant-001.owl", "UTF-8") + "&buildingTopNode="
 				+ "&coordinates=" + URLEncoder.encode(coordinates, "UTF-8") + "&substances="
@@ -57,7 +55,7 @@ public class ADMSCoordinationAgent extends HttpServlet {
 		String responseString2 = EntityUtils.toString(httpResponse2.getEntity());
 
 		coordinates = coordinates.replaceAll(",", "#");
-		String buildingsIRI = AgentLocator.getProperty("host") + ":" + AgentLocator.getProperty("port")
+		String buildingsIRI = "http://" + request.getServerName() + ":" + request.getServerPort()
 				+ "/JPS/ADMSGetBuildingsIRI?coordinates=" + URLEncoder.encode(coordinates, "UTF-8");
 		HttpUriRequest request3 = new HttpGet(buildingsIRI);
 		HttpResponse httpResponse3 = HttpClientBuilder.create().build().execute(request3);
@@ -65,7 +63,7 @@ public class ADMSCoordinationAgent extends HttpServlet {
 
 		response.getWriter().write(responseString3.replace("'", "\""));
 
-		String startADMSRequets = AgentLocator.getProperty("host") + ":" + AgentLocator.getProperty("port")
+		String startADMSRequets = "http://" + request.getServerName() + ":" + request.getServerPort()
 				+ "/JPS/ADMSStarter";
 		HttpUriRequest request4 = new HttpGet(startADMSRequets);
 		HttpResponse httpResponse4 = null;

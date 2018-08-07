@@ -9,6 +9,8 @@ function visualizeComposition(dataObject) {
     myDiagram =
         $(go.Diagram, "myDiagramDiv2",
             {
+                //initialScale: 0.2,
+                initialAutoScale: go.Diagram.Uniform,
                 initialContentAlignment: go.Spot.Center,
                 validCycle: go.Diagram.CycleNotDirected,  // don't allow loops
                 // For this sample, automatically show the state of the diagram's model on the page
@@ -150,10 +152,6 @@ function visualizeComposition(dataObject) {
     function showModel() {
         document.getElementById("mySavedModel").textContent = myDiagram.model.toJson();
     }
-}
 
 
-function layout() {
-    console.log('doing layout');
-    myDiagram.layoutDiagram(true);
 }
