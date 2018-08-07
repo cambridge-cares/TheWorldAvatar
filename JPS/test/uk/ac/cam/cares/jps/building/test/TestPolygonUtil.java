@@ -18,7 +18,7 @@ public class TestPolygonUtil extends TestCase {
 
 	public static void main(String[] args) {
 		
-		new TestPolygonUtil().testCalculateTheHagueBuildingDataForADMS();
+		new TestPolygonUtil().testSimpleShapeForSimpleRotatedBox();
 	}
 	
 	private double area(Polygon p) {
@@ -34,6 +34,17 @@ public class TestPolygonUtil extends TestCase {
 			float x = Float.valueOf(tokenizer.nextToken());
 			float y = Float.valueOf(tokenizer.nextToken());
 			result.addVertex(x, y);
+		}
+		
+		return result;
+	}
+	
+	private Polygon move(Polygon p, float x, float y) {
+		
+		Polygon result = new Polygon();
+		
+		for (Point2d current : p.getVertices()) {
+			result.addVertex(current.getX() + x, current.getY() + y);
 		}
 		
 		return result;
@@ -537,7 +548,7 @@ public class TestPolygonUtil extends TestCase {
 		
 		System.out.println("Polygon with large coordinates = " + p);
 		
-		double areaNew = PolygonUtil.calculateArea(p.getVertices());
+		double areaNew = area(p);
 		assertEquals(51.933, areaNew, 0.01);
 		
 		Polygon p2 = new Polygon();
@@ -549,7 +560,7 @@ public class TestPolygonUtil extends TestCase {
 		
 		System.out.println("Polygon with small coordinates = " + p2);
 		
-		areaNew = PolygonUtil.calculateArea(p2.getVertices());
+		areaNew = area(p2);
 		assertEquals(51.898, areaNew, 0.01);
 	}
 	
@@ -567,7 +578,7 @@ public class TestPolygonUtil extends TestCase {
 		
 		System.out.println("Polygon non closed = " + p);
 
-		double areaNew = PolygonUtil.calculateArea(p.getVertices());
+		double areaNew = area(p);
 		assertEquals(51.933, areaNew, 0.01);
 	}
 	
@@ -595,6 +606,7 @@ public class TestPolygonUtil extends TestCase {
 		double area = PolygonUtil.area(polygons);	
 		System.out.println("area = " + area);
 		Polygon box = PolygonUtil.createBestShrinkedBox(polygons);
+		System.out.println("box = " + box);
 		
 		assertEquals(area, area(box), 0.1);
 		
@@ -604,6 +616,8 @@ public class TestPolygonUtil extends TestCase {
 		Polygon recreatedBox = SimpleShapeConverter.createPolygon(shape);
 		System.out.println("recreated box = " + recreatedBox);
 		
+		assertNearlySamePolygons(box, recreatedBox);
+		
 		draw(-79425, -454725, 20, p, recreatedBox);
 		
 		assertEquals(0, shape.shapeType);
@@ -611,23 +625,25 @@ public class TestPolygonUtil extends TestCase {
 		assertEquals(454735.8125, shape.centerY, 0.1);
 		assertEquals(10.145, shape.length, 0.01);
 		assertEquals(5.119, shape.width, 0.01);
-		assertEquals(-55.955, shape.angle, 0.01);
+		assertEquals(145.955, shape.angle, 0.01);
 	}
 	
-	public void testCalculateAngle() {
+	public void testCalculateAngleToYAxis() {
 		
-		double angle = SimpleShapeConverter.calculateAngleBetweenVectorToXAxis(1, 1, 3, 3);
-		assertEquals(-45, angle, 0.1);
-		
-		angle = SimpleShapeConverter.calculateAngleBetweenVectorToXAxis(1, 1, 1, 3);
-		assertEquals(-90, angle, 0.1);
-		
-		angle = SimpleShapeConverter.calculateAngleBetweenVectorToXAxis(1, 1, -3, 5);
+		double angle = SimpleShapeConverter.calculateAngleBetweenVectorToYAxis(1, 1, 1, 3);
+		assertEquals(0, angle, 0.1);
+				
+		angle = SimpleShapeConverter.calculateAngleBetweenVectorToYAxis(1, 1, 3, 3);
 		assertEquals(45, angle, 0.1);
 		
-		angle = SimpleShapeConverter.calculateAngleBetweenVectorToXAxis(1, 1, 1, -2);
+		angle = SimpleShapeConverter.calculateAngleBetweenVectorToYAxis(1, 1, 3, 1);
 		assertEquals(90, angle, 0.1);
 		
+		angle = SimpleShapeConverter.calculateAngleBetweenVectorToYAxis(1, 1, -3, 5);
+		assertEquals(135, angle, 0.1);
+		
+		angle = SimpleShapeConverter.calculateAngleBetweenVectorToYAxis(1, 1, 1, -2);
+		assertEquals(0, angle, 0.1);	
 	}
 	
 	public void testSimpleShapeForSimpleRotatedBox() {
@@ -643,14 +659,16 @@ public class TestPolygonUtil extends TestCase {
 			System.out.println("shape = " + shape);
 			Polygon p2 = SimpleShapeConverter.createPolygon(shape);
 			System.out.println("recreated polygon = " + p2);	
+			
+			draw(0, 0, 1 , p1, p2);
+			
 			assertNearlySamePolygons(p1, p2);
-			//draw(0, 0, 1 , p, p2);
 		}
 	}
 	
 	private void assertNearlySamePolygons(Polygon p1, Polygon p2) {
 		
-		double delta = 0.001;
+		double delta = 0.1;
 		
 		assertEquals(p1.size(), p2.size());
 		
@@ -663,7 +681,8 @@ public class TestPolygonUtil extends TestCase {
 					break;
 				}
 			}
-			assertTrue(found);
+			
+			assertTrue("Point with index=" + i + " wasn't found", found);
 		}
 	}
 	
@@ -690,10 +709,62 @@ public class TestPolygonUtil extends TestCase {
 		}
 	}
 	
-	public void testCalculateCenter() {
+	public void testCalculateCenterForSimplifiedShape() {
 		Polygon polygon = createPolygon("-10 0 0 10 10 0 0 -10");
 		SimpleShape shape = SimpleShapeConverter.simplifyShapes(Arrays.asList(polygon));
 		assertEquals(0.0, shape.centerX, 0.001);
 		assertEquals(0.0, shape.centerY, 0.001);
+	}
+	
+	public void testCalculatePerimeterForNonClosedBox() {
+		Polygon polygon = createPolygon("-10 -10 -10 10 10 10 10 -10");
+		double perimeter = PolygonUtil.calculatePerimeter(polygon);
+		assertEquals(80., perimeter, 0.01);
+	}
+	
+	public void testCalculatePerimeterForClosedBox() {
+		Polygon polygon = createPolygon("-10 -10 -10 10 10 10 10 -10 -10 -10");
+		double perimeter = PolygonUtil.calculatePerimeter(polygon);
+		assertEquals(80., perimeter, 0.01);
+	}
+	
+	public void testCalculateCenterOfMass() {
+		
+		List<Polygon> polygons = new ArrayList<>();
+		// clockwise polygon
+		polygons.add(move(createPolygon("-10 -10 10 -10 10 10 -10 10 -10 -10"), 20, 20));
+		// the same shape but anti clockwise
+		polygons.add(move(createPolygon("-10 -10 -10 10 10 10 10 -10 -10 -10"), 20, 20));
+		// the same shape but with additional edges
+		polygons.add(move(createPolygon("-10 -10 -10 10 10 10 10 -10 5 -10 -2 -10 -10 -10"), 20, 20));
+		
+		for (Polygon current : polygons) {
+			System.out.println(current);
+			Point2d center = PolygonUtil.calculateCenterOfMass(current.getVertices());
+			System.out.println("center = " + center);
+			assertEquals(20.f, center.getX(), 0.01);
+			assertEquals(20.f, center.getY(), 0.01);
+		}
+	}
+	
+	public void testSimpleShapeForPolygonWithEightEdges() {
+		// this defines a symmetric polygon with 8 edges
+		// clockwise and anti clockwise
+		List<Polygon> polygons = new ArrayList<>();
+		polygons.add(createPolygon("0 1 0 2 1 3 2 3 3 2 3 1 2 0 1 0 0 1"));
+		polygons.add(createPolygon("0 1 1 0 2 0 3 1 3 2 2 3 1 3 0 2 0 1"));
+		
+		for (Polygon current : polygons) {
+			
+			Point2d center = PolygonUtil.calculateCenterOfMass(current.getVertices());
+			System.out.println("center = " + center);
+
+			SimpleShape shape = SimpleShapeConverter.simplifyShapes(Arrays.asList(current));
+			// check that the shape is a circle
+			assertEquals(1, shape.shapeType);
+			assertEquals(1.5, shape.centerX);
+			assertEquals(1.5, shape.centerY);
+			assertEquals(3.0738, shape.length, 0.001);
+		}
 	}
 }

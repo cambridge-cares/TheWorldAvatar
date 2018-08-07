@@ -25,25 +25,47 @@ public class BuildingQueryPerformer implements SparqlConstants {
 	public static final String BERLIN_IRI = "http://dbpedia.org/page/Berlin";
 	public static final String THE_HAGUE_IRI = "http://dbpedia.org/page/The_Hague";
 	
-	Logger logger = LoggerFactory.getLogger(BuildingQueryPerformer.class);
+	private Logger logger = LoggerFactory.getLogger(BuildingQueryPerformer.class);
+	private String host;
+	private int port;
+	private String path;
 
+	
+	public BuildingQueryPerformer() {	
+	}
+	
+	public BuildingQueryPerformer(String host, int port, String path) {
+		this.host = host;
+		this.port = port;
+		this.path = path;
+	}
+	
 	public String performQuery(String cityIRI, String query) {
 		
+		logger.debug("city = " + cityIRI);
 		logger.debug("query = \n" + query);
 		
-		URIBuilder builder = null;
-		if (cityIRI.equalsIgnoreCase(BERLIN_IRI)) {
-			builder = new URIBuilder().setScheme("http").setHost("www.theworldavatar.com").setPort(80)
-				.setPath("/damecoolquestion/berlinbuildings/query")
-				.setParameter("query", query);
-		} else if (cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
-			builder = new URIBuilder().setScheme("http").setHost("www.theworldavatar.com").setPort(80)
-				.setPath("/damecoolquestion/buildingsLite/query")
-				.setParameter("query", query);
-		} else {
-			throw new JPSRuntimeException("unknown city = " + cityIRI);
+		String myHost = host;
+		int myPort = port;
+		String myPath = path;
+		// TODO-AE hard coded hosts and paths and datasets
+		if (myHost == null) {
+			myHost = "www.theworldavatar.com";
+			myPort = 80;
+			if (cityIRI.equalsIgnoreCase(BERLIN_IRI)) {
+				myPath = "/damecoolquestion/berlinbuildings/query";
+			} else if (cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
+				// TODO-AE URGENT switch to new dataset
+				// the old dataset for The Hague with different IRIs
+				myPath = "/damecoolquestion/buildingsLite/query";
+				//myPath = "/damecoolquestion/thehaguebuildings/query";
+			}
 		}
-
+		
+		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
+				.setPath(myPath)
+				.setParameter("query", query);
+	
 		String result = executeGet(builder);
 		
 		logger.debug("query result = \n" + result);
@@ -167,10 +189,11 @@ public class BuildingQueryPerformer implements SparqlConstants {
 	 */
 	private String getQueryBuildingsFromRegion(int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
 		
-		// TODO-AE URGENT: the query return each building having any point of any groundsurface polygons in the given region
+		// TODO-AE MID: the query return each building having any point of any groundsurface polygons in the given region
 		// Therefore, it doesn't seem to be very different to SPARQL query from getQueryBdnVerticesWithAndWithoutBuildingParts
 		// but then it doesn't make sense to query once again for each selected building
 		// Ask Kevin: I thought the original idea was to use the calculated weighted and stored center coordinates from the entire building as criterion?
+		// agreed with Kevin: we leave it as it is at the moment; but in the long run it should be changed
 		
 		String query = PREFIX_ONTOCAPE_SYS + PREFIX_ONTOCAPE_SPACE_AND_TIME_EXTENDED + PREFIX_CITYGML + PREFIX_XSD +
 //			"PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>\r\n" + 

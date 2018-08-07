@@ -33,14 +33,14 @@ public class SimpleShapeConverter {
 		public double length;
 		public double width;
 		/**
-		 * between -90 and +90 degree
+		 * angle between box side and y axis, between 0 and 180 degree
 		 */
 		public double angle;
 
 		@Override
 		public String toString() {
 			String s = "SimpleShape[type=" + shapeType + ",centerX=" + centerX + ",centerY=" + centerY
-					+ ",lenght=" + length + ",widht=" + width + ",angle=" + angle;
+					+ ",lenght=" + length + ",widht=" + width + ",angle=" + angle + "]";
 			return s;
 		}
 	}
@@ -101,26 +101,37 @@ public class SimpleShapeConverter {
 		return result;
 	}
 	
+	public static boolean isNearlyCircular(double area, double perimeter) {
+
+		double T = Math.abs(4 * 22 / 7 * area / Math.pow(perimeter, 2));
+
+		if (T <= 1 && T >= 0.9) {
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public static SimpleShape simplifyShapes(List<Polygon> polygons) {
 		
 		SimpleShape result = new SimpleShape();
 		
 		double area = PolygonUtil.area(polygons);
 		
-		// TODO-AE URGENT URGENT check with Kevin 
-		// whether circle only applies to single polygon
-		// also get the perimeter calculation
-		// what is needed: center and length and type = 1 only?
 		if ((polygons.size() == 1))  {
-			
-//			double perimeter;
-//			if (isCircular(area, perimeter)) {
-//				result.type = 1
-//				return result;	
-//			}
+			double perimeter = PolygonUtil.calculatePerimeter(polygons.get(0));
+			if (isNearlyCircular(area, perimeter)) {
+				result.shapeType = 1;
+				result.length = perimeter / Math.PI; // = diameter
+				Point2d center = PolygonUtil.calculateCenterOfMass(polygons.get(0).getVertices());
+				result.centerX = center.getX();
+				result.centerY = center.getY();		
+				
+				return result;	
+			}
 		}
 		
-		
+		// simplify the polygons and replace them by one box
 		result.shapeType = 0;
 		
 		Polygon box = PolygonUtil.createBestShrinkedBox(polygons);
@@ -128,20 +139,18 @@ public class SimpleShapeConverter {
 		Point2d diff = box.get(1).minus(box.get(0));
 		result.length = PolygonUtil.length(diff);
 		result.width = area / result.length;
-		
-		System.out.println(box);
-		
-		// the method calculateCentroid() calculates wrong value for large coordinates
+				
+		// the method Polygon.calculateCentroid() calculates a wrong value for large coordinates
+		// thus, don't use the following line.
 		//Point2d centroid = box.calculateCentroid();
 		
+		// We use the center of the box for ADMS and not the center of the building stored in the triple store
+		// and used for selecting the buildings from a region (Kevin agreed to that)
 		Point2d centroid = PolygonUtil.center(box.get(0), box.get(2));
 		result.centerX = centroid.getX();
 		result.centerY = centroid.getY();
 		
-		// TODO-AE URGENT URGENT Kevin --> angle
-		// what does e.g. angle = 45 degree mean. In which direction the box is rotated?
-		// check the sign of the angle. 
-		result.angle = - calculateAngleBetweenVectorToXAxis(box.get(0).getX(), box.get(0).getY(), box.get(1).getX(), box.get(1).getY());
+		result.angle = calculateAngleBetweenVectorToYAxis(box.get(0).getX(), box.get(0).getY(), box.get(1).getX(), box.get(1).getY());
 		
 		return result;
 	}
@@ -154,8 +163,8 @@ public class SimpleShapeConverter {
 		
 		Polygon result = new Polygon();
 		
-		double dX = shape.length / 2.;
-		double dY = shape.width / 2.;
+		double dY = shape.length / 2.;
+		double dX = shape.width / 2.;
 		
 		result.addVertex(new Point2dImpl(shape.centerX -  dX, shape.centerY - dY));
 		result.addVertex(new Point2dImpl(shape.centerX -  dX, shape.centerY + dY));
@@ -163,24 +172,26 @@ public class SimpleShapeConverter {
 		result.addVertex(new Point2dImpl(shape.centerX +  dX, shape.centerY - dY));
 		result.addVertex(new Point2dImpl(shape.centerX -  dX, shape.centerY - dY));
 		
-		result.rotate(new Point2dImpl(shape.centerX,  shape.centerY), shape.angle / 180. * Math.PI);
+		result.rotate(new Point2dImpl(shape.centerX,  shape.centerY), - shape.angle / 180. * Math.PI);
 		
 		return result;
 	}
 	
 	/**
-	 * Calculates the angle (in degree) between a vector and the x axis. If xstart <= xend, the the vector is given by
-	 * end point minus start point else by start point minus end point. 
+	 * Calculates the angle (in degree) between a vector and the y axis. If xstart <= xend, the vector is given by
+	 * end point minus start point else by start point minus end point.
 	 * 
-	 * Example. (1,1) and (0,0) will result into angle = 45 degree
+	 * Examples: <br>
+	 * (1,1) and (0,0) will result into angle = 45 degree<br>
+	 * (1,1) and (2,0) will result into angle = 135 degree
 	 * 
 	 * @param xstart x of start point
 	 * @param ystart y of start point
 	 * @param xend x of end point
 	 * @param yend y of end point
-	 * @return
+	 * @return angle in degree between 0 and 180
 	 */
-	public static double calculateAngleBetweenVectorToXAxis(double xstart, double ystart, double xend, double yend) {
+	public static double calculateAngleBetweenVectorToYAxis(double xstart, double ystart, double xend, double yend) {
 		
 		double xdiff = xend - xstart;
 		double ydiff = yend - ystart;
@@ -192,11 +203,24 @@ public class SimpleShapeConverter {
 		
 		// general formula for calculating the (positive or negative) angle between two vectors a and b:
 		// angle = atan2( a.x*b.y - a.y*b.x, a.x*b.x + a.y*b.y )
-		// In general the angle will be between -pi and pi but since xdiff is always non-negative
+		// In general this angle will be between -pi and pi but since xdiff is always non-negative
 		// the angle will be between -pi/2 and pi/2
-		// in the following: a = (xdiff, ydiff) and b = (1,0)
+		// in the following: a = (xdiff, ydiff) and b = (0,1)
 		
-		double angle = Math.atan2(-ydiff, xdiff);
-		return angle / Math.PI * 180;
+		double dotProduct = PolygonUtil.dotProduct(new Point2dImpl(0,1), new Point2dImpl(xdiff,ydiff));
+		if (dotProduct == 0.) {
+			// diff vector is orthogonal to y axis
+			return 90.;
+		}
+		
+		// transform angle to [0, 180)
+		double angle = Math.atan2(xdiff, ydiff) / Math.PI * 180;
+		
+		if (angle < 0) {
+			angle = 180 + angle;
+		} else if (angle == 180.) {
+			angle = 0.;
+		}
+		return angle;
 	}
 }

@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.building;
 
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +8,8 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class PolygonUtil {
 	
@@ -186,6 +187,7 @@ public class PolygonUtil {
 	 * @param points
 	 * @return
 	 */
+	// TODO-AE remove this method if not needed anymore
 	private static double calculateSignedAreaAdaptedFromFuhrman(List<Point2d> points) {
 		int i, j, n = points.size();
 		double area = 0;
@@ -206,27 +208,37 @@ public class PolygonUtil {
 	 * @return the area of the polygon
 	 */
 	public static double calculateArea(List<Point2d> points) {
-		final boolean closed = PolygonUtil.isClosed(points);
-		double area = 0;
-
-		List<Point2d> copyPoints = points;
-		if (!closed && points.size() > 0) {	
-			copyPoints = new ArrayList<Point2d>(points);
-			copyPoints.add(points.get(0));
-		}
-
+		return Math.abs(calculateSignedArea(points));
+	}
+	
+	public static double calculateSignedArea(List<Point2d> points) {
+		
+		List<Point2d> closedPoints = close(points);
 		// This does not take into account the winding
 		// rule and therefore holes
-		for (int k = 0; k < copyPoints.size() - 1; k++) {
-			final double ik = copyPoints.get(k).getX();
-			final double jk = copyPoints.get(k).getY();
-			final double ik1 = copyPoints.get(k + 1).getX();
-			final double jk1 = copyPoints.get(k + 1).getY();
+		double area = 0;
+		for (int k = 0; k < closedPoints.size() - 1; k++) {
+			final double ik = closedPoints.get(k).getX();
+			final double jk = closedPoints.get(k).getY();
+			final double ik1 = closedPoints.get(k + 1).getX();
+			final double jk1 = closedPoints.get(k + 1).getY();
 
 			area += ik * jk1 - ik1 * jk;
 		}
 
-		return Math.abs(0.5 * area);
+		return 0.5 * area;
+	}
+	
+	public static List<Point2d> close(List<Point2d> points) {
+		final boolean closed = PolygonUtil.isClosed(points);
+	
+		List<Point2d> closedList = new ArrayList<Point2d>(points);
+		if (!closed && points.size() > 0) {	
+			closedList = new ArrayList<Point2d>(points);
+			closedList.add(points.get(0));
+		}
+
+		return closedList;
 	}
 	
 	public static boolean isClosed(List<Point2d> points) {
@@ -243,39 +255,92 @@ public class PolygonUtil {
 	}
 	
 	/**
+	 * This method was adapted for JPS.
+	 * BUT: this method seems to calculate nonsense if the orientation of
+	 * the polygon is clockwise
+	 * 
+	 * 
 	 * Function to calculate the center of mass for a given polygon, according
-	 * ot the algorithm defined at
+	 * to the algorithm defined at
 	 * http://local.wasp.uwa.edu.au/~pbourke/geometry/polyarea/
 	 * 
 	 * @author Christopher Fuhrman (christopher.fuhrman@gmail.com)
 	 * @version 2006-09-27
 	 * 
-	 * @param polyPoints
-	 *            array of points in the polygon
+	 * @param points in the polygon
 	 * @return point that is the center of mass
 	 */
-	// TODO-AE remove if not needed, Point2D is awt class !!!
-	private static Point2D centerOfMass(Point2D[] polyPoints) {
-//		double cx = 0, cy = 0;
-//		double area = calculateArea(polyPoints);
-//		// could change this to Point2D.Float if you want to use less memory
-//		Point2D res = new Point2D.Double();
-//		int i, j, n = polyPoints.length;
-//
-//		double factor = 0;
-//		for (i = 0; i < n; i++) {
-//			j = (i + 1) % n;
-//			factor = (polyPoints[i].getX() * polyPoints[j].getY()
-//					- polyPoints[j].getX() * polyPoints[i].getY());
-//			cx += (polyPoints[i].getX() + polyPoints[j].getX()) * factor;
-//			cy += (polyPoints[i].getY() + polyPoints[j].getY()) * factor;
-//		}
-//		area *= 6.0f;
-//		factor = 1 / area;
-//		cx *= factor;
-//		cy *= factor;
-//		res.setLocation(cx, cy);
-//		return res;
-		return null;
+	// TODO-AE: remove this method 
+	private static Point2d calculateCenterOfMassWRONG(List<Point2d> points) {
+		double cx = 0, cy = 0;
+		double area = calculateSignedArea(points);
+		
+		int i, j, n = points.size();
+
+		double factor = 0;
+		for (i = 0; i < n; i++) {
+			j = (i + 1) % n;
+			factor = (points.get(i).getX() * points.get(j).getY()
+					- points.get(j).getX() * points.get(i).getY());
+			cx += (points.get(i).getX() + points.get(j).getX()) * factor;
+			cy += (points.get(i).getY() + points.get(j).getY()) * factor;
+		}
+		area *= 6.0f;
+		factor = 1 / area;
+		cx *= factor;
+		cy *= factor;
+		return new Point2dImpl(cx, cy);
+	}
+	
+	/**
+	 * All x and y values must be nonnegative
+	 * 
+	 * @param points
+	 * @return
+	 */
+	public static Point2d calculateCenterOfMass(List<Point2d> points) {
+		
+		points = close(points);
+		
+		int totvertices = points.size();
+		double[] x = new double[totvertices];
+		double[] y = new double[totvertices];
+		double Cx = 0;
+		double Cy = 0;
+		
+		for (int a = 0; a < totvertices; a++) {
+			x[a] = points.get(a).getX();
+			y[a] = points.get(a).getY();
+			
+			if ((x[a] < 0) || (y[a] < 0)) {
+				throw new JPSRuntimeException("x and y values must be nonnegative for calculation of center of mass, points = " + points);
+			}
+		}
+		
+		double A = calculateSignedArea(points);
+	
+		// calculation of the Cx
+		for (int a = 0; a < totvertices - 1; a++) {
+			Cx += (x[a] + x[a + 1]) * (x[a] * y[a + 1] - x[a + 1] * y[a]);
+		}
+		// calculation of the Cy
+		for (int a = 0; a < totvertices - 1; a++) {
+			Cy += (y[a] + y[a + 1]) * (x[a] * y[a + 1] - x[a + 1] * y[a]);
+
+		}
+
+		return new Point2dImpl(Cx / 6. / A, Cy / 6. / A);
+	}
+	
+	
+	public static double calculatePerimeter(Polygon p) {
+		
+		double perimeter = 0;
+		List<Point2d> closedPoints = close(p.getVertices());
+		for (int i=0; i<closedPoints.size() - 1; i++) {
+			perimeter += length(closedPoints.get(i+1).minus(closedPoints.get(i)));
+		}
+		
+		return perimeter;
 	}
 }

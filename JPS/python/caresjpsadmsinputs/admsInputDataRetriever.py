@@ -20,7 +20,7 @@ class admsInputDataRetriever(object):
     BDN = namedtuple('BDN', ['BldNumBuildings','BldName','BldType','BldX','BldY','BldHeight', 'BldLength', 'BldWidth', 'BldAngle'])
     OPT = namedtuple('OPT', ['OptNumOutputs','OptPolName','OptInclude','OptShortOrLong', 'OptSamplingTime','OptSamplingTimeUnits','OptCondition','OptNumPercentiles','OptNumExceedences','OptPercentiles','OptExceedences','OptUnits','OptGroupsOrSource','OptAllSources','OptNumGroups','OptIncludedGroups','OptIncludedSource','OptCreateComprehensiveFile'])
 
-    def __init__(self, topnode, bdnnode=None, range=None, pollutants =['Cl2'], srcLimit = 5, bdnLimit = 25, filterSrc = False):
+    def __init__(self, topnode, bdnnode=None, range=None, pollutants =['HC'], srcLimit = 5, bdnLimit = 5, filterSrc = False):
         '''constructor
         inputs:
         range - user input range {'xmin', 'xmax', 'ymin', 'ymax'}, actual range is the min(user range, region envelope(e.g. jurongisland))
@@ -88,8 +88,8 @@ class admsInputDataRetriever(object):
         #todo: provide gis speci number in future and do conversion if needed
         #if user specified range, compare
         if userrange is not None:
-            xRange = (min(xRange[0], userrange['xmin']), max(xRange[1], userrange['xmax']))
-            yRange = (min(yRange[0], userrange['ymin']), max(yRange[1], userrange['ymax']))
+            xRange = (max(xRange[0], userrange['xmin']), min(xRange[1], userrange['xmax']))
+            yRange = (max(yRange[0], userrange['ymin']), min(yRange[1], userrange['ymax']))
 
         print('xrange: {} - {}', *xRange)
         print('yrange: {} - {}', *yRange)
@@ -381,7 +381,7 @@ class admsInputDataRetriever(object):
             SrcNumPollutants = len(src['content'])
             pollutantnames = [self.polIRI2Name(content) for content in src['content'] ]
 
-            newSrc = admsSrc(SrcName = src['o'].toPython(), SrcHeight = src['height'].toPython(), SrcDiameter = src['diameter'].toPython(),SrcVertVeloc = src['velocity'].toPython(), SrcPolEmissionRate = src['emissionrates'], SrcPollutants = pollutantnames,SrcTemperature = src['temp'].toPython(), SrcX1 = src['x'].toPython(), SrcY1 = src['y'].toPython(), SrcMolWeight = src['moleweight'].toPython(), SrcDensity = src['density'].toPython(), SrcSpecHeatCap = src['heatcapa'].toPython(), SrcNumPollutants=SrcNumPollutants)
+            newSrc = admsSrc(SrcName = src['o'].toPython(), SrcHeight = src['height'].toPython(), SrcDiameter = src['diameter'].toPython(),SrcVertVeloc = src['velocity'].toPython(), SrcPolEmissionRate = src['emissionrates'], SrcPollutants = pollutantnames,SrcTemperature = src['temp'].toPython(), SrcX1 = src['x'].toPython(), SrcY1 = src['y'].toPython(), SrcMolWeight = src['moleweight'].toPython(), SrcDensity = src['density'].toPython(), SrcSpecHeatCap = src['heatcapa'].toPython(), SrcNumPollutants=SrcNumPollutants, SrcMassFlux = src['massflow'].toPython())
             packed.append(newSrc)
 
 
@@ -391,7 +391,7 @@ class admsInputDataRetriever(object):
 
     def getBdnData(self):
         self.connectDB(self.bdnnode, connectType = 'endpoint')
-        bdns = self.filterBdnEnvelope()
+        bdns = []#self.filterBdnEnvelope()
         
         if len(bdns) is 0: #range is smaller than any envelope, 
         #then we have to filter indi buildings
@@ -684,11 +684,13 @@ class admsInputDataRetriever(object):
         return self.OPT(numPol,PolNames, [1]*numPol,[0]*numPol,[1]*numPol,[3]*numPol,[0]*numPol,[0]*numPol,[0]*numPol,[0]*80,[0]*80,['ug/m3']*numPol,1,0,1,"Grouptank001",SrcNames,0)
 
     def polIRI2Name(self, polIRI):
-        substances = {'http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#chlorine':'Cl2',
-        'http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#NitrogenDioxide':'NO2',
-        'http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#CarbonMonoxide':'CO',
-        'http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#CarbonDioxide':'CO2'
-        ,'http://www.theworldavatar.com/Plant-001.owl#NitrogenOxides':'NOx'
+        substances = {
+		#'http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#chlorine':'Cl2',
+        'http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/chemical_species.owl#Nitrogen__dioxide':'NO2',
+        'http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/chemical_species.owl#Carbon__monoxide':'CO',
+        'http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/chemical_species.owl#Carbon__dioxide':'CO2',
+		'http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/pseudocomponent.owl#Unburned_Hydrocarbon':'HC',
+        'http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/pseudocomponent.owl#Nitrogen__oxides':'NOx'
 
         }
 
@@ -739,8 +741,10 @@ class admsInputDataRetriever(object):
             print(src)
         
         met = self.getWeather()
+        xran,yran = self.range
+        grd = xran[0], yran[0], xran[1], yran[1]
 
-        return {'Src': self.rawSrc, 'Bdn': self.rawBdn, 'Opt': rawOpt, 'Met': met}
+        return {'Src': self.rawSrc, 'Bdn': self.rawBdn, 'Opt': rawOpt, 'Met': met, 'Grd':grd}
         
 
 
