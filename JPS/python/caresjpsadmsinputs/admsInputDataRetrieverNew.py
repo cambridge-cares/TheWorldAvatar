@@ -20,7 +20,7 @@ class admsInputDataRetriever(object):
     BDN = namedtuple('BDN', ['BldNumBuildings','BldName','BldType','BldX','BldY','BldHeight', 'BldLength', 'BldWidth', 'BldAngle'])
     OPT = namedtuple('OPT', ['OptNumOutputs','OptPolName','OptInclude','OptShortOrLong', 'OptSamplingTime','OptSamplingTimeUnits','OptCondition','OptNumPercentiles','OptNumExceedences','OptPercentiles','OptExceedences','OptUnits','OptGroupsOrSource','OptAllSources','OptNumGroups','OptIncludedGroups','OptIncludedSource','OptCreateComprehensiveFile'])
 
-    def __init__(self, topnode, bdnnode=None, range=None, pollutants =['HC'], srcLimit = 5, bdnLimit = 5, filterSrc = False):
+    def __init__(self, topnode, bdnnode=None, range=None, pollutants =['HC'], srcLimit = 5, bdnLimit = 5, filterSrc = False, rawBdn = None):
         '''constructor
         inputs:
         range - user input range {'xmin', 'xmax', 'ymin', 'ymax'}, actual range is the min(user range, region envelope(e.g. jurongisland))
@@ -38,6 +38,7 @@ class admsInputDataRetriever(object):
         self.srcLimit = srcLimit
         self.bdnLimit = bdnLimit
         self.filterSrc = False
+        self.rawBdn = rawBdn
 
         self.range = self.getRange(range)
         print(self.range)
@@ -729,14 +730,11 @@ class admsInputDataRetriever(object):
             raise Exception("No src in found to requiries")
 
         #get all building data
-
-        #TODO-AE
         #self.rawBdn = self.getBdnData()
-        #print('raw building: ')
-        #print(self.rawBdn)
+        print('raw building: ')
+        print(self.rawBdn)
         rawOpt = self.getOpt(self.pollutants, [s.SrcName for s in self.rawSrc])
-        #TODO-AE
-        #self.coreBdn2Src()
+        self.coreBdn2Src()
 
         #for debuging, in future,define this for data type, i dont think it auto rpint for objet
         for src in self.rawSrc:
@@ -746,7 +744,6 @@ class admsInputDataRetriever(object):
         xran,yran = self.range
         grd = xran[0], yran[0], xran[1], yran[1]
 
-        #TODO-AE
         #return {'Src': self.rawSrc, 'Bdn': self.rawBdn, 'Opt': rawOpt, 'Met': met, 'Grd':grd}
         return {'Src': self.rawSrc, 'Opt': rawOpt, 'Met': met, 'Grd':grd}
         

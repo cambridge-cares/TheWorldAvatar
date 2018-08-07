@@ -25,13 +25,12 @@ writer.write()
 
 if __name__ == "__main__":
     print('arguments for ' + sys.argv[0])
-    print(' plant = ' + sys.argv[1])
-    print(' coordintates = ' + sys.argv[2])
-    print(' ADMS working dir = ' + sys.argv[3])
-    print(' building data = ' + sys.argv[4])
+    print('  plant = ' + sys.argv[1])
+    print('  coordinates = ' + sys.argv[2])
+    print('  ADMS working dir = ' + sys.argv[3])
+    print('  building data = ' + sys.argv[4])
     print()
-    print('top:')
-    print(config.bldTopnode)
+    print('top = ' + config.bldTopnode)
     
     coordinates = str(sys.argv[2]).replace("'", "\"").replace('#',',');
     coordinates = json.loads(coordinates)
@@ -39,9 +38,8 @@ if __name__ == "__main__":
     buildingdata = sys.argv[4].replace("\'","\"")
     buildingdata = json.loads(buildingdata)
     BDN = namedtuple('BDN', ['BldNumBuildings','BldName','BldType','BldX','BldY','BldHeight', 'BldLength', 'BldWidth', 'BldAngle'])
-    # TODO-AE URGENT 
-    BDN.BldNumBuildings = 25
     BDN.BldName = buildingdata['BldName']
+    BDN.BldNumBuildings = len(BDN.BldName)
     BDN.BldType = buildingdata['BldType']
     BDN.BldX = buildingdata['BldX']
     BDN.BldY = buildingdata['BldY']
@@ -50,10 +48,11 @@ if __name__ == "__main__":
     BDN.BldWidth = buildingdata['BldWidth']
     BDN.BldAngle = buildingdata['BldAngle']
     
+    print('number of buildings = ' + str(BDN.BldNumBuildings))
 
     print('calling admsInputDataRetrieverNew ...')
 
-    test = admsInputDataRetriever(str(sys.argv[1]),config.bldTopnode, coordinates,  ["CO2"   ,"CO" ,  "NO2" ,  "HC" ,  "NOx"], 2, config.bdnLimit,False  )
+    test = admsInputDataRetriever(str(sys.argv[1]),config.bldTopnode, coordinates,  ["CO2"   ,"CO" ,  "NO2" ,  "HC" ,  "NOx"], 2, config.bdnLimit,False, BDN)
     result = test.get()
     
     result['Bdn'] = BDN

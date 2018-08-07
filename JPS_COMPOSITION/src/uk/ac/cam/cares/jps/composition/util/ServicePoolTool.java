@@ -6,23 +6,28 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
 
 public class ServicePoolTool {
 
-	public static final String filename = AgentLocator.getAbsolutePath("service_pool.txt", ServicePoolTool.class);
+	public static String filename = "service_pool.txt";
+	public String fullHostName = "";
 
-	public static JSONObject readTheServicePool() throws JSONException, IOException {
+	public ServicePoolTool(String fullHostName) {
+		this.fullHostName = fullHostName;
+	}
+
+	public JSONObject readTheServicePool() throws Exception {
+
+		FilePathManager m = new FilePathManager();
+		String filepath = m.getFilePath(this.fullHostName) + filename;
 		String wholeContent = "";
-		File thefile = new File(filename);
+		File thefile = new File(filepath);
 		if (!thefile.exists()) {
 			writeToTheServicePool("");
 		}
 
-		try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+		try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
 			String sCurrentLine;
 			while ((sCurrentLine = br.readLine()) != null) {
 				wholeContent = wholeContent + sCurrentLine;
@@ -38,8 +43,9 @@ public class ServicePoolTool {
 		}
 	}
 
-	public static void writeToTheServicePool(String content) throws IOException {
-		FileWriter fw = new FileWriter(filename);
+	public void writeToTheServicePool(String content) throws Exception {
+		FileWriter fw = new FileWriter(
+				"/home/zhouxiaochi/Documents/JPS/JParkSimulator-git/JPS_COMPOSITION/WebContent/service_pool.txt");
 		fw.write(content);
 		fw.close();
 	}

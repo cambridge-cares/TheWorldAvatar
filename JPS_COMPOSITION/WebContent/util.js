@@ -1,3 +1,24 @@
+var compositeService = {};
+var serviceList = {};
+var executionChain = {};
+
+var hostname = window.location.href;
+var defaultRealService = {"class": "go.GraphLinksModel",
+    "nodeDataArray": [
+        {"key":1, "text":"Composite_Service_11Yju7k1", "category":"Service", "fullIRI":"http://www.theworldavatar.com/Composite_Service_11Yju7k1"},
+        {"text":"Operation_pexDwAC", "category":"Operation", "fullIRI":"http://www.theworldavatar.com/Operation_pexDwAC", "httpUrl":"http://www.theworldavatar.com/JPS_COMPOSITION/CoordinateToWeather", "key":-2},
+        {"text":"MessageContent_Input_xzbAvBW", "category":"MessageContent_Input", "fullIRI":"http://www.theworldavatar.com/MessageContent_Input_xzbAvBW", "key":-3},
+        {"text":"Mandatory_MessagePart_CghedAK", "category":"Mandatory_MessagePart", "fullIRI":"http://www.theworldavatar.com/Mandatory_MessagePart_CghedAK", "key":-4, "params":{"hasValue":"", "hasDatatype":"", "modelReference":"http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#Coordinate"}},
+        {"text":"MessageContent_Output_18YRk5SC", "category":"MessageContent_Output", "fullIRI":"http://www.theworldavatar.com/MessageContent_Output_18YRk5SC", "key":-5},
+        {"text":"Mandatory_MessagePart_15wGxcwo", "category":"Mandatory_MessagePart", "fullIRI":"http://www.theworldavatar.com/Mandatory_MessagePart_15wGxcwo", "key":-6, "params":{"hasValue":"", "hasDatatype":"", "modelReference":"https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#WeatherState"}}
+    ],
+    "linkDataArray": [
+        {"from":1, "to":-2},
+        {"from":-2, "to":-3},
+        {"from":-3, "to":-4},
+        {"from":-2, "to":-5},
+        {"from":-5, "to":-6}
+    ]};
 // This function creates a hashcode basing on the current date in milliseconds
 function toHex(input) {
     var hash = "",
@@ -171,7 +192,7 @@ function convertNodeObjToMSMObj(testObj) {
     var serviceString = JSON.stringify({'uri': service.fullIRI, 'operations': operationsString}, 4);
     serviceString = replaceAll(serviceString, "\"{", "{");
     serviceString = replaceAll(serviceString, "}\"", "}"); //"[
-    serviceString = replaceAll(serviceString, "]\"", "]").replace(/"\[/g,"[");
+    serviceString = replaceAll(serviceString, "]\"", "]").replace(/"\[/g, "[");
     serviceString = serviceString.replace(/\\/g, "");
     return serviceString
 
@@ -187,10 +208,10 @@ function sendRequest(agentInJSON, RequestUrl) {
 function addToServicePool() {
     $.ajax({
         method: "POST",
-        url: "http://localhost:8080/JPS_COMPOSITION/AddToServicePool",
+        url: hostname + "AddToServicePool",
         data: convertNodeObjToMSMObj(myDiagram.model)
     }).done(function () {
-       alert("Added another service to the pool");
+        alert("Added another service to the pool");
     });
 
 }
@@ -200,7 +221,7 @@ function addToServicePool() {
 function convertJSONToOWL() {
     $.ajax({
         method: "POST",
-        url: "http://localhost:8080/JPS_COMPOSITION/ServiceConvertToOWL",
+        url: hostname + "ServiceConvertToOWL",
         data: convertNodeObjToMSMObj(myDiagram.model),
         timeout: 3000
     })
@@ -209,28 +230,107 @@ function convertJSONToOWL() {
         })();
 }
 
+function goToVisualization(event) {
+	
+
+    var baseUrl = event.srcElement.parentElement.getAttribute('data');
+    baseUrl = baseUrl.replace('www.theworldavatar.com', window.location.host);
+    window.location.href = baseUrl + '?data=' + JSON.stringify(executionChain);
+}
+
 
 // The compose a composite
 function composeService() {
+
+    $("#myDiagramDiv").width("0%");
+    $("#myDiagramDiv2").height("700px");
+
     $.ajax({
         method: "POST",
-        url: "http://localhost:8080/JPS_COMPOSITION/ServiceCompositionEndpoint",
+        url: hostname + "ServiceCompositionEndpoint",
         data: convertNodeObjToMSMObj(myDiagram.model),
         timeout: 5000
 
     })
         .done(function (msg) {
-            console.log(msg);
+
+
+            compositeService = msg;
             visualizeComposition(convertComposition(JSON.parse(msg)));
+            console.log(convertComposition(JSON.parse(msg)));
+
         })
         .fail(function (error) {
             alert('This might not be a valid composite service')
-        })
-    
-    
-    
-    ;
+        });
 }
+
+function loadRealComposite() {
+	document.getElementById("mySavedModel").value =  JSON.stringify(defaultRealService);
+    refresh(defaultRealService);
+
+}
+
+function sendToExecutor(){
+	var compositeServiceObj = JSON.parse(compositeService);
+	compositeServiceObj['eliminationList'] = serviceList;
+	$("#visualizationSelection").height('700px');
+	$("#myDiagramDiv2").width("60%");
+    $("#buttonRow").hide();
+    $('.cards').show();
+    $('#visualizationSelectionOutput').show();
+    $('#visualizationSelection').show();
+  
+
+    $.ajax({
+        method: "POST",
+        url: hostname + "ServiceExecutorEndpoint",
+        data: JSON.stringify(compositeServiceObj),
+        timeout: 2000
+
+    })
+        .done(function (msg) {
+            executionChain = JSON.parse(msg);
+        	console.log(msg);
+        })
+        .fail(function (error) {
+            alert('This might not be a valid composite service')
+        });
+}
+
+
+
+function optimizeService() {
+    $.ajax({
+        method: "POST",
+        url: hostname + "ServiceOptimizationEndpoint",
+        data: compositeService,
+        timeout: 5000
+
+    })
+        .done(function (msg) {
+            serviceList = JSON.parse(msg);
+            console.log(serviceList);
+            (function myLoop(i) {
+                console.log(i);
+                setTimeout(function () {
+                    var key = IRIProcessor(serviceList[i]);
+                    var node = myDiagram.findNodeForKey(key);
+                    myDiagram.remove(node);         //  your code here
+                    if (i--) myLoop(i);      //  decrement i and call myLoop again if i > 0
+                }, 500)
+            })(serviceList.length - 1);
+
+ 
+
+        })
+        .fail(function (error) {
+            alert('This might not be a valid composite service')
+        });
+
+
+}
+
 
 function replaceAll(text, search, replacement) {
     return text.replace(new RegExp(search, 'g'), replacement);
@@ -248,13 +348,13 @@ function convertComposition(result) {
 
     var initOutputs = [];
     result.initialInputs.forEach(function (initInput) {
-       initOutputs.push({name: IRIProcessor(initInput.modelReference)});
+        initOutputs.push({name: IRIProcessor(initInput.modelReference)});
     });
 
-    var initObject = {key: "Inputs",inputs:[], outputs: initOutputs.sort(dynamicSort("name")), loc: "200 0"};
+    var initObject = {key: "Inputs", inputs: [], outputs: initOutputs.sort(dynamicSort("name")), loc: "200 0"};
     visualizationObject.nodeDataArray.push(initObject);
 
-   var initLayer = {services: [{operations: [{outputs:[{mandatoryParts: result.initialInputs}]}], uri: 'Inputs'}]};
+    var initLayer = {services: [{operations: [{outputs: [{mandatoryParts: result.initialInputs}]}], uri: 'Inputs'}]};
 
 
     var previousLayers = [initLayer];
@@ -275,12 +375,16 @@ function convertComposition(result) {
                         previousLayer.services.forEach(function (previousService) {
                             previousService.operations[0].outputs.forEach(function (previousOutput) {
                                 previousOutput.mandatoryParts.forEach(function (previousOutputPart) {
-                                    if(previousOutputPart.modelReference === model.modelReference){
-                                        var newConnection = {from: IRIProcessor(previousService.uri), to: IRIProcessor(service.uri),
-                                            fromPort: IRIProcessor(previousOutputPart.modelReference), toPort: IRIProcessor(model.modelReference)};
+                                    if (previousOutputPart.modelReference === model.modelReference) {
+                                        var newConnection = {
+                                            from: IRIProcessor(previousService.uri),
+                                            to: IRIProcessor(service.uri),
+                                            fromPort: IRIProcessor(previousOutputPart.modelReference),
+                                            toPort: IRIProcessor(model.modelReference)
+                                        };
                                         visualizationObject.linkDataArray.push(newConnection);
-                                        if(layerIndex === previousLayerIndex){
-                                            extra_indent = 400;
+                                        if (layerIndex === previousLayerIndex) {
+                                            extra_indent = 300;
                                         }
 
                                     }
@@ -298,7 +402,7 @@ function convertComposition(result) {
             });
             serviceObject.inputs = inputs.sort(dynamicSort("name"));
             serviceObject.outputs = outputs.sort(dynamicSort("name"));
-            serviceObject.loc = (layerIndex + 1) * 500 + extra_indent + " " + serviceIndex * 200;
+            serviceObject.loc = (layerIndex + 1) * 300 + extra_indent + " " + serviceIndex * 200;
             visualizationObject.nodeDataArray.push(serviceObject);
         });
 
@@ -308,21 +412,21 @@ function convertComposition(result) {
 }
 
 function IRIProcessor(IRI) {
-    if (IRI.includes("#")){
+    if (IRI.includes("#")) {
         return IRI.split("#").slice(-1)[0]
     }
-    else{
+    else {
         return IRI.split("/").slice(-1)[0]
     }
 }
 
 function dynamicSort(property) {
     var sortOrder = 1;
-    if(property[0] === "-") {
+    if (property[0] === "-") {
         sortOrder = -1;
         property = property.substr(1);
     }
-    return function (a,b) {
+    return function (a, b) {
         var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
         return result * sortOrder;
     }

@@ -48,14 +48,13 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		String myHost = host;
 		int myPort = port;
 		String myPath = path;
-		// TODO-AE hard coded hosts and paths and datasets
+		// TODO-AE hard coded hosts and paths and datasets but can be overwritten be parameter in constructor
 		if (myHost == null) {
 			myHost = "www.theworldavatar.com";
 			myPort = 80;
 			if (cityIRI.equalsIgnoreCase(BERLIN_IRI)) {
 				myPath = "/damecoolquestion/berlinbuildings/query";
 			} else if (cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
-				// TODO-AE URGENT switch to new dataset
 				// the old dataset for The Hague with different IRIs
 				//myPath = "/damecoolquestion/buildingsLite/query";
 				myPath = "/damecoolquestion/thehaguebuildings/query";
