@@ -9,16 +9,25 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/index.css">
     <link rel="stylesheet" type="text/css" href="css/adms3dmap.css">
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="scripts/start.js"></script>
+    <link rel="stylesheet" href="css/OSMBuildings.css">
+    <link rel="stylesheet" href="css/conmap.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
     <title>J-Park Simulator</title>
-    <link rel="stylesheet" href="css/OSMBuildings.css">
-    <script src="scripts/OSMBuildings.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="scripts/OSMBuildings.debug.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.4.4/proj4.js"></script>
-	<script src="scripts/admstthreeDmap.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3-contour.v1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+    <script src="scripts/svg2img.js"></script>
+    <script src="scripts/mContour.js"></script>
+	<script src="scripts/adms3Dmap.js"></script>
 	<script src="scripts/start.js"></script>
 
 </head>
@@ -43,21 +52,25 @@
         </option>
     </select>
 
-
-
     <h1 id="head1"></h1>
     <p id="description"></p>
 
-    <label for="xlower">X lower:</label>
+    <label for="location">Location: </label>
+    <select id="location" name="location">
+        <option value="Berlin">Berlin</option>
+        <option value="The Hague" selected>The Hague</option>
+    </select>
 
+
+    <label for="xlower">X lower:</label>
     <input id="xlower" type="text" value='79480'/>
+
     <label for="xupper">X upper:</label>
     <input id="xupper" type="text" value='85000'/>
 
-
     <label for="ylower">Y lower:</label>
-
     <input id="ylower" type="text" value='454670'/>
+
     <label for="yupper">Y upper:</label>
     <input id="yupper" type="text" value='460000'/>
 
@@ -69,23 +82,23 @@
     </ul>
 </div>
 <div id="map">
-    <div id="fieldsetCheckbox">
-        <fieldset id="twoDimCheckbox">
-            <legend>Select Orientation</legend>
-            <div id="twoDim">
-                <input type="checkbox" id="2d" name="dimension" value="2d">
-                <label for="2d">2D</label>
-            </div>
-        </fieldset>
-        <div id="output">
-            <p id="lat">x: <span id="latitude"></span></p>
-            <p id="lon">y: <span id="longitude"></span></p>
-            <p id="conc0">concentration (0m) in &mu;g/m<sup>3</sup>: <br><span id="concentration0"></span></p>
-            <p id="conc10">concentration (10m) in &mu;g/m<sup>3</sup>: <br><span id="concentration10"></span></p>
-            <p id="conc20">concentration (20m) in &mu;g/m<sup>3</sup>: <br><span id="concentration20"></span></p>
-            <p id="conc30">concentration (30m) in &mu;g/m<sup>3</sup>: <br><span id="concentration30"></span></p>
-        </div>
-    </div>
+    <!--<div id="fieldsetCheckbox">-->
+        <!--<fieldset id="twoDimCheckbox">-->
+            <!--<legend>Select Orientation</legend>-->
+            <!--<div id="twoDim">-->
+                <!--<input type="checkbox" id="2d" name="dimension" value="2d">-->
+                <!--<label for="2d">2D</label>-->
+            <!--</div>-->
+        <!--</fieldset>-->
+        <!--<div id="output">-->
+            <!--<p id="lat">x: <span id="latitude"></span></p>-->
+            <!--<p id="lon">y: <span id="longitude"></span></p>-->
+            <!--<p id="conc0">concentration (0m) in &mu;g/m<sup>3</sup>: <br><span id="concentration0"></span></p>-->
+            <!--<p id="conc10">concentration (10m) in &mu;g/m<sup>3</sup>: <br><span id="concentration10"></span></p>-->
+            <!--<p id="conc20">concentration (20m) in &mu;g/m<sup>3</sup>: <br><span id="concentration20"></span></p>-->
+            <!--<p id="conc30">concentration (30m) in &mu;g/m<sup>3</sup>: <br><span id="concentration30"></span></p>-->
+        <!--</div>-->
+    <!--</div>-->
 </div>
 
 <div class="control tilt">
@@ -102,6 +115,21 @@
     <button class="dec">-</button>
     <button class="inc">+</button>
 </div>
+
+<div class="choice  container">
+    <div class="row">
+        <div id="sliderwrapper" class = "col-lg-1 offset-lg-2"></div>
+        <div id="optionwrapper" class = "col-lg-3"></div>
+        <div id="legendwrapper" class = "col-lg-3"></div>
+
+    </div>
+
+</div>
+
+<div id="svgwrapper">
+    <svg xmlns="http://www.w3.org/2000/svg"  width="1024" height="1024"></svg>
+</div>
+<canvas width="1024" height="1024" id="drawcanvas"></canvas>
 
 </body>
 </html>

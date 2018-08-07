@@ -38,13 +38,18 @@ public class AgentCaller {
 		return executeGet(builder);
 	}
 	
-	public static String executeGet(String path, String key, String value) {
-		// TODO-AE maybe use directly class java.net.URI, maybe move this class to JPS_BASE
+	public static String executeGet(String path, String... keyOrvalue) {
+		// TODO-AE maybe use directly class java.net.URI
 		// TODO-AE refactor get hostname
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(getHostPort())
-				.setPath(path)
-				.setParameter(key, value);
+				.setPath(path);
 		
+		for (int i=0; i<keyOrvalue.length; i=i+2) {
+			String key = keyOrvalue[i];
+			String value = keyOrvalue[i+1];
+			builder.setParameter(key, value);
+		}
+				
 		try {
 			return executeGet(builder);
 		} catch (Exception e) {
@@ -52,16 +57,21 @@ public class AgentCaller {
 		} 
 	}	
 		
-	private static String executeGet(URIBuilder builder) {
+	// TODO-AE turn from public to private
+	public static String executeGet(URIBuilder builder) {
 		try {
 			HttpGet request = new HttpGet(builder.build());
+						
+			logger.debug(request.toString());
 			HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 			
 			if (httpResponse.getStatusLine().getStatusCode() != 200) {
 				throw new JPSRuntimeException("HTTP response with error = " + httpResponse.getStatusLine());
 			}
 		
-			return EntityUtils.toString(httpResponse.getEntity());
+			String body =  EntityUtils.toString(httpResponse.getEntity());
+			logger.debug(body);
+			return body;
 		} catch (Exception e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		} 
