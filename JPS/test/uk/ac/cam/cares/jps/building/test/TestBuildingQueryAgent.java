@@ -76,15 +76,15 @@ public class TestBuildingQueryAgent extends TestCase {
 
 		double plantx = targetCenter[0];
 		double planty = targetCenter[1];
-		double lowerx = plantx - 400;
-		double lowery = planty - 400;
-		double upperx = plantx + 400;
-		double uppery = planty + 400;
+//		double lowerx = plantx - 400;
+//		double lowery = planty - 400;
+//		double upperx = plantx + 400;
+//		double uppery = planty + 400;
 		
-//		double lowerx = 699454.9;
-//		double lowery = 532934.62;
-//		double upperx = 699709.44;
-//		double uppery = 533339.17;
+		double lowerx = 699208.47;
+		double lowery = 533059.02;
+		double upperx = 699959.88;
+		double uppery = 533841.67;
 		startIntegrationWithPython(cityIRI, plantIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
 		
 		// TODO-AE assert statement is missing here 
