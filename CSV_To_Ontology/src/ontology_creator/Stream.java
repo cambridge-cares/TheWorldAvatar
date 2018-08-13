@@ -433,9 +433,9 @@ public class Stream {
 		
 		/* Add hasProperty molecular weight instance */
 		RDFIndividual molecularWeightInstance;
-		RDFIndividual molecularWeightCheck=owlModel.getRDFIndividual("http://www.jparksimulator.com/"+filename+"#Molecular_Weight_Of_"+component);
+		RDFIndividual molecularWeightCheck=owlModel.getOWLIndividual("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#MolecularWeightOf"+component);
 		if (molecularWeightCheck==null) {
-			molecularWeightInstance=molecularWeight.createRDFIndividual("http://www.jparksimulator.com/"+filename+"#Molecular_Weight_Of_"+component);
+			molecularWeightInstance=molecularWeight.createRDFIndividual("http://www.jparksimulator.com/"+filename+"#MolecularWeightOf"+component);
 		}
 		else {
 			molecularWeightInstance = molecularWeightCheck;
@@ -444,12 +444,12 @@ public class Stream {
 		
 		/* Add hasValue value of molecular weight */
 		RDFIndividual valueMolecularWeight;
-		RDFIndividual valuemolecularweightcheck=owlModel.getRDFIndividual("http://www.jparksimulator.com/"+filename+"#Value_Of_Molecular_Weight_Of_"+component);
+		RDFIndividual valuemolecularweightcheck=owlModel.getOWLIndividual("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#ValueOfMolecularWeightOf"+component);
 		if (valuemolecularweightcheck==null) {
-			valueMolecularWeight=scalarValue.createRDFIndividual("http://www.jparksimulator.com/"+filename+"#Value_Of_Molecular_Weight_Of_"+component);
+			valueMolecularWeight=scalarValue.createRDFIndividual("http://www.jparksimulator.com/"+filename+"#ValueOfMolecularWeightOf"+component);
 		}
 		else {
-			valueMolecularWeight=owlModel.getRDFIndividual("http://www.jparksimulator.com/"+filename+"#Value_Of_Molecular_Weight_Of_"+component);
+			valueMolecularWeight=owlModel.getRDFIndividual("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#ValueOfMolecularWeightOf"+component);
 		}
 		molecularWeightInstance.addPropertyValue(hasValue, valueMolecularWeight);
 		
@@ -497,7 +497,7 @@ public class Stream {
 			
 			/* Adding single species */
 			RDFIndividual singleSpecies;
-			RDFIndividual checkSpecies=owlModel.getRDFIndividual("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#"+singleComponent);
+			RDFIndividual checkSpecies=owlModel.getOWLIndividual("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#"+singleComponent);
 			if (checkSpecies==null) {
 				singleSpecies = chemicalSpecies.createRDFIndividual("http://www.jparksimulator.com/"+filename+"#"+singleComponent);
 			}
