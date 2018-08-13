@@ -530,8 +530,8 @@ public class TestPolygonUtil extends TestCase {
 			
 			Polygon merged = PolygonUtil.merge(polygons);
 			Polygon hull = merged.calculateConvexHull();
-			//draw(0, 0, polygons.get(0), polygons.get(1), polygons.get(2), hull, box);
-			//draw(800, 200, hull, box);
+			//draw(800, 200, 0, polygons.get(0), polygons.get(1), polygons.get(2), hull, box);
+			//draw(800, 200, 0, hull, box);
 		}
 	}
 	
@@ -652,7 +652,7 @@ public class TestPolygonUtil extends TestCase {
 	public void testSimpleShapeForSimpleRotatedBox() {
 				
 		double[] angles = new double[] {0., 0.1, 0.2, 0.5, 1.4, 1.57, 2., -.1, -1., -1.57, -2.};
-		
+		//double[] angles = new double[] {0.2};
 		for (double angle : angles) {
 			System.out.println("angle=" + angle);
 			Polygon p1 = createPolygon("100 300 200 500 600 300 500 100 100 300");

@@ -1,8 +1,12 @@
 package uk.ac.cam.cares.jps.building;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.http.HttpHeaders;
@@ -11,6 +15,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,7 +100,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		} 
 	}
 	
-	private String getCRSName(String cityIRI) {
+	public String getCRSName(String cityIRI) {
 		
 		// the following query will return for the hague: urn:ogc:def:crs:EPSG::28992
 		// therefore, we will not use the query at the moment
@@ -139,6 +145,84 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
 		return map.get("bdn");
 	}
+	
+	public List<String> performQueryClosestBuildingsFromRegion(String cityIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
+		
+		double plx = plantx;
+		double ply = planty;
+		double lx = lowerx;
+		double ux = upperx;
+		double ly = lowery;
+		double uy = uppery;
+		
+		String targetCRSName = getCRSName(cityIRI);
+		if (!DEFAULT_CRS_NAME.equals(targetCRSName)) {
+			
+			double[] p = CRSTransformer.transform(DEFAULT_CRS_NAME, targetCRSName, new double[] {plantx, planty});
+			plx = p[0];
+			ply = p[1];
+			p = CRSTransformer.transform(DEFAULT_CRS_NAME, targetCRSName, new double[] {lowerx, lowery});
+			lx = p[0];
+			ly = p[1];
+			p = CRSTransformer.transform(DEFAULT_CRS_NAME, targetCRSName, new double[] {upperx, uppery});
+			ux = p[0];
+			uy = p[1];
+		}
+		
+		String query = getQueryClosestBuildingsFromRegion(200, lx, ly, ux, uy);		
+		String result = performQuery(cityIRI, query);
+		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		
+		return selectClosestBuilding(plx, ply, buildingLimit, map);
+	}
+	
+	public List<String> selectClosestBuilding(double centerx, double centery, int buildingLimit, Map<String, List<String>> map) {
+		
+		List<String> result = new ArrayList<String>();
+		
+		class DistanceBuildingPair {
+			double distance;
+			String buildingIRI;
+		}
+		
+		int size = map.get("bdn").size();
+		DistanceBuildingPair[] pairs = new DistanceBuildingPair[size];
+		for (int i=0; i<size; i++) {
+	
+			double x = Double.valueOf(map.get("x").get(i));
+			double y = Double.valueOf(map.get("y").get(i));
+			Point2d diff = new Point2dImpl(x,y).minus(new Point2dImpl(centerx, centery));
+			double distance = PolygonUtil.length(diff);
+			
+			DistanceBuildingPair newPair = new DistanceBuildingPair();
+			newPair.distance = distance;
+			newPair.buildingIRI = map.get("bdn").get(i);
+			pairs[i] = newPair;
+		}
+		
+		Comparator<DistanceBuildingPair> comparator = new Comparator<DistanceBuildingPair>() {
+
+			@Override
+			public int compare(DistanceBuildingPair o1, DistanceBuildingPair o2) {
+				if (o1.distance == o2.distance) {
+					return 0;
+				}
+				if (o1.distance < o2.distance) {
+					return -1;
+				}
+				return 1;
+			}
+		};
+		
+		Arrays.sort(pairs, comparator);
+		
+		int min = Math.min(size, buildingLimit);
+		for (int i=0; i<min; i++) {
+			result.add(pairs[i].buildingIRI);
+		}
+		
+		return result;
+	}
 
 	// TODO-AE Shaocong said that this method actually is not needed, remove it
 	private String getQueryFilterBdnEnvelope(int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
@@ -174,7 +258,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			"}\r\n" + 
 			"LIMIT %d";		//  #limit of building num	
 		
-		return String.format(query, lowerx, lowery, upperx, uppery, buildingLimit);
+		return format(query, lowerx, lowery, upperx, uppery, buildingLimit);
 	}
 
 	/**
@@ -235,10 +319,10 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			"}\r\n" + 
 			"LIMIT %d";	
 
-		return String.format(query, lowerx, lowery, upperx, uppery, buildingLimit);
+		return format(query, lowerx, lowery, upperx, uppery, buildingLimit);
 	}
 	
-	public String getQueryClosestBuildingsFromRegion(int buildingLimit, double lowerx, double lowery, double upperx, double uppery, int maxBuildingSelection) {
+	public String getQueryClosestBuildingsFromRegion(int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
 		
 		// TODO-AE URGENT do we need distinct here. does it only effect buildings or also x and y
 		String query = PREFIX_ONTOCAPE_SYS + PREFIX_ONTOCAPE_SPACE_AND_TIME_EXTENDED + PREFIX_CITYGML + PREFIX_XSD +
@@ -251,7 +335,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			"}\n" + 
 			"LIMIT %d";
 
-		return String.format(query, lowerx, lowery, upperx, uppery, buildingLimit);
+		return format(query, lowerx, lowery, upperx, uppery, buildingLimit);
 	}
 	
 	public String getQueryBdnVerticesWithAndWithoutBuildingParts(String buildingIRI) {
@@ -265,7 +349,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 				"?po space_and_time_extended:hasGISCoordinateSystem ?coordinates.\n";
 		
 		String query = PREFIX_ONTOCAPE_SYS + PREFIX_ONTOCAPE_SPACE_AND_TIME_EXTENDED + PREFIX_CITYGML +
-				"SELECT ?groundsurface ?x ?y ?z\n" + 
+				"SELECT ?groundsurface ?x ?y ?z ?coordinates \n" + 
 				"WHERE {{\n" +
 				"<%s> citygml:boundedBy ?groundsurface.\n" +
 				navigationToCoordinates +
@@ -275,9 +359,10 @@ public class BuildingQueryPerformer implements SparqlConstants {
 				"?part citygml:boundedBy ?groundsurface.\n" +
 				navigationToCoordinates +
 				CITYGML_HASCOORDINATES_XYZ +
-				"}}";
+				"}}" +
+				"ORDER BY ?groundsurface ?coordinates";
 		
-		return String.format(query, buildingIRI, buildingIRI);
+		return format(query, buildingIRI, buildingIRI);
 	}
 	
 	public String getQueryBdnHeight(String buildingIRI) {
@@ -290,7 +375,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 				"?hv sys:numericalValue ?h .\n" + 
 				"}\n";
 		
-		return String.format(query, buildingIRI);
+		return format(query, buildingIRI);
 	}
 	
 	public SimpleBuildingData performQuerySimpleBuildingData(String cityIRI, List<String> buildingIRIs) {
@@ -310,7 +395,17 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			}
 					
 			List<Polygon> polygons = SimpleShapeConverter.convertTo2DPolygons(map, "groundsurface", "x", "y");
-			SimpleShape shape = SimpleShapeConverter.simplifyShapes(polygons);
+			// TODO-AE URGENT switch between only one algorithm and both algorithms
+			//SimpleShape shape = SimpleShapeConverter.simplifyShapes(polygons);
+			Object[] shapes = SimpleShapeConverter.simplifyShapesWithTwoAlgorithms(polygons);
+			SimpleShape shape = (SimpleShape) shapes[0]; // the result of the algorithm with convex hull;
+			if (shapes[2] != null) {
+				double intersectionAreaAlg1 = (Double) shapes[1];
+				double intersectionAreaAlg2 = (Double) shapes[3];
+				if (intersectionAreaAlg2 > intersectionAreaAlg1) {
+					shape = (SimpleShape) shapes[2]; 	// the result of the algorithm with box along lines
+				}
+			}
 					
 			// TODO-AE URGENT transformation to CRS coordinates
 			result.BldIRI.add(currentIRI);
@@ -336,7 +431,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		return result;
 	}
 	
-	private Map<String, List<String>> transformCoordinates(String sourceCRSName, String targetCRSName, Map<String, List<String>> coordinateMap) {
+	public Map<String, List<String>> transformCoordinates(String sourceCRSName, String targetCRSName, Map<String, List<String>> coordinateMap) {
 
 		List<String> xColumn = coordinateMap.get("x");
 		List<String> yColumn = coordinateMap.get("y");
@@ -351,5 +446,9 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		}
 		
 		return coordinateMap;
+	}
+	
+	public static String format(String s, Object... args) {
+		return String.format(Locale.ENGLISH, s, args);
 	}
 }
