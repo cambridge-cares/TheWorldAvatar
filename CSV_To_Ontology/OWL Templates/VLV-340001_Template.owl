@@ -17,8 +17,8 @@
      xmlns:technical_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/technical_system.owl#"
      xmlns:behavior="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#">
     <owl:Ontology rdf:about="http://www.jparksimulator.com/VLV-340001.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/Eco-industrialPark.owl"/>
         <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/OntoCAPE.owl"/>
-		<owl:imports rdf:resource="http://www.theworldavatar.com/Eco-industrialPark.owl"/>
     </owl:Ontology>
     
 
@@ -32,13 +32,6 @@
      -->
 
     
-
-
-
-    
-
-
-  
 
 
     <!-- http://www.jparksimulator.com/VLV-340001.owl#Pipe_in -->
@@ -63,9 +56,9 @@
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/VLV-340001.owl#PressureDecreaseOf_ProcessStream_in">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#PressureChange"/>
-        <technical_system:isRealizedBy rdf:resource="http://www.jparksimulator.com/VLV-340001.owl#VLV-340001"/>
         <network_system:hasInput rdf:resource="http://www.jparksimulator.com/VLV-340001.owl#ProcessStream_in"/>
         <network_system:hasOutput rdf:resource="http://www.jparksimulator.com/VLV-340001.owl#ProcessStream_out"/>
+        <technical_system:isRealizedBy rdf:resource="http://www.jparksimulator.com/VLV-340001.owl#VLV-340001"/>
     </owl:NamedIndividual>
     
 
@@ -95,9 +88,9 @@
         <machine:hasOutletPressure rdf:resource="http://www.jparksimulator.com/VLV-340001.owl#ValueOf_OutletPressure_VLV-340001"/>
         <machine:hasPressureDrop rdf:resource="http://www.jparksimulator.com/VLV-340001.owl#ValueOf_PressureDrop_VLV-340001"/>
         <space_and_time_extended:hasGISCoordinateSystem rdf:resource="http://www.jparksimulator.com/VLV-340001.owl#VLV-340001_CoordinateSystem"/>
-        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/VLV-340001.owl#PressureDecreaseOf_ProcessStream_in"/>
         <system:isDirectlyConnectedTo rdf:resource="http://www.jparksimulator.com/VLV-340001.owl#Pipe_in"/>
         <system:isDirectlyConnectedTo rdf:resource="http://www.jparksimulator.com/VLV-340001.owl#Pipe_out"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/VLV-340001.owl#PressureDecreaseOf_ProcessStream_in"/>
     </owl:NamedIndividual>
     
 
@@ -137,7 +130,7 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/VLV-340001.owl#ValueOf_x_VLV-340001">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0</system:numericalValue>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">3.1415926</system:numericalValue>
     </owl:NamedIndividual>
     
 
@@ -147,7 +140,7 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/VLV-340001.owl#ValueOf_y_VLV-340001">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0</system:numericalValue>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">2.71828</system:numericalValue>
     </owl:NamedIndividual>
     
 

@@ -31,8 +31,8 @@
      xmlns:plant="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#"
      xmlns:technical_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/technical_system.owl#">
     <owl:Ontology rdf:about="http://www.jparksimulator.com/V-300000.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/Eco-industrialPark.owl"/>
         <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/OntoCAPE.owl"/>
-		<owl:imports rdf:resource="http://www.theworldavatar.com/Eco-industrialPark.owl"/>
     </owl:Ontology>
     
 
@@ -73,10 +73,10 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/V-300000.owl#Flashing_ProcessStream_in">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Flashing"/>
         <behavior:hasHeatDuty rdf:resource="http://www.jparksimulator.com/V-300000.owl#HeatDutyOf_V-300000"/>
-        <technical_system:isRealizedBy rdf:resource="http://www.jparksimulator.com/V-300000.owl#V-300000"/>
         <network_system:hasInput rdf:resource="http://www.jparksimulator.com/V-300000.owl#ProcessStream_in"/>
         <network_system:hasOutput rdf:resource="http://www.jparksimulator.com/V-300000.owl#ProcessStream_out1"/>
         <network_system:hasOutput rdf:resource="http://www.jparksimulator.com/V-300000.owl#ProcessStream_out2"/>
+        <technical_system:isRealizedBy rdf:resource="http://www.jparksimulator.com/V-300000.owl#V-300000"/>
     </owl:NamedIndividual>
     
 
@@ -346,7 +346,7 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/V-300000.owl#ValueOf_x_V-300000">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">8.1234567</system:numericalValue>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">3.1415926</system:numericalValue>
     </owl:NamedIndividual>
     
 
@@ -356,7 +356,7 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/V-300000.owl#ValueOf_y_V-300000">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">9.1234567</system:numericalValue>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">2.71828</system:numericalValue>
     </owl:NamedIndividual>
     
 
