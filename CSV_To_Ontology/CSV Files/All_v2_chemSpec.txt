@@ -1,13 +1,13 @@
 Full Name	HYSYS abbr	Molecular Weight	Molecular Formula
 i-Butane	i-Butane	58.12	C4H10
 n-Butane	n-Butane	58.12	C4H10
-2,4,4-trimethyl-1-pentene	244M1pentene	114.2285	C8H16
+"2,4,4-trimethyl-1-pentene"	244M1pentene	114.2285	C8H16
 Methyl-tert-Butyl-Ether	MTBE	88.15	C5H12O
 i-Butene	i-Butene	56.11	C4H8
 1-Butene	1-Butene	56.11	C4H8
 cis-2-Butene	cis2-Butene	56.11	C4H8
 trans-2-Butene	tr2-Butene	56.11	C4H8
-1,3-Butadiene	13-Butadiene	54.1	C4H6
+"1,3-Butadiene"	13-Butadiene	54.1	C4H6
 Methanol	Methanol	32.04	CH3OH
 Water	H2O	18	H2O
-2,4,4-trimethyl-2-pentene	244M2pentene	114.2285	C8H16
+"2,4,4-trimethyl-2-pentene"	244M2pentene	114.2285	C8H16

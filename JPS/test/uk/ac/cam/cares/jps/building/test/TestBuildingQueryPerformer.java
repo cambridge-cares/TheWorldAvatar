@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.building.test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +21,6 @@ import uk.ac.cam.cares.jps.building.SparqlConstants;
 
 public class TestBuildingQueryPerformer extends TestCase implements SparqlConstants {
 	
-	// TODO-AE URGENT switch to new IRI prefix
 	// IRI for old KB of THE Hague
 	//public static final String BUILDING_IRI_THE_HAGUE_PREFIX = "http://www.theworldavatar.com/Building/";
 	public static final String BUILDING_IRI_THE_HAGUE_PREFIX = "http://www.theworldavatar.com/kb/nld/thehague/buildings/";
@@ -75,7 +75,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 				"}\n" +
 				"LIMIT 100";
 		
-		query = String.format(query, BUILDING_IRI_THE_HAGUE_WITHOUT_PARTS);
+		query = BuildingQueryPerformer.format(query, BUILDING_IRI_THE_HAGUE_WITHOUT_PARTS);
 		
 		System.out.println(query);
 		
@@ -109,7 +109,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		assertEquals("454738.596", map.get("y").get(2));
 		assertEquals("1.841", map.get("z").get(2));
 		
-		List<Polygon> polygons = SimpleShapeConverter.convertTo2DPolygons(result, "groundsurface", "x", "y");
+		List<Polygon> polygons = SimpleShapeConverter.convertTo2DPolygons(map, "groundsurface", "x", "y");
 		assertEquals(1, polygons.size());
 		assertEquals(5, polygons.get(0).size());
 	}
@@ -126,45 +126,47 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		// the next value is the center of the best shrinked box
 		// old KB for The Hauge 
 		// assertEquals(79831., data.BldX.get(0), 0.1);
-		assertEquals(79833., data.BldX.get(0), 0.1);
+		assertEquals(79822., data.BldX.get(0), 1);
 		//<http://www.theworldavatar.com/kb/nld/thehague/buildings/10_buildings0.owl#V_y_Building_GUID_E59B86F5-443F-49AE-BD94-BAB9AAAA278A>
 		//"454799.0413769716"^^xsd:double
 		// the next value is the center of the best shrinked box
 		//assertEquals(454766.375, data.BldY.get(0), 0.1);
-		assertEquals(454816.531, data.BldY.get(0), 0.1);
+		assertEquals(454783.531, data.BldY.get(0), 1);
 		// <http://www.theworldavatar.com/kb/nld/thehague/buildings/10_buildings0.owl#V_EstimatedHeight_Building_GUID_E59B86F5-443F-49AE-BD94-BAB9AAAA278A>
 		//"83.607"^^xsd:double
 		// the next value was read from the knowledge base
 		assertEquals(83.607, data.BldHeight.get(0), 0.1);
 	}
 	
-	public void testTheHaguePerformQueryBuildingsFromRegionAroundPlant() {
+	public void testselectClosestBuilding() {
 		
-		List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryBuildingsFromRegion(BuildingQueryPerformer.THE_HAGUE_IRI, 25, 79000., 454000., 79800., 455200.);
+		double centerx = 10;
+		double centery = 10;
+		
+		Map<String, List<String>> map = new HashMap<String, List<String>>();
+		map.put("bdn", Arrays.asList("b1", "b2", "b3", "b4", "b5"));
+		map.put("x", Arrays.asList("9", "5", "9.5", "3", "15"));
+		map.put("y", Arrays.asList("11", "16", "10.5", "4", "1"));
+		
+		List<String> buildingIRIs = createQueryPerformerForTheHague().selectClosestBuilding(centerx, centery, 2, map);
+		assertEquals(2, buildingIRIs.size());
+		assertEquals("b3", buildingIRIs.get(0));
+		assertEquals("b1", buildingIRIs.get(1));
+	}
+	
+	public void testTheHaguePerformQueryCLosestBuildingsFromRegionAroundPlant() {
+		
+		double plantx = 79831;
+		double planty = 454766;
+		double lowerx = plantx - 400;
+		double lowery = planty - 400;
+		double upperx = plantx + 400;
+		double uppery = planty + 400;
+		
+		List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryClosestBuildingsFromRegion( 
+				BuildingQueryPerformer.THE_HAGUE_IRI, plantx, planty, 25, lowerx, lowery, upperx, uppery);
+				
 		assertEquals(25, buildingIRIs.size());
-		
-		String[] expectedBuildingNames = new String[] {
-				"BuildingGUID_83EFA0E4-FC06-46B3-8482-E38C8CF602BC", "BuildingGUID_21FFA968-1D0D-46F1-9C6A-DEB511EDE8EC", "BuildingGUID_E7EAC652-9675-4075-9B77-9119130FFC01", 
-				"BuildingGUID_0DDFE8F6-C689-411B-A40B-7AB0B322DAA4", "BuildingGUID_75633FA6-1816-4681-AED1-28477B9E8306", "BuildingGUID_8FD8BE3F-EA1A-43E5-B1C3-C8C041F93F8F", 
-				"BuildingGUID_AA6B15F5-3CFA-43F6-AB89-E775D5417EA5", "BuildingGUID_9A460324-F094-49C8-99CC-8D22EFAAD44A", "BuildingGUID_175A22B3-5F74-48B7-B3D9-6B63262428C8", 
-				"BuildingGUID_8E8447BD-78FB-43E3-B58B-9E3D08969CE2", "BuildingGUID_F5DB3C73-0EEC-400D-8ADC-12D9B3EBECCB", "BuildingGUID_CEA4BE77-3E65-4839-BA27-96862FB6F94F", 
-				"BuildingGUID_A8192F36-EC80-4BDB-8180-98F82986F85C", "BuildingGUID_BB852817-BC7D-4DDF-A6FD-5C7A48C7D4F5", "BuildingGUID_7B178A87-680D-49DF-AB8B-2241E3E03C19", 
-				"BuildingGUID_20D43A4B-A213-473B-BACE-2AC07274EEF0", "BuildingGUID_797DD1C0-0D05-439B-8BC1-10E85FB992C5", "BuildingGUID_73E89625-9CE2-4A7C-8A07-0E66B497366A", 
-				"BuildingGUID_A99CBE3D-710E-46C5-B7C1-3205D6E50E88", "BuildingGUID_B2BB7029-D5EF-46B7-9517-918121935409", "BuildingGUID_9B9071F4-A36F-4A1F-AC8E-1BECF958A2E7", 
-				"BuildingGUID_8E3E7C70-E12B-4413-889C-A8809EC95F3B", "BuildingGUID_C7AA599B-C39B-4459-AD40-B0F661FE1D8C", "BuildingGUID_780A7409-5CDE-4E85-A29C-08DA3796DB31", 
-				"BuildingGUID_244EC50A-A357-44F5-BA8A-422C4EDAF37E"};
-
-		for (String expectedName : expectedBuildingNames) {
-			boolean found = false;
-			for (String buildingIRI : buildingIRIs) {
-				String[] splits = buildingIRI.split("#");
-				if (expectedName.equals(splits[1])) {
-					found = true;
-					break;
-				}
-			}	
-			assertTrue("building not found, buildingName = " + expectedName, found);
-		}
 	}
 	
 	public void testTheHagueBuildingWithParts() {
@@ -217,8 +219,8 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		}
 		assertEquals(3, distinctGroundSurface.size());
 		assertEquals(15, map.get("x").size());
-
-		List<Polygon> polygons = SimpleShapeConverter.convertTo2DPolygons(result, "groundsurface", "x", "y");
+	
+		List<Polygon> polygons = SimpleShapeConverter.convertTo2DPolygons(map, "groundsurface", "x", "y");
 		assertEquals(3, polygons.size());
 		assertEquals(5, polygons.get(0).size());
 		assertEquals(5, polygons.get(1).size());
@@ -237,14 +239,14 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 			i = 1;
 		}
 
-		assertEquals("BuildingGUID_83EFA0E4-FC06-46B3-8482-E38C8CF602BC", result.BldName.get(i));
+		assertTrue("BuildingGUID_83EFA0E4-FC06-46B3-8482-E38C8CF602BC".endsWith(result.BldName.get(i)));
 		assertEquals(0, (int) result.BldType.get(i));
 
 		assertEquals(79434.15625, (double) result.BldX.get(i), 0.1);
 		assertEquals(454735.8125, (double) result.BldY.get(i), 0.1);
-		assertEquals(10.145, (double) result.BldLength.get(i), 0.01);
-		assertEquals(5.119, (double) result.BldWidth.get(i), 0.01);
-		assertEquals(145.955, (double) result.BldAngle.get(i), 0.01);
+		assertEquals(10.07, (double) result.BldLength.get(i), 0.01);
+		assertEquals(5.15, (double) result.BldWidth.get(i), 0.01);
+		assertEquals(145.94, (double) result.BldAngle.get(i), 0.01);
 		assertEquals(9.432, (double) result.BldHeight.get(i), 0.01);
 	}
 	
@@ -269,14 +271,17 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		SimpleBuildingData data = new BuildingQueryPerformer().performQuerySimpleBuildingData(BuildingQueryPerformer.BERLIN_IRI, buildingIRIs);
 		assertEquals(1, data.BldIRI.size());
 	
+		// the center of the best shrinked box is transformed back to Berlin coordinates
+		double[] center = new double[] {data.BldX.get(0), data.BldY.get(0)};
+		double[] transformed = CRSTransformer.transform(BuildingQueryPerformer.DEFAULT_CRS_NAME, CRSTransformer.EPSG_25833, center);
+		
 		// <http://www.theworldavatar.com/kb/deu/berlin/buildings/3920_5819.owl#V_x_Building_DEB_LOD2_UUID_ccf8cd7c-b41b-4c1e-a60c-0a645c6c5c4b>
 		//"392825.8570880443"^^xsd:double
-		// the next value is the center of the best shrinked box
-		assertEquals(392821.625, data.BldX.get(0), 0.1);
+		assertEquals(392825, transformed[0], 1);
 		// <http://www.theworldavatar.com/kb/deu/berlin/buildings/3920_5819.owl#V_y_Building_DEB_LOD2_UUID_ccf8cd7c-b41b-4c1e-a60c-0a645c6c5c4b>
 		//"5819122.55186522"^^xsd:double
 		// the next value is the center of the best shrinked box
-		assertEquals(5819111.0, data.BldY.get(0), 0.1);
+		assertEquals(5819122, transformed[1], 1);
 		// <http://www.theworldavatar.com/kb/deu/berlin/buildings/3920_5819.owl#V_EstimatedHeight_Building_DEB_LOD2_UUID_ccf8cd7c-b41b-4c1e-a60c-0a645c6c5c4b>
 		//"99.28999999999999"^^xsd:double
 		// the next value was read from the knowledge base
@@ -287,7 +292,8 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		
 		// transform the points into the CRS of GUI, BuildingQueryPerformer will translate them back to Berlin CRS
 		String sourceCRS = CRSTransformer.EPSG_25833; // Berlin
-		double[] sourcePoints = new double[]{390000., 5815000., 396000., 5826000.};
+		//double[] sourcePoints = new double[]{390000., 5815000., 396000., 5826000.};
+		double[] sourcePoints = new double[]{370000., 5805000., 406000., 5926000.};
 		String targetCRS = CRSTransformer.EPSG_28992; // The Hague
 		double[] targetPoints = CRSTransformer.transform(sourceCRS, targetCRS, sourcePoints);
 		
@@ -335,121 +341,26 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		}
 	}
 	
-	//TODO-AE remove this
-	public void xxxtestOLDQuery1 () {
-		
-		String query = 
-		"PREFIX p3: <http://www.theworldavatar.com/CityGMLOntology.owl#>\r\n" + 
-		"PREFIX j1: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>\r\n" + 
-		"PREFIX j2: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>\r\n" + 
-		"SELECT ?polygon ?coordinates ?xval ?yval ?zval\r\n" + 
-		"WHERE {\r\n" + 
-		"                {\r\n" + 
-		"                    <http://www.theworldavatar.com/kb/nld/thehague/buildings/3940_5818.owl#BuildingBLDG_0003000900350d26> p3:id ?buildingID .\r\n" + 
-		"                    <http://www.theworldavatar.com/kb/nld/thehague/buildings/3940_5818.owl#BuildingBLDG_0003000900350d26> p3:boundedBy ?groundSurface .\r\n" + 
-		"                     ?groundSurface a p3:GroundSurfaceType .\r\n" + 
-		"                     ?groundSurface p3:lod2MultiSurface ?multiSurface .\r\n" + 
-		"                      ?multiSurface p3:surfaceMember ?polygon .\r\n" + 
-		"                       ?polygon p3:exterior ?linearRing .\r\n" + 
-		"                        ?linearRing j2:contains ?points .\r\n" + 
-		"                         ?points j1:hasGISCoordinateSystem ?coordinates .\r\n" + 
-		"                          ?coordinates j1:hasProjectedCoordinate_x ?x .\r\n" + 
-		"                           ?x j2:hasValue ?xv .\r\n" + 
-		"                            ?xv j2:numericalValue ?xval .\r\n" + 
-		"                          ?coordinates j1:hasProjectedCoordinate_y ?y .\r\n" + 
-		"                           ?y j2:hasValue ?yv .\r\n" + 
-		"                            ?yv j2:numericalValue ?yval.\r\n" + 
-		"                          ?coordinates j1:hasProjectedCoordinate_z ?z .\r\n" + 
-		"                           ?z j2:hasValue ?zv .\r\n" + 
-		"                            ?zv j2:numericalValue ?zval\r\n" + 
-		"                }\r\n" + 
-		"                UNION\r\n" + 
-		"                {\r\n" + 
-		"                     <http://www.theworldavatar.com/kb/nld/thehague/buildings/3940_5818.owl#BuildingBLDG_0003000900350d26> p3:consistsOfBuildingPart ?buildingPart .\r\n" + 
-		"                     ?buildingPart p3:boundedBy ?groundSurface .\r\n" + 
-		"                     ?groundSurface a p3:GroundSurfaceType .\r\n" + 
-		"                     ?groundSurface p3:lod2MultiSurface ?multiSurfaceType .\r\n" + 
-		"                      ?multiSurfaceType p3:surfaceMember ?polygon .\r\n" + 
-		"                       ?polygon p3:exterior ?linearRing .\r\n" + 
-		"                        ?linearRing j2:contains ?points .\r\n" + 
-		"                         ?points j1:hasGISCoordinateSystem ?coordinates .\r\n" + 
-		"                          ?coordinates j1:hasProjectedCoordinate_x ?x .\r\n" + 
-		"                           ?x j2:hasValue ?xv .\r\n" + 
-		"                            ?xv j2:numericalValue ?xval .\r\n" + 
-		"                          ?coordinates j1:hasProjectedCoordinate_y ?y .\r\n" + 
-		"                           ?y j2:hasValue ?yv .\r\n" + 
-		"                            ?yv j2:numericalValue ?yval .\r\n" + 
-		"                          ?coordinates j1:hasProjectedCoordinate_z ?z .\r\n" + 
-		"                           ?z j2:hasValue ?zv .\r\n" + 
-		"                            ?zv j2:numericalValue ?zval\r\n" + 
-		"                }\r\n" + 
-		"}\r\n" + 
-		"ORDER BY ?polygon ?points";
-		
-		System.out.println(query);
-	}
-	
-	//TODO-AE remove this
-	public void xxxtestOLDBerlinPlant() {
-		String query = "PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>\r\n" + 
-		"PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>\r\n" + 
-		"PREFIX citygml:<http://www.theworldavatar.com/CityGMLOntology.owl#>\r\n" + 
-		"\r\n" + 
-		"SELECT  ?pred ?obj\r\n" + 
-		"WHERE {\r\n" + 
-		"<http://www.theworldavatar.com/kb/deu/berlin/buildings/3920_5819.owl#BuildingDEB_LOD2_UUID_ccf8cd7c-b41b-4c1e-a60c-0a645c6c5c4b> ?pred ?obj .\r\n" + 
-		"}";
-		
-		query = "PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>\r\n" + 
-				"PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>\r\n" + 
-				"PREFIX citygml:<http://www.theworldavatar.com/CityGMLOntology.owl#>\r\n" + 
-				"\r\n" + 
-				"SELECT  ?pred ?obj\r\n" + 
-				"WHERE {\r\n" + 
-				"<http://www.theworldavatar.com/kb/deu/berlin/buildings/3940_5818.owl#BuildingBLDG_0003000a0041a96a> ?pred ?obj .\r\n" + 
-				"}\r\n" +
-				"LIMIT 100";
-		
-		query = "PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>\r\n" + 
-				"PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>\r\n" + 
-				"PREFIX citygml:<http://www.theworldavatar.com/CityGMLOntology.owl#>\r\n" + 
-				"\r\n" + 
-				"SELECT  ?building ?name\r\n" + 
-				"WHERE {\r\n" + 
-				"?building <http://www.theworldavatar.com/CityGMLOntology.owl#name> ?name .\r\n" + 
-				"}\r\n" +
-				"LIMIT 100";
-		
-//		query = "PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>\r\n" + 
-//				"PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>\r\n" + 
-//				"PREFIX citygml:<http://www.theworldavatar.com/CityGMLOntology.owl#>\r\n" + 
-//				"\r\n" + 
-//				"SELECT  ?pred ?obj\r\n" + 
-//				"WHERE {\r\n" + 
-//				"<http://www.theworldavatar.com/kb/deu/berlin/buildings/3940_5818.owl#V_EstimatedHeight_Building_BLDG_0003000a0041a96a> ?pred ?obj .\r\n" + 
-//				"}\r\n" +
-//				"LIMIT 25";
-		
-		
-		//String result = performQuery("berlinbuildings", query);
-		String result = new BuildingQueryPerformer().performQuery(BuildingQueryPerformer.BERLIN_IRI, query);
-		
-		System.out.println(result);
-		
+	public void testBerlinPerformQueryCLosestBuildingsFromRegionAroundPlant() {
 
+		double plantx = 392825;
+		double planty = 5819122;
 		
+		// transform the points around the plant in Berlin into the CRS of GUI, BuildingQueryPerformer will translate them back to Berlin CRS
+		// this transformed target plants are the correct ones for ADMS Python scripts
+		String sourceCRS = CRSTransformer.EPSG_25833; // Berlin
+		double[] sourceCenter = new double[]{plantx, planty};
+		String targetCRS = CRSTransformer.EPSG_28992; // The Hague
+		double[] targetCenter = CRSTransformer.transform(sourceCRS, targetCRS, sourceCenter);
 		
-		//double[] p = CRSTransformer.transform(CRSTransformer.EPSG_25833, BuildingQueryPerformer.DEFAULT_CRS_NAME, 390000., 5815000., 396000., 5826000.);
-		//createQueryPerformerForTheHague().performQueryFilterBdns(BuildingQueryPerformer.BERLIN, 100, p[0], p[1], p[2], p[3]);
+		double lowerx = targetCenter[0] - 400;
+		double lowery = targetCenter[1] - 400;
+		double upperx = targetCenter[0] + 400;
+		double uppery = targetCenter[1] + 400;
 		
-		
-		
-		// ZULETZT:
-		// Compare the result of both query concerning how many building and coordinate transf. and assert !!!
-		
-
-		//https://rdflib.github.io/sparqlwrapper/
-		// rdflib.plugins.sparql.results.jsonresults
-		//http://rdflib.readthedocs.io/en/stable/_modules/rdflib/plugins/sparql/results/jsonresults.html
+		List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryClosestBuildingsFromRegion( 
+				BuildingQueryPerformer.BERLIN_IRI, plantx, planty, 25, lowerx, lowery, upperx, uppery);
+				
+		assertEquals(25, buildingIRIs.size());
 	}
 }

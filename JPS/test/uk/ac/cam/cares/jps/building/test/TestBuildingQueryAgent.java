@@ -46,54 +46,56 @@ public class TestBuildingQueryAgent extends TestCase {
 	public void testTheHagueIntegrationWithPython() throws InterruptedException {
 		
 		String city = BuildingQueryPerformer.THE_HAGUE_IRI;
-		
-		//args.add("http://www.theworldavatar.com/Plant-001.owl#Plant-001");
 		String plant = "http://www.theworldavatar.com/Plant-001.owl";
-		//args.add(coordinates.toString().replaceAll(",", "#"));
-		//args.add("{'xmin':84400, 'xmax':84600, 'ymin':451000, 'ymax':451300}");
-		//args.add("{'xmin':79770, 'xmax':79910, 'ymin':454680, 'ymax':454980}");
-		double lowerx = 79770;
-		double lowery = 454680;
-		double upperx = 79910;
-		double uppery = 454980;
-		
 		int buildingLimit = 25;
 		
-		startIntegrationWithPython(city, plant, lowerx, lowery, upperx, uppery, buildingLimit);
+		double plantx = 79831;
+		double planty = 454766;
+		double lowerx = plantx - 100;
+		double lowery = planty - 100;
+		double upperx = plantx + 100;
+		double uppery = planty + 200;
+
+		startIntegrationWithPython(city, plant, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
 		
 		// TODO-AE assert statement is missing here 
 	}
 	
 	public void testBerlinIntegrationWithPython() throws InterruptedException {
 		
-		String city = BuildingQueryPerformer.BERLIN_IRI;
-		String plant = "http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002";
+		String cityIRI = BuildingQueryPerformer.BERLIN_IRI;
+		String plantIRI = "http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002";
+		int buildingLimit = 25;
 		
 		// transform the points around the plant in Berlin into the CRS of GUI, BuildingQueryPerformer will translate them back to Berlin CRS
 		// this transformed target plants are the correct ones for ADMS Python scripts
 		String sourceCRS = CRSTransformer.EPSG_25833; // Berlin
-		double[] sourcePoints = new double[]{390000., 5815000., 396000., 5826000.};
+		double[] sourceCenter = new double[]{392825, 5819122};
 		String targetCRS = CRSTransformer.EPSG_28992; // The Hague
-		double[] targetPoints = CRSTransformer.transform(sourceCRS, targetCRS, sourcePoints);
+		double[] targetCenter = CRSTransformer.transform(sourceCRS, targetCRS, sourceCenter);
+
+		double plantx = targetCenter[0];
+		double planty = targetCenter[1];
+//		double lowerx = plantx - 400;
+//		double lowery = planty - 400;
+//		double upperx = plantx + 400;
+//		double uppery = planty + 400;
 		
-		double lowerx = targetPoints[0];
-		double lowery = targetPoints[1];
-		double upperx = targetPoints[2];
-		double uppery = targetPoints[3];
-		
-		int buildingLimit = 25;
-		
-		startIntegrationWithPython(city, plant, lowerx, lowery, upperx, uppery, buildingLimit);
+		double lowerx = 699208.47;
+		double lowery = 533059.02;
+		double upperx = 699959.88;
+		double uppery = 533841.67;
+		startIntegrationWithPython(cityIRI, plantIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
 		
 		// TODO-AE assert statement is missing here 
 	}
 	
-	private void startIntegrationWithPython(String city, String plant, double lowerx, double lowery, double upperx, double uppery, int buildingLimit) throws InterruptedException {
+	private void startIntegrationWithPython(String cityIRI, String plantIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) throws InterruptedException {
 		
 		ArrayList<String> args = new ArrayList<String>();
 		args.add("python");
 		args.add("admsMainNew.py"); 
-		args.add(plant);
+		args.add(plantIRI);
 		
 		String coordintates = getCoordinatesForPython(lowerx, lowery, upperx, uppery);
 		args.add(coordintates);
@@ -101,7 +103,7 @@ public class TestBuildingQueryAgent extends TestCase {
 		String fullPath = AgentLocator.getPathToWorkingDir(this) + "/" + "ADMS";
 		args.add(fullPath); // this extra parameter tells the python script where to put the input files
 		
-		String buildingData = retrieveBuildingDataInJSON(city, lowerx, lowery, upperx, uppery, buildingLimit);
+		String buildingData = retrieveBuildingDataInJSON(cityIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
 		buildingData = buildingData.replace('\"', '\'');
 		args.add(buildingData);
 		System.out.println("building data =  \n" + buildingData);
@@ -112,9 +114,11 @@ public class TestBuildingQueryAgent extends TestCase {
 		System.out.println("Python result: \n" + result);
 	}
 	
-	private String retrieveBuildingDataInJSON(String city, double lowerx, double lowery, double upperx, double uppery, int buildingLimit) {
-		List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryBuildingsFromRegion(city , buildingLimit, lowerx, lowery, upperx, uppery);
-		SimpleBuildingData result = createQueryPerformerForTheHague().performQuerySimpleBuildingData(city, buildingIRIs);
+	private String retrieveBuildingDataInJSON(String cityIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
+		// TODO-AE URGENT URGENT activate the query for closest buildings from Region
+		//List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryBuildingsFromRegion(cityIRI , buildingLimit, lowerx, lowery, upperx, uppery);
+		List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryClosestBuildingsFromRegion(cityIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
+		SimpleBuildingData result = createQueryPerformerForTheHague().performQuerySimpleBuildingData(cityIRI, buildingIRIs);
 		String argument = new Gson().toJson(result);
 		return argument;
 	}

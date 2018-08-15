@@ -343,4 +343,58 @@ public class PolygonUtil {
 		
 		return perimeter;
 	}
+	
+	public static Polygon createBestFittingBoxAlongAllPolygonLines(List<Polygon> polygons) {
+		
+		double area = area(polygons);
+		
+		double intersectionAreaMax = -1;
+		Polygon bestBox = null;
+		for (Polygon current : polygons) {
+			for (int i=0; i<current.size()-1; i++) {
+				
+				Polygon box = createBestFittingBoxAlongGivenLine(polygons, area, current.get(i), current.get(i+1));
+				double intersectionArea = calculateIntersectionArea(polygons, box);
+				if (intersectionArea > intersectionAreaMax) {
+					intersectionAreaMax = intersectionArea;
+					bestBox = box;
+				}	
+			}
+		}
+		
+		return bestBox;
+	}
+	
+	public static Point2d add(Point2d p1, Point2d p2) {
+		return new Point2dImpl(p1.getX() + p2.getX(), p1.getY() + p2.getY());
+	}
+	
+	public static Polygon createBestFittingBoxAlongGivenLine(List<Polygon> polygons, double area, Point2d startPoint, Point2d endPoint) {
+		Point2d diff = endPoint.minus(startPoint);
+		double length = length(diff);
+		double width = area / length;
+		double xortho = diff.getY() * width / length;
+		double yortho = -diff.getX() * width / length;
+		
+		double intersectionAreaMax = -1;
+		Polygon bestBox = null;
+		for (int i=0; i<=1; i++) {
+			if (i==1) {
+				xortho = -xortho;
+				yortho = -yortho;
+			}
+			
+			Point2d ortho = new Point2dImpl(xortho, yortho);
+			Polygon box = new Polygon(startPoint, endPoint, add(endPoint, ortho), add(startPoint, ortho), startPoint);
+			double intersectionArea = calculateIntersectionArea(polygons, box);
+			if (intersectionArea > intersectionAreaMax) {
+				intersectionAreaMax = intersectionArea;
+				bestBox = box;
+			}	
+		}
+		
+		
+	
+		return bestBox;
+	}
 }

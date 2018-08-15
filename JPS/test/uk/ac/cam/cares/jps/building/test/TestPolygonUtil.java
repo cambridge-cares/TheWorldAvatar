@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.building.test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.openimaj.math.geometry.point.Point2d;
@@ -10,6 +11,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.util.MatrixToJsonConverter;
 import uk.ac.cam.cares.jps.building.PolygonUtil;
 import uk.ac.cam.cares.jps.building.SimpleShapeConverter;
 import uk.ac.cam.cares.jps.building.SimpleShapeConverter.SimpleShape;
@@ -528,8 +530,8 @@ public class TestPolygonUtil extends TestCase {
 			
 			Polygon merged = PolygonUtil.merge(polygons);
 			Polygon hull = merged.calculateConvexHull();
-			//draw(0, 0, polygons.get(0), polygons.get(1), polygons.get(2), hull, box);
-			//draw(800, 200, hull, box);
+			//draw(800, 200, 0, polygons.get(0), polygons.get(1), polygons.get(2), hull, box);
+			//draw(800, 200, 0, hull, box);
 		}
 	}
 	
@@ -597,7 +599,8 @@ public class TestPolygonUtil extends TestCase {
 			"79434.822,454730.25,1.841\n" + 
 			"79439.151,454733.054,1.841";
 		
-		Polygon p = SimpleShapeConverter.convertTo2DPolygon(csvCoordinates, "x", "y");
+		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(csvCoordinates);
+		Polygon p = SimpleShapeConverter.convertTo2DPolygon(map, "x", "y");
 		
 		System.out.println("original Polygon = " + p);
 		
@@ -649,7 +652,7 @@ public class TestPolygonUtil extends TestCase {
 	public void testSimpleShapeForSimpleRotatedBox() {
 				
 		double[] angles = new double[] {0., 0.1, 0.2, 0.5, 1.4, 1.57, 2., -.1, -1., -1.57, -2.};
-		
+		//double[] angles = new double[] {0.2};
 		for (double angle : angles) {
 			System.out.println("angle=" + angle);
 			Polygon p1 = createPolygon("100 300 200 500 600 300 500 100 100 300");

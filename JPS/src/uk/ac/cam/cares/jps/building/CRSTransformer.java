@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.building;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.cts.CRSFactory;
@@ -39,6 +41,8 @@ public class CRSTransformer {
 	
 	private static Logger logger;
 	private static CRSFactory cRSFactory;
+	private static Map<String, CoordinateReferenceSystem> crsMap = new HashMap<String, CoordinateReferenceSystem>();
+	private static Map<String, Set<CoordinateOperation>> coordOpMap = new HashMap<String, Set<CoordinateOperation>>();
 
 	private static synchronized CRSFactory getFactory() {
 		if (cRSFactory == null) {
@@ -64,18 +68,22 @@ public class CRSTransformer {
 	 * https://github.com/orbisgis/cts/blob/master/src/test/java/org/cts/op/BaseCoordinateTransformTest.java
 	 * and then adapted.
 	 *
-	 * @param sourceCRS
-	 * @param targetCRS
+	 * @param sourceCRSName
+	 * @param targetCRSName
 	 * @param inputPoint
 	 * @return
 	 * @throws IllegalCoordinateException
 	 * @throws CoordinateOperationException
+	 * @throws CRSException 
 	 */
-	   private static double[] transform(GeodeticCRS sourceCRS, GeodeticCRS targetCRS, double[] sourcePoint)
-		         throws IllegalCoordinateException, CoordinateOperationException {
-			
-		Set<CoordinateOperation>  ops = CoordinateOperationFactory.createCoordinateOperations(sourceCRS, targetCRS);
-		int tot = ops.size();
+	   private static double[] transformInternal(String sourceCRSName, String targetCRSName, double[] sourcePoint)
+		         throws IllegalCoordinateException, CoordinateOperationException, CRSException {
+		   
+		GeodeticCRS sourceCRS = (GeodeticCRS) getCRS(sourceCRSName);
+		GeodeticCRS targetCRS = (GeodeticCRS) getCRS(targetCRSName);
+		
+		Set<CoordinateOperation> ops = getCoordinateOperations(sourceCRS, targetCRS);
+		//int tot = ops.size();
 		// for (CoordinateOperation op : ops) System.out.println(" " + op.getName());
 		if (sourceCRS.getDatum() == GeodeticDatum.WGS84 || targetCRS.getDatum() == GeodeticDatum.WGS84) {
 			ops = CoordinateOperationFactory.excludeFilter(ops, FrenchGeocentricNTF2RGF.class);
@@ -90,22 +98,22 @@ public class CRSTransformer {
 				&& !(targetCRS instanceof CompoundCRS)) {
 			ops = CoordinateOperationFactory.excludeFilter(ops, GridBasedTransformation.class);
 		}
-		int subtot = ops.size();
+		//int subtot = ops.size();
 		if (!ops.isEmpty()) {
 			CoordinateOperation op = CoordinateOperationFactory.getMostPrecise(ops);
 			
-			if (logger.isDebugEnabled()) {
-				logger.debug("Source " + sourceCRS);
-				logger.debug("Target " + targetCRS);
-				logger.debug(tot + " transformations found, " + subtot + " retained");
-				logger.debug("Used transformation (" + op.getPrecision() + ") : " + op);
-
-				if (ops.size() > 1) {
-					for (CoordinateOperation oop : ops) {
-						logger.debug("   other transformation : precision = " + oop.getPrecision());
-					}
-				}
-			}
+//			if (logger.isDebugEnabled()) {
+//				logger.debug("Source " + sourceCRS);
+//				logger.debug("Target " + targetCRS);
+//				logger.debug(tot + " transformations found, " + subtot + " retained");
+//				logger.debug("Used transformation (" + op.getPrecision() + ") : " + op);
+//
+//				if (ops.size() > 1) {
+//					for (CoordinateOperation oop : ops) {
+//						logger.debug("   other transformation : precision = " + oop.getPrecision());
+//					}
+//				}
+//			}
 			
 			double[] source = new double[sourcePoint.length];
 			System.arraycopy(sourcePoint, 0, source, 0, sourcePoint.length);
@@ -122,13 +130,10 @@ public class CRSTransformer {
 		
 		double[] result = new double[sourcePoints.length];
 		
-		try {
-			CoordinateReferenceSystem sourceCRS = getFactory().getCRS(sourceCRSName);
-			CoordinateReferenceSystem targetCRS = getFactory().getCRS(targetCRSName);
-		
+		try {		
 			for (int i=0; i<sourcePoints.length; i=i+2) {
 				double[] pointPoint = new double[] {sourcePoints[i], sourcePoints[i+1]};
-				double[] targetPoint = transform((GeodeticCRS) sourceCRS, (GeodeticCRS) targetCRS, pointPoint);
+				double[] targetPoint = transformInternal(sourceCRSName, targetCRSName, pointPoint);
 				result[i] = targetPoint[0];
 				result[i+1] = targetPoint[1];
 			} 
@@ -137,5 +142,26 @@ public class CRSTransformer {
 		}
 		
 		return result;
+	}
+	
+	private static synchronized CoordinateReferenceSystem getCRS(String crsName) throws CRSException {
+		if (crsMap.containsKey(crsName)) {
+			return crsMap.get(crsName);
+		}
+		
+		CoordinateReferenceSystem crs = getFactory().getCRS(crsName);
+		crsMap.put(crsName,  crs);
+		return crs;
+	}
+	
+	private static Set<CoordinateOperation> getCoordinateOperations(GeodeticCRS sourceCRS, GeodeticCRS targetCRS) throws CoordinateOperationException {
+		String key = sourceCRS.getName() + "_" + targetCRS.getName();
+		if (coordOpMap.containsKey(key)) {
+			return coordOpMap.get(key);
+		}
+		
+		Set<CoordinateOperation>  ops = CoordinateOperationFactory.createCoordinateOperations(sourceCRS, targetCRS);
+		coordOpMap.put(key,  ops);
+		return ops;
 	}
 }

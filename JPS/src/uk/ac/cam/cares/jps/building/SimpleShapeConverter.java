@@ -10,12 +10,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.util.MatrixToJsonConverter;
 
-/**
- * @author Andreas
- *
- */
 /**
  * @author Andreas
  *
@@ -45,14 +40,12 @@ public class SimpleShapeConverter {
 		}
 	}
 	
-	public static Polygon convertTo2DPolygon(String csvCoordinates, String xName, String yName) {
+	public static Polygon convertTo2DPolygon(Map<String, List<String>> coordinateMap, String xName, String yName) {
 		
 		Polygon result = new Polygon();
 		
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(csvCoordinates);
-		
-		List<String> xColumn = map.get(xName);
-		List<String> yColumn = map.get(yName);
+		List<String> xColumn = coordinateMap.get(xName);
+		List<String> yColumn = coordinateMap.get(yName);
 		
 		for (int i=0; i<xColumn.size(); i++) {
 			float x = Float.valueOf(xColumn.get(i));
@@ -63,22 +56,20 @@ public class SimpleShapeConverter {
 		return result;
 	}
 	
-	public static List<Polygon> convertTo2DPolygons(String csvCoordinates, String pName, String xName, String yName) {
+	public static List<Polygon> convertTo2DPolygons(Map<String, List<String>> coordinateMap, String pName, String xName, String yName) {
 		
 		List<Polygon> result = new ArrayList<Polygon>();
 		
 		if ((pName == null) || (pName.isEmpty())) {
 			
-			Polygon polygon = convertTo2DPolygon(csvCoordinates, xName, yName);
+			Polygon polygon = convertTo2DPolygon(coordinateMap, xName, yName);
 			result.add(polygon);
 			
 		} else {
-			
-			Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(csvCoordinates);
-			
-			List<String> pColumn = map.get(pName);
-			List<String> xColumn = map.get(xName);
-			List<String> yColumn = map.get(yName);
+						
+			List<String> pColumn = coordinateMap.get(pName);
+			List<String> xColumn = coordinateMap.get(xName);
+			List<String> yColumn = coordinateMap.get(yName);
 			
 			Map<String, Polygon> polygonMap = new HashMap<String, Polygon>();
 			
@@ -103,7 +94,7 @@ public class SimpleShapeConverter {
 	
 	public static boolean isNearlyCircular(double area, double perimeter) {
 
-		double T = Math.abs(4 * 22 / 7 * area / Math.pow(perimeter, 2));
+		double T = Math.abs(4 * Math.PI * area / Math.pow(perimeter, 2));
 
 		if (T <= 1 && T >= 0.9) {
 			return true;
@@ -123,6 +114,8 @@ public class SimpleShapeConverter {
 			if (isNearlyCircular(area, perimeter)) {
 				result.shapeType = 1;
 				result.length = perimeter / Math.PI; // = diameter
+				// TODO-AE URGENT the width is not set, what are the consequences 
+				// in the width list in the apl file?
 				Point2d center = PolygonUtil.calculateCenterOfMass(polygons.get(0).getVertices());
 				result.centerX = center.getX();
 				result.centerY = center.getY();		
@@ -132,9 +125,58 @@ public class SimpleShapeConverter {
 		}
 		
 		// simplify the polygons and replace them by one box
-		result.shapeType = 0;
-		
 		Polygon box = PolygonUtil.createBestShrinkedBox(polygons);
+		result = createSimpleShapeForBox(box, area);
+		
+		return result;
+	}
+	
+	public static Object[] simplifyShapesWithTwoAlgorithms(List<Polygon> polygons) {
+		
+		Object[] result = new Object[4];
+		
+		double area = PolygonUtil.area(polygons);
+		
+		if ((polygons.size() == 1))  {
+			double perimeter = PolygonUtil.calculatePerimeter(polygons.get(0));
+			if (isNearlyCircular(area, perimeter)) {
+				
+				SimpleShape shape = new SimpleShape();
+				
+				shape.shapeType = 1;
+				shape.length = perimeter / Math.PI; // = diameter
+				// TODO-AE URGENT the width is not set, what are the consequences 
+				// in the width list in the apl file?
+				Point2d center = PolygonUtil.calculateCenterOfMass(polygons.get(0).getVertices());
+				shape.centerX = center.getX();
+				shape.centerY = center.getY();		
+				
+				result[0] = shape;
+				
+				return result;	
+			}
+		}
+		
+		Polygon box1 = PolygonUtil.createBestShrinkedBox(polygons);
+		SimpleShape shape1 = createSimpleShapeForBox(box1, area);
+		double intersectionArea1 = PolygonUtil.calculateIntersectionArea(polygons, box1);
+		result[0] = shape1;
+		result[1] = intersectionArea1;
+		
+		Polygon box2 = PolygonUtil.createBestFittingBoxAlongAllPolygonLines(polygons);
+		SimpleShape shape2 = createSimpleShapeForBox(box2, area);
+		double intersectionArea2 = PolygonUtil.calculateIntersectionArea(polygons, box2);
+		result[2] = shape2;
+		result[3] = intersectionArea2;
+				
+		return result;
+	}
+	
+	
+	private static SimpleShape createSimpleShapeForBox(Polygon box, double area) {
+		SimpleShape result = new SimpleShape();
+		
+		result.shapeType = 0;
 		
 		Point2d diff = box.get(1).minus(box.get(0));
 		result.length = PolygonUtil.length(diff);

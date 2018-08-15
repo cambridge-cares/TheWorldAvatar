@@ -4,6 +4,7 @@
      xmlns:process="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#"
      xmlns:space_and_time_extended="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:phase_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#"
      xmlns:topology="http://www.theworldavatar.com/OntoCAPE/meta_model/topology/topology.owl#"
      xmlns:network_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/network_system.owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
@@ -20,8 +21,8 @@
      xmlns:behavior="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#"
      xmlns:economic_performance="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#">
     <owl:Ontology rdf:about="http://www.jparksimulator.com/R-340001.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/Eco-industrialPark.owl"/>
         <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/OntoCAPE.owl"/>
-		<owl:imports rdf:resource="http://www.theworldavatar.com/Eco-industrialPark.owl"/>
     </owl:Ontology>
     
 
@@ -82,6 +83,15 @@
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#Maintenance&amp;RepairCosts"/>
         <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#amount_of_money"/>
         <system:hasValue rdf:resource="http://www.jparksimulator.com/R-340001.owl#ValueOf_MtnceCost_R-340001"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/R-340001.owl#OpPressure_R-340001 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/R-340001.owl#OpPressure_R-340001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/R-340001.owl#ValueOf_OpPressure_R-340001"/>
     </owl:NamedIndividual>
     
 
@@ -172,6 +182,7 @@
         <plant:hasConnector rdf:resource="http://www.jparksimulator.com/R-340001.owl#R-340001_N_2"/>
         <plant:hasConnector rdf:resource="http://www.jparksimulator.com/R-340001.owl#R-340001_N_3"/>
         <machine:hasPressureDrop rdf:resource="http://www.jparksimulator.com/R-340001.owl#PressureDrop_R-340001"/>
+        <phase_system:has_pressure rdf:resource="http://www.jparksimulator.com/R-340001.owl#OpPressure_R-340001"/>
         <space_and_time_extended:hasGISCoordinateSystem rdf:resource="http://www.jparksimulator.com/R-340001.owl#R-340001_CoordinateSystem"/>
         <system:hasCharacteristic rdf:resource="http://www.jparksimulator.com/R-340001.owl#R-340001_VisualRepresentation"/>
         <technical_system:realizes rdf:resource="http://www.jparksimulator.com/R-340001.owl#Reaction_SBRProduction"/>
@@ -309,6 +320,16 @@
     
 
 
+    <!-- http://www.jparksimulator.com/R-340001.owl#ValueOf_OpPressure_R-340001 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/R-340001.owl#ValueOf_OpPressure_R-340001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">13243546</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.jparksimulator.com/R-340001.owl#ValueOf_OpTemperature_R-340001 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/R-340001.owl#ValueOf_OpTemperature_R-340001">
@@ -344,7 +365,7 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/R-340001.owl#ValueOf_x_R-340001">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">8.1234567</system:numericalValue>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">3.1415926</system:numericalValue>
     </owl:NamedIndividual>
     
 
@@ -354,7 +375,7 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/R-340001.owl#ValueOf_y_R-340001">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">9.1234567</system:numericalValue>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">2.71828</system:numericalValue>
     </owl:NamedIndividual>
     
 

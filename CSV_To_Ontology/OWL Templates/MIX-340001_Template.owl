@@ -162,7 +162,7 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/MIX-340001.owl#ValueOf_x_MIX-340001">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0</system:numericalValue>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">3.1415926</system:numericalValue>
     </owl:NamedIndividual>
     
 
@@ -172,7 +172,7 @@
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/MIX-340001.owl#ValueOf_y_MIX-340001">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0</system:numericalValue>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">2.71828</system:numericalValue>
     </owl:NamedIndividual>
     
 
