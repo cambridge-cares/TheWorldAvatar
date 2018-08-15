@@ -69,37 +69,36 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) =>
 
     // --- Rendering 3D building models --- //
 
-//    $.getJSON('/JPS/ADMSHelper',
-//        {
-//            listOfIRIs: JSON.stringify(list)
-//        },
-//        function(data) {
-//            var geojson = data;
-//            var arrayLength = geojson.length;
-//            
-//            for (var i = 0; i < arrayLength; i++) {
-//
-//                try {
-//                    osmb.addGeoJSON(geojson[i]);
-////                    console.log(JSON.stringify(geojson[i], null, 4));
-//                }
-//                catch(err) {
-//                    console.log(err.name)
-//                }
-//            }
-//        });
+    $.getJSON('/JPS/ADMSHelper',
+        {
+            listOfIRIs: JSON.stringify(list),
+            cityiri
+        },
+        function(data) {
+            var geojson = data;
+            var arrayLength = geojson.length;
+            console.log(data);
+            
+            for (var i = 0; i < arrayLength; i++) {
+
+                try {
+                    osmb.addGeoJSON(geojson[i]);
+//                    console.log(JSON.stringify(geojson[i], null, 4));
+                }
+                catch(err) {
+                    console.log(err.name)
+                }
+            }
+        });
     
-    console.log(cityiri);
-    console.log(list);
-    
-    $.getJSON('/JPS/buildings/simpleshape', 
-    	{
-    		cityiri,
-    		buildingiris: JSON.stringify(list)
-    	},
-    	buildingData => {
-    		console.log(buildingData);
-    	})
+//    $.getJSON('/JPS/buildings/simpleshape', 
+//    	{
+//    		cityiri,
+//    		buildingiris: JSON.stringify(list)
+//    	},
+//    	buildingData => {
+//    		console.log(buildingData);
+//    	})
     
     // --- Rendering 3D layer --- //
     makeRadios('optionwrapper', POL_LIST, 'Select a pollutant:')

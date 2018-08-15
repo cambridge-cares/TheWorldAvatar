@@ -33,13 +33,14 @@ public class ADMSHelper extends HttpServlet {
 		
 		// -- Get String formatted in Array of Strings -- //
 		request.setCharacterEncoding("UTF-8");
-		String jsonString = request.getParameter("listOfIRIs");
+		String listOfIRIs = request.getParameter("listOfIRIs");
+		String cityiri = request.getParameter("cityiri");
 		
 		Gson g = new Gson();
 		
 		String result;
 		try {
-			result = PythonHelper.callPython("caresjpsadmsinputs/ADMSGeoJsonGetter.py", g.toJson(jsonString), this);
+			result = PythonHelper.callPython("caresjpsadmsinputs/ADMSGeoJsonGetter.py", g.toJson(listOfIRIs), cityiri, this);
 			response.setContentType("application/json");
 			response.getWriter().write(result);
 		} catch (PythonException e) {
