@@ -19,7 +19,6 @@ import uk.ac.cam.ceb.como.io.chem.file.parser.formula.EmpiricalFormulaParser;
 import uk.ac.ceb.como.molhub.bean.MoleculeProperty;
 import uk.ac.ceb.como.molhub.controler.ConnectionToTripleStore;
 
-
 public class QueryManager {
 	
 	/** The server url. */
@@ -128,10 +127,9 @@ public static List<MoleculeProperty> performListQuery(Sentence sentence ) {
 					int numberOfAtoms = empiricalFormulaParser
 							.getNumberOfAllAtoms(literal.getAtomicSentence().toString());
 					
+//					String queryString = QueryManager.getQueryForPositiveLiteral(atomName,numberOfAtoms);
 					
-					String queryString = QueryManager.getQueryForPositiveLiteral(atomName,numberOfAtoms);
-					
-//					String queryString = QueryManager.getQueryForMoleculeName(atomName, numberOfAtoms);
+					String queryString = QueryManager.getQueryForMoleculeName(atomName, numberOfAtoms);
 //					String queryString = QueryManager.getQueryForNegativeLiteral(atomName, numberOfAtoms);
 					
 					TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL,queryString);
@@ -160,9 +158,9 @@ public static List<MoleculeProperty> performListQuery(Sentence sentence ) {
 							
 							setOfLiterals.add(moleculeProperty);
 						
-							literalUnionSet.addAll(setOfLiterals);							
+							literalUnionSet.addAll(setOfLiterals);
 							
-							qResult.add(moleculeProperty);							
+							qResult.add(moleculeProperty);
 							
 						}
 						
@@ -178,15 +176,24 @@ public static List<MoleculeProperty> performListQuery(Sentence sentence ) {
 		}
 		
 		return  qResult;
-
 	}
 }
 
 public static String getQueryForPositiveLiteral(String atomName, int numberOfAtoms) {
 	
-	String numberOfAtom = String.valueOf(numberOfAtoms);
+	String atomNumber = String.valueOf(numberOfAtoms);
 	
-	String queryForPositiveLiteral = "SELECT ?numberOfAtoms ?mname  WHERE { ?g <http://ontochem.theworldavatar.com/kb/OntoChem.owl#hasInitialization> ?mn . ?mn <http://purl.org/gc/hasMoleculeProperty> ?mp . ?mp <http://purl.org/gc/hasName> ?mname . ?mp <http://purl.org/gc/hasMolecule> ?mol . ?mol <http://purl.org/gc/hasNumberOfAtoms> ?numberOfAtoms .  ?mol <http://purl.org/gc/hasAtom> ?x . ?x <http://purl.org/gc/isElement> <http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"+atomName+">. FILTER(str(?numberOfAtoms)='"+numberOfAtom+"')} LIMIT 50";
+	String queryForPositiveLiteral = "SELECT ?numberOfAtoms ?mname  "
+			+ "WHERE { "
+			+ "?g <http://ontochem.theworldavatar.com/kb/OntoChem.owl#hasInitialization> ?mn . "
+			+ "?mn <http://purl.org/gc/hasMoleculeProperty> ?mp . "
+			+ "?mp <http://purl.org/gc/hasName> ?mname . "
+			+ "?mp <http://purl.org/gc/hasMolecule> ?mol . "
+			+ "?mol <http://purl.org/gc/hasNumberOfAtoms> ?numberOfAtoms .  "
+			+ "?mol <http://purl.org/gc/hasAtom> ?x . "
+			+ "?x <http://purl.org/gc/isElement> <http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"+atomName+">. "
+			+ "FILTER(str(?numberOfAtoms)='"+atomNumber+"')} "
+			+ "LIMIT 50";
 	
 	return queryForPositiveLiteral;
 }

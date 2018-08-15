@@ -7,7 +7,6 @@ import org.eclipse.rdf4j.repository.http.HTTPRepository;
 
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ConnectionToTripleStore.
  *

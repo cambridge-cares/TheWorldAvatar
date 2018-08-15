@@ -62,6 +62,7 @@ public class TermValidationAction extends ActionSupport {
 
 		DPLL dpll = new DPLLSatisfiable();
 
+		String periodicTableSymbol = null;
 		EmpiricalFormulaParser empiricalFormulaParser = new EmpiricalFormulaParser();
 
 		try {
@@ -87,6 +88,25 @@ public class TermValidationAction extends ActionSupport {
 				Set<PropositionSymbol> ps = c.getSymbols();
 
 				for (PropositionSymbol ppSymbol : ps) {
+					
+					/**
+					 * @author nk510
+					 * Checking whether propositional symbol matches regular expression of periodic table elements.
+					 */
+					if(!ppSymbol.getSymbol().matches("[A-Z][a-z]{0,3}[0-9]+")) {
+						
+						addFieldError("term.name", "Propositional letter (" + ppSymbol.getSymbol()
+						+ ") does not match the naming of input query string.");
+
+				        return ERROR;
+					}else {
+						
+						/**
+						 * @author nk510
+						 * Removes appearing all numbers at the end of propositional symbol.
+						 */						
+						periodicTableSymbol = ppSymbol.getSymbol().replaceAll("[0-9]+","");
+					}
 					/**
 					 * 
 					 * @author nk510 Extracts each propositional letter (propositional symbol) in
@@ -95,10 +115,9 @@ public class TermValidationAction extends ActionSupport {
 					 *         we use <b>{@author pb556}</b> parser.
 					 * 
 					 */
-
+//empiricalFormulaParser.getAtomName(ppSymbol.getSymbol().toString())
 					Element elementSymbol = PeriodicTable
-							.getElementBySymbol(empiricalFormulaParser.getAtomName(ppSymbol.getSymbol().toString()));
-					
+							.getElementBySymbol(periodicTableSymbol);
 
 					if (elementSymbol.getSymbol() == null) {
 
@@ -107,14 +126,10 @@ public class TermValidationAction extends ActionSupport {
 
 						return ERROR;
 
-					} else {
-						
-						setPeriodicTableElement(elementSymbol.getName());
-						
-					}				
-					
+					} else {						
+						setPeriodicTableElement(elementSymbol.getName());						
+					}					
 				}
-
 			}
 
 			/**

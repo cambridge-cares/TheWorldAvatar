@@ -26,8 +26,6 @@ td {width:100%;float:left;clear:left; white-space:pre }
 
 <h3> Search Results: </h3>
 
-<!--<s:property value="%{finalSearchResultSet.{moleculeName}[0]}" />-->
-
 <s:iterator value="queryResult">
 <s:property value="moleculeId"/>
 <s:property value="moleculeName"/>

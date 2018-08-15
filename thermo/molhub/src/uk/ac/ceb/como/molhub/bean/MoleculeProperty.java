@@ -6,6 +6,8 @@ public class MoleculeProperty {
 	
 	private String moleculeName;
 	
+	private String numberOfAtoms;
+	
 	public MoleculeProperty() {}
 	
 	public MoleculeProperty(String moleculeId, String moleculeName) {
@@ -28,6 +30,14 @@ public class MoleculeProperty {
 
 	public void setMoleculeName(String moleculeName) {
 		this.moleculeName = moleculeName;
+	}
+
+	public String getNumberOfAtoms() {
+		return numberOfAtoms;
+	}
+
+	public void setNumberOfAtoms(String numberOfAtoms) {
+		this.numberOfAtoms = numberOfAtoms;
 	}
 	
 }
