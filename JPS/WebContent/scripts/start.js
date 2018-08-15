@@ -61,6 +61,34 @@ $(function(){
     })
     //***************************************************************************
 
+    osmb.on('pointerdown', function(e) {
+
+        var id = osmb.getTarget(e.detail.x, e.detail.y, function(id) {
+
+            var coordinates = osmb.unproject(e.detail.x, e.detail.y);
+            
+            var longitude = coordinates["longitude"];
+            var latitude = coordinates["latitude"];
+
+            const coordinatesArray = [];
+
+            if (!isNaN(latitude) && !isNaN(longitude)) {
+            	console.log(latitude, longitude);
+                const convertedCoordinates = proj4('EPSG:28992', [parseFloat(longitude), parseFloat(latitude)]);
+
+                coordinatesArray.push(convertedCoordinates[0]); // latitude
+                coordinatesArray.push(convertedCoordinates[1]); // longitude
+
+//                document.getElementById("longitude").innerHTML = longitude; // convertedCoordinates[1];
+//                document.getElementById("latitude").innerHTML = latitude; // convertedCoordinates[0];
+
+                console.log(coordinatesArray);
+            }
+        });
+    });
+
+    //***************************************************************************
+
     
     //***************************************************************************
     // converts point from EPSG:28992 to EPSG:4326

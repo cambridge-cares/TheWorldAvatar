@@ -59,8 +59,8 @@ def getGeoJSON(centrePoint, height, epsg):
                 'properties': {
                     'height': height,
                     'minHeight': 0,
-                    'color': 'pink',
-                    'roofColor': 'pink'
+                    'color': 'black',
+                    'roofColor': 'black'
                 },
                 'geometry': {
                     'type': 'Polygon',
