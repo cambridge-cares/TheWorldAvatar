@@ -28,7 +28,7 @@ const controlButtonsSetter = osmb => {
 };
 
 
-const initadms3dmap  = (list, range, osmb, location, coordinatesMid) => {
+const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) => {
 	
 	proj4.defs("EPSG:28992","+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.417,50.3319,465.552,-0.398957,0.343988,-1.8774,4.0725 +units=m +no_defs");
     proj4.defs('WGS84', "+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees");
@@ -69,25 +69,37 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid) => {
 
     // --- Rendering 3D building models --- //
 
-    $.getJSON('/JPS/ADMSHelper',
-        {
-            listOfIRIs: JSON.stringify(list)
-        },
-        function(data) {
-            var geojson = data;
-            var arrayLength = geojson.length;
-            
-            for (var i = 0; i < arrayLength; i++) {
-
-                try {
-                    osmb.addGeoJSON(geojson[i]);
-//                    console.log(JSON.stringify(geojson[i], null, 4));
-                }
-                catch(err) {
-                    console.log(err.name)
-                }
-            }
-        });
+//    $.getJSON('/JPS/ADMSHelper',
+//        {
+//            listOfIRIs: JSON.stringify(list)
+//        },
+//        function(data) {
+//            var geojson = data;
+//            var arrayLength = geojson.length;
+//            
+//            for (var i = 0; i < arrayLength; i++) {
+//
+//                try {
+//                    osmb.addGeoJSON(geojson[i]);
+////                    console.log(JSON.stringify(geojson[i], null, 4));
+//                }
+//                catch(err) {
+//                    console.log(err.name)
+//                }
+//            }
+//        });
+    
+    console.log(cityiri);
+    console.log(list);
+    
+    $.getJSON('/JPS/buildings/simpleshape', 
+    	{
+    		cityiri,
+    		buildingiris: JSON.stringify(list)
+    	},
+    	buildingData => {
+    		console.log(buildingData);
+    	})
     
     // --- Rendering 3D layer --- //
     makeRadios('optionwrapper', POL_LIST, 'Select a pollutant:')

@@ -44,105 +44,6 @@ $(function(){
 
     
     //***************************************************************************
-
-//    const twoDimCheckbox = document.querySelector('input[value="2d"]');
-//    let decreaseTiltTimer;
-//    let increaseTiltTimer;
-//
-//    const decreaseTilt = () => {
-//        let tilt = osmb.getTilt();
-//        tilt--;
-//        if (tilt != 0) {
-//            osmb.setTilt(tilt);
-//        }
-//    };
-//
-//    const increaseTilt = () => {
-//        let tilt = osmb.getTilt();
-//        tilt++;
-//        if (tilt < 45) {
-//            osmb.setTilt(tilt);
-//        }
-//    };
-//
-//    osmb.on('pointerdown', function(e) {
-//        // related to the tilt timers
-//        clearInterval(decreaseTiltTimer);
-//        clearInterval(increaseTiltTimer);
-//
-//        const output = document.getElementById("output");
-//
-//        if (output.style.display !== "none") {
-//
-//            var id = osmb.getTarget(e.detail.x, e.detail.y, function(id) {
-//
-//                var coordinates = osmb.unproject(e.detail.x, e.detail.y);
-//
-//                var longitude = coordinates["longitude"];
-//                var latitude = coordinates["latitude"];
-//
-//                const coordinatesArray = [];
-//
-//                if (!isNaN(latitude) && !isNaN(longitude)) {
-//
-//                    const convertedCoordinates = proj4('EPSG:28992', [parseFloat(longitude), parseFloat(latitude)]);
-//
-//                    coordinatesArray.push(convertedCoordinates[0]); // latitude
-//                    coordinatesArray.push(convertedCoordinates[1]); // longitude
-//
-//                    document.getElementById("longitude").innerHTML = longitude; // convertedCoordinates[1];
-//                    document.getElementById("latitude").innerHTML = latitude; // convertedCoordinates[0];
-//
-//                    // $.getJSON('/JPS/ADMSOutput',
-//                    //     {
-//                    //         coordinatesLonLat: JSON.stringify(coordinatesArray)
-//                    //     },
-//                    //     function(data) {
-//                    //         var concentrations = data;
-//                    //
-//                    //         document.getElementById("concentration0").innerHTML = concentrations[2];
-//                    //         document.getElementById("concentration10").innerHTML = concentrations[3];
-//                    //         document.getElementById("concentration20").innerHTML = concentrations[4];
-//                    //         document.getElementById("concentration30").innerHTML = concentrations[5];
-//                    //
-//                    //     });
-//                }
-//            });
-//        }
-//    });
-
-//    twoDimCheckbox.onchange = function(){
-//    	if(twoDimCheckbox.checked) {
-//            clearInterval(increaseTiltTimer);
-//            decreaseTiltTimer = setInterval(decreaseTilt, 15);
-//            decreaseTiltTimer;
-//
-//            const output = document.getElementById("output");
-//
-//            output.style.display = "inline";
-//        } else {
-//            clearInterval(decreaseTiltTimer);
-//            increaseTiltTimer = setInterval(increaseTilt, 15);
-//            increaseTiltTimer;
-//
-//            const output = document.getElementById("output");
-//
-//            if (output.style.display !== "none") {
-//                output.style.display = "none";
-//
-//                document.getElementById("longitude").innerHTML = "";
-//                document.getElementById("latitude").innerHTML = "";
-//                document.getElementById("concentration0").innerHTML = "";
-//                document.getElementById("concentration10").innerHTML = "";
-//                document.getElementById("concentration20").innerHTML = "";
-//                document.getElementById("concentration30").innerHTML = "";
-//            }
-//        }
-//    };
-    //***************************************************************************
-
-    
-    //***************************************************************************
     $("#reaction-select").on('change',function () {
         //show a map of reactions
         console.log("select changed");
@@ -176,12 +77,20 @@ $(function(){
     };
 
     $('#start').click(function(){
-        //$('#start').attr("disabled", true);
+    	//$('#start').attr("disabled", true);
+    	
+    	const BERLIN_IRI = "http://dbpedia.org/page/Berlin";
+    	const THE_HAGUE_IRI = "http://dbpedia.org/page/The_Hague";
         
         let xmax = parseInt($('#xupper').val());
         let xmin = parseInt($('#xlower').val());
         let ymax = parseInt($('#yupper').val());
         let ymin = parseInt($('#ylower').val());
+        
+        const lowerx = xmin;
+        const lowery = ymin;
+        const upperx = xmax;
+        const uppery = ymax;
 
 //        approximate becasue texture only work on power2(has to be 1:1,1:2,1:4...)
         [xmin, xmax, ymin, ymax] = appro2ratio(xmin, xmax, ymin, ymax);
@@ -191,15 +100,39 @@ $(function(){
         const coordinatesMid = getMidPoint(coordinatesMin, coordinatesMax);
 
         const location = $("#location option:selected").text();
+        
+        let locationIRI;
+        
+        if (location === "The Hague") {
+        	locationIRI = THE_HAGUE_IRI;
+        } else if (location === "Berlin") {
+        	locationIRI = BERLIN_IRI;
+        }
+        
+        const getBuildingIRIs = (cityiri, buildinglimit, lowerx, lowery, upperx, uppery) => {
+        	return $.getJSON('/JPS/buildings/fromregion',
+	        	{
+	        		cityiri,
+	        		buildinglimit,
+	        		lowerx,
+	        		lowery,
+	        		upperx,
+	        		uppery
+	        	});
+        }
+        
+        $.when(getBuildingIRIs(locationIRI, 25, lowerx, lowery, upperx, uppery)).done(buildingIRIs => {
+        	initadms3dmap(buildingIRIs, [xmin, xmax, ymin, ymax], osmb, location, coordinatesMid, locationIRI);
+        });
          
-        $.ajax('http://www.theworldavatar.com/JPS/ADMSCoordinationAgent?coordinates='+encodeURIComponent(JSON.stringify({'xmin':xmin,'xmax':xmax, 'ymin':ymin, 'ymax':ymax}).replaceAll('"',"'"))).done(function (bdnlist) {
-            //todo: init building
-            initadms3dmap(JSON.parse(bdnlist), [xmin, xmax, ymin, ymax], osmb, location, coordinatesMid);
-            
-        }).fail(function (xhr, testStatus, errorThrown) {
-//            console.log("error")
-        	console.log(xhr.responseText);
-        })
+//        $.ajax('http://www.theworldavatar.com/JPS/ADMSCoordinationAgent?coordinates='+encodeURIComponent(JSON.stringify({'xmin':xmin,'xmax':xmax, 'ymin':ymin, 'ymax':ymax}).replaceAll('"',"'"))).done(function (bdnlist) {
+//            //todo: init building
+//        	console.log(JSON.parse(bdnlist));
+//            initadms3dmap(JSON.parse(bdnlist), [xmin, xmax, ymin, ymax], osmb, location, coordinatesMid);
+//            
+//        }).fail(function (xhr, testStatus, errorThrown) {
+//        	console.log(xhr.responseText);
+//        })
     });
     //***************************************************************************
 
@@ -214,10 +147,10 @@ $(function(){
                 latitude: 52.512997,
                 longitude: 13.385423
             });
-            $("#xlower").val("");
-            $("#xupper").val("");
-            $("#ylower").val("");
-            $("#yupper").val("");
+            $("#xlower").val("699182");
+            $("#xupper").val("699983");
+            $("#ylower").val("532537");
+            $("#yupper").val("533338");
         } else if(location === "The Hague"){
             osmb.setPosition({
                 latitude: 52.076146,
