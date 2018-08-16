@@ -63,6 +63,8 @@ import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 
+
+/** the main function is to replace the coordinate in the template with thee one in csv file*/
 public class Test {
 	
 	//just to switch the coordinate from the template to the real value written in csv

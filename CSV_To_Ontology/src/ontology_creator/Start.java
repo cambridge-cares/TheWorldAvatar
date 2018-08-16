@@ -4,7 +4,11 @@ import java.util.Scanner;
 
 public class Start {
 	
-	/**for the coordinate, use the test.java for replacing the default coordinate to the one written in coordinate.csv*/
+	/**for the coordinate, use the test.java for replacing the default coordinate to the one written in coordinate.csv
+	 * 
+	 * don't use the name of the unit ops' first abbreviation (e.g: R(reactor), T(tower),P(pump), etc....) as the file name of the required files 
+	 * no dash(-) in the 2nd character of the filename of the required files
+	 * */
 	
 	public static void main(String[] args) {
 //		Scanner sc = new Scanner(System.in);
