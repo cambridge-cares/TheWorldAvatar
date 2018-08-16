@@ -462,14 +462,15 @@ public class Stream {
 		
 		/* Add hasMolecularStructure */
 		RDFIndividual molecularStructure;
-		RDFIndividual molecularStructureCheck=owlModel.getRDFIndividual("http://www.jparksimulator.com/"+filename+"#"+componentToMolFormula(component));
+		RDFIndividual molecularStructureCheck=owlModel.getOWLIndividual("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#"+componentToMolFormula(component));
 		if (molecularStructureCheck==null) {
 			molecularStructure = molecularEntity.createRDFIndividual("http://www.jparksimulator.com/"+filename+"#"+componentToMolFormula(component));
+			species.setPropertyValue(hasMolecularStructure, molecularStructure);
 		}
 		else {
 			molecularStructure = molecularStructureCheck;
 		}
-		species.addPropertyValue(hasMolecularStructure, molecularStructure);
+		
 		
 		/* Add hasMacroscopicAppearance */
 		molecularStructure.addPropertyValue(hasMacroscopicAppearance, species);
