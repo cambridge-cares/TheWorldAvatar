@@ -1,3 +1,5 @@
+const listGeoJsonAddedToOSMB = []; // edit
+
 const controlButtonsSetter = osmb => {
     var controlButtons = document.querySelectorAll('.control button');
     for (var i = 0, il = controlButtons.length; i < il; i++) {
@@ -30,6 +32,10 @@ const controlButtonsSetter = osmb => {
 
 const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) => {
 	
+	for(obj of listGeoJsonAddedToOSMB) {
+		obj.destroy();
+	}
+	
 	proj4.defs("EPSG:28992","+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.417,50.3319,465.552,-0.398957,0.343988,-1.8774,4.0725 +units=m +no_defs");
     proj4.defs('WGS84', "+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees");
     
@@ -61,7 +67,7 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) =>
     		const geojson = data;
     		try {
     			// console.log(JSON.stringify(geojson, null, 4));
-    			osmb.addGeoJSON(geojson);
+    			listGeoJsonAddedToOSMB.push(osmb.addGeoJSON(geojson)); // edit
     		} catch (err) {
     			console.log(err.name);
     		}
@@ -69,40 +75,43 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) =>
 
     // --- Rendering 3D building models --- //
 
-//    $.getJSON('/JPS/ADMSHelper',
-//        {
-//            listOfIRIs: JSON.stringify(list)
-//        },
-//        function(data) {
-//            var geojson = data;
-//            var arrayLength = geojson.length;
-//            
-//            for (var i = 0; i < arrayLength; i++) {
-//
-//                try {
-//                    osmb.addGeoJSON(geojson[i]);
-////                    console.log(JSON.stringify(geojson[i], null, 4));
-//                }
-//                catch(err) {
-//                    console.log(err.name)
-//                }
-//            }
-//        });
+    $.getJSON('/JPS/ADMSHelper',
+        {
+            listOfIRIs: JSON.stringify(list),
+            cityiri
+        },
+        function(data) {
+            var geojson = data;
+            var arrayLength = geojson.length;
+            console.log(data);
+            
+            for (var i = 0; i < arrayLength; i++) {
+
+                try {
+                	listGeoJsonAddedToOSMB.push(osmb.addGeoJSON(geojson[i])); // edit
+//                    console.log(JSON.stringify(geojson[i], null, 4));
+                }
+                catch(err) {
+                    console.log(err.name)
+                }
+            }
+        });
     
-    console.log(cityiri);
-    console.log(list);
-    
-    $.getJSON('/JPS/buildings/simpleshape', 
-    	{
-    		cityiri,
-    		buildingiris: JSON.stringify(list)
-    	},
-    	buildingData => {
-    		console.log(buildingData);
-    	})
+//    $.getJSON('/JPS/buildings/simpleshape', 
+//    	{
+//    		cityiri,
+//    		buildingiris: JSON.stringify(list)
+//    	},
+//    	buildingData => {
+//    		console.log(buildingData);
+//    	})
     
     // --- Rendering 3D layer --- //
-    makeRadios('optionwrapper', POL_LIST, 'Select a pollutant:')
+    let optionWrapperNode = document.getElementById("optionwrapper");
+    while(optionWrapperNode.firstChild) {
+    	optionWrapperNode.removeChild(optionWrapperNode.firstChild);
+    }
+    makeRadios('optionwrapper', POL_LIST, 'Select a pollutant:');
     
     var geojson = {
     		type: 'FeatureCollection',
@@ -138,11 +147,17 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) =>
     		console.log('src change to ' + idxSrc)
     		if(preObj) preObj.destroy();
     		preObj =  osmb.addGeoJSON(geojson,{ elevation: HEIGHT_INTERVAL * (idxH), hasTexture:dataurls[idxH*POL_NUM +idxSrc]});
+    		listGeoJsonAddedToOSMB.push(preObj); // edit
         });
         
     	//  var dataurls = data.dataurls, heights =data.heights
         preObj = osmb.addGeoJSON(geojson,{ elevation: 0, hasTexture:dataurls[0]});
+        listGeoJsonAddedToOSMB.push(preObj); // edit
         
+        let sliderWrapperNode = document.getElementById("sliderwrapper");
+        while(sliderWrapperNode.firstChild) {
+        	sliderWrapperNode.removeChild(sliderWrapperNode.firstChild);
+        }
         //init at zero position
         makeSlider('sliderwrapper', HEIGHT_NUM, function (event, ui) {
         	if(preObj) preObj.destroy();
@@ -151,7 +166,7 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) =>
 
             console.log('sliderto ' + idxH)
             preObj =  osmb.addGeoJSON(geojson,{ elevation: HEIGHT_INTERVAL * (idxH), hasTexture:dataurls[idxH*POL_NUM +idxSrc]});
-            
+            listGeoJsonAddedToOSMB.push(preObj);
         })
     }, err => {console.log(err)})
     //***************************************************************************

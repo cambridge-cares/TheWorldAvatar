@@ -43,7 +43,8 @@ public class ADMSPowerPlantGetter extends HttpServlet {
 			powerplantKnowledgeBase = WORKINGDIR_ADMS_PATH + "/Plant-001.owl";
 		} else if (location.equals("Berlin")) {
 			powerPlantIRI = "http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002";
-			epsg = "epsg:25833";
+//			epsg = "epsg:25833";
+			epsg = "epsg:28992";
 			powerplantKnowledgeBase = WORKINGDIR_ADMS_PATH + "/Heizkraftwerk_Mitte.owl";
 		}
 		

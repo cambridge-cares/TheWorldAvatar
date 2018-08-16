@@ -15,10 +15,10 @@ function getContourMaps(address) {
     return new Promise((resolve, reject) => {
         
         $.ajax({
-  url: address,
-  dataType: 'text'
-})//todo: change to actual endpoint in future,
-            .done(function (d2result) {
+        	url: address,
+        	dataType: 'text'
+        })//todo: change to actual endpoint in future,
+        .done(function (d2result) {
                 console.log('get contour data')
                   d2result = JSON.parse(d2result)
             
@@ -26,7 +26,8 @@ function getContourMaps(address) {
                 //heights=   d2result.heights = [1.1,2.2,3.3,4.4,5.5]
     
                 //=============contour consts======================//
-                const thresholds = d3.range(0, THRESHOULD_NUM)
+                
+                  const thresholds = d3.range(0, THRESHOULD_NUM)
                     .map(function (p) {
                         return Math.pow(4, p);
                     });//todo: custom this, need to know output features
@@ -35,10 +36,17 @@ function getContourMaps(address) {
                     .domain([1, middle, d3.max(thresholds)])
                     .range(['#3986ce', '#fee08b', '#d73027'])
                     .interpolate(d3.interpolateLab);
+                
                 //=============legend ======================//
-                makeLegend(LEGEND_DIV, thresholds, color)
+                
+                let legendWrapperNode = document.getElementById("legendwrapper");
+                while(legendWrapperNode.firstChild) {
+                	legendWrapperNode.removeChild(legendWrapperNode.firstChild);
+                }
+                makeLegend(LEGEND_DIV, thresholds, color);
                 
                 //=============contour map as svg for each  ======================//
+                
                 d2result = d2Arr21d(d2result);//to 1d
                 let svgstrs = d2result.map((output) => {
                     var svg = d3.select("#svgwrapper svg"),
@@ -69,22 +77,25 @@ function getContourMaps(address) {
                 
                 
                 //=========set up canvas for image conversion=========================//
-               // var newCanvas = $('<canvas/>', {'id': 'drawcanvas'})
+               
+                // var newCanvas = $('<canvas/>', {'id': 'drawcanvas'})
                 //    .width(2048)//todo: customize size
                  //   .height(2048);
                 //$('body').append(newCanvas);
                 var canvas = $('#drawcanvas')[0];
                 var context = canvas.getContext('2d');
-    						context.translate(canvas.width, 0);
-
-						context.scale(-1,1);
+    			
+                context.translate(canvas.width, 0);
+				context.scale(-1,1);
 
                 //========convert all svg strs to png images=============//
-                let futureImages = svgstrs.map((svgstr) => {
+                
+				let futureImages = svgstrs.map((svgstr) => {
                     return svgToImagePromise(svgstr)
                 })
                 
                 //======parse all image to dataurls=====================/
+                
                 Promise.all(futureImages).then(images => {
                     let dataurls = images.map((image) => {
 

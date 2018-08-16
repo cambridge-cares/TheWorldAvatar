@@ -10,18 +10,14 @@ import os
 from caresjpsutil import returnExceptionToJava, returnResultsToJava
 from caresjpsutil import PythonLogger
 
-owlCRS = Proj(init='epsg:28992')
-osmCRS = Proj(init='epsg:4326')
-
-def sparqlQuery(queryString):
-    
-    sparql = SPARQLWrapper("http://www.theworldavatar.com/damecoolquestion/buildingsLite/sparql")
+def sparqlQuery(queryString, sparqlEndPoint):
+    sparql = SPARQLWrapper(sparqlEndPoint)
     sparql.setQuery(queryString)
     sparql.setReturnFormat(JSON)
 
     return sparql.query().convert()
 
-def sparqlBuildingCoordinates(building):
+def sparqlBuildingCoordinates(building, sparqlEndPoint):
     
     queryString = '''
 
@@ -76,11 +72,11 @@ def sparqlBuildingCoordinates(building):
             ORDER BY ?polygon ?points
     '''.format(building)
     
-    return sparqlQuery(queryString)
+    return sparqlQuery(queryString, sparqlEndPoint)
 
 
 # graph as first parameter
-def sparqlBuildingHeights(building):
+def sparqlBuildingHeights(building, sparqlEndPoint):
     
     queryString = """
         PREFIX p3: <http://www.theworldavatar.com/CityGMLOntology.owl#>
@@ -97,7 +93,7 @@ def sparqlBuildingHeights(building):
 
         """.format(building)
         
-    return sparqlQuery(queryString)
+    return sparqlQuery(queryString, sparqlEndPoint)
 
 def writeFile(buildingCoordinates):
     f = open("output.txt", "w")
@@ -125,7 +121,7 @@ def readFromJSONFile(fileName):
 def getBuildingHeights(buildingHeight):
     return float(buildingHeight[0]['numericalValue']['value'])
 
-def getBuildingCoordinates(buildingCoordinates):
+def getBuildingCoordinates(buildingCoordinates, owlCRS, osmCRS):
     building = []
     polygon = []
 
@@ -189,7 +185,18 @@ def getGeoJSON(listBuildingCoordinates, listBuildingHeights):
 def return_buildings():
     
     listOfIRIs = json.loads(sys.argv[1])
-
+    cityiri = sys.argv[2]
+    sparqlEndPoint = None
+    owlCRS = None
+    osmCRS = Proj(init='epsg:4326')
+    
+    if cityiri == "http://dbpedia.org/page/The_Hague":
+        owlCRS = Proj(init='epsg:28992')
+        sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/thehaguebuildings/sparql"
+    elif cityiri == "http://dbpedia.org/page/Berlin":
+        owlCRS = Proj(init='epsg:25833')
+        sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/berlinbuildings/sparql"
+    
     if listOfIRIs == []:
         raise ValueError("EMPTY ARRAY")
 
@@ -201,12 +208,12 @@ def return_buildings():
 
     for building in listOfIRIs:
 
-        buildingHeight = sparqlBuildingHeights(building)["results"]["bindings"]
+        buildingHeight = sparqlBuildingHeights(building, sparqlEndPoint)["results"]["bindings"]
         height = getBuildingHeights(buildingHeight)
         listBuildingHeights.append(height)
 
-        buildingCoordinates = sparqlBuildingCoordinates(building)["results"]["bindings"]
-        coordinates = getBuildingCoordinates(buildingCoordinates)
+        buildingCoordinates = sparqlBuildingCoordinates(building, sparqlEndPoint)["results"]["bindings"]
+        coordinates = getBuildingCoordinates(buildingCoordinates, owlCRS, osmCRS)
         listBuildingCoordinates.append(coordinates)
 
 
