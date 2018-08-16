@@ -34,7 +34,8 @@ public class ADMSStarter extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String res = startADMS();
+		String targetFolder = request.getParameter("targetFolder");
+		String res = startADMS(targetFolder);
 		response.getWriter().write(res);
 	}
 
@@ -48,15 +49,11 @@ public class ADMSStarter extends HttpServlet {
 		doGet(request, response);
 	}
 
-	public String startADMS() {
+	public String startADMS(String targetFolder) {
 		// ServletContext context = getServletContext();
 		String startADMSCommand = "\"C:\\Program Files (x86)\\CERC\\ADMS 5\\ADMSModel.exe\" /e2 /ADMS \"test.apl\"";
-		ServletContext context = getServletContext();
-		String targetFolder = AgentLocator.getPathToWorkingDir(this) + "/ADMS"; // execute adms within the target folder
-																				// where the input file is generated in
-																				// the previous step
 		CommandHelper.executeSingleCommand(targetFolder, startADMSCommand);
-		return "Started ADMS";
+		return targetFolder;
 	}
 
 }

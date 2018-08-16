@@ -2,6 +2,37 @@ import { retrieveSelectedPlantParams } from "./plantparams-handler.js";
 import { processInputs } from "./mods-handler.js";
 
 $(document).ready(function(){
+	
+	//-----------------------------------------------------------------------------------//
+	
+	const toggleDisplay = elemId => {
+        let x = document.getElementById(elemId);
+        if (x.style.display !== 'block') {
+            x.style.display = 'block';
+        } else {
+            x.style.display = 'none';
+        }
+    };
+
+    $("#readme-button").click(function() {
+        toggleDisplay("readme-text");
+    });
+
+    document.addEventListener("click", function(evt) {
+        var readmeButtonElement = document.getElementById('readme-button'),
+            readmeTextElement = document.getElementById('readme-text'),
+            targetElement = evt.target;  // clicked element
+
+        if (targetElement == readmeButtonElement || targetElement == readmeTextElement) {
+            return; //readme-button or readme-text is clicked. do nothing.
+        }
+
+        if(readmeTextElement.style.display === 'block') {
+            readmeTextElement.style.display = 'none';
+        }
+    });
+    
+    //-----------------------------------------------------------------------------------//
 
 	document.getElementById("plantSelection").addEventListener("change", retrieveSelectedPlantParams);
 	document.getElementById("startSimButton").addEventListener("click", processInputs, false);

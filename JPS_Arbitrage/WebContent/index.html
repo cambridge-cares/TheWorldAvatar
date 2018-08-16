@@ -30,6 +30,29 @@
 			additional profit by analysing the futures market prices for
 			both the reagent and the product.
 		</p>
+		<span id="readme-button">?</span>
+		<span id="readme-text">This agent has considered the chemical processes of converting natural gas into methanol 
+		and crude palm oil and methanol into biodiesel and glycerol for an automated arbitrage spotter. The arbitrage spotter searches for opportunities to make additional profit by analysing the futures 
+		market prices for both the reagent and the product, while taking into consideration the cost of storage and 
+		production (steam, electricity, cooling water, process water and fuel gas) derived from simulations of the 
+		chemical process. 
+		To reduce the computation time for the simulation, approximation models were developed for the chemical 
+		processes. 
+		<br/><br/>The futures market prices are sourced from the Chicago Mercantile Exchange (https://www.cmegroup.com)
+		for natural gas, crude palm oil and biodiesel, and Zhengzhou Commodity Exchange (http://english.czce.com.cn) for methanol. 
+		The latest futures market prices data is retrieved every time the arbitrage spotter is executed (graphs on the 
+		left).
+		<br/>The necessary currency conversions between CNY-USD and SGD-USD were computed using the latest exchange 
+		rates data sourced from the XE Currency Converter (https://www.xe.com/currencyconverter/). 
+		<br/><br/>The user can modify the chemical process of interest by selecting from the dropdown list and executing the 
+		simulation to determine the recommendation. 
+		<br/>The user can also modify the price of cooling water, fuel gas, 
+		electricity and the flow rate of crude palm oil for the biodiesel plant or flow rate of natural gas for the 
+		methanol plant. 
+		<br/><br/>The arbitrage spotter would compute the highest marginal profit for the product, the ratio of 
+		reagent to product at which the future contracts need to be accepted, the delivery date on which the reagent’s 
+		future contracts should be purchased and the delivery date on which the product’s future contracts should be 
+		sold.</span>
 	</div>
 	
 	<div class="content container">
