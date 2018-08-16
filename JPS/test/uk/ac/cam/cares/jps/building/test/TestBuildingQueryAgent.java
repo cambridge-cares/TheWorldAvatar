@@ -109,6 +109,7 @@ public class TestBuildingQueryAgent extends TestCase {
 		System.out.println("building data =  \n" + buildingData);
 		
 		String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
+		System.out.println(targetFolder);
 		String result = CommandHelper.executeCommands(targetFolder, args);
 	
 		System.out.println("Python result: \n" + result);

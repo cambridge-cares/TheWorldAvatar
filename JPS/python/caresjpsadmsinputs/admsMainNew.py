@@ -66,7 +66,6 @@ if __name__ == "__main__":
     # AE
     #writer = admsAplWriter(result, "..\..\workingdir\ADMS\test.apl")
     writer = admsAplWriter(result, sys.argv[3] + '\\test.apl')
-
     writer.write()
     
     print('finished admsAplWriter')

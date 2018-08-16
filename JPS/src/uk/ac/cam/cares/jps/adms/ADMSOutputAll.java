@@ -41,10 +41,8 @@ public class ADMSOutputAll extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		
-//		String outputFile = "C:/TOMCAT/webapps/JPS/workingdir/ADMS/test.levels.gst";
-		
+	
 		String outputFile = AgentLocator.getPathToWorkingDir(this) + "/ADMS/test.levels.gst";
-		
 		String result = PythonHelper.callPython("caresjpsadmsinputs/gstReader.py", outputFile, "4", "5", "", this);
 		
 //		ArrayList<String> args  = new ArrayList<String>();
@@ -57,10 +55,7 @@ public class ADMSOutputAll extends HttpServlet {
 //		String targetFolder = "C:/TOMCAT/webapps/JPS/python/caresjpsadmsinputs";
 //		String result = CommandHelper.executeCommands(targetFolder, args);
 		logger.info("=== Result === :" + result);
-
-		
 		response.setContentType("application/json");
-
 		response.getWriter().write(result);
 	}
 

@@ -733,7 +733,7 @@ class admsAplWriter(object):
     #main function
     def write(self):
         #if contains this data, execute the corresponding writing function
-        with open('../../workingdir/ADMS/test.apl', 'w') as file:
+        with open(self.address, 'w') as file:
             self.writeStr(file, HEADER)
             self.writeStr(file,SUP)
             self.writeTemp(file,MET,[self.data['Met']])
