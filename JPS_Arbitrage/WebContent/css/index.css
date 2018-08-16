@@ -1,3 +1,42 @@
+body {
+    overflow-x: hidden;
+}
+
+#readme-button {
+    cursor: pointer;
+    color: white;
+    background: transparent;
+
+    position: absolute;
+    top: 55px;
+    right: 690px;
+    font-size: 20px;
+    width: 30px;
+
+    border: 2px solid white;
+    border-radius: 50%;
+}
+
+#readme-text {
+    display: none;
+    box-sizing: border-box;
+    height: 271px;
+    width: 709px;
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 5px 5px;
+
+    position: absolute;
+    top: 32px;
+    right: 6px;
+
+    background: white;
+    z-index: 1;
+
+    text-align: left;
+    overflow-y: scroll;
+}
+
 /* top-banner */
 #topBanner {
     background-color: #10616C;
