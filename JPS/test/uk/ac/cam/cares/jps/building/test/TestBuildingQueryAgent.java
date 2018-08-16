@@ -51,10 +51,15 @@ public class TestBuildingQueryAgent extends TestCase {
 		
 		double plantx = 79831;
 		double planty = 454766;
-		double lowerx = plantx - 100;
-		double lowery = planty - 100;
-		double upperx = plantx + 100;
-		double uppery = planty + 200;
+//		double lowerx = plantx - 100;
+//		double lowery = planty - 100;
+//		double upperx = plantx + 100;
+//		double uppery = planty + 200;
+		
+		double lowerx = plantx - 400;
+		double lowery = planty - 400;
+		double upperx = plantx + 400;
+		double uppery = planty + 400;
 
 		startIntegrationWithPython(city, plant, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
 		
