@@ -35,7 +35,27 @@ public class BuildingQueryAgent extends HttpServlet {
 			double lowery = Double.valueOf(req.getParameter("lowery"));
 			double upperx = Double.valueOf(req.getParameter("upperx"));
 			double uppery = Double.valueOf(req.getParameter("uppery"));
-			List<String> buildingIRIs = performer.performQueryBuildingsFromRegion(cityIRI, buildingLimit, lowerx, lowery, upperx, uppery);
+			
+			double plantx = 79831;
+			double planty = 454766;
+			
+			if(cityIRI.equalsIgnoreCase(BuildingQueryPerformer.THE_HAGUE_IRI)) {
+				plantx = 79831;
+				planty = 454766;
+			}
+			else {
+				String sourceCRS = CRSTransformer.EPSG_25833; // Berlin
+				double[] sourceCenter = new double[]{392825, 5819122};
+				String targetCRS = CRSTransformer.EPSG_28992; // The Hague
+				double[] targetCenter = CRSTransformer.transform(sourceCRS, targetCRS, sourceCenter);
+				plantx = targetCenter[0];
+				planty = targetCenter[1];
+			}
+			
+			
+			
+			//List<String> buildingIRIs = performer.performQueryBuildingsFromRegion(cityIRI, buildingLimit, lowerx, lowery, upperx, uppery);
+			List<String> buildingIRIs = performer.performQueryClosestBuildingsFromRegion(cityIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
 			String message = new Gson().toJson(buildingIRIs);
 			print(resp, message);
 			
