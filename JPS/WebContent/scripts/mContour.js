@@ -168,6 +168,8 @@ function makeLegend(selector_id, thresholds, color) {
 
     var svg = d3.select("#"+selector_id )
         .append("svg")
+		.style("height", "155px")
+		.style("width", "160px")
   console.log(svg);
     
     svg.append("g")
@@ -181,7 +183,8 @@ function makeLegend(selector_id, thresholds, color) {
     
     svg.select(".legendQuant")
         .call(legend);
-
+		
+	$("text.label").append(" \u03BCg/m\u00B3"); // micrograms/meter^3
 }
 
 function makeSlider(selector_id, levelnum, callback){

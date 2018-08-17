@@ -152,21 +152,23 @@ $(function(){
 //        approximate becasue texture only work on power2(has to be 1:1,1:2,1:4...)
         [xmin, xmax, ymin, ymax] = appro2ratio(xmin, xmax, ymin, ymax);
 
-        const coordinatesMin = getOSMPoint(xmin, ymin);
-        const coordinatesMax = getOSMPoint(xmax-5000,ymax-5000);
-        const coordinatesMid = getMidPoint(coordinatesMin, coordinatesMax);
-
         const location = $("#location option:selected").text();
         
         let locationIRI;
+        const coordinatesMin = getOSMPoint(lowerx, lowery);
+		let coordinatesMax;
         
         if (location === "The Hague") {
         	locationIRI = THE_HAGUE_IRI;
+			coordinatesMax = getOSMPoint(upperx-5000, uppery-5000);
         } else if (location === "Berlin") {
         	locationIRI = BERLIN_IRI;
+			coordinatesMax = getOSMPoint(upperx, uppery)
         }
+
+        const coordinatesMid = getMidPoint(coordinatesMin, coordinatesMax);
         
-        const getBuildingIRIs = (cityIRI, buildinglimit, lowerx, lowery, upperx, uppery) => {
+        const getBuildingIRIs = (cityIRI, lowerx, lowery, upperx, uppery) => {
         	return $.getJSON('/JPS/ADMSCoordinationAgentNew',
 	        	{
 	        		cityIRI,

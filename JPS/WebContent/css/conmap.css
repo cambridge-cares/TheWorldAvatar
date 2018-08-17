@@ -18,3 +18,24 @@
 body{
     position: relative;
 }
+
+.choice.container {
+    width: 500px;
+}
+
+div.row {
+    margin-left: -15px;
+    width: 487px;
+}
+
+div#sliderwrapper {
+	width: 82px;
+}
+
+div#optionwrapper {
+    width: 245px;
+}
+
+div#legendwrapper {
+    width: 160px;
+}
