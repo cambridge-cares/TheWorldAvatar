@@ -10,11 +10,23 @@ public class MoleculeProperty {
 	
 	public MoleculeProperty() {}
 	
-	public MoleculeProperty(String moleculeId, String moleculeName) {
+	public MoleculeProperty(String moleculeId, String moleculeName, String numberOfAtoms) {
+		
+		this.moleculeId=moleculeId;
+		this.moleculeName=moleculeName;
+		this.numberOfAtoms=numberOfAtoms;
+	}
+
+public MoleculeProperty(String moleculeId, String moleculeName) {
 		
 		this.moleculeId=moleculeId;
 		this.moleculeName=moleculeName;
 	}
+
+public MoleculeProperty(String moleculeName) {
+	
+	this.moleculeName=moleculeName;
+}
 
 	public String getMoleculeId() {
 		return moleculeId;

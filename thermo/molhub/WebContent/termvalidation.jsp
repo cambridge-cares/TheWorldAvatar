@@ -20,7 +20,7 @@ td {width:100%;float:left;clear:left; white-space:pre }
 
 <p>Your propositional formula is: <s:property value="formula" /> </p>
 
-<p>Your periodic table element is: <s:property value="periodicTableElement" /> </p>
+<p>Your periodic table elements are: <s:property value="periodicTableElement" /> </p>
 
 <p>Is propositional formula satisfiable (true in at least one valuation)? : <s:property value="satisfiable" /></p>
 

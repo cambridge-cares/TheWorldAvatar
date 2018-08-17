@@ -40,7 +40,7 @@ public class ConnectionToTripleStore {
 	 * @return the SPARQL end point (instance of class RepositoryConnection) 
 	 * 
 	 */
-	public static RepositoryConnection getSPARQLRepositoryConnection(String serverUrl, String graphName) {
+	public static RepositoryConnection getSPARQLRepositoryConnection(String serverUrl) {
 		
 		Repository repository = new SPARQLRepository(serverUrl);		
 		repository.initialize();	

@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.TupleQuery;
@@ -20,219 +19,141 @@ import uk.ac.ceb.como.molhub.bean.MoleculeProperty;
 import uk.ac.ceb.como.molhub.controler.ConnectionToTripleStore;
 
 public class QueryManager {
-	
+
 	/** The server url. */
 	static String serverUrl = "http://localhost:8080/rdf4j-server/repositories/compchemkb";
-	
+
 	static Set<MoleculeProperty> finalSearchResultSet = new HashSet<MoleculeProperty>();
-	
-	public static Set<MoleculeProperty> performQuery(Sentence sentence ) {
-   
-	Set<Clause> clauseSet = SentenceManager.getClauseSet(sentence);
-	
-	EmpiricalFormulaParser empiricalFormulaParser = new EmpiricalFormulaParser();	
-	
-	try (RepositoryConnection connection = ConnectionToTripleStore.getSPARQLRepositoryConnection(serverUrl,"compchemkb")) {
-		
-		for (Clause c : clauseSet) {
-			
-//			if(!c.isTautology()) {
-				
-				Set<Literal> literalSet = c.getLiterals();
-				
-				Set<MoleculeProperty> literalUnionSet = new HashSet<MoleculeProperty>();
-				
-				for (Literal literal : literalSet) {
-					
-					String atomName = empiricalFormulaParser
-							.getAtomName(literal.getAtomicSentence().toString());
-					int numberOfAtoms = empiricalFormulaParser
-							.getNumberOfAllAtoms(literal.getAtomicSentence().toString());
-					
-					String queryString = QueryManager.getQueryForPositiveLiteral(atomName,numberOfAtoms);
 
-					TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL,queryString);
-					
-					TupleQueryResult result = tupleQuery.evaluate();
-					
-					try (TupleQueryResult resultSet = tupleQuery.evaluate()) {
+	public static List<MoleculeProperty> performListQuery(Sentence sentence) {
+
+		Set<Clause> clauseSet = SentenceManager.getClauseSet(sentence);
+
+		EmpiricalFormulaParser empiricalFormulaParser = new EmpiricalFormulaParser();
+
+		List<MoleculeProperty> qResult = new ArrayList<MoleculeProperty>();
+
+		try (RepositoryConnection connection = ConnectionToTripleStore.getSPARQLRepositoryConnection(serverUrl)) {
+
+			for (Clause c : clauseSet) {
+
+				if (!c.isTautology()) {
+
+					Set<Literal> literalSet = c.getLiterals();					
+
+					for (Literal literal : literalSet) {
+
+						String queryString = "";
+						/**
+						 * @author nk510 Returns atom name by parsing each literal in clause. Here we use {@author pb556} parser.
+						 */
+						String atomName = empiricalFormulaParser.getAtomName(literal.getAtomicSentence().toString());
+
+						/**
+						 * @author nk510 Returns number of atoms by parsing literal in clause. Here we use {@author pb556} parser.
+						 */
+						int numberOfAtoms = empiricalFormulaParser.getAtomSum(literal.getAtomicSentence().toString());
 						
-						while (resultSet.hasNext()) { // iterate over the result
-							
-							BindingSet bindingSet = result.next();
-							
-							Value valueOfG09 = bindingSet.getValue("x");
+						/**
+						 * @author nk510
+						 * If literal is positive then query manager returns sparql query string that will query those molecule name containing atom name and selected number of atoms.
+						 */
+						if(literal.isPositiveLiteral()) {
+
+						queryString = QueryManager.getAllTriplesForPositiveLiteral(atomName, numberOfAtoms);
 						
-							Value valueOfMoleculeName = bindingSet.getValue("y");   
-							
-							MoleculeProperty moleculeProperty = new MoleculeProperty(valueOfG09.toString(), valueOfMoleculeName.toString());
-							
-							Set<MoleculeProperty> setOfLiterals = new HashSet<MoleculeProperty>();
-							
-							setOfLiterals.add(moleculeProperty);
-						
-							literalUnionSet.addAll(setOfLiterals);						
-														
 						}
 						
+						if(literal.isNegativeLiteral()) {
 						
-					} catch (Exception e) {
+						queryString = QueryManager.getAllTriplesForNegativeLiteral(atomName, numberOfAtoms);
 						
-						e.getMessage();
+						}
+						TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+
+						try (TupleQueryResult result = tupleQuery.evaluate()) {
+
+							/**
+							 * @author nk510 Evaluates sparql query and populates 'MoleculeProperty' bean.
+							 * 
+							 */
+							while (result.hasNext()) {
+
+								BindingSet bindingSet = result.next();
+
+								MoleculeProperty moleculeProperty = new MoleculeProperty();
+
+								moleculeProperty.setMoleculeName(bindingSet.getValue("name").toString());
+
+								qResult.add(moleculeProperty);
+							}
+
+						} catch (Exception e) {
+
+							e.getMessage();
+						}
 					}
-					
-					
-					finalSearchResultSet.retainAll(literalUnionSet);
-					
 				}
-//			}
-			
-		}
-		
-		connection.close();
-		
-		
-		return finalSearchResultSet;
+				
+			}
 
-	}	
-}
-
-public static List<MoleculeProperty> performListQuery(Sentence sentence ) {
-	
-	Set<Clause> clauseSet = SentenceManager.getClauseSet(sentence);
-	
-	EmpiricalFormulaParser empiricalFormulaParser = new EmpiricalFormulaParser();
-	
-	List<MoleculeProperty> qResult = new ArrayList<MoleculeProperty>() ;
-	
-	try (RepositoryConnection connection = ConnectionToTripleStore.getSPARQLRepositoryConnection(serverUrl,"compchemkb")) {
-		
-		for (Clause c : clauseSet) {
-			
-//			if(!c.isTautology()) {
-				
-				Set<Literal> literalSet = c.getLiterals();
-				
-				Set<MoleculeProperty> literalUnionSet = new HashSet<MoleculeProperty>();
-				
-				for (Literal literal : literalSet) {
-					
-					String atomName = empiricalFormulaParser
-							.getAtomName(literal.getAtomicSentence().toString());
-					
-					/**
-					 * @author nk510
-					 * ova metoda ne vraca broj atoma za dati atomski broj nego daje zbir svih atoma u molekulu.
-					 */
-					int numberOfAtoms = empiricalFormulaParser
-							.getNumberOfAllAtoms(literal.getAtomicSentence().toString());
-					
-//					String queryString = QueryManager.getQueryForPositiveLiteral(atomName,numberOfAtoms);
-					
-					String queryString = QueryManager.getQueryForMoleculeName(atomName, numberOfAtoms);
-//					String queryString = QueryManager.getQueryForNegativeLiteral(atomName, numberOfAtoms);
-					
-					TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL,queryString);
-					
-					TupleQueryResult result = tupleQuery.evaluate();
-					
-					try (TupleQueryResult resultSet = tupleQuery.evaluate()) {
-						
-						List<String> bindingNames = result.getBindingNames();
-						
-						while (resultSet.hasNext()) { // iterate over the result
-							
-							BindingSet bindingSet = result.next();
-							
-							Value valueOfG09 = bindingSet.getValue(bindingNames.get(0));						
-							
-							Value valueOfMoleculeName = bindingSet.getValue(bindingNames.get(1));
-							
-							MoleculeProperty moleculeProperty = new MoleculeProperty();
-							
-							moleculeProperty.setMoleculeId(valueOfG09.toString());
-							
-							moleculeProperty.setMoleculeName(valueOfMoleculeName.toString());
-							
-							Set<MoleculeProperty> setOfLiterals = new HashSet<MoleculeProperty>();
-							
-							setOfLiterals.add(moleculeProperty);
-						
-							literalUnionSet.addAll(setOfLiterals);
-							
-							qResult.add(moleculeProperty);
-							
-						}
-						
-					} catch (Exception e) {
-						
-						e.getMessage();
-					}				
-					
-					finalSearchResultSet.retainAll(literalUnionSet);
-				}
-//			}
-			
+			return qResult;
 		}
-		
-		return  qResult;
 	}
-}
 
-public static String getQueryForPositiveLiteral(String atomName, int numberOfAtoms) {
+	/**
+	 * @author nk510
+	 * @param atomName
+	 *            name of literal that represents atom name from periodic table
+	 * @param atomNumber
+	 *            number of atoms which appear in a molecule for give atom name
+	 * @return Query as a String. Result of that query should be all molecule names
+	 *         which contain atom name and number of atoms for given atom name.
+	 */
 	
-	String atomNumber = String.valueOf(numberOfAtoms);
-	
-	String queryForPositiveLiteral = "SELECT ?numberOfAtoms ?mname  "
-			+ "WHERE { "
-			+ "?g <http://ontochem.theworldavatar.com/kb/OntoChem.owl#hasInitialization> ?mn . "
-			+ "?mn <http://purl.org/gc/hasMoleculeProperty> ?mp . "
-			+ "?mp <http://purl.org/gc/hasName> ?mname . "
-			+ "?mp <http://purl.org/gc/hasMolecule> ?mol . "
-			+ "?mol <http://purl.org/gc/hasNumberOfAtoms> ?numberOfAtoms .  "
-			+ "?mol <http://purl.org/gc/hasAtom> ?x . "
-			+ "?x <http://purl.org/gc/isElement> <http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"+atomName+">. "
-			+ "FILTER(str(?numberOfAtoms)='"+atomNumber+"')} "
-			+ "LIMIT 50";
-	
-	return queryForPositiveLiteral;
-}
+	public static String getAllTriplesForPositiveLiteral(String atomName, int atomNumber) {
 
-public static String getQueryForNegativeLiteral(String atomName, int numberOfAtoms) {
-	
-	atomName= atomName.toString().replaceAll("\\s+","");
-	
-	String queryForNegativeLiteral = "SELECT ?g09 ?mname" 
-			+"WHERE {"   
-			+"?g09 <http://ontochem.theworldavatar.com/kb/OntoChem.owl#hasInitialization> ?mn ."  
-			+"?mn <http://purl.org/gc/hasMoleculeProperty> ?mp .  " 
-			+"?mp <http://purl.org/gc/hasName> ?mname ." 
-			+"?mp <http://purl.org/gc/hasMolecule> ?mol ." 			
-			+"?mol <http://purl.org/gc/hasNumberOfAtoms> ?nAtoms."  
-			+"?mol <http://purl.org/gc/hasAtom> ?at ." 
-			+"?at <http://purl.org/gc/isElement> <http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"+atomName+">."  
-			+"}"
-			+ "LIMIT 10";
-	
-	return queryForNegativeLiteral;
-}
-//"FILTER(regex(str(?atomName),http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"+atomName+"))\r\n" +
-//"?mp1 gc:hasName ?moleculeName . " + 
+		String query = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
+		        + "PREFIX gc: <http://purl.org/gc/>"
+		        + "PREFIX ontochem: <http://ontochem.theworldavatar.com/kb/OntoChem.owl#>"
+				+ "SELECT ?name " 
+				+ "WHERE { "
+                + "?s ontochem:hasInitialization ?in . "
+                + "?in gc:hasMoleculeProperty ?mp . "
+                + "?mp gc:hasName ?name ."
+                + "?mp gc:hasMolecule ?molecule ."
+                + "?molecule gc:hasAtom ?atom. "
+                + "?atom gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#" + atomName + ">."
+                + "?molecule gc:hasNumberOfAtoms ?n ." 
+                + "FILTER(str(?n)='" + atomNumber + "') ."
+				+ "}";
 
-public static String getQueryForMoleculeName(String atomName, int atomNumber) {
+		return query;
+	}
+
+	public static String getAllTriplesForNegativeLiteral(String atomName, int atomNumber) {
+
+		String query = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
+		        + "PREFIX gc: <http://purl.org/gc/>"
+		        + "PREFIX ontochem: <http://ontochem.theworldavatar.com/kb/OntoChem.owl#>"
+				+ "SELECT ?name " 
+				+ "WHERE { "
+                + "?s ontochem:hasInitialization ?in . "
+                + "?in gc:hasMoleculeProperty ?mp . "
+                + "?mp gc:hasName ?name ."
+                + "FILTER NOT EXISTS { "
+                + "?mp gc:hasMolecule ?molecule ."
+                + "?molecule gc:hasAtom ?atom. "                
+                + "?molecule gc:hasNumberOfAtoms ?n ."
+                + "?atom gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#" + atomName + ">."                
+                + "FILTER(str(?n)='" + atomNumber + "') ."
+                + "}"
+				+ "}";
+
+		return query;
+	}
+
 	
-	String queryForNegativeLiteral = "SELECT ?g09 ?mname"
-			+ " WHERE { "
-			+ "?g09 <http://ontochem.theworldavatar.com/kb/OntoChem.owl#hasInitialization> ?mn . "
-			+ "?mn <http://purl.org/gc/hasMoleculeProperty> ?mp . "
-			+ "?mp <http://purl.org/gc/hasName> ?mname ."
-			+ "}"
-			+ "LIMIT 20";
+
 	
-	return queryForNegativeLiteral;
-}
-
-
-
-
 }

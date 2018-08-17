@@ -19,13 +19,12 @@ import aima.core.logic.propositional.parsing.ast.Sentence;
 
 import uk.ac.cam.ceb.como.chem.periodictable.Element;
 import uk.ac.cam.ceb.como.chem.periodictable.PeriodicTable;
-import uk.ac.cam.ceb.como.io.chem.file.parser.formula.EmpiricalFormulaParser;
 import uk.ac.ceb.como.molhub.bean.MoleculeProperty;
 import uk.ac.ceb.como.molhub.bean.Term;
 import uk.ac.ceb.como.molhub.model.QueryManager;
 import uk.ac.ceb.como.molhub.model.SentenceManager;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class TermValidationAction.
  */
@@ -49,6 +48,9 @@ public class TermValidationAction extends ActionSupport {
 	Set<MoleculeProperty> finalSearchResultSet = new HashSet<MoleculeProperty>();
 	
 	List<MoleculeProperty> queryResult;
+	
+	
+	
 
 	/*
 	 * (non-Javadoc)
@@ -63,7 +65,6 @@ public class TermValidationAction extends ActionSupport {
 		DPLL dpll = new DPLLSatisfiable();
 
 		String periodicTableSymbol = null;
-		EmpiricalFormulaParser empiricalFormulaParser = new EmpiricalFormulaParser();
 
 		try {
 
@@ -115,13 +116,13 @@ public class TermValidationAction extends ActionSupport {
 					 *         we use <b>{@author pb556}</b> parser.
 					 * 
 					 */
-//empiricalFormulaParser.getAtomName(ppSymbol.getSymbol().toString())
+
 					Element elementSymbol = PeriodicTable
 							.getElementBySymbol(periodicTableSymbol);
 
 					if (elementSymbol.getSymbol() == null) {
 
-						addFieldError("term.name", "There is at least one propositional letter (" + ppSymbol.getSymbol()
+						addFieldError("term.name", "There is at least one propositional letter (" + periodicTableSymbol
 								+ ") that is not member of periodic table.");
 
 						return ERROR;
@@ -139,17 +140,14 @@ public class TermValidationAction extends ActionSupport {
 			 *         (DPLL) procedure.
 			 * 
 			 */
+			
 			setSatisfiable(dpll.dpllSatisfiable(sentence));
 
 			if (dpll.dpllSatisfiable(sentence)) {
 
 				setFormula(getSearchTerm(term));
 				
-				try {
-				
-//					setFinalSearchResultSet(QueryManager.performQuery(sentence));
-					
-//					setQueryResult(QueryManager.performListQuery(sentence));
+				try {			
 					
 					queryResult = new ArrayList<MoleculeProperty>();
 					
@@ -160,11 +158,6 @@ public class TermValidationAction extends ActionSupport {
 						queryResult.add(new MoleculeProperty(mpp.getMoleculeId(),mpp.getMoleculeName()));
 					}
 					
-//					MoleculeProperty mp = new MoleculeProperty("1", "Chlorine");
-//					queryResult.add(mp);
-					
-//					setQueryResult(QueryManager.performListQuery(sentence));
-				
 				}catch(RDF4JException e) {
 					
 					addFieldError("term.name", "Query result failed. Explanation: " + e.getMessage());
