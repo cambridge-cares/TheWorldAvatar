@@ -1,0 +1,13 @@
+form {
+    width: 300px; /* this is needed */
+    height: 200px; /* this is needed */
+    padding: 10px; /* this is for styling only */
+    background: #eee; /* this is for styling only */
+    
+    position: absolute; /* this is needed */
+    margin: auto; /* this is needed */
+    left: 0; /* this is needed */
+    right: 0; /* this is needed */
+    top: 0; /* this is needed */
+    bottom: 0; /* this is needed */
+}

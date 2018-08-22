@@ -6,6 +6,7 @@
 <style>
 td {width:100%;float:left;clear:left; white-space:pre }
 </style>
+
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <title>Query submission notification</title>
@@ -29,6 +30,11 @@ td {width:100%;float:left;clear:left; white-space:pre }
 <s:iterator value="queryResult">
 <s:property value="moleculeId"/>
 <s:property value="moleculeName"/>
+<P/>
+</s:iterator>
+
+<s:iterator value="queryResultString">
+<s:property/>
 <P/>
 </s:iterator>
 

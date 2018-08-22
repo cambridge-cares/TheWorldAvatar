@@ -1,6 +1,14 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="sj" uri="/struts-jquery-tags" %> 
+
+<!--Clear the browser cache in the page used before-->
+<%
+response.setHeader("Pragma","no-cache");
+response.setHeader("Cache-Control","no-store"); 
+response.setHeader("Expires", "0");
+response.setDateHeader("Expires", -1);
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -30,7 +38,7 @@
 
 <s:form action="termValidationAction">
       
- 	  <s:textfield name="term.name" placeholder="(cl2 or (h2 and o1))"/>
+ 	  <s:textfield name="term.name" placeholder="Search Molhub"/>
    	  
    	  <s:submit value="Molhub Search" align="center"/>
       

@@ -1,4 +1,5 @@
 package uk.ac.ceb.como.molhub.model;
+
 import java.util.Set;
 
 import aima.core.logic.propositional.kb.KnowledgeBase;
@@ -26,10 +27,9 @@ public static Set<Clause> getClauseSet(Sentence sentence){
 	DistributeOrOverAnd distributeOrOverAnd = new DistributeOrOverAnd();
 
 	Sentence finalSentence = sentence.accept(distributeOrOverAnd, null);
-
 	/**
 	 * @author nk510
-	 * Convert sentence into clausal normal form known as conjunctive normal form (CNF).
+	 * Convert sentence into conjunctive normal form (CNF).
 	 */
 	Sentence cnfSentence = ConvertToCNF.convert(finalSentence);	
 	
@@ -41,7 +41,7 @@ public static Set<Clause> getClauseSet(Sentence sentence){
 
 	kb.tell(cnfSentence);
 
-	Set<Clause> clause = kb.asCNF();
+	Set<Clause> clause =kb.asCNF();
 	
 	return clause;
 	

@@ -2,6 +2,7 @@ package uk.ac.ceb.como.molhub.action;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,11 +48,10 @@ public class TermValidationAction extends ActionSupport {
 	
 	Set<MoleculeProperty> finalSearchResultSet = new HashSet<MoleculeProperty>();
 	
-	List<MoleculeProperty> queryResult;
+	Set<MoleculeProperty> queryResult;
 	
+	Set<String> queryResultString;
 	
-	
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -149,14 +149,14 @@ public class TermValidationAction extends ActionSupport {
 				
 				try {			
 					
-					queryResult = new ArrayList<MoleculeProperty>();
+					queryResultString = new HashSet<String>();
+				
+					Set<String> listTemp = QueryManager.performQuery(sentence);
 					
-					List<MoleculeProperty> listTemp = QueryManager.performListQuery(sentence);
-					
-					for(MoleculeProperty mpp: listTemp) {
+					for(String mpp: listTemp) {
 						
-						queryResult.add(new MoleculeProperty(mpp.getMoleculeId(),mpp.getMoleculeName()));
-					}
+						queryResultString.add(mpp);
+					}	
 					
 				}catch(RDF4JException e) {
 					
@@ -293,7 +293,7 @@ public class TermValidationAction extends ActionSupport {
 		formula = formula.replaceAll("or", "|");
 		formula = formula.replaceAll("not", "~");
 		formula = formula.replaceAll("implies", "=>");
-		formula = formula.replaceAll("euqal", "<=>");
+		formula = formula.replaceAll("equals", "<=>");
 
 		return formula;
 	}
@@ -325,12 +325,24 @@ public class TermValidationAction extends ActionSupport {
 		this.finalSearchResultSet = finalSearchResultSet;
 	}
 
-	public List<MoleculeProperty> getQueryResult() {
+	public Set<MoleculeProperty> getQueryResult() {
 		return queryResult;
 	}
 
-	public void setQueryResult(List<MoleculeProperty> queryResult) {
+	public void setQueryResult(Set<MoleculeProperty> queryResult) {
 		this.queryResult = queryResult;
+	}
+
+	public Set<String> getQueryResultString() {
+		return queryResultString;
+	}
+
+	public void setQueryResultString(Set<String> queryResultString) {
+		this.queryResultString = queryResultString;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 
 	

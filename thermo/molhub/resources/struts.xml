@@ -22,7 +22,7 @@
             </param >
     </result>
 
-	<result name="error">Login.jsp</result>
+	<result name="error">login.jsp</result>
 
 	</action>
 

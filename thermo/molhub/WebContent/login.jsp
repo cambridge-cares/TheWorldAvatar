@@ -15,9 +15,12 @@
 <s:form action="login.action" method="post">
 <tr>
 <td>
+<div class="inputWithIcon">
 <s:textfield name="username" key="label.username" size="20" align="left"/>
+</div>
 <s:password name="password" key="label.password" size="20" align="left"/>
 <s:submit method="execute" key="label.login" align="center"/>
+
 </td>
 </tr>
 </s:form>
