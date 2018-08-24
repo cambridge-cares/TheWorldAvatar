@@ -17,7 +17,7 @@
 	
  
     <welcome-file-list>
-		<welcome-file>login.jsp</welcome-file>
+		<welcome-file>como.jsp</welcome-file>
 	</welcome-file-list>
 	
    <jsp-config>
@@ -26,15 +26,5 @@
         <page-encoding>UTF-8</page-encoding>
     </jsp-property-group>
    </jsp-config>
-
-  <!-- 
-  <welcome-file-list>
-  <welcome-file>index.html</welcome-file>
-  <welcome-file>index.htm</welcome-file>
-  <welcome-file>index.jsp</welcome-file>
-  <welcome-file>default.html</welcome-file>
-  <welcome-file>default.htm</welcome-file>
-  <welcome-file>default.jsp</welcome-file>
-  </welcome-file-list>
-   -->
+   
 </web-app>

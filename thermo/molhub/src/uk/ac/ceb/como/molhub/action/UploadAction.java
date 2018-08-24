@@ -30,6 +30,8 @@ import uk.ac.ceb.como.molhub.model.FolderManager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -39,11 +41,13 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 
 // TODO: Auto-generated Javadoc
 /**
- * @author nk510 The Class UploadAction: Uploads one of more selected Gaussian
- *         files (g09) on server and generates XML and ontology files.
+ * @author nk510 The Class UploadAction: Uploads one or more selected Gaussian
+ *         files (g09) on server, and generates XML, ontology files, and adds
+ *         ontology files into tripe store (RDF4J).
  * 
  */
 public class UploadAction extends ActionSupport {
+		
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
@@ -55,9 +59,10 @@ public class UploadAction extends ActionSupport {
 	private String xslt = catalinaFolderPath + "/conf/Catalina/xslt/ontochem_rdf.xsl";
 
 	/** The files. */
-	private File[] files;
+	private List<File> files = new ArrayList<File>();
 
 	/** The upload file name. */
+//	private String[] uploadFileName;
 	private String[] uploadFileName;
 
 	/** The uri. */
@@ -75,7 +80,8 @@ public class UploadAction extends ActionSupport {
 	public String execute() throws Exception {
 
 		int fileNumber = 0;
-
+		
+		
 		/**
 		 * 
 		 * @author nk510 Iterates over selected file names.
@@ -90,9 +96,11 @@ public class UploadAction extends ActionSupport {
 			 * @author nk510 Creates unique folder name for each uploaded Gaussian file
 			 *         (g09).
 			 */
-
+			
 			String folderName = FolderManager.generateUniqueFolderName(f.getName(), catalinaFolderPath);
-			File inputG09File = new File(folderName + "/" + uploadFileName[fileNumber]);
+			
+			File inputG09File = new File(folderName + "/" + uploadFileName[fileNumber]); //uploadFileName[fileNumber]
+			
 			File outputXMLFile = new File(
 					folderName + "/" + uploadFileName[fileNumber].replaceAll(".g09", "") + ".xml");
 
@@ -112,6 +120,7 @@ public class UploadAction extends ActionSupport {
 			 * @author nk510 Runs Xslt transformation.
 			 * 
 			 */
+			
 			Transformation.trasnformation(new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile),
 					new StreamSource(xslt));
 
@@ -146,7 +155,7 @@ public class UploadAction extends ActionSupport {
 			fileNumber++;
 
 		}
-
+		
 		addActionMessage("Uploading files (g09, xml, owl) successfully completed.");
 
 		return INPUT;
@@ -158,7 +167,7 @@ public class UploadAction extends ActionSupport {
 	 *
 	 * @return the upload
 	 */
-	public File[] getUpload() {
+	public List<File> getUpload() {
 		return files;
 	}
 
@@ -168,7 +177,7 @@ public class UploadAction extends ActionSupport {
 	 * @param upload
 	 *            the new upload
 	 */
-	public void setUpload(File[] upload) {
+	public void setUpload(List<File> upload) {
 		this.files = upload;
 	}
 
