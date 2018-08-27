@@ -112,7 +112,7 @@ public class GenerateXml {
 	 * @throws Exception            <p>Generates CompChem XML whole file based on parsing g09 files.
 	 *             Currently it supports the following features: Formula,
 	 *             Composition, Frequencies, Symmetry Nr, Geometry, Geometry type,
-	 *             Rotational Constants, Spin Multiplicity.</p>
+	 *             Rotational Constants, Spin Multiplicity, Atomic mass.</p>
 	 */
 
 	public static Module generateRootModule(File file, File  outputfile, Module rootModule) throws Exception {
@@ -195,7 +195,6 @@ public class GenerateXml {
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
-		
 		return rootModule;
 	}	
 }

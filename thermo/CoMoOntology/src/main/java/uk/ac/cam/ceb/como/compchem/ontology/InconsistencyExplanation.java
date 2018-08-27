@@ -4,7 +4,8 @@
 package uk.ac.cam.ceb.como.compchem.ontology;
 
 import java.io.File;
-
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Set;
 
@@ -330,4 +331,55 @@ public class InconsistencyExplanation {
 
 		return factory;
 	}
+	
+public static boolean getConsistencyOWLFile(String owlFilePath) throws OWLOntologyCreationException, FileNotFoundException {
+		
+		boolean inconsistency = true;
+		
+		FileInputStream f = new FileInputStream(new File(owlFilePath));
+		
+		/**
+		 * 
+		 * @author nk510 <p>Instance of OWLOntologyManager will be used to load and save
+		 *         ontologies from local file.</p>
+		 * 
+		 */
+		
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+
+		/**
+		 * 
+		 * @author nk510 <p>We use the OWL API to load ontologies from local file.</p>
+		 * 
+		 */
+
+		OWLOntology ontology = manager.loadOntologyFromOntologyDocument(f);
+
+		Configuration configuration = new Configuration();
+		/**
+		 * 
+		 * @author nk510 <p>Hermit reasoner does not support explanation for inconsistency.
+		 *         To do that, we have to instantiate Hermit reasoner as an owl reasoner
+		 *         (OWLReasoner). For that reason, we instantiate ReasonerFactory. </p>
+		 *
+		 */
+
+		ReasonerFactory factory = new ReasonerFactory();
+
+		/**
+		 * 
+		 * @author nk510 <p>A line below uses an instance of ReasonerFactory to obtain an
+		 *         instance of HermiT as an OWLReasoner. </p>
+		 * 
+		 */
+
+		OWLReasoner reasoner = factory.createReasoner(ontology, configuration);
+		
+		inconsistency= reasoner.isConsistent();
+		
+		
+		
+		return inconsistency;
+	}
+
 }

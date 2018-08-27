@@ -88,7 +88,7 @@ public class Transformation {
 			 * 
 			 */
 
-			String outputPath = "src/test/resources/ontology/ontochem_abox/" + f.getName().replace(".xml", "").toString() + ".owl";
+			String outputPath = "src/test/resources/ontology/ontochem_abox/" + f.getName().replace(".xml", "").toString() + ".rdf";
 
 			FileOutputStream outputStream = new FileOutputStream(new File(outputPath));
 

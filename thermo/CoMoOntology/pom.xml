@@ -58,19 +58,17 @@
     <version>5.1.5</version>
 </dependency-->
 
-<dependency>
-<!--
-  Tp consider: 
+<!-- <dependency>
+  To consider: 
   Taken from: https://github.com/matthewhorridge/owlexplanation. 
   This API needs to explain for inconsistency. The explanation classes in owl api are ancient and not very efficient.
- -->
-   
+    
     <groupId>net.sourceforge.owlapi</groupId>
     <artifactId>owlexplanation</artifactId>
     <version>5.0.0</version>
     
 </dependency>
-
+-->
 <!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
 <dependency>
     <groupId>javax.xml.bind</groupId>
@@ -79,12 +77,12 @@
 </dependency>
 
 <!-- https://mvnrepository.com/artifact/org.apache.jena/jena-core -->
-<dependency>
+<!-- <dependency>
     <groupId>org.apache.jena</groupId>
     <artifactId>jena-core</artifactId>
     <version>3.7.0</version>
 </dependency>
-
+-->
 <!-- https://mvnrepository.com/artifact/org.apache.jena/jena-arq--> 
 <dependency>
     <groupId>org.apache.jena</groupId>

@@ -276,7 +276,7 @@ thermodynamics, the symmetry number corrects for any overcounting of equivalent 
     <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
   </owl:Class>
   <owl:Class rdf:ID="RotationalConstants">
-    <rdfs:isDefinedBy rdf:resource="danieln@cmclinnovations.com"/>
+    <rdfs:isDefinedBy rdf:resource="http://ontochem.theworldavatar.com/kb/danieln@cmclinnovations.com"/>
     <rdfs:comment xml:lang="en">These are inversely proportional to moments of inertia and determine the magnitude of spacing between rotational energy levels. The rotational constants can be calculated from molecule's geometry and atoms it contains as eigenvalues of the moments of inertia tensor. Definition given by Dr Daniel Nurkowski &lt;danieln@cmclinnovations.com&gt;.</rdfs:comment>
     <rdfs:subClassOf rdf:resource="http://purl.org/gc/MolecularComputation"/>
     <rdfs:label xml:lang="en">Rotational Constants</rdfs:label>
@@ -422,6 +422,13 @@ thermodynamics, the symmetry number corrects for any overcounting of equivalent 
       <owl:DatatypeProperty rdf:about="http://purl.org/dc/elements/1.1/date"/>
     </rdfs:subPropertyOf>
   </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://purl.org/gc/hasFile">
+    <rdfs:domain rdf:resource="http://purl.org/gc/MolecularMethodology"/>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A property that describes the attachment file.</rdfs:comment>
+    <rdfs:label xml:lang="en">has file</rdfs:label>
+    <rdfs:comment xml:lang="en">A property that describes the reference to the attachment file.</rdfs:comment>
+  </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="hasSpinMultiplicityValue">
     <rdfs:domain rdf:resource="http://purl.org/gc/Molecule"/>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
@@ -429,15 +436,6 @@ thermodynamics, the symmetry number corrects for any overcounting of equivalent 
     <rdfs:isDefinedBy rdf:resource="http://www.xml-cml.org/dictionary/compchem/#spinMultiplicity"/>
     <rdfs:label xml:lang="en">hasspin multiplicity value</rdfs:label>
   </owl:DatatypeProperty>
-  
-  <owl:DatatypeProperty rdf:about="http://purl.org/gc/hasFile">
-       <rdfs:domain rdf:resource="http://purl.org/gc/MolecularMethodology"/>
-        <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
-        <rdfs:comment xml:lang="en">A property that describes the attachment file.</rdfs:comment>
-        <rdfs:label xml:lang="en">has file</rdfs:label>
-        <rdfs:comment xml:lang="en">A property that describes the reference to the attachment file.</rdfs:comment>
-  </owl:DatatypeProperty>
-    
   <owl:DatatypeProperty rdf:ID="hasProgram">
     <rdfs:isDefinedBy rdf:resource="http://www.xml-cml.org/dictionary/compchem/#program"/>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
@@ -495,14 +493,14 @@ thermodynamics, the symmetry number corrects for any overcounting of equivalent 
     <rdfs:comment xml:lang="en">A property that determines the number of atoms in a given collection</rdfs:comment>
     <rdfs:subPropertyOf rdf:resource="http://purl.org/gc/hasMolecularData"/>
   </owl:DatatypeProperty>
-  <owl:DatatypeProperty rdf:ID="hasLevelOfTheoryValue">
-    <rdfs:label>has level of theory value</rdfs:label>
-  </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#symbol">
     <rdfs:label>symbol</rdfs:label>
     <rdfs:comment>The symbol for a unit is a glyph that is used to represent the unit in a compact form. For example, the symbol for the US Dollar is $. This contrasts with unit:abbreviation, which gives a short alphanumeric abbreviation for the unit. (I.e. USD for US Dollar).</rdfs:comment>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     <rdfs:subPropertyOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#literal"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="hasLevelOfTheoryValue">
+    <rdfs:label>has level of theory value</rdfs:label>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:about="#hasCount">
     <rdfs:label>has count</rdfs:label>

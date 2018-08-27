@@ -4,7 +4,12 @@
 package uk.ac.cam.ceb.como.jaxb.xml.generation;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.xmlcml.cml.base.CMLAttribute;
 import org.xmlcml.cml.base.CMLElement;
@@ -19,14 +24,20 @@ import org.xmlcml.cml.element.CMLParameter;
 import org.xmlcml.cml.element.CMLProperty;
 import org.xmlcml.cml.element.CMLPropertyList;
 
+import com.google.common.collect.Sets;
+
 import uk.ac.cam.ceb.como.chem.periodictable.Element;
 import uk.ac.cam.ceb.como.chem.structure.Atom;
 import uk.ac.cam.ceb.como.compchem.CompChem;
 import uk.ac.cam.ceb.como.compchem.CompChemWrapper;
 import uk.ac.cam.ceb.como.compchem.property.RotationalConstants;
+import uk.ac.cam.ceb.como.io.chem.file.jaxb.AtomArray;
+import uk.ac.cam.ceb.como.io.chem.file.jaxb.Formula;
+import uk.ac.cam.ceb.como.io.chem.file.jaxb.Molecule;
 import uk.ac.cam.ceb.como.io.chem.file.parser.cml.CMLMoleculeParser;
 import uk.ac.cam.ceb.como.io.chem.file.parser.compchem.CompChemIOUtils;
 import uk.ac.cam.ceb.como.io.chem.file.parser.compchem.CompChemParser;
+import uk.ac.cam.ceb.como.io.chem.file.parser.formula.EmpiricalFormulaParser;
 import uk.ac.cam.ceb.como.io.chem.file.parser.g09.FrequencyParser;
 import uk.ac.cam.ceb.como.io.chem.file.parser.g09.GaussianParser;
 import uk.ac.cam.ceb.como.thermo.calculator.rotation.internal.util.IRCompChemWrapper;
@@ -49,8 +60,8 @@ public class ParsingTestExamples {
 
 public static void main(String[] args) throws Exception {
 
-		 String path = "src/test/resources/g09/Cl.g09";
-//		 String path = "src/test/resources/g09/Cl2O6.g09";
+//		 String path = "src/test/resources/g09/Cl.g09";
+		 String path = "src/test/resources/g09/Cl2O6.g09";
 
 		 File f = new File(path);
 		
@@ -167,5 +178,71 @@ public static void main(String[] args) throws Exception {
 //		for(CMLAtom a: atom) {
 //		System.out.println(a.getElementType() + " " + a.getX3() + " " );			
 //		}
-	}
+		 
+//EmpiricalFormulaParser empiricalFormulaParser = new EmpiricalFormulaParser();
+		
+//System.out.println("formula: " + empiricalFormulaParser.parse("Fe22") + ", atom name: " + empiricalFormulaParser.getAtomName("Fe22") + " atom number: " + empiricalFormulaParser.getAtomSum("Fe22") );
+		
+
+Set<String> a = new HashSet<String>();
+Set<String> b = new HashSet<String>();
+Set<String> c = new HashSet<String>();
+
+
+Collection<String> stringCollection = new HashSet<String>();
+
+//clause 1
+a.add("a");
+a.add("b");
+
+stringCollection = getIntersection(a);
+
+a.clear();
+
+//clause 2
+a.add("c");
+a.add("d");
+a.add("b");
+
+stringCollection = getIntersection(a);
+
+a.clear();
+//clause 2
+a.add("b");
+a.add("g");
+a.add("v");
+
+stringCollection = getIntersection(a);
+
+
+for(String s: stringCollection) {
+	
+	System.out.println(s);
+}
+
+
+
+
+
+}
+
+public static <T> Collection<T> getIntersection(Collection<T>... sets) {
+
+    Collection<T> firstSet;
+
+    if (sets == null || sets.length == 0 || (firstSet = sets[0]) == null)
+        return Collections.<T>emptySet();
+
+    Collection<T> intersection = new HashSet(firstSet);
+
+    for (Collection c : sets) {
+        if (c == null) 
+            return Collections.<T>emptySet();
+        intersection.retainAll(c);
+    }
+    return intersection;
+}
+
+
+
 }

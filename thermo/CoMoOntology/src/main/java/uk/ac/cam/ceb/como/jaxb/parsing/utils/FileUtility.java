@@ -5,6 +5,11 @@ package uk.ac.cam.ceb.como.jaxb.parsing.utils;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import com.google.common.collect.Lists;
 
 /**
  * The Class FileUtility.
@@ -26,7 +31,6 @@ public class FileUtility implements Utility {
 	public File[] getFileList(String folderPath, final String ...format) {
 
 		File dir = new File(folderPath);
-
 		
 		File[] fileList = dir.listFiles(new FilenameFilter(){
 			
@@ -38,4 +42,5 @@ public class FileUtility implements Utility {
 
 		return fileList;
 	}	
+	
 }
