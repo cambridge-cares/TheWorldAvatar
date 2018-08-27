@@ -21,14 +21,20 @@ package uk.ac.ceb.como.molhub.action;
 
 import com.opensymphony.xwork2.ActionSupport;
 
+import uk.ac.cam.ceb.como.compchem.ontology.InconsistencyExplanation;
 import uk.ac.cam.ceb.como.compchem.xslt.Transformation;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.Module;
+import uk.ac.cam.ceb.como.jaxb.parsing.utils.FileUtility;
+
+import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
 import uk.ac.cam.ceb.como.jaxb.xml.generation.GenerateXml;
+import uk.ac.ceb.como.molhub.bean.GaussianUploadReport;
 import uk.ac.ceb.como.molhub.controler.ConnectionToTripleStore;
 import uk.ac.ceb.como.molhub.model.FolderManager;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +45,7 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.rio.RDFFormat;
 
+
 // TODO: Auto-generated Javadoc
 /**
  * @author nk510 The Class UploadAction: Uploads one or more selected Gaussian
@@ -47,7 +54,6 @@ import org.eclipse.rdf4j.rio.RDFFormat;
  * 
  */
 public class UploadAction extends ActionSupport {
-		
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
@@ -62,8 +68,13 @@ public class UploadAction extends ActionSupport {
 	private List<File> files = new ArrayList<File>();
 
 	/** The upload file name. */
-//	private String[] uploadFileName;
 	private String[] uploadFileName;
+	
+	List<String> column = new ArrayList<String>();
+	
+	GaussianUploadReport gaussianUploadReport;
+	
+	private List<GaussianUploadReport> uploadReportList = new ArrayList<GaussianUploadReport>();
 
 	/** The uri. */
 	private String uri = "http://como.cheng.cam.ac.uk/molhub/compchem/";
@@ -78,16 +89,30 @@ public class UploadAction extends ActionSupport {
 	 */
 	@Override
 	public String execute() throws Exception {
-
+	
 		int fileNumber = 0;
-		
-		
+
+		if(files.isEmpty()) {
+			
+			addFieldError("term.name","Missing selected Gaussian files.");
+			
+			return ERROR;
+			
+		}
+		/**
+		 * @author nk510
+		 * Creates names for each column in table report.
+		 */
+		column.add("UUID");
+		column.add("Gaussian file");
+		column.add("XML validation");
+		column.add("OWL consistency");
 		/**
 		 * 
 		 * @author nk510 Iterates over selected file names.
 		 * 
 		 */
-
+		
 		for (File f : files) {
 
 			Module rootModule = new Module();
@@ -96,11 +121,11 @@ public class UploadAction extends ActionSupport {
 			 * @author nk510 Creates unique folder name for each uploaded Gaussian file
 			 *         (g09).
 			 */
-			
+
 			String folderName = FolderManager.generateUniqueFolderName(f.getName(), catalinaFolderPath);
-			
-			File inputG09File = new File(folderName + "/" + uploadFileName[fileNumber]); //uploadFileName[fileNumber]
-			
+
+			File inputG09File = new File(folderName + "/" + uploadFileName[fileNumber]);
+
 			File outputXMLFile = new File(
 					folderName + "/" + uploadFileName[fileNumber].replaceAll(".g09", "") + ".xml");
 
@@ -120,15 +145,29 @@ public class UploadAction extends ActionSupport {
 			 * @author nk510 Runs Xslt transformation.
 			 * 
 			 */
-			
+
 			Transformation.trasnformation(new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile),
 					new StreamSource(xslt));
+			
+			/**
+			 * @author nk510 Adds name of folder wherer Gaussian files are uploaded, validates result of
+			 *         generated Compchem xml file against Compchem XML schema, and checks consistency of generated
+			 *         Compchem ontology (owl file).
+			 * 
+			 */
+			
+			boolean inconsistency = InconsistencyExplanation.getConsistencyOWLFile(outputOwlPath);
+			
+			gaussianUploadReport = new GaussianUploadReport(folderName.substring(folderName.lastIndexOf("/") + 1), uploadFileName[fileNumber], true, inconsistency);
+			
+			uploadReportList.add(gaussianUploadReport);
 
 			/**
 			 * 
 			 * @author nk510 Adding generated ontology files (owl) into RDF4J triple store.
 			 * 
 			 */
+
 			try (RepositoryConnection connection = ConnectionToTripleStore.getRepositoryConnection(serverUrl,
 					"compchemkb")) {
 				/**
@@ -148,14 +187,12 @@ public class UploadAction extends ActionSupport {
 					 */
 					connection.rollback();
 				}
-
 				connection.close();
 			}
 
 			fileNumber++;
-
 		}
-		
+
 		addActionMessage("Uploading files (g09, xml, owl) successfully completed.");
 
 		return INPUT;
@@ -199,4 +236,31 @@ public class UploadAction extends ActionSupport {
 	public void setUploadFileName(String[] uploadFileName) {
 		this.uploadFileName = uploadFileName;
 	}
+
+	public List<GaussianUploadReport> getUploadReportList() {
+		return uploadReportList;
+	}
+
+	public void setUploadReportList(List<GaussianUploadReport> uploadReportList) {
+		this.uploadReportList = uploadReportList;
+	}
+
+	public GaussianUploadReport getGaussianUploadReport() {
+		return gaussianUploadReport;
+	}
+
+	public void setGaussianUploadReport(GaussianUploadReport gaussianUploadReport) {
+		this.gaussianUploadReport = gaussianUploadReport;
+	}
+
+	public List<String> getColumn() {
+		return column;
+	}
+
+	public void setColumn(List<String> column) {
+		
+		this.column = column;
+	}
+	
+	
 }

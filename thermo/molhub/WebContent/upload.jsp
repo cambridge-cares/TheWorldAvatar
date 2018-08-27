@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
-<%@ taglib prefix="sj" uri="/struts-jquery-tags" %> 
+<%@ taglib prefix="sj" uri="/struts-jquery-tags" %>
+<%@ taglib prefix="sb" uri="/struts-bootstrap-tags" %> 
 
 <!DOCTYPE html>
 <html>
@@ -12,7 +13,7 @@
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/CoMoIncludeStyle.css">
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/CoMoThemesStyle.css">
 <title>Computational Modelling Group</title>
-
+  
 </head>
 
 <body class="oneColFixCtr">
@@ -78,29 +79,51 @@
 <div class="Applications" id="subsubmenu">
     <ul class="clearfix">
            
-        <!--<li class="clearfix"><a class='selected' href="">Upload (via %) </a></li>-->
-        <li class="clearfix"><s:a class="selected" href="%{urlUpload}">Upload (via %) </s:a></li>
-        <li class="clearfix"><a class="unselected" href="/molhub/repository/">Repository</a></li>
-        <li class="clearfix"><a class="unselected" href="/molhub/query/">Query, etc.</a></li>
+  <!--  <li class="clearfix"><a class='selected' href="">Upload (via %) </a></li> -->
+        <li class="clearfix"><s:a class="selected" href="%{urlUpload}">Upload Gaussian files</s:a></li>
+  <!--  <li class="clearfix"><a class="unselected" href="/molhub/repository/">Repository</a></li>-->
+        <li class="clearfix"><a class="unselected" href="/molhub/query/">Query Compchem repository</a></li>
+        <li class="clearfix"><a class="unselected" href="/molhub/calculation/">Thermodynamic calculations</a></li>
     </ul>
 </div>
 
 <div id="main-content" class="clearfix">
 
 <!-- PUT CONTENT HERE -->
+<div class="col-md-8">
 <s:actionerror />
-<s:form action="upload" method="post" enctype="multipart/form-data">
-    <s:file name="upload" label="Select files" multiple="multiple"/>
-    <s:submit value="Upload selected files"/>
+<s:actionmessage/>
+<s:form action="upload" method="post" enctype="multipart/form-data" theme="bootstrap">
+    
+  <s:file name="upload" label="Select Gaussian files to upload:"  multiple="multiple" theme="bootstrap"/>
+  
+  <s:submit value="Upload" label="Select files" theme="bootstrap"/>
+   
 </s:form>
-
-<h4>Uploaded (g09) files are: </h4>
-<s:iterator value="uploadFileName" var="fn">
-<s:property value="fn"/><br/>
-</s:iterator>
-
 </div>
 
+<!-- Lists report about all uploaded Gaussian files. Does not check whether Gaussian file is correct or no. -->
+
+          
+<table class="borderAll" border="1">
+            <tr>
+                <s:iterator value="column" var="c">
+                <th><s:property /></th> 
+                </s:iterator>
+                
+            </tr>
+            <s:iterator value="uploadReportList" var="report" status="status">
+                <tr>
+                    <td class="nowrap"><s:property value="uuid"/></td>
+                    <td class="nowrap"><s:property value="gaussianFileName"/></td>
+                    <td class="nowrap"><s:property value="validationCompchemFile"/></td>
+                    <td class="nowrap"><s:property value="consistencyCompchemOntologyFile"/></td>
+                </tr>
+            </s:iterator>
+</table>
+
+        
+</div>
     <div id="footer-bar"></div>
     <div id="footer">
         <ul>
@@ -119,5 +142,4 @@
 </div>
 </div>
 </body>
-
 </html>

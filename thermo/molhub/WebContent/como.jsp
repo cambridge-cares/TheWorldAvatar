@@ -78,10 +78,11 @@
 <div class="Applications" id="subsubmenu">
     <ul class="clearfix">
            
- <!--   <li class="clearfix"><a class='selected' href="">Upload (via %) </a></li> -->
-        <li class="clearfix"><s:a class="selected" href="%{urlUpload}">Upload (via %) </s:a></li>
-        <li class="clearfix"><a class="unselected" href="/molhub/repository/">Repository</a></li>
-        <li class="clearfix"><a class="unselected" href="/molhub/query/">Query, etc.</a></li>
+<!--   <li class="clearfix"><a class='selected' href="">Upload (via %) </a></li> -->
+        <li class="clearfix"><s:a class="selected" href="%{urlUpload}">Upload Gaussian files</s:a></li>
+<!--    <li class="clearfix"><a class="unselected" href="/molhub/repository/">Repository</a></li>-->
+        <li class="clearfix"><a class="unselected" href="/molhub/query/">Query Compchem repository</a></li>
+        <li class="clearfix"><a class="unselected" href="/molhub/calculation/">Thermodynamic calculations</a></li>
     </ul>
 </div>
 

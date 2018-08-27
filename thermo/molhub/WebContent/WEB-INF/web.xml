@@ -17,7 +17,7 @@
 	
  
     <welcome-file-list>
-		<welcome-file>como.jsp</welcome-file>
+		<welcome-file>upload.jsp</welcome-file>
 	</welcome-file-list>
 	
    <jsp-config>
