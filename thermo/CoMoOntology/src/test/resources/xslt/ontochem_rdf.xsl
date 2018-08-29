@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:transform  xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" 
-	xmlns:xd="http://www.pnp-software.com/XSLTdoc"
-	xmlns:uuid="java.util.UUID" xmlns="http://como.cheng.cam.ac.uk/molhub/compchem/" xmlns:cc="http://www.xml-cml.org/dictionary/compchem/"	
-	xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/"
+<xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" 
+	xmlns:xd="http://www.pnp-software.com/XSLTdoc" xmlns:owl="http://www.w3.org/2002/07/owl#"
+	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"  xmlns:ontochem="http://ontochem.theworldavatar.com/kb/OntoChem.owl#"
+	xmlns:gc="http://purl.org/gc/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:uuid="java.util.UUID" xmlns:math="java.lang.Math" exclude-result-prefixes="math">
+
+<!-- xmlns:compchem="http://como.cheng.cam.ac.uk/molhub/compchem/" xmlns:cc="http://www.xml-cml.org/dictionary/compchem/"	
+	xmlns:convention="http://www.xml-cml.org/convention/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/"
 	xmlns:gc="http://purl.org/gc/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:ontochem="http://ontochem.theworldavatar.com/kb/OntoChem.owl#"
-	xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:math="java.lang.Math"
-	exclude-result-prefixes="math">
-
+	xmlns:owl="http://www.w3.org/2002/07/owl#" -->
+	
+<!-- exclude-result-prefixes="math" -->
+    
 	<!--Author: Nenad B. Krdzavac, e-mail: nk510(at)cam.ac.uk -->
 
 	<!-- 
@@ -42,8 +47,8 @@
 	<!-- Applying all templates -->
 
 	<xsl:template match="/">
-
-		<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     
+		<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"		        
 			xmlns:unit="http://data.nasa.gov/qudt/owl/unit#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
 			xmlns:ontochem="http://ontochem.theworldavatar.com/kb/OntoChem.owl#" xmlns:spin="http://spinrdf.org/spin#"
 			xmlns:arg="http://spinrdf.org/arg#" xmlns:obo="http://purl.obolibrary.org/obo/"
@@ -61,7 +66,7 @@
 			<xsl:apply-templates
 				select="module/module/module/*[local-name() = 'module']"/>
 		</rdf:RDF>
-
+ 
 	</xsl:template>
 
 	<xsl:variable name="id">
@@ -73,12 +78,12 @@
 	<xsl:value-of select="uuid:randomUUID()"/>
 	</xsl:variable> 
 	
-
 	<!-- 
 	This template matches nodes that has cc:jobList and cc:job attributes 
 	value. It creates root and its child rdf nodes for molecular system by using 
 	current node name and dirctRef attribute value of current node. 
 	-->
+
 
 	<xsl:template match="module/module/*[local-name() = 'module']">
 
@@ -100,6 +105,8 @@
 		<xsl:variable name="vdictRef_parent_no_namespace">
 			<xsl:value-of select="substring-after($vdictRef_parent,'cc:')"/>
 		</xsl:variable>
+
+        <xsl:variable name="folder" select="@href" />
 
 		<!-- 
 		

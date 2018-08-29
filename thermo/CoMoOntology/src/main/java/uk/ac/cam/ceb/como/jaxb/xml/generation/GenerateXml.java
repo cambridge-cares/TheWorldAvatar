@@ -183,12 +183,12 @@ public class GenerateXml {
 			GenerateCompChemModule.getRootModule(initialModule, finalModule, environmentModule ,rootModule);
 
 		} try {
-			
+
 			JAXBContext context = JAXBContext.newInstance(Module.class);
 			Marshaller marshaller = context.createMarshaller();
-
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
+			
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,true);			
+			
 			marshaller.marshal(rootModule, outputfile);
 			marshaller.marshal(rootModule, System.out);
 
@@ -196,5 +196,5 @@ public class GenerateXml {
 			e.printStackTrace();
 		}
 		return rootModule;
-	}	
+	}
 }

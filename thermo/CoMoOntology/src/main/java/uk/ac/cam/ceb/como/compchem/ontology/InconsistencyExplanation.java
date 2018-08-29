@@ -332,6 +332,13 @@ public class InconsistencyExplanation {
 		return factory;
 	}
 	
+	/**
+	 * 
+	 * @param owlFilePath input owl file for which consistency is checked
+	 * @return true if input owl file is consistent, and false if input owl file is inconsistent.
+	 * @throws OWLOntologyCreationException 
+	 * @throws FileNotFoundException
+	 */
 public static boolean getConsistencyOWLFile(String owlFilePath) throws OWLOntologyCreationException, FileNotFoundException {
 		
 		boolean inconsistency = true;
