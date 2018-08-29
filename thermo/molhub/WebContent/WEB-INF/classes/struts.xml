@@ -2,25 +2,25 @@
 <!DOCTYPE struts PUBLIC
     "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
     "http://struts.apache.org/dtds/struts-2.0.dtd">
-
 <struts>
 		
-	<constant name="struts.devMode" value="true"/>
-<!--<constant name="struts.ui.theme" value="css_xhtml"/>-->
-<!-- 
-	<constant name="struts.enable.DynamicMethodInvocation" value="false"/>
-	<constant name="struts.custom.i18n.resources" value="ApplicationResources"/>	
+    <constant name="struts.enable.DynamicMethodInvocation" value="false" />
+    <constant name="struts.devMode" value="true" />
+	<constant name="struts.custom.i18n.resources" value="ApplicationResources" />
 	<constant name="struts.multipart.maxSize" value="1000000000" />
--->
-	
-	<package name="default" namespace="/" extends="struts-default">
-	
+		
+
+<!--<constant name="struts.ui.theme" value="css_xhtml"/>-->
+ 
+ 
+		
+<package name="default" namespace="/" extends="struts-default"> 	
 	<!--
 	<action name="login"
 		class="uk.ac.ceb.como.molhub.action.LoginAction">
 		 
     <result name = "success" type = "redirect">
-            <param name = "location">
+          <param name = "location">
             /upload.jsp
             </param >
     </result>
@@ -30,28 +30,26 @@
 	</action>
 	 -->
 
-    <action name="upload" class="uk.ac.ceb.como.molhub.action.UploadAction" method="execute"><!--method="execute"-->
-    
+
+ <action name="upload" class="uk.ac.ceb.como.molhub.action.UploadAction" method="execute">
+
      <interceptor-ref name="defaultStack">
         <param name="fileUpload.maximumSize">1048576</param>        
     </interceptor-ref>  
     
-     <result name="input">/upload.jsp</result><!-- input -->
+     <result name="input">/upload.jsp</result>
      <result name="error">/upload.jsp</result>
-    
+         
     </action>
- 
-   <!--  
-   <action name="calculation" class="uk.ac.ceb.como.molhub.action.CalculationAction">    
-   <result name="success">/calculation.jsp</result>    
+
+  
+   <action name="search" class="uk.ac.ceb.como.molhub.action.TermValidationAction" method="execute">
+		<result name="success">/search.jsp</result>
+		<result name="input">/search.jsp</result>
+		<result name="error">/search.jsp</result>        	
    </action>
-   
-   <action name="termValidationAction" class="uk.ac.ceb.como.molhub.action.TermValidationAction" method="execute">
-		<result name="success">/termvalidation.jsp</result>
-		<result name="input">/upload.jsp</result>
-		<result name="error">/upload.jsp</result>
-   </action>
-    -->	
+   	
    </package>
-      
+   
+     
 </struts>

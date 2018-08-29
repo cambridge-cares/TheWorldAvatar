@@ -777,7 +777,7 @@ border-color: #888888;
     text-decoration:none;
     vertical-align:middle;
     padding:0px 2px 0px 12px;
-    background-image:url(../css/static/group/images/menu_arrow_roll.gif);
+    background-image:url(images/menu_arrow_roll.gif);
     background-repeat:no-repeat;
 }
 
@@ -792,7 +792,7 @@ border-color: #888888;
     text-decoration:none;
     vertical-align:middle;
     padding:0px 2px 0px 12px;
-    background-image:url(../css/static/group/images/menu_arrow_norm.gif);
+    background-image:url(images/menu_arrow_norm.gif);
     background-color:#ffffff;
     background-repeat:no-repeat;
 }

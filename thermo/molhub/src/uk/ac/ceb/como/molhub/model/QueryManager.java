@@ -23,7 +23,6 @@ import aima.core.logic.propositional.kb.data.Clause;
 import aima.core.logic.propositional.kb.data.Literal;
 import aima.core.logic.propositional.parsing.ast.Sentence;
 import uk.ac.cam.ceb.como.io.chem.file.parser.formula.EmpiricalFormulaParser;
-import uk.ac.ceb.como.molhub.bean.MoleculeProperty;
 
 import uk.ac.ceb.como.molhub.controler.ConnectionToTripleStore;
 

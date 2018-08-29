@@ -22,7 +22,6 @@ import uk.ac.ceb.como.molhub.bean.Term;
 import uk.ac.ceb.como.molhub.model.QueryManager;
 import uk.ac.ceb.como.molhub.model.SentenceManager;
 
-
 /**
  * The Class TermValidationAction.
  */
@@ -161,6 +160,11 @@ public class TermValidationAction extends ActionSupport {
 
 					return ERROR;
 					
+				}
+				
+				if(queryResultString.isEmpty()) {
+					
+					addFieldError("term.name", "There are not result for given query string. Please, try again.");
 				}
 				
 				return SUCCESS;		

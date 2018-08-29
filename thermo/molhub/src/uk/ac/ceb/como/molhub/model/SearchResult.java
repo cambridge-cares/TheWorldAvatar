@@ -6,6 +6,8 @@ public class SearchResult {
 
 	private String id;
 	
+	private MoleculeProperty moleculeProperty;
+	
 	public String getId() {
 		return id;
 	}
@@ -22,6 +24,6 @@ public class SearchResult {
 		this.moleculeProperty = moleculeProperty;
 	}
 
-	private MoleculeProperty moleculeProperty;
+	
 	
 }

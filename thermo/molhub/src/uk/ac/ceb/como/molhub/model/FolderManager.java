@@ -29,6 +29,7 @@ import uk.ac.cam.ceb.como.io.chem.file.jaxb.Module;
 public class FolderManager {
 
 	private List<GaussianUploadReport> uploadReportList = new ArrayList<GaussianUploadReport>();
+	GaussianUploadReport gaussianUploadReport = new GaussianUploadReport();
 	
 	/**
 	 * @author nk510

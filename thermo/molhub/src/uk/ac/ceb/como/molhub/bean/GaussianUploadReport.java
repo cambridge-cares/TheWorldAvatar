@@ -7,8 +7,6 @@ public class GaussianUploadReport implements Cloneable{
 	private boolean validationCompchemFile;
 	private boolean consistencyCompchemOntologyFile;
 	
-	
-	
 	public GaussianUploadReport() {
 		
 	}
