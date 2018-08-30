@@ -42,7 +42,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.rio.RDFFormat;
-import org.jline.utils.Log;
+
 
 // TODO: Auto-generated Javadoc
 /**
@@ -57,13 +57,13 @@ public class UploadAction extends ActionSupport {
 	private static final long serialVersionUID = 1L;
 
 	private String uploadFileContentType;
-	
+
 	/** The catalina folder path. */
 	private String catalinaFolderPath = System.getProperty("catalina.home");
 
 	/** The xslt. */
 	private String xslt = catalinaFolderPath + "/conf/Catalina/xslt/ontochem_rdf.xsl";
-	
+
 	private String xsd = catalinaFolderPath + "/conf/Catalina/xml_schema/schema.xsd";
 
 	/** The files. */
@@ -71,11 +71,11 @@ public class UploadAction extends ActionSupport {
 
 	/** The upload file name. */
 	private String[] uploadFileName;
-	
+
 	List<String> column = new ArrayList<String>();
-	
+
 	GaussianUploadReport gaussianUploadReport;
-	
+
 	private List<GaussianUploadReport> uploadReportList = new ArrayList<GaussianUploadReport>();
 
 	/** The uri. */
@@ -91,21 +91,20 @@ public class UploadAction extends ActionSupport {
 	 */
 	@Override
 	public String execute() throws Exception {
-	
-		int fileNumber = 0;		
+
+		int fileNumber = 0;
 		/**
-		 * @author nk510
-		 * Column names in generated table (report).
+		 * @author nk510 Column names in generated table (report).
 		 */
-		if(!files.isEmpty()) {
-		column.add("UUID");
-		column.add("Gaussian file");
-		column.add("XML validation");
-		column.add("OWL consistency");
+		if (!files.isEmpty()) {
+			column.add("UUID");
+			column.add("Gaussian file");
+			column.add("XML validation");
+			column.add("OWL consistency");
 		}
-		
-		if(files.isEmpty()) {
-			
+
+		if (files.isEmpty()) {
+
 			addActionMessage("Please select Gaussian files first, and than press 'Upload' button.");
 		}
 		/**
@@ -113,7 +112,7 @@ public class UploadAction extends ActionSupport {
 		 * @author nk510 Iterates over selected (uploaded) files.
 		 * 
 		 */
-		
+
 		for (File f : files) {
 
 			Module rootModule = new Module();
@@ -134,17 +133,16 @@ public class UploadAction extends ActionSupport {
 					+ ".owl";
 
 			File owlFile = new File(outputOwlPath);
-			
+
 			/**
-			 * @author nk510
-			 * Creates a folder.
+			 * @author nk510 Creates a folder.
 			 */
 
 			FolderManager.createFolder(folderName);
 
 			/**
-			 * @author nk510
-			 * Saves Gaussian file and XML file to generated folder.
+			 * @author nk510 Saves Gaussian file and XML file are saved into generated
+			 *         folder.
 			 */
 			FolderManager.saveFileInFolder(inputG09File, f.getAbsolutePath());
 
@@ -152,65 +150,71 @@ public class UploadAction extends ActionSupport {
 
 			/**
 			 * 
-			 * @author nk510 Runs Xslt transformation.
+			 * @author nk510 Runs Xslt transformation. Here we use just created folder name
+			 *         as a part of IRI in generated ontology (owl file).
 			 * 
 			 */
 
-			Transformation.trasnformation(new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile),
+			Transformation.trasnformation(folderName.substring(folderName.lastIndexOf("/") + 1),
+					new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile),
 					new StreamSource(xslt));
-			
-			/**
-			 * @author nk510 Validates of
-			 *         generated Compchem xml file against Compchem XML schema, and checks consistency of generated
-			 *         Compchem ontology (owl file).
-			 * 
-			 */
-			
-			boolean consistency = InconsistencyExplanation.getConsistencyOWLFile(outputOwlPath);
-			
-			boolean xmlValidation = XMLValidationManager.validateXMLSchema(xsd,outputXMLFile );
-					
-			gaussianUploadReport = new GaussianUploadReport(folderName.substring(folderName.lastIndexOf("/") + 1), uploadFileName[fileNumber], xmlValidation, consistency);
-			
-			uploadReportList.add(gaussianUploadReport);
-			
-			/**
-			 * 
-			 * @author nk510 Adding generated ontology files (owl) into RDF4J triple store, only in case when generated ontology (owl file) is consistent.
-			 * 
-			 */
-			
-			if(consistency) {
 
-			try (RepositoryConnection connection = ConnectionToTripleStore.getRepositoryConnection(serverUrl,
-					"compchemkb")) {
-				/**
-				 * @author nk510 Beginning of transaction.
-				 */
-				connection.begin();
-				try {
+			/**
+			 * @author nk510 Validates of generated Compchem xml file against Compchem XML
+			 *         schema, and checks consistency of generated Compchem ontology (owl
+			 *         file).
+			 * 
+			 */
+
+			boolean consistency = InconsistencyExplanation.getConsistencyOWLFile(outputOwlPath);
+
+			boolean xmlValidation = XMLValidationManager.validateXMLSchema(xsd, outputXMLFile);
+
+			gaussianUploadReport = new GaussianUploadReport(folderName.substring(folderName.lastIndexOf("/") + 1),
+					uploadFileName[fileNumber], xmlValidation, consistency);
+
+			uploadReportList.add(gaussianUploadReport);
+
+			/**
+			 * 
+			 * @author nk510 Adding generated ontology files (owl) into RDF4J triple store,
+			 *         only in case when generated ontology (owl file) is consistent.
+			 * 
+			 */
+
+			if (consistency) {
+
+				try (RepositoryConnection connection = ConnectionToTripleStore.getRepositoryConnection(serverUrl,
+						"compchemkb")) {
 					/**
-					 * @author nk510 Each generated owl file will be stored in RDF4J triple store.
+					 * @author nk510 Beginning of transaction.
 					 */
-					connection.add(owlFile, uri, RDFFormat.RDFXML);
-					connection.commit();
-				} catch (RepositoryException e) {
-					/**
-					 * If something is wrong during the transaction, it will return a message about
-					 * it.
-					 */
-					connection.rollback();
+					connection.begin();
+					try {
+						/**
+						 * @author nk510 Each generated owl file will be stored in RDF4J triple store.
+						 */
+						connection.add(owlFile, uri, RDFFormat.RDFXML);
+						connection.commit();
+					} catch (RepositoryException e) {
+						/**
+						 * If something is wrong during the transaction, it will return a message about
+						 * it.
+						 */
+						connection.rollback();
+					}
+					connection.close();
 				}
-				connection.close();
-			}
-			
+
 			}
 			/**
-			 * In case of inconsistency of generated ontology (Abox) then Error message will appear.
+			 * In case of inconsistency of generated ontology (Abox) then Error message will
+			 * appear.
 			 */
-			if(!consistency) {
-				
-				addFieldError("term.name","Ontology '"+ owlFile.getName()+ "' is not consistent and not loaded into triple store.");
+			if (!consistency) {
+
+				addFieldError("term.name",
+						"Ontology '" + owlFile.getName() + "' is not consistent and not loaded into triple store.");
 				return ERROR;
 			}
 
@@ -280,13 +284,11 @@ public class UploadAction extends ActionSupport {
 	}
 
 	public void setColumn(List<String> column) {
-		
+
 		/**
-		 * @author nk510
-		 * Creates names for each column in table report.
+		 * @author nk510 Creates names for each column in table report.
 		 */
-		
-		
+
 		this.column = column;
 	}
 
@@ -297,6 +299,5 @@ public class UploadAction extends ActionSupport {
 	public void setUploadFileContentType(String uploadFileContentType) {
 		this.uploadFileContentType = uploadFileContentType;
 	}
-	
-	
+
 }

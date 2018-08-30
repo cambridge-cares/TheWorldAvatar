@@ -2,7 +2,7 @@ package uk.ac.ceb.como.molhub.bean;
 
 public class MoleculeProperty {
 
-	private String moleculeId;
+	private String uuid;
 	
 	private String moleculeName;
 	
@@ -12,14 +12,14 @@ public class MoleculeProperty {
 	
 	public MoleculeProperty(String moleculeId, String moleculeName, String numberOfAtoms) {
 		
-		this.moleculeId=moleculeId;
+		this.uuid=moleculeId;
 		this.moleculeName=moleculeName;
 		this.numberOfAtoms=numberOfAtoms;
 	}
 
 public MoleculeProperty(String moleculeId, String moleculeName) {
 		
-		this.moleculeId=moleculeId;
+		this.uuid=moleculeId;
 		this.moleculeName=moleculeName;
 	}
 
@@ -29,11 +29,11 @@ public MoleculeProperty(String moleculeName) {
 }
 
 	public String getMoleculeId() {
-		return moleculeId;
+		return uuid;
 	}
 
 	public void setMoleculeId(String moleculeId) {
-		this.moleculeId = moleculeId;
+		this.uuid = moleculeId;
 	}
 
 	public String getMoleculeName() {

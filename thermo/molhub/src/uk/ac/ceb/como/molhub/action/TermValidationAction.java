@@ -123,8 +123,8 @@ public class TermValidationAction extends ActionSupport {
 
 						return ERROR;
 
-					} else {						
-						setPeriodicTableElement(elementSymbol.getName());						
+					} else {
+						setPeriodicTableElement(elementSymbol.getName());
 					}					
 				}
 			}
@@ -153,7 +153,7 @@ public class TermValidationAction extends ActionSupport {
 						
 						queryResultString.add(mpp);
 					}	
-					
+
 				}catch(RDF4JException e) {
 					
 					addFieldError("term.name", "Query result failed. Explanation: " + e.getMessage());
@@ -164,7 +164,7 @@ public class TermValidationAction extends ActionSupport {
 				
 				if(queryResultString.isEmpty()) {
 					
-					addFieldError("term.name", "There are not result for given query string. Please, try again.");
+					addFieldError("term.name", "There are no results for given query string. Please, try again.");
 				}
 				
 				return SUCCESS;		
@@ -345,9 +345,5 @@ public class TermValidationAction extends ActionSupport {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-
-	
-
-
 
 }

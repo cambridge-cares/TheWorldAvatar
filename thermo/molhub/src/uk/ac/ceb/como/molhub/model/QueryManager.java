@@ -2,14 +2,12 @@ package uk.ac.ceb.como.molhub.model;
 
 import org.apache.log4j.Logger;
 
-
 import java.io.IOException;
 import java.util.ArrayList;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryLanguage;
@@ -60,10 +58,6 @@ public class QueryManager {
 				
 				logger.info("Clause set: " + c + " for step: " + step +".");
 				
-				/**
-				 * @author nk510
-				 * Skip to query knowledge based for clauses which are tautology. 
-				 */
 
 //				if (!c.isTautology()) {		
 					
@@ -71,16 +65,14 @@ public class QueryManager {
 					
 					Set<Literal> literalSet = c.getLiterals();
 					
-					for (Literal literal : literalSet) {						
-						
-						
+					for (Literal literal : literalSet) {
 						
 						logger.info("Literal: " + literal);
 						
 						logger.info("literal.getAtomicSentence().toString() " + literal.getAtomicSentence().toString());
 						
-						
 						String queryString = "";
+						
 						/**
 						 * @author nk510 Returns atom name by parsing each literal in clause. Here we
 						 *         use {@author pb556} parser.
@@ -163,8 +155,6 @@ public class QueryManager {
 					listMoleculePropertySet.add(setB);
 //				}
 			}
-			
-			
 			
 			return intersection(listMoleculePropertySet);
 		}

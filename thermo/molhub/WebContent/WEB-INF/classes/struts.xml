@@ -44,6 +44,7 @@
 
   
    <action name="search" class="uk.ac.ceb.como.molhub.action.TermValidationAction" method="execute">
+   
 		<result name="success">/search.jsp</result>
 		<result name="input">/search.jsp</result>
 		<result name="error">/search.jsp</result>        	

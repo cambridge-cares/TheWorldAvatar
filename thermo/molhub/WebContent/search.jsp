@@ -75,9 +75,8 @@
     <ul><li class="selcsm">MolHub</li></ul>
 </div>
 
-<!--<s:url action="search" var="sAction"/>-->
-
 <!-- SUB-SUB-MENU, FEEL FREE TO CHANGE -->
+
 <div class="Applications" id="subsubmenu">
     <ul class="clearfix">
        <li class="clearfix"><s:a class="unselected" href="upload.jsp">Upload Gaussian files</s:a></li>
