@@ -78,6 +78,14 @@
 	<xsl:value-of select="uuid:randomUUID()"/>
 	</xsl:variable> 
 	
+
+    <!-- Folder name that has the same name as folder created where we store g09, xml and owl files.  -->
+	<xsl:param name="xmlFolderName"/>
+	
+	<xsl:variable name="folder_name">
+	<xsl:value-of select="$xmlFolderName"/>
+	</xsl:variable>
+	
 	<!-- 
 	This template matches nodes that has cc:jobList and cc:job attributes 
 	value. It creates root and its child rdf nodes for molecular system by using 
@@ -107,6 +115,8 @@
 		</xsl:variable>
 
         <xsl:variable name="folder" select="@href" />
+        
+       
 
 		<!-- 
 		
@@ -129,7 +139,7 @@
 		-->
 
 <!-- 		<owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_no_namespace}_{$vmodule}_molecular_methоdology_{$id}">  -->
-            <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$uuidVar}">
+            <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$folder_name}">
 			<rdf:type rdf:resource="http://ontochem.theworldavatar.com/kb/OntoChem.owl#G09"/>
 			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
 
@@ -807,5 +817,6 @@
     <xsl:template match="*[local-name() = 'scalar']">
 		<xsl:value-of select="." />
 	</xsl:template>
+	
 	
 </xsl:transform>

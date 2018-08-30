@@ -8,6 +8,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.util.Random;
+import java.util.UUID;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -93,11 +96,17 @@ public class Transformation {
 			FileOutputStream outputStream = new FileOutputStream(new File(outputPath));
 
 			/**
-			 * @author nk510 <p>Runs XSLT transformation for each ontochem XML file form file
-			 *         list.</p>
+			 * @author nk510
+			 * @param randomStr is used to create an IRI as an instance of 'ontochem:G09' class.
 			 */
+			String randomStr= UUID.randomUUID().toString();
 
-			trasnformation(xmlSource, outputStream, xsltSource);
+			/**
+			 * @author nk510 <p>Runs XSLT transformation for each ontochem XML file form file
+			 *         list.</p> 
+			 */
+			
+			trasnformation(randomStr,xmlSource, outputStream, xsltSource);
 
 		}
 	}
@@ -117,9 +126,8 @@ public class Transformation {
 	 *             class.</p>
 	 */
 
-	public static void trasnformation(InputStream XmlSource, FileOutputStream outputStream, StreamSource xsltSource)
+	public static void trasnformation(String xmlFolderName, InputStream XmlSource, FileOutputStream outputStream, StreamSource xsltSource)
 			throws TransformerException {
-
 		
 		/**
 		 * In case of using SaxonHE parser, we need to set/add the following System property:
@@ -128,9 +136,10 @@ public class Transformation {
 		
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();	
 		Transformer transformer = transformerFactory.newTransformer(xsltSource);
+		
+		transformer.setParameter("xmlFolderName", xmlFolderName);
+		
 		transformer.transform(new StreamSource(XmlSource), new StreamResult(outputStream));
-		
-		
 	
-	}
+	}	
 }

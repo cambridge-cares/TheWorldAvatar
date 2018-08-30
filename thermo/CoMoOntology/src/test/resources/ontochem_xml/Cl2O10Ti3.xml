@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<module xmlns:h="http://www.w3.org/1999/xhtml" xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/" xmlns="http://www.xml-cml.org/schema" xmlns:convention="http://www.xml-cml.org/convention/">
+<module xmlns:h="http://www.w3.org/1999/xhtml" xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/" xmlns:convention="http://www.xml-cml.org/convention/">
     <module dictRef="cc:jobList">
         <module dictRef="cc:job">
             <module dictRef="cc:initialization">
