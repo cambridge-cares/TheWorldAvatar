@@ -1,7 +1,8 @@
 package uk.ac.ceb.como.molhub.action;
 
+import java.util.ArrayList;
 import java.util.HashSet;
-
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.rdf4j.RDF4JException;
@@ -42,9 +43,7 @@ public class TermValidationAction extends ActionSupport {
 	/** The periodic table element. */
 	private String periodicTableElement;
 	
-	Set<MoleculeProperty> finalSearchResultSet = new HashSet<MoleculeProperty>();
-	
-	Set<MoleculeProperty> queryResult;
+	List<MoleculeProperty> finalSearchResultSet = new ArrayList<MoleculeProperty>();
 	
 	Set<String> queryResultString;
 	
@@ -125,14 +124,14 @@ public class TermValidationAction extends ActionSupport {
 
 					} else {
 						setPeriodicTableElement(elementSymbol.getName());
-					}					
+					}
 				}
 			}
 
 			/**
 			 * 
 			 * @author nk510 Checks whether input propositional sentence (query string) is
-			 *         satisfiable. It si checked by using Davis–Putnam–Logemann–Loveland
+			 *         satisfiable. It is checked by using Davis–Putnam–Logemann–Loveland
 			 *         (DPLL) procedure.
 			 * 
 			 */
@@ -143,17 +142,27 @@ public class TermValidationAction extends ActionSupport {
 
 				setFormula(getSearchTerm(term));
 				
-				try {			
+				try {
 					
 					queryResultString = new HashSet<String>();
-				
-					Set<String> listTemp = QueryManager.performQuery(sentence);
+
+					Set<String> listTemp = QueryManager.performSPARQLQueryOnQueryString(sentence);
 					
 					for(String mpp: listTemp) {
 						
 						queryResultString.add(mpp);
-					}	
-
+						
+					}
+					
+					/**
+					 * @author nk510
+					 *  Returns list of all molecule properties. All molecules are result of input query string. 
+					 */
+					for(String mn : queryResultString) {
+						
+						finalSearchResultSet.add(QueryManager.performSPARQLForMoleculeName(mn));
+					}
+					
 				}catch(RDF4JException e) {
 					
 					addFieldError("term.name", "Query result failed. Explanation: " + e.getMessage());
@@ -318,22 +327,14 @@ public class TermValidationAction extends ActionSupport {
 		this.periodicTableElement = periodicTableElement;
 	}
 
-	public Set<MoleculeProperty> getFinalSearchResultSet() {
+	public List<MoleculeProperty> getFinalSearchResultSet() {
 		return finalSearchResultSet;
 	}
 
-	public void setFinalSearchResultSet(Set<MoleculeProperty> finalSearchResultSet) {
+	public void setFinalSearchResultSet(List<MoleculeProperty> finalSearchResultSet) {
 		this.finalSearchResultSet = finalSearchResultSet;
 	}
-
-	public Set<MoleculeProperty> getQueryResult() {
-		return queryResult;
-	}
-
-	public void setQueryResult(Set<MoleculeProperty> queryResult) {
-		this.queryResult = queryResult;
-	}
-
+	
 	public Set<String> getQueryResultString() {
 		return queryResultString;
 	}

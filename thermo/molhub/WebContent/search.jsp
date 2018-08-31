@@ -90,20 +90,25 @@
 
 <div class="col-md-9">
 <s:actionerror />
-<s:form action="search">   
+<s:form action="search">
    
-<s:textfield name="term.name" placeholder="Search Molhub" size="80"/>   	  
+<s:textfield name="term.name" placeholder="Search Molhub" size="80"/>
 <s:submit value="Molhub Search"/>
 </s:form>
 </div>
-
-
 
 <s:iterator value="queryResultString">
 <s:property/>
 <P/>
 </s:iterator>
-        
+
+ 
+<s:iterator value="finalSearchResultSet" var="result" >
+<s:property  value="uuid"/>, <s:property  value="moleculeName"/>
+<P/>
+</s:iterator>
+
+
 </div>
     <div id="footer-bar"></div>
     <div id="footer">

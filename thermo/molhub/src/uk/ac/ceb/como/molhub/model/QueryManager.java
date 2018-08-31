@@ -22,6 +22,8 @@ import aima.core.logic.propositional.kb.data.Literal;
 import aima.core.logic.propositional.parsing.ast.Sentence;
 import uk.ac.cam.ceb.como.io.chem.file.parser.formula.EmpiricalFormulaParser;
 
+import uk.ac.ceb.como.molhub.bean.MoleculeProperty;
+import uk.ac.ceb.como.molhub.bean.QueryString;
 import uk.ac.ceb.como.molhub.controler.ConnectionToTripleStore;
 
 public class QueryManager {
@@ -32,10 +34,21 @@ public class QueryManager {
 	final static Logger logger = Logger.getLogger(QueryManager.class.getName());
 	
 	static Set<String> result = new HashSet<String>();
-	 
-	public static Set<String> performQuery(Sentence sentence) throws IOException {
+	
+	
+	/**
+	 * 
+	 * @param sentence input query string given as propositional formula. Each literal in this query string contains atom name and number of atoms. 
+	 * @return a list of molecule names as a result of sparql queries on RDF4J triple store.
+	 * @throws IOException 
+	 */
+	public static Set<String> performSPARQLQueryOnQueryString(Sentence sentence) throws IOException {
 
-		List<Set<String>> listMoleculePropertySet = new ArrayList<Set<String>>();
+		/**
+		 * @author nk510
+		 * List of Strings that represents final solution of querying triple store by using input string (propositional formula). 
+		 */
+		List<Set<String>> listMoleculeNameSet = new ArrayList<Set<String>>();
 		/**
 		 * @author nk510
 		 * Set of all clauses built based on input query.
@@ -54,10 +67,7 @@ public class QueryManager {
 			
 			for (Clause c : clauseSet) {
 				
-				step++;
-				
-				logger.info("Clause set: " + c + " for step: " + step +".");
-				
+				step++;				
 
 //				if (!c.isTautology()) {		
 					
@@ -66,10 +76,6 @@ public class QueryManager {
 					Set<Literal> literalSet = c.getLiterals();
 					
 					for (Literal literal : literalSet) {
-						
-						logger.info("Literal: " + literal);
-						
-						logger.info("literal.getAtomicSentence().toString() " + literal.getAtomicSentence().toString());
 						
 						String queryString = "";
 						
@@ -92,7 +98,7 @@ public class QueryManager {
 						 */
 						if (literal.isPositiveLiteral()) {
 
-							queryString = QueryManager.getAllTriplesForPositiveLiteral(atomName, numberOfAtoms);
+							queryString = QueryString.getAllTriplesForPositiveLiteral(atomName, numberOfAtoms);
 						}
 
 						/**
@@ -103,7 +109,7 @@ public class QueryManager {
 
 						if (literal.isNegativeLiteral()) {
 
-							queryString = QueryManager.getAllTriplesForNegativeLiteral(atomName, numberOfAtoms);
+							queryString = QueryString.getAllTriplesForNegativeLiteral(atomName, numberOfAtoms);
 
 						}
 						
@@ -112,6 +118,7 @@ public class QueryManager {
 						try (TupleQueryResult result = tupleQuery.evaluate()) {
 							
 							/**
+							 * 
 							 * @author nk510 Evaluates sparql query and populates 'MoleculeProperty' beans.
 							 * 
 							 */
@@ -125,19 +132,12 @@ public class QueryManager {
 								/**
 								 * 
 								 * @author nk510
-								 * Add all results for one literal into a set. 
+								 * Add all results for one literal into a set.
 								 * 
 								 */
-								setA.add(bindingSet.getValue("name").toString());
-							}
 
-							logger.info("Union set for step " + step + ".");
-								
-							for(String mp: setA) {
-									
-							logger.info("mp.getMoleculeName() "+ mp);
-									
-							}
+								setA.add(bindingSet.getValue("name").toString());
+							}							
 							
 							setB.addAll(setA);
 							
@@ -148,83 +148,77 @@ public class QueryManager {
 					}
 					
 					if(clauseSet.size()<=1) {
-						
-						return setB;
-					}  
 					
-					listMoleculePropertySet.add(setB);
+						return setB;
+					}
+					
+					listMoleculeNameSet.add(setB);
 //				}
 			}
 			
-			return intersection(listMoleculePropertySet);
+			return intersection(listMoleculeNameSet);
 		}
 	}
 
-	/**
-	 * @author nk510
-	 * @param atomName
-	 *            name of literal that represents atom name from periodic table
-	 * @param atomNumber
-	 *            number of atoms which appear in a molecule for give atom name
-	 * @return Query as a String. Result of that query should be list of all molecule names
-	 *         which contain selected atom name and selected number of atoms.
-	 */
+	public static MoleculeProperty performSPARQLForMoleculeName(String moleculeName){
+		
+		MoleculeProperty moleculeProperty=null;
+		
+		String queryString = QueryString.getAllTriplesMoleculeProperty(moleculeName);
+		
+		try (RepositoryConnection connection = ConnectionToTripleStore.getSPARQLRepositoryConnection(serverUrl)) {
+			
+			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+			
+			
+			try (TupleQueryResult result = tupleQuery.evaluate()) {
+				
+				while (result.hasNext()) {
 
-	public static String getAllTriplesForPositiveLiteral(String atomName, int atomNumber) {
+					BindingSet bindingSet = result.next();
+					
+					moleculeProperty = new MoleculeProperty(bindingSet.getValue("uuid").toString(),
+							                                                 moleculeName, 
+							                                                 bindingSet.getValue("levelOfTheory").toString(), 
+							                                                 bindingSet.getValue("basisSetValue").toString(),
+							                                                 Integer.parseInt(bindingSet.getValue("frequenciesSize").toString()),
+							                                                 bindingSet.getValue("frequenciesValue").toString(),
+							                                                 bindingSet.getValue("frequenciesUnit").toString(),
+							                                                 Integer.parseInt(bindingSet.getValue("spinMultiplicityValue").toString()),
+							                                                 Double.parseDouble(bindingSet.getValue("coordinateX").toString()),
+							                                                 Double.parseDouble(bindingSet.getValue("coordinateY").toString()),
+							                                                 Double.parseDouble(bindingSet.getValue("coordinateZ").toString()),
+							                                                 Double.parseDouble(bindingSet.getValue("massValue").toString()),
+							                                                 bindingSet.getValue("massUnit").toString(),
+							                                                 bindingSet.getValue("geometryTypeValue").toString(),
+							                                                 Integer.parseInt(bindingSet.getValue("rotationalConstantsSize").toString()),
+							                                                 bindingSet.getValue("rotationalConstantsUnit").toString(),
+							                                                 bindingSet.getValue("rotationalConstantsValue").toString(),
+							                                                 Integer.parseInt(bindingSet.getValue("rotationalSymmetryNumber").toString()),
+							                                                 bindingSet.getValue("programName").toString(),
+							                                                 bindingSet.getValue("programVersion").toString(),
+							                                                 bindingSet.getValue("runDate").toString());
+				}
+				
+			}catch (Exception e) {
 
-		String query = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" 
-		        + "PREFIX gc: <http://purl.org/gc/>"
-				+ "PREFIX ontochem: <http://ontochem.theworldavatar.com/kb/OntoChem.owl#>" 
-		        + "SELECT ?name "
-				+ "WHERE { " 
-		        + "?s ontochem:hasInitialization ?in . " 
-				+ "?in gc:hasMoleculeProperty ?mp . "
-				+ "?mp gc:hasName ?name ." 
-				+ "?mp gc:hasMolecule ?molecule ." 
-				+ "?molecule gc:hasAtom ?atom. "
-				+ "?atom gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#" + atomName + ">."
-				+ "?molecule gc:hasNumberOfAtoms ?n ." 
-				+ "FILTER(str(?n)='" + atomNumber + "') ." + "}";
-
-		return query;
+				e.getMessage();
+			}
+			
+		}
+		
+		
+		return moleculeProperty;
+		
 	}
+	
 
-	/**
-	 * @author nk510
-	 * @param atomName
-	 *            name of literal that represents atom name from periodic table
-	 * @param atomNumber
-	 *            number of atoms which appear in a molecule for give atom name
-	 * @return Query as a String. Result of that query should be list of  all molecule names
-	 *         which do not contain selected atom name and selected number of atoms.
-	 */
-	public static String getAllTriplesForNegativeLiteral(String atomName, int atomNumber) {
-
-		String query = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" 
-		        + "PREFIX gc: <http://purl.org/gc/>"
-				+ "PREFIX ontochem: <http://ontochem.theworldavatar.com/kb/OntoChem.owl#>" 
-		        + "SELECT ?name "
-				+ "WHERE { " 
-		        + "?s ontochem:hasInitialization ?in . " 
-				+ "?in gc:hasMoleculeProperty ?mp . "
-				+ "?mp gc:hasName ?name ." 
-				+ "FILTER NOT EXISTS { " 
-				+ "?mp gc:hasMolecule ?molecule ."
-				+ "?molecule gc:hasAtom ?atom. " 
-				+ "?molecule gc:hasNumberOfAtoms ?n ."
-				+ "?atom gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#" + atomName + ">."
-				+ "FILTER(str(?n)='" + atomNumber + "') ." 
-				+ "}" 
-				+ "}";
-
-		return query;
-	}
-
+	
 	/**
 	 * 
 	 * @author nk510
 	 * @param listOfSets a list that contains sets of all unions in all clauses.
-	 * @return intersection of all clauses.
+	 * @return intersection of all clauses as a set of strings.
 	 * 
 	 */
 public static Set<String> intersection(List<Set<String>> listOfSets){
