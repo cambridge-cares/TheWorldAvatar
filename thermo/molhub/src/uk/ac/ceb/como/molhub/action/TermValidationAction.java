@@ -160,7 +160,7 @@ public class TermValidationAction extends ActionSupport {
 					 */
 					for(String mn : queryResultString) {
 						
-						finalSearchResultSet.add(QueryManager.performSPARQLForMoleculeName(mn));
+						finalSearchResultSet.addAll(QueryManager.performSPARQLForMoleculeName(mn));
 					}
 					
 				}catch(RDF4JException e) {

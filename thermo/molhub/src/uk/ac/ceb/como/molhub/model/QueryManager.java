@@ -160,9 +160,9 @@ public class QueryManager {
 		}
 	}
 
-	public static MoleculeProperty performSPARQLForMoleculeName(String moleculeName){
+	public static List<MoleculeProperty> performSPARQLForMoleculeName(String moleculeName){
 		
-		MoleculeProperty moleculeProperty=null;
+		List<MoleculeProperty> moleculePropertyList = new ArrayList<MoleculeProperty>();
 		
 		String queryString = QueryString.getAllTriplesMoleculeProperty(moleculeName);
 		
@@ -170,34 +170,34 @@ public class QueryManager {
 			
 			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
 			
-			
 			try (TupleQueryResult result = tupleQuery.evaluate()) {
 				
 				while (result.hasNext()) {
 
 					BindingSet bindingSet = result.next();
 					
-					moleculeProperty = new MoleculeProperty(bindingSet.getValue("uuid").toString(),
-							                                                 moleculeName, 
-							                                                 bindingSet.getValue("levelOfTheory").toString(), 
-							                                                 bindingSet.getValue("basisSetValue").toString(),
-							                                                 Integer.parseInt(bindingSet.getValue("frequenciesSize").toString()),
-							                                                 bindingSet.getValue("frequenciesValue").toString(),
-							                                                 bindingSet.getValue("frequenciesUnit").toString(),
-							                                                 Integer.parseInt(bindingSet.getValue("spinMultiplicityValue").toString()),
-							                                                 Double.parseDouble(bindingSet.getValue("coordinateX").toString()),
-							                                                 Double.parseDouble(bindingSet.getValue("coordinateY").toString()),
-							                                                 Double.parseDouble(bindingSet.getValue("coordinateZ").toString()),
-							                                                 Double.parseDouble(bindingSet.getValue("massValue").toString()),
-							                                                 bindingSet.getValue("massUnit").toString(),
-							                                                 bindingSet.getValue("geometryTypeValue").toString(),
-							                                                 Integer.parseInt(bindingSet.getValue("rotationalConstantsSize").toString()),
-							                                                 bindingSet.getValue("rotationalConstantsUnit").toString(),
-							                                                 bindingSet.getValue("rotationalConstantsValue").toString(),
-							                                                 Integer.parseInt(bindingSet.getValue("rotationalSymmetryNumber").toString()),
-							                                                 bindingSet.getValue("programName").toString(),
-							                                                 bindingSet.getValue("programVersion").toString(),
-							                                                 bindingSet.getValue("runDate").toString());
+					MoleculeProperty moleculeProperty = new MoleculeProperty(bindingSet.getValue("uuid").stringValue(),
+							                                                 moleculeName);
+//							                                                 bindingSet.getValue("levelOfTheory").toString()); 
+//							                                                 bindingSet.getValue("basisSetValue").toString());
+//							                                                 Integer.parseInt(bindingSet.getValue("frequenciesSize").toString()),
+//							                                                 bindingSet.getValue("frequenciesValue").toString(),
+//							                                                 bindingSet.getValue("frequenciesUnit").toString(),
+//							                                                 Integer.parseInt(bindingSet.getValue("spinMultiplicityValue").toString()),
+//							                                                 Double.parseDouble(bindingSet.getValue("coordinateX").toString()),
+//							                                                 Double.parseDouble(bindingSet.getValue("coordinateY").toString()),
+//							                                                 Double.parseDouble(bindingSet.getValue("coordinateZ").toString()),
+//							                                                 Double.parseDouble(bindingSet.getValue("massValue").toString()),
+//							                                                 bindingSet.getValue("massUnit").toString(),
+//							                                                 bindingSet.getValue("geometryTypeValue").toString(),
+//							                                                 Integer.parseInt(bindingSet.getValue("rotationalConstantsSize").toString()),
+//							                                                 bindingSet.getValue("rotationalConstantsUnit").toString(),
+//							                                                 bindingSet.getValue("rotationalConstantsValue").toString(),
+//							                                                 Integer.parseInt(bindingSet.getValue("rotationalSymmetryNumber").toString()),
+//							                                                 bindingSet.getValue("programName").toString(),
+//							                                                 bindingSet.getValue("programVersion").toString(),
+//							                                                 bindingSet.getValue("runDate").toString());
+				moleculePropertyList.add(moleculeProperty);
 				}
 				
 			}catch (Exception e) {
@@ -207,12 +207,9 @@ public class QueryManager {
 			
 		}
 		
-		
-		return moleculeProperty;
+		return moleculePropertyList;
 		
 	}
-	
-
 	
 	/**
 	 * 

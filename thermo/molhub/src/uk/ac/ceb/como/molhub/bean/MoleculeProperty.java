@@ -66,6 +66,15 @@ public class MoleculeProperty {
 		
 	}
 	
+   public MoleculeProperty(String uuid,String moleculeName, String levelOfTheory) {
+		
+		this.uuid=uuid;
+		this.moleculeName=moleculeName;		
+		this.levelOfTheory=levelOfTheory;
+		
+	}
+
+	
 	public MoleculeProperty(String uuid, String moleculeName) {
 
 		this.uuid = uuid;

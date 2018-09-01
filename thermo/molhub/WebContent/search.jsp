@@ -99,15 +99,24 @@
 
 <s:iterator value="queryResultString">
 <s:property/>
-<P/>
 </s:iterator>
 
- 
+ <table>
 <s:iterator value="finalSearchResultSet" var="result" >
-<s:property  value="uuid"/>, <s:property  value="moleculeName"/>
-<P/>
+<tr>
+ <th><s:property  value="moleculeName"/></th>
+ <th></th>
+</tr>
+<tr>
+    <td></td>
+    <td>
+    <s:property  value="uuid"/><P/>
+    <!--<s:property  value="levelOfTheory"/><P/>-->
+    <!--<s:property  value="basisSet"/><P/>-->
+    </td>
+  </tr>
 </s:iterator>
-
+</table>
 
 </div>
     <div id="footer-bar"></div>
