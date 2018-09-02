@@ -729,7 +729,6 @@ class admsAplWriter(object):
     def __init__(self, data, address):
         self.data = data
         self.address = address
-
     #main function
     def write(self):
         #if contains this data, execute the corresponding writing function

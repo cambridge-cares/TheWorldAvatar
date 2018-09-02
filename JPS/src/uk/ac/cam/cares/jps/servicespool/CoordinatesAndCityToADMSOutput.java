@@ -84,10 +84,6 @@ public class CoordinatesAndCityToADMSOutput extends HttpServlet {
 			String plant = "http://www.theworldavatar.com/Plant-001.owl";
 			double plantx = 79831;
 			double planty = 454766;
-//			 lowerx = plantx - 100;
-//			 lowery = planty - 100;
-//			 upperx = plantx + 100;
-//			 uppery = planty + 200;
 			try {
 				response.getWriter().write(startIntegrationWithPython(city, plant, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery));
 			} catch (InterruptedException e) {

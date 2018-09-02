@@ -39,7 +39,7 @@ public class ADMSCoordinationAgentNew extends HttpServlet {
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ADMSCoordinationAgentNew() {
+    public ADMSCoordinationAgentNew() { 
         super();
         // TODO Auto-generated constructor stub
     }
@@ -47,14 +47,14 @@ public class ADMSCoordinationAgentNew extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		
-		String cityIRI = request.getParameter("cityIRI");
-		String lowerx = request.getParameter("lowerx");
+		String cityIRI = request.getParameter("cityIRI"); // ZHOUXIAOCHI:  Thy shall be semantic 
+		String lowerx = request.getParameter("lowerx");   
 		String lowery = request.getParameter("lowery");
-		String upperx = request.getParameter("upperx");
+		String upperx = request.getParameter("upperx"); 
 		String uppery = request.getParameter("uppery");
 		
 		
-		
+		// ZHOUXIAOCHI: Thy shall be executed by the semantic agent executor
 		
 		String myHost = request.getServerName();
 		int myPort = request.getServerPort();
@@ -77,7 +77,6 @@ public class ADMSCoordinationAgentNew extends HttpServlet {
 				.setPath(myPathADMSStarter)
 				.setParameter("targetFolder", result1);
 	
-		
 		JSONObject result = new JSONObject();
 		String ADMSOutput = executeGet(buildermyPathADMSStarter);
 		

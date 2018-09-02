@@ -12,45 +12,36 @@ import javax.servlet.http.HttpServletResponse;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 
-/**
- * Servlet implementation class AMDSStarter
- */
 @WebServlet("/ADMSStarter")
 public class ADMSStarter extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
+
 	public ADMSStarter() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		String targetFolder = request.getParameter("targetFolder");
-		String res = startADMS(targetFolder);
-		response.getWriter().write(res);
+		if(request.getServerName().contains("localhost")) {
+			response.getWriter().write("Running in localhost, ADMS won't be started");
+		}
+		else {
+			String res = startADMS(targetFolder);
+			response.getWriter().write("ADMS finished simulation");
+		}
+
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
+ 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 
 	public String startADMS(String targetFolder) {
-		// ServletContext context = getServletContext();
 		String startADMSCommand = "\"C:\\Program Files (x86)\\CERC\\ADMS 5\\ADMSModel.exe\" /e2 /ADMS \"test.apl\"";
 		CommandHelper.executeSingleCommand(targetFolder, startADMSCommand);
 		return targetFolder;
