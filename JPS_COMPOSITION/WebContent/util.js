@@ -245,6 +245,8 @@ function composeService() {
     $("#myDiagramDiv").width("0%");
     $("#myDiagramDiv2").height("700px");
 
+	console.log('model', convertNodeObjToMSMObj(myDiagram.model));
+	
     $.ajax({
         method: "POST",
         url: hostname + "ServiceCompositionEndpoint",
