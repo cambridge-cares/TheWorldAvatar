@@ -47,6 +47,8 @@ public class TermValidationAction extends ActionSupport {
 	
 	Set<String> queryResultString;
 	
+	List<String> resultsColumn = new ArrayList<String>();
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -61,6 +63,11 @@ public class TermValidationAction extends ActionSupport {
 
 		String periodicTableSymbol = null;
 
+		resultsColumn.add("UUID:");
+		resultsColumn.add("Empirical Formula:");
+		resultsColumn.add("Basis Set:");
+		resultsColumn.add("Method: ");
+		
 		try {
 
 			Sentence sentence = parser.parse(getSearchTerm(term));
@@ -151,17 +158,15 @@ public class TermValidationAction extends ActionSupport {
 					for(String mpp: listTemp) {
 						
 						queryResultString.add(mpp);
-						
-					}
 					
-					/**
-					 * @author nk510
-					 *  Returns list of all molecule properties. All molecules are result of input query string. 
-					 */
-					for(String mn : queryResultString) {
+						/**
+						 * @author nk510
+						 *  Returns list of all molecule properties. All molecules are result of input query string. 
+						 */
+						finalSearchResultSet.addAll(QueryManager.performSPARQLForMoleculeName(mpp));
 						
-						finalSearchResultSet.addAll(QueryManager.performSPARQLForMoleculeName(mn));
 					}
+
 					
 				}catch(RDF4JException e) {
 					
@@ -345,6 +350,14 @@ public class TermValidationAction extends ActionSupport {
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+
+	public List<String> getResultsColumn() {
+		return resultsColumn;
+	}
+
+	public void setResultsColumn(List<String> resultsColumn) {
+		this.resultsColumn = resultsColumn;
 	}
 
 }

@@ -100,23 +100,69 @@
 <s:iterator value="queryResultString">
 <s:property/>
 </s:iterator>
+<P/>
 
- <table>
-<s:iterator value="finalSearchResultSet" var="result" >
-<tr>
- <th><s:property  value="moleculeName"/></th>
- <th></th>
-</tr>
-<tr>
-    <td></td>
-    <td>
-    <s:property  value="uuid"/><P/>
-    <!--<s:property  value="levelOfTheory"/><P/>-->
-    <!--<s:property  value="basisSet"/><P/>-->
-    </td>
-  </tr>
+<div id="tool-container">
+
+       <div id="result-container">
+            <div id="process-box" class="tool-tab">
+               
+<!-- A list of search results for given query string-->
+                   
+<s:iterator value="finalSearchResultSet" var="result" >                    
+<div id="<s:property  value="uuid"/>" class="box">
+    <div class="round-top box-header">
+        <div class="checkbox-wrapper" >
+            
+        </div>
+            <div class="species-title" style="background-color:lightblue"><b><s:property  value="moleculeName"/></b></div>
+        
+    </div>
+    <div class="round-bottom box-content" style="background-color:lightyellow">
+     <!--  <img alt="" src="http://como.cheng.cam.ac.uk/molhub/compchem/6498a583-a210-4ac1/data.3d.thumb.png" class="species-image"/>-->
+
+        <div class="species-content">
+            <div>
+                <div class="property-name"><b><s:property value="resultsColumn[0]"/></b> <s:property  value="uuid"/></div>
+                <div class="property-value"></div>
+            </div>
+            <p/>
+            <div>
+                <div class="property-name"></div>
+                <div class="property-value">
+                   <!-- <a href="http://como.cheng.cam.ac.uk/molhub/compchem/6498a583-a210-4ac1/">http://como.cheng.cam.ac.uk/molhub/compchem/6498a583-a210-4ac1/</a> -->
+                </div>
+            </div>
+            <p/>
+            <div>
+                <div class="property-name"><b><s:property value="resultsColumn[1]"/></b> <s:property  value="moleculeName"/></div>
+                <div class="property-value"></div>
+            </div>
+            <!-- 
+            <div>
+                <div class="property-name">InChI</div>
+                <div class="property-value">InChI=1S/C2H5O4Si/c1-2-6-7(3,4)5/h2-4H,1H2</div>
+
+            </div>
+             -->
+             <p/>
+            <div>
+                <div class="property-name"><b><s:property value="resultsColumn[2]"/></b> <s:property  value="basisSet"/></div>
+                <div class="property-value"></div>
+            </div>
+            <p/>
+            <div>
+                <div class="property-name"><b><s:property value="resultsColumn[3]"/></b> <s:property  value="levelOfTheory"/></div>
+                <div class="property-value"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<P/>
 </s:iterator>
-</table>
+</div>
+</div>
+</div>
 
 </div>
     <div id="footer-bar"></div>

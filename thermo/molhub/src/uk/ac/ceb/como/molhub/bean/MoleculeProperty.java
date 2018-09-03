@@ -85,9 +85,7 @@ public class MoleculeProperty {
 
 		this.moleculeName = moleculeName;
 
-	}
-
-	
+	}	
 
 	public String getMoleculeName() {
 		return moleculeName;

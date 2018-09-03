@@ -19,6 +19,7 @@ import org.apache.commons.io.FileUtils;
  *         (owl files) of Ontochem ontology. Runs thermo calculations
  *         implemented in Python, and generated results using json format.</p>
  */
+
 public class CalculationAction extends ActionSupport {
 
 	private static final long serialVersionUID = 1L;

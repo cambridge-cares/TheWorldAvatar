@@ -177,9 +177,9 @@ public class QueryManager {
 					BindingSet bindingSet = result.next();
 					
 					MoleculeProperty moleculeProperty = new MoleculeProperty(bindingSet.getValue("uuid").stringValue(),
-							                                                 moleculeName);
-//							                                                 bindingSet.getValue("levelOfTheory").toString()); 
-//							                                                 bindingSet.getValue("basisSetValue").toString());
+							                                                 moleculeName,
+							                                                 bindingSet.getValue("levelOfTheory").toString(), 
+							                                                 bindingSet.getValue("basisSetValue").toString());
 //							                                                 Integer.parseInt(bindingSet.getValue("frequenciesSize").toString()),
 //							                                                 bindingSet.getValue("frequenciesValue").toString(),
 //							                                                 bindingSet.getValue("frequenciesUnit").toString(),
