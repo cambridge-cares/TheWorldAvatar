@@ -2,7 +2,7 @@ PREFIX ontochem: <http://ontochem.theworldavatar.com/kb/OntoChem.owl#>
 PREFIX gc: <http://purl.org/gc/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-SELECT ?moleculeName ?atomName ?atomNumber ?levelOfTheory ?basisSetValue ?frequenciesSize ?frequenciesValue ?frequenciesUnit ?spinMultiplicityValue  ?coordinateX ?coordinateY ?coordinateZ ?massValue ?massUnit ?geometryTypeValue ?rotationalConstantsSize ?rotationalConstantsUnit ?rotationalConstantsValue ?rotationalSymmetryNumber ?programName ?programVersion  ?runDate 
+SELECT ?g09 ?moleculeName ?atomName ?atomNumber ?levelOfTheory ?basisSetValue ?frequenciesSize ?frequenciesValue ?frequenciesUnit ?spinMultiplicityValue  ?coordinateX ?coordinateY ?coordinateZ ?massValue ?massUnit ?geometryTypeValue ?rotationalConstantsSize ?rotationalConstantsUnit ?rotationalConstantsValue ?rotationalSymmetryNumber ?programName ?programVersion ?runDate 
 WHERE { 
 {
 ?g09 ontochem:hasInitialization ?mn0 . 
@@ -27,7 +27,6 @@ UNION
 ?mn2 gc:hasParameter ?p2 .
 ?p2 rdf:type <http://purl.org/gc/BasisSet> .
 ?p2 gc:hasBasisSet ?basisSetValue .
-
 }
 UNION
 {
@@ -48,20 +47,19 @@ UNION
 ?go1 rdf:type gc:GeometryOptimization .
 ?go1 gc:hasMolecule ?mol2.
 ?mol2 ontochem:hasSpinMultiplicityValue ?spinMultiplicityValue .
-
 }
 UNION
 {
-?g09 gc:isCalculationOn ?go2. 
+?g09 gc:isCalculationOn ?go2.
 ?go2 rdf:type gc:VibrationalAnalysis. 
-?go2 gc:hasResult ?r . 
+?go2 gc:hasResult ?r .
 ?r rdf:type gc:Frequency .
 ?r gc:hasVibrationCount ?frequenciesSize .
 ?r ontochem:hasFrequenciesValue ?frequenciesValue .
-?r gc:hasUnit ?frequenciesUnit. 
+?r gc:hasUnit ?frequenciesUnit.
 }
 UNION
-{ 
+{
 ?g09 gc:isCalculationOn ?go3. 
 ?go3 a ontochem:GeometryType .
 ?go3 ontochem:hasGeometryTypeValue ?geometryTypeValue.

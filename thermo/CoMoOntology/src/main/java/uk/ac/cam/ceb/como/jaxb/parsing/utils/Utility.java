@@ -1,8 +1,12 @@
 package uk.ac.cam.ceb.como.jaxb.parsing.utils;
 
 import java.io.File;
+import java.util.List;
 
+// TODO: Auto-generated Javadoc
 /**
+ * The Interface Utility.
+ *
  * @author nk510
  * The Interface Utility.
  */
@@ -16,5 +20,15 @@ public interface Utility {
 	 * @return the file list
 	 */
 	public File[] getFileList(String folderPath, final String ...format);	
+	
+	
+	/**
+	 * Gets the array file list.
+	 *
+	 * @param folderPath the folder path
+	 * @param format the format
+	 * @return the array file list
+	 */
+	public List<File> getArrayFileList(String folderPath, final String format);
 	
 }

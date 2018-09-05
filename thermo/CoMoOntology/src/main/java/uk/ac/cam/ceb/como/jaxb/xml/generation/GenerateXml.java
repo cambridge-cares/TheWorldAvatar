@@ -83,7 +83,7 @@ public class GenerateXml {
 
 		}
 	}
-	
+
 	/**
 	 * Gets the empirical parser.
 	 *

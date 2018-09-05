@@ -1,6 +1,3 @@
-/*
- * 
- */
 package uk.ac.cam.ceb.como.jaxb.parsing.utils;
 
 import java.io.BufferedReader;
@@ -36,7 +33,7 @@ public class FormulaUtility {
 	 *             Signals that an I/O exception has occurred.
 	 */
 	public String extractFormulaName(File file) throws IOException {
-
+		
 		String formulaName = null;
 
 		/**
@@ -89,7 +86,6 @@ public class FormulaUtility {
 				System.out.println("formula name:  " + formulaName);
 
 				break;
-
 			}
 		}
 
@@ -117,5 +113,4 @@ public class FormulaUtility {
 
 		return empParser.getNumberOfAllAtoms(formula);
 	}
-
 }

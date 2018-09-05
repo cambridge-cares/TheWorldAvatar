@@ -96,6 +96,7 @@ public class CompChemQuery {
 		}
 		
 		long endT = System.nanoTime();
+		
 		System.out.println("time: " + (endT-startT)/1000000000 + " sec.");
 		
 	}
@@ -103,7 +104,7 @@ public class CompChemQuery {
 	/**
 	 * Gets the ont model.
 	 *
-	 * @param tboxSource the ontochem ontology (tbox source)
+	 * @param tboxSource the Compchemchem ontology (tbox source)
 	 * @param aboxSource the ontochem data assertions (abox source)
 	 * @return model Gets instance of OntModel.
 	 */
@@ -139,17 +140,19 @@ public class CompChemQuery {
 	/**
 	 * Perform query.
 	 *
-	 * @param model the instance of OntModel
-	 * @param queryString the query string
-	 * @param fileName the file name
+	 * @param model the instance of OntModel.
+	 * @param queryString the query string.
+	 * @param fileName the file name.
+	 * @param targetFolder is destination folder where query result is saved.
 	 * @throws IOException Signals that an I/O exception has occurred.
+	 * 
 	 */
 	
 	public static void performQuery(OntModel model, String queryString, String fileName, String targetFolder) throws IOException {
 		
 		Query query = QueryFactory.create(queryString);
-		
-		QueryExecution qexec = QueryExecutionFactory.create(query, model);		
+
+		QueryExecution qexec = QueryExecutionFactory.create(query, model);
 		
 		FileOutputStream fileOutputStream = null;
 		
@@ -157,7 +160,7 @@ public class CompChemQuery {
 
 			ResultSet resultSet = qexec.execSelect();
 			
-			while(resultSet.hasNext()) {			 
+			while(resultSet.hasNext()) { 
 		    
 		    fileOutputStream=new FileOutputStream(new File(targetFolder+ StringUtils.substringBefore(fileName, ".")  +".json"),false);
 	       		
@@ -166,9 +169,10 @@ public class CompChemQuery {
 			}
 
 		} finally {
+			
 			qexec.close();
+			
 			fileOutputStream.close();
-		}	
+		}
 	}
-	
 }

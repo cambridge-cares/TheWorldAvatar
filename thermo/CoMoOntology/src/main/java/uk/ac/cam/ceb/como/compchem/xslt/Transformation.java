@@ -8,8 +8,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.Random;
 import java.util.UUID;
 
 import javax.xml.transform.Transformer;
@@ -29,7 +27,7 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
  *         ontochem XML files to RDF graph as Abox assertions of CoMo ontochem
  *         ontology ver 0.1.</p>
  *         
- */
+ */ 
 
 public class Transformation {
 
@@ -104,10 +102,8 @@ public class Transformation {
 			/**
 			 * @author nk510 <p>Runs XSLT transformation for each ontochem XML file form file
 			 *         list.</p> 
-			 */
-			
+			 */			
 			trasnformation(randomStr,xmlSource, outputStream, xsltSource);
-
 		}
 	}
 

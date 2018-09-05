@@ -56,7 +56,7 @@ public class ConsistencyTest {
 		System.out.println("Compchem ontology consistecy: " + hermit.isConsistent());
 
 	}
-
+	
 	/**
 	 * Gets the ontology.
 	 *
