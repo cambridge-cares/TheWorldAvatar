@@ -73,7 +73,7 @@ public class UploadAction extends ActionSupport {
 	private String[] uploadFileName;
 
 	List<String> column = new ArrayList<String>();
-
+	
 	GaussianUploadReport gaussianUploadReport;
 
 	private List<GaussianUploadReport> uploadReportList = new ArrayList<GaussianUploadReport>();
@@ -139,7 +139,7 @@ public class UploadAction extends ActionSupport {
 			 */
 
 			FolderManager.createFolder(folderName);
-
+			
 			/**
 			 * @author nk510 Saves Gaussian file and XML file are saved into generated
 			 *         folder.
@@ -301,5 +301,5 @@ public class UploadAction extends ActionSupport {
 	public void setUploadFileContentType(String uploadFileContentType) {
 		this.uploadFileContentType = uploadFileContentType;
 	}
-
+	
 }

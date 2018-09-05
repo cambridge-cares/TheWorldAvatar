@@ -88,18 +88,31 @@
 
 <!-- PUT CONTENT HERE -->
 
+
 <div class="col-md-9">
-<s:actionerror />
-<s:form action="search">
-   
+<s:actionerror/>
+<s:form action="search">   
 <s:textfield name="term.name" placeholder="Search Molhub" size="80"/>
 <s:submit value="Molhub Search"/>
 </s:form>
 </div>
+<div class="col-md-4">
+<s:actionerror/>
+<s:actionmessage />
 
+<s:form action="calculation" >
+<s:submit value="Run calculation"/>
+</s:form>
+<!-- 
+<s:a action="calculation">Run calculation</s:a>
+ -->
+</div>
+ 
+<!-- 
 <s:iterator value="queryResultString">
-<s:property/>
+<b><s:property/></b>
 </s:iterator>
+ -->
 <P/>
 
 <div id="tool-container">
@@ -119,7 +132,7 @@
         
     </div>
     <div class="round-bottom box-content" style="background-color:lightyellow">
-     <!--  <img alt="" src="http://como.cheng.cam.ac.uk/molhub/compchem/6498a583-a210-4ac1/data.3d.thumb.png" class="species-image"/>-->
+    <!--<img alt="" src="http://como.cheng.cam.ac.uk/molhub/compchem/6498a583-a210-4ac1/data.3d.thumb.png" class="species-image"/>-->
 
         <div class="species-content">
             <div>

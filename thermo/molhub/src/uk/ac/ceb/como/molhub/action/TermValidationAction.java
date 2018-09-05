@@ -3,8 +3,10 @@ package uk.ac.ceb.como.molhub.action;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.apache.struts2.interceptor.SessionAware;
 import org.eclipse.rdf4j.RDF4JException;
 
 import com.opensymphony.xwork2.ActionSupport;
@@ -26,8 +28,8 @@ import uk.ac.ceb.como.molhub.model.SentenceManager;
 /**
  * The Class TermValidationAction.
  */
-public class TermValidationAction extends ActionSupport {
-
+public class TermValidationAction extends ActionSupport implements SessionAware {
+	
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1222255700658500383L;
 
@@ -49,6 +51,7 @@ public class TermValidationAction extends ActionSupport {
 	
 	List<String> resultsColumn = new ArrayList<String>();
 	
+	Map<String,Object> session;
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -56,7 +59,7 @@ public class TermValidationAction extends ActionSupport {
 	 */
 	@Override
 	public String execute() throws Exception {
-
+		
 		PLParser parser = new PLParser();
 
 		DPLL dpll = new DPLLSatisfiable();
@@ -67,6 +70,13 @@ public class TermValidationAction extends ActionSupport {
 		resultsColumn.add("Empirical Formula:");
 		resultsColumn.add("Basis Set:");
 		resultsColumn.add("Method: ");
+		
+		if (term.getName().length() == 0) {
+
+			addFieldError("term.name", "Query string is empty.");
+			
+			return ERROR;
+		}
 		
 		try {
 
@@ -167,6 +177,14 @@ public class TermValidationAction extends ActionSupport {
 						
 					}
 
+					/**
+					 * @author nk510
+					 * Adding search results into session.
+					 */
+					for(MoleculeProperty mp: finalSearchResultSet) {
+						
+						session.put(mp.getUuid(), mp.getMoleculeName());
+					}
 					
 				}catch(RDF4JException e) {
 					
@@ -207,8 +225,16 @@ public class TermValidationAction extends ActionSupport {
 			return ERROR;
 		}
 
-	}
+	} 
 	
+	@Override
+	public String input() {
+		
+		getFinalSearchResultSet();
+		
+		return INPUT;
+	}
+	 
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -226,7 +252,7 @@ public class TermValidationAction extends ActionSupport {
 			addFieldError("term.name", "Query string is empty.");
 		}
 	}
-
+	
 	/**
 	 * Gets the term.
 	 *
@@ -358,6 +384,13 @@ public class TermValidationAction extends ActionSupport {
 
 	public void setResultsColumn(List<String> resultsColumn) {
 		this.resultsColumn = resultsColumn;
+	}
+
+	@Override
+	public void setSession(Map<String, Object> session) {
+		
+		this.session=session;
+		
 	}
 
 }
