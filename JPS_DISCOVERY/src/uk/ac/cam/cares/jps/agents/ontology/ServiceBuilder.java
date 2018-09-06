@@ -1,14 +1,14 @@
-package uk.ac.cam.cares.jps.agent.owl;
+package uk.ac.cam.cares.jps.agents.ontology;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.ac.cam.cares.jps.composition.ServiceModel.MessageContent;
-import uk.ac.cam.cares.jps.composition.ServiceModel.MessagePart;
-import uk.ac.cam.cares.jps.composition.ServiceModel.Operation;
-import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
+import uk.ac.cam.cares.jps.composition.servicemodel.MessageContent;
+import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
+import uk.ac.cam.cares.jps.composition.servicemodel.Operation;
+import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 public class ServiceBuilder {
 	
@@ -48,17 +48,27 @@ public class ServiceBuilder {
 		return this;
 	}	
 	
-	public ServiceBuilder input(String modelReference, boolean mandatory)  {
-		addMessagePart(modelReference, mandatory, true);
+	public ServiceBuilder input(String type, String name)  {
+		addMessagePart(type, false, name, true, true);
 		return this;
 	}
 	
-	public ServiceBuilder output(String modelReference, boolean mandatory)  {
-		addMessagePart(modelReference, mandatory, false);
+	public ServiceBuilder input(String type, boolean array, String name, boolean mandatory)  {
+		addMessagePart(type, array, name, mandatory, true);
 		return this;
 	}
 	
-	private void addMessagePart(String modelReference, boolean mandatory, boolean input) {
+	public ServiceBuilder output(String type, String name)  {
+		addMessagePart(type, false, name, true, false);
+		return this;
+	}
+	
+	public ServiceBuilder output(String type, boolean array, String name, boolean mandatory)  {
+		addMessagePart(type, array, name, mandatory, false);
+		return this;
+	}
+	
+	private void addMessagePart(String type, boolean array, String name, boolean mandatory, boolean input) {
 		
 		MessageContent content = getContent(input);
 		List<MessagePart> parts = null;
@@ -77,7 +87,9 @@ public class ServiceBuilder {
 		}
 		
 		MessagePart newPart = new MessagePart();
-		newPart.setModelReference(uri(modelReference));
+		newPart.setModelReference(uri(type));
+		newPart.setArray(array);
+		newPart.setName(name);
 		parts.add(newPart);
 	}
 	

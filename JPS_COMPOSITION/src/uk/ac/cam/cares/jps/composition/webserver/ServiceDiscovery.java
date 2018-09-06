@@ -13,9 +13,13 @@ import uk.ac.cam.cares.jps.composition.util.ServicePoolTool;
 
 public class ServiceDiscovery {
 
-	private ArrayList<Service> service_pool;
+	protected ArrayList<Service> service_pool;
 	public String hostName = "";
 
+	public ServiceDiscovery() {
+		this.service_pool = new ArrayList<Service>();
+	}
+	
 	public ServiceDiscovery(String hostName) throws Exception {
 		this.service_pool = new ArrayList<Service>();
 		this.hostName = hostName;
