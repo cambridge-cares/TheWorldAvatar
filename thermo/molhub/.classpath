@@ -27,5 +27,9 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/nk510/git/thermochemistry/molhub/WebContent/WEB-INF/lib/Jmol.jar"/>
+	<classpathentry kind="lib" path="C:/Users/nk510/git/thermochemistry/molhub/WebContent/WEB-INF/lib/JmolData.jar"/>
+	<classpathentry kind="lib" path="C:/Users/nk510/git/thermochemistry/molhub/WebContent/WEB-INF/lib/JmolLib.jar"/>
+	<classpathentry kind="lib" path="C:/Users/nk510/git/thermochemistry/molhub/WebContent/WEB-INF/lib/JSpecView.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

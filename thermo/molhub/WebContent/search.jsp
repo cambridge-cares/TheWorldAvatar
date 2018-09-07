@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="sj" uri="/struts-jquery-tags" %>
 <%@ taglib prefix="sb" uri="/struts-bootstrap-tags" %> 
+<%@ taglib  prefix="c"  uri="http://java.sun.com/jsp/jstl/core"%>
 
 <!DOCTYPE html>
 <html>
@@ -14,8 +15,10 @@
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/CoMoStyle.css">
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/CoMoIncludeStyle.css">
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/CoMoThemesStyle.css">
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/styles/tool-navigator.css"/>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/styles/repository.css"/>
 <title>Computational Modelling Group</title>
-  
+ 
 </head>
 
 <body class="oneColFixCtr">
@@ -103,16 +106,11 @@
 <s:form action="calculation" >
 <s:submit value="Run calculation"/>
 </s:form>
-<!-- 
-<s:a action="calculation">Run calculation</s:a>
- -->
+
+<s:set value="term" var="termName"/>
+
 </div>
- 
-<!-- 
-<s:iterator value="queryResultString">
-<b><s:property/></b>
-</s:iterator>
- -->
+<s:property value="session"/>
 <P/>
 
 <div id="tool-container">
@@ -122,22 +120,24 @@
                
 <!-- A list of search results for given query string-->
                    
-<s:iterator value="finalSearchResultSet" var="result" >                    
+<s:iterator value="finalSearchResultSet" var="result" > 
+
+              
 <div id="<s:property  value="uuid"/>" class="box">
     <div class="round-top box-header">
         <div class="checkbox-wrapper" >
             
         </div>
-            <div class="species-title" style="background-color:lightblue"><b><s:property  value="moleculeName"/></b></div>
+            <div class="species-title"><s:property  value="moleculeName"/></div>
         
     </div>
-    <div class="round-bottom box-content" style="background-color:lightyellow">
+    <div class="round-bottom box-content">
     <!--<img alt="" src="http://como.cheng.cam.ac.uk/molhub/compchem/6498a583-a210-4ac1/data.3d.thumb.png" class="species-image"/>-->
 
         <div class="species-content">
             <div>
-                <div class="property-name"><b><s:property value="resultsColumn[0]"/></b> <s:property  value="uuid"/></div>
-                <div class="property-value"></div>
+                <div class="property-name"><s:property value="resultsColumn[0]"/></div>
+                <div class="property-value"><s:property  value="uuid"/></div>
             </div>
             <p/>
             <div>
@@ -148,8 +148,8 @@
             </div>
             <p/>
             <div>
-                <div class="property-name"><b><s:property value="resultsColumn[1]"/></b> <s:property  value="moleculeName"/></div>
-                <div class="property-value"></div>
+                <div class="property-name"><s:property value="resultsColumn[1]"/></div>
+                <div class="property-value"> <s:property  value="moleculeName"/></div>
             </div>
             <!-- 
             <div>
@@ -160,13 +160,13 @@
              -->
              <p/>
             <div>
-                <div class="property-name"><b><s:property value="resultsColumn[2]"/></b> <s:property  value="basisSet"/></div>
-                <div class="property-value"></div>
+                <div class="property-name"><s:property value="resultsColumn[2]"/></div>
+                <div class="property-value"> <s:property  value="basisSet"/></div>
             </div>
             <p/>
             <div>
-                <div class="property-name"><b><s:property value="resultsColumn[3]"/></b> <s:property  value="levelOfTheory"/></div>
-                <div class="property-value"></div>
+                <div class="property-name"><s:property value="resultsColumn[3]"/></div>
+                <div class="property-value"> <s:property  value="levelOfTheory"/></div>
             </div>
         </div>
     </div>

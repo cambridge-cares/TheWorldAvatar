@@ -38,20 +38,29 @@
 
   
    <action name="search" class="uk.ac.ceb.como.molhub.action.TermValidationAction" method="execute">
-          
-	<result name="success">/search.jsp</result>
+    
+    <result name="success">/search.jsp</result>
 	<result name="input">/search.jsp</result>
 	<result name="error">/search.jsp</result>
-
+	 
+    <interceptor-ref name="basicStack"/>
+    <interceptor-ref name="scope">
+        <param name="type">start</param>
+    </interceptor-ref>
+      
    </action>
-     
+   
+   <action name="calculation" class="uk.ac.ceb.como.molhub.action.CalculationAction" method="execute">  
     
-    <action name="calculation" class="uk.ac.ceb.como.molhub.action.CalculationAction" method="execute">
-     
        <result name="success">/search.jsp</result>
        <result name="input">/search.jsp</result>
 	   <result name="error">/search.jsp</result>   
-		
+    
+    <interceptor-ref name="scope">
+        <param name="type">end</param>
+    </interceptor-ref>
+    <interceptor-ref name="basicStack"/>
+    
     </action>
     	
    

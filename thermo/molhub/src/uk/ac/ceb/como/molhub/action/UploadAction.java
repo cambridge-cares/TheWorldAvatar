@@ -97,6 +97,7 @@ public class UploadAction extends ActionSupport {
 		 * @author nk510 Column names in generated table (report).
 		 */
 		if (!files.isEmpty()) {
+			
 			column.add("UUID");
 			column.add("Gaussian file");
 			column.add("XML validation");

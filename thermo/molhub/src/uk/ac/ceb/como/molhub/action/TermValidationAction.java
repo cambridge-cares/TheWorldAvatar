@@ -1,15 +1,20 @@
 package uk.ac.ceb.como.molhub.action;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.struts2.interceptor.SessionAware;
-import org.eclipse.rdf4j.RDF4JException;
 
+import org.apache.struts2.dispatcher.SessionMap;
+
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+
+import org.eclipse.rdf4j.RDF4JException;
 
 import aima.core.logic.propositional.inference.DPLL;
 import aima.core.logic.propositional.inference.DPLLSatisfiable;
@@ -28,6 +33,7 @@ import uk.ac.ceb.como.molhub.model.SentenceManager;
 /**
  * The Class TermValidationAction.
  */
+
 public class TermValidationAction extends ActionSupport implements SessionAware {
 	
 	/** The Constant serialVersionUID. */
@@ -51,7 +57,10 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 	
 	List<String> resultsColumn = new ArrayList<String>();
 	
-	Map<String,Object> session;
+	Map<String,Object> session = new HashMap<String, Object>();
+
+		
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -60,26 +69,40 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 	@Override
 	public String execute() throws Exception {
 		
+		
 		PLParser parser = new PLParser();
 
 		DPLL dpll = new DPLLSatisfiable();
 
 		String periodicTableSymbol = null;
-
-		resultsColumn.add("UUID:");
+		
+		resultsColumn.add("UUID:");		
 		resultsColumn.add("Empirical Formula:");
 		resultsColumn.add("Basis Set:");
 		resultsColumn.add("Method: ");
-		
-		if (term.getName().length() == 0) {
+			
+		if (term.getName().length() == 0) {			
+			
+			if (!session.isEmpty()) {			
+				
+				for(Map.Entry<String, Object> mp: session.entrySet()) {
+				
+					session.remove(mp.getKey(),mp.getValue());
+				}
+			}
 
 			addFieldError("term.name", "Query string is empty.");
 			
 			return ERROR;
 		}
 		
-		try {
-
+		if(!session.isEmpty()) {
+			
+			session.clear();
+		}
+		
+		try { 
+			
 			Sentence sentence = parser.parse(getSearchTerm(term));
 
 			/**
@@ -176,15 +199,22 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 						finalSearchResultSet.addAll(QueryManager.performSPARQLForMoleculeName(mpp));
 						
 					}
-
+					
+					
 					/**
 					 * @author nk510
-					 * Adding search results into session.
+					 * Adding search results (uuid, molecule name) into session.
 					 */
-					for(MoleculeProperty mp: finalSearchResultSet) {
-						
-						session.put(mp.getUuid(), mp.getMoleculeName());
-					}
+					for(MoleculeProperty mp: finalSearchResultSet) {	
+					
+					session.put(mp.getUuid(), mp.getMoleculeName());
+					
+										
+					}					
+					
+//					setSession(session);
+					
+					
 					
 				}catch(RDF4JException e) {
 					
@@ -385,12 +415,18 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 	public void setResultsColumn(List<String> resultsColumn) {
 		this.resultsColumn = resultsColumn;
 	}
-
+	
 	@Override
 	public void setSession(Map<String, Object> session) {
+		// TODO Auto-generated method stub
 		
-		this.session=session;
+		this.session=(SessionMap<String, Object>)session;
 		
 	}
+	
+	public Map<String, Object> getSession() {
+		
+		return session;
+	}	
 
 }

@@ -118,7 +118,7 @@
 				<div id="main-content" class="clearfix">
 
 					<!-- PUT CONTENT HERE -->
-					<div class="col-md-8">
+					<div class="col-md-9">
 						<s:actionerror />
 						<s:actionmessage />
 						<s:form action="upload" method="post"

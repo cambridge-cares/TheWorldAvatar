@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.struts2.interceptor.SessionAware;
+import org.apache.struts2.dispatcher.SessionMap;
 
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -39,8 +40,8 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 	
 	String sparql = catalicaFolderPath + "/conf/Catalina/sparql_query/query_all.sparql";
 	
-	List<MoleculeProperty> finalSearchResultSet = new ArrayList<MoleculeProperty>();
-
+	List<MoleculeProperty> finalSearchResultSet = new ArrayList<MoleculeProperty>();	
+	
 	@Override
 	public String execute() throws Exception {
 
@@ -48,8 +49,6 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 
 		File sparqlFile = new File(sparql);
 		
-		logger.info("session.size(): " + session.size());
-
 		if(session.isEmpty()) {
 			
 			addFieldError("term.name","There are no selected species for which calculation will be performed.");
@@ -89,11 +88,28 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 
 					Runtime.getRuntime().exec(cmd);
 				}
+				
+				/**
+				 * @author nk510
+				 * Remove session keys
+				 */
+				session.remove(mp.getKey());				
+				
 		}
+		/**
+		 * @author nk510
+		 * Invalidate session
+		 */
+//		if (session instanceof org.apache.struts2.dispatcher.SessionMap) {
+//		    try {
+//		        ((org.apache.struts2.dispatcher.SessionMap<String, Object>) session).invalidate();
+//		    } catch (IllegalStateException e) {
+//		        logger.error("Problem with session: ", e);
+//		    }
+//		}
+		
 		
 		addActionMessage("Calculations successfully completed.");
-		
-		session.clear();	
 		
 		return SUCCESS;
 
@@ -106,7 +122,6 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 	public void setFinalSearchResultSet(List<MoleculeProperty> finalSearchResultSet) {
 		this.finalSearchResultSet = finalSearchResultSet;
 	}
-
 	
 	public Map<String, Object> getSession() {
 		return session;
@@ -114,6 +129,6 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 
 	@Override
 	public void setSession(Map<String, Object> session) {
-		this.session = session;
+		this.session = (SessionMap<String,Object>)session;
 	}
 }
