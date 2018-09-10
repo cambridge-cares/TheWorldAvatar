@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.owl;
+package uk.ac.cam.cares.jps.agents.ontology;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -18,10 +18,10 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
-import uk.ac.cam.cares.jps.composition.ServiceModel.MessageContent;
-import uk.ac.cam.cares.jps.composition.ServiceModel.MessagePart;
-import uk.ac.cam.cares.jps.composition.ServiceModel.Operation;
-import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
+import uk.ac.cam.cares.jps.composition.servicemodel.MessageContent;
+import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
+import uk.ac.cam.cares.jps.composition.servicemodel.Operation;
+import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 public class ServiceReader {
 	
@@ -187,16 +187,22 @@ public class ServiceReader {
         Individual individual = inputNode.as(Individual.class);
         result = new MessagePart(new URI(individual.getURI()));
         
-        String modelReference = individual.getProperty(MSM.modelReference.Property()).getString();
-        result.setModelReference(new URI(modelReference));
+        String type = individual.getProperty(MSM.hasType.Property()).getString();
+        result.setModelReference(new URI(type));
         
-        Statement statement = individual.getProperty(MSM.hasValue.Property());
+        String array = individual.getProperty(MSM.isArray.Property()).getString();
+        result.setArray(Boolean.valueOf(array));
+        
+        String name = individual.getProperty(MSM.hasName.Property()).getString();
+        result.setName(name);
+        
+        Statement statement = individual.getProperty(MSM.hasObjectValue.Property());
         if (statement != null) {
         	result.setValue(statement.getString());
         }
        
-        // TODO-AE datatypeValue should be not literal (see definition of MessagePart but an URI) --> Xiaochi
-        statement = individual.getProperty(MSM.hasDatatypeValue.Property());
+        // TODO-AE URGENT datatypeValue should be not literal (see definition of MessagePart but an URI) --> Xiaochi
+        statement = individual.getProperty(MSM.hasDataValue.Property());
         if (statement != null) {
         	result.setDatatypeValue(statement.getString());
         }

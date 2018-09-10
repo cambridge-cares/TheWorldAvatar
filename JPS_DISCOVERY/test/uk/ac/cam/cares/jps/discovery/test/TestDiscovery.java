@@ -199,5 +199,7 @@ public class TestDiscovery extends TestCase {
 		AgentResponse agentResponse = DiscoveryProvider.callAgent(agentRequest);
 		Object actual = agentResponse.getOutputParameters().get(0).getValue();
 		assertEquals("30.3", actual);
+		
+		
 	}
 }

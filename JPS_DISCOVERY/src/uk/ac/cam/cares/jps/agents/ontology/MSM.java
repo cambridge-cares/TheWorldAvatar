@@ -1,12 +1,14 @@
-package uk.ac.cam.cares.jps.agent.owl;
+package uk.ac.cam.cares.jps.agents.ontology;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 public enum MSM {
 
 	Service() {
+
 		@Override
 		public String IRI() {
 			return MSM + this.name();
@@ -19,8 +21,7 @@ public enum MSM {
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
-			// TODO Auto-generated method stub
+		public Property Property() {
 			return null;
 		}
 
@@ -39,8 +40,7 @@ public enum MSM {
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
-			// TODO Auto-generated method stub
+		public Property Property() {
 			return null;
 		}
 
@@ -59,8 +59,7 @@ public enum MSM {
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
-			// TODO Auto-generated method stub
+		public Property Property() {
 			return null;
 		}
 
@@ -79,8 +78,7 @@ public enum MSM {
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
-			// TODO Auto-generated method stub
+		public Property Property() {
 			return null;
 		}
 	},
@@ -89,8 +87,7 @@ public enum MSM {
 
 		@Override
 		public String IRI() {
-			// TODO Auto-generated method stub
-			return null;
+			return MSM + this.name();
 		}
 
 		@Override
@@ -100,7 +97,7 @@ public enum MSM {
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
+		public Property Property() {
 			Model model = ModelFactory.createDefaultModel();
 			return model.createProperty(MSM + this.name());
 		}
@@ -111,8 +108,7 @@ public enum MSM {
 
 		@Override
 		public String IRI() {
-			// TODO Auto-generated method stub
-			return null;
+			return MSM + this.name();
 		}
 
 		@Override
@@ -122,7 +118,7 @@ public enum MSM {
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
+		public Property Property() {
 			Model model = ModelFactory.createDefaultModel();
 			return model.createProperty(MSM + this.name());
 		}
@@ -133,8 +129,7 @@ public enum MSM {
 
 		@Override
 		public String IRI() {
-			// TODO Auto-generated method stub
-			return null;
+			return MSM + this.name();
 		}
 
 		@Override
@@ -144,7 +139,7 @@ public enum MSM {
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
+		public Property Property() {
 			Model model = ModelFactory.createDefaultModel();
 			return model.createProperty(MSM + this.name());
 		}
@@ -155,8 +150,7 @@ public enum MSM {
 
 		@Override
 		public String IRI() {
-			// TODO Auto-generated method stub
-			return null;
+			return MSM + this.name();
 		}
 
 		@Override
@@ -166,7 +160,7 @@ public enum MSM {
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
+		public Property Property() {
 			Model model = ModelFactory.createDefaultModel();
 			return model.createProperty(MSM + this.name());
 		}
@@ -177,8 +171,7 @@ public enum MSM {
 
 		@Override
 		public String IRI() {
-			// TODO Auto-generated method stub
-			return null;
+			return MSM + this.name();
 		}
 
 		@Override
@@ -188,19 +181,19 @@ public enum MSM {
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
+		public Property Property() {
 			Model model = ModelFactory.createDefaultModel();
 			return model.createProperty(MSM + this.name());
 		}
 
 	},
 	
+	// TODO-AE URGENT replace this by hasType
 	modelReference() {
 
 		@Override
 		public String IRI() {
-			// TODO Auto-generated method stub
-			return null;
+			return SAWSDL + this.name();
 		}
 
 		@Override
@@ -210,53 +203,114 @@ public enum MSM {
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
+		public Property Property() {
 			Model model = ModelFactory.createDefaultModel();
 			return model.createProperty(SAWSDL + this.name());
 		}
 
 	},
 	
-	hasValue() {
+	hasType() {
 
 		@Override
 		public String IRI() {
-			// TODO Auto-generated method stub
-			return null;
+			return MSM + this.name();
 		}
 
 		@Override
 		public Resource Node() {
 			Model model = ModelFactory.createDefaultModel();
-			return model.createResource(ONTOAGENT + this.name());
+			return model.createResource(MSM + this.name());
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
+		public Property Property() {
 			Model model = ModelFactory.createDefaultModel();
-			return model.createProperty(ONTOAGENT + this.name());
+			return model.createProperty(MSM + this.name());
 		}
 
 	},
 	
-	hasDatatypeValue() {
+	isArray() {
 
 		@Override
 		public String IRI() {
-			// TODO Auto-generated method stub
-			return null;
+			return MSM + this.name();
 		}
 
 		@Override
 		public Resource Node() {
 			Model model = ModelFactory.createDefaultModel();
-			return model.createResource(ONTOAGENT + this.name());
+			return model.createResource(MSM + this.name());
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
+		public Property Property() {
 			Model model = ModelFactory.createDefaultModel();
-			return model.createProperty(ONTOAGENT + this.name());
+			return model.createProperty(MSM + this.name());
+		}
+
+	},
+	
+	hasName() {
+
+		@Override
+		public String IRI() {
+			return MSM + this.name();
+		}
+
+		@Override
+		public Resource Node() {
+			Model model = ModelFactory.createDefaultModel();
+			return model.createResource(MSM + this.name());
+		}
+
+		@Override
+		public Property Property() {
+			Model model = ModelFactory.createDefaultModel();
+			return model.createProperty(MSM + this.name());
+		}
+
+	},
+	
+	hasObjectValue() {
+
+		@Override
+		public String IRI() {
+			return MSM + this.name();
+		}
+
+		@Override
+		public Resource Node() {
+			Model model = ModelFactory.createDefaultModel();
+			return model.createResource(MSM + this.name());
+		}
+
+		@Override
+		public Property Property() {
+			Model model = ModelFactory.createDefaultModel();
+			return model.createProperty(MSM + this.name());
+		}
+
+	},
+	
+	hasDataValue() {
+
+		@Override
+		public String IRI() {
+			return MSM + this.name();
+		}
+
+		@Override
+		public Resource Node() {
+			Model model = ModelFactory.createDefaultModel();
+			return model.createResource(MSM + this.name());
+		}
+
+		@Override
+		public Property Property() {
+			Model model = ModelFactory.createDefaultModel();
+			return model.createProperty(MSM + this.name());
 		}
 
 	},
@@ -267,37 +321,33 @@ public enum MSM {
 
 		@Override
 		public String IRI() {
-			return null;
+			return MSM + this.name();
 		}
 
 		@Override
 		public Resource Node() {
 			Model model = ModelFactory.createDefaultModel();
-			return model.createResource(ONTOAGENT + this.name());
+			return model.createResource(MSM + this.name());
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
+		public Property Property() {
 			Model model = ModelFactory.createDefaultModel();
-			return model.createProperty(ONTOAGENT + this.name());
+			return model.createProperty(MSM + this.name());
 		}
 
-	}
-
-
-	;
+	};
 
 	public abstract String IRI();
 
 	public abstract Resource Node();
 
-	public abstract com.hp.hpl.jena.rdf.model.Property Property();
+	public abstract Property Property();
 
-	public static final String MSM = "http://iserve.kmi.open.ac.uk/ns/msm#";
+	public static final String MSM = "http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#";
+	// TODO-AE URGENT discard this
 	public static final String SAWSDL = "http://www.w3.org/ns/sawsdl#";
-	public static final String ONTOAGENT = "http://www.theworldavatar.com/ontology/OntoAgent.owl#";
 
 	private MSM() {
-
 	}
 }
