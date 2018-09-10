@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.servicespool;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -27,8 +28,12 @@ import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.RDFFormat;
+import org.apache.jena.vocabulary.RDF;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -62,7 +67,10 @@ public class ADMSAgent extends HttpServlet {
 		// Lets do both of them and then discuss later.
 		// Receive the IRI of the source emission and then make the query ... 
 		// 
-		String value = request.getParameter("value").replace("$", "#");
+		String value = request.getParameter("value").replace("$", "#").replace("@", "#");
+
+ 
+		
 		Model model = ModelFactory.createDefaultModel();
 		RDFDataMgr.read(model, new ByteArrayInputStream(value.getBytes("UTF-8")), Lang.RDFJSON);
 	
@@ -70,7 +78,7 @@ public class ADMSAgent extends HttpServlet {
 		JSONObject weatherInJSON = QueryWarehouse.getWeatherData(model);
 		String buildingsInString = QueryWarehouse.getBuildingData(model);
 	 	String plantIRI = QueryWarehouse.getPlantIRI(model);
-	 	 
+	 	
 		writeAPLFile(buildingsInString,plantIRI, regionInJSON);
 		writeMetFile(weatherInJSON);
 		
@@ -82,8 +90,22 @@ public class ADMSAgent extends HttpServlet {
 				.setPath(path)
 				.setParameter("targetFolder",AgentLocator.getPathToWorkingDir(this));
 		
-		response.getWriter().write(executeGet(builder));
-		response.getWriter().write("\nInput files are at : " + AgentLocator.getPathToWorkingDir(this));
+		Model rdfModel = ModelFactory.createDefaultModel();
+		Resource ADMSOutput = rdfModel.createResource("http://test.com/Instance/myADMSOutput");
+		Resource ADMSOutputType = rdfModel.createResource("http://test.com/ontology/ADMSSimulation");
+		Property hasPath = rdfModel.createProperty("http://test.com/Property/hasOutputPosition");
+		ADMSOutput.addProperty(RDF.type,ADMSOutputType);
+		ADMSOutput.addLiteral(hasPath,AgentLocator.getPathToWorkingDir(this));
+		
+ 
+		executeGet(builder);
+		
+		rdfModel.add(model);		
+		StringWriter out = new StringWriter();		
+		RDFDataMgr.write(out, rdfModel, RDFFormat.RDFJSON);
+		response.getWriter().write(out.toString().replace("$", "#"));
+		
+		//response.getWriter().write("\nInput files are at : " + AgentLocator.getPathToWorkingDir(this));
 		
 		
 	

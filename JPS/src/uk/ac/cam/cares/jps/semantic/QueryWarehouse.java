@@ -11,6 +11,7 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
+import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFFormat;
 import org.json.JSONArray;
@@ -22,6 +23,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
+import uk.ac.cam.cares.jps.building.CRSTransformer;
 import uk.ac.cam.cares.jps.building.SimpleBuildingData;
 
 public class QueryWarehouse {
@@ -29,7 +31,7 @@ public class QueryWarehouse {
 	public static JSONObject getRegionCoordinates(Model model) {
 		String queryString = 
 				"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
-				"SELECT ?lowerX ?upperX ?lowerY ?upperY  WHERE \n"
+				"SELECT ?lowerX ?upperX ?lowerY ?upperY ?ref  WHERE \n"
 				+ "{"
 				+ "?region <http://test.com/Property/upperPoint> ?upperPoint . \n"
 				+ "?upperPoint <http://test.com/Property/hasX> ?upperX .\n"
@@ -37,6 +39,7 @@ public class QueryWarehouse {
 				+ "?region <http://test.com/Property/lowerPoint> ?lowerPoint .\n"
 				+ "?lowerPoint <http://test.com/Property/hasX> ?lowerX .\n"
 				+ "?lowerPoint <http://test.com/Property/hasY> ?lowerY .\n"
+				+ "?region <http://test.com/Property/referenceSystem> ?ref .\n"
 				+ "}";
 		
 	
@@ -49,15 +52,59 @@ public class QueryWarehouse {
 			 try {
 				 
 				QuerySolution nextSolution = results.nextSolution();
-				output.put("xmax", nextSolution.getLiteral("upperX").getValue());
-				output.put("ymax", nextSolution.getLiteral("upperY").getValue());
-				output.put("xmin", nextSolution.getLiteral("lowerX").getValue());
-				output.put("ymin", nextSolution.getLiteral("lowerY").getValue());				
+				
+				System.out.println("---------------85564251--------------");
+				System.out.println(nextSolution.getLiteral("upperX").getString());
+				System.out.println(nextSolution.getLiteral("upperY").getString());
+				System.out.println(nextSolution.getLiteral("lowerX").getString());
+				System.out.println(nextSolution.getLiteral("lowerY").getString());
+
+				output.put("xmax", nextSolution.getLiteral("upperX").getString());
+				output.put("ymax", nextSolution.getLiteral("upperY").getString());
+				output.put("xmin", nextSolution.getLiteral("lowerX").getString());
+				output.put("ymin", nextSolution.getLiteral("lowerY").getString());			
+				output.put("ref", nextSolution.getLiteral("ref").getString());				
+
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
 			 
 		}
+		
+
+		String ref,targetCRS;
+		try {
+			ref = output.getString("ref");
+			if (ref.equalsIgnoreCase(CRSTransformer.EPSG_4326)) {
+				String sourceCRS = CRSTransformer.EPSG_4326;			 
+ 				double[] upperPoint = new double[] {Double.parseDouble(output.getString("xmax")),Double.parseDouble(output.getString("ymax"))};
+				double[] lowerPoint = new double[] {Double.parseDouble(output.getString("xmin")),Double.parseDouble(output.getString("ymin"))};
+				
+  				if (Double.parseDouble(output.getString("xmax")) > 5.0) {
+  					targetCRS = CRSTransformer.EPSG_28992; // Berlin
+  				} else {
+  					System.out.println("====================== Hague ======================");
+  					targetCRS = CRSTransformer.EPSG_28992;
+  				} 
+ 				
+				double[] newUpperPoint = CRSTransformer.transform(sourceCRS, targetCRS, upperPoint);
+				double[] newLowerPoint = CRSTransformer.transform(sourceCRS, targetCRS, lowerPoint);
+				output.put("xmax", newUpperPoint[0]);
+				output.put("ymax", newUpperPoint[1]);
+				output.put("xmin", newLowerPoint[0]);
+				output.put("ymin", newLowerPoint[1]);
+				output.put("ref", targetCRS);
+				
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		System.out.println();
+		System.out.println(output.toString());
+		System.out.println("-----------------------------");				
+
+		
 		return output;
 	}
 	
@@ -185,6 +232,31 @@ public class QueryWarehouse {
 			plantIRI = nextSolution.get("plant").toString();
 		}
 		return plantIRI;		
+	}
+	
+	
+	public static String getCityIRI(Model model) {
+		
+ 
+		
+		
+		String findCityQuery = 
+				"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
+				"SELECT ?city WHERE \n"
+				+ "{"
+				+ "		?city rdf:type <http://www.theworldavatar.com/OntoEIP/supporting_concepts/space_and_time_v1.owl#City> .\n"
+				+ "}";
+		
+		String cityIRI = "";
+		Query query = QueryFactory.create(findCityQuery);
+		QueryExecution qe = QueryExecutionFactory.create(query, model);
+		ResultSet results = qe.execSelect();
+		while(results.hasNext()) {
+			QuerySolution nextSolution = results.nextSolution();
+			cityIRI = (nextSolution.getResource("city").getURI());
+			System.out.println("---- CityIRI ----" + cityIRI);
+		}
+		return cityIRI;
 	}
 	
 	

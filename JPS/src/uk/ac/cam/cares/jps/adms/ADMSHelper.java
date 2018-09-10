@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.adms;
 
 import java.io.IOException;
+import java.util.ArrayList;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -9,7 +11,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.PythonException;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 /**
@@ -35,12 +39,24 @@ public class ADMSHelper extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		String listOfIRIs = request.getParameter("listOfIRIs");
 		String cityiri = request.getParameter("cityiri");
-		
+
 		Gson g = new Gson();
-		
+		System.out.println(listOfIRIs);
+		System.out.println(cityiri);
 		String result;
 		try {
-			result = PythonHelper.callPython("caresjpsadmsinputs/ADMSGeoJsonGetter.py", g.toJson(listOfIRIs), cityiri, this);
+			
+			String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
+
+			ArrayList<String> args = new ArrayList<String>();
+			args.add("python");
+			args.add("ADMSGeoJsonGetter.py"); 
+			args.add(g.toJson(listOfIRIs));
+			args.add(cityiri);
+
+		
+			result = CommandHelper.executeCommands(targetFolder, args);
+			 
 			response.setContentType("application/json");
 			response.getWriter().write(result);
 		} catch (PythonException e) {

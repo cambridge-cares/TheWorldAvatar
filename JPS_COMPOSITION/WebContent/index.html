@@ -7,19 +7,20 @@
           content="An editor of flow diagrams that supports deletion by dropping onto a particular node and relinking by dragging a link."/>
     <!-- Copyright 1998-2018 by Northwoods Software Corporation. -->
     <meta charset="UTF-8">
-    <script src="go.js"></script>
-    <link rel="stylesheet" type="text/css" href="semantic.min.css">
+    <script src="assets/go.js"></script>
+    <link rel="stylesheet" type="text/css" href="assets/semantic.min.css">
     <script
             src="https://code.jquery.com/jquery-3.1.1.min.js"
             integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
             crossorigin="anonymous"></script>
-    <script src="semantic.min.js"></script>
-    <script src="hashId.min.js"></script>
+    <script src="assets/semantic.min.js"></script>
+    <script src="assets/hashId.min.js"></script>
     <script src="util.js"></script>
     <script src="constants.js"></script>
     <script src="componentFunctions.js"></script>
-    <script src="nativeSemanticUI.js"></script>
+    <script src="assets/nativeSemanticUI.js"></script>
     <script src="visualizeComposition.js"></script>
+    <script src="recommendation.js"></script>
 
 
     <style>
@@ -85,7 +86,7 @@
 
         @font-face {
             font-family: aileron;
-            src: url("arl.ttf") format("opentype");
+            src: url("assets/arl.ttf") format("opentype");
         }
     </style>
 </head>
@@ -94,7 +95,7 @@
 
 <div class="ui inverted vertical masthead center aligned segment" id="topBanner">
     <a style="margin-top: 500px" href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
-        <img src="cam_lang_negativ1%20NEW_0.png">
+        <img src="assets/cam_lang_negativ1%20NEW_0.png">
     </a>
     <div id="container" class="ui text container">
         <h1 id="header1" class="ui inverted header">Semantic Web Service Composition</h1>
@@ -203,59 +204,23 @@
 
 
     <div id="visualizationSelection">
- 
         <h1 class="ui header">Input tools recommanded</h1>
-    
-        <div class="ui special cards">
-    
-    	
-            
-            <div class="card" style="display: inline-block">
-                <div class="blurring dimmable image">
-                    <div class="ui dimmer">
-                        <div class="content">
-                            <div class="center">
-                                <div class="ui inverted button"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <img src="mapo.png">
-                </div>
-                <div  class="content" data="http://www.theworldavatar.com/JPS_COMPOSITION/test.html" onclick="goToVisualization(event)">
-                    <a class="header" data="http://www.theworldavatar.com/JPS_COMPOSITION/test.html">Google Map Coordinate Selector</a>
-                </div>
-             
-            </div>
-            <div class="card" style="display: inline-block">
-                <div class="blurring dimmable image">
-                    <div class="ui inverted dimmer">
-                        <div class="content">
-                            <div class="center">
-                                <div class="ui primary button">Add Friend</div>
-                            </div>
-                        </div>
-                    </div>
-                    <img src="https://blog.webkid.io/content/images/old/3d-maps-with-osmbuildings/osmb-thumb.jpg">
-                </div>
-                   <div class="content" data="http://www.theworldavatar.com/JPS_COMPOSITION/test2.html" onclick="goToVisualization(event)">
-                    <a class="header" data="http://www.theworldavatar.com/JPS_COMPOSITION/test2.html">Google Map Coordinate Selector</a>
-                </div>
-             
-            </div>
+        <div class="ui special cards" id="inputRecommendation">
+                xxxx
         </div>
     </div>
   
   
   
-  
+  <!--
       <div id="visualizationSelectionOutput">
       
       <h1 class="ui header">Output visualization tools recommanded</h1>
       
         <div class="ui special cards">
-        
-          
-        
+
+
+
             <div class="card" style="display: inline-block">
                 <div class="blurring dimmable image">
                     <div class="ui dimmer">
@@ -270,11 +235,11 @@
                 <div class="content" data="http://www.theworldavatar.com/JPS_COMPOSITION/test.html" onclick="goToVisualization(event)">
                     <a class="header" data="http://www.theworldavatar.com/JPS_COMPOSITION/test.html">Google Map Coordinate Selector</a>
                 </div>
-             
+
             </div>
              
         </div>
-    </div>
+    </div> -->
   
   
   
@@ -355,8 +320,26 @@
    </textarea>  -->
 
     <textarea id="mySavedModel" style="hidden:true; width:0%;height:0px">
-   { "class":"go.GraphLinksModel","nodeDataArray":[{"key":1,"text":"Composite_Service_11Yju7k1","category":"Service","fullIRI":"http://www.theworldavatar.com/Composite_Service_11Yju7k1"},{"text":"Operation_pexDwAC","category":"Operation","fullIRI":"http://www.theworldavatar.com/Operation_pexDwAC","httpUrl":"http://www.theworldavatar.com/JPS_COMPOSITION/CoordinateToWeather","key":-2},{"text":"MessageContent_Input_xzbAvBW","category":"MessageContent_Input","fullIRI":"http://www.theworldavatar.com/MessageContent_Input_xzbAvBW","key":-3},{"text":"Mandatory_MessagePart_CghedAK","category":"Mandatory_MessagePart","fullIRI":"http://www.theworldavatar.com/Mandatory_MessagePart_CghedAK","key":-4,"params":{"hasValue":"","hasDatatype":"","modelReference":"http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#Coordinate"}},{"text":"MessageContent_Output_18YRk5SC","category":"MessageContent_Output","fullIRI":"http://www.theworldavatar.com/MessageContent_Output_18YRk5SC","key":-5},{"text":"Mandatory_MessagePart_15wGxcwo","category":"Mandatory_MessagePart","fullIRI":"http://www.theworldavatar.com/Mandatory_MessagePart_15wGxcwo","key":-6,"params":{"hasValue":"","hasDatatype":"","modelReference":"https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#WeatherState"}}],"linkDataArray":[{"from":1,"to":-2},{"from":-2,"to":-3},{"from":-3,"to":-4},{"from":-2,"to":-5},{"from":-5,"to":-6}]}
-   </textarea>
+{ "class": "go.GraphLinksModel",
+  "nodeDataArray": [
+{"key":1, "text":"Composite_Service_cCMjLPS", "category":"Service", "fullIRI":"http://www.theworldavatar.com/Composite_Service_cCMjLPS"},
+{"text":"Operation_pexDwAC", "category":"Operation", "fullIRI":"http://www.theworldavatar.com/Operation_pexDwAC", "httpUrl":"http://www.theworldavatar.com/JPS_COMPOSITION/CoordinateToWeather", "key":-2},
+{"text":"MessageContent_Input_xzbAvBW", "category":"MessageContent_Input", "fullIRI":"http://www.theworldavatar.com/MessageContent_Input_xzbAvBW", "key":-3},
+{"text":"Mandatory_MessagePart_CghedAK", "category":"Mandatory_MessagePart", "fullIRI":"http://www.theworldavatar.com/Mandatory_MessagePart_CghedAK", "key":-4, "params":{"hasValue":"", "hasDatatype":"", "modelReference":"http://test.com/ontology/Region"}},
+{"text":"MessageContent_Output_18YRk5SC", "category":"MessageContent_Output", "fullIRI":"http://www.theworldavatar.com/MessageContent_Output_18YRk5SC", "key":-5},
+{"text":"Mandatory_MessagePart_15wGxcwo", "category":"Mandatory_MessagePart", "fullIRI":"http://www.theworldavatar.com/Mandatory_MessagePart_15wGxcwo", "key":-6, "params":{"hasValue":"", "hasDatatype":"", "modelReference":"http://test.com/ontology/ADMSSimulation"}},
+{"text":"MessageContent_Output_1gpms0DA", "category":"MessageContent_Output", "fullIRI":"http://www.theworldavatar.com/MessageContent_Output_1gpms0DA", "key":-7},
+{"text":"Mandatory_MessagePart_guVoBmm", "category":"Mandatory_MessagePart", "fullIRI":"http://www.theworldavatar.com/Mandatory_MessagePart_guVoBmm", "key":-8, "params":{"hasValue":"", "hasDatatype":"", "modelReference":"http://test.com/ontology/BuildingList"}}
+ ],
+  "linkDataArray": [
+{"from":1, "to":-2},
+{"from":-2, "to":-3},
+{"from":-3, "to":-4},
+{"from":-2, "to":-5},
+{"from":-5, "to":-6},
+{"from":-2, "to":-7},
+{"from":-7, "to":-8}
+ ]}   </textarea>
 </div>
 <script>
     function refreshPage() {

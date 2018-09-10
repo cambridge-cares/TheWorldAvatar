@@ -3,10 +3,10 @@ package uk.ac.cam.cares.jps.composition.ontology;
 import java.io.FileNotFoundException;
 import java.io.StringWriter;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.RDF;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
 
 import uk.ac.cam.cares.jps.composition.servicemodel.MessageContent;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;

@@ -177,9 +177,10 @@ $(function(){
 	        		upperx,
 	        		uppery
 	        	});
-        }
+        };
         
         $.when(getBuildingIRIs(locationIRI, lowerx, lowery, upperx, uppery)).done(buildingIRIs => {
+            
         	initadms3dmap(buildingIRIs, [xmin, xmax, ymin, ymax], osmb, location, coordinatesMid, locationIRI);
         });
          

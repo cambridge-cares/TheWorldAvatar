@@ -1,8 +1,8 @@
 package uk.ac.cam.cares.jps.composition.vocabulary;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 
 public enum MSM {
 
@@ -19,9 +19,9 @@ public enum MSM {
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
+		public org.apache.jena.rdf.model.Property Property() {
 			Model model = ModelFactory.createDefaultModel();
-			return (com.hp.hpl.jena.rdf.model.Property) model.createResource(msm + this.name());
+			return (org.apache.jena.rdf.model.Property) model.createResource(msm + this.name());
 		}
 
 	},
@@ -38,7 +38,7 @@ public enum MSM {
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
+		public org.apache.jena.rdf.model.Property Property() {
 			return null;
 		}
 
@@ -56,7 +56,7 @@ public enum MSM {
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
+		public org.apache.jena.rdf.model.Property Property() {
 			return null;
 		}
 
@@ -74,7 +74,7 @@ public enum MSM {
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
+		public org.apache.jena.rdf.model.Property Property() {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -94,7 +94,7 @@ public enum MSM {
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
+		public org.apache.jena.rdf.model.Property Property() {
 			Model model = ModelFactory.createDefaultModel();
 			return model.createProperty(msm + this.name());
 		}
@@ -115,7 +115,7 @@ public enum MSM {
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
+		public org.apache.jena.rdf.model.Property Property() {
 			Model model = ModelFactory.createDefaultModel();
 			return model.createProperty(msm + this.name());
 		}
@@ -135,7 +135,7 @@ public enum MSM {
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
+		public org.apache.jena.rdf.model.Property Property() {
 			Model model = ModelFactory.createDefaultModel();
 			return model.createProperty(msm + this.name());
 		}
@@ -155,7 +155,7 @@ public enum MSM {
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
+		public org.apache.jena.rdf.model.Property Property() {
 			Model model = ModelFactory.createDefaultModel();
 			return model.createProperty(msm + this.name());
 		}
@@ -175,7 +175,7 @@ public enum MSM {
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
+		public org.apache.jena.rdf.model.Property Property() {
 			Model model = ModelFactory.createDefaultModel();
 			return model.createProperty(msm + this.name());
 		}
@@ -195,7 +195,7 @@ public enum MSM {
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
+		public org.apache.jena.rdf.model.Property Property() {
 			Model model = ModelFactory.createDefaultModel();
 			return model.createProperty(sawsdl + this.name());
 		}
@@ -215,7 +215,7 @@ public enum MSM {
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
+		public org.apache.jena.rdf.model.Property Property() {
 			Model model = ModelFactory.createDefaultModel();
 			return model.createProperty(twa + this.name());
 		}
@@ -235,7 +235,7 @@ public enum MSM {
 		}
 
 		@Override
-		public com.hp.hpl.jena.rdf.model.Property Property() {
+		public org.apache.jena.rdf.model.Property Property() {
 			Model model = ModelFactory.createDefaultModel();
 			return model.createProperty(twa + this.name());
 		}
@@ -248,7 +248,7 @@ public enum MSM {
 
 	public abstract Resource Node();
 
-	public abstract com.hp.hpl.jena.rdf.model.Property Property();
+	public abstract org.apache.jena.rdf.model.Property Property();
 
 	private MSM() {
 

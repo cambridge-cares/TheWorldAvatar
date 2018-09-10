@@ -20,6 +20,11 @@ public class ServiceCompositionEngine {
 	private ArrayList<MessagePart> inputsToAppend;
 	private ArrayList<URI> outputsRequired;
 
+	public ArrayList<URI> outputsRequiredTemp;
+	public boolean OutputRequirementMet = false;
+	
+	
+	
 	public ServiceCompositionEngine(Service compositeAgent, String host) throws Exception {
 		this.newGraph = new Graph();
 		this.fullHostName = host;
@@ -28,12 +33,14 @@ public class ServiceCompositionEngine {
 		this.inputsToAppend = new ArrayList<MessagePart>();
 		this.outputsRequired = new ArrayList<URI>();
 
-		System.out.println("Here 002");
+		this.outputsRequiredTemp = new ArrayList<URI>();
 
 		for (MessagePart part : compositeAgent.getAllOutputs()) {
 			this.outputsRequired.add(part.getModelReference());
 		}
+		outputsRequiredTemp.addAll(this.outputsRequired);
 		this.inputsToAppend = (ArrayList<MessagePart>) compositeAgent.getAllInputs();
+
 	}
 
 	public Graph getGraph() {
@@ -45,6 +52,8 @@ public class ServiceCompositionEngine {
 		// Find all the candidate basing on the inputs
 		// Increment the index, declare a new layer, put all the candidates in the layer
 
+		ArrayList<URI> URIsToRemove = new ArrayList<URI>();
+		
 		this.newGraph.inputPool.addAll(this.inputsToAppend); // the input come from the result from last iteration
 		inputsToAppend = new ArrayList<MessagePart>();
 		ArrayList<Service> servicesToAppend = this.serviceDiscovery.getAllServiceCandidates(this.newGraph.inputPool,
@@ -59,18 +68,23 @@ public class ServiceCompositionEngine {
 
 		boolean metRequirement = true; // If one of the requirement is not me, the boolean value will be set to false.
 
-		for (URI required : this.outputsRequired) {
+		for (URI required : this.outputsRequiredTemp) {
 			boolean atLeastOneHit = false;
 			for (MessagePart output : this.inputsToAppend) {
 				URI modelRef = output.getModelReference(); // get the newly generated output and compare it to the
 															// desired output.
 				if (modelRef.toString().contentEquals(required.toString())) {
 					atLeastOneHit = true;
+					URIsToRemove.add(required);
 				}
 			}
 			if (!atLeastOneHit) {
 				metRequirement = false;
 			}
+		}
+		
+		for(URI toRemove : URIsToRemove) {
+			this.outputsRequiredTemp.remove(toRemove);
 		}
 		return metRequirement;
 	}

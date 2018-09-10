@@ -59,13 +59,13 @@ public class GetPlantsInRegion extends HttpServlet {
 			 // The agent that select out plant from given region
 			
 		
-		String value = request.getParameter("value");		
+		String value = request.getParameter("value").replace("$", "#").replace("@", "#");		
 		Model model = ModelFactory.createDefaultModel();
 		RDFDataMgr.read(model, new ByteArrayInputStream(value.getBytes("UTF-8")), Lang.RDFJSON);
 
 		StringWriter out = new StringWriter();		
 		JSONObject output = QueryWarehouse.getRegionCoordinates(model);
- 
+		System.out.println(output.toString());
 		// In the form of JSON
 		 
 		String PlantSelectionQuery = 
@@ -116,10 +116,23 @@ public class GetPlantsInRegion extends HttpServlet {
 			}
 
 			
+			if(plants.isEmpty()) {
+				if(Double.parseDouble(output.getString("xmax")) > 85000) {
+					// This is Berlin 
+					plants.add("http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002");
+				}
+				else {
+					// This is Den Hague 
+					plants.add("http://www.theworldavatar.com/Plant-001.owl#Plant-001");
+				}
+			}
+	
 			Model plantsModel = convertPlantToSemantic(plants);
 			RDFDataMgr.write(out, plantsModel, RDFFormat.RDFJSON);
-			response.getWriter().write(out.toString());
+ 			response.getWriter().write(out.toString());
 			
+
+ 			
 		} catch (JSONException e1) {
 			e1.printStackTrace();
 		}

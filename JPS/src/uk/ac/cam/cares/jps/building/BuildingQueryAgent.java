@@ -30,6 +30,7 @@ public class BuildingQueryAgent extends HttpServlet {
 		if ("/buildings/fromregion".equals(path)) {
 			
 			String cityIRI = req.getParameter("cityiri");
+ 
 			int buildingLimit = Integer.valueOf(req.getParameter("buildinglimit"));
 			double lowerx = Double.valueOf(req.getParameter("lowerx"));
 			double lowery = Double.valueOf(req.getParameter("lowery"));
@@ -39,9 +40,10 @@ public class BuildingQueryAgent extends HttpServlet {
 			double plantx = 79831;
 			double planty = 454766;
 			
-			if(cityIRI.equalsIgnoreCase(BuildingQueryPerformer.THE_HAGUE_IRI)) {
+			if(cityIRI.equalsIgnoreCase(BuildingQueryPerformer.THE_HAGUE_IRI) || cityIRI.equalsIgnoreCase("http://dbpedia.org/resouce/The_Hague")) {
 				plantx = 79831;
 				planty = 454766;
+				System.out.println("================= THE HAGUE ===============");
 			}
 			else {
 				String sourceCRS = CRSTransformer.EPSG_25833; // Berlin
@@ -50,12 +52,14 @@ public class BuildingQueryAgent extends HttpServlet {
 				double[] targetCenter = CRSTransformer.transform(sourceCRS, targetCRS, sourceCenter);
 				plantx = targetCenter[0];
 				planty = targetCenter[1];
+				System.out.println("================= B E R L I N ===============");
+				System.out.println(lowerx + "|" + lowery + "|" + cityIRI);
 			}
 			
 			
 			
-			//List<String> buildingIRIs = performer.performQueryBuildingsFromRegion(cityIRI, buildingLimit, lowerx, lowery, upperx, uppery);
-			List<String> buildingIRIs = performer.performQueryClosestBuildingsFromRegion(cityIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
+			List<String> buildingIRIs = performer.performQueryBuildingsFromRegion(cityIRI, buildingLimit, lowerx, lowery, upperx, uppery);
+			//List<String> buildingIRIs = performer.performQueryClosestBuildingsFromRegion(cityIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
 			String message = new Gson().toJson(buildingIRIs);
 			print(resp, message);
 			

@@ -23,6 +23,9 @@ public class ServicePoolTool {
 
 		FilePathManager m = new FilePathManager();
 		String filepath = m.getFilePath(this.fullHostName) + '/' +filename;
+		if(m.getFilePath(this.fullHostName) == null) { // It means the system is running without a server
+			filepath = "E:" + filename;
+		}
 		String wholeContent = "";
 		File thefile = new File(filepath);
 		if (!thefile.exists()) {

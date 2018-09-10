@@ -26,6 +26,7 @@ import org.apache.jena.riot.Lang;
 import org.junit.Test;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.building.CRSTransformer;
 
 public class TestWholeADMS {
 
@@ -40,6 +41,9 @@ public class TestWholeADMS {
 		Property hasY = regionModel.createProperty("http://test.com/Property/hasY");
 		Property hasUpperPoint = regionModel.createProperty("http://test.com/Property/upperPoint");
 		Property hasLowerPoint = regionModel.createProperty("http://test.com/Property/lowerPoint");
+		Property hasReferenceSystem = regionModel.createProperty("http://test.com/Property/referenceSystem");
+		
+		
 		Resource Region = regionModel.createResource("http://test.com/aRegionInstance");
 		Region.addProperty(RDF.type, "http://test.com/ontology/Region");
 		Resource UpperPoint = regionModel.createResource("http://test.com/upperPoint");
@@ -52,6 +56,7 @@ public class TestWholeADMS {
 		LowerPoint.addLiteral(hasY, 454670);
 		Region.addProperty(hasLowerPoint, LowerPoint);
 		Region.addProperty(hasUpperPoint, UpperPoint);
+		Region.addLiteral(hasReferenceSystem, CRSTransformer.EPSG_25833);
 		
 		
 		String GetPlantPath = "/JPS/GetPlantsInRegion";
@@ -98,7 +103,7 @@ public class TestWholeADMS {
 		String ADMSAgentPath = "/JPS/ADMSAgent";
 		String rst = callAgentSimple(inputDataBundleForADMS,ADMSAgentPath);
  
-	
+		System.out.println(rst);
 		//================================================================================================
 		
 	}

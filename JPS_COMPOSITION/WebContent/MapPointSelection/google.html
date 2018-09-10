@@ -123,7 +123,7 @@
 		
         var myLatlng = {lat: 52.4451331, lng: 13.3741787};
         var hostname = window.location.host;
-        document.getElementById('frame').src = "http://" + hostname + "/JPS_COMPOSITION/visualizationOfWeather001.html"
+        document.getElementById('frame').src = "http://" + hostname + "/JPS_COMPOSITION/OutputVisualization/visualizationOfWeather001.html";
         var executionChain = window.location.href.split("data=")[1];
         var map = new google.maps.Map(document.getElementById('map'), {
             zoom: 9.5,
@@ -138,7 +138,7 @@
 
         function send(lon, lat) {
             console.log('triggered');
-            var data = '{"http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#Coordinate":{ "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#space_and_time_extended:hasProjectedCoordinate_y":[{"type":"literal","value":' + lat + '}],"http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#space_and_time_extended:hasProjectedCoordinate_x":[{"type":"literal","value":' + lon + '}]}}'
+            var data = '{"http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#Coordinate":{ "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#space_and_time_extended:hasProjectedCoordinate_y":[{"type":"literal","value":"' + lat + '"}],"http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#space_and_time_extended:hasProjectedCoordinate_x":[{"type":"literal","value":"' + lon + '"}]}}'
             var myUrl = 'http://' + hostname + '/JPS_COMPOSITION/ServiceExecutionEndpoint?executionChain=' + executionChain + '&value=' + encodeURIComponent(data);
             var request = $.ajax({
                 url: myUrl,
@@ -149,7 +149,7 @@
             request.done(function (data) {
             	$('#result').text(data);
                 console.log('data', data)
-                document.getElementById('frame').src = "http://" + hostname + "/JPS_COMPOSITION/visualizationOfWeather001.html?value=" +  data;
+                document.getElementById('frame').src = "http://" + hostname + "/JPS_COMPOSITION/OutputVisualization/visualizationOfWeather001.html?value=" +  data;
                console.log('http://localhost:8080/JPS_COMPOSITION/visualizationOfWeather001.html?value=' +  data);
                 
             });

@@ -43,6 +43,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.building.BuildingQueryPerformer;
 import uk.ac.cam.cares.jps.building.CRSTransformer;
 import uk.ac.cam.cares.jps.building.SimpleBuildingData;
+import uk.ac.cam.cares.jps.semantic.QueryWarehouse;
 
 
 @WebServlet("/GetBuildingDataForSimulation")
@@ -73,10 +74,10 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 		
 		// Then perform query on the plant to get its coordinates 
 		
-		String value = request.getParameter("value");
+		String value = request.getParameter("value").replace("$", "#").replace("@", "#");
+
 		Model model = ModelFactory.createDefaultModel();
 		RDFDataMgr.read(model, new ByteArrayInputStream(value.getBytes("UTF-8")), Lang.RDFJSON);
-
  
 		try {
 		 
@@ -85,18 +86,22 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 			double plantX = coords[0];
 			double plantY = coords[1];
 			String city = getCityIRI(model);
-			JSONObject region = getRegion(model);
+			//JSONObject region = getRegion(model);
 			
-			double upperx = region.getDouble("upperX");
-			double uppery = region.getDouble("upperY");
-			double lowerx = region.getDouble("lowerX");
-			double lowery = region.getDouble("lowerY");
+			JSONObject region = QueryWarehouse.getRegionCoordinates(model);
+			
+			double upperx = region.getDouble("xmax");
+			double uppery = region.getDouble("ymax");
+			double lowerx = region.getDouble("xmin");
+			double lowery = region.getDouble("ymin");
 			
 			
 			double plantx = 79831;
 			double planty = 454766;
 			
 			String data = "";
+			
+			city = city.replace("page", "resource");
 			
 			if(city.equalsIgnoreCase("http://dbpedia.org/resource/The_Hague")) {
 				//response.getWriter().write("This is HAGUE -- " + "|" + city + "|" + String.valueOf(upperx) + "|" +String.valueOf(uppery) + "|" + String.valueOf(lowerx) + "|" + String.valueOf(lowery) + "|" + String.valueOf(plantx) +"|" +  String.valueOf(planty));
@@ -113,8 +118,8 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 				data = retrieveBuildingDataInJSON(BuildingQueryPerformer.BERLIN_IRI, plantx, planty, 25, lowerx, lowery, upperx, uppery);
 			}
 			
-			
-			response.getWriter().write(convertBuildingDataToSemantic(data));
+			String buildingDataString = convertBuildingDataToSemantic(data);
+			response.getWriter().write(buildingDataString);
 
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -171,7 +176,8 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 		
 		StringWriter out = new StringWriter();
 		RDFDataMgr.write(out, BuildingDataModel, RDFFormat.RDFJSON);
-		
+
+
 		return out.toString();
 	}
 	

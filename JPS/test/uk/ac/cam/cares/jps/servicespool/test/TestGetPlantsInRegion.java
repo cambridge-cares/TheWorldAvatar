@@ -22,6 +22,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.junit.Test;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.building.CRSTransformer;
 
 public class TestGetPlantsInRegion {
 
@@ -38,6 +39,9 @@ public class TestGetPlantsInRegion {
 		Property hasY = rdfModel.createProperty("http://test.com/Property/hasY");
 		Property hasUpperPoint = rdfModel.createProperty("http://test.com/Property/upperPoint");
 		Property hasLowerPoint = rdfModel.createProperty("http://test.com/Property/lowerPoint");
+		Property hasReferenceSystem = rdfModel.createProperty("http://test.com/Property/referenceSystem");
+		
+		
 		Resource Region = rdfModel.createResource("http://test.com/aRegionInstance");
 		Region.addProperty(RDF.type, "http://test.com/ontology/Region");
 		Resource UpperPoint = rdfModel.createResource("http://test.com/upperPoint");
@@ -50,6 +54,7 @@ public class TestGetPlantsInRegion {
 		LowerPoint.addLiteral(hasY, 454670);
 		Region.addProperty(hasLowerPoint, LowerPoint);
 		Region.addProperty(hasUpperPoint, UpperPoint);
+		Region.addLiteral(hasReferenceSystem, CRSTransformer.EPSG_25833);
 		
 		
 		

@@ -22,26 +22,14 @@ import org.apache.jena.vocabulary.RDF;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
+
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.RDFFormat;
-import org.apache.jena.vocabulary.RDF;
+
 
  
 import uk.ac.cam.cares.jps.composition.util.SendRequest;
@@ -65,8 +53,10 @@ public class CityToWeather extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
-		String value = request.getParameter("value").replace("@", "#");
-
+		String value = request.getParameter("value").replace("@", "#").replace("$", "#");
+		
+		
+		
 		Model model = ModelFactory.createDefaultModel();
 		RDFDataMgr.read(model, new ByteArrayInputStream(value.getBytes("UTF-8")), Lang.RDFJSON);
 		String cityIRI = getCityIRI(model);

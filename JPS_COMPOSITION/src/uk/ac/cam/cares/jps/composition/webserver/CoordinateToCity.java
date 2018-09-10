@@ -41,7 +41,7 @@ public class CoordinateToCity extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-			JSONObject value = new JSONObject(request.getParameter("value").replaceAll("@", "#"));
+			JSONObject value = new JSONObject(request.getParameter("value").replace("@", "#").replace("$", "#"));
 			JSONObject coordinate = value.getJSONObject(
 					"http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#Coordinate");
 			JSONArray lat = coordinate.getJSONArray(
@@ -128,6 +128,7 @@ public class CoordinateToCity extends HttpServlet {
 		String url = String.format(temp, cityName.replace(" ", "_"));
 
 		String result = SendRequest.sendGet(url);
+		System.out.println("City Query :===================");
 		System.out.println(result);
 		if (result != null) {
 			JSONObject result_JSON = new JSONObject(SendRequest.sendGet(url));

@@ -11,29 +11,18 @@ import javax.servlet.http.HttpServletResponse;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
-
-/**
- * Servlet implementation class ADMSGetBuildingsIRI
- */
+ 
 @WebServlet("/ADMSGetBuildingsIRI")
 public class ADMSGetBuildingsIRI extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
 	public ADMSGetBuildingsIRI() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 
 		String coordinates = request.getParameter("coordinates");
 		ArrayList<String> args = new ArrayList<String>();

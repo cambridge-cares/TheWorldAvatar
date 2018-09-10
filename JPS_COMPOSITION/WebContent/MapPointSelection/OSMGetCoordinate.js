@@ -20,7 +20,7 @@ osmb.on('pointerdown', function(e) {
 });
 
 
-var hostname = window.location.href.split("?")[0].replace('test2.html', '');
+var hostname = window.location.href.split("?")[0].replace('osm.html', '').replace('/MapPointSelection','');
 var executionChain = window.location.href.split("data=")[1];
 
 
@@ -37,7 +37,7 @@ function send(lon, lat) {
     request.done(function (data) {
         $('#result').text(data);
         console.log('data', data)
-        document.getElementById('frame').src = hostname +  "/visualizationOfWeather001.html?value=" +  data;
+        document.getElementById('frame').src = hostname +  "/OutputVisualization/visualizationOfWeather001.html?value=" +  data;
 
     });
 
