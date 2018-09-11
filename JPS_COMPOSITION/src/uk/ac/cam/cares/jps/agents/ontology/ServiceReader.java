@@ -198,7 +198,7 @@ public class ServiceReader {
         
         Statement statement = individual.getProperty(MSM.hasObjectValue.Property());
         if (statement != null) {
-        	result.setValue(statement.getString());
+        	result.setValue(new URI(statement.getString()));
         }
        
         // TODO-AE URGENT datatypeValue should be not literal (see definition of MessagePart but an URI) --> Xiaochi

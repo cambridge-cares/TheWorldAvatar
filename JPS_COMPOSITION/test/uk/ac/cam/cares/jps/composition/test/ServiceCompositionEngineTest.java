@@ -25,18 +25,20 @@ public class ServiceCompositionEngineTest {
 		
 		boolean met = false;
 		int index = 0;
-		while (!met) {
+		int counter = 0;
+		while (!met && (counter < 50)) {
 			index++;
 			met = engine.appendLayerToGraph(index);
-			System.out.println("You made this far 003");
+			System.out.println("Counter:" + counter);
+			counter++;
 
 		}
 		System.out.println("You made this far 004");
 
 		int size = 1;
-		while (size != 0) {
-			size = engine.eliminateRedundantAgent();
-		}
+//		while (size != 0) {
+//			size = engine.eliminateRedundantAgent();
+//		}
 
 		ConnectionBuilder connectionBuilder = new ConnectionBuilder();
 		connectionBuilder.buildEdge(engine.getGraph()); // build the connection between services
@@ -46,9 +48,7 @@ public class ServiceCompositionEngineTest {
 		JSONObject graphInJSON = FormatTranslator.convertGraphJavaClassTOJSON(engine.getGraph());
 
 		
-		System.out.println("success");
-		System.out.println(graphInJSON.toString());
-		System.out.println("success!");
+		graphInJSON.toString();
 		
 	}
 

@@ -20,7 +20,7 @@ public class MessagePart{
 	private List<MessagePart> mandatoryParts;
 	private List<MessagePart> optionalParts;
 	// TODO-AE URGENT rename to objectValue with type URI
-	private String value;
+	private URI objectValue;
 	// TODO-AE URGENT rename to dataValue
 	private String datatypeValue;
 	private URI modelReference;
@@ -47,7 +47,7 @@ public class MessagePart{
 		this.uri = uri;
 		this.mandatoryParts = new ArrayList<MessagePart>();
         this.optionalParts = new ArrayList<MessagePart>();
-        this.value = null;
+        this.objectValue = null;
         this.datatypeValue = null;
         this.modelReference = null;
        
@@ -73,12 +73,12 @@ public class MessagePart{
     	return this.modelReference;
     }
     
-    public void setValue(String value) {
-    	this.value = value;
+    public void setValue(URI value) {
+    	this.objectValue = value;
     }
     
-    public String getValue() {
-    	return this.value;
+    public URI getValue() {
+    	return this.objectValue;
     }
     
     public void setDatatypeValue(String dataTypeValue) {
