@@ -43,10 +43,8 @@ public class ServiceExecutionEndpoint extends HttpServlet {
 				response.getWriter().write(result.replace("$", "#").replace("@", "#"));
 			}
 		} catch (JSONException | URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
