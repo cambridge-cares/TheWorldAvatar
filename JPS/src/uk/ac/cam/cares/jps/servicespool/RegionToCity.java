@@ -75,8 +75,7 @@ public class RegionToCity extends HttpServlet {
 			String cityRDF = convertIRIToRDF(cityIRI);
 			response.getWriter().write(cityRDF);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+ 			e.printStackTrace();
 		}
 	
 	}
@@ -84,8 +83,7 @@ public class RegionToCity extends HttpServlet {
 	
  
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+ 		doGet(request, response);
 	}
 	
 	public String getCityNameFromCoordinate(String latlng) throws Exception {
@@ -181,8 +179,7 @@ public class RegionToCity extends HttpServlet {
 			result = String.valueOf(ycenter) + "," + String.valueOf(xcenter);
 			return result;
 		} catch (NumberFormatException | JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+ 			e.printStackTrace();
 		}
 		
 		

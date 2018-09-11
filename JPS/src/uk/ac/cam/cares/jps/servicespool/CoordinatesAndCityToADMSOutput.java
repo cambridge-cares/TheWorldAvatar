@@ -33,15 +33,13 @@ public class CoordinatesAndCityToADMSOutput extends HttpServlet {
      */
     public CoordinatesAndCityToADMSOutput() {
         super();
-        // TODO Auto-generated constructor stub
-    }
+     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-
+ 
 
 		// 1. Get city IRI and coordinates 
 		// 2. Produces GST file and Buildings List
@@ -74,7 +72,6 @@ public class CoordinatesAndCityToADMSOutput extends HttpServlet {
 			try {
 				response.getWriter().write(startIntegrationWithPython(cityIRI, plantIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery));
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

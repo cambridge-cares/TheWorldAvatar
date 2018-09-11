@@ -170,7 +170,6 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 			
 			
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

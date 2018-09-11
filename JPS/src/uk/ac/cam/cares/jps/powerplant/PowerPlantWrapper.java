@@ -20,20 +20,17 @@ public class PowerPlantWrapper extends HttpServlet {
      */
     public PowerPlantWrapper() {
         super();
-        // TODO Auto-generated constructor stub
-    }
+     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
- 
+  
 
 		try {
 			response.getWriter().append("http://www.theworldavatar.com/Plant-001.owl") ;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -42,8 +39,7 @@ public class PowerPlantWrapper extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+ 		doGet(request, response);
 	}
 
 }
