@@ -13,27 +13,17 @@ import javax.servlet.http.HttpServletResponse;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 
-/**
- * Servlet implementation class ADMSWrapper
- */
+
 @WebServlet("/ADMSWrapper")
 public class ADMSWrapper extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Default constructor.
-	 */
 	public ADMSWrapper() {
-		// TODO Auto-generated constructor stub
 	}
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 
 		String selectedSource = request.getParameter("selectedSource");
 		String buildingTopNode = request.getParameter("buildingTopNode");
@@ -69,13 +59,9 @@ public class ADMSWrapper extends HttpServlet {
 
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 

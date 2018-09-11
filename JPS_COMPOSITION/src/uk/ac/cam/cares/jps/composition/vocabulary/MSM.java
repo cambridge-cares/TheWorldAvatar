@@ -75,7 +75,6 @@ public enum MSM {
 
 		@Override
 		public org.apache.jena.rdf.model.Property Property() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 	},

@@ -26,21 +26,13 @@ public class CoordinatesAndCityToADMSOutput extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	public static final String BUILDING_IRI_THE_HAGUE_PREFIX = "http://www.theworldavatar.com/kb/nld/thehague/buildings/";
 
-	
-	
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
+
     public CoordinatesAndCityToADMSOutput() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 
 
 		// 1. Get city IRI and coordinates 
@@ -74,7 +66,6 @@ public class CoordinatesAndCityToADMSOutput extends HttpServlet {
 			try {
 				response.getWriter().write(startIntegrationWithPython(cityIRI, plantIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery));
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

@@ -15,28 +15,18 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
-/**
- * Servlet implementation class ADMSCoordinationAgent
- */
 @WebServlet("/ADMSCoordinationAgent")
 public class ADMSCoordinationAgent extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
+
 	public ADMSCoordinationAgent() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		String coordinates = request.getParameter("coordinates");
 		String powerPlantStartUrl = "http://" + request.getServerName() + ":" + request.getServerPort()
 				+ "/JPS/PowerPlantWrapperAgent";
@@ -70,19 +60,14 @@ public class ADMSCoordinationAgent extends HttpServlet {
 		try {
 			httpResponse4 = HttpClientBuilder.create().build().execute(request4);
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
+	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 

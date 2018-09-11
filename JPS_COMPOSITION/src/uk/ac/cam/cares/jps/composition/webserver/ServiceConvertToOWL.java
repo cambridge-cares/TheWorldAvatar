@@ -15,16 +15,13 @@ import uk.ac.cam.cares.jps.composition.ontology.ServiceWriter;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 import uk.ac.cam.cares.jps.composition.util.FormatTranslator;
 
-/**
- * Servlet implementation class ServiceConvertToOWL
- */
+
 @WebServlet("/ServiceConvertToOWL")
 public class ServiceConvertToOWL extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	public ServiceConvertToOWL() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

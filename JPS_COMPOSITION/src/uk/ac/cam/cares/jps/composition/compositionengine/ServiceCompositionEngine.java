@@ -10,14 +10,14 @@ import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 import uk.ac.cam.cares.jps.composition.util.MatchingTool;
 import uk.ac.cam.cares.jps.composition.util.OptimalPathSearcher;
-import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
+import uk.ac.cam.cares.jps.composition.webserver.ServiceDiscoveryOld;
 
 public class ServiceCompositionEngine {
 
-	public String fullHostName = "";
+
 	public String fileDirectory = "C:/Users/nasac/Documents/GIT/JPS_COMPOSITION"  + "/testres/serviceowlfiles";
 	public Graph newGraph;
-	private ServiceDiscovery serviceDiscovery;
+	private ServiceDiscoveryOld serviceDiscovery;
 	private ArrayList<MessagePart> inputsToAppend;
 	private ArrayList<URI> outputsRequired;
 
@@ -28,9 +28,8 @@ public class ServiceCompositionEngine {
 	
 	public ServiceCompositionEngine(Service compositeAgent, String host) throws Exception {
 		this.newGraph = new Graph();
-		this.fullHostName = host;
 		this.newGraph.initialInputs = (ArrayList<MessagePart>) compositeAgent.getAllInputs();
-		this.serviceDiscovery = new ServiceDiscovery(this.fileDirectory);
+		this.serviceDiscovery = new ServiceDiscoveryOld(host);
 		this.inputsToAppend = new ArrayList<MessagePart>();
 		this.outputsRequired = new ArrayList<URI>();
 
