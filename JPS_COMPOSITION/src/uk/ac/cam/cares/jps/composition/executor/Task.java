@@ -13,7 +13,6 @@ public class Task {
 	public ArrayList<int[]> outputIndexArray;
 	public ArrayList<int[]> inputIndexArray;
 	public ExecutionResult result;
-
 	public Task() {
 
 	}

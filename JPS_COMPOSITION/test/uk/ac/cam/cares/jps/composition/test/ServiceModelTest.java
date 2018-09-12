@@ -29,7 +29,7 @@ public class ServiceModelTest {
 		// Here we declare the two input parameters
 		MessagePart messagePartCity = new MessagePart(new URI("http://www.theworldvatar.com/wInParamCityXYZ123"));
 		messagePartCity.setModelReference(new URI("http://www.theworldavatar.com/CityGML.owl#City"));
-		messagePartCity.setValue("http://dbpedia.org/resource/Singapore");
+		messagePartCity.setValue(new URI("http://dbpedia.org/resource/Singapore"));
 		messagePartCity.setDatatypeValue("xsd:anyURI");
 		// We put value and value data type in the class MessagePart...
 

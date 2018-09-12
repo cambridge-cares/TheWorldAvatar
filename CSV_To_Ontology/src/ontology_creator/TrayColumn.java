@@ -177,68 +177,68 @@ public class TrayColumn {
 			for (String feedStream : tray.getFeedStreams()) {
 				setDistFeed(feedStream);
 				// Create Process Stream and adds it to the separation process
-				OWLNamedClass ProcessStreamClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#ProcessStream");
+				OWLNamedClass ProcessStreamClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#ProcessStream");
 
-				OWLObjectProperty hasInput = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/network_system.owl#hasInput");
+				OWLObjectProperty hasInput = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#hasInput");
 
-				RDFIndividual SeparationProcess = owlModel.getRDFIndividual("http://www.jparksimulator.com/" + getName() + ".owl#" + getSeparationName());
-				RDFIndividual ProcessStream = ProcessStreamClass.createRDFIndividual("http://www.jparksimulator.com/" + getName() + ".owl#ProcessStream_" + feedStream);
+				RDFIndividual SeparationProcess = owlModel.getRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#" + getSeparationName());
+				RDFIndividual ProcessStream = ProcessStreamClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#ProcessStream_" + feedStream);
 				
 				SeparationProcess.addPropertyValue(hasInput, ProcessStream);
 				
 				// Create a new Nozzle and adds it to the Column
 				addN_nozzle();
-				OWLNamedClass NozzleClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Nozzle");
+				OWLNamedClass NozzleClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Nozzle");
 
-				OWLObjectProperty hasConnector = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#hasConnector");
-				OWLDatatypeProperty is_at_numbered_tray = owlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#is_at_numbered_tray");
+				OWLObjectProperty hasConnector = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#hasConnector");
+				OWLDatatypeProperty is_at_numbered_tray = owlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#is_at_numbered_tray");
 
-				RDFIndividual column = owlModel.getRDFIndividual("http://www.jparksimulator.com/" + getName() + ".owl#" + getName() );
-				RDFIndividual nozzle = NozzleClass.createRDFIndividual("http://www.jparksimulator.com/" + getName()  + ".owl#"+ getName()  + "_N_" + Integer.toString(getN_nozzle()));
+				RDFIndividual column = owlModel.getRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#" + getName() );
+				RDFIndividual nozzle = NozzleClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName()  + ".owl#"+ getName()  + "_N_" + Integer.toString(getN_nozzle()));
 
 				column.addPropertyValue(hasConnector, nozzle);
 				nozzle.addPropertyValue(is_at_numbered_tray, trayNo);
 
 				// Create a new Pipe and connects it to the Nozzle
-				OWLNamedClass PipeClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Pipe");
+				OWLNamedClass PipeClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Pipe");
 
-				OWLObjectProperty isDirectlyConnectedTo = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#isDirectlyConnectedTo");
+				OWLObjectProperty isDirectlyConnectedTo = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyConnectedTo");
 
-				RDFIndividual Pipe = PipeClass.createRDFIndividual("http://www.jparksimulator.com/" + getName() + ".owl#Pipe_" + feedStream);
+				RDFIndividual Pipe = PipeClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#Pipe_" + feedStream);
 
 				Pipe.addPropertyValue(isDirectlyConnectedTo, nozzle);
 				nozzle.addPropertyValue(isDirectlyConnectedTo, Pipe);
 			}
 			for (String drawStream : tray.getDrawStreams()) {
 				// Create Process Stream and adds it to the Distilling process
-				OWLNamedClass ProcessStreamClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#ProcessStream");
+				OWLNamedClass ProcessStreamClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#ProcessStream");
 
 				OWLObjectProperty hasOutput = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/meta_model/topology/topology.owl#hasOutput");
 
-				RDFIndividual SeparationProcess = owlModel.getRDFIndividual("http://www.jparksimulator.com/" + getName()+ ".owl#" + getSeparationName());
-				RDFIndividual ProcessStream = ProcessStreamClass.createRDFIndividual("http://www.jparksimulator.com/" + getName()+ ".owl#ProcessStream_" + drawStream);
+				RDFIndividual SeparationProcess = owlModel.getRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName()+ ".owl#" + getSeparationName());
+				RDFIndividual ProcessStream = ProcessStreamClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName()+ ".owl#ProcessStream_" + drawStream);
 
 				SeparationProcess.addPropertyValue(hasOutput, ProcessStream);
 
 				// Create a new connector and adds it to the Column
 				addN_nozzle();
-				OWLNamedClass NozzleClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Nozzle");
+				OWLNamedClass NozzleClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Nozzle");
 
-				OWLObjectProperty hasConnector = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#hasConnector");
-				OWLDatatypeProperty is_at_numbered_tray = owlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#is_at_numbered_tray");
+				OWLObjectProperty hasConnector = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#hasConnector");
+				OWLDatatypeProperty is_at_numbered_tray = owlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#is_at_numbered_tray");
 				
-				RDFIndividual column = owlModel.getRDFIndividual("http://www.jparksimulator.com/" + getName()+ ".owl#" + getName());
-				RDFIndividual nozzle = NozzleClass.createRDFIndividual("http://www.jparksimulator.com/" + getName() + ".owl#"+ getName() + "_N_" + Integer.toString(getN_nozzle()));
+				RDFIndividual column = owlModel.getRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName()+ ".owl#" + getName());
+				RDFIndividual nozzle = NozzleClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#"+ getName() + "_N_" + Integer.toString(getN_nozzle()));
 
 				column.addPropertyValue(hasConnector, nozzle);
 				nozzle.addPropertyValue(is_at_numbered_tray, trayNo);
 				
 				// Create a new Pipe and connects it to the Nozzle
-				OWLNamedClass PipeClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Pipe");
+				OWLNamedClass PipeClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Pipe");
 
-				OWLObjectProperty isDirectlyConnectedTo = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#isDirectlyConnectedTo");
+				OWLObjectProperty isDirectlyConnectedTo = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyConnectedTo");
 
-				RDFIndividual Pipe = PipeClass.createRDFIndividual("http://www.jparksimulator.com/" + getName()+ ".owl#Pipe_" + drawStream);
+				RDFIndividual Pipe = PipeClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName()+ ".owl#Pipe_" + drawStream);
 
 				Pipe.addPropertyValue(isDirectlyConnectedTo, nozzle);
 				nozzle.addPropertyValue(isDirectlyConnectedTo, Pipe);

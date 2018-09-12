@@ -98,8 +98,8 @@ public class HeatExchanger {
 		this.utilStartNum = utilStartNum;
 	}
 	public void inputHeatDuty(JenaOWLModel owlmodel) {
-		OWLIndividual HeatDuty = owlmodel.getOWLIndividual("http://www.jparksimulator.com/"	+ filename + "#ValueOfHeatDutyOf" + getName());
-		OWLDatatypeProperty numericalvalue = owlmodel.getOWLDatatypeProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue");
+		OWLIndividual HeatDuty = owlmodel.getOWLIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"	+ filename + "#ValueOfHeatDutyOf" + getName());
+		OWLDatatypeProperty numericalvalue = owlmodel.getOWLDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 		HeatDuty.setPropertyValue(numericalvalue, getDuty());
 	}
 	
@@ -143,7 +143,7 @@ public class HeatExchanger {
 					int streamNumber = Integer.parseInt(streamName.substring(streamName.length()-6));
 					System.out.println(streamNumber);
 					if (streamNumber < utilStartNum) {
-						OWLNamedClass ProcessStreamClass = owlmodel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#ProcessStream");
+						OWLNamedClass ProcessStreamClass = owlmodel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#ProcessStream");
 						obj.setRDFType(ProcessStreamClass);
 						obj.rename("ProcessStream_" + Integer.toString(streamNumber));
 					}

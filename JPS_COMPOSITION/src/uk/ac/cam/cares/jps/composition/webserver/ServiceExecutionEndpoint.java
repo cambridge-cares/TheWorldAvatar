@@ -34,21 +34,17 @@ public class ServiceExecutionEndpoint extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			JSONObject executorInJSON = new JSONObject(request.getParameter("executionChain"));
-			System.out.println(executorInJSON);
 			Executor executor = FormatTranslator.convertJSONTOExecutor(executorInJSON.toString());
 			String value = request.getParameter("value");
-			System.out.println(value);
 			String result = executor.execute(value);
 			if (result == null) {
 				response.getWriter().write("Error");
 			} else {
-				response.getWriter().write(result);
+				response.getWriter().write(result.replace("$", "#").replace("@", "#"));
 			}
 		} catch (JSONException | URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

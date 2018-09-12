@@ -260,7 +260,7 @@ class admsInputDataRetriever(object):
             
             qdataC = self.query("""
                     PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
-           PREFIX substance:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#>
+			PREFIX substance:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#>
 
             SELECT DISTINCT  ?content
             WHERE {{
@@ -710,7 +710,7 @@ class admsInputDataRetriever(object):
         '''
         #finish writing met
         metLoc= r"test.met"
-        cobbling.run(meteo_data = metLoc)
+        #cobbling.run(meteo_data = metLoc)
         #pointing to met in apl
         return os.path.realpath(metLoc)
 

@@ -124,6 +124,7 @@
         <j.0:consumes rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#HuntsmanPropyleneOxide"/>
         <j.0:produces rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#HuntsmanPolyetheramines"/>
         <p10:isOwnedBy rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#HuntsmanSingaporePteLtd"/>
+        <j.2:hasElectricalRepresentation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EBus-048.owl</j.2:hasElectricalRepresentation>
         <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">HuntsmanSingaporePteLtd</p10:hasName>
         <p24:hasGISCoordinateSystem rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#HuntsmanCoordinateSystem"/>
         <p24:nearSea rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</p24:nearSea>

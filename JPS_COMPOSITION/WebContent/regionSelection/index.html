@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Graphical User Interface for selecting a region</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="script.js"></script>
+
+</head>
+<style>
+    #map {
+        display: inline-block;
+        height: 1200px;
+        padding: 10px;
+        width: 68%;
+        margin-left: 1%;
+    }
+</style>
+<body>
+
+<div id="map" style="width: 45%; height: 1200px;"></div>
+<iframe id="frame" style="width: 45%; height: 1200px;" src=""></iframe>
+
+
+
+<script>
+    function initMap() {
+//52.076527&lon=4.292204
+        var myLatlng = {lat: 52.076527, lng: 4.292204};
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 16,
+            center: myLatlng
+        });
+
+
+        var hostname = window.location.host;
+
+
+        var drawingManager = new google.maps.drawing.DrawingManager({
+            drawingMode: google.maps.drawing.OverlayType.Rectangle,
+            drawingControl: true,
+            drawingControlOptions: {
+                position: google.maps.ControlPosition.TOP_CENTER,
+                drawingModes: ['rectangle']
+            },
+            markerOptions: {icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'},
+            circleOptions: {
+                fillColor: '#ADD8E6',
+                fillOpacity: 1,
+                strokeWeight: 5,
+                clickable: false,
+                editable: true,
+                zIndex: 1
+            }
+        });
+        drawingManager.setMap(map);
+        google.maps.event.addListener(drawingManager, 'overlaycomplete', function(event) {
+
+                var ne  = event.overlay.getBounds().getNorthEast();
+                var sw  = event.overlay.getBounds().getSouthWest();
+
+
+                var y_min = String(sw.lat());
+                var x_min = String(sw.lng());
+                var y_max = String(ne.lat());
+                var x_max = String(ne.lng());
+
+            let regionInSemanticJSON =  generateSemanticRegion(y_min,x_min,y_max,x_max);
+
+            var executionChain = window.location.href.split("data=")[1];
+
+            var myUrl = 'http://' + hostname + '/JPS_COMPOSITION/ServiceExecutionEndpoint?executionChain=' + executionChain + '&value=' + encodeURIComponent(regionInSemanticJSON);
+            //var myUrl = 'http://' + 'localhost:8080' + '/JPS/GetBuildingListFromRegion?&value=' + encodeURIComponent(regionInSemanticJSON);
+
+            console.log(myUrl);
+            var request = $.ajax({
+                url: myUrl,
+                type: 'GET',
+                contentType: 'application/json; charset=utf-8'
+            });
+
+            request.done(function (data) {
+                	
+               	let theUrl = "http://" + hostname + "/JPS/?value=" +  encodeURIComponent(data) + "lat=52.076146&lon=4.309961&zoom=14.5&tilt=0.0&rotation=0.6";
+                document.getElementById('frame').src = theUrl;
+                var win = window.open(theUrl, '_blank');
+                win.focus();
+            });
+
+            request.fail(function (jqXHR, textStatus) {
+
+            });
+
+        });
+    }
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA&libraries=drawing&callback=initMap"
+        async defer></script>
+</body>
+</html>

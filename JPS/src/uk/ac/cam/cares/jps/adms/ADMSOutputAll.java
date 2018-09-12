@@ -42,8 +42,25 @@ public class ADMSOutputAll extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		
 	
+		//String result = PythonHelper.callPython("caresjpsadmsinputs/gstReader.py", outputFile, "4", "5", "", this);
+		
+		
+		String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
 		String outputFile = AgentLocator.getPathToWorkingDir(this) + "/ADMS/test.levels.gst";
-		String result = PythonHelper.callPython("caresjpsadmsinputs/gstReader.py", outputFile, "4", "5", "", this);
+
+		
+		System.out.println(outputFile);
+		
+		ArrayList<String> args = new ArrayList<String>();
+		args.add("python");
+		args.add("gstReader.py"); 
+		args.add(outputFile);
+		args.add("4");
+		args.add("5");
+		args.add("");
+		
+		String result = CommandHelper.executeCommands(targetFolder, args);
+		 
 		
 //		ArrayList<String> args  = new ArrayList<String>();
 //		args.add("python");

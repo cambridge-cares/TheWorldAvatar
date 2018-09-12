@@ -19,16 +19,20 @@
 
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="scripts/OSMBuildings.debug.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.4.4/proj4.js"></script>
-    <script src="https://d3js.org/d3.v4.min.js"></script>
-    <script src="https://d3js.org/d3-contour.v1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.min.js"></script>
-    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+
+    <script src="javascript/d3.v4.js"></script>
+    <script src="javascript/d3-contour.js"></script>
+    <script src="javascript/d3-legend.js"></script>
+    <script src="javascript/d3-scale-chromatic.js"></script>
+    <script src="javascript/proj4.js"></script>
 
     <script src="scripts/svg2img.js"></script>
     <script src="scripts/mContour.js"></script>
 	<script src="scripts/adms3Dmap.js"></script>
-	<script src="scripts/start.js"></script>
+    <!--<script src="scripts/start.js"></script> -->
+    <script src="scripts/rdfProcessor.js"></script>
+    <script src="scripts/start3.js"></script>
 
 </head>
 <body>
@@ -59,35 +63,14 @@
 
 <div id="inputFields">
 
-    <select id="reaction-select">
-        <option value="">
-        </option>
-        <option value="marinov">
-            marinov
-        </option>
-    </select>
-
+    
     <h1 id="head1"></h1>
     <p id="description"></p>
 
-    <label for="location">Location: </label>
-    <select id="location" name="location">
-        <option value="Berlin">Berlin</option>
-        <option value="The Hague" selected>The Hague</option>
-    </select>
+  
 
 
-    <label for="xlower">X lower:</label>
-    <input id="xlower" type="text" value='79480'/>
-
-    <label for="xupper">X upper:</label>
-    <input id="xupper" type="text" value='85000'/>
-
-    <label for="ylower">Y lower:</label>
-    <input id="ylower" type="text" value='454670'/>
-
-    <label for="yupper">Y upper:</label>
-    <input id="yupper" type="text" value='460000'/>
+ 
 
 
     <button id="start">Start simulation</button>

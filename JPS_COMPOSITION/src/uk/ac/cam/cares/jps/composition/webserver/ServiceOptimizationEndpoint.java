@@ -12,8 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.HTTP;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.openjena.atlas.json.JSON;
-
+ 
 import uk.ac.cam.cares.jps.composition.enginemodel.Graph;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 import uk.ac.cam.cares.jps.composition.util.FormatTranslator;

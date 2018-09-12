@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.building.test;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,19 +52,14 @@ public class TestBuildingQueryAgent extends TestCase {
 		
 		double plantx = 79831;
 		double planty = 454766;
-//		double lowerx = plantx - 100;
-//		double lowery = planty - 100;
-//		double upperx = plantx + 100;
-//		double uppery = planty + 200;
-		
-		double lowerx = plantx - 400;
-		double lowery = planty - 400;
-		double upperx = plantx + 400;
-		double uppery = planty + 400;
+		double lowerx = plantx - 100;
+		double lowery = planty - 100;
+		double upperx = plantx + 100;
+		double uppery = planty + 200;
 
-		startIntegrationWithPython(city, plant, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
-		
-		// TODO-AE assert statement is missing here 
+		String targetFolder = startIntegrationWithPython(city, plant, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
+		long delta = System.currentTimeMillis() - GetLastModifiedTime(targetFolder, "test.apl");
+		assertTrue(delta <= 1000*60);
 	}
 	
 	public void testBerlinIntegrationWithPython() throws InterruptedException {
@@ -86,24 +82,17 @@ public class TestBuildingQueryAgent extends TestCase {
 //		double upperx = plantx + 400;
 //		double uppery = planty + 400;
 		
-/*		double lowerx = 699208.47;
-		double lowery = 533059.02; //(if source is ok outside the range)
-		//double lowery = 532907.37;
+		double lowerx = 699208.47;
+		double lowery = 533059.02;
 		double upperx = 699959.88;
-		double uppery = 533841.67;*/
-		
-		double lowerx = 699182.00;
-		double upperx = 699983.00;
-		double lowery = 532620.00;
-		double uppery = 533338.00;
-		
-		
-		startIntegrationWithPython(cityIRI, plantIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
-		
+		double uppery = 533841.67;
+		String targetFolder = startIntegrationWithPython(cityIRI, plantIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
+		long delta = System.currentTimeMillis() - GetLastModifiedTime(targetFolder, "test.apl");
+		assertTrue(delta <= 1000*60);
 		// TODO-AE assert statement is missing here 
 	}
 	
-	private void startIntegrationWithPython(String cityIRI, String plantIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) throws InterruptedException {
+	private String startIntegrationWithPython(String cityIRI, String plantIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) throws InterruptedException {
 		
 		ArrayList<String> args = new ArrayList<String>();
 		args.add("python");
@@ -124,14 +113,13 @@ public class TestBuildingQueryAgent extends TestCase {
 		String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
 		System.out.println(targetFolder);
 		String result = CommandHelper.executeCommands(targetFolder, args);
-	
-		System.out.println("Python result: \n" + result);
-	}
+		return targetFolder;
+	}	
 	
 	private String retrieveBuildingDataInJSON(String cityIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
 		// TODO-AE URGENT URGENT activate the query for closest buildings from Region
-		List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryBuildingsFromRegion(cityIRI , buildingLimit, lowerx, lowery, upperx, uppery);
-		//List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryClosestBuildingsFromRegion(cityIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
+		//List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryBuildingsFromRegion(cityIRI , buildingLimit, lowerx, lowery, upperx, uppery);
+		List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryClosestBuildingsFromRegion(cityIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
 		SimpleBuildingData result = createQueryPerformerForTheHague().performQuerySimpleBuildingData(cityIRI, buildingIRIs);
 		String argument = new Gson().toJson(result);
 		return argument;
@@ -140,5 +128,10 @@ public class TestBuildingQueryAgent extends TestCase {
 	private String getCoordinatesForPython(double lowerx, double lowery, double upperx, double uppery) {
 		String template = "{'xmin':%f, 'xmax':%f, 'ymin':%f, 'ymax':%f}";
 		return String.format(template, lowerx, upperx, lowery, uppery);
+	}
+	
+	public long GetLastModifiedTime(String targetFolder, String fileName) {
+        File f = new File(targetFolder + "/" + fileName);
+        return f.lastModified();
 	}
 }

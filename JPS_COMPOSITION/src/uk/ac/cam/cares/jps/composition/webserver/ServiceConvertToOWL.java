@@ -24,8 +24,7 @@ public class ServiceConvertToOWL extends HttpServlet {
 
 	public ServiceConvertToOWL() {
 		super();
-		// TODO Auto-generated constructor stub
-	}
+ 	}
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)

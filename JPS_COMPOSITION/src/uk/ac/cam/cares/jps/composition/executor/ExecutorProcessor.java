@@ -16,7 +16,9 @@ public class ExecutorProcessor {
 	public Map<String, ArrayList<String>> resultPool;
 	public ArrayList<String> eliminationList;
 	public JSONObject map;
-
+ 	
+	
+	
 	public ExecutorProcessor(JSONObject compositionResult) throws JSONException {
 		this.compositeService = compositionResult;
 		this.layers = this.compositeService.getJSONArray("layers");

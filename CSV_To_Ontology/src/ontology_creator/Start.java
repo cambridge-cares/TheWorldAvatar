@@ -42,6 +42,13 @@ public class Start {
 		String specialStreamsFile = "CSV Files/cumene/All_v2_SpecialStream_CSV_Cumene.csv";
 		int utilStartNum = 340200;
 		
+//		String plantName = "MTBE-Plant";
+//		String aswFile = "CSV Files/mtbe/result.csv";
+//		String heatXfile = "CSV Files/mtbe/All_v2_HE_CSV.csv";
+//		String chemSpecFile = "CSV Files/mtbe/All_v2_chemSpec.txt";
+//		String specialStreamsFile = "CSV Files/mtbe/All_v2_SpecialStream_CSV.csv";
+//		int utilStartNum = 350201;
+		
 		Plant chemicalPlant = new Plant(plantName, aswFile, heatXfile, chemSpecFile, specialStreamsFile, utilStartNum);
 		chemicalPlant.createOntology();
 		
