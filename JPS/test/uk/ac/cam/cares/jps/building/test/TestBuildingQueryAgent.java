@@ -86,10 +86,18 @@ public class TestBuildingQueryAgent extends TestCase {
 //		double upperx = plantx + 400;
 //		double uppery = planty + 400;
 		
-		double lowerx = 699208.47;
-		double lowery = 533059.02;
+/*		double lowerx = 699208.47;
+		double lowery = 533059.02; //(if source is ok outside the range)
+		//double lowery = 532907.37;
 		double upperx = 699959.88;
-		double uppery = 533841.67;
+		double uppery = 533841.67;*/
+		
+		double lowerx = 699182.00;
+		double upperx = 699983.00;
+		double lowery = 532620.00;
+		double uppery = 533338.00;
+		
+		
 		startIntegrationWithPython(cityIRI, plantIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
 		
 		// TODO-AE assert statement is missing here 
@@ -122,8 +130,8 @@ public class TestBuildingQueryAgent extends TestCase {
 	
 	private String retrieveBuildingDataInJSON(String cityIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
 		// TODO-AE URGENT URGENT activate the query for closest buildings from Region
-		//List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryBuildingsFromRegion(cityIRI , buildingLimit, lowerx, lowery, upperx, uppery);
-		List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryClosestBuildingsFromRegion(cityIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
+		List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryBuildingsFromRegion(cityIRI , buildingLimit, lowerx, lowery, upperx, uppery);
+		//List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryClosestBuildingsFromRegion(cityIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
 		SimpleBuildingData result = createQueryPerformerForTheHague().performQuerySimpleBuildingData(cityIRI, buildingIRIs);
 		String argument = new Gson().toJson(result);
 		return argument;
