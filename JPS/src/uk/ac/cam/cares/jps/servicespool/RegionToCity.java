@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.servicespool;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
@@ -26,7 +25,6 @@ import org.apache.http.util.EntityUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.vocabulary.RDF;
@@ -36,7 +34,6 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.building.CRSTransformer;
-import uk.ac.cam.cares.jps.semantic.QueryWarehouse;
 
 
 
@@ -57,23 +54,35 @@ public class RegionToCity extends HttpServlet {
     }
  
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String value = request.getParameter("value").replace("$", "#").replace("@", "#");		
-		Model model = ModelFactory.createDefaultModel();
-		RDFDataMgr.read(model, new ByteArrayInputStream(value.getBytes("UTF-8")), Lang.RDFJSON);
- 		JSONObject output = QueryWarehouse.getRegionCoordinates(model);
-		System.out.println("====================== RegionToCity ===================");
-		System.out.println(output.toString());
-		System.out.println("=========================LatLng=======================");
-		String latlng = getCenterLatLon(output);
-		System.out.println(latlng);
-		System.out.println("========================End=========================");
+//		String value = request.getParameter("value").replace("$", "#").replace("@", "#");		
+//		Model model = ModelFactory.createDefaultModel();
+//		RDFDataMgr.read(model, new ByteArrayInputStream(value.getBytes("UTF-8")), Lang.RDFJSON);
+ 		
+ 		//JSONObject output = QueryWarehouse.getRegionCoordinates(model);
+	
+		JSONObject region = new JSONObject();
+		try {
+			region.put("upperx", request.getParameter("upperx"));
+			region.put("uppery", request.getParameter("uppery"));
+			region.put("lowerx", request.getParameter("lowerx"));
+			region.put("lowery", request.getParameter("lowery"));
+			region.put("srsname", request.getParameter("srsname"));
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+		}
+		
+ 		
+ 		String latlng = getCenterLatLon(region);
 
 		try {
 			String res = getCityNameFromCoordinate(latlng);
 			String cityName = extractCityName(res);
 			String cityIRI = lookUpCityName(cityName);
-			String cityRDF = convertIRIToRDF(cityIRI);
-			response.getWriter().write(cityRDF);
+			JSONObject result = new JSONObject();
+			result.put("city", cityIRI);
+			
+			//String cityRDF = convertIRIToRDF(cityIRI);
+			response.getWriter().write(result.toString());
 		} catch (Exception e) {
  			e.printStackTrace();
 		}
@@ -157,24 +166,22 @@ public class RegionToCity extends HttpServlet {
 	public String getCenterLatLon(JSONObject region) {
 		String result = "";
 		try {
-			double xmin = Double.parseDouble(region.getString("xmin"));
-			double xmax = Double.parseDouble(region.getString("xmax"));
-			double ymin = Double.parseDouble(region.getString("ymin"));
-			double ymax = Double.parseDouble(region.getString("ymax"));
+			double xmin = Double.parseDouble(region.getString("lowerx"));
+			double xmax = Double.parseDouble(region.getString("upperx"));
+			double ymin = Double.parseDouble(region.getString("lowery"));
+			double ymax = Double.parseDouble(region.getString("uppery"));
 			
 			double xcenter = (xmax + xmin)/2;
 			double ycenter = (ymax + ymin)/2;
 			
-			String ref = region.getString("ref");
-			if(ref.equalsIgnoreCase(CRSTransformer.EPSG_28992)) {
-				String sourceCRS = CRSTransformer.EPSG_28992;
- 				String targetCRS = CRSTransformer.EPSG_4326;
+			String ref = region.getString("srsname");
+			String targetCRS = CRSTransformer.EPSG_4326;
 
- 				double[] oldPoint = new double[] {xcenter,ycenter};
- 				double[] newPoint = CRSTransformer.transform(sourceCRS, targetCRS, oldPoint);
- 				xcenter = newPoint[0];
- 				ycenter = newPoint[1];
-			}
+			double[] oldPoint = new double[] {xcenter,ycenter};
+			double[] newPoint = CRSTransformer.transform(ref, targetCRS, oldPoint);
+			xcenter = newPoint[0];
+			ycenter = newPoint[1];
+			 
 			
 			result = String.valueOf(ycenter) + "," + String.valueOf(xcenter);
 			return result;
