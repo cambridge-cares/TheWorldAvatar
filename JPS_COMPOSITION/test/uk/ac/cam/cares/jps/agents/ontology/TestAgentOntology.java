@@ -8,6 +8,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
 import uk.ac.cam.cares.jps.composition.servicemodel.Operation;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
@@ -293,14 +294,8 @@ public class TestAgentOntology extends TestCase {
 	
 	public void testServiceDiscovery() throws Exception {
 		
-		// TODO-AE URGENT The method returns /C:/Users/Andreas/my/JPSWorkspace/JParkSimulator-git/JPS_COMPOSITION/build/classes/
-		// the first / is wrong
-		//String fileDirectory = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres/serviceowlfiles";
-		String fileDirectory = "C:/Users/Andreas/my/JPSWorkspace/JParkSimulator-git/JPS_COMPOSITION" + "/testres/serviceowlfiles";
-		//String fileDirectory = "C:/Users/nasac/Documents/GIT/JPS_COMPOSITION/" + "/testres/serviceowlfiles";
-		
+		String fileDirectory = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres/serviceowlfiles";
 		ServiceDiscovery discovery = new ServiceDiscovery(fileDirectory);
-		
 		List<MessagePart> inputs = createMessageParts("op2inputrefuri1");
 		List<Service> result = discovery.getAllServiceCandidates(inputs, new ArrayList<Service>());
 		
@@ -315,6 +310,6 @@ public class TestAgentOntology extends TestCase {
 				.output("op2outputrefuri2", "op1outputname2")
 				.build();
 		
-		new ServiceWriter().writeAsOwlFile(service, "Op2", "C:\\Users\\Andreas\\TMP\\newAgentsMSM");
+		//new ServiceWriter().writeAsOwlFile(service, "Op2", "C:\\Users\\Andreas\\TMP\\newAgentsMSM");
 	}
 }
