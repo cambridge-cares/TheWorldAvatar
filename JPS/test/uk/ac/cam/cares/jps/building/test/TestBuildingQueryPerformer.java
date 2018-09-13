@@ -12,7 +12,7 @@ import org.openimaj.math.geometry.shape.Polygon;
 import com.google.gson.Gson;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.util.MatrixToJsonConverter;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.building.BuildingQueryPerformer;
 import uk.ac.cam.cares.jps.building.CRSTransformer;
 import uk.ac.cam.cares.jps.building.SimpleBuildingData;
@@ -60,7 +60,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		
 		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		assertEquals(10, map.get("building").size());
 		assertEquals(10, map.get("name").size());
 	}
@@ -81,7 +81,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		
 		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		assertEquals(1, map.get("x").size());
 		assertEquals(1, map.get("y").size());
 	}
@@ -91,7 +91,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		String query = createQueryPerformerForTheHague().getQueryBdnHeight(BUILDING_IRI_THE_HAGUE_WITHOUT_PARTS);
 		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		assertEquals(1, map.get("h").size());
 		assertEquals("9.432", map.get("h").get(0));
 	}
@@ -101,7 +101,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		String query = createQueryPerformerForTheHague().getQueryBdnVerticesWithAndWithoutBuildingParts(BUILDING_IRI_THE_HAGUE_WITHOUT_PARTS);		
 		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		assertEquals(5, map.get("x").size());
 		assertEquals(5, map.get("y").size());
 		assertEquals(5, map.get("z").size());
@@ -195,7 +195,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		
 		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		assertEquals(10, map.get("bdn").size());
 	}
 	
@@ -210,7 +210,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		
 		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		List<String> distinctGroundSurface = new ArrayList<String>();
 		for (Object current : map.get("groundsurface")) {
 			if (!distinctGroundSurface.contains(current)) {
