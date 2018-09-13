@@ -14,7 +14,7 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.Parameter;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.util.MatrixToJsonConverter;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 public class TestDiscovery extends TestCase {
 	
@@ -248,7 +248,7 @@ public class TestDiscovery extends TestCase {
 			priceList.add(price);
 		}
 		
-		MatrixToJsonConverter converter = new MatrixToJsonConverter();
+		MatrixConverter converter = new MatrixConverter();
 
 		String monthIRI = "months"; //"http://www.theworldavatar.com/ontology/Time.owl#Month";
 		converter.putColumn(monthIRI, monthList);

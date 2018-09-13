@@ -207,12 +207,12 @@ public class ServiceReader {
         	result.setDatatypeValue(statement.getString());
         }
         
-//        List<MessagePart> mps;
-//        mps = obtainParts(individual, MSM.hasMandatoryPart.Property());
-//        result.setMandatoryParts(mps);
-//
-//        mps = obtainParts(individual, MSM.hasOptionalPart.Property());
-//        result.setOptionalParts(mps);
+        List<MessagePart> mps;
+        mps = obtainParts(individual, MSM.hasMandatoryPart.Property());
+        result.setMandatoryParts(mps);
+
+        mps = obtainParts(individual, MSM.hasOptionalPart.Property());
+        result.setOptionalParts(mps);
 
         return result;
     }
