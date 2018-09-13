@@ -8,8 +8,7 @@ import java.util.StringTokenizer;
 
 import com.google.gson.Gson;
 
-// TODO-AE rename this class to MatrixConverter as soon as Kevin is back
-public class MatrixToJsonConverter {
+public class MatrixConverter {
 
 	private Map<String, List<Object>> map = new HashMap<String, List<Object>>();
 	
@@ -70,20 +69,5 @@ public class MatrixToJsonConverter {
 			result.add(tokenizer.nextToken());
 		}
 		return result;
-	}
-
-	/**
-	 * 
-	 * @param area
-	 * @param perimeter
-	 * @return 
-	 */
-	public static boolean isCircular(double area, double perimeter) {
-	
-		double T = Math.abs(4 * 22 / 7 * area / Math.pow(perimeter, 2));
-		if (T <= 1 && T >= 0.9) {
-			return true; 
-		} 
-		return false;
 	}
 }

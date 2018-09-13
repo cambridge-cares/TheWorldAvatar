@@ -11,7 +11,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.util.MatrixToJsonConverter;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.building.PolygonUtil;
 import uk.ac.cam.cares.jps.building.SimpleShapeConverter;
 import uk.ac.cam.cares.jps.building.SimpleShapeConverter.SimpleShape;
@@ -599,7 +599,7 @@ public class TestPolygonUtil extends TestCase {
 			"79434.822,454730.25,1.841\n" + 
 			"79439.151,454733.054,1.841";
 		
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(csvCoordinates);
+		Map<String, List<String>> map = MatrixConverter.fromCsv(csvCoordinates);
 		Polygon p = SimpleShapeConverter.convertTo2DPolygon(map, "x", "y");
 		
 		System.out.println("original Polygon = " + p);
