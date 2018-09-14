@@ -2,7 +2,7 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="sj" uri="/struts-jquery-tags" %>
-<%@ taglib prefix="sb" uri="/struts-bootstrap-tags" %> 
+<%@ taglib prefix="sb" uri="/struts-bootstrap-tags" %>
 <%@ taglib  prefix="c"  uri="http://java.sun.com/jsp/jstl/core"%>
 
 <!DOCTYPE html>
@@ -12,16 +12,118 @@
 <!--  after pressing refresh button it clears content of page. -->
 <!-- <meta http-equiv="refresh" content="300;url=upload.action" /> -->
 <link rel="icon" href="${pageContext.request.contextPath}/css/static/group/favicon.ico" />
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/CoMoStyle.css">
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/CoMoIncludeStyle.css">
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/CoMoThemesStyle.css">
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/CoMoStyle.css"/>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/CoMoIncludeStyle.css"/>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/CoMoThemesStyle.css"/>
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/styles/tool-navigator.css"/>
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/styles/repository.css"/>
+
 <title>Computational Modelling Group</title>
- 
+
+<script   type="text/javascript" src="<%=request.getContextPath()%>/jsmol/JSmol.min.js"></script> <!-- ${pageContext.request.contextPath} request.getContextPath() -->
+
+<script type="text/javascript">  
+
+var s = unescape(document.location.search);
+var script = 'set errorCallback "myCallback";'
+	+'set animationFPS 4;set antialiasdisplay;set measurementUnits angstroms;set zoomlarge false;'
+	+'set echo top left;echo loading XXXX...;refresh;'
+	+'load ":XXXX";set echo top center;echo XXXX;'
+var xxxx = s.split("_USE=")[0]
+if (xxxx.length < 2) {
+  xxxx = "ethanol"
+} else {
+  xxxx = xxxx.substring(1);
+  if (xxxx.indexOf("load ") >= 0) {
+    script = xxxx
+    xxxx = ""
+  }
+}
+if (xxxx)
+  script = script.replace(/XXXX/g, xxxx)
+
+  
+var Info = {
+		width: 300,
+		height: 100,
+		disableJ2SLoadMonitor: true, 
+		disableInitialConsole: true, 
+		script: script,
+		use: "HTML5",
+		jarPath: "<%=request.getContextPath()%>/jsmol/java",
+		j2sPath: "<%=request.getContextPath()%>/jsmol/j2s",
+		jarFile: "JmolAppletSigned.jar",
+		isSigned: false,
+		script: "set zoomlarge false;set antialiasDisplay;load http://<%=request.getHeader("host")%>/35269150-ffb3-3ffb-a7b9-4d9b56aa61fc/Cl2O10Ti3.g09",		
+		addSelectionOptions: false,
+		serverURL: "<%=request.getContextPath()%>/jsmol/php/jsmol.php",
+		readyFunction: null,
+		console: "jmol_infodiv",
+		disableInitialConsole: true,
+		defaultModel: null,
+		debug: false
+	}
+	
+Jmol.getApplet("appletCheck", Info, true);
+var isApplet = (appletCheck._jmolType.indexOf("_Applet") >= 0);
+var is2D = appletCheck._is2D;
+
+if (!isApplet && !Info.script) {
+
+	// JSmol or image
+
+	Info.defaultModel = "$tylenol";
+	Info.script = "#alt:LOAD :tylenol";
+
+}
+
+
+$(document).ready(function(){
+		
+	// This demonstration shows that
+	// what is put on the page can depend upon the platform.
+
+	// Note that the use of $(document.ready()) is optional but preferred. 
+	// You can do the traditional in-body coding if you want. See also simple2-nojq.htm.
+	// But as Gusts Kaksis pointed out, if we are using jQuery for database lookups, we might
+	// as well use it for more than that.
+  
+    // note that we create the applet first, before the controls, because
+    // we need window.jmol to be defined for those, and Jmol.getAppletHtml does that.
+  
+  $("#middlepanel").html(Jmol.getAppletHtml("jmol", Info));
+
+  // alternatively, you can use
+  //
+  //   jmol = "jmol"
+  //
+  // and then create the buttons before the applet itself. 
+  // Just make sure if you do that to use the name of the applet you are
+  // actually going to be using. So, perhaps:
+  //
+  //   jmolApplet0 = "jmolApplet0"
+  //
+
+	var use = (Info.use != "JAVA" ? Info.use : Info.isSigned ? "SIGNED" : "JAVA"); 
+
+		$("#leftpanel").html(		
+		  "<br>Spin: " + Jmol.jmolRadioGroup(jmol, [["spin off", "off", true],["spin on", "on"]])
+		);
+
+  // right panel
+  
+	Jmol.setButtonCss(null, "style='width:160px'");	
+	$("#rightpanel").html(
+		Jmol.jmolButton(jmol,"write PNGJ jsmol.png","Save PNG")		
+	);
+})
+
+</script>
+
 </head>
 
 <body class="oneColFixCtr">
+
 <div id="container">
 <div id="mainContent">
 
@@ -90,7 +192,19 @@
 <div id="main-content" class="clearfix">
 
 <!-- PUT CONTENT HERE -->
-
+ 
+<table style="margin-left:auto; margin-right:auto;">
+	<tr>
+		<td></td>		
+		<td><div id="middlepanel"></div></td>
+		<td><div id="leftpanel"></div><P/><div id="rightpanel"></div></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td style="text-align:center"></td>
+		<td></td>
+	</tr>
+</table>
 
 <div class="col-md-9">
 <s:actionerror/>
@@ -122,7 +236,7 @@
                    
 <s:iterator value="finalSearchResultSet" var="result" > 
 
-              
+      
 <div id="<s:property  value="uuid"/>" class="box">
     <div class="round-top box-header">
         <div class="checkbox-wrapper" >
@@ -132,8 +246,9 @@
         
     </div>
     <div class="round-bottom box-content">
-    <!--<img alt="" src="http://como.cheng.cam.ac.uk/molhub/compchem/6498a583-a210-4ac1/data.3d.thumb.png" class="species-image"/>-->
-
+    	   
+        <!--<img alt="" src="http://como.cheng.cam.ac.uk/molhub/compchem/6498a583-a210-4ac1/data.3d.thumb.png" class="species-image"/>-->
+         
         <div class="species-content">
             <div>
                 <div class="property-name"><s:property value="resultsColumn[0]"/></div>
@@ -142,7 +257,7 @@
             <p/>
             <div>
                 <div class="property-name"></div>
-                <div class="property-value">
+                <div class="property-value">    
                    <!-- <a href="http://como.cheng.cam.ac.uk/molhub/compchem/6498a583-a210-4ac1/">http://como.cheng.cam.ac.uk/molhub/compchem/6498a583-a210-4ac1/</a> -->
                 </div>
             </div>
