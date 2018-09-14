@@ -4,18 +4,18 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
 import uk.ac.cam.cares.jps.composition.enginemodel.Graph;
 import uk.ac.cam.cares.jps.composition.enginemodel.Layer;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 import uk.ac.cam.cares.jps.composition.util.MatchingTool;
 import uk.ac.cam.cares.jps.composition.util.OptimalPathSearcher;
-import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
 
 public class ServiceCompositionEngine {
 
 	public String fullHostName = "";
-	public String fileDirectory = "C:/Users/nasac/Documents/GIT/JPS_COMPOSITION"  + "/testres/serviceowlfiles";
+	public String fileDirectory = null;
 	public Graph newGraph;
 	private ServiceDiscovery serviceDiscovery;
 	private ArrayList<MessagePart> inputsToAppend;
@@ -24,11 +24,14 @@ public class ServiceCompositionEngine {
 	public ArrayList<URI> outputsRequiredTemp;
 	public boolean OutputRequirementMet = false;
 	
-	
-	
 	public ServiceCompositionEngine(Service compositeAgent, String host) throws Exception {
+		this(compositeAgent, host, "C:/Users/nasac/Documents/GIT/JPS_COMPOSITION"  + "/testres/serviceowlfiles");
+	}
+	
+	public ServiceCompositionEngine(Service compositeAgent, String host, String fileDirectory) throws Exception {
 		this.newGraph = new Graph();
 		this.fullHostName = host;
+		this.fileDirectory = fileDirectory;
 		this.newGraph.initialInputs = (ArrayList<MessagePart>) compositeAgent.getAllInputs();
 		this.serviceDiscovery = new ServiceDiscovery(this.fileDirectory);
 		this.inputsToAppend = new ArrayList<MessagePart>();
