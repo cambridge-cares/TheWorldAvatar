@@ -49,17 +49,8 @@ public class ServiceCompositionEndpoint extends HttpServlet {
 
 			ServiceCompositionEngine myCompositionEngine = new ServiceCompositionEngine(agent,
 					"http://" + request.getServerName() + ":" + request.getServerPort());
-
-			boolean met = false;
-			int index = 0;
-			while (!met) {
-				index++;
-				met = myCompositionEngine.appendLayerToGraph(index);
-			}
-			int size = 1;
-			while (size != 0) {
-				size = myCompositionEngine.eliminateRedundantAgent();
-			}
+			
+			myCompositionEngine.start();
 
 			ConnectionBuilder connectionBuilder = new ConnectionBuilder();
 			connectionBuilder.buildEdge(myCompositionEngine.getGraph()); // build the connection between services

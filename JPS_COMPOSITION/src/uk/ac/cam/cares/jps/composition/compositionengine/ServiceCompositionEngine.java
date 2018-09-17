@@ -147,5 +147,18 @@ public class ServiceCompositionEngine {
 	public void visualizeGraph() {
 
 	}
+	
+	public void start() {
+		boolean met = false;
+		int index = 0;
+		while (!met) {
+			index++;
+			met = this.appendLayerToGraph(index);
+		}
+		int size = 1;
+		while (size != 0) {
+			size = this.eliminateRedundantAgent();
+		}
+	}
 
 }

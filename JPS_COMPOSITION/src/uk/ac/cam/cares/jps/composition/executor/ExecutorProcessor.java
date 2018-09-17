@@ -18,12 +18,26 @@ public class ExecutorProcessor {
 	public JSONObject map;
  	
 	
+	public ExecutorProcessor(JSONObject compositionResult, ArrayList<String> eliminationList) throws JSONException {
+		this.compositeService = compositionResult;
+		this.layers = this.compositeService.getJSONArray("layers");
+		this.taskList = new ArrayList<Task>();
+		this.eliminationList = eliminationList;
+		this.resultPool = new HashMap<String, ArrayList<String>>();
+		this.map = new JSONObject();
+	}
 	
 	public ExecutorProcessor(JSONObject compositionResult) throws JSONException {
 		this.compositeService = compositionResult;
 		this.layers = this.compositeService.getJSONArray("layers");
 		this.taskList = new ArrayList<Task>();
+		
 		this.eliminationList = new ArrayList<String>();
+		JSONArray tempList = this.compositeService.getJSONArray("eliminationList");
+		for (int idx = 0; idx < tempList.length(); idx++) {
+			this.eliminationList.add(tempList.getString(idx));
+		}
+		
 		this.resultPool = new HashMap<String, ArrayList<String>>();
 		this.map = new JSONObject();
 	}
@@ -133,10 +147,6 @@ public class ExecutorProcessor {
 			this.map = this.compositeService.getJSONObject("updatesMap");
 		}
 		JSONArray layers = this.compositeService.getJSONArray("layers");
-		JSONArray tempList = this.compositeService.getJSONArray("eliminationList");
-		for (int idx = 0; idx < tempList.length(); idx++) {
-			this.eliminationList.add(tempList.getString(idx));
-		}
 
 		for (int i = 0; i < layers.length(); i++) {
 			JSONObject layer = layers.getJSONObject(i);
