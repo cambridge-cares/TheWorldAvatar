@@ -43,15 +43,13 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.rio.RDFFormat;
 
-
-// TODO: Auto-generated Javadoc
 /**
  * @author nk510 The Class UploadAction: Uploads one or more selected Gaussian
  *         files (g09) on server, and generates XML, ontology files, and adds
  *         ontology files into tripe store (RDF4J).
  * 
  */
-public class UploadAction extends ActionSupport {
+public class UploadAction extends ActionSupport {	
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
@@ -92,10 +90,12 @@ public class UploadAction extends ActionSupport {
 	@Override
 	public String execute() throws Exception {
 
+		
 		int fileNumber = 0;
 		/**
 		 * @author nk510 Column names in generated table (report).
 		 */
+		
 		if (!files.isEmpty()) {
 			
 			column.add("UUID");
@@ -106,8 +106,10 @@ public class UploadAction extends ActionSupport {
 
 		if (files.isEmpty()) {
 
-			addActionMessage("Please select Gaussian files first, and than press 'Upload' button.");
+		addActionMessage("Please select Gaussian files first, and than press 'Upload' button.");
+		
 		}
+		
 		/**
 		 * 
 		 * @author nk510 Iterates over selected (uploaded) files.
@@ -126,6 +128,9 @@ public class UploadAction extends ActionSupport {
 			String folderName = FolderManager.generateUniqueFolderName(f.getName(), catalinaFolderPath);
 
 			File inputG09File = new File(folderName + "/" + uploadFileName[fileNumber]);
+			
+			String outputPNGFilePath = folderName + "/" + uploadFileName[fileNumber].replaceAll(".g09", "").toString()
+					+ ".png";
 
 			File outputXMLFile = new File(
 					folderName + "/" + uploadFileName[fileNumber].replaceAll(".g09", "") + ".xml");
@@ -160,6 +165,13 @@ public class UploadAction extends ActionSupport {
 					new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile),
 					new StreamSource(xslt));
 
+			/**
+			 * @author nk510 
+			 * Generate image (.png file) from uploaded Gaussian file by using Jmol.
+			 */
+			String[] cmd = { "java","-jar", "C:/Users/nk510/git/thermochemistry/molhub/WebContent/WEB-INF/lib/Jmol.jar","--nodisplay","-j","background white",inputG09File.getAbsolutePath(), "-w", "background white", "png:"+ outputPNGFilePath };
+
+			Runtime.getRuntime().exec(cmd);
 			
 			
 			/**

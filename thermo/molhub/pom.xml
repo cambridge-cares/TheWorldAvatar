@@ -253,7 +253,12 @@
     <version>5.2.0-M3</version>
 </dependency>
 
-
+<!-- https://mvnrepository.com/artifact/net.sourceforge.jmol/jmol -->
+<dependency>
+    <groupId>net.sourceforge.jmol</groupId>
+    <artifactId>jmol</artifactId>
+    <version>14.29.17</version>
+</dependency>
 
   </dependencies>
 </project>

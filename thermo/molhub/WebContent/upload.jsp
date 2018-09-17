@@ -138,8 +138,7 @@
 					     3. Checks whether XML file is valid against Compchem schema. 
 					     4. Checks whether generated ontology (owl) file is consistent.  
 					-->
-
-
+					
 					<table class="borderAll" border="1">
 						<tr>
 							<s:iterator value="column" var="c">
@@ -156,6 +155,7 @@
 								<td class="nowrap"><s:property
 										value="consistencyCompchemOntologyFile" /></td>
 							</tr>
+							
 						</s:iterator>
 					</table>
 

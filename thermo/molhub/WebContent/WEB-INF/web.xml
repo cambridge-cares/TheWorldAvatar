@@ -18,14 +18,7 @@
     <welcome-file-list>
 		<welcome-file>upload.jsp</welcome-file>
 	</welcome-file-list>
-
-	<!-- 
-	600seconds = 10 mins 	
-	<session-config>
-
-    <session-timeout>60</session-timeout> 
-    </session-config>
-    -->
+	
    <jsp-config>
     <jsp-property-group > 
         <url-pattern>*.jsp</url-pattern>

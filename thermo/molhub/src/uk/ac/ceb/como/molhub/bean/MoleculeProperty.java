@@ -2,6 +2,7 @@ package uk.ac.ceb.como.molhub.bean;
 
 public class MoleculeProperty {
 
+	private String fileName;
 	private String uuid;
 	private String moleculeName;
 	private String levelOfTheory;
@@ -28,13 +29,15 @@ public class MoleculeProperty {
 	public MoleculeProperty() {
 	}
 
-	public MoleculeProperty(String uuid, String moleculeName, String levelOfTheory,
+	public MoleculeProperty(String fileName,String uuid, String moleculeName,String levelOfTheory,
 			String basisSet, int frequenciesSize, String frequenciesValue, String frequenciesUnit, int spinMultiplicity,
 			double coordinateX, double coordinateY, double coordinateZ, double atomicMass, String atomicMassUnit,
 			String geometryType, int rotationalConstantsSize, String rotationalConstantsUnit, String rotationalConstantsValue, int rotationalSymmetryNumber, String programName, String programVersion, String runDate) {
 
+		this.fileName=fileName;
 		this.uuid = uuid;
 		this.moleculeName = moleculeName;
+		
 		this.levelOfTheory = levelOfTheory;
 		this.basisSet = basisSet;
 		this.frequenciesSize = frequenciesSize;
@@ -255,4 +258,11 @@ public class MoleculeProperty {
 		this.runDate = runDate;
 	}
 
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
 }

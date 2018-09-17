@@ -53,7 +53,7 @@ public class FolderManager {
 
 		UUID uuid = UUID.nameUUIDFromBytes(bytes);
 
-		folderName = catalinaFolderPath + "/conf/Catalina/" + uuid.toString();
+		folderName = catalinaFolderPath + "/webapps/ROOT/" + uuid.toString();
 
 		return folderName;
 

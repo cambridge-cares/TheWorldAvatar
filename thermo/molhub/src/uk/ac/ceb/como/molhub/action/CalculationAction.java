@@ -58,7 +58,7 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 		
 		for(Map.Entry<String, Object> mp: session.entrySet()) {
 			
-			String speciesFolder = catalicaFolderPath + "/conf/Catalina/"+ mp.getKey().toString()+ "/";
+			String speciesFolder = catalicaFolderPath + "/webapps/ROOT/"+ mp.getKey().toString()+ "/";
 			
 			List<File> aboxFiles = utility.getArrayFileList(speciesFolder, ".owl");
 			
@@ -100,14 +100,6 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 		 * @author nk510
 		 * Invalidate session
 		 */
-//		if (session instanceof org.apache.struts2.dispatcher.SessionMap) {
-//		    try {
-//		        ((org.apache.struts2.dispatcher.SessionMap<String, Object>) session).invalidate();
-//		    } catch (IllegalStateException e) {
-//		        logger.error("Problem with session: ", e);
-//		    }
-//		}
-		
 		
 		addActionMessage("Calculations successfully completed.");
 		
