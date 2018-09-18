@@ -116,11 +116,13 @@
 				</div>
 
 				<div id="main-content" class="clearfix">
-
+                        
+                        <s:actionerror />
+						<s:actionmessage />
+						
 					<!-- PUT CONTENT HERE -->
 					<div class="col-md-9">
-						<s:actionerror />
-						<s:actionmessage />
+					
 						<s:form action="upload" method="post"
 							enctype="multipart/form-data" theme="bootstrap">
 

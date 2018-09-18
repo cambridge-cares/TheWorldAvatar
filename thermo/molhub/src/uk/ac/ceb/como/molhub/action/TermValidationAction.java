@@ -11,7 +11,7 @@ import org.apache.struts2.interceptor.SessionAware;
 
 import org.apache.struts2.dispatcher.SessionMap;
 
-import com.opensymphony.xwork2.ActionContext;
+
 import com.opensymphony.xwork2.ActionSupport;
 
 import org.eclipse.rdf4j.RDF4JException;
@@ -67,7 +67,6 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 	@Override
 	public String execute() throws Exception {
 		
-		
 		PLParser parser = new PLParser();
 
 		DPLL dpll = new DPLLSatisfiable();
@@ -79,6 +78,10 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 		resultsColumn.add("Basis Set:");
 		resultsColumn.add("Method: ");
 			
+		/**
+		 * @author nk510
+		 * This part of code is executing when a user presses button "Molhub Search". 
+		 */
 		if (term.getName().length() == 0) {			
 			
 			if (!session.isEmpty()) {			
@@ -87,6 +90,7 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 				
 					session.remove(mp.getKey(),mp.getValue());
 				}
+				
 			}
 
 			addFieldError("term.name", "Query string is empty.");
@@ -194,6 +198,7 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 						 * @author nk510
 						 *  Returns list of all molecule properties which will appear in query result. It remembers also image file name (.png file).  
 						 */
+						
 						finalSearchResultSet.addAll(QueryManager.performSPARQLForMoleculeName(mpp));
 						
 					}
@@ -252,6 +257,7 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 			return ERROR;
 		}
 
+		
 	} 
 	
 	@Override
@@ -415,7 +421,6 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 	
 	@Override
 	public void setSession(Map<String, Object> session) {
-		// TODO Auto-generated method stub
 		
 		this.session=(SessionMap<String, Object>)session;
 		
@@ -425,124 +430,6 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 		
 		return session;
 	}	
-
-/**
- 
-<script   type="text/javascript" src="<%=request.getContextPath()%>/jsmol/JSmol.min.js"></script> <!-- ${pageContext.request.contextPath} request.getContextPath() -->
-
-	  <script type="text/javascript">  
-
-var s = unescape(document.location.search);
-var script = 'set errorCallback "myCallback";'
-	+'set animationFPS 4;set antialiasdisplay;set measurementUnits angstroms;set zoomlarge false;'
-	+'set echo top left;echo loading XXXX...;refresh;'
-	+'load ":XXXX";set echo top center;echo XXXX;'
-var xxxx = s.split("_USE=")[0]
-if (xxxx.length < 2) {
-  xxxx = "ethanol"
-} else {
-  xxxx = xxxx.substring(1);
-  if (xxxx.indexOf("load ") >= 0) {
-    script = xxxx
-    xxxx = ""
-  }
-}
-if (xxxx)
-  script = script.replace(/XXXX/g, xxxx)
-
-  
-var Info = {
-		width:  600,
-		height: 100,
-		disableJ2SLoadMonitor: true, 
-		disableInitialConsole: true, 
-		script: script,
-		use: "HTML5",
-		jarPath: "<%=request.getContextPath()%>/jsmol/java",
-		j2sPath: "<%=request.getContextPath()%>/jsmol/j2s",
-		jarFile: "JmolAppletSigned.jar",
-		isSigned: false,
-		script: "set zoomlarge false;set antialiasDisplay;load http://<%=request.getHeader("host")%>/<s:property  value="uuid"/>/TiCl4.g09",		
-		addSelectionOptions: false,
-		serverURL: "<%=request.getContextPath()%>/jsmol/php/jsmol.php",
-		readyFunction: null,
-		console: "jmol_infodiv",
-		disableInitialConsole: true,
-		defaultModel: null,
-		debug: false
-	}
-	
-Jmol.getApplet("appletCheck", Info, true);
-var isApplet = (appletCheck._jmolType.indexOf("_Applet") >= 0);
-var is2D = appletCheck._is2D;
-
-if (!isApplet && !Info.script) {
-
-	// JSmol or image
-
-	Info.defaultModel = "$tylenol";
-	Info.script = "#alt:LOAD :tylenol";
-
-}
-
-
-$(document).ready(function(){
-		
-	// This demonstration shows that
-	// what is put on the page can depend upon the platform.
-
-	// Note that the use of $(document.ready()) is optional but preferred. 
-	// You can do the traditional in-body coding if you want. See also simple2-nojq.htm.
-	// But as Gusts Kaksis pointed out, if we are using jQuery for database lookups, we might
-	// as well use it for more than that.
-  
-    // note that we create the applet first, before the controls, because
-    // we need window.jmol to be defined for those, and Jmol.getAppletHtml does that.
-  
-  $("#middlepanel").html(Jmol.getAppletHtml("jmol", Info));
-
-  // alternatively, you can use
-  //
-  //   jmol = "jmol"
-  //
-  // and then create the buttons before the applet itself. 
-  // Just make sure if you do that to use the name of the applet you are
-  // actually going to be using. So, perhaps:
-  //
-  //   jmolApplet0 = "jmolApplet0"
-  //
-
-	var use = (Info.use != "JAVA" ? Info.use : Info.isSigned ? "SIGNED" : "JAVA"); 
-
-		$("#leftpanel").html(		
-		  "<br>Spin: " + Jmol.jmolRadioGroup(jmol, [["spin off", "off", true],["spin on", "on"]])
-		);
-
-  // right panel
-  
-	Jmol.setButtonCss(null, "style='width:160px'");	
-	$("#rightpanel").html(
-		Jmol.jmolButton(jmol,"write PNGJ jsmol.png","Save PNG")		
-	);
-})
-
-</script>
-
- 
-<table style="margin-left:auto; margin-right:auto;">
-	<tr>
-		<td></td>		
-		<td><div id="middlepanel"></div></td>
-		<td><div id="leftpanel"></div><P/><div id="rightpanel"></div></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td style="text-align:center"></td>
-		<td></td>
-	</tr>
-</table>
- 
- */
 }
 
 

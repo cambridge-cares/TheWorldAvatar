@@ -28,7 +28,8 @@
 	<result name="input">/search.jsp</result>
 	<result name="error">/search.jsp</result>
 	 
-    <interceptor-ref name="basicStack"/>
+	
+    <interceptor-ref name="basicStack"/>    
     <interceptor-ref name="scope">
         <param name="type">start</param>
     </interceptor-ref>

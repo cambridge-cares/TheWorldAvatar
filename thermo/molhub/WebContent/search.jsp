@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<%@ page contentType="text/html; charset=UTF-8" %>
-<%@ taglib prefix="s" uri="/struts-tags" %>
-<%@ taglib prefix="sj" uri="/struts-jquery-tags" %>
-<%@ taglib prefix="sb" uri="/struts-bootstrap-tags" %>
+<%@ page contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%@ taglib prefix="sj" uri="/struts-jquery-tags"%>
+<%@ taglib prefix="sb" uri="/struts-bootstrap-tags"%>
 <%@ taglib  prefix="c"  uri="http://java.sun.com/jsp/jstl/core"%>
 
 <!DOCTYPE html>
@@ -108,7 +108,11 @@
 <s:submit value="Run calculation"/>
 </s:form>
 
-<s:set value="term" var="termName"/>
+<s:property value="term"/>
+
+
+<s:if test="%{term==null}"><% session.invalidate(); %></s:if>
+
 
 </div>
 <s:property value="session"/>
@@ -117,25 +121,30 @@
 <div id="tool-container">
 
        <div id="result-container">
+       
             <div id="process-box" class="tool-tab">
                
 <!-- A list of search results for given query string-->
                    
-<s:iterator value="finalSearchResultSet" var="result" > 
-
+<s:iterator value="finalSearchResultSet" var="result"> 
       
 <div id="<s:property  value="uuid"/>" class="box">
+    
     <div class="round-top box-header">
+    
         <div class="checkbox-wrapper" >
             
         </div>
-            <div class="species-title"><s:property  value="moleculeName"/></div>
+    
+    <div class="species-title"><s:property  value="moleculeName"/></div>
+    
     </div>
+    
     <div class="round-bottom box-content">   	   
  
- <!--<img alt="" src="http://como.cheng.cam.ac.uk/molhub/compchem/6498a583-a210-4ac1/data.3d.thumb.png" class="species-image"/>-->
+<!--<img alt="" src="http://como.cheng.cam.ac.uk/molhub/compchem/6498a583-a210-4ac1/data.3d.thumb.png" class="species-image"/>-->
  
-  <img alt="" src="http://<%=request.getHeader("host")%>/<s:property  value="uuid"/>/TiCl4.png" class="species-image"/>
+<img alt="" src="http://<%=request.getHeader("host")%>/<s:property  value="uuid"/>/<s:property  value="uuid"/>.png" class="species-image"/>
   
  <div class="species-image" id="middlepanel"></div>
  

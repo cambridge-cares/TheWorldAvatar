@@ -49,7 +49,7 @@ import org.eclipse.rdf4j.rio.RDFFormat;
  *         ontology files into tripe store (RDF4J).
  * 
  */
-public class UploadAction extends ActionSupport {	
+public class UploadAction extends ActionSupport {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
@@ -71,7 +71,7 @@ public class UploadAction extends ActionSupport {
 	private String[] uploadFileName;
 
 	List<String> column = new ArrayList<String>();
-	
+
 	GaussianUploadReport gaussianUploadReport;
 
 	private List<GaussianUploadReport> uploadReportList = new ArrayList<GaussianUploadReport>();
@@ -90,14 +90,13 @@ public class UploadAction extends ActionSupport {
 	@Override
 	public String execute() throws Exception {
 
-		
 		int fileNumber = 0;
 		/**
 		 * @author nk510 Column names in generated table (report).
 		 */
-		
+
 		if (!files.isEmpty()) {
-			
+
 			column.add("UUID");
 			column.add("Gaussian file");
 			column.add("XML validation");
@@ -105,11 +104,10 @@ public class UploadAction extends ActionSupport {
 		}
 
 		if (files.isEmpty()) {
-
-		addActionMessage("Please select Gaussian files first, and than press 'Upload' button.");
-		
+			
+			addActionMessage("Please select Gaussian files first, and than press 'Upload' button.");
 		}
-		
+
 		/**
 		 * 
 		 * @author nk510 Iterates over selected (uploaded) files.
@@ -125,12 +123,16 @@ public class UploadAction extends ActionSupport {
 			 *         (g09).
 			 */
 
-			String folderName = FolderManager.generateUniqueFolderName(f.getName(), catalinaFolderPath);
-
+			String folderName = FolderManager.generateUniqueFolderName(f.getName(), catalinaFolderPath);			
+			
 			File inputG09File = new File(folderName + "/" + uploadFileName[fileNumber]);
 			
-			String outputPNGFilePath = folderName + "/" + uploadFileName[fileNumber].replaceAll(".g09", "").toString()
-					+ ".png";
+			/**
+			 * @author nk510
+			 * Png file name is the same as the name of folder where that image is saved.
+			 */
+//			String outputPNGFilePath = folderName + "/" + folderName + ".jpg";
+			
 
 			File outputXMLFile = new File(
 					folderName + "/" + uploadFileName[fileNumber].replaceAll(".g09", "") + ".xml");
@@ -139,13 +141,15 @@ public class UploadAction extends ActionSupport {
 					+ ".owl";
 
 			File owlFile = new File(outputOwlPath);
+			
+			File pngFile = new File(folderName + "/" + folderName.substring(folderName.lastIndexOf("/")+ 1)+ ".png");
 
 			/**
 			 * @author nk510 Creates a folder.
 			 */
 
 			FolderManager.createFolder(folderName);
-			
+
 			/**
 			 * @author nk510 Saves Gaussian file and XML file are saved into generated
 			 *         folder.
@@ -166,14 +170,14 @@ public class UploadAction extends ActionSupport {
 					new StreamSource(xslt));
 
 			/**
-			 * @author nk510 
-			 * Generate image (.png file) from uploaded Gaussian file by using Jmol.
+			 * @author nk510 Generate image (.png file) from uploaded Gaussian file by using
+			 *         JmolData.
 			 */
-			String[] cmd = { "java","-jar", "C:/Users/nk510/git/thermochemistry/molhub/WebContent/WEB-INF/lib/Jmol.jar","--nodisplay","-j","background white",inputG09File.getAbsolutePath(), "-w", "background white", "png:"+ outputPNGFilePath };
+			
+			String[] cmd = {"java","-jar", catalinaFolderPath + "/conf/Catalina/jmol/JmolData.jar","--nodisplay","-j","background white",inputG09File.getAbsolutePath().toString(),"-w","png:"+pngFile.getAbsolutePath().toString()};
 
 			Runtime.getRuntime().exec(cmd);
-			
-			
+
 			/**
 			 * @author nk510 Validates of generated Compchem xml file against Compchem XML
 			 *         schema, and checks consistency of generated Compchem ontology (owl
@@ -314,5 +318,5 @@ public class UploadAction extends ActionSupport {
 	public void setUploadFileContentType(String uploadFileContentType) {
 		this.uploadFileContentType = uploadFileContentType;
 	}
-	
+
 }
