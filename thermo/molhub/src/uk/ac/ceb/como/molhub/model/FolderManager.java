@@ -97,7 +97,7 @@ public class FolderManager {
 
 		stream.close();
 
-	}	
+	}
 	
 	public List<GaussianUploadReport> getUploadReportList() {
 		return uploadReportList;
@@ -107,6 +107,32 @@ public class FolderManager {
 		this.uploadReportList = uploadReportList;
 	}
 	
+	/**
+	 * @author nk510
+	 * @param  uuid unique folder name
+	 * @param  catalinaFolderPath Apache Tomcat server's Catalina folder path.
+	 * @param  format format of a file stored in given folder name.
+	 * @return file name saved in given folder name (uuid).
+	 */
+	public String getFileName(String uuid,  String catalinaFolderPath, String format) {
+		
+		String fileName=null;
+		
+		String folderName = catalinaFolderPath + "/webapps/ROOT/" + uuid.toString();
+		
+		File file = new File(folderName);
+
+		for(File f : file.listFiles()) {
+			
+			if(f.getName().endsWith(format)){
+				
+				fileName = f.getName();
+				
+				break;
+			}
+		}
+		
+        return fileName;
 	
-	
+	}	
 }

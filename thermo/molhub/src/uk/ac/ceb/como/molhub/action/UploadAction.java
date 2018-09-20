@@ -45,7 +45,7 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 
 /**
  * @author nk510 The Class UploadAction: Uploads one or more selected Gaussian
- *         files (g09) on server, and generates XML, ontology files, and adds
+ *         files (g09) on server, and generates XML, ontology file, image file, and adds
  *         ontology files into tripe store (RDF4J).
  * 
  */

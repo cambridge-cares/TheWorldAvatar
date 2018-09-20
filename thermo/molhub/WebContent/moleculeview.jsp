@@ -21,6 +21,106 @@
 
 <title>Computational Modelling Group</title>
 
+<script   type="text/javascript" src="<%=request.getContextPath()%>/jsmol/JSmol.min.js"></script>
+
+<script type="text/javascript">  
+
+var s = unescape(document.location.search);
+var script = 'set errorCallback "myCallback";'
+	+'set animationFPS 4;set antialiasdisplay;set measurementUnits angstroms;set zoomlarge false;'
+	+'set echo top left;echo loading XXXX...;refresh;'
+	+'load ":XXXX";set echo top center;echo XXXX;'
+var xxxx = s.split("_USE=")[0]
+if (xxxx.length < 2) {
+  xxxx = "ethanol"
+} else {
+  xxxx = xxxx.substring(1);
+  if (xxxx.indexOf("load ") >= 0) {
+    script = xxxx
+    xxxx = ""
+  }
+}
+if (xxxx)
+  script = script.replace(/XXXX/g, xxxx)
+  
+var Info = {
+		width:  500,
+		height: 500,		
+		disableJ2SLoadMonitor: true, 
+		disableInitialConsole: true, 
+		script: script,
+		use: "HTML5",
+		jarPath: "<%=request.getContextPath()%>/jsmol/java",
+		j2sPath: "<%=request.getContextPath()%>/jsmol/j2s",
+		jarFile: "JmolAppletSigned.jar",
+		isSigned: false,
+		script: "set zoomlarge false;set antialiasDisplay;load http://<%=request.getHeader("host")%>/<s:property  value="uuid"/>/<s:property value="gaussianFileName"/>",		
+		addSelectionOptions: false,
+		serverURL: "<%=request.getContextPath()%>/jsmol/php/jsmol.php",
+		readyFunction: null,
+		console: "jmol_infodiv",
+		disableInitialConsole: true,
+		defaultModel: null,
+		debug: false
+	}
+	
+Jmol.getApplet("appletCheck", Info, true);
+var isApplet = (appletCheck._jmolType.indexOf("_Applet") >= 0);
+var is2D = appletCheck._is2D;
+
+if (!isApplet && !Info.script) {
+
+	// JSmol or image
+
+	Info.defaultModel = "$tylenol";
+	Info.script = "#alt:LOAD :tylenol";
+
+}
+
+
+$(document).ready(function(){
+		
+	// This demonstration shows that
+	// what is put on the page can depend upon the platform.
+
+	// Note that the use of $(document.ready()) is optional but preferred. 
+	// You can do the traditional in-body coding if you want. See also simple2-nojq.htm.
+	// But as Gusts Kaksis pointed out, if we are using jQuery for database lookups, we might
+	// as well use it for more than that.
+  
+    // note that we create the applet first, before the controls, because
+    // we need window.jmol to be defined for those, and Jmol.getAppletHtml does that.
+  
+  $("#middlepanel").html(Jmol.getAppletHtml("jmol", Info));
+
+  // alternatively, you can use
+  //
+  //   jmol = "jmol"
+  //
+  // and then create the buttons before the applet itself. 
+  // Just make sure if you do that to use the name of the applet you are
+  // actually going to be using. So, perhaps:
+  //
+  //   jmolApplet0 = "jmolApplet0"
+  //
+
+	var use = (Info.use != "JAVA" ? Info.use : Info.isSigned ? "SIGNED" : "JAVA"); 
+
+		$("#leftpanel").html(		
+		  "<br>Spin: " + Jmol.jmolRadioGroup(jmol, [["spin off", "off", true],["spin on", "on"]])
+		);
+
+  // right panel
+  
+	Jmol.setButtonCss(null, "style='width:160px'");	
+	$("#rightpanel").html(
+		Jmol.jmolButton(jmol,"write PNGJ jsmol.png","Save PNG")		
+	);
+})
+
+</script>
+
+
 </head>
 
 <body class="oneColFixCtr">
@@ -86,7 +186,7 @@
 <div class="Applications" id="subsubmenu">
     <ul class="clearfix">
        <li class="clearfix"><s:a class="unselected" href="upload.jsp">Upload Gaussian files</s:a></li>
-	   <li class="clearfix"><s:a class="selected" href="search.jsp">Query Compchem repository</s:a></li>
+	   <li class="clearfix"><s:a class="unselected" href="search.jsp">Query Compchem repository</s:a></li>
     </ul>
 </div>
 
@@ -94,105 +194,38 @@
 
 <!-- PUT CONTENT HERE -->
 
-<div class="col-md-9">
-<s:actionerror/>
-<s:form action="search">   
-<s:textfield name="term.name" placeholder="Search Molhub" size="80"/>
-<s:submit value="Molhub Search"/>
-</s:form>
-</div>
-<div class="col-md-4">
-<s:actionerror/>
-<s:actionmessage />
-
-<s:form action="calculation" >
-<s:submit value="Run calculation"/>
-</s:form>
-
-<!--<s:property value="term"/>-->
-
-</div>
-<s:property value="session"/>
-<P/>
-
-<div id="tool-container">
-
-       <div id="result-container">
-       
-            <div id="process-box" class="tool-tab">
-               
-<!-- A list of search results for given query string-->
-                   
-<s:iterator value="finalSearchResultSet" var="result"> 
-      
-<div id="<s:property  value="uuid"/>" class="box">
+<table class="tg">
+  <tr>
+    <th class="tg-s268" colspan="5"><h3>Overview</h3></th>
+    <th class="tg-0lax" rowspan="3"> <div id="middlepanel"></div></th>
+    <th class="tg-0lax" rowspan="3"><div id="leftpanel"></div></th>
+    <th class="tg-0lax" rowspan="3"><div id="rightpanel"></div></th>
+  </tr>
+  <tr>
+    <td class="tg-s268" colspan="5"><h3>Parameters</h3></td>
+  </tr>
+  <tr>
+    <td class="tg-s268" colspan="5"><h3>Properties</h3></td>
+  </tr>
+  <tr>
+    <td class="tg-0lax" colspan="6">
     
-    <div class="round-top box-header">
-    
-        <div class="checkbox-wrapper" >
-            
-        </div>
-    
-    <div class="species-title"><s:property  value="moleculeName"/></div>
-    
-    </div>
-    
-    <div class="round-bottom box-content">
- 
-<!--<img alt="" src="http://como.cheng.cam.ac.uk/molhub/compchem/6498a583-a210-4ac1/data.3d.thumb.png" class="species-image"/>-->
- 
-<img alt="" src="http://<%=request.getHeader("host")%>/<s:property  value="uuid"/>/<s:property  value="uuid"/>.png" class="species-image"/>
-  
-<s:url action="moleculeview.action" var="moleculeView">
+    <p><b>Other data:</b></p>
+    <p>This page is a human readable frontend to the molecule database. The following links provide access to other data formats. Depending on your browser these may not be rendered properly. </p>
+<ul>
+  <li><a href="http://<%=request.getHeader("host")%>/<s:property  value="uuid"/>/<s:property value="gaussianFileName"/>">Gaussian(G09)</a></li>
+  <li><a href="http://<%=request.getHeader("host")%>/<s:property  value="uuid"/>/<s:property value="xmlFileName"/>">XML</a></li>
+  <li><a href="http://<%=request.getHeader("host")%>/<s:property  value="uuid"/>/<s:property value="owlFileName"/>">OWL</a></li>
+  <s:if test="%{nasaFileName!=null}">
+  <li><a href="http://<%=request.getHeader("host")%>/<s:property  value="uuid"/>/<s:property value="nasaFileName"/>">NASA</a></li>
+  </s:if>
+</ul>
 
-<s:param name="uuidName"><s:property  value="uuid"/></s:param>
+    </td>
+  </tr>
+</table>
 
-</s:url>
 
-<div class="species-image" id="middlepanel"></div>
- 
-        <div class="species-content">
-            <div>
-                <div class="property-name"><s:property value="resultsColumn[0]"/></div>
-                <div class="property-value"><s:property  value="uuid"/></div>
-            </div>
-            <p/>
-            <div>
-                <div class="property-name"><s:property value="resultsColumn[1]"/></div>
-                <div class="property-value">
-                <s:a href="%{moleculeView}">http://<%=request.getHeader("host")%>/<s:property  value="uuid"/></s:a>
-                </div>
-            </div>
-            <p/>
-            <div>
-                <div class="property-name"><s:property value="resultsColumn[2]"/></div>
-                <div class="property-value"> <s:property  value="moleculeName"/></div>
-            </div>
-            <!-- 
-            <div>
-                <div class="property-name">InChI</div>
-                <div class="property-value">InChI=1S/C2H5O4Si/c1-2-6-7(3,4)5/h2-4H,1H2</div>
-
-            </div>
-             -->
-             <p/>
-            <div>
-                <div class="property-name"><s:property value="resultsColumn[3]"/></div>
-                <div class="property-value"> <s:property  value="basisSet"/></div>
-            </div>
-            <p/>
-            <div>
-                <div class="property-name"><s:property value="resultsColumn[4]"/></div>
-                <div class="property-value"> <s:property  value="levelOfTheory"/></div>
-            </div>
-        </div>
-    </div>
-</div>
-<P/>
-</s:iterator>
-</div>
-</div>
-</div>
 
 </div>
     <div id="footer-bar"></div>

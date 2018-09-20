@@ -74,6 +74,7 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 		String periodicTableSymbol = null;
 		
 		resultsColumn.add("UUID:");		
+		resultsColumn.add("URL:");
 		resultsColumn.add("Empirical Formula:");
 		resultsColumn.add("Basis Set:");
 		resultsColumn.add("Method: ");
@@ -82,7 +83,7 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 		 * @author nk510
 		 * This part of code is executing when a user presses button "Molhub Search". 
 		 */
-		if (term.getName().length() == 0) {			
+		if ((term.getName().length() == 0)) {			
 			
 			if (!session.isEmpty()) {			
 				

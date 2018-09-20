@@ -49,6 +49,15 @@
     
     </action>
     	
+     <action name="moleculeview" class="uk.ac.ceb.como.molhub.action.MoleculeViewAction" method="execute">  
+    
+       <result name="success">/moleculeview.jsp</result>
+       <result name="input">/moleculeview.jsp</result>
+	   <result name="error">/moleculeview.jsp</result>   
+    
+    
+    </action>
+    
    
    </package>
         
