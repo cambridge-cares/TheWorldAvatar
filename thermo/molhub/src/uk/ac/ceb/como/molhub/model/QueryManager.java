@@ -183,6 +183,7 @@ public class QueryManager {
 					MoleculeProperty moleculeProperty = new MoleculeProperty(bindingSet.getValue("uuid").stringValue(),
 							moleculeName, bindingSet.getValue("levelOfTheory").toString(),
 							bindingSet.getValue("basisSetValue").toString());
+					
 					moleculePropertyList.add(moleculeProperty);
 				}
 

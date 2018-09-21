@@ -4,6 +4,7 @@ import org.apache.struts2.ServletActionContext;
 
 import com.opensymphony.xwork2.ActionSupport;
 
+import uk.ac.ceb.como.molhub.bean.MoleculeProperty;
 import uk.ac.ceb.como.molhub.model.FolderManager;
 
 import org.apache.log4j.Logger;
@@ -28,11 +29,9 @@ public class MoleculeViewAction extends ActionSupport {
 	
 	private String nasaFileName=folderManager.getFileName(getUuid(), catalinaFolderPath,"nasa.json");
 
-	public String execute() {	
-				
-		logger.info("getUuid() : " + getUuid() + ", getGaussianFileName(): " + getGaussianFileName());
-		
-		
+	MoleculeProperty moleculeProperty = new MoleculeProperty();
+	
+	public String execute() {
 		
 		return SUCCESS;
 	}	
@@ -75,6 +74,14 @@ public class MoleculeViewAction extends ActionSupport {
 
 	public void setNasaFileName(String nasaFileName) {
 		this.nasaFileName = nasaFileName;
+	}
+
+	public MoleculeProperty getMoleculeProperty() {
+		return moleculeProperty;
+	}
+
+	public void setMoleculeProperty(MoleculeProperty moleculeProperty) {
+		this.moleculeProperty = moleculeProperty;
 	}
 
 	

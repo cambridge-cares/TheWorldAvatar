@@ -89,14 +89,11 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 					Runtime.getRuntime().exec(cmd);
 				}
 				
-				
-				
 				/**
 				 * @author nk510
 				 * Remove session keys
 				 */
 				session.remove(mp.getKey());
-				
 				
 		}
 		

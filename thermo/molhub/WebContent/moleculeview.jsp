@@ -45,7 +45,7 @@ if (xxxx)
   
 var Info = {
 		width:  500,
-		height: 500,		
+		height: 300,		
 		disableJ2SLoadMonitor: true, 
 		disableInitialConsole: true, 
 		script: script,
@@ -192,40 +192,101 @@ $(document).ready(function(){
 
 <div id="main-content" class="clearfix">
 
-<!-- PUT CONTENT HERE -->
+<div id="tool-container">
+<div class="container">
+</div><h1>C2H5O4Si</h1>
 
-<table class="tg">
-  <tr>
-    <th class="tg-s268" colspan="5"><h3>Overview</h3></th>
-    <th class="tg-0lax" rowspan="3"> <div id="middlepanel"></div></th>
-    <th class="tg-0lax" rowspan="3"><div id="leftpanel"></div></th>
-    <th class="tg-0lax" rowspan="3"><div id="rightpanel"></div></th>
-  </tr>
-  <tr>
-    <td class="tg-s268" colspan="5"><h3>Parameters</h3></td>
-  </tr>
-  <tr>
-    <td class="tg-s268" colspan="5"><h3>Properties</h3></td>
-  </tr>
-  <tr>
-    <td class="tg-0lax" colspan="6">
-    
-    <p><b>Other data:</b></p>
-    <p>This page is a human readable frontend to the molecule database. The following links provide access to other data formats. Depending on your browser these may not be rendered properly. </p>
-<ul>
-  <li><a href="http://<%=request.getHeader("host")%>/<s:property  value="uuid"/>/<s:property value="gaussianFileName"/>">Gaussian(G09)</a></li>
+<div style="width: 302px;margin: auto;">    
+    <div class="tabcontent paddingAll hide" id="mol-jmol-1">
+        <div id="middlepanel"></div>
+        <div id="leftpanel"></div>
+        <div id="rightpanel"></div>
+    </div>
+</div>
+<div class="span-24 last params">
+    <div class="span-12 paramlist">
+        <h2>Overview<!--{inchi}--></h2>
+        <table style="width:80%;">
+            <tbody>
+                <tr>
+                    <td>Empirical Formula</td>
+                    <td>C2H5O4Si</td>
+                </tr>
+                <tr>
+                    <td>Canonical SMILES</td>
+                    <td>N/A</td>
+                </tr>
+                <tr>
+                    <td>Isomeric SMILES</td>
+                    <td>N/A</td>
+                </tr>
+                <tr>
+                    <td>InChI</td>
+                    <td>InChI=1S/C2H5O4Si/c1-2-6-7(3,4)5/h2-4H,1H2</td>
+                </tr>
+                <tr>
+                    <td>InChI Key</td>
+                    <td>InChIKey=KBMSEKIQYYCASV-UHFFFAOYSA-N</td>
+                </tr>
+            </tbody>
+        </table>
+        <h2>Parameters</h2>
+        <table style="width:80%;">
+            <tbody>
+                <tr>
+                    <td>Basis Set</td>
+                    <td>6-311+G(d,p)</td>
+                </tr>
+                <tr>
+                    <td>Method</td>
+                    <td>UB971</td>
+                </tr>
+                <tr>
+                    <td>Job Type</td>
+                    <td>Freq</td>
+                </tr>
+
+            </tbody>
+        </table>
+        <h2>Properties</h2>
+        <table style="width:80%;">
+            <tbody>
+                <tr>
+                    <td>Frequencies</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Enthalpy of Formation</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h2>Other Data</h2>
+        <p>
+        This page is a human readable frontend to the molecule database.
+            The following links provide access to other data formats.
+            Depending on your browser these may not be rendered properly.
+
+        <ul>
+            <li><a href="http://<%=request.getHeader("host")%>/<s:property  value="uuid"/>/<s:property value="gaussianFileName"/>">Gaussian(G09)</a></li>
   <li><a href="http://<%=request.getHeader("host")%>/<s:property  value="uuid"/>/<s:property value="xmlFileName"/>">XML</a></li>
   <li><a href="http://<%=request.getHeader("host")%>/<s:property  value="uuid"/>/<s:property value="owlFileName"/>">OWL</a></li>
   <s:if test="%{nasaFileName!=null}">
   <li><a href="http://<%=request.getHeader("host")%>/<s:property  value="uuid"/>/<s:property value="nasaFileName"/>">NASA</a></li>
   </s:if>
-</ul>
+        </ul>
+        </p>
 
-    </td>
-  </tr>
-</table>
+    </div>
+</div>
+</div>
 
 
+</div>
+
+<!-- PUT CONTENT HERE -->
+<!-- <div id="middlepanel"></div><div id="leftpanel"></div><div id="rightpanel"></div> -->
 
 </div>
     <div id="footer-bar"></div>
@@ -242,7 +303,6 @@ $(document).ready(function(){
         </ul>
     </div>
 
-</div>
 </div>
 </div>
 </body>

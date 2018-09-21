@@ -88,4 +88,131 @@ public static String getAllTriplesMoleculeProperty(String moleculeName) {
 				
 				return query;
 	}
+
+public static String geNonCompositetMoleculeProperties(String uuid) {
+	
+	String query = 
+			"PREFIX ontochem: <http://ontochem.theworldavatar.com/kb/OntoChem.owl#>"
+					+"PREFIX gc: <http://purl.org/gc/>"
+					+"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+					+"PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
+					+"SELECT DISTINCT ?moleculeName ?levelOfTheory ?basisSetValue ?geometryTypeValue" 
+					+"WHERE {"
+					+"<http://como.cheng.cam.ac.uk/molhub/compchem/"+uuid+"> ontochem:hasInitialization ?mn0 ." 
+					+"?mn0 gc:hasMoleculeProperty ?mp0 ." 
+					+"?mp0 gc:hasName ?moleculeName ." 
+					+"<http://como.cheng.cam.ac.uk/molhub/compchem/"+uuid+"> ontochem:hasInitialization ?mn0 ."
+					+"?mn0 gc:hasParameter ?p1 ."
+					+"?p1  rdf:type <http://ontochem.theworldavatar.com/kb/OntoChem.owl#LevelOfTheory> ."
+					+"?p1  ontochem:hasLevelOfTheoryValue ?levelOfTheory ."
+					+"?mn2 gc:hasParameter ?p2 ."
+					+"?p2  rdf:type <http://purl.org/gc/BasisSet> ."
+					+"?p2  gc:hasBasisSet ?basisSetValue ."
+					+ "<http://como.cheng.cam.ac.uk/molhub/compchem/"+uuid+"> gc:isCalculationOn ?c1. "
+					+ "?c1 a ontochem:GeometryType ."
+					+ "?c1 ontochem:hasGeometryTypeValue ?geometryTypeValue ."
+					+"}";
+	
+	return query;
+}
+
+public static String geFrequency(String uuid) {
+	
+	String query = 
+			"PREFIX ontochem: <http://ontochem.theworldavatar.com/kb/OntoChem.owl#>"
+					+"PREFIX gc: <http://purl.org/gc/>"
+					+"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+					+"PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
+					+"SELECT DISTINCT ?frequenciesSize ?frequenciesValue ?frequenciesUnit " 
+					+"WHERE {"
+					+ "<http://como.cheng.cam.ac.uk/molhub/compchem/"+uuid+">  gc:isCalculationOn ?fc1 ."
+					+ "?fc1 rdf:type gc:VibrationalAnalysis."
+					+ "?fc1 gc:hasResult ?r ."
+					+ "?r rdf:type gc:Frequency ."
+					+ "?r gc:hasVibrationCount ?frequenciesSize ."
+					+ "?r ontochem:hasFrequenciesValue ?frequenciesValue ."
+					+ "?r gc:hasUnit ?frequenciesUnit ."
+					+"}";
+	
+	return query;
+}
+
+public static String getAtomicMass(String uuid) {
+	
+	String query =
+			"PREFIX ontochem: <http://ontochem.theworldavatar.com/kb/OntoChem.owl#>"
+					+"PREFIX gc: <http://purl.org/gc/>"
+					+"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+					+"PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
+					+"SELECT DISTINCT ?atomName ?massValue ?massUnit " 
+					+"WHERE {"
+					+ "<http://como.cheng.cam.ac.uk/molhub/compchem/"+uuid+">  gc:isCalculationOn ?go ."
+					+ "?go rdf:type gc:GeometryOptimization ."
+					+ "?go gc:hasMolecule ?mol1. "
+					+ "?mol1 gc:hasAtom ?at1 ."
+					+ "?at1 gc:isElement ?atomName ."
+					+ "?at1 gc:hasMass ?mass ."
+					+ "?mass gc:hasValue ?massValue . "
+					+ "?mass gc:hasUnit ?massUnit . "
+					+"}";
+	
+	return query;
+}
+
+public static String getMultiplicity(String uuid) {
+	
+	String query=
+			"PREFIX ontochem: <http://ontochem.theworldavatar.com/kb/OntoChem.owl#>"
+					+"PREFIX gc: <http://purl.org/gc/>"
+					+"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+					+"PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
+					+"SELECT DISTINCT ?spinMultiplicityValue " 
+					+"WHERE {"
+					+ "<http://como.cheng.cam.ac.uk/molhub/compchem/"+uuid+">   gc:isCalculationOn ?go1 . "
+					+ "?go1 rdf:type gc:GeometryOptimization ."
+					+ "?go1 gc:hasMolecule ?mol2."
+					+ "?mol2 ontochem:hasSpinMultiplicityValue ?spinMultiplicityValue ."
+					+"}";	
+
+	return query;
+}
+
+
+public static String getRotationalSymmertyNumber(String uuid) {
+	
+	String query=
+			"PREFIX ontochem: <http://ontochem.theworldavatar.com/kb/OntoChem.owl#>"
+					+"PREFIX gc: <http://purl.org/gc/>"
+					+"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+					+"PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
+					+"SELECT DISTINCT ?rotationalSymmetryNumber " 
+					+"WHERE {"
+					+ "<http://como.cheng.cam.ac.uk/molhub/compchem/"+uuid+">   gc:isCalculationOn ?go5 ."
+					+ "?go5 rdf:type ontochem:RotationalSymmetry ."
+					+ "?go5 ontochem:hasRotationalSymmetryNumber ?rotationalSymmetryNumber . "
+					+"}";	
+
+	return query;
+}
+
+public static String getRotationalConstant(String uuid) {
+	
+	String query=
+			"PREFIX ontochem: <http://ontochem.theworldavatar.com/kb/OntoChem.owl#>"
+					+"PREFIX gc: <http://purl.org/gc/>"
+					+"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+					+"PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
+					+"SELECT DISTINCT ?rotationalConstantsSize  ?rotationalConstantsValue ?rotationalConstantsUnit " 
+					+"WHERE {"
+					+ "<http://como.cheng.cam.ac.uk/molhub/compchem/"+uuid+">   gc:isCalculationOn ?go4 ."
+					+ "?go4 rdf:type ontochem:RotationalConstants ."
+					+ "?go4 ontochem:hasRotationalConstantsValue ?rotationalConstantsValue ."
+					+ "?go4 gc:hasUnit ?rotationalConstantsUnit ."
+					+ "?go ontochem:hasRotationalConstantsCount ?rotationalConstantsSize ."
+					+"}";	
+
+	return query;
+}
+
+
 }

@@ -1,26 +1,44 @@
 package uk.ac.ceb.como.molhub.bean;
 
+import java.util.List;
+
 public class MoleculeProperty {
 
 	private String fileName;
+	
 	private String uuid;
 	private String moleculeName;
 	private String levelOfTheory;
 	private String basisSet;
+	private String geometryType;
+	
 	private int frequenciesSize;
 	private String frequenciesValue;
 	private String frequenciesUnit;
+	private List<Frequency> frequency;
+	
 	private int spinMultiplicity;
+	
 	private double coordinateX;
 	private double coordinateY;
 	private double coordinateZ;
+	
 	private double atomicMass;
 	private String atomicMassUnit;
-	private String geometryType;
+	
+	private List<AtomicMass> atomicMassList;
+	
+	
+	
+	
 	private int rotationalConstantsSize;
 	private String rotationalConstantsUnit;
 	private String rotationalConstantsValue;
+	
+	List<RotationalConstant> rotationalConstant;
+	
 	private int rotationalSymmetryNumber;
+	
 	private String programName;
 	private String programVersion;
 	private String runDate;
@@ -264,5 +282,29 @@ public class MoleculeProperty {
 
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
+	}
+
+	public List<Frequency> getFrequency() {
+		return frequency;
+	}
+
+	public void setFrequency(List<Frequency> frequency) {
+		this.frequency = frequency;
+	}
+
+	public List<AtomicMass> getGeometry() {
+		return atomicMassList;
+	}
+
+	public void setGeometry(List<AtomicMass> geometry) {
+		this.atomicMassList = geometry;
+	}
+
+	public List<RotationalConstant> getRotationalConstant() {
+		return rotationalConstant;
+	}
+
+	public void setRotationalConstant(List<RotationalConstant> rotationalConstant) {
+		this.rotationalConstant = rotationalConstant;
 	}
 }
