@@ -3,12 +3,15 @@ package uk.ac.cam.cares.jps.agents.ontology;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 
+import com.google.gson.Gson;
+
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 public class TestAgentDescriptions extends TestCase {
 
 	private static final String JPS = "http://www.theworldavatar.com/JPS";
+	private static final String WEATHER = "https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl";
 	
 	private ServiceBuilder addInputRegion(ServiceBuilder builder) {
 		return builder.input("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType", "region").down()
@@ -27,6 +30,8 @@ public class TestAgentDescriptions extends TestCase {
 		backAndforthAndWrite(service, "RegionToCity");
 		service = createDescrForAgentGetPlantsInRegion();
 		backAndforthAndWrite(service, "GetPlantsInRegion");
+		service = createDescrForAgentWeather();
+		backAndforthAndWrite(service, "OpenWeatherMap");
 	}
 	
 	private void backAndforthAndWrite(Service service, String name) throws URISyntaxException, FileNotFoundException {
@@ -53,5 +58,36 @@ public class TestAgentDescriptions extends TestCase {
 		return addInputRegion(new ServiceBuilder().operation(null, JPS + "/GetPlantsInRegion"))
 			.output("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Plant", true, "plant", true)
 			.build();
+	}
+	
+	private Service createDescrForAgentWeather() {
+		ServiceBuilder builder = new ServiceBuilder().operation(null, JPS + "/GetCurrentWeather")
+			.input("http://dbpedia.org/ontology/city", "city")
+			.output(WEATHER + "#WeatherState", "weatherstate").down()
+				.output(WEATHER + "#hasHumidity", "hashumidity").down()
+					.output(WEATHER + "#hasValue", "hasvalue").up()
+				.output(WEATHER + "#hasExteriorTemperature", "hasexteriortemperature").down()
+					.output(WEATHER + "#hasValue", "hasvalue").up()
+				.output(WEATHER + "#hasWind", "haswind").down()
+					.output(WEATHER + "#hasSpeed", "hasspeed")
+					.output(WEATHER + "#hasDirection", "hasdirection").up()
+				.output(WEATHER + "#hasWeatherCondition", "hasweathercondition") // not required for ADMS
+				.output(WEATHER + "#hasCloudCover", "hascloudcover").down()
+					.output(WEATHER + "#hasCloudCoverValue", "hascloudcovervalue").up()
+				.output(WEATHER + "#hasPrecipitation", "hasprecipation").down()
+					.output(WEATHER + "#hasIntensity", "hasintensity").up()
+				.up();
+		
+		return builder.build();
+	}
+	
+	public void testWeatherDescription() throws URISyntaxException, FileNotFoundException {
+		
+		Service service = createDescrForAgentWeather();
+		
+		String json = new Gson().toJson(service);
+		System.out.println(json);
+		
+		// backAndforthAndWrite(service, "OpenWeatherMap");
 	}
 }
