@@ -24,7 +24,8 @@
                 "modelReference": "http://www.jparksimulator.com/BuildingsLayer.owl#Building",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_opB3Eap",
                 "value": "http://www.theworldavatar.com/BMS/CARES_Lab.owl#CARES_Laboratory",
-                "datatypeValue": "xsd:anyURI"
+                "datatypeValue": "xsd:anyURI",
+                "name": "building"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_854bqv7"
@@ -61,7 +62,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#SpatialCoordinate",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_ZAG1FV6",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "coordinate"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_xOMm481"
@@ -158,7 +160,8 @@
                 "modelReference": "http://test.com/ontology/ADMSSimulation",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_CghedAK",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name":"admssimulation"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Output_ZvtMu44"
@@ -172,7 +175,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Plant",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_aownH40",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "plant"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_WPCd1bE"
@@ -184,7 +188,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoEIP/supporting_concepts/space_and_time_v1.owl#City",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_kHQvbhY",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name":"city"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_1cxdnb45"
@@ -196,7 +201,8 @@
                 "modelReference": "http://test.com/ontology/BuildingsForSimulation",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_1gK8tLZI",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name":"buildingsforsimulation"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_r2PhF6q"
@@ -208,7 +214,8 @@
                 "modelReference": "http://test.com/ontology/Region",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_LKEMQoo",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "region"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_jdkSO8p"
@@ -231,7 +238,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#SpatialCoordinate",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_156Ifgje",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "coordinate"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Output_V8Q4gm"
@@ -245,7 +253,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#Coordinate",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_7qw7VLS",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "coordinate"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_vq7UCC6"
@@ -268,7 +277,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#SpatialCoordinate",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_oYXRW3D",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "coordinate"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Output_GyoAZmo"
@@ -282,7 +292,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#Coordinate",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_1iIOEhct",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "coordinate"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_BBCaIRu"
@@ -305,7 +316,8 @@
                 "modelReference": "http://test.com/ontology/BuildingsForSimulation",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_W8a9wso",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "buildingsforsimulation"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Output_1hY3kADb"
@@ -319,7 +331,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Plant",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_10a1PYOk",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "plant"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_RgGZqPw"
@@ -331,7 +344,8 @@
                 "modelReference": "http://test.com/ontology/Region",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_17FKd5pd",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "region"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_1hoHxgCW"
@@ -343,7 +357,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoEIP/supporting_concepts/space_and_time_v1.owl#City",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_Cm0knYt",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "city"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_ozYA0Rt"
@@ -380,7 +395,8 @@
                 "modelReference": "http://www.jparksimulator.com/BuildingsLayer.owl#Building",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_E4yTm6r",
                 "value": "",
-                "datatypeValue": "xsd:anyURI"
+                "datatypeValue": "xsd:anyURI",
+                "name": "building"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_ccO1PAI"
@@ -417,7 +433,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#Coordinate",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_atIDSV2",
                 "value": "",
-                "datatypeValue": "xsd:anyURI"
+                "datatypeValue": "xsd:anyURI",
+                "name": "coordinate"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_16lD64WI"
@@ -440,7 +457,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoEIP/supporting_concepts/space_and_time_v1.owl#City",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_KQvXM82",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "city"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Output_Sg14GTU"
@@ -454,7 +472,8 @@
                 "modelReference": "http://test.com/ontology/Region",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_1942AhIL",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "region"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_Q1M8Ca2"
@@ -477,7 +496,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Plant",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_1ccrlqHW",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "plant"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Output_sS5WPD7"
@@ -491,7 +511,8 @@
                 "modelReference": "http://test.com/ontology/Region",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_cnbycgM",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "region"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_DkOzFx9"
@@ -528,7 +549,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoEIP/supporting_concepts/space_and_time_v1.owl#City",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_K0znTIC",
                 "value": "",
-                "datatypeValue": "xsd:anyURI"
+                "datatypeValue": "xsd:anyURI",
+                "name": "city"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_13DcCT9F"
@@ -565,7 +587,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Plant",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_PE7H9L7",
                 "value": "",
-                "datatypeValue": "xsd:anyURI"
+                "datatypeValue": "xsd:anyURI",
+                "name": "plant"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_GtckOwm"
@@ -588,7 +611,8 @@
                 "modelReference": "http://www.jparksimulator.com/BuildingsLayer.owl#Building",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_199eQtyP",
                 "value": "",
-                "datatypeValue": "xsd:anyURI"
+                "datatypeValue": "xsd:anyURI",
+                "name": "building"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Output_S0rj7mO"
@@ -602,7 +626,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#Coordinate",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_tmgtVGj",
                 "value": "",
-                "datatypeValue": "xsd:float"
+                "datatypeValue": "xsd:float",
+                "name": "coordinate"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_12DSxD3h"
@@ -639,7 +664,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoEIP/supporting_concepts/space_and_time_v1.owl#City",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_1d1nVj7h",
                 "value": "http://dbpedia.org/resource/Singapore",
-                "datatypeValue": "xsd:anyURI"
+                "datatypeValue": "xsd:anyURI",
+                "name": "city"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_jSTWiSF"
@@ -676,7 +702,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoEIP/supporting_concepts/space_and_time_v1.owl#City",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_1dm9X3up",
                 "value": "http://dbpedia.org/resource/Berlin",
-                "datatypeValue": "xsd:anyURI"
+                "datatypeValue": "xsd:anyURI",
+                "name": "city"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_ZZEjC7g"
@@ -713,7 +740,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#Coordinate",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_11OVWKDW",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "coordinate"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_nfSt0nW"
@@ -736,7 +764,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoEIP/supporting_concepts/space_and_time_v1.owl#City",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_18F4ilvB",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "city"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Output_C1eiDCl"
@@ -750,7 +779,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#Coordinate",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_V3DP4vY",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "coordinate"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_dc874H5"
@@ -836,19 +866,22 @@
                 "modelReference": "http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#Coordinate",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_GyoAZmo",
                 "value": "",
-                "datatypeValue": "xsd:anyURI"
+                "datatypeValue": "xsd:anyURI",
+                "name": "coordinate"
               },
               {
                 "modelReference": "http://www.jparksimulator.com/BuildingsLayer.owl#Building",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_5mEIdC4",
                 "value": "",
-                "datatypeValue": "xsd:anyURI"
+                "datatypeValue": "xsd:anyURI",
+                "name": "building"
               },
               {
                 "modelReference": "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#Substance",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_1dRkubxB",
                 "value": "",
-                "datatypeValue": "xsd:anyURI"
+                "datatypeValue": "xsd:anyURI",
+                "name": "substance"
               },
               {
                 "modelReference": "http://www.theworldavatar.com/CoordinatesOfSourceOfEmission",
@@ -897,13 +930,15 @@
                 "modelReference": "http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#Coordinate",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_1d1nVj7h",
                 "value": "",
-                "datatypeValue": "xsd:double"
+                "datatypeValue": "xsd:double",
+                "name": "coordinate"
               },
               {
                 "modelReference": "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Plant",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_184Iv1Cn",
                 "value": "",
-                "datatypeValue": "xsd:anyURI"
+                "datatypeValue": "xsd:anyURI",
+                "name": "plant"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_xEnQHrW"
@@ -969,7 +1004,8 @@
                 "modelReference": "https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#WeatherState",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_EPjc2GC",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "weatherstate"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Output_14XjCTDa"
@@ -983,7 +1019,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoEIP/supporting_concepts/space_and_time_v1.owl#City",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_8v2tmIh",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "city"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_12WEznqp"
@@ -994,43 +1031,6 @@
       }
     ],
     "uri": "http://www.theworldavatar.com/Composite_Service_C5TIQUG"
-  },
-  "http://www.theworldavatar.com/Composite_Service_qWD1tgo": {
-    "operations": [
-      {
-        "outputs": [
-          {
-            "optionalParts": [],
-            "mandatoryParts": [
-              {
-                "modelReference": "https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#WeatherState",
-                "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_i3ChalW",
-                "value": "",
-                "datatypeValue": ""
-              }
-            ],
-            "uri": "http://www.theworldavatar.com/MessageContent_Output_vKUWn5e"
-          }
-        ],
-        "inputs": [
-          {
-            "optionalParts": [],
-            "mandatoryParts": [
-              {
-                "modelReference": "http://www.theworldavatar.com/OntoEIP/supporting_concepts/space_and_time_v1.owl#City",
-                "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_zSDMMaP",
-                "value": "",
-                "datatypeValue": ""
-              }
-            ],
-            "uri": "http://www.theworldavatar.com/MessageContent_Input_rnBjpty"
-          }
-        ],
-        "httpUrl": "http://www.theworldavatar.com/JPS_COMPOSITION/CityToWeather",
-        "uri": "http://www.theworldavatar.com/Operation_14czqc2T"
-      }
-    ],
-    "uri": "http://www.theworldavatar.com/Composite_Service_qWD1tgo"
   },
   "http://www.theworldavatar.com/Service_YbmFtBz": {
     "operations": [
@@ -1057,7 +1057,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#Coordinate",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_CVQhCjZ",
                 "value": "",
-                "datatypeValue": "xsd:anyURI"
+                "datatypeValue": "xsd:anyURI",
+                "name": "city"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_17Q7Ct5h"
@@ -1080,7 +1081,8 @@
                 "modelReference": "http://test.com/ontology/BuildingList",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_RbuKeXu",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "building"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Output_151vZ4tc"
@@ -1094,7 +1096,8 @@
                 "modelReference": "http://test.com/ontology/Region",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_lWLlZVs",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "region"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_Cm0knYt"
@@ -1106,7 +1109,8 @@
                 "modelReference": "http://www.theworldavatar.com/OntoEIP/supporting_concepts/space_and_time_v1.owl#City",
                 "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_lWww2ZVs",
                 "value": "",
-                "datatypeValue": ""
+                "datatypeValue": "",
+                "name": "city"
               }
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_CmsdfYt"

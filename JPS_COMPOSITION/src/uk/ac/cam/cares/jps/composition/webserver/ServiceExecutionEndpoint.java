@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.composition.executor.Executor;
+import uk.ac.cam.cares.jps.composition.executor.ExecutorNew;
 import uk.ac.cam.cares.jps.composition.util.FormatTranslator;
 
 /**
@@ -34,9 +34,9 @@ public class ServiceExecutionEndpoint extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			JSONObject executorInJSON = new JSONObject(request.getParameter("executionChain"));
-			Executor executor = FormatTranslator.convertJSONTOExecutor(executorInJSON.toString());
+			ExecutorNew executor = FormatTranslator.convertJSONTOExecutor(executorInJSON.toString());
 			String value = request.getParameter("value");
-			String result = executor.execute(value);
+			String result = executor.execute(new JSONObject(value));
 			if (result == null) {
 				response.getWriter().write("Error");
 			} else {

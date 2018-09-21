@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.composition.webserver;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -11,27 +10,22 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.RDFFormat;
-import org.apache.jena.vocabulary.RDF;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.RDFFormat;
+import org.apache.jena.vocabulary.RDF;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-
- 
 import uk.ac.cam.cares.jps.composition.util.SendRequest;
 
 /**
@@ -53,16 +47,17 @@ public class CityToWeather extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
-		String value = request.getParameter("value").replace("@", "#").replace("$", "#");
-		
-		
-		
-		Model model = ModelFactory.createDefaultModel();
-		RDFDataMgr.read(model, new ByteArrayInputStream(value.getBytes("UTF-8")), Lang.RDFJSON);
-		String cityIRI = getCityIRI(model);
-		System.out.println("CityIRI : " + cityIRI);
-		
-		
+		String value = request.getParameter("value");
+ 		
+		JSONObject inputInJSON = null;
+		String cityIRI = null;
+		try {
+			inputInJSON = new JSONObject(value);
+ 			cityIRI = inputInJSON.getString("city");
+ 		} catch (JSONException e1) {
+			e1.printStackTrace();
+		}
+		 
 		if (cityIRI.length() >= 1) {
 			String cityName = queryCityNameLabel(cityIRI);
 			try {
@@ -71,7 +66,8 @@ public class CityToWeather extends HttpServlet {
 					cityName = "Den%20Haag";
 				}
 				System.out.println(cityName);
-				response.getWriter().write(constructSemanticResponse(getWeatherFromCity(cityName), cityName.replaceAll("%20", "_"), cityIRI));
+				response.getWriter().write(getWeatherFromCity(cityName));
+				//response.getWriter().write(constructSemanticResponse(getWeatherFromCity(cityName), cityName.replaceAll("%20", "_"), cityIRI));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

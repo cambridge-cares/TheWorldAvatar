@@ -25,7 +25,7 @@ public class MessagePart{
 	private String datatypeValue;
 	private URI modelReference;
 	private URI type; 
-	private String name;
+	public String name;
 	private boolean array = false;
 	// TODO-AE URGENT remove output and input edges from here and other MSM classes
 	public ArrayList<Edge> outputEdges;

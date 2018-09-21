@@ -1,7 +1,7 @@
 /**
  * Created by xiaochizhou on 2018/8/24.
  */
-
+ 
 const assert = require('assert');
 const ganache = require('ganache-cli');
 const Web3 = require('web3');

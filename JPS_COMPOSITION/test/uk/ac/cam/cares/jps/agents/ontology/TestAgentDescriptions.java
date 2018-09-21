@@ -36,7 +36,9 @@ public class TestAgentDescriptions extends TestCase {
 	
 	private void backAndforthAndWrite(Service service, String name) throws URISyntaxException, FileNotFoundException {
 		
-		new ServiceWriter().writeAsOwlFile(service, name, "C:\\Users\\Andreas\\TMP\\newAgentsMSM");
+		new ServiceWriter().writeAsOwlFile(service, name, "C:\\Users\\nasac\\Documents\\TMP\\newAgentsMSM");
+		
+		
 		
 		service.setUri(null);
 		String owlService = new ServiceWriter().generateSerializedModel(service, name);

@@ -20,7 +20,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/log4j-slf4j-impl-2.11.0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/org.json.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/slf4j-api-1.7.25.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jps_base.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-collections4-4.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/dom4j-1.6.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/poi-3.16.jar"/>
@@ -59,5 +58,6 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="output" path="build/classes"/>
+	<classpathentry kind="lib" path="/JPS_BASE/workingdir/jps_base.jar" sourcepath="/JPS_BASE"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -16,15 +16,13 @@ public class ServiceDiscoveryOld {
 	protected ArrayList<Service> service_pool;
 	public String hostName = "";
 
-	public ServiceDiscoveryOld() {
-		this.service_pool = new ArrayList<Service>();
-	}
+//	public ServiceDiscoveryOld() {
+//		this.service_pool = new ArrayList<Service>();
+//	}
 	
-	public ServiceDiscoveryOld(String hostName) throws Exception {
+	public ServiceDiscoveryOld() throws Exception {
 		this.service_pool = new ArrayList<Service>();
-		this.hostName = hostName;
-		System.out.println(this.hostName);
-		loadServicePool(hostName);
+		loadServicePool("http://localhost:8080");
 	}
 
 	public void loadServicePool(String fullHostName) throws Exception {

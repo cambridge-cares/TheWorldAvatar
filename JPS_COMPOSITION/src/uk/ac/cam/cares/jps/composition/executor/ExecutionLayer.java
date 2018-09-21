@@ -8,11 +8,11 @@ public class ExecutionLayer {
 	// a executionlayer should return the result
 
 	public ArrayList<Task> taskList;
-	public ArrayList<ExecutionResult> resultList;
+	public ArrayList<ExecutionPackage> resultList;
 
 	public ExecutionLayer() {
 		this.taskList = new ArrayList<Task>();
-		this.resultList = new ArrayList<ExecutionResult>();
+		this.resultList = new ArrayList<ExecutionPackage>();
 	}
 
 }

@@ -4,10 +4,11 @@
 
 pragma solidity ^0.4.0;
 
-contract DeliveryServicePerformanceRegistry {
+contract DeliveryServiceRegistry {
 
 
     address[] public registeredServiceProviderAddressList;
+    address private registryAddress;
 
     struct DeliveryServiceProvider{
         address providerAddress;
@@ -15,10 +16,17 @@ contract DeliveryServicePerformanceRegistry {
         int serviceCounter;
     }
 
-    function DeliveryServicePerformanceRegistry(){
+    function DeliveryServiceRegistry(){
 
     }
 
+    function getNumberOfRegisteredServices(){
+
+    }
+
+    function getAverageScoreOfRegisteredServices(){
+
+    }
 
     function RegisterNewServiceProviderAddress(address newServiceProvider) public {
         registeredServiceProviderAddressList.push(newServiceProvider);
@@ -33,8 +41,8 @@ contract DeliveryServicePerformanceRegistry {
     }
 
 
-    function validateServiceProvider() {
-        //
+    function validateServiceProvider() isRegistry {
+
     }
 
 
@@ -51,5 +59,16 @@ contract DeliveryServicePerformanceRegistry {
     function scalpingSpotter(){
 
     }
+
+    function evaluate() {
+
+    }
+
+    modifier isRegistry() {
+        require(msg.sender ==registryAddress );
+        _;
+    }
+
+
 
 }
