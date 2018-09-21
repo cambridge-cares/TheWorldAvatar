@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
 import uk.ac.cam.cares.jps.composition.servicemodel.Operation;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
+import uk.ac.cam.cares.jps.composition.webserver.ServiceDiscoveryOld;
 
 public class TestAgentOntology extends TestCase {
 	
@@ -295,7 +295,7 @@ public class TestAgentOntology extends TestCase {
 	public void testServiceDiscovery() throws Exception {
 		
 		String fileDirectory = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres/serviceowlfiles";
-		ServiceDiscovery discovery = new ServiceDiscovery(fileDirectory);
+		ServiceDiscoveryOld discovery = new ServiceDiscoveryOld();
 		List<MessagePart> inputs = createMessageParts("op2inputrefuri1");
 		List<Service> result = discovery.getAllServiceCandidates(inputs, new ArrayList<Service>());
 		

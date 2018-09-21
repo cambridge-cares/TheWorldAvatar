@@ -8,8 +8,6 @@ import java.io.IOException;
 
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
-
 public class ServicePoolTool {
 
 	public static String filename = "service_pool.txt";
@@ -26,6 +24,8 @@ public class ServicePoolTool {
 		if(m.getFilePath(this.fullHostName) == null) { // It means the system is running without a server
 			filepath = "E:" + filename;
 		}
+		
+		System.out.println(filepath);
 		String wholeContent = "";
 		File thefile = new File(filepath);
 		if (!thefile.exists()) {

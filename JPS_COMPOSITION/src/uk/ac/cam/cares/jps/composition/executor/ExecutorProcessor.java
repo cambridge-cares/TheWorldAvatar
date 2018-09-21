@@ -83,6 +83,11 @@ public class ExecutorProcessor {
 				}
 			}
 			task.targetHttpUrl = nextHttpUrlList;
+			
+			for(String url : task.targetHttpUrl) {
+				task.keysArray.add(getAllKeysFromTargetHTTP(url));
+			}
+			 
 			System.out.println(nextHttpUrlList);
 			return task;
 		} else {
@@ -132,6 +137,37 @@ public class ExecutorProcessor {
 		result.add(resultInput);
 		return result;
 	}
+	
+	public ArrayList<String> getAllKeysFromTargetHTTP(String targetHttp) throws JSONException {
+		JSONArray layers = this.compositeService.getJSONArray("layers");
+		ArrayList<String> result = new ArrayList<String>();
+		for (int i = 0; i < layers.length(); i++) {
+			JSONObject layer = layers.getJSONObject(i);
+			JSONArray services = layer.getJSONArray("services");
+			for(int j = 0; j < services.length(); j++) {
+				JSONObject service = services.getJSONObject(j);
+				JSONObject operation = service.getJSONArray("operations").getJSONObject(0);
+				String http = operation.getString("httpUrl");
+
+				if(targetHttp.equalsIgnoreCase(http)) {
+					JSONArray inputs = operation.getJSONArray("inputs");
+					for (int l = 0; l < inputs.length(); l++) {
+						JSONObject input = inputs.getJSONObject(l);
+						JSONArray InputMandatoryParts = input.getJSONArray("mandatoryParts");
+						for (int m = 0; m < InputMandatoryParts.length(); m++) {
+							if (InputMandatoryParts.getJSONObject(m).has("name")) {
+								String name = InputMandatoryParts.getJSONObject(m).getString("name");
+								result.add(name);
+							}
+						}
+					}
+				}
+			}
+		}
+		return result;
+	}
+	
+	
 
 	public String getHttpUrl(int[] index) throws JSONException {
 		JSONObject layer = this.layers.getJSONObject(index[0]);

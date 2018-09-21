@@ -4,20 +4,21 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
 import uk.ac.cam.cares.jps.composition.enginemodel.Graph;
 import uk.ac.cam.cares.jps.composition.enginemodel.Layer;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
+import uk.ac.cam.cares.jps.composition.util.ConnectionBuilder;
 import uk.ac.cam.cares.jps.composition.util.MatchingTool;
 import uk.ac.cam.cares.jps.composition.util.OptimalPathSearcher;
+import uk.ac.cam.cares.jps.composition.webserver.ServiceDiscoveryOld;
 
 public class ServiceCompositionEngine {
 
 	public String fullHostName = "";
 	public String fileDirectory = null;
 	public Graph newGraph;
-	private ServiceDiscovery serviceDiscovery;
+	private ServiceDiscoveryOld serviceDiscovery;
 	private ArrayList<MessagePart> inputsToAppend;
 	private ArrayList<URI> outputsRequired;
 
@@ -29,20 +30,20 @@ public class ServiceCompositionEngine {
 	}
 	
 	public ServiceCompositionEngine(Service compositeAgent, String host, String fileDirectory) throws Exception {
-		this.newGraph = new Graph();
+		this.newGraph = new Graph(new URI("Something"));
 		this.fullHostName = host;
 		this.fileDirectory = fileDirectory;
 		this.newGraph.initialInputs = (ArrayList<MessagePart>) compositeAgent.getAllInputs();
-		this.serviceDiscovery = new ServiceDiscovery(this.fileDirectory);
+		this.serviceDiscovery = new ServiceDiscoveryOld();
 		this.inputsToAppend = new ArrayList<MessagePart>();
 		this.outputsRequired = new ArrayList<URI>();
 
 		this.outputsRequiredTemp = new ArrayList<URI>();
-
+		
 		for (MessagePart part : compositeAgent.getAllOutputs()) {
 			this.outputsRequired.add(part.getModelReference());
 		}
-		outputsRequiredTemp.addAll(this.outputsRequired);
+		this.outputsRequiredTemp.addAll(this.outputsRequired);
 		this.inputsToAppend = (ArrayList<MessagePart>) compositeAgent.getAllInputs();
 
 	}
@@ -62,6 +63,8 @@ public class ServiceCompositionEngine {
 		inputsToAppend = new ArrayList<MessagePart>();
 		ArrayList<Service> servicesToAppend = this.serviceDiscovery.getAllServiceCandidates(this.newGraph.inputPool,
 				this.newGraph.servicePool);
+		 
+		
 		this.newGraph.servicePool.addAll(servicesToAppend);
 		for (Service service : servicesToAppend) {
 			this.inputsToAppend.addAll(service.getAllOutputs());
@@ -129,7 +132,6 @@ public class ServiceCompositionEngine {
 		executionList.forEach((layer, services) -> { // iterate through the executionList map, where Layers are keys and
 														// an ArrayList of services is the value.
 			for (Service s : services) {
-				System.out.println(s.getUri().toASCIIString());
 				layer.removeService(s);// for each layer, remove the redundant services.
 			}
 		});
@@ -148,17 +150,24 @@ public class ServiceCompositionEngine {
 
 	}
 	
-	public void start() {
+	public void start() { // Now appending Layers and Connection builders are merged in this start function
 		boolean met = false;
 		int index = 0;
 		while (!met) {
 			index++;
+			System.out.println(index);
 			met = this.appendLayerToGraph(index);
 		}
 		int size = 1;
 		while (size != 0) {
 			size = this.eliminateRedundantAgent();
 		}
+		
+		ConnectionBuilder connectionBuilder = new ConnectionBuilder();
+		connectionBuilder.buildEdge(this.getGraph()); // build the connection between services
+		connectionBuilder.connectEdges(this.getGraph());
+		connectionBuilder.rearrangeEdges(this.getGraph());
+
 	}
 
 }

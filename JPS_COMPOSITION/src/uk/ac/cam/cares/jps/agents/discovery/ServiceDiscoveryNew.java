@@ -12,11 +12,11 @@ import uk.ac.cam.cares.jps.agents.ontology.ServiceReader;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 // TODO-AE URGENT should be a singleton, remove extends after integration in composition
-public class ServiceDiscovery extends uk.ac.cam.cares.jps.composition.webserver.ServiceDiscoveryOld {
+public class ServiceDiscoveryNew extends uk.ac.cam.cares.jps.composition.webserver.ServiceDiscoveryOld {
 	
-	Logger logger = LoggerFactory.getLogger(ServiceDiscovery.class);
+	Logger logger = LoggerFactory.getLogger(ServiceDiscoveryNew.class);
 	
-	public ServiceDiscovery(String fileDirectory) throws Exception {
+	public ServiceDiscoveryNew(String fileDirectory) throws Exception {
 		super();
 		System.out.println(fileDirectory);
 		loadServicePool(fileDirectory);

@@ -12,7 +12,7 @@ public class Task {
 	public ArrayList<String> targetHttpUrl;
 	public ArrayList<int[]> outputIndexArray;
 	public ArrayList<int[]> inputIndexArray;
-	public ExecutionResult result;
+	public ArrayList<ArrayList<String>> keysArray; // For each targetHttpUrl, there is an array of keys, indicating the keys of the result. 
 	public Task() {
 
 	}
@@ -22,5 +22,6 @@ public class Task {
 		this.outputIndexArray = new ArrayList<int[]>();
 		this.inputIndexArray = new ArrayList<int[]>();
 		this.targetHttpUrl = new ArrayList<String>();
+		this.keysArray = new ArrayList<ArrayList<String>>();
 	}
 }

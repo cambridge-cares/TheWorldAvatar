@@ -54,25 +54,28 @@ public class RegionToCity extends HttpServlet {
     }
  
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//		String value = request.getParameter("value").replace("$", "#").replace("@", "#");		
-//		Model model = ModelFactory.createDefaultModel();
-//		RDFDataMgr.read(model, new ByteArrayInputStream(value.getBytes("UTF-8")), Lang.RDFJSON);
- 		
- 		//JSONObject output = QueryWarehouse.getRegionCoordinates(model);
-	
+
+		JSONObject input = null;
 		JSONObject region = new JSONObject();
 		try {
-			region.put("upperx", request.getParameter("upperx"));
-			region.put("uppery", request.getParameter("uppery"));
-			region.put("lowerx", request.getParameter("lowerx"));
-			region.put("lowery", request.getParameter("lowery"));
-			region.put("srsname", request.getParameter("srsname"));
+			input = new JSONObject(request.getParameter("value"));
+			/*{"region":{"uppercorner":{"uppery":"21.00","upperx":"20.00"},
+			 * "srsname":"EPSG:4326","lowercorner":{"lowery":"11.00","lowerx":"10.00"}}}
+			 */
+			
+			System.out.println(input.toString());
+			
+			region.put("srsname", input.getJSONObject("region").get("srsname"));
+			region.put("uppery", input.getJSONObject("region").getJSONObject("uppercorner").get("uppery"));
+			region.put("upperx", input.getJSONObject("region").getJSONObject("uppercorner").get("upperx"));
+			region.put("lowery", input.getJSONObject("region").getJSONObject("lowercorner").get("lowery"));
+			region.put("lowerx", input.getJSONObject("region").getJSONObject("lowercorner").get("lowerx"));
+			
+
 		} catch (JSONException e1) {
 			e1.printStackTrace();
 		}
-		
- 		
- 		String latlng = getCenterLatLon(region);
+		String latlng = getCenterLatLon(region);
 
 		try {
 			String res = getCityNameFromCoordinate(latlng);
@@ -80,8 +83,6 @@ public class RegionToCity extends HttpServlet {
 			String cityIRI = lookUpCityName(cityName);
 			JSONObject result = new JSONObject();
 			result.put("city", cityIRI);
-			
-			//String cityRDF = convertIRIToRDF(cityIRI);
 			response.getWriter().write(result.toString());
 		} catch (Exception e) {
  			e.printStackTrace();

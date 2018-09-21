@@ -1,8 +1,6 @@
 package uk.ac.cam.cares.jps.servicespool;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.net.URI;
 import java.util.ArrayList;
 
@@ -21,16 +19,13 @@ import org.apache.http.util.EntityUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.vocabulary.RDF;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.semantic.QueryWarehouse;
+import uk.ac.cam.cares.jps.semantic.JSONFlattenTool;
 
  
 @WebServlet("/GetPlantsInRegion")
@@ -49,15 +44,16 @@ public class GetPlantsInRegion extends HttpServlet {
 			 // The agent that select out plant from given region
 			
 		
-		String value = request.getParameter("value").replace("$", "#").replace("@", "#");		
-		Model model = ModelFactory.createDefaultModel();
-		RDFDataMgr.read(model, new ByteArrayInputStream(value.getBytes("UTF-8")), Lang.RDFJSON);
-
-		StringWriter out = new StringWriter();		
-		JSONObject output = QueryWarehouse.getRegionCoordinates(model);
-		System.out.println(output.toString());
-		// In the form of JSON
-		 
+		String value = request.getParameter("value");
+		JSONObject output = null;
+		try {
+			output = JSONFlattenTool.flattenRegion(new JSONObject(value));
+		} catch (JSONException e2) {
+ 			e2.printStackTrace();
+		}
+ 
+		System.out.println(output);
+		
 		String PlantSelectionQuery = 
 				"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" + 
 				"PREFIX space_and_time_extended:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>" + 
@@ -79,16 +75,16 @@ public class GetPlantsInRegion extends HttpServlet {
 		
 		String myHost = "www.theworldavatar.com" ;
 		int myPort = 80;
-
 		String myPath = "/damecoolquestion/composition/query";
-		
 		URIBuilder builder;
+		
+		// TODO: convert the coordinate based on srsname
  
 		
 		try {
 			builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 					.setPath(myPath)
-					.setParameter("query", String.format(PlantSelectionQuery,output.getString("xmin"),output.getString("xmax"),output.getString("ymin"),output.getString("ymax")))
+					.setParameter("query", String.format(PlantSelectionQuery,output.getString("lowerx"),output.getString("upperx"),output.getString("lowery"),output.getString("uppery")))
 					.setParameter("output", "json");
 			String result = executeGet(builder);		
 			ArrayList<String> plants = new ArrayList<String>();
@@ -107,7 +103,7 @@ public class GetPlantsInRegion extends HttpServlet {
 
 			
 			if(plants.isEmpty()) {
-				if(Double.parseDouble(output.getString("xmax")) > 85000) {
+				if(Double.parseDouble(output.getString("upperx")) > 85000) {
 					// This is Berlin 
 					plants.add("http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002");
 				}
@@ -116,10 +112,8 @@ public class GetPlantsInRegion extends HttpServlet {
 					plants.add("http://www.theworldavatar.com/Plant-001.owl#Plant-001");
 				}
 			}
-	
-			Model plantsModel = convertPlantToSemantic(plants);
-			RDFDataMgr.write(out, plantsModel, RDFFormat.RDFJSON);
- 			response.getWriter().write(out.toString());
+ 
+ 			response.getWriter().write(plants.toString());
 			
 
  			
