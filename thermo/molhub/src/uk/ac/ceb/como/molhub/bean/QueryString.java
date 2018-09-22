@@ -96,7 +96,7 @@ public static String geNonCompositetMoleculeProperties(String uuid) {
 					+"PREFIX gc: <http://purl.org/gc/>"
 					+"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
 					+"PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
-					+"SELECT DISTINCT ?moleculeName ?levelOfTheory ?basisSetValue ?geometryTypeValue" 
+					+"SELECT ?moleculeName ?levelOfTheory ?basisSetValue ?geometryTypeValue " 
 					+"WHERE {"
 					+"<http://como.cheng.cam.ac.uk/molhub/compchem/"+uuid+"> ontochem:hasInitialization ?mn0 ." 
 					+"?mn0 gc:hasMoleculeProperty ?mp0 ." 
@@ -105,6 +105,7 @@ public static String geNonCompositetMoleculeProperties(String uuid) {
 					+"?mn0 gc:hasParameter ?p1 ."
 					+"?p1  rdf:type <http://ontochem.theworldavatar.com/kb/OntoChem.owl#LevelOfTheory> ."
 					+"?p1  ontochem:hasLevelOfTheoryValue ?levelOfTheory ."
+					+ "<http://como.cheng.cam.ac.uk/molhub/compchem/"+uuid+"> ontochem:hasInitialization ?mn2 ."
 					+"?mn2 gc:hasParameter ?p2 ."
 					+"?p2  rdf:type <http://purl.org/gc/BasisSet> ."
 					+"?p2  gc:hasBasisSet ?basisSetValue ."
@@ -123,7 +124,7 @@ public static String geFrequency(String uuid) {
 					+"PREFIX gc: <http://purl.org/gc/>"
 					+"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
 					+"PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
-					+"SELECT DISTINCT ?frequenciesSize ?frequenciesValue ?frequenciesUnit " 
+					+"SELECT ?frequenciesSize ?frequenciesValue ?frequenciesUnit " 
 					+"WHERE {"
 					+ "<http://como.cheng.cam.ac.uk/molhub/compchem/"+uuid+">  gc:isCalculationOn ?fc1 ."
 					+ "?fc1 rdf:type gc:VibrationalAnalysis."
@@ -144,7 +145,7 @@ public static String getAtomicMass(String uuid) {
 					+"PREFIX gc: <http://purl.org/gc/>"
 					+"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
 					+"PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
-					+"SELECT DISTINCT ?atomName ?massValue ?massUnit " 
+					+"SELECT (strafter(str(?atomName), '#') AS ?atomicName) ?massValue ?massUnit " 
 					+"WHERE {"
 					+ "<http://como.cheng.cam.ac.uk/molhub/compchem/"+uuid+">  gc:isCalculationOn ?go ."
 					+ "?go rdf:type gc:GeometryOptimization ."
@@ -159,14 +160,14 @@ public static String getAtomicMass(String uuid) {
 	return query;
 }
 
-public static String getMultiplicity(String uuid) {
+public static String getSpinMultiplicity(String uuid) {
 	
 	String query=
 			"PREFIX ontochem: <http://ontochem.theworldavatar.com/kb/OntoChem.owl#>"
 					+"PREFIX gc: <http://purl.org/gc/>"
 					+"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
 					+"PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
-					+"SELECT DISTINCT ?spinMultiplicityValue " 
+					+"SELECT ?spinMultiplicityValue " 
 					+"WHERE {"
 					+ "<http://como.cheng.cam.ac.uk/molhub/compchem/"+uuid+">   gc:isCalculationOn ?go1 . "
 					+ "?go1 rdf:type gc:GeometryOptimization ."

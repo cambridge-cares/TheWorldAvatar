@@ -21,9 +21,11 @@ import aima.core.logic.propositional.kb.data.Clause;
 import aima.core.logic.propositional.kb.data.Literal;
 import aima.core.logic.propositional.parsing.ast.Sentence;
 import uk.ac.cam.ceb.como.io.chem.file.parser.formula.EmpiricalFormulaParser;
-
+import uk.ac.ceb.como.molhub.bean.AtomicMass;
+import uk.ac.ceb.como.molhub.bean.Frequency;
 import uk.ac.ceb.como.molhub.bean.MoleculeProperty;
 import uk.ac.ceb.como.molhub.bean.QueryString;
+import uk.ac.ceb.como.molhub.bean.RotationalConstant;
 import uk.ac.ceb.como.molhub.controler.ConnectionToTripleStore;
 
 public class QueryManager {
@@ -131,7 +133,7 @@ public class QueryManager {
 
 							/**
 							 * 
-							 * @author nk510 Add all results for one literal into a set.
+							 * @author nk510 Add all results into a set for one literal .
 							 * 
 							 */
 
@@ -156,14 +158,23 @@ public class QueryManager {
 			}
 
 			/**
-			 * @author nk510
-			 * Calculates intersection of all results for all clauses (unions).
+			 * @author nk510 Calculates intersection of all results for all clauses
+			 *         (unions).
 			 * 
 			 */
 			return intersection(listMoleculeNameSet);
 		}
 	}
 
+	/**
+	 * 
+	 * @author nk510
+	 * @param moleculeName
+	 *            a name of a molecule
+	 * @return for given molecule name sparql returns uuid, level of theory, and
+	 *         basis set.
+	 * 
+	 */
 	public static List<MoleculeProperty> performSPARQLForMoleculeName(String moleculeName) {
 
 		List<MoleculeProperty> moleculePropertyList = new ArrayList<MoleculeProperty>();
@@ -179,11 +190,11 @@ public class QueryManager {
 				while (result.hasNext()) {
 
 					BindingSet bindingSet = result.next();
-					
+
 					MoleculeProperty moleculeProperty = new MoleculeProperty(bindingSet.getValue("uuid").stringValue(),
 							moleculeName, bindingSet.getValue("levelOfTheory").toString(),
 							bindingSet.getValue("basisSetValue").toString());
-					
+
 					moleculePropertyList.add(moleculeProperty);
 				}
 
@@ -238,4 +249,187 @@ public class QueryManager {
 
 		return finalSet;
 	}
+
+	/**
+	 * @author nk510
+	 * @param uuid
+	 *            unique folder name.
+	 * @return a list of all frequencies for given uuid.
+	 * 
+	 */
+	public static List<Frequency> getAllFrequencies(String uuid) {
+
+		List<Frequency> frequencyList = new ArrayList<Frequency>();
+
+		String queryString = QueryString.geFrequency(uuid);
+
+		logger.info("queryString (frequency): " + queryString);
+
+		try (RepositoryConnection connection = ConnectionToTripleStore.getSPARQLRepositoryConnection(serverUrl)) {
+
+			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+
+			try (TupleQueryResult result = tupleQuery.evaluate()) {
+
+				while (result.hasNext()) {
+
+					BindingSet bindingSet = result.next();
+
+					Frequency frequency = new Frequency(bindingSet.getValue("frequenciesSize").stringValue(),
+							bindingSet.getValue("frequenciesValue").stringValue(),
+							bindingSet.getValue("frequenciesUnit").stringValue());
+
+					frequencyList.add(frequency);
+				}
+
+			}
+		}
+
+		return frequencyList;
+
+	}
+
+	public static List<MoleculeProperty> getAllNonCompositetMoleculeProperties(String uuid) {
+
+		String queryString = QueryString.geNonCompositetMoleculeProperties(uuid);
+
+		List<MoleculeProperty> moleculePropertyList = new ArrayList<MoleculeProperty>();
+
+		logger.info("queryString (nonComposite): " + queryString);
+
+		try (RepositoryConnection connection = ConnectionToTripleStore.getSPARQLRepositoryConnection(serverUrl)) {
+
+			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+
+			try (TupleQueryResult result = tupleQuery.evaluate()) {
+
+				while (result.hasNext()) {
+
+					BindingSet bindingSet = result.next();
+
+					MoleculeProperty moleculeProperty = new MoleculeProperty(uuid,
+							bindingSet.getValue("moleculeName").stringValue(),
+							bindingSet.getValue("basisSetValue").stringValue(),
+							bindingSet.getValue("levelOfTheory").stringValue(),
+							bindingSet.getValue("geometryTypeValue").stringValue());
+
+					moleculePropertyList.add(moleculeProperty);
+
+				}
+			}
+		}
+		return moleculePropertyList;
+	}
+
+	public static String getAllRotationalSymmertyNumber(String uuid) {
+
+		String queryString = QueryString.getRotationalSymmertyNumber(uuid);
+
+		String rotationalSymmetryNumber = new String();
+
+		try (RepositoryConnection connection = ConnectionToTripleStore.getSPARQLRepositoryConnection(serverUrl)) {
+
+			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+
+			try (TupleQueryResult result = tupleQuery.evaluate()) {
+
+				while (result.hasNext()) {
+
+					BindingSet bindingSet = result.next();
+
+					rotationalSymmetryNumber = bindingSet.getValue("rotationalSymmetryNumber").stringValue();
+
+				}
+			}
+		}
+		return rotationalSymmetryNumber;
+	}
+
+	public static String getAllSpinMultiplicity(String uuid) {
+
+		String queryString = QueryString.getSpinMultiplicity(uuid);
+
+		String spinMultiplicityValue = new String();
+
+		try (RepositoryConnection connection = ConnectionToTripleStore.getSPARQLRepositoryConnection(serverUrl)) {
+
+			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+
+			try (TupleQueryResult result = tupleQuery.evaluate()) {
+
+				while (result.hasNext()) {
+
+					BindingSet bindingSet = result.next();
+
+					spinMultiplicityValue = bindingSet.getValue("spinMultiplicityValue").stringValue();
+
+				}
+			}
+		}
+		return spinMultiplicityValue;
+	}
+
+	public static List<AtomicMass> getAllAtomicMass(String uuid) {
+
+		List<AtomicMass> atomicMassList = new ArrayList<AtomicMass>();
+
+		String queryString = QueryString.getAtomicMass(uuid);
+
+		logger.info("queryString (frequency): " + queryString);
+
+		try (RepositoryConnection connection = ConnectionToTripleStore.getSPARQLRepositoryConnection(serverUrl)) {
+
+			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+
+			try (TupleQueryResult result = tupleQuery.evaluate()) {
+
+				while (result.hasNext()) {
+
+					BindingSet bindingSet = result.next();
+
+					AtomicMass atomicMass = new AtomicMass(bindingSet.getValue("atomicName").stringValue(),
+							bindingSet.getValue("massValue").stringValue(),
+							bindingSet.getValue("massUnit").stringValue());
+
+					atomicMassList.add(atomicMass);
+				}
+
+			}
+		}
+
+		return atomicMassList;
+
+	}
+	
+	public static List<RotationalConstant> getAllRotationalConstant(String uuid) {
+
+		List<RotationalConstant> rotationalConstantList = new ArrayList<RotationalConstant>();
+
+		String queryString = QueryString.getRotationalConstant(uuid);
+
+		try (RepositoryConnection connection = ConnectionToTripleStore.getSPARQLRepositoryConnection(serverUrl)) {
+
+			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+
+			try (TupleQueryResult result = tupleQuery.evaluate()) {
+
+				while (result.hasNext()) {
+
+					BindingSet bindingSet = result.next();
+
+					RotationalConstant rotationalConstant = new RotationalConstant(bindingSet.getValue("rotationalConstantsSize").stringValue(),
+							bindingSet.getValue("rotationalConstantsValue").stringValue(),
+							bindingSet.getValue("rotationalConstantsUnit").stringValue());
+
+					rotationalConstantList.add(rotationalConstant);
+				}
+
+			}
+		}
+
+		return rotationalConstantList;
+
+	}
+	
+
 }

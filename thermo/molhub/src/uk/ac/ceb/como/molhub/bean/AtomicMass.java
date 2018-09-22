@@ -2,15 +2,23 @@ package uk.ac.ceb.como.molhub.bean;
 
 public class AtomicMass {
 	
-	private double atomicMass;
+	
+	private String atomicMassValue;
 	private String atomicMassUnit;
 	private String atomName;
 	
-	public double getAtomicMass() {
-		return atomicMass;
+	public AtomicMass(String atomName, String atomicMassValue, String atomicMassUnit) {
+		
+		this.atomName=atomName;
+		this.atomicMassValue=atomicMassValue;
+		this.atomicMassUnit=atomicMassUnit;
 	}
-	public void setAtomicMass(double atomicMass) {
-		this.atomicMass = atomicMass;
+	
+	public String getAtomicMassValue() {
+		return atomicMassValue;
+	}
+	public void setAtomicMassValue(String atomicMassValue) {
+		this.atomicMassValue = atomicMassValue;
 	}
 	public String getAtomicMassUnit() {
 		return atomicMassUnit;

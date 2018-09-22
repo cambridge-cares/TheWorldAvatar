@@ -15,6 +15,7 @@ public class MoleculeProperty {
 	private int frequenciesSize;
 	private String frequenciesValue;
 	private String frequenciesUnit;
+	
 	private List<Frequency> frequency;
 	
 	private int spinMultiplicity;
@@ -28,9 +29,6 @@ public class MoleculeProperty {
 	
 	private List<AtomicMass> atomicMassList;
 	
-	
-	
-	
 	private int rotationalConstantsSize;
 	private String rotationalConstantsUnit;
 	private String rotationalConstantsValue;
@@ -41,8 +39,7 @@ public class MoleculeProperty {
 	
 	private String programName;
 	private String programVersion;
-	private String runDate;
-	
+	private String runDate;	
 	
 	public MoleculeProperty() {
 	}
@@ -87,6 +84,16 @@ public class MoleculeProperty {
 		
 	}
 	
+public MoleculeProperty(String uuid,String moleculeName, String basisSet, String levelOfTheory, String geometryType) {
+		
+		this.uuid=uuid;
+		this.moleculeName=moleculeName;
+		this.basisSet=basisSet;
+		this.levelOfTheory=levelOfTheory;
+		this.geometryType=geometryType;
+		
+	}
+
    public MoleculeProperty(String uuid,String moleculeName, String levelOfTheory) {
 		
 		this.uuid=uuid;

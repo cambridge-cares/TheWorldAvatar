@@ -2,14 +2,21 @@ package uk.ac.ceb.como.molhub.bean;
 
 public class RotationalConstant {
 
-	private int rotationalConstantsSize;
-	private String rotationalConstantsUnit;
+	private String rotationalConstantsSize;	
 	private String rotationalConstantsValue;
+	private String rotationalConstantsUnit;
 	
-	public int getRotationalConstantsSize() {
+	public RotationalConstant(String rotationalConstantsSize,String rotationalConstantsValue,String rotationalConstantsUnit) {
+		
+		this.rotationalConstantsSize=rotationalConstantsSize;
+		this.rotationalConstantsValue=rotationalConstantsValue;
+		this.rotationalConstantsUnit=rotationalConstantsUnit;
+	}
+	
+	public String getRotationalConstantsSize() {
 		return rotationalConstantsSize;
 	}
-	public void setRotationalConstantsSize(int rotationalConstantsSize) {
+	public void setRotationalConstantsSize(String rotationalConstantsSize) {
 		this.rotationalConstantsSize = rotationalConstantsSize;
 	}
 	public String getRotationalConstantsUnit() {

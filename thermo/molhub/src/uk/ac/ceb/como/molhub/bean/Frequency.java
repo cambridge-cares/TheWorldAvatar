@@ -2,19 +2,24 @@ package uk.ac.ceb.como.molhub.bean;
 
 public class Frequency {
 	
-	private int frequenciesSize;
+	private String frequenciesSize;
 	
 	private String frequenciesValue;
 	
 	private String frequenciesUnit;
 	
+	public Frequency(){
+		
+	}
+	public Frequency(String frequenciesSize, String frequenciesValue, String frequenciesUnit){
+		
+		this.frequenciesSize=frequenciesSize;
+		this.frequenciesValue=frequenciesValue;
+		this.frequenciesUnit=frequenciesUnit;
+	}
 	
-	public int getFrequenciesSize() {
-		return frequenciesSize;
-	}
-	public void setFrequenciesSize(int frequenciesSize) {
-		this.frequenciesSize = frequenciesSize;
-	}
+	
+
 	public String getFrequenciesValue() {
 		return frequenciesValue;
 	}
@@ -26,6 +31,12 @@ public class Frequency {
 	}
 	public void setFrequenciesUnit(String frequenciesUnit) {
 		this.frequenciesUnit = frequenciesUnit;
+	}
+	public String getFrequenciesSize() {
+		return frequenciesSize;
+	}
+	public void setFrequenciesSize(String frequenciesSize) {
+		this.frequenciesSize = frequenciesSize;
 	}
 	
 }

@@ -194,7 +194,7 @@ $(document).ready(function(){
 
 <div id="tool-container">
 <div class="container">
-</div><h1>C2H5O4Si</h1>
+</div><h1><s:iterator value="moleculePropertyList" var="resultSet"><s:property value="#resultSet.moleculeName"/></s:iterator></h1>
 
 <div style="width: 302px;margin: auto;">    
     <div class="tabcontent paddingAll hide" id="mol-jmol-1">
@@ -209,24 +209,24 @@ $(document).ready(function(){
         <table style="width:80%;">
             <tbody>
                 <tr>
-                    <td>Empirical Formula</td>
-                    <td>C2H5O4Si</td>
+                    <td><b>Empirical Formula</b></td>
+                    <td><s:iterator value="moleculePropertyList" var="resultSet"><s:property value="#resultSet.moleculeName"/></s:iterator></td>
                 </tr>
                 <tr>
-                    <td>Canonical SMILES</td>
+                    <td><b>Canonical SMILES</b></td>
                     <td>N/A</td>
                 </tr>
                 <tr>
-                    <td>Isomeric SMILES</td>
+                    <td><b>Isomeric SMILES</b></td>
                     <td>N/A</td>
                 </tr>
                 <tr>
-                    <td>InChI</td>
-                    <td>InChI=1S/C2H5O4Si/c1-2-6-7(3,4)5/h2-4H,1H2</td>
+                    <td><b>InChI</b></td>
+                    <td>N/A</td>
                 </tr>
                 <tr>
-                    <td>InChI Key</td>
-                    <td>InChIKey=KBMSEKIQYYCASV-UHFFFAOYSA-N</td>
+                    <td><b>InChI Key</b></td>
+                    <td>N/A</td>
                 </tr>
             </tbody>
         </table>
@@ -234,31 +234,102 @@ $(document).ready(function(){
         <table style="width:80%;">
             <tbody>
                 <tr>
-                    <td>Basis Set</td>
-                    <td>6-311+G(d,p)</td>
+                    <td><b>Basis Set:</b></td>
+                    <td><s:iterator value="moleculePropertyList" var="resultSet"> <s:property value="#resultSet.basisSet"/></s:iterator></td>
                 </tr>
                 <tr>
-                    <td>Method</td>
-                    <td>UB971</td>
+                    <td><b>Level of Theory:</b></td>
+                    <td><s:iterator value="moleculePropertyList" var="resultSet"> <s:property value="#resultSet.levelOfTheory"/></s:iterator></td>
                 </tr>
                 <tr>
-                    <td>Job Type</td>
-                    <td>Freq</td>
+                    <td><b>Geometry Type:</b></td>
+                    <td><s:iterator value="moleculePropertyList" var="resultSet"><s:property value="#resultSet.geometryType"/></s:iterator></td>
+                </tr>
+                <tr>
+                    <td><b>Job Type</b></td>
+                    <td>N/A</td>
                 </tr>
 
             </tbody>
         </table>
         <h2>Properties</h2>
-        <table style="width:80%;">
+        <table style="width:100%;">
             <tbody>
+
                 <tr>
-                    <td>Frequencies</td>
+                    <s:if test="%{frequencyList.size>0}">
+                    <td>
+                    <b>Frequencies</b><P/>
+                     <s:iterator value="frequencyList" var="result">
+                     <ul>
+                     <li><b>Frequency Size:</b> <s:property value="#result.frequenciesSize"/></li>
+                     <li><b>Frequency Value:</b> <s:property value="#result.frequenciesValue"/></li>
+                     <li><b>Frequency Unit:</b> <a href="<s:property value="#result.frequenciesUnit"/>"><s:property value="#result.frequenciesUnit"/></a></li>
+                     </ul>
+                     </s:iterator>       
+                    </td> 
+                    </s:if>                   
                     <td></td>
+                    <td></td>
+                    <td></td>
+                    
                 </tr>
                 <tr>
-                    <td>Enthalpy of Formation</td>
+                    <td><b>Enthalpy of Formation</b></td>
+                    <td>N/A</td>
+                </tr>
+                <s:if test="rotationalSymmetryNumber!=''">
+                <tr>
+                    <td><b>Rotational Symmetry Number:</b></td>
+                    <td><s:property value="rotationalSymmetryNumber"/></td>
+                </tr>
+                </s:if>
+                
+                <s:if test="spinMultiplicityValue!=''">
+                <tr>
+                    <td><b>Spin Multiplicity:</b></td>
+                    <td><s:property value="spinMultiplicityValue"/></td>
+                </tr>
+                </s:if>
+                
+                <tr>
+                    <td>
+                    <s:if test="%{atomicMassList.size>0}">
+                    <b>Atomic Mass</b><P/>
+                     <s:iterator value="atomicMassList" var="resultAtomicMass">
+                     <ul>
+                     <li><b>Atom Name:</b> <s:property value="#resultAtomicMass.atomName"/></li>
+                     <li><b>Atomic Mass Value:</b> <s:property value="#resultAtomicMass.atomicMassValue"/></li>
+                     <li><b>Atomic Mass Unit:</b><a href="<s:property value="#resultAtomicMass.atomicMassUnit"/>"><s:property value="#resultAtomicMass.atomicMassUnit"/></a></li>
+                     </ul>
+                     </s:iterator>
+                     </s:if>                    
+                    </td>                    
+                    <td></td>
+                    <td></td>
                     <td></td>
                 </tr>
+                
+                <tr>
+                    <s:if test="%{rotationalConstantList.size>0}">
+                    <td>
+                    <b>Rotational Constant</b><P/>
+                     <s:iterator value="rotationalConstantList" var="resultRotationalConstant">
+                     <ul>
+                     <li><b>Rotational Constant Size:</b> <s:property value="#resultRotationalConstant.rotationalConstantsSize"/></li>
+                     <li><b>Rotational Constant Value:</b> <s:property value="#resultRotationalConstant.rotationalConstantsValue"/></li>
+                     <li><b>Rotational Constant Unit:</b> <a href="<s:property value="#resultRotationalConstant.rotationalConstantsUnit"/>"><s:property value="#resultRotationalConstant.rotationalConstantsUnit"/></a></li>
+                     </ul>
+                     </s:iterator>       
+                    </td> 
+                    </s:if>                   
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    
+                </tr>
+                
+                
             </tbody>
         </table>
         

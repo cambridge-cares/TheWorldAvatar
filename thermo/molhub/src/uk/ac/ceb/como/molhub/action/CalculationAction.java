@@ -36,9 +36,9 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 	
 	Map<String, Object> session;
 
-	String catalicaFolderPath = System.getProperty("catalina.home");
+	String catalinaFolderPath = System.getProperty("catalina.home");
 	
-	String sparql = catalicaFolderPath + "/conf/Catalina/sparql_query/query_all.sparql";
+	String sparql = catalinaFolderPath + "/conf/Catalina/sparql_query/query_all.sparql";
 	
 	List<MoleculeProperty> finalSearchResultSet = new ArrayList<MoleculeProperty>();	
 	
@@ -58,7 +58,7 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 		
 		for(Map.Entry<String, Object> mp: session.entrySet()) {
 			
-			String speciesFolder = catalicaFolderPath + "/webapps/ROOT/"+ mp.getKey().toString()+ "/";
+			String speciesFolder = catalinaFolderPath + "/webapps/ROOT/"+ mp.getKey().toString()+ "/";
 			
 			List<File> aboxFiles = utility.getArrayFileList(speciesFolder, ".owl");
 			
