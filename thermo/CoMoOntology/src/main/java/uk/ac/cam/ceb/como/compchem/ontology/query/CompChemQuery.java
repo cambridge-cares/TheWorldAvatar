@@ -146,8 +146,7 @@ public class CompChemQuery {
 	 * @param targetFolder is destination folder where query result is saved.
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 * 
-	 */
-	
+	 */	
 	public static void performQuery(OntModel model, String queryString, String fileName, String targetFolder) throws IOException {
 		
 		Query query = QueryFactory.create(queryString);
