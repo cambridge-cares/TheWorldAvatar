@@ -65,7 +65,7 @@ public class TestComposition {
 		
 		
 		
-		//		
+ 		
 //		ArrayList<Service> serviceEliminationList = OptimalPathSearcher.getAllServicesToBeDeleted(graph);
 //		ArrayList<String> eliminationList = new ArrayList<String>();
 //		for (Service service : serviceEliminationList) {
@@ -79,7 +79,7 @@ public class TestComposition {
 //		Executor executor = new Executor(executionChain);
 		
 		
-		//String result = executor.execute(json);
+//		String result = executor.execute(json);
 
 
 	}
