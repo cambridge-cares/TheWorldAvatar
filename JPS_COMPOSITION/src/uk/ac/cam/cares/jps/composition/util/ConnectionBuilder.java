@@ -37,6 +37,9 @@ public class ConnectionBuilder {
 									fromOutputIdx[0] = previousLayer.getIndex() - 1;// layer index of an agent in
 									fromOutputIdx[1] = previousServiceIndex - 1;
 									fromOutputIdx[2] = previousInputIndex - 1;
+																		
+									// TODO: Get the key from the 
+									
 									toInputIdx[0] = layer.getIndex() - 1;
 									toInputIdx[1] = currentServiceIndex - 1;
 									toInputIdx[2] = currentInputIndex - 1;

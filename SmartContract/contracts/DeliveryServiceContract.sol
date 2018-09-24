@@ -4,18 +4,26 @@
 
 pragma solidity ^0.4.24;
 
-contract DeliveryServiceEvaluation {
+contract DeliveryServiceContract {
 
+    event PackageLocationChanged(string location, address sender);
+    event DeadlineMissed();
+
+    // It should also be monitoring physical activities such as
 
     uint public estimatedDeliveryTime;
     uint public deadlineOffSet;
 
     string public state;
 
-    function DeliveryServiceEvaluation(uint newEstimatedDeliveryTime, uint newDeadlineOffSet) public {
+    function DeliveryServiceContract(uint newEstimatedDeliveryTime, uint newDeadlineOffSet) public {
         // To initialize an instance of the contract, you need ...
-    estimatedDeliveryTime = newEstimatedDeliveryTime;
-    deadlineOffSet = newDeadlineOffSet;
+        estimatedDeliveryTime = newEstimatedDeliveryTime;
+        deadlineOffSet = newDeadlineOffSet;
+
+    }
+
+    function makeFinalPayment() public {
 
     }
 
@@ -27,6 +35,9 @@ contract DeliveryServiceEvaluation {
         return state;
     }
 
+    function deposit() public payable {
+
+    }
 
 
 

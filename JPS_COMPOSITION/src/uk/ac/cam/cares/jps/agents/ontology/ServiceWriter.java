@@ -13,6 +13,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessageContent;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
 import uk.ac.cam.cares.jps.composition.servicemodel.Operation;
@@ -29,7 +30,7 @@ public class ServiceWriter {
 		model.write(fos, "RDF/XML");
 	}
 	
-	public String generateSerializedModel(Service service, String serviceName) throws FileNotFoundException {
+	public String generateSerializedModel(Service service, String serviceName) { 
 		Model model = generateModel(service, serviceName);
 		StringWriter out = new StringWriter();
 		model.write(out, "RDF/XML");
@@ -53,7 +54,7 @@ public class ServiceWriter {
 		servicePath = JPSConstants.URI_KB_AGENTS + "/" + service.getClass().getSimpleName() + "_" + name + ".owl";
 		
 		try {
-			URI uri = new URI(this.servicePath + "/Service");
+			URI uri = new URI(this.servicePath + "#Service");
 			service.setUri(uri);
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e.getMessage(), e);
@@ -130,20 +131,19 @@ public class ServiceWriter {
 		if (messagePart.getDatatypeValue() != null) {
 			current.addLiteral(MSM.hasDataValue.Property(), messagePart.getDatatypeValue());
 		}
-	}
-	
-	private URI getOrCreateUriOLD(Object resource, URI uri) {
-		if (uri == null) {
-			UUID uuid = UUID.randomUUID();
-			String name = servicePath + "/" + resource.getClass().getSimpleName() + "_" + uuid;
-			try {
-				return new URI(name);
-			} catch (URISyntaxException e) {
-				throw new RuntimeException(e.getMessage(), e);
+		
+		// write nested parameters
+		if (messagePart.getMandatoryParts() != null) {
+			for (MessagePart nestedPart : messagePart.getMandatoryParts()) {
+				nestedPart.setUri(getOrCreateUri(nestedPart, nestedPart.getUri()));
+				current.addProperty(MSM.hasMandatoryPart.Property(), model.createResource(nestedPart.getUri().toASCIIString()));
+				addMessagePart(model, nestedPart);
 			}
 		}
-
-		return uri;
+		
+		if (messagePart.getOptionalParts() != null) {
+			throw new JPSRuntimeException("nested parameters must be mandatory");
+		}
 	}
 	
 	private URI getOrCreateUri(Object resource, URI uri) {

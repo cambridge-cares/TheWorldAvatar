@@ -14,7 +14,7 @@ var inputMap = {
 
             }
         ],
-    'http://test.com/ontology/Region':
+    'http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType':
         [
             {
                 'src' : 'http://www.theworldavatar.com/JPS_COMPOSITION/regionSelection',

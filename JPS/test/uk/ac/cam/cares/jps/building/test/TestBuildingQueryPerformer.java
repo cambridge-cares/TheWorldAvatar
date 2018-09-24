@@ -12,7 +12,7 @@ import org.openimaj.math.geometry.shape.Polygon;
 import com.google.gson.Gson;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.util.MatrixToJsonConverter;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.building.BuildingQueryPerformer;
 import uk.ac.cam.cares.jps.building.CRSTransformer;
 import uk.ac.cam.cares.jps.building.SimpleBuildingData;
@@ -60,7 +60,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		
 		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		assertEquals(10, map.get("building").size());
 		assertEquals(10, map.get("name").size());
 	}
@@ -81,7 +81,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		
 		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		assertEquals(1, map.get("x").size());
 		assertEquals(1, map.get("y").size());
 	}
@@ -91,7 +91,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		String query = createQueryPerformerForTheHague().getQueryBdnHeight(BUILDING_IRI_THE_HAGUE_WITHOUT_PARTS);
 		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		assertEquals(1, map.get("h").size());
 		assertEquals("9.432", map.get("h").get(0));
 	}
@@ -101,7 +101,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		String query = createQueryPerformerForTheHague().getQueryBdnVerticesWithAndWithoutBuildingParts(BUILDING_IRI_THE_HAGUE_WITHOUT_PARTS);		
 		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		assertEquals(5, map.get("x").size());
 		assertEquals(5, map.get("y").size());
 		assertEquals(5, map.get("z").size());
@@ -195,7 +195,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		
 		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		assertEquals(10, map.get("bdn").size());
 	}
 	
@@ -210,7 +210,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		
 		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		List<String> distinctGroundSurface = new ArrayList<String>();
 		for (Object current : map.get("groundsurface")) {
 			if (!distinctGroundSurface.contains(current)) {
@@ -301,31 +301,31 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 				targetPoints[0], targetPoints[1], targetPoints[2], targetPoints[3]);
 		assertEquals(25, buildingIRIs.size());
 		
-		String[] expectedBuildingNames = new String[] {"BuildingBLDG_0003000a0041a96a",
-				"BuildingBLDG_0003000a0044ad95",  
-				"BuildingBLDG_0003000f00041375",  
-				"BuildingBLDG_0003000900350d71",  
-				"BuildingDEB_LOD2_UUID_fa5ba7fe-f85d-4a60-a4ba-52df87c6b968",  
-				"BuildingDEB_LOD2_UUID_de691875-c5db-476d-abf9-d4e98d9546b4",  
-				"BuildingBLDG_0003000f00445803",  
-				"BuildingBLDG_0003000000266736",  
-				"BuildingBLDG_00030009001b8b74",  
-				"BuildingBLDG_0003000f00041373",  
-				"BuildingBLDG_00030002003cd9b9",  
-				"BuildingBLDG_0003000900350d26",  
-				"BuildingBLDG_0003000900350cfa",  
-				"BuildingBLDG_0003000900350d1d",  
-				"BuildingBLDG_0003000e00006df3",  
-				"BuildingBLDG_0003000900350d02",  
-				"BuildingBLDG_0003000a0044acab",  
-				"BuildingBLDG_0003000900350d0f",  
-				"BuildingBLDG_0003000900350d6f",  
-				"BuildingDEB_LOD2_UUID_78a2c5f2-8d75-4b06-bdf7-8bdc60b3d751",  
-				"BuildingBLDG_0003000e00686a85",  
-				"BuildingDEB_LOD2_UUID_22426381-bfbb-48cf-9057-6e58de219076",  
-				"BuildingBLDG_0003000f00445810",  
-				"BuildingBLDG_0003000900350d00",  
-				"BuildingBLDG_00030009001b8ba2"	
+		String[] expectedBuildingNames = new String[] {"BuildingBLDG_000300000025061b",
+				"BuildingBLDG_00030000002573e8",  
+				"BuildingDEB_LOD2_UUID_a02d5dfa-2b41-4e94-8fd5-be8b4f606e5f",  
+				"BuildingBLDG_0003000f00153e86",  
+				"BuildingBLDG_0003000f00153e80",  
+				"BuildingBLDG_0003000f00153e99",  
+				"BuildingBLDG_0003000b00415fe7",  
+				"BuildingBLDG_0003000b003bf3c6",  
+				"BuildingBLDG_0003000200260464",  
+				"BuildingBLDG_0003000f00153e5c",  
+				"BuildingBLDG_0003000f00153e8c",  
+				"BuildingBLDG_0003000f00153e92",  
+				"BuildingBLDG_0003000f00153e71",  
+				"BuildingBLDG_00030002001b0953",  
+				"BuildingBLDG_0003000000242a00",  
+				"BuildingBLDG_0003000a003ec93a",  
+				"BuildingBLDG_00030000002573b2",  
+				"BuildingBLDG_0003000000194844",  
+				"BuildingBLDG_0003000f00153e95",  
+				"BuildingBLDG_0003000f003c8ad4",  
+				"BuildingBLDG_0003000900613659",  
+				"BuildingDEB_LOD2_UUID_7218b0e2-3f98-43bb-93b2-57cfa5905623",  
+				"BuildingDEB_LOD2_UUID_84a501bb-34cb-4d2b-b5f5-602ca0d6c13e",  
+				"BuildingBLDG_0003000000243b13",  
+				"BuildingDEB_LOD2_UUID_50ff0cfe-a996-4c2e-be50-67b3135bd638"	
 			};
 
 		for (String expectedName : expectedBuildingNames) {

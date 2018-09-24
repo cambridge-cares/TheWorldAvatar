@@ -23,6 +23,9 @@ public class AgentLocator {
 	private static AgentLocator instance = null;
 	
 	private static Logger logger = LoggerFactory.getLogger(AgentLocator.class);
+	private static final String[] SUBDIRECTORIES_FOR_COMPILED_CLASSES = new String[] {
+			"/WEB-INF/classes/", "\\WEB-INF/classes/", "/bin/", "\\bin\\", "/build/classes/", "\\build\\classes\\"
+	};
 	private String jpsBaseDirectory = null;
 	private Properties jpsProps = null;
 	private Properties jpsTestProps = null;
@@ -111,22 +114,21 @@ public class AgentLocator {
 		try {
 			path = URLDecoder.decode(classDir, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			throw new JPSRuntimeException(e);
-		
+			throw new JPSRuntimeException(e);	
 		}
+		
 		if ((path.indexOf("/") == 0) || (path.indexOf("\\") == 0)) {
 			path = path.substring(1);
 		}
-		int index = path.lastIndexOf("/WEB-INF/classes/");
-		if (index == -1) {
-			index = path.lastIndexOf("\\WEB-INF/classes/");
-			if (index == -1) {
-				index = path.lastIndexOf("/bin/");
-				if (index == -1) {
-					index = path.lastIndexOf("\\bin\\");
-				}
-			}
-		}
+				
+		int index = -1;
+		for (String current : SUBDIRECTORIES_FOR_COMPILED_CLASSES) {
+			index = path.lastIndexOf(current);
+			if (index >+ 0) {
+				break;
+			}		
+		}	
+		
 		if (index == -1) {
 			String message = "current JPS app directory was not found, class directory = " + classDir;
 			logger.error(message);

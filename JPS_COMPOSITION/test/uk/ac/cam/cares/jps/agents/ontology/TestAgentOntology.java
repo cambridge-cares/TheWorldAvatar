@@ -7,14 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
-import uk.ac.cam.cares.jps.agents.ontology.ServiceBuilder;
-import uk.ac.cam.cares.jps.agents.ontology.ServiceReader;
-import uk.ac.cam.cares.jps.agents.ontology.ServiceWriter;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
 import uk.ac.cam.cares.jps.composition.servicemodel.Operation;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
+import uk.ac.cam.cares.jps.composition.webserver.ServiceDiscoveryOld;
 
 public class TestAgentOntology extends TestCase {
 	
@@ -225,13 +222,80 @@ public class TestAgentOntology extends TestCase {
 		assertEquals(false, parts.get(1).isArray());
 	}
 	
+	public void testOwlSerializationWithNestedInputParameter() throws FileNotFoundException, URISyntaxException {
+		
+		Service service = new ServiceBuilder()
+				.operation(null, "http://www.theworldavatar.com/test1")
+				.input("inputrefuri1", "region")
+				.down().input("inputrefuri2", "lowercorner")
+					   .down().input("inputrefuri3", "lowerx")
+					   		  .input("inputrefuri4", "lowery").up()
+					   .input("inputrefuri5", "uppercorner")
+					   .down().input("inputrefuri6", "upperx")
+				   		      .input("inputrefuri7", "uppery").up()
+					   .input("inputrefuri8", "srsname").up()
+			    .input("inputrefuri9", "foo")
+				.output("outputrefuri1", "city")
+				.build();
+		
+		String owlService = new ServiceWriter().generateSerializedModel(service, "Test");
+		
+		System.out.println();
+		System.out.println(owlService);
+		System.out.println();
+		
+		List<Service> services = new ServiceReader().parse(owlService, null);
+		Operation op = services.get(0).getOperations().get(0);
+		
+		// assert input parameters
+		assertEquals(1, op.getInputs().size());
+		assertEquals(2, op.getInputs().get(0).getMandatoryParts().size());
+		assertEquals(0, op.getInputs().get(0).getOptionalParts().size());
+		MessagePart part = op.getInputs().get(0).getMandatoryParts().get(0);
+		assertEquals("inputrefuri1", part.getModelReference().toASCIIString());
+		assertEquals("region", part.getName());
+		assertEquals(3, part.getMandatoryParts().size());
+		MessagePart partDown = part.getMandatoryParts().get(0);
+		assertEquals("inputrefuri2", partDown.getModelReference().toASCIIString());
+		assertEquals("lowercorner", partDown.getName());
+		assertEquals(2, partDown.getMandatoryParts().size());
+		MessagePart partDownDown = partDown.getMandatoryParts().get(0);
+		assertEquals("inputrefuri3", partDownDown.getModelReference().toASCIIString());
+		assertEquals("lowerx", partDownDown.getName());
+		partDownDown = partDown.getMandatoryParts().get(1);
+		assertEquals("inputrefuri4", partDownDown.getModelReference().toASCIIString());
+		assertEquals("lowery", partDownDown.getName());
+		partDown = part.getMandatoryParts().get(1);
+		assertEquals("inputrefuri5", partDown.getModelReference().toASCIIString());
+		assertEquals("uppercorner", partDown.getName());
+		assertEquals(2, partDown.getMandatoryParts().size());
+		partDownDown = partDown.getMandatoryParts().get(0);
+		assertEquals("inputrefuri6", partDownDown.getModelReference().toASCIIString());
+		assertEquals("upperx", partDownDown.getName());
+		partDownDown = partDown.getMandatoryParts().get(1);
+		assertEquals("inputrefuri7", partDownDown.getModelReference().toASCIIString());
+		assertEquals("uppery", partDownDown.getName());
+		partDown = part.getMandatoryParts().get(2);
+		assertEquals("inputrefuri8", partDown.getModelReference().toASCIIString());
+		assertEquals("srsname", partDown.getName());
+		assertEquals(0, partDown.getMandatoryParts().size());
+		part = op.getInputs().get(0).getMandatoryParts().get(1);
+		assertEquals("inputrefuri9", part.getModelReference().toASCIIString());
+		assertEquals("foo", part.getName());
+		
+		// assert output parameters
+		assertEquals(1, op.getOutputs().size());
+		assertEquals(1, op.getOutputs().get(0).getMandatoryParts().size());
+		assertEquals(0, op.getOutputs().get(0).getOptionalParts().size());
+		part = op.getOutputs().get(0).getMandatoryParts().get(0);
+		assertEquals("outputrefuri1", part.getModelReference().toASCIIString());
+		assertEquals("city", part.getName());
+	}
+	
 	public void testServiceDiscovery() throws Exception {
 		
-		//String fileDirectory = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres/serviceowlfiles";
-		String fileDirectory = "C:/Users/nasac/Documents/GIT/JPS_COMPOSITION/" + "/testres/serviceowlfiles";
-		
-		ServiceDiscovery discovery = new ServiceDiscovery(fileDirectory);
-		
+		String fileDirectory = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres/serviceowlfiles";
+		ServiceDiscoveryOld discovery = new ServiceDiscoveryOld();
 		List<MessagePart> inputs = createMessageParts("op2inputrefuri1");
 		List<Service> result = discovery.getAllServiceCandidates(inputs, new ArrayList<Service>());
 		
@@ -246,6 +310,6 @@ public class TestAgentOntology extends TestCase {
 				.output("op2outputrefuri2", "op1outputname2")
 				.build();
 		
-		new ServiceWriter().writeAsOwlFile(service, "Op2", "C:\\Users\\nasac\\Documents\\TMP\\newAgentsMSM");
+		//new ServiceWriter().writeAsOwlFile(service, "Op2", "C:\\Users\\Andreas\\TMP\\newAgentsMSM");
 	}
 }
