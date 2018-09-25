@@ -51,7 +51,7 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 	/** The periodic table element. */
 	private String periodicTableElement;
 	
-	List<MoleculeProperty> finalSearchResultSet = new ArrayList<MoleculeProperty>();
+	Set<MoleculeProperty> finalSearchResultSet = new HashSet<MoleculeProperty>();
 	
 	Set<String> queryResultString;
 	
@@ -83,7 +83,7 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 		 * @author nk510
 		 * This part of code is executing when a user presses button "Molhub Search". 
 		 */
-		if ((term.getName().length() == 0)) {			
+		if ((term.getName().length() == 0) || (term ==null)) {			
 			
 			if (!session.isEmpty()) {			
 				
@@ -274,6 +274,7 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 	 * 
 	 * @see com.opensymphony.xwork2.ActionSupport#validate()
 	 */
+	
 	public void validate() {
 
 		/**
@@ -392,11 +393,11 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 		this.periodicTableElement = periodicTableElement;
 	}
 
-	public List<MoleculeProperty> getFinalSearchResultSet() {
+	public Set<MoleculeProperty> getFinalSearchResultSet() {
 		return finalSearchResultSet;
 	}
 
-	public void setFinalSearchResultSet(List<MoleculeProperty> finalSearchResultSet) {
+	public void setFinalSearchResultSet(Set<MoleculeProperty> finalSearchResultSet) {
 		this.finalSearchResultSet = finalSearchResultSet;
 	}
 	

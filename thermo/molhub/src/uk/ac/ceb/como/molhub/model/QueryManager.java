@@ -28,23 +28,29 @@ import uk.ac.ceb.como.molhub.bean.QueryString;
 import uk.ac.ceb.como.molhub.bean.RotationalConstant;
 import uk.ac.ceb.como.molhub.controler.ConnectionToTripleStore;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class QueryManager.
+ */
 public class QueryManager {
 
 	/** The server url. */
 	static String serverUrl = "http://localhost:8080/rdf4j-server/repositories/compchemkb";
 
+	/** The Constant logger. */
 	final static Logger logger = Logger.getLogger(QueryManager.class.getName());
 
+	/** The result. */
 	static Set<String> result = new HashSet<String>();
 
 	/**
-	 * 
-	 * @param sentence
-	 *            input query string given as propositional formula. Each literal in
+	 * Perform SPARQL query on query string.
+	 *
+	 * @param sentence            input query string given as propositional formula. Each literal in
 	 *            this query string contains atom name and number of atoms.
 	 * @return a list of molecule names as a result of sparql queries on RDF4J
 	 *         triple store.
-	 * @throws IOException
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static Set<String> performSPARQLQueryOnQueryString(Sentence sentence) throws IOException {
 
@@ -62,8 +68,10 @@ public class QueryManager {
 		 * @author nk510 Here we use Philip's parser for empirical formula.
 		 */
 		EmpiricalFormulaParser empiricalFormulaParser = new EmpiricalFormulaParser();
-
-		try (RepositoryConnection connection = ConnectionToTripleStore.getSPARQLRepositoryConnection(serverUrl)) {
+		
+		RepositoryConnection connection = ConnectionToTripleStore.getSPARQLRepositoryConnection(serverUrl);
+		
+		try{
 
 			int step = 0;
 
@@ -116,8 +124,8 @@ public class QueryManager {
 					}
 
 					TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
-
-					try (TupleQueryResult result = tupleQuery.evaluate()) {
+					TupleQueryResult result = tupleQuery.evaluate();
+					try {
 
 						/**
 						 * 
@@ -141,10 +149,16 @@ public class QueryManager {
 						}
 
 						setB.addAll(setA);
+						
+						
 
 					} catch (Exception e) {
-
+						
 						e.getMessage();
+					
+					} finally {
+						
+						result.close();
 					}
 				}
 
@@ -157,23 +171,28 @@ public class QueryManager {
 				// }
 			}
 
+			
 			/**
 			 * @author nk510 Calculates intersection of all results for all clauses
 			 *         (unions).
 			 * 
 			 */
+		
 			return intersection(listMoleculeNameSet);
+		
+		}finally {
+			
+			connection.close();
 		}
 	}
 
 	/**
-	 * 
+	 * Perform SPARQL for molecule name.
+	 *
 	 * @author nk510
-	 * @param moleculeName
-	 *            a name of a molecule
+	 * @param moleculeName            a name of a molecule
 	 * @return for given molecule name sparql returns uuid, level of theory, and
 	 *         basis set.
-	 * 
 	 */
 	public static List<MoleculeProperty> performSPARQLForMoleculeName(String moleculeName) {
 
@@ -210,12 +229,11 @@ public class QueryManager {
 	}
 
 	/**
-	 * 
+	 * Intersection.
+	 *
 	 * @author nk510
-	 * @param listOfSets
-	 *            a list that contains sets of all unions in all clauses.
+	 * @param listOfSets            a list that contains sets of all unions in all clauses.
 	 * @return intersection of all clauses as a set of strings.
-	 * 
 	 */
 	public static Set<String> intersection(List<Set<String>> listOfSets) {
 
@@ -251,19 +269,17 @@ public class QueryManager {
 	}
 
 	/**
+	 * Gets the all frequencies.
+	 *
 	 * @author nk510
-	 * @param uuid
-	 *            unique folder name.
-	 * @return a list of all frequencies for given uuid.
-	 * 
+	 * @param uuid            unique folder name.
+	 * @return a list of all frequencies (size, value, unit) for given uuid.
 	 */
 	public static List<Frequency> getAllFrequencies(String uuid) {
 
 		List<Frequency> frequencyList = new ArrayList<Frequency>();
 
 		String queryString = QueryString.geFrequency(uuid);
-
-		logger.info("queryString (frequency): " + queryString);
 
 		try (RepositoryConnection connection = ConnectionToTripleStore.getSPARQLRepositoryConnection(serverUrl)) {
 
@@ -289,13 +305,17 @@ public class QueryManager {
 
 	}
 
+	/**
+	 * Gets the all non compositet molecule properties.
+	 *
+	 * @param uuid the uuid is name for unique folder name
+	 * @return the all non compositet molecule properties
+	 */
 	public static List<MoleculeProperty> getAllNonCompositetMoleculeProperties(String uuid) {
 
 		String queryString = QueryString.geNonCompositetMoleculeProperties(uuid);
 
 		List<MoleculeProperty> moleculePropertyList = new ArrayList<MoleculeProperty>();
-
-		logger.info("queryString (nonComposite): " + queryString);
 
 		try (RepositoryConnection connection = ConnectionToTripleStore.getSPARQLRepositoryConnection(serverUrl)) {
 
@@ -321,6 +341,12 @@ public class QueryManager {
 		return moleculePropertyList;
 	}
 
+	/**
+	 * Gets the all rotational symmerty number.
+	 *
+	 * @param uuid the uuid is name for unique folder
+	 * @return the all rotational symmerty number
+	 */
 	public static String getAllRotationalSymmertyNumber(String uuid) {
 
 		String queryString = QueryString.getRotationalSymmertyNumber(uuid);
@@ -345,6 +371,12 @@ public class QueryManager {
 		return rotationalSymmetryNumber;
 	}
 
+	/**
+	 * Gets the all spin multiplicity.
+	 *
+	 * @param uuid the uuid is name for unique folder
+	 * @return the all spin multiplicity value
+	 */
 	public static String getAllSpinMultiplicity(String uuid) {
 
 		String queryString = QueryString.getSpinMultiplicity(uuid);
@@ -369,13 +401,17 @@ public class QueryManager {
 		return spinMultiplicityValue;
 	}
 
+	/**
+	 * Gets the all atomic mass.
+	 *
+	 * @param uuid the uuid is name for unique folder
+	 * @return the all atomic mass (atom name, atomic mass value, atomic mass unit)
+	 */
 	public static List<AtomicMass> getAllAtomicMass(String uuid) {
 
 		List<AtomicMass> atomicMassList = new ArrayList<AtomicMass>();
 
 		String queryString = QueryString.getAtomicMass(uuid);
-
-		logger.info("queryString (frequency): " + queryString);
 
 		try (RepositoryConnection connection = ConnectionToTripleStore.getSPARQLRepositoryConnection(serverUrl)) {
 
@@ -401,6 +437,12 @@ public class QueryManager {
 
 	}
 	
+	/**
+	 * Gets the all rotational constant.
+	 *
+	 * @param uuid the uuid is name for unique folder.
+	 * @return the all rotational constant (rotational constant size, rotational constant value, rotational constant unit).
+	 */
 	public static List<RotationalConstant> getAllRotationalConstant(String uuid) {
 
 		List<RotationalConstant> rotationalConstantList = new ArrayList<RotationalConstant>();
@@ -426,10 +468,8 @@ public class QueryManager {
 
 			}
 		}
-
+		
 		return rotationalConstantList;
 
 	}
-	
-
 }

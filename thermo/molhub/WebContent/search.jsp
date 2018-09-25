@@ -115,21 +115,22 @@
 <s:property value="session"/>
 <P/>
 
+
 <div id="tool-container">
 
        <div id="result-container">
        
             <div id="process-box" class="tool-tab">
-               
+
 <!-- A list of search results for given query string-->
-                   
+                 
 <s:iterator value="finalSearchResultSet" var="result"> 
       
 <div id="<s:property  value="uuid"/>" class="box">
     
     <div class="round-top box-header">
     
-        <div class="checkbox-wrapper" >
+        <div class="checkbox-wrapper">
             
         </div>
     
@@ -160,7 +161,7 @@
             <div>
                 <div class="property-name"><s:property value="resultsColumn[1]"/></div>
                 <div class="property-value">
-                <s:a href="%{moleculeView}">http://<%=request.getHeader("host")%>/<s:property  value="uuid"/></s:a>
+                <s:a href="%{moleculeView}" target="_blank">http://<%=request.getHeader("host")%>/<s:property  value="uuid"/></s:a>
                 </div>
             </div>
             <p/>

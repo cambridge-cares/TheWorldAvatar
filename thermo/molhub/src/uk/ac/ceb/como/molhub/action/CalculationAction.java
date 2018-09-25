@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.struts2.interceptor.SessionAware;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.SessionMap;
 
 import com.opensymphony.xwork2.ActionSupport;
@@ -96,6 +97,7 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 				session.remove(mp.getKey());
 				
 		}
+		
 		
 		addActionMessage("Calculations successfully completed.");
 		

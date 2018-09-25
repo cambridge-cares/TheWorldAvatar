@@ -44,8 +44,8 @@ if (xxxx)
   script = script.replace(/XXXX/g, xxxx)
   
 var Info = {
-		width:  500,
-		height: 300,		
+		width:  700,
+		height: 600,		
 		disableJ2SLoadMonitor: true, 
 		disableInitialConsole: true, 
 		script: script,
@@ -196,9 +196,9 @@ $(document).ready(function(){
 <div class="container">
 </div><h1><s:iterator value="moleculePropertyList" var="resultSet"><s:property value="#resultSet.moleculeName"/></s:iterator></h1>
 
-<div style="width: 302px;margin: auto;">    
-    <div class="tabcontent paddingAll hide" id="mol-jmol-1">
-        <div id="middlepanel"></div>
+<div style="width: 100%;margin: auto;position:left;">    
+    <div style="position: left;"class="tabcontent paddingAll hide" id="mol-jmol-1">
+        <div style="position:left;" id="middlepanel"></div>
         <div id="leftpanel"></div>
         <div id="rightpanel"></div>
     </div>

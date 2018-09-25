@@ -20,6 +20,7 @@
 package uk.ac.ceb.como.molhub.action;
 
 import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.ValidationAware;
 
 import uk.ac.cam.ceb.como.compchem.ontology.InconsistencyExplanation;
 import uk.ac.cam.ceb.como.compchem.xslt.Transformation;
@@ -49,7 +50,7 @@ import org.eclipse.rdf4j.rio.RDFFormat;
  *         ontology files into tripe store (RDF4J).
  * 
  */
-public class UploadAction extends ActionSupport {
+public class UploadAction extends ActionSupport  implements ValidationAware {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
@@ -106,14 +107,18 @@ public class UploadAction extends ActionSupport {
 		if (files.isEmpty()) {
 			
 			addActionMessage("Please select Gaussian files first, and than press 'Upload' button.");
+			
 		}
-
+		
+//		MultiPartRequestWrapper multiReqWrapper = (MultiPartRequestWrapper) ServletActionContext.getRequest();
+//		File[] filesToUpload = multiReqWrapper.getFiles(fieldName);
+		
 		/**
 		 * 
 		 * @author nk510 Iterates over selected (uploaded) files.
 		 * 
 		 */
-
+		
 		for (File f : files) {
 
 			Module rootModule = new Module();
@@ -131,8 +136,8 @@ public class UploadAction extends ActionSupport {
 			 * @author nk510
 			 * Png file name is the same as the name of folder where that image is saved.
 			 */
-//			String outputPNGFilePath = folderName + "/" + folderName + ".jpg";
 			
+//			String outputPNGFilePath = folderName + "/" + folderName + ".jpg";
 
 			File outputXMLFile = new File(
 					folderName + "/" + uploadFileName[fileNumber].replaceAll(".g09", "") + ".xml");
@@ -226,14 +231,18 @@ public class UploadAction extends ActionSupport {
 				}
 
 			}
+			
 			/**
+			 * 
 			 * In case of inconsistency of generated ontology (Abox) then Error message will
 			 * appear.
+			 * 
 			 */
+			
 			if (!consistency) {
 
 				addFieldError("term.name",
-						"Ontology '" + owlFile.getName() + "' is not consistent and not loaded into triple store.");
+						"Ontology '" + owlFile.getName() + "' is not consistent. Owl file is not loaded into triple store.");
 				return ERROR;
 			}
 

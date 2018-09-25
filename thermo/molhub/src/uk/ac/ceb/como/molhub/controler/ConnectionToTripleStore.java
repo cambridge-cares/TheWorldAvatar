@@ -42,7 +42,7 @@ public class ConnectionToTripleStore {
 	 */
 	public static RepositoryConnection getSPARQLRepositoryConnection(String serverUrl) {
 		
-		Repository repository = new SPARQLRepository(serverUrl);		
+		Repository repository = new SPARQLRepository(serverUrl,serverUrl);		
 		repository.initialize();	
 		
 		RepositoryConnection repositoryConnection = repository.getConnection();

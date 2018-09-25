@@ -6,17 +6,16 @@
 
     <constant name="struts.enable.DynamicMethodInvocation" value="false" />
     <constant name="struts.devMode" value="true" />
-	<constant name="struts.custom.i18n.resources" value="ApplicationResources" />
+    <constant name="struts.custom.i18n.resources" value="ApplicationResources" />
 	<constant name="struts.multipart.maxSize" value="1000000000" />
-	
+ 	
 <package name="default" namespace="/" extends="struts-default">
 	 
  <action name="upload" class="uk.ac.ceb.como.molhub.action.UploadAction" method="execute">
 
-     <interceptor-ref name="defaultStack">
-        <param name="fileUpload.maximumSize">1048576</param>     
-    </interceptor-ref>
-
+     <interceptor-ref name="fileUpload"/>
+     <interceptor-ref name="basicStack"/>
+     
      <result name="input">/upload.jsp</result>
      <result name="error">/upload.jsp</result>
          

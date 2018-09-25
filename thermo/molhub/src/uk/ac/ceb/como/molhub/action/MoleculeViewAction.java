@@ -50,6 +50,10 @@ public class MoleculeViewAction extends ActionSupport {
 	
 	public String execute() {
 		
+		/**
+		 * @author nk510
+		 * Returns a list of frequencies for each digital entity.
+		 */
 		frequencyList = QueryManager.getAllFrequencies(getUuid());
 		
 		moleculePropertyList = QueryManager.getAllNonCompositetMoleculeProperties(getUuid());
@@ -152,5 +156,4 @@ public class MoleculeViewAction extends ActionSupport {
 	public void setRotationalConstantList(List<RotationalConstant> rotationalConstantList) {
 		this.rotationalConstantList = rotationalConstantList;
 	}
-	
 }
