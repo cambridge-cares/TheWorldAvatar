@@ -16,6 +16,7 @@
 
     <title>J-Park Simulator : Mass Exchange Network Model</title>
 	<script src="scripts/start.js"></script>
+	
 
 </head>
 <style>
@@ -31,7 +32,29 @@ TH {
         <img  src="images/cam_lang_negativ1%20NEW_0.png">
     </a>
        <h1 id="head1">J-Park Simulator : Mass Exchange Network Model</h1>
-<p id="description">Simulate the optimum mass exchange network configuration inside an eco-industrial park by using GAMS, considering the carbon tax, international market price factor, annual cost factor as the input and showing the CO2 emission with some specific costs as the output. </p>
+	   
+	   <span id="readme-button">?</span>
+		<span id="readme-text">This agent identifies the optimal mass exchange network configuration with the objective of minimising the overall network cost. The computation is based on considering the characteristics of the companies within the network i.e. location within the network, feedstock and product information (type, price and quantity), the transportation costs associated with different transportation tools i.e. trucks, short-sea vessels and pipelines, the CO<sub>2</sub> emission and cost associated with different transportation tools and the installation costs of pipelines.  
+		
+		<br/><br/>The agent considers 14 companies producing 12 products as the feedstock for 20 companies on Jurong Island. The user can modify the values of the carbon tax associated with transportation tool’s CO<sub>2</sub> emission; international market price factor that is defined as the ratio of the international market price to local market price for a material and annual time factor that is defined as the year(s) for the cost projection computation (to be provided in comma separated format). The user can also select from the dropdown list if the lowest local market price is considered in the computation of international market price. If the lowest local market price is not considered in the computation of international market price, i.e. “False”, the international market price will be computed based on the highest local market price. The user can modify the available input parameters and execute the simulation to determine the corresponding optimal mass exchange network configuration. The model is executed in GAMS.
+
+<br/><br/> The following parameters for the optimal mass exchange network configuration are visualised:
+<br/><br/>
+1. Annual transportation costs<br/>
+
+2.	Annual material costs<br/>
+
+3.	Pipeline installation costs<br/>
+
+4.	Annual CO<sub>2</sub> emission for transportation <br/>
+
+5.	Annual costs associated with CO<sub>2</sub> emission for transportation<br/>
+
+6.	Cumulative transportation costs for the cost projection computation
+</span>
+
+		
+<p id="description">Determine the optimum mass exchange network configuration estimated using GAMS, considering the carbon tax, international market price factor, annual time factor and the CO<sub>2</sub> emission. </p>
 
 </div>
 
@@ -40,14 +63,14 @@ TH {
     <h1 id="head1"></h1>
     <p id="description"></p>
 
-    <label for="carbontax">Carbon Tax ($/ton CO2.year):</label>
+    <label for="carbontax">Carbon Tax ($/ton CO<sub>2</sub>):</label>
     <input id="carbontax" type="text" value='50'/>
     
     
     <label for="intmarketpricefactor">International Market Price Factor:</label>
     <input id="intmarketpricefactor" type="text" value='1.05'/>
     
- 	<label for="annualtimefactor">annual time factor (projection in <i>n-th</i> year):</label>
+ 	<label for="annualtimefactor">Annual Time Factor (projection in <i>n-th</i> year):</label>
   	<input id="timefactor" type="text" value='1,10,50,100'/> 
   	
   	<label for="intmarketlowestprice">International Market Lowest Price Applied:</label>
