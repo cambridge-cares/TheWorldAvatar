@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,12 +51,13 @@ public class MenTableAgent extends HttpServlet {
 	//	String baseDir = AgentLocator.getProperty("absdir.jps_men");
 		
 		//return baseDir + "/testres/transportation/Jr_Transportation_simplified.owl"; // location of the owl file that contains information for the transportation system
-		return "http://www.jparksimulator.com/Jr_Transportation_simplified.owl";
+		return "http://www.jparksimulator.com/kb/sgp/jurongisland/MaterialTransportMode.owl";
 	}
 	
 	public String getChemicalPlants() {
 
-		return "http://www.jparksimulator.com/JurongIsland.owl";
+		//return "http://www.jparksimulator.com/JurongIsland.owl";
+		return "http://www.theworldavatar.com/kb/sgp/jurongisland/JurongIsland.owl";
 	}
 	
 	@Override
