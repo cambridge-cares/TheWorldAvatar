@@ -83,8 +83,8 @@ public class MenDataProvider {
 	public List<Transportation> getTransportationMeansInfoFromKB(String Transport_OKB) {
 		
 		//Land transportation 1
-		String lt = "PREFIX tp:<http://www.jparksimulator.com/transportation_simple.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#> "
+		String lt = "PREFIX tp:<http://www.theworldavatar.com/ontology/ontotransport/TransportationSystemOntology.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "SELECT ?lt ?Ctrans ?emission ?Cinst "
 				+ "WHERE { ?entity a tp:Truck ."
 				+ "?entity tp:hasName ?lt ."
@@ -103,8 +103,8 @@ public class MenDataProvider {
 				;
 		
 		//Land transportation 2
-		String lt2 = "PREFIX tp:<http://www.jparksimulator.com/transportation_simple.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#> "
+		String lt2 = "PREFIX tp:<http://www.theworldavatar.com/ontology/ontotransport/TransportationSystemOntology.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "SELECT ?lt ?Ctrans ?emission ?Cinst "
 				+ "WHERE { ?entity a tp:LandPipelines ."
 				+ "?entity tp:hasName ?lt ."
@@ -165,8 +165,8 @@ public class MenDataProvider {
 	    }
 	    
 	    //Short-sea transportation 1
-		String sst = "PREFIX tp:<http://www.jparksimulator.com/transportation_simple.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#> "
+		String sst = "PREFIX tp:<http://www.theworldavatar.com/ontology/ontotransport/TransportationSystemOntology.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "SELECT ?sst ?Ctrans ?emission ?Cinst "
 				+ "WHERE { ?entity a tp:Ship ."
 				+ "?entity tp:hasName ?sst ."
@@ -183,8 +183,8 @@ public class MenDataProvider {
 				;
 		
 		//Short-sea transportation 2
-		String sst2 = "PREFIX tp:<http://www.jparksimulator.com/transportation_simple.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#> "
+		String sst2 = "PREFIX tp:<http://www.theworldavatar.com/ontology/ontotransport/TransportationSystemOntology.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "SELECT ?sst ?Ctrans ?emission ?Cinst "
 				+ "WHERE { ?entity a tp:SeaPipelines ."
 				+ "?entity tp:hasName ?sst ."
@@ -263,8 +263,8 @@ public class MenDataProvider {
 				}					
 			}
 		}
-		logger.debug("Number of feasible Connections = " + feasibleConnections.size());
-		logger.debug("connection = " +  feasibleConnections);
+		logger.info("Number of feasible Connections = " + feasibleConnections.size());
+		logger.info("connection = " +  feasibleConnections);
 		return  feasibleConnections;
 	}
 
@@ -273,12 +273,12 @@ public class MenDataProvider {
 
 		for (int file = 0; file < plantkb.size(); file++) {
 			// extract rawmaterial information (rawmaterial name, demand) from the OKB
-			String sinkInfo = "PREFIX cp:<" + "http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl"+ "#> " 
-					+ "PREFIX cp2:<http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#> " 
-					+ "PREFIX j2:<http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl" + "#> "
-					+ "PREFIX cpname:<http://www.theworldavatar.com/OntoEIP/upper_level/system_v1.owl" + "#> "
-					+ "PREFIX j0:<" + "http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl" + "#> "
-					+ "PREFIX j3:<" + "http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#> " 
+			String sinkInfo = "PREFIX cp:<" + "http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl"+ "#> " 
+					+ "PREFIX cp2:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> " 
+					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl" + "#> "
+					+ "PREFIX cpname:<http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl" + "#> "
+					+ "PREFIX j0:<" + "http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl" + "#> "
+					+ "PREFIX j3:<" + "http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> " 
 					+ "SELECT ?entity ?entityname  ?rawmaterial ?numvaldemand ?nearSea ?numvalx ?numvaly "
 					+ "WHERE {?entity  a  cp:ChemicalPlant  ." 
 					+ "?entity   cp2:nearSea ?nearSea ."
@@ -329,8 +329,8 @@ public class MenDataProvider {
 			}
 		}
 
-		 //logger.info("Number of sinks = " + sinks.size());
-		 //logger.info("sinks = " + sinks);
+		// logger.info("Number of sinks = " + sinks.size());
+		// logger.info("sinks = " + sinks);
 		return sinks;
 	}
 
@@ -340,12 +340,12 @@ public class MenDataProvider {
 
 		for (int file = 0; file < plantkb.size(); file++) {
 
-			String sourceInfo = "PREFIX cp:<http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#> " 
-					+ "PREFIX cp2:<http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#> " 
-					+ "PREFIX j2:<http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#> "
-					+ "PREFIX cpname:<" + "http://www.theworldavatar.com/OntoEIP/upper_level/system_v1.owl#> "
-					+ "PREFIX j0:<" + "http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#> "
-					+ "PREFIX j3:<" + "http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#> " 
+			String sourceInfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#> " 
+					+ "PREFIX cp2:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> " 
+					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+					+ "PREFIX cpname:<" + "http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#> "
+					+ "PREFIX j0:<" + "http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#> "
+					+ "PREFIX j3:<" + "http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> " 
 					+ "SELECT ?entity ?entityname  ?product ?numvalcapacity ?numvalprice ?nearSea ?numvalx ?numvaly "
 					+ "WHERE {?entity  a  cp:ChemicalPlant  ." 
 					+ "?entity   cp2:nearSea ?nearSea ."

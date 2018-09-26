@@ -56,8 +56,8 @@ public class MenAgent extends HttpServlet {
 		}	
 		
 		else {
-		String chemicalplantInfo = "PREFIX cp:<http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#> " 
-				+ "PREFIX j2:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#> "
+		String chemicalplantInfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#> " 
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "SELECT ?iri "
 				+ "WHERE {?entity  a  cp:Eco-industrialPark  ." 
 				+ "?entity   j2:hasSubsystem ?cpl ."
