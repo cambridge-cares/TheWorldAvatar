@@ -32,12 +32,18 @@ public class TestAgentDescriptions extends TestCase {
 		backAndforthAndWrite(service, "GetPlantsInRegion");
 		service = createDescrForAgentWeather();
 		backAndforthAndWrite(service, "OpenWeatherMap");
+		service = createDescrForAgentSRMEmissions();
+		backAndforthAndWrite(service, "SRMEmissions");
+		service = createDescrForAgentBuildingQuery();
+		backAndforthAndWrite(service, "BuildingQuery");
+		service = createDescrForAgentADMS();
+		backAndforthAndWrite(service, "ADMS");
 	}
 	
 	private void backAndforthAndWrite(Service service, String name) throws URISyntaxException, FileNotFoundException {
 		
-		new ServiceWriter().writeAsOwlFile(service, name, "C:\\Users\\nasac\\Documents\\TMP\\newAgentsMSM");
-		
+		//new ServiceWriter().writeAsOwlFile(service, name, "C:\\Users\\nasac\\Documents\\TMP\\newAgentsMSM");
+		new ServiceWriter().writeAsOwlFile(service, name, "C:\\Users\\Andreas\\TMP\\newAgentsMSM");
 		
 		
 		service.setUri(null);
@@ -83,13 +89,36 @@ public class TestAgentDescriptions extends TestCase {
 		return builder.build();
 	}
 	
-	public void testWeatherDescription() throws URISyntaxException, FileNotFoundException {
+	private Service createDescrForAgentSRMEmissions() {
+		return new ServiceBuilder().operation(null, JPS + "/calculateEmissionStream")
+			.input("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
+			.output("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
+			.build();
+	}
+	
+	private Service createDescrForAgentBuildingQuery() {
+		return addInputRegion(new ServiceBuilder().operation(null, JPS + "/buildings/fromregion"))
+			.input("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
+			.output("http://www.theworldavatar.com/CityGMLOntology.owl#BuildingType", true, "buildings", true)
+			.build();
+	}
+	
+	private Service createDescrForAgentADMS() {
+		return addInputRegion(new ServiceBuilder().operation(null, JPS + "/ADMSAgent"))
+			.input("http://dbpedia.org/ontology/city", "city")
+			.input("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
+			.input("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
+			.input(WEATHER + "#WeatherState", "weatherstate")
+			.input("http://www.theworldavatar.com/CityGMLOntology.owl#BuildingType", true, "buildings", true)
+			.output("https://www.w3.org/ns/csvw#Table", "dispersiongrid")
+			.build();
+	}
+	
+	public void testDescription() throws URISyntaxException, FileNotFoundException {
 		
-		Service service = createDescrForAgentWeather();
+		Service service = createDescrForAgentADMS(); 
 		
 		String json = new Gson().toJson(service);
 		System.out.println(json);
-		
-		// backAndforthAndWrite(service, "OpenWeatherMap");
 	}
 }
