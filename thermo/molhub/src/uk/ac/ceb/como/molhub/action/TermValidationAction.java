@@ -1,5 +1,7 @@
 package uk.ac.ceb.como.molhub.action;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,8 +15,6 @@ import org.apache.struts2.dispatcher.SessionMap;
 
 
 import com.opensymphony.xwork2.ActionSupport;
-
-import org.eclipse.rdf4j.RDF4JException;
 
 import aima.core.logic.propositional.inference.DPLL;
 import aima.core.logic.propositional.inference.DPLLSatisfiable;
@@ -35,6 +35,10 @@ import uk.ac.ceb.como.molhub.model.SentenceManager;
  */
 
 public class TermValidationAction extends ActionSupport implements SessionAware {
+	
+	final long startTime = System.currentTimeMillis();	
+	
+	private String runningTime=null;
 	
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1222255700658500383L;
@@ -66,6 +70,8 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 	 */
 	@Override
 	public String execute() throws Exception {
+		
+		
 		
 		PLParser parser = new PLParser();
 
@@ -199,8 +205,23 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 						 * @author nk510
 						 *  Returns list of all molecule properties which will appear in query result. It remembers also image file name (.png file).  
 						 */
+					
+						Map<String,MoleculeProperty> mapMoleculeProperty = new HashMap<String,MoleculeProperty>();
 						
-						finalSearchResultSet.addAll(QueryManager.performSPARQLForMoleculeName(mpp));
+						mapMoleculeProperty = QueryManager.performSPARQLForMoleculeName(mpp);
+						
+						Set<MoleculeProperty> setMoleculeProperty = new HashSet<MoleculeProperty>();
+						
+						for (MoleculeProperty set : mapMoleculeProperty.values()) {
+							
+							setMoleculeProperty.add(set);
+						}
+						
+						/**
+						 * @author nk510
+						 * Adds result in final search result set as Java Set of MoleculeProperties. 
+						 */
+						finalSearchResultSet.addAll(setMoleculeProperty);
 						
 					}
 					
@@ -212,19 +233,21 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 					
 					session.put(mp.getUuid(),mp.getMoleculeName());
 					
-										
-					}					
-					
-//					setSession(session);
+					}				
 					
 					
+					NumberFormat formatter = new DecimalFormat("#00.000");
 					
-				}catch(RDF4JException e) {
+					final long endTime = System.currentTimeMillis();
+					
+					runningTime = formatter.format((endTime - startTime) / 1000d) + " seconds";
+					
+					
+				}catch(Exception e) {
 					
 					addFieldError("term.name", "Query result failed. Explanation: " + e.getMessage());
 
 					return ERROR;
-					
 				}
 				
 				if(queryResultString.isEmpty()) {
@@ -242,6 +265,7 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 			}
 			
 
+			
 		} catch (Exception e) {
 
 			/**
@@ -257,9 +281,11 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 
 			return ERROR;
 		}
-
+		
 		
 	} 
+	
+	
 	
 	@Override
 	public String input() {
@@ -431,6 +457,18 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 	public Map<String, Object> getSession() {
 		
 		return session;
+	}
+
+
+
+	public String getRunningTime() {
+		return runningTime;
+	}
+
+
+
+	public void setRunningTime(String runningTime) {
+		this.runningTime = runningTime;
 	}	
 }
 

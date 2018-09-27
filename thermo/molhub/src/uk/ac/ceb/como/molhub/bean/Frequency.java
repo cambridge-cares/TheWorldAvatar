@@ -18,8 +18,6 @@ public class Frequency {
 		this.frequenciesUnit=frequenciesUnit;
 	}
 	
-	
-
 	public String getFrequenciesValue() {
 		return frequenciesValue;
 	}

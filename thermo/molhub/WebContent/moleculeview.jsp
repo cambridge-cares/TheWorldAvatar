@@ -182,7 +182,7 @@ $(document).ready(function(){
 </div>
 
 <!-- SUB-SUB-MENU, FEEL FREE TO CHANGE -->
-
+ 
 <div class="Applications" id="subsubmenu">
     <ul class="clearfix">
        <li class="clearfix"><s:a class="unselected" href="upload.jsp">Upload Gaussian files</s:a></li>
@@ -190,6 +190,7 @@ $(document).ready(function(){
     </ul>
 </div>
 
+ 
 <div id="main-content" class="clearfix">
 
 <div id="tool-container">

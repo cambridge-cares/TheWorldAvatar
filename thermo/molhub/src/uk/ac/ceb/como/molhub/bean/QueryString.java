@@ -1,12 +1,17 @@
 package uk.ac.ceb.como.molhub.bean;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class QueryString.
+ */
 public class QueryString {
+	
 	/**
+	 * Gets the all triples for positive literal.
+	 *
 	 * @author nk510
-	 * @param atomName
-	 *            name of literal that represents atom name from periodic table
-	 * @param atomNumber
-	 *            number of atoms which appear in a molecule for give atom name
+	 * @param atomName            name of literal that represents atom name from periodic table
+	 * @param atomNumber            number of atoms which appear in a molecule for give atom name
 	 * @return Query as a String. Result of that query should be list of all molecule names
 	 *         which contain selected atom name and selected number of atoms.
 	 */
@@ -16,7 +21,7 @@ public class QueryString {
 		String query = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" 
 		        + "PREFIX gc: <http://purl.org/gc/>"
 				+ "PREFIX ontochem: <http://ontochem.theworldavatar.com/kb/OntoChem.owl#>" 
-		        + "SELECT ?name "
+		        + "SELECT (strafter(str(?s), 'compchem/') AS ?uuid) ?name "
 				+ "WHERE { " 
 		        + "?s ontochem:hasInitialization ?in . " 
 				+ "?in gc:hasMoleculeProperty ?mp . "
@@ -31,11 +36,11 @@ public class QueryString {
 	}
 
 	/**
+	 * Gets the all triples for negative literal.
+	 *
 	 * @author nk510
-	 * @param atomName
-	 *            name of literal that represents atom name from periodic table
-	 * @param atomNumber
-	 *            number of atoms which appear in a molecule for give atom name
+	 * @param atomName            name of literal that represents atom name from periodic table
+	 * @param atomNumber            number of atoms which appear in a molecule for give atom name
 	 * @return Query as a String. Result of that query should be list of  all molecule names
 	 *         which do not contain selected atom name and selected number of atoms.
 	 */
@@ -44,7 +49,7 @@ public class QueryString {
 		String query = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" 
 		        + "PREFIX gc: <http://purl.org/gc/>"
 				+ "PREFIX ontochem: <http://ontochem.theworldavatar.com/kb/OntoChem.owl#>" 
-		        + "SELECT ?name "
+		        + "SELECT (strafter(str(?s), 'compchem/') AS ?uuid) ?name "
 				+ "WHERE { " 
 		        + "?s ontochem:hasInitialization ?in . " 
 				+ "?in gc:hasMoleculeProperty ?mp . "
@@ -62,8 +67,11 @@ public class QueryString {
 	}
 	
 /**
+ * Gets the all triples molecule property.
+ *
+ * @author nk510
  * @param moleculeName  a name of molecule (for example: Cl 2 O 6).
- * @return Query as a string. Result of that query should be a list of molecule properties visible on search page. 
+ * @return Query as a string. Result of that query should be a list of molecule properties visible on search page.
  */
 public static String getAllTriplesMoleculeProperty(String moleculeName) {
 		
@@ -89,6 +97,12 @@ public static String getAllTriplesMoleculeProperty(String moleculeName) {
 				return query;
 	}
 
+/**
+ * Ge non compositet molecule properties.
+ *
+ * @param uuid the uuid
+ * @return the string
+ */
 public static String geNonCompositetMoleculeProperties(String uuid) {
 	
 	String query = 
@@ -117,6 +131,12 @@ public static String geNonCompositetMoleculeProperties(String uuid) {
 	return query;
 }
 
+/**
+ * Ge frequency.
+ *
+ * @param uuid the uuid
+ * @return the string
+ */
 public static String geFrequency(String uuid) {
 	
 	String query = 
@@ -138,6 +158,12 @@ public static String geFrequency(String uuid) {
 	return query;
 }
 
+/**
+ * Gets the atomic mass.
+ *
+ * @param uuid the uuid
+ * @return the atomic mass
+ */
 public static String getAtomicMass(String uuid) {
 	
 	String query =
@@ -160,6 +186,12 @@ public static String getAtomicMass(String uuid) {
 	return query;
 }
 
+/**
+ * Gets the spin multiplicity.
+ *
+ * @param uuid the uuid
+ * @return the spin multiplicity
+ */
 public static String getSpinMultiplicity(String uuid) {
 	
 	String query=
@@ -179,6 +211,12 @@ public static String getSpinMultiplicity(String uuid) {
 }
 
 
+/**
+ * Gets the rotational symmerty number.
+ *
+ * @param uuid the uuid
+ * @return the rotational symmerty number
+ */
 public static String getRotationalSymmertyNumber(String uuid) {
 	
 	String query=
@@ -196,6 +234,12 @@ public static String getRotationalSymmertyNumber(String uuid) {
 	return query;
 }
 
+/**
+ * Gets the rotational constant.
+ *
+ * @param uuid the uuid as a parameter for SPARQL query.
+ * @return the rotational constant data (rotational constant size, rotational constant value, and rotational constant unit)
+ */
 public static String getRotationalConstant(String uuid) {
 	
 	String query=

@@ -62,6 +62,4 @@ public class GaussianUploadReport implements Cloneable{
                 + "Validation of Compchem xml file: " + isValidationCompchemFile() + " | "
                 + "Consistency of Compchem owl file :  " + isConsistencyCompchemOntologyFile();
     }
-    
-    
 }
