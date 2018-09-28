@@ -1,5 +1,30 @@
 $(function(){
-     
+         const toggleDisplay = elemId => {
+        let x = document.getElementById(elemId);
+        if (x.style.display !== 'block') {
+            x.style.display = 'block';
+        } else {
+            x.style.display = 'none';
+        }
+    };
+
+    $("#readme-button").click(function() {
+        toggleDisplay("readme-text");
+    });
+
+    document.addEventListener("click", function(evt) {
+        var readmeButtonElement = document.getElementById('readme-button'),
+            readmeTextElement = document.getElementById('readme-text'),
+            targetElement = evt.target;  // clicked element
+
+        if (targetElement == readmeButtonElement || targetElement == readmeTextElement) {
+            return; //readme-button or readme-text is clicked. do nothing.
+        }
+
+        if(readmeTextElement.style.display === 'block') {
+            readmeTextElement.style.display = 'none';
+        }
+    });
     
     $('#start').click(function(){
     	
@@ -30,8 +55,8 @@ $(function(){
                           tablestring+="<TH>Transport Cost per year <br> (10^3 x $/yr)</TH>";
                           tablestring+="<TH> Material Purchase Cost per year <br> (10^9 x $/yr)</TH>";
                           tablestring+="<TH>Pipeline Installation Cost <br> (10^6 x $)</TH>";
-                          tablestring+="<TH>CO2 Emission per year <br> (t/yr)</TH>";
-                          tablestring+="<TH>CO2 Emission cost per year <br> (10^3 x $/yr)</TH>";
+                          tablestring+="<TH>CO<sub>2</sub> Emission per year <br> (ton/yr)</TH>";
+                          tablestring+="<TH>CO<sub>2</sub> Emission cost per year <br> (10^3 x $/yr)</TH>";
                           for(var c=0; c<totalyear; c++) {
                         	  tablestring+="<TH>Total Cost Related to Transportation in "+n[c]+" year <br> (10^6 x $)</TH>";
                       			}

@@ -4,6 +4,12 @@ import java.util.Scanner;
 
 public class Start {
 	
+	/**for the coordinate, use the test.java for replacing the default coordinate to the one written in coordinate.csv
+	 * 
+	 * don't use the name of the unit ops' first abbreviation (e.g: R(reactor), T(tower),P(pump), etc....) as the file name of the required files 
+	 * no dash(-) in the 2nd character of the filename of the required files
+	 * */
+	
 	public static void main(String[] args) {
 //		Scanner sc = new Scanner(System.in);
 //		
@@ -22,12 +28,26 @@ public class Start {
 //		
 //		sc.close();
 
-		String plantName = "MTBE-Plant";
-		String aswFile = "CSV Files/MTBE-Plant_CSV_2.csv";
-		String heatXfile = "CSV Files/All_v2_HE_CSV.csv";
-		String chemSpecFile = "CSV Files/All_v2_chemSpec.txt";
-		String specialStreamsFile = "CSV Files/All_v2_SpecialStream_CSV.csv";
-		int utilStartNum = 350201;
+//		String plantName = "MTBE-Plant";
+//		String aswFile = "CSV Files/mtbe/MTBE-Plant_CSV_2.csv";
+//		String heatXfile = "CSV Files/mtbe/All_v2_HE_CSV.csv";
+//		String chemSpecFile = "CSV Files/mtbe/All_v2_chemSpec.txt";
+//		String specialStreamsFile = "CSV Files/mtbe/All_v2_SpecialStream_CSV.csv";
+//		int utilStartNum = 350201;
+		
+		String plantName = "Cumene-Plant";
+		String aswFile = "CSV Files/cumene/Cumene_test.csv";
+		String heatXfile = "CSV Files/cumene/All_v2_HE_CSV_Cumene.csv";
+		String chemSpecFile = "CSV Files/cumene/All_v2_chemSpec_CSV_Cumene.txt";
+		String specialStreamsFile = "CSV Files/cumene/All_v2_SpecialStream_CSV_Cumene.csv";
+		int utilStartNum = 340200;
+		
+//		String plantName = "MTBE-Plant";
+//		String aswFile = "CSV Files/mtbe/result.csv";
+//		String heatXfile = "CSV Files/mtbe/All_v2_HE_CSV.csv";
+//		String chemSpecFile = "CSV Files/mtbe/All_v2_chemSpec.txt";
+//		String specialStreamsFile = "CSV Files/mtbe/All_v2_SpecialStream_CSV.csv";
+//		int utilStartNum = 350201;
 		
 		Plant chemicalPlant = new Plant(plantName, aswFile, heatXfile, chemSpecFile, specialStreamsFile, utilStartNum);
 		chemicalPlant.createOntology();

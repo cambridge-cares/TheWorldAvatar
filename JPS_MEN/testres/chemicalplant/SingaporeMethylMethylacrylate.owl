@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://www.jparksimulator.com/SingaporeMethylMethylacrylate.owl#"
-     xml:base="http://www.jparksimulator.com/SingaporeMethylMethylacrylate.owl"
+<rdf:RDF xmlns="http://www.jparksimulator.com/kb/sgp/jurongisland/SingaporeMethylMethylacrylate.owl#"
+     xml:base="http://www.jparksimulator.com/kb/sgp/jurongisland/SingaporeMethylMethylacrylate.owl"
      xmlns:p1="file:/C:/OntoCAPE/meta_model/data_structures/binary_tree.owl#"
      xmlns:p2="file:/C:/OntoCAPE/meta_model/data_structures/array.owl#"
      xmlns:p3="file:/C:/OntoCAPE/meta_model/data_structures/linked_list.owl#"
@@ -9,39 +9,39 @@
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:p6="file:/C:/OntoCAPE/meta_model/topology/topology.owl#"
      xmlns:p7="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#"
-     xmlns:p8="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#"
+     xmlns:p8="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
-     xmlns:p9="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/network_system.owl#"
+     xmlns:p9="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:p10="http://www.theworldavatar.com/OntoEIP/upper_level/system_v1.owl#"
-     xmlns:p12="http://www.theworldavatar.com/OntoEIP/upper_level/system_function.owl#"
-     xmlns:p11="http://www.theworldavatar.com/OntoEIP/upper_level/system_behavior.owl#"
-     xmlns:p14="http://www.theworldavatar.com/OntoEIP/upper_level/system_realization.owl#"
-     xmlns:p13="http://www.theworldavatar.com/OntoEIP/upper_level/system_performance.owl#"
+     xmlns:p10="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#"
+     xmlns:p12="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_function.owl#"
+     xmlns:p11="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_behavior.owl#"
+     xmlns:p14="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_realization.owl#"
+     xmlns:p13="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_performance.owl#"
      xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
      xmlns:p16="http://www.jparksimulator.com/OntoCAPE/meta_model/data_structures/binary_tree.owl#"
      xmlns:terms="http://purl.org/dc/terms/"
-     xmlns:p15="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#"
+     xmlns:p15="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#"
      xmlns:p18="http://www.jparksimulator.com/OntoCAPE/meta_model/data_structures/linked_list.owl#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:p17="http://www.jparksimulator.com/OntoCAPE/meta_model/data_structures/array.owl#"
      xmlns:p19="http://www.jparksimulator.com/OntoCAPE/meta_model/data_structures/loop.owl#"
      xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
      xmlns:swrl="http://www.w3.org/2003/11/swrl#"
-     xmlns:j.1="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#"
-     xmlns:j.0="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#"
+     xmlns:j.1="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#"
+     xmlns:j.0="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#"
      xmlns:p21="http://www.jparksimulator.com/OntoCAPE/meta_model/topology/topology.owl#"
-     xmlns:j.3="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#"
-     xmlns:j.2="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+     xmlns:j.3="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#"
+     xmlns:j.2="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
      xmlns:p20="http://www.jparksimulator.com/OntoCAPE/meta_model/data_structures/multiset.owl#"
-     xmlns:p23="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#"
-     xmlns:p22="http://www.jparksimulator.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
-     xmlns:p24="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+     xmlns:p23="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#"
+     xmlns:p22="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+     xmlns:p24="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <owl:Ontology rdf:about="http://www.jparksimulator.com/SingaporeMethylMethylacrylate.owl">
-        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
-        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl"/>
+    <owl:Ontology rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/SingaporeMethylMethylacrylate.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl"/>
     </owl:Ontology>
     
 
@@ -57,125 +57,125 @@
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfMethylMethacrylateMMABySingaporeMethylMethylacrylate -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#CapacityOfMethylMethacrylateMMABySingaporeMethylMethylacrylate -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfMethylMethacrylateMMABySingaporeMethylMethylacrylate">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Capacity"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_CapacityOfMethylMethacrylateMMABySingaporeMethylMethylacrylate"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#CapacityOfMethylMethacrylateMMABySingaporeMethylMethylacrylate">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Capacity"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_CapacityOfMethylMethacrylateMMABySingaporeMethylMethylacrylate"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfMethylMethacrylateMMABySingaporeMethylMethylacrylate -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfMethylMethacrylateMMABySingaporeMethylMethylacrylate -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfMethylMethacrylateMMABySingaporeMethylMethylacrylate">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#Price"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfMethylMethacrylateMMABySingaporeMethylMethylacrylate"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfMethylMethacrylateMMABySingaporeMethylMethylacrylate">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Price"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfMethylMethacrylateMMABySingaporeMethylMethylacrylate"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#SingaporeMethylMethylacrylate -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#SingaporeMethylMethylacrylate -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#SingaporeMethylMethylacrylate">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ChemicalPlant"/>
-        <p24:hasGISCoordinateSystem rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#SingaporeMethylMethylacrylateCoordinateSystem"/>
-        <j.0:produces rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#SingaporeMethylMethylacrylateMethylMethacrylateMMA"/>
-        <p10:isOwnedBy rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#SingaporeMethylMethylacrylatePteLtd"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#SingaporeMethylMethylacrylate">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ChemicalPlant"/>
+        <p24:hasGISCoordinateSystem rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#SingaporeMethylMethylacrylateCoordinateSystem"/>
+        <j.0:produces rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#SingaporeMethylMethylacrylateMethylMethacrylateMMA"/>
+        <p10:isOwnedBy rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#SingaporeMethylMethylacrylatePteLtd"/>
         <p24:nearSea rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</p24:nearSea>
         <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SingaporeMethylMethylacrylatePteLtd</p10:hasName>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#SingaporeMethylMethylacrylateCoordinateSystem -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#SingaporeMethylMethylacrylateCoordinateSystem -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#SingaporeMethylMethylacrylateCoordinateSystem">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#ProjectedCoordinateSystem"/>
-        <p24:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#x_SingaporeMethylMethylacrylate"/>
-        <p24:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#y_SingaporeMethylMethylacrylate"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#SingaporeMethylMethylacrylateCoordinateSystem">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#ProjectedCoordinateSystem"/>
+        <p24:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#x_SingaporeMethylMethylacrylate"/>
+        <p24:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#y_SingaporeMethylMethylacrylate"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#SingaporeMethylMethylacrylateMethylMethacrylateMMA -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#SingaporeMethylMethylacrylateMethylMethacrylateMMA -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#SingaporeMethylMethylacrylateMethylMethacrylateMMA">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Product"/>
-        <j.0:hasCapacity rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfMethylMethacrylateMMABySingaporeMethylMethylacrylate"/>
-        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfMethylMethacrylateMMABySingaporeMethylMethylacrylate"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#SingaporeMethylMethylacrylateMethylMethacrylateMMA">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Product"/>
+        <j.0:hasCapacity rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#CapacityOfMethylMethacrylateMMABySingaporeMethylMethylacrylate"/>
+        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfMethylMethacrylateMMABySingaporeMethylMethylacrylate"/>
         <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MethylMethacrylateMonomer</p10:hasName>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#SingaporeMethylMethylacrylatePteLtd -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#SingaporeMethylMethylacrylatePteLtd -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#SingaporeMethylMethylacrylatePteLtd">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/upper_level/system_v1.owl#Organization"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#SingaporeMethylMethylacrylatePteLtd">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#Organization"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_CapacityOfMethylMethacrylateMMABySingaporeMethylMethylacrylate -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_CapacityOfMethylMethacrylateMMABySingaporeMethylMethylacrylate -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_CapacityOfMethylMethacrylateMMABySingaporeMethylMethylacrylate">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kton/year"/>
-        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfMethylMethacrylateMMABySingaporeMethylMethylacrylate"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_CapacityOfMethylMethacrylateMMABySingaporeMethylMethylacrylate">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kton/year"/>
+        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#CapacityOfMethylMethacrylateMMABySingaporeMethylMethylacrylate"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">200000.0</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfMethylMethacrylateMMABySingaporeMethylMethylacrylate -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfMethylMethacrylateMMABySingaporeMethylMethylacrylate -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfMethylMethacrylateMMABySingaporeMethylMethylacrylate">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfMethylMethacrylateMMABySingaporeMethylMethylacrylate">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">2010.0</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_x_SingaporeMethylMethylacrylate -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_x_SingaporeMethylMethylacrylate -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_x_SingaporeMethylMethylacrylate">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
-        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#x_SingaporeMethylMethylacrylate"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_x_SingaporeMethylMethylacrylate">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#x_SingaporeMethylMethylacrylate"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">355806.5790347195</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_y_SingaporeMethylMethylacrylate -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_y_SingaporeMethylMethylacrylate -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_y_SingaporeMethylMethylacrylate">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
-        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#y_SingaporeMethylMethylacrylate"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_y_SingaporeMethylMethylacrylate">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#y_SingaporeMethylMethylacrylate"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">139303.6173651793</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#x_SingaporeMethylMethylacrylate -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#x_SingaporeMethylMethylacrylate -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#x_SingaporeMethylMethylacrylate">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
-        <j.1:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_x_SingaporeMethylMethylacrylate"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#x_SingaporeMethylMethylacrylate">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <j.1:refersToAxis rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_x_SingaporeMethylMethylacrylate"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#y_SingaporeMethylMethylacrylate -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#y_SingaporeMethylMethylacrylate -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#y_SingaporeMethylMethylacrylate">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
-        <j.1:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_y_SingaporeMethylMethylacrylate"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#y_SingaporeMethylMethylacrylate">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <j.1:refersToAxis rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_y_SingaporeMethylMethylacrylate"/>
     </owl:NamedIndividual>
 </rdf:RDF>
 

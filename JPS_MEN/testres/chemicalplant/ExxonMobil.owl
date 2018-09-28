@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://www.jparksimulator.com/ExxonMobil.owl#"
-     xml:base="http://www.jparksimulator.com/ExxonMobil.owl"
+<rdf:RDF xmlns="http://www.jparksimulator.com/kb/sgp/jurongisland/ExxonMobil.owl#"
+     xml:base="http://www.jparksimulator.com/kb/sgp/jurongisland/ExxonMobil.owl "
      xmlns:p1="file:/C:/OntoCAPE/meta_model/data_structures/binary_tree.owl#"
      xmlns:p2="file:/C:/OntoCAPE/meta_model/data_structures/array.owl#"
      xmlns:p3="file:/C:/OntoCAPE/meta_model/data_structures/linked_list.owl#"
@@ -9,39 +9,39 @@
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:p6="file:/C:/OntoCAPE/meta_model/topology/topology.owl#"
      xmlns:p7="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#"
-     xmlns:p8="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#"
+     xmlns:p8="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
-     xmlns:p9="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/network_system.owl#"
+     xmlns:p9="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:p10="http://www.theworldavatar.com/OntoEIP/upper_level/system_v1.owl#"
-     xmlns:p12="http://www.theworldavatar.com/OntoEIP/upper_level/system_function.owl#"
-     xmlns:p11="http://www.theworldavatar.com/OntoEIP/upper_level/system_behavior.owl#"
-     xmlns:p14="http://www.theworldavatar.com/OntoEIP/upper_level/system_realization.owl#"
-     xmlns:p13="http://www.theworldavatar.com/OntoEIP/upper_level/system_performance.owl#"
+     xmlns:p10="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#"
+     xmlns:p12="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_function.owl#"
+     xmlns:p11="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_behavior.owl#"
+     xmlns:p14="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_realization.owl#"
+     xmlns:p13="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_performance.owl#"
      xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
      xmlns:p16="http://www.jparksimulator.com/OntoCAPE/meta_model/data_structures/binary_tree.owl#"
      xmlns:terms="http://purl.org/dc/terms/"
-     xmlns:p15="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#"
+     xmlns:p15="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#"
      xmlns:p18="http://www.jparksimulator.com/OntoCAPE/meta_model/data_structures/linked_list.owl#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:p17="http://www.jparksimulator.com/OntoCAPE/meta_model/data_structures/array.owl#"
      xmlns:p19="http://www.jparksimulator.com/OntoCAPE/meta_model/data_structures/loop.owl#"
      xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
      xmlns:swrl="http://www.w3.org/2003/11/swrl#"
-     xmlns:j.1="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#"
-     xmlns:j.0="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#"
+     xmlns:j.1="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#"
+     xmlns:j.0="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#"
      xmlns:p21="http://www.jparksimulator.com/OntoCAPE/meta_model/topology/topology.owl#"
-     xmlns:j.3="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#"
-     xmlns:j.2="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+     xmlns:j.3="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#"
+     xmlns:j.2="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
      xmlns:p20="http://www.jparksimulator.com/OntoCAPE/meta_model/data_structures/multiset.owl#"
-     xmlns:p23="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#"
-     xmlns:p22="http://www.jparksimulator.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
-     xmlns:p24="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+     xmlns:p23="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#"
+     xmlns:p22="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+     xmlns:p24="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <owl:Ontology rdf:about="http://www.jparksimulator.com/ExxonMobil.owl">
-        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
-        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl"/>
+    <owl:Ontology rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/ExxonMobil.owl ">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl"/>
     </owl:Ontology>
     
 
@@ -57,503 +57,503 @@
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfBenzeneByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#CapacityOfBenzeneByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfBenzeneByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Capacity"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_CapacityOfBenzeneByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#CapacityOfBenzeneByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Capacity"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_CapacityOfBenzeneByExxonMobil"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfEthyleneByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#CapacityOfEthyleneByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfEthyleneByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Capacity"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_CapacityOfEthyleneByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#CapacityOfEthyleneByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Capacity"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_CapacityOfEthyleneByExxonMobil"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ChemicalPlant"/>
-        <p24:hasGISCoordinateSystem rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilCoordinateSystem"/>
-        <j.0:produces rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilBenzene"/>
-        <j.0:produces rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilButene-1"/>
-        <j.0:produces rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilButenes"/>
-        <j.0:produces rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilEthylene"/>
-        <j.0:produces rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilIso-nonylAlcohol"/>
-        <j.0:produces rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilIsoparFluids"/>
-        <j.0:produces rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilMethylTertiaryButylEtherMTBE"/>
-        <j.0:produces rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilMethylbenzene"/>
-        <j.0:produces rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilMotorGasoline"/>
-        <j.0:produces rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilParaxylene"/>
-        <j.0:produces rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilPolyethylene"/>
-        <j.0:produces rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilPolypropylene"/>
-        <j.0:produces rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilSpecialtyElastomers"/>
-        <p10:isOwnedBy rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilChemicalAsiaPacificPteLtd"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ChemicalPlant"/>
+        <p24:hasGISCoordinateSystem rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilCoordinateSystem"/>
+        <j.0:produces rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilBenzene"/>
+        <j.0:produces rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilButene-1"/>
+        <j.0:produces rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilButenes"/>
+        <j.0:produces rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilEthylene"/>
+        <j.0:produces rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilIso-nonylAlcohol"/>
+        <j.0:produces rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilIsoparFluids"/>
+        <j.0:produces rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilMethylTertiaryButylEtherMTBE"/>
+        <j.0:produces rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilMethylbenzene"/>
+        <j.0:produces rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilMotorGasoline"/>
+        <j.0:produces rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilParaxylene"/>
+        <j.0:produces rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilPolyethylene"/>
+        <j.0:produces rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilPolypropylene"/>
+        <j.0:produces rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilSpecialtyElastomers"/>
+        <p10:isOwnedBy rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilChemicalAsiaPacificPteLtd"/>
         <p24:nearSea rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</p24:nearSea>
         <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ExxonMobilChemicalAsiaPacificPteLtd</p10:hasName>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilBenzene -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilBenzene -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilBenzene">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Product"/>
-        <j.0:hasCapacity rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfBenzeneByExxonMobil"/>
-        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfBenzeneByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilBenzene">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Product"/>
+        <j.0:hasCapacity rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#CapacityOfBenzeneByExxonMobil"/>
+        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfBenzeneByExxonMobil"/>
         <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Benzene</p10:hasName>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilButene-1 -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilButene-1 -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilButene-1">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Product"/>
-        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfButene-1ByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilButene-1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Product"/>
+        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfButene-1ByExxonMobil"/>
         <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Butene-1</p10:hasName>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilButenes -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilButenes -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilButenes">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Product"/>
-        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfButenesByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilButenes">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Product"/>
+        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfButenesByExxonMobil"/>
         <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Butenes</p10:hasName>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilChemicalAsiaPacificPteLtd -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilChemicalAsiaPacificPteLtd -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilChemicalAsiaPacificPteLtd">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/upper_level/system_v1.owl#Organization"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilChemicalAsiaPacificPteLtd">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#Organization"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilCoordinateSystem -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilCoordinateSystem -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilCoordinateSystem">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#ProjectedCoordinateSystem"/>
-        <p24:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#x_ExxonMobil"/>
-        <p24:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#y_ExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilCoordinateSystem">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#ProjectedCoordinateSystem"/>
+        <p24:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#x_ExxonMobil"/>
+        <p24:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#y_ExxonMobil"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilEthylene -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilEthylene -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilEthylene">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Product"/>
-        <j.0:hasCapacity rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfEthyleneByExxonMobil"/>
-        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfEthyleneByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilEthylene">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Product"/>
+        <j.0:hasCapacity rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#CapacityOfEthyleneByExxonMobil"/>
+        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfEthyleneByExxonMobil"/>
         <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ethylene</p10:hasName>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilIso-nonylAlcohol -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilIso-nonylAlcohol -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilIso-nonylAlcohol">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Product"/>
-        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfIso-nonylAlcoholByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilIso-nonylAlcohol">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Product"/>
+        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfIso-nonylAlcoholByExxonMobil"/>
         <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Iso-nonylAlcohol</p10:hasName>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilIsoparFluids -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilIsoparFluids -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilIsoparFluids">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Product"/>
-        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfIsoparFluidsByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilIsoparFluids">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Product"/>
+        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfIsoparFluidsByExxonMobil"/>
         <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">IsoparFluids</p10:hasName>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilMethylTertiaryButylEtherMTBE -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilMethylTertiaryButylEtherMTBE -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilMethylTertiaryButylEtherMTBE">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Product"/>
-        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfMethylTertiaryButylEtherMTBEByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilMethylTertiaryButylEtherMTBE">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Product"/>
+        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfMethylTertiaryButylEtherMTBEByExxonMobil"/>
         <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MethylTertiaryButylEtherMTBE</p10:hasName>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilMethylbenzene -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilMethylbenzene -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilMethylbenzene">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Product"/>
-        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfMethylbenzeneByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilMethylbenzene">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Product"/>
+        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfMethylbenzeneByExxonMobil"/>
         <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Methylbenzene</p10:hasName>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilMotorGasoline -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilMotorGasoline -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilMotorGasoline">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Product"/>
-        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfMotorGasolineByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilMotorGasoline">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Product"/>
+        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfMotorGasolineByExxonMobil"/>
         <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MotorGasoline</p10:hasName>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilParaxylene -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilParaxylene -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilParaxylene">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Product"/>
-        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfParaxyleneByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilParaxylene">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Product"/>
+        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfParaxyleneByExxonMobil"/>
         <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Paraxylene</p10:hasName>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilPolyethylene -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilPolyethylene -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilPolyethylene">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Product"/>
-        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfPolyethyleneByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilPolyethylene">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Product"/>
+        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfPolyethyleneByExxonMobil"/>
         <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Polyethylene</p10:hasName>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilPolypropylene -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilPolypropylene -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilPolypropylene">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Product"/>
-        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfPolypropyleneByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilPolypropylene">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Product"/>
+        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfPolypropyleneByExxonMobil"/>
         <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Polypropylene</p10:hasName>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilSpecialtyElastomers -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilSpecialtyElastomers -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ExxonMobilSpecialtyElastomers">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Product"/>
-        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfSpecialtyElastomersByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ExxonMobilSpecialtyElastomers">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Product"/>
+        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfSpecialtyElastomersByExxonMobil"/>
         <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SpecialtyElastomers</p10:hasName>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfBenzeneByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfBenzeneByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfBenzeneByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#Price"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfBenzeneByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfBenzeneByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Price"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfBenzeneByExxonMobil"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfButene-1ByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfButene-1ByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfButene-1ByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#Price"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfButene-1ByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfButene-1ByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Price"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfButene-1ByExxonMobil"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfButenesByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfButenesByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfButenesByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#Price"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfButenesByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfButenesByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Price"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfButenesByExxonMobil"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfEthyleneByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfEthyleneByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfEthyleneByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#Price"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfEthyleneByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfEthyleneByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Price"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfEthyleneByExxonMobil"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfIso-nonylAlcoholByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfIso-nonylAlcoholByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfIso-nonylAlcoholByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#Price"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfIso-nonylAlcoholByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfIso-nonylAlcoholByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Price"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfIso-nonylAlcoholByExxonMobil"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfIsoparFluidsByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfIsoparFluidsByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfIsoparFluidsByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#Price"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfIsoparFluidsByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfIsoparFluidsByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Price"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfIsoparFluidsByExxonMobil"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfMethylTertiaryButylEtherMTBEByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfMethylTertiaryButylEtherMTBEByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfMethylTertiaryButylEtherMTBEByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#Price"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfMethylTertiaryButylEtherMTBEByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfMethylTertiaryButylEtherMTBEByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Price"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfMethylTertiaryButylEtherMTBEByExxonMobil"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfMethylbenzeneByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfMethylbenzeneByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfMethylbenzeneByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#Price"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfMethylbenzeneByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfMethylbenzeneByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Price"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfMethylbenzeneByExxonMobil"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfMotorGasolineByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfMotorGasolineByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfMotorGasolineByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#Price"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfMotorGasolineByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfMotorGasolineByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Price"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfMotorGasolineByExxonMobil"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfParaxyleneByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfParaxyleneByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfParaxyleneByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#Price"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfParaxyleneByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfParaxyleneByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Price"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfParaxyleneByExxonMobil"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfPolyethyleneByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfPolyethyleneByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfPolyethyleneByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#Price"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfPolyethyleneByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfPolyethyleneByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Price"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfPolyethyleneByExxonMobil"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfPolypropyleneByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfPolypropyleneByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfPolypropyleneByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#Price"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfPolypropyleneByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfPolypropyleneByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Price"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfPolypropyleneByExxonMobil"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfSpecialtyElastomersByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfSpecialtyElastomersByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfSpecialtyElastomersByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#Price"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfSpecialtyElastomersByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfSpecialtyElastomersByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Price"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfSpecialtyElastomersByExxonMobil"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_CapacityOfBenzeneByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_CapacityOfBenzeneByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_CapacityOfBenzeneByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kton/year"/>
-        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfBenzeneByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_CapacityOfBenzeneByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kton/year"/>
+        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#CapacityOfBenzeneByExxonMobil"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">580000.0</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_CapacityOfEthyleneByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_CapacityOfEthyleneByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_CapacityOfEthyleneByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfEthyleneByExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_CapacityOfEthyleneByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#CapacityOfEthyleneByExxonMobil"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1900000.0</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfBenzeneByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfBenzeneByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfBenzeneByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfBenzeneByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1364.0</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfButene-1ByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfButene-1ByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfButene-1ByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfButene-1ByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">100.0</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfButenesByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfButenesByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfButenesByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfButenesByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">450.0</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfEthyleneByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfEthyleneByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfEthyleneByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfEthyleneByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1254.0</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfIso-nonylAlcoholByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfIso-nonylAlcoholByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfIso-nonylAlcoholByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfIso-nonylAlcoholByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">345.0</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfIsoparFluidsByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfIsoparFluidsByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfIsoparFluidsByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfIsoparFluidsByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">2463.0</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfMethylTertiaryButylEtherMTBEByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfMethylTertiaryButylEtherMTBEByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfMethylTertiaryButylEtherMTBEByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfMethylTertiaryButylEtherMTBEByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">85.0</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfMethylbenzeneByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfMethylbenzeneByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfMethylbenzeneByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfMethylbenzeneByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">380.0</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfMotorGasolineByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfMotorGasolineByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfMotorGasolineByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfMotorGasolineByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1273.0</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfParaxyleneByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfParaxyleneByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfParaxyleneByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfParaxyleneByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">530.0</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfPolyethyleneByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfPolyethyleneByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfPolyethyleneByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfPolyethyleneByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1663.0</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfPolypropyleneByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfPolypropyleneByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfPolypropyleneByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfPolypropyleneByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1618.0</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfSpecialtyElastomersByExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfSpecialtyElastomersByExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfSpecialtyElastomersByExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfSpecialtyElastomersByExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_x_ExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_x_ExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_x_ExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
-        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#x_ExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_x_ExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#x_ExxonMobil"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">354625.14832526876</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_y_ExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_y_ExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_y_ExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
-        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#y_ExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_y_ExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#y_ExxonMobil"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">140185.4775197053</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#x_ExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#x_ExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#x_ExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
-        <j.1:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_x_ExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#x_ExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <j.1:refersToAxis rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_x_ExxonMobil"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#y_ExxonMobil -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#y_ExxonMobil -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#y_ExxonMobil">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
-        <j.1:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_y_ExxonMobil"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#y_ExxonMobil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <j.1:refersToAxis rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_y_ExxonMobil"/>
     </owl:NamedIndividual>
 </rdf:RDF>
 

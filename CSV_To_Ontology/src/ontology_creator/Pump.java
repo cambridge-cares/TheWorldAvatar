@@ -88,11 +88,11 @@ public class Pump {
 		
 		JenaOWLModel owlModel = Tools.callJena(filename);
 		
-		OWLIndividual PumpHead = owlModel.getOWLIndividual("http://www.jparksimulator.com/" + getName() + ".owl#ValueOfPumpHeadOf" + getName());
-		OWLIndividual Power = owlModel.getOWLIndividual("http://www.jparksimulator.com/" + getName() + ".owl#ValueOfHeatDutyOf" + getName());
-		OWLIndividual Pressure = owlModel.getOWLIndividual("http://www.jparksimulator.com/" + getName() + ".owl#ValueOfOutletPressureOf" + getName());
+		OWLIndividual PumpHead = owlModel.getOWLIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#ValueOfPumpHeadOf" + getName());
+		OWLIndividual Power = owlModel.getOWLIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#ValueOfHeatDutyOf" + getName());
+		OWLIndividual Pressure = owlModel.getOWLIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#ValueOfOutletPressureOf" + getName());
 		
-		OWLDatatypeProperty numericalvalue = owlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue");
+		OWLDatatypeProperty numericalvalue = owlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 		
 		PumpHead.setPropertyValue(numericalvalue, getPumpHead());
 		Power.setPropertyValue(numericalvalue, getPower());

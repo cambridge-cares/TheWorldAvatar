@@ -186,42 +186,42 @@ public class Stream {
 		 * 
 		 */
 		
-		OWLIndividual singlePhase1=owlModel.getOWLIndividual("http://www.jparksimulator.com/"+ filename +"#Single_Phase_1_"+ getName());
+		OWLIndividual singlePhase1=owlModel.getOWLIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+ filename +"#Single_Phase_1_"+ getName());
 		
-		OWLObjectProperty thermodynamicBehavior=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/material.owl#thermodynamicBehavior");
-		OWLObjectProperty isComposedOfSubsystem=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#isComposedOfSubsystem");
-		OWLObjectProperty hasStateOfAggregation=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#hasStateOfAggregation");
-		OWLObjectProperty hasTemperature=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#has_temperature");
-		OWLObjectProperty hasPressure=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#has_pressure");
-		OWLObjectProperty hasVapourFraction=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#hasVapourRatio");
-		OWLObjectProperty hasUnitOfMeasure=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasUnitOfMeasure");
-		OWLObjectProperty hasValue = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasValue");
-		OWLObjectProperty hasComposition=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#has_composition");
-		OWLObjectProperty comprisesDirectly=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#comprisesDirectly");
-		OWLDatatypeProperty numericalValue = owlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue");
+		OWLObjectProperty thermodynamicBehavior=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/material/material.owl#thermodynamicBehavior");
+		OWLObjectProperty isComposedOfSubsystem=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isComposedOfSubsystem");
+		OWLObjectProperty hasStateOfAggregation=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#hasStateOfAggregation");
+		OWLObjectProperty hasTemperature=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_temperature");
+		OWLObjectProperty hasPressure=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_pressure");
+		OWLObjectProperty hasVapourFraction=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#hasVapourRatio");
+		OWLObjectProperty hasUnitOfMeasure=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure");
+		OWLObjectProperty hasValue = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue");
+		OWLObjectProperty hasComposition=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_composition");
+		OWLObjectProperty comprisesDirectly=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#comprisesDirectly");
+		OWLDatatypeProperty numericalValue = owlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 		
-		OWLNamedClass scalarValue = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue");
-		OWLNamedClass singlePhase=owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase");	
-		OWLNamedClass multiPhaseSystem=owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#MultiphaseSystem");	
-		OWLNamedClass temperature = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature");
-		OWLNamedClass pressure = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure");
-		OWLNamedClass phaseSystemProperty = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#ThermodynamicStateProperty");
-		OWLNamedClass composition=owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Composition");
-		OWLNamedClass moleFrac=owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#MoleFraction");
+		OWLNamedClass scalarValue = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue");
+		OWLNamedClass singlePhase=owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase");	
+		OWLNamedClass multiPhaseSystem=owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#MultiphaseSystem");	
+		OWLNamedClass temperature = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Temperature");
+		OWLNamedClass pressure = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Pressure");
+		OWLNamedClass phaseSystemProperty = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermodynamicStateProperty");
+		OWLNamedClass composition=owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Composition");
+		OWLNamedClass moleFrac=owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#MoleFraction");
 		
-		OWLIndividual celsius=owlModel.getOWLIndividual("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius");
-		OWLIndividual bar=owlModel.getOWLIndividual("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar");
-		OWLIndividual liquid=owlModel.getOWLIndividual("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#liquid");
-		OWLIndividual material=owlModel.getOWLIndividual("http://www.jparksimulator.com/"+ filename + "#Material_" + getName());
+		OWLIndividual celsius=owlModel.getOWLIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius");
+		OWLIndividual bar=owlModel.getOWLIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#bar");
+		OWLIndividual liquid=owlModel.getOWLIndividual("http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#liquid");
+		OWLIndividual material=owlModel.getOWLIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+ filename + "#Material_" + getName());
 		
-		RDFIndividual multiPhaseSystemInstance=multiPhaseSystem.createRDFIndividual("http://www.jparksimulator.com/"+ filename +"#Multi_Phase_System_"+ getName());
-		RDFIndividual singlePhase2=singlePhase.createRDFIndividual("http://www.jparksimulator.com/" + filename + "#Single_Phase_2_" + getName());
-		RDFIndividual temperature2=temperature.createRDFIndividual("http://www.jparksimulator.com/"+filename+"#Temperature_2_"+ getName());
-		RDFIndividual pressure2=pressure.createRDFIndividual("http://www.jparksimulator.com/"+filename+"#Pressure_2_"+ getName());
-		RDFIndividual valueTemperature2=scalarValue.createRDFIndividual("http://www.jparksimulator.com/"+filename+"#Value_Of_Temperature_2_"+ getName());
-		RDFIndividual valuePressure2=scalarValue.createRDFIndividual("http://www.jparksimulator.com/"+filename+"#Value_Of_Pressure_2_"+ getName());
-		RDFIndividual vapourRatio=phaseSystemProperty.createRDFIndividual("http://www.jparksimulator.com/"+filename+"#Vapour_Ratio_"+ getName());
-		RDFIndividual valueVapourRatio=scalarValue.createRDFIndividual("http://www.jparksimulator.com/"+filename+"#Value_Of_Vapour_Ratio_"+ getName());
+		RDFIndividual multiPhaseSystemInstance=multiPhaseSystem.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+ filename +"#Multi_Phase_System_"+ getName());
+		RDFIndividual singlePhase2=singlePhase.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + filename + "#Single_Phase_2_" + getName());
+		RDFIndividual temperature2=temperature.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+"#Temperature_2_"+ getName());
+		RDFIndividual pressure2=pressure.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+"#Pressure_2_"+ getName());
+		RDFIndividual valueTemperature2=scalarValue.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+"#Value_Of_Temperature_2_"+ getName());
+		RDFIndividual valuePressure2=scalarValue.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+"#Value_Of_Pressure_2_"+ getName());
+		RDFIndividual vapourRatio=phaseSystemProperty.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+"#Vapour_Ratio_"+ getName());
+		RDFIndividual valueVapourRatio=scalarValue.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+"#Value_Of_Vapour_Ratio_"+ getName());
 		
 		valueTemperature2.setPropertyValue(hasUnitOfMeasure,celsius);
 		valueTemperature2.setPropertyValue(numericalValue, getTemperature());
@@ -245,9 +245,9 @@ public class Stream {
 		if (getPhaseSystem().containsKey("Aqueous") && !getPhaseSystem().containsKey("Liquid")) {
 			for (String species : getAqPhaseMoleComp().keySet()) {
 				try {
-					RDFIndividual streamSpecies=composition.createRDFIndividual("http://www.jparksimulator.com/"+filename+".owl#"+species+"_2_in_"+ getName());
-					RDFIndividual speciesMoleFrac=moleFrac.createRDFIndividual("http://www.jparksimulator.com/"+filename+".owl#"+"Mole_Fraction_Of_"+species+"_2_in_"+ getName());
-					RDFIndividual speciesMoleFracValue=scalarValue.createRDFIndividual("http://www.jparksimulator.com/"+filename+".owl#"+"Value_Of_Mole_Fraction_Of_"+species+"_2_in_"+ getName());
+					RDFIndividual streamSpecies=composition.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#"+species+"_2_in_"+ getName());
+					RDFIndividual speciesMoleFrac=moleFrac.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#"+"Mole_Fraction_Of_"+species+"_2_in_"+ getName());
+					RDFIndividual speciesMoleFracValue=scalarValue.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#"+"Value_Of_Mole_Fraction_Of_"+species+"_2_in_"+ getName());
 					singlePhase2.addPropertyValue(hasComposition, streamSpecies);
 					streamSpecies.addPropertyValue(comprisesDirectly, speciesMoleFrac);
 					speciesMoleFrac.addPropertyValue(hasValue, speciesMoleFracValue);
@@ -260,9 +260,9 @@ public class Stream {
 		if (getPhaseSystem().containsKey("Liquid") && !getPhaseSystem().containsKey("Aqueous")) {
 			for (String species : getLiqPhaseMoleComp().keySet()) {
 				try {
-					RDFIndividual streamSpecies=composition.createRDFIndividual("http://www.jparksimulator.com/"+filename+".owl#"+species+"_2_in_"+ getName());
-					RDFIndividual speciesMoleFrac=moleFrac.createRDFIndividual("http://www.jparksimulator.com/"+filename+".owl#"+"Mole_Fraction_Of_"+species+"_2_in_"+ getName());
-					RDFIndividual speciesMoleFracValue=scalarValue.createRDFIndividual("http://www.jparksimulator.com/"+filename+".owl#"+"Value_Of_Mole_Fraction_Of_"+species+"_2_in_"+ getName());
+					RDFIndividual streamSpecies=composition.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#"+species+"_2_in_"+ getName());
+					RDFIndividual speciesMoleFrac=moleFrac.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#"+"Mole_Fraction_Of_"+species+"_2_in_"+ getName());
+					RDFIndividual speciesMoleFracValue=scalarValue.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#"+"Value_Of_Mole_Fraction_Of_"+species+"_2_in_"+ getName());
 					singlePhase2.addPropertyValue(hasComposition, streamSpecies);
 					streamSpecies.addPropertyValue(comprisesDirectly, speciesMoleFrac);
 					speciesMoleFrac.addPropertyValue(hasValue, speciesMoleFracValue);
@@ -275,9 +275,9 @@ public class Stream {
 		if (getPhaseSystem().containsKey("Liquid") && getPhaseSystem().containsKey("Aqueous")) {
 			for (String species : getAqPhaseMoleComp().keySet()) {
 				try {
-					RDFIndividual streamSpecies=composition.createRDFIndividual("http://www.jparksimulator.com/"+filename+".owl#"+species+"_2_in_"+ getName());
-					RDFIndividual speciesMoleFrac=moleFrac.createRDFIndividual("http://www.jparksimulator.com/"+filename+".owl#"+"Mole_Fraction_Of_"+species+"_2_in_"+ getName());
-					RDFIndividual speciesMoleFracValue=scalarValue.createRDFIndividual("http://www.jparksimulator.com/"+filename+".owl#"+"Value_Of_Mole_Fraction_Of_"+species+"_2_in_"+ getName());
+					RDFIndividual streamSpecies=composition.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#"+species+"_2_in_"+ getName());
+					RDFIndividual speciesMoleFrac=moleFrac.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#"+"Mole_Fraction_Of_"+species+"_2_in_"+ getName());
+					RDFIndividual speciesMoleFracValue=scalarValue.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#"+"Value_Of_Mole_Fraction_Of_"+species+"_2_in_"+ getName());
 					singlePhase2.addPropertyValue(hasComposition, streamSpecies);
 					streamSpecies.addPropertyValue(comprisesDirectly, speciesMoleFrac);
 					speciesMoleFrac.addPropertyValue(hasValue, speciesMoleFracValue);
@@ -288,11 +288,11 @@ public class Stream {
 			}
 			for (String species : getLiqPhaseMoleComp().keySet()) {
 				try {
-					RDFIndividual singlePhase3=singlePhase.createRDFIndividual("http://www.jparksimulator.com/" + filename + "#Single_Phase_3_" + getName());
+					RDFIndividual singlePhase3=singlePhase.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + filename + "#Single_Phase_3_" + getName());
 					
-					RDFIndividual streamSpecies=composition.createRDFIndividual("http://www.jparksimulator.com/"+filename+".owl#"+species+"_3_in_"+ getName());
-					RDFIndividual speciesMoleFrac=moleFrac.createRDFIndividual("http://www.jparksimulator.com/"+filename+".owl#"+"Mole_Fraction_Of_"+species+"_3_in_"+ getName());
-					RDFIndividual speciesMoleFracValue=scalarValue.createRDFIndividual("http://www.jparksimulator.com/"+filename+".owl#"+"Value_Of_Mole_Fraction_Of_"+species+"_3_in_"+ getName());
+					RDFIndividual streamSpecies=composition.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#"+species+"_3_in_"+ getName());
+					RDFIndividual speciesMoleFrac=moleFrac.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#"+"Mole_Fraction_Of_"+species+"_3_in_"+ getName());
+					RDFIndividual speciesMoleFracValue=scalarValue.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#"+"Value_Of_Mole_Fraction_Of_"+species+"_3_in_"+ getName());
 					singlePhase3.addPropertyValue(hasComposition, streamSpecies);
 					streamSpecies.addPropertyValue(comprisesDirectly, speciesMoleFrac);
 					speciesMoleFrac.addPropertyValue(hasValue, speciesMoleFracValue);
@@ -305,11 +305,11 @@ public class Stream {
 		if (getPhaseSystem().containsKey("Liquid 2")) {
 			for (String species : getLiq2PhaseMoleComp().keySet()) {
 				try {
-					RDFIndividual singlePhase3=singlePhase.createRDFIndividual("http://www.jparksimulator.com/" + filename + "#Single_Phase_3_" + getName());
+					RDFIndividual singlePhase3=singlePhase.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + filename + "#Single_Phase_3_" + getName());
 					
-					RDFIndividual streamSpecies=composition.createRDFIndividual("http://www.jparksimulator.com/"+filename+".owl#"+species+"_3_in_"+ getName());
-					RDFIndividual speciesMoleFrac=moleFrac.createRDFIndividual("http://www.jparksimulator.com/"+filename+".owl#"+"Mole_Fraction_Of_"+species+"_3_in_"+ getName());
-					RDFIndividual speciesMoleFracValue=scalarValue.createRDFIndividual("http://www.jparksimulator.com/"+filename+".owl#"+"Value_Of_Mole_Fraction_Of_"+species+"_3_in_"+ getName());
+					RDFIndividual streamSpecies=composition.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#"+species+"_3_in_"+ getName());
+					RDFIndividual speciesMoleFrac=moleFrac.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#"+"Mole_Fraction_Of_"+species+"_3_in_"+ getName());
+					RDFIndividual speciesMoleFracValue=scalarValue.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#"+"Value_Of_Mole_Fraction_Of_"+species+"_3_in_"+ getName());
 					singlePhase3.addPropertyValue(hasComposition, streamSpecies);
 					streamSpecies.addPropertyValue(comprisesDirectly, speciesMoleFrac);
 					speciesMoleFrac.addPropertyValue(hasValue, speciesMoleFracValue);
@@ -322,9 +322,9 @@ public class Stream {
 		if (getPhaseSystem().containsKey("Gas")) {
 			for (String species : getGasPhaseMoleComp().keySet()) {
 				try {
-					RDFIndividual streamSpecies=composition.createRDFIndividual("http://www.jparksimulator.com/"+filename+".owl#"+species+"_1_in_"+ getName());
-					RDFIndividual speciesMoleFrac=moleFrac.createRDFIndividual("http://www.jparksimulator.com/"+filename+".owl#"+"Mole_Fraction_Of_"+species+"_1_in_"+ getName());
-					RDFIndividual speciesMoleFracValue=scalarValue.createRDFIndividual("http://www.jparksimulator.com/"+filename+".owl#"+"Value_Of_Mole_Fraction_Of_"+species+"_1_in_"+ getName());
+					RDFIndividual streamSpecies=composition.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#"+species+"_1_in_"+ getName());
+					RDFIndividual speciesMoleFrac=moleFrac.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#"+"Mole_Fraction_Of_"+species+"_1_in_"+ getName());
+					RDFIndividual speciesMoleFracValue=scalarValue.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#"+"Value_Of_Mole_Fraction_Of_"+species+"_1_in_"+ getName());
 					singlePhase1.addPropertyValue(hasComposition, streamSpecies);
 					streamSpecies.addPropertyValue(comprisesDirectly, speciesMoleFrac);
 					speciesMoleFrac.addPropertyValue(hasValue, speciesMoleFracValue);
@@ -345,22 +345,22 @@ public class Stream {
 		 * added a single phase system into owlModel with its properties
 		 * 
 		 */
-		OWLDatatypeProperty numericalValue = owlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue");
-		OWLNamedClass scalarValue = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue");
+		OWLDatatypeProperty numericalValue = owlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
+		OWLNamedClass scalarValue = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue");
 		
-		OWLObjectProperty hasValue = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasValue");
-		OWLObjectProperty hasComposition=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#has_composition");
-		OWLNamedClass composition=owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Composition");
-		OWLNamedClass moleFrac=owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#MoleFraction");
-		OWLObjectProperty comprisesDirectly=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#comprisesDirectly");
+		OWLObjectProperty hasValue = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue");
+		OWLObjectProperty hasComposition=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_composition");
+		OWLNamedClass composition=owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Composition");
+		OWLNamedClass moleFrac=owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#MoleFraction");
+		OWLObjectProperty comprisesDirectly=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#comprisesDirectly");
 		
-		OWLIndividual singlePhaseSingle=owlModel.getOWLIndividual("http://www.jparksimulator.com/"+ filename +"#Single_Phase_"+getName());
+		OWLIndividual singlePhaseSingle=owlModel.getOWLIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+ filename +"#Single_Phase_"+getName());
 		
 		if (getPhaseSystem().containsKey("Gas")) {
 			for (String species : getGasPhaseMoleComp().keySet()) {
-				RDFIndividual streamSpecies=composition.createRDFIndividual("http://www.jparksimulator.com/"+ filename +"#"+species+"_in_"+getName());
-				RDFIndividual speciesMoleFrac=moleFrac.createRDFIndividual("http://www.jparksimulator.com/"+ filename +"#Mole_Fraction_Of_"+species+"_in_"+getName());
-				RDFIndividual speciesMoleFracValue=scalarValue.createRDFIndividual("http://www.jparksimulator.com/"+ filename +"#Value_Of_Mole_Fraction_Of_"+species+"_in_"+getName());
+				RDFIndividual streamSpecies=composition.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+ filename +"#"+species+"_in_"+getName());
+				RDFIndividual speciesMoleFrac=moleFrac.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+ filename +"#Mole_Fraction_Of_"+species+"_in_"+getName());
+				RDFIndividual speciesMoleFracValue=scalarValue.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+ filename +"#Value_Of_Mole_Fraction_Of_"+species+"_in_"+getName());
 				singlePhaseSingle.addPropertyValue(hasComposition, streamSpecies);
 				streamSpecies.addPropertyValue(comprisesDirectly, speciesMoleFrac);
 				speciesMoleFrac.addPropertyValue(hasValue, speciesMoleFracValue);
@@ -369,9 +369,9 @@ public class Stream {
 		}
 		else if (getPhaseSystem().containsKey("Liquid")) {
 			for (String species : getLiqPhaseMoleComp().keySet()) {
-				RDFIndividual streamSpecies=composition.createRDFIndividual("http://www.jparksimulator.com/"+ filename +"#"+species+"_in_"+getName());
-				RDFIndividual speciesmolefrac=moleFrac.createRDFIndividual("http://www.jparksimulator.com/"+ filename +"#Mole_Fraction_Of_"+species+"_in_"+getName());
-				RDFIndividual speciesmolefracvalue=scalarValue.createRDFIndividual("http://www.jparksimulator.com/"+ filename +"#Value_Of_Mole_Fraction_Of_"+species+"_in_"+getName());
+				RDFIndividual streamSpecies=composition.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+ filename +"#"+species+"_in_"+getName());
+				RDFIndividual speciesmolefrac=moleFrac.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+ filename +"#Mole_Fraction_Of_"+species+"_in_"+getName());
+				RDFIndividual speciesmolefracvalue=scalarValue.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+ filename +"#Value_Of_Mole_Fraction_Of_"+species+"_in_"+getName());
 				singlePhaseSingle.addPropertyValue(hasComposition, streamSpecies);
 				streamSpecies.addPropertyValue(comprisesDirectly, speciesmolefrac);
 				speciesmolefrac.addPropertyValue(hasValue, speciesmolefracvalue);
@@ -380,9 +380,9 @@ public class Stream {
 		}
 		else if (getPhaseSystem().containsKey("Liquid 2")) {
 			for (String species : getLiq2PhaseMoleComp().keySet()) {
-				RDFIndividual streamSpecies=composition.createRDFIndividual("http://www.jparksimulator.com/"+ filename +"#"+species+"_in_"+getName());
-				RDFIndividual speciesMoleFrac=moleFrac.createRDFIndividual("http://www.jparksimulator.com/"+ filename +"#Mole_Fraction_Of_"+species+"_in_"+getName());
-				RDFIndividual speciesMoleFracValue=scalarValue.createRDFIndividual("http://www.jparksimulator.com/"+ filename +"#Value_Of_Mole_Fraction_Of_"+species+"_in_"+getName());
+				RDFIndividual streamSpecies=composition.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+ filename +"#"+species+"_in_"+getName());
+				RDFIndividual speciesMoleFrac=moleFrac.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+ filename +"#Mole_Fraction_Of_"+species+"_in_"+getName());
+				RDFIndividual speciesMoleFracValue=scalarValue.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+ filename +"#Value_Of_Mole_Fraction_Of_"+species+"_in_"+getName());
 				singlePhaseSingle.addPropertyValue(hasComposition, streamSpecies);
 				streamSpecies.addPropertyValue(comprisesDirectly, speciesMoleFrac);
 				speciesMoleFrac.addPropertyValue(hasValue, speciesMoleFracValue);
@@ -391,9 +391,9 @@ public class Stream {
 		}
 		else if (getPhaseSystem().containsKey("Aqueous")) {
 			for (String species : getAqPhaseMoleComp().keySet()) {
-				RDFIndividual streamSpecies=composition.createRDFIndividual("http://www.jparksimulator.com/"+ filename +"#"+species+"_in_"+getName());
-				RDFIndividual speciesMoleFrac=moleFrac.createRDFIndividual("http://www.jparksimulator.com/"+ filename +"#Mole_Fraction_Of_"+species+"_in_"+getName());
-				RDFIndividual speciesMoleFracValue=scalarValue.createRDFIndividual("http://www.jparksimulator.com/"+ filename +"#Value_Of_Mole_Fraction_Of_"+species+"_in_"+getName());
+				RDFIndividual streamSpecies=composition.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+ filename +"#"+species+"_in_"+getName());
+				RDFIndividual speciesMoleFrac=moleFrac.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+ filename +"#Mole_Fraction_Of_"+species+"_in_"+getName());
+				RDFIndividual speciesMoleFracValue=scalarValue.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+ filename +"#Value_Of_Mole_Fraction_Of_"+species+"_in_"+getName());
 				singlePhaseSingle.addPropertyValue(hasComposition, streamSpecies);
 				streamSpecies.addPropertyValue(comprisesDirectly, speciesMoleFrac);
 				speciesMoleFrac.addPropertyValue(hasValue, speciesMoleFracValue);
@@ -415,27 +415,27 @@ public class Stream {
 		 * added the properties of the chemical species
 		 * 
 		 */
-		OWLIndividual molecularMass=owlModel.getOWLIndividual("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/derived_dimensions.owl#molecular_mass");
-		OWLIndividual kg_per_kmol=owlModel.getOWLIndividual("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_kmol");
+		OWLIndividual molecularMass=owlModel.getOWLIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#molecular_mass");
+		OWLIndividual kg_per_kmol=owlModel.getOWLIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_kmol");
 		
-		OWLNamedClass molecularWeight=owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#MolecularWeight");
-		OWLNamedClass scalarValue = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue");
-		OWLNamedClass molecularEntity=owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#MolecularEntity");
+		OWLNamedClass molecularWeight=owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#MolecularWeight");
+		OWLNamedClass scalarValue = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue");
+		OWLNamedClass molecularEntity=owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#MolecularEntity");
 		
-		OWLObjectProperty hasMolecularStructure=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#hasMolecularStructure");
-		OWLObjectProperty hasProperty=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasProperty");
-		OWLObjectProperty hasValue = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasValue");
-		OWLObjectProperty hasDimension=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasDimension");
-		OWLObjectProperty hasUnitOfMeasure=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasUnitOfMeasure");
-		OWLObjectProperty hasMacroscopicAppearance=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#hasMacroscopicAppearance");
+		OWLObjectProperty hasMolecularStructure=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#hasMolecularStructure");
+		OWLObjectProperty hasProperty=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty");
+		OWLObjectProperty hasValue = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue");
+		OWLObjectProperty hasDimension=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension");
+		OWLObjectProperty hasUnitOfMeasure=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure");
+		OWLObjectProperty hasMacroscopicAppearance=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#hasMacroscopicAppearance");
 		
-		OWLDatatypeProperty numericalValue = owlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue");
+		OWLDatatypeProperty numericalValue = owlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 		
 		/* Add hasProperty molecular weight instance */
 		RDFIndividual molecularWeightInstance;
-		RDFIndividual molecularWeightCheck=owlModel.getOWLIndividual("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#MolecularWeightOf"+component);
+		RDFIndividual molecularWeightCheck=owlModel.getOWLIndividual("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#MolecularWeightOf"+component);
 		if (molecularWeightCheck==null) {
-			molecularWeightInstance=molecularWeight.createRDFIndividual("http://www.jparksimulator.com/"+filename+"#MolecularWeightOf"+component);
+			molecularWeightInstance=molecularWeight.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+"#MolecularWeightOf"+component);
 		}
 		else {
 			molecularWeightInstance = molecularWeightCheck;
@@ -444,12 +444,12 @@ public class Stream {
 		
 		/* Add hasValue value of molecular weight */
 		RDFIndividual valueMolecularWeight;
-		RDFIndividual valuemolecularweightcheck=owlModel.getOWLIndividual("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#ValueOfMolecularWeightOf"+component);
+		RDFIndividual valuemolecularweightcheck=owlModel.getOWLIndividual("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ValueOfMolecularWeightOf"+component);
 		if (valuemolecularweightcheck==null) {
-			valueMolecularWeight=scalarValue.createRDFIndividual("http://www.jparksimulator.com/"+filename+"#ValueOfMolecularWeightOf"+component);
+			valueMolecularWeight=scalarValue.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+"#ValueOfMolecularWeightOf"+component);
 		}
 		else {
-			valueMolecularWeight=owlModel.getRDFIndividual("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#ValueOfMolecularWeightOf"+component);
+			valueMolecularWeight=owlModel.getRDFIndividual("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ValueOfMolecularWeightOf"+component);
 		}
 		molecularWeightInstance.addPropertyValue(hasValue, valueMolecularWeight);
 		
@@ -462,14 +462,15 @@ public class Stream {
 		
 		/* Add hasMolecularStructure */
 		RDFIndividual molecularStructure;
-		RDFIndividual molecularStructureCheck=owlModel.getRDFIndividual("http://www.jparksimulator.com/"+filename+"#"+componentToMolFormula(component));
+		RDFIndividual molecularStructureCheck=owlModel.getOWLIndividual("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#"+componentToMolFormula(component));
 		if (molecularStructureCheck==null) {
-			molecularStructure = molecularEntity.createRDFIndividual("http://www.jparksimulator.com/"+filename+"#"+componentToMolFormula(component));
+			molecularStructure = molecularEntity.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+"#"+componentToMolFormula(component));
+			species.setPropertyValue(hasMolecularStructure, molecularStructure);
 		}
 		else {
 			molecularStructure = molecularStructureCheck;
 		}
-		species.addPropertyValue(hasMolecularStructure, molecularStructure);
+		
 		
 		/* Add hasMacroscopicAppearance */
 		molecularStructure.addPropertyValue(hasMacroscopicAppearance, species);
@@ -484,22 +485,22 @@ public class Stream {
 		 * added intrinsic characteristics into owlModel
 		 * 
 		 */
-		OWLIndividual material=owlModel.getOWLIndividual("http://www.jparksimulator.com/"+ filename + "#Material_" + getName());
+		OWLIndividual material=owlModel.getOWLIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+ filename + "#Material_" + getName());
 		
-		OWLNamedClass chemicalSpecies=owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#ChemicalSpecies");
-		OWLNamedClass mixture=owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#Mixture");
+		OWLNamedClass chemicalSpecies=owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalSpecies");
+		OWLNamedClass mixture=owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#Mixture");
 		
-		OWLObjectProperty intrinsicCharacteristics=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/material.owl#intrinsicCharacteristics");
-		OWLObjectProperty containsDirectly=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#containsDirectly");
+		OWLObjectProperty intrinsicCharacteristics=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/material/material.owl#intrinsicCharacteristics");
+		OWLObjectProperty containsDirectly=owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#containsDirectly");
 		
 		if (isSingleComponent()) {
 			String singleComponent = hysysNameToCompArray(getSingleComponent());
 			
 			/* Adding single species */
 			RDFIndividual singleSpecies;
-			RDFIndividual checkSpecies=owlModel.getOWLIndividual("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#"+singleComponent);
+			RDFIndividual checkSpecies=owlModel.getOWLIndividual("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#"+singleComponent);
 			if (checkSpecies==null) {
-				singleSpecies = chemicalSpecies.createRDFIndividual("http://www.jparksimulator.com/"+filename+"#"+singleComponent);
+				singleSpecies = chemicalSpecies.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+"#"+singleComponent);
 			}
 			else {
 				singleSpecies = checkSpecies;
@@ -510,7 +511,7 @@ public class Stream {
 			addChemicalSpeciesProperties(owlModel, singleSpecies, singleComponent);
 		}
 		else { // Multi Component
-			RDFIndividual mixtureSpecies=mixture.createRDFIndividual("http://www.jparksimulator.com/"+filename+"#Mixture_"+getName());
+			RDFIndividual mixtureSpecies=mixture.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+"#Mixture_"+getName());
 			material.addPropertyValue(intrinsicCharacteristics, mixtureSpecies);
 			
 			Set<String> allComponents = new HashSet<String>();
@@ -522,9 +523,9 @@ public class Stream {
 			for (String component : allComponents) {
 				/* Add containsDirectly to Mixture*/
 				RDFIndividual species;
-				RDFIndividual checkSpecies=owlModel.getRDFIndividual("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#"+component);
+				RDFIndividual checkSpecies=owlModel.getRDFIndividual("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#"+component);
 				if (checkSpecies==null) {
-					species = chemicalSpecies.createRDFIndividual("http://www.jparksimulator.com/"+filename+"#"+component);
+					species = chemicalSpecies.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+"#"+component);
 				}
 				else {
 					species = checkSpecies;

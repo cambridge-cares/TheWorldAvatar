@@ -63,8 +63,11 @@ import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 
+
+/** the main function is to replace the coordinate in the template with thee one in csv file*/
 public class Test {
 	
+	//just to switch the coordinate from the template to the real value written in csv
 	public static void addCoordinates(String coordinateFile) {
 		List<List<String>> table = Tools.csvToList(coordinateFile);
 		for (int r=0; r<table.size(); r++) {
@@ -87,7 +90,8 @@ public class Test {
 //		List<List<String>> table = Tools.createTableFromCSV("CSV Files/VBA Attempt.csv");
 //		Tools.viewTable(table,4235,4242);
 		
-		addCoordinates("CSV Files/Coordinates.csv");
+		addCoordinates("CSV Files/cumene/Cumene_Plant_GPS.csv");
+		System.out.print ("success");
 		
 	}
 
