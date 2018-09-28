@@ -6,7 +6,9 @@ package uk.ac.cam.cares.jps.composition.servicemodel;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -23,7 +25,6 @@ public class MessagePart{
 	private URI objectValue;
 	// TODO-AE URGENT rename to dataValue
 	private String datatypeValue;
-	private URI modelReference;
 	private URI type; 
 	public String name;
 	private boolean array = false;
@@ -41,6 +42,8 @@ public class MessagePart{
 	public MessagePart() {
         this.outputEdges = new ArrayList<Edge>();
         this.inputEdges = new ArrayList<Edge>();
+		this.mandatoryParts = new ArrayList<MessagePart>();
+
 	}
 	
 	public MessagePart(URI uri) {
@@ -49,7 +52,6 @@ public class MessagePart{
         this.optionalParts = new ArrayList<MessagePart>();
         this.objectValue = null;
         this.datatypeValue = null;
-        this.modelReference = null;
        
         this.outputEdges = new ArrayList<Edge>();
         this.inputEdges = new ArrayList<Edge>();
@@ -61,16 +63,6 @@ public class MessagePart{
 	
     public List<MessagePart> getOptionalParts() {
         return optionalParts;
-    }
-
-    @Deprecated
-    public void setModelReference(URI uri) {
-    	this.modelReference = uri;
-    }
-    
-    @Deprecated
-    public URI getModelReference() {
-    	return this.modelReference;
     }
     
     public void setValue(URI value) {
@@ -120,6 +112,71 @@ public class MessagePart{
         }
         return false;
     }
+    
+	public Map<String,String> getTypeNamesUnderThisMessagePart(){
+		return getNamesUnderAMessagePart(this);
+	}
+	
+	public static Map<String,String> getTypeNamesUnderMessagePart(MessagePart mp){
+		return getNamesUnderAMessagePart(mp);
+	}
+	
+	public Map<String, Map<String,String>> getMapOfUpstreamNamesAndDownstreamNames(Service upstreamService) {
+		// Get downstream type-name mapping of this messagePart type
+		// Get upstream type-name mapping of this messagePart type 
+		String downstreamMPType = this.getType().toASCIIString();
+		MessagePart upstreamMP = null;
+		for(MessagePart mp : upstreamService.getAllOutputs()) {
+			String upstreamMPType = mp.getType().toASCIIString();
+			if(downstreamMPType.equalsIgnoreCase(upstreamMPType)) {
+				upstreamMP = mp;
+				break;
+			}
+		}
+		Map<String,String> upstreamTypeToNameMap = getTypeNamesUnderMessagePart(upstreamMP);
+		Map<String,String> downstreamTypeToNameMap = getTypeNamesUnderThisMessagePart();
+		Map<String,String> upToDownNameToNameMap = new HashMap<String,String>();
+		
+		// Firstly, make the root key mapping 
+		upToDownNameToNameMap.put(upstreamMP.getName(), this.getName());
+		
+		for (Map.Entry<String, String> upstreamEntry : upstreamTypeToNameMap.entrySet())
+		{
+			for (Map.Entry<String, String> downstreamEntry : downstreamTypeToNameMap.entrySet())
+			{
+				if(upstreamEntry.getKey().equalsIgnoreCase(downstreamEntry.getKey())){
+					// The type matches, put the upstream name as key and downstream name as value...
+					upToDownNameToNameMap.put(upstreamEntry.getValue(), downstreamEntry.getValue());
+					break;
+				}
+			}
+		}
+		
+		Map<String, Map<String,String>> result = new HashMap<String, Map<String,String>>();
+		result.put(upstreamMP.getName(), upToDownNameToNameMap);
+		return result;
+		
+	}
+	
+	
+	public static Map<String,String> getNamesUnderAMessagePart(MessagePart messagePart){
+		Map<String,String> names = new HashMap<String,String>();
+		if(messagePart.getMandatoryParts().size()!= 0) {
+			// The messagePart still has children 
+			for(MessagePart childPart: messagePart.getMandatoryParts()) {
+				names.putAll(getNamesUnderAMessagePart(childPart));
+			}
+			return names;
+		}
+		else {
+			// The messagePart has no child, therefore, return its names
+			names.put(messagePart.getType().toASCIIString(),messagePart.getName());
+			return names;
+		}
+	}
+	
+	
+	
 
     public boolean removeMandatoryPart(MessagePart part) {
         if (part != null) {
@@ -149,11 +206,11 @@ public class MessagePart{
 		this.uri = uri;
 	}
 
-	private URI getType() {
+	public URI getType() {
 		return type;
 	}
 
-	private void setType(URI type) {
+	public void setType(URI type) {
 		this.type = type;
 	}
 

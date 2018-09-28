@@ -73,7 +73,7 @@ public class ServiceWriter {
 		Resource current = model.createResource(messagePart.uri.toASCIIString());
 		current.addProperty(RDF.type, MSM.MessagePart.Node());
 		current.addProperty(MSM.modelReference.Property(),
-				model.createResource(messagePart.getModelReference().toASCIIString()));
+				model.createResource(messagePart.getType().toASCIIString()));
 
 		current.addLiteral(MSM.hasValue.Property(), messagePart.getValue());
 		current.addLiteral(MSM.hasDatatypeValue.Property(), messagePart.getDatatypeValue());

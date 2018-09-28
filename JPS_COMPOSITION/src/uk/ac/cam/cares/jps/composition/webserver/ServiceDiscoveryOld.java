@@ -37,16 +37,16 @@ public class ServiceDiscoveryOld {
 
 	public ArrayList<Service> getAllServiceCandidates(List<MessagePart> inputs, ArrayList<Service> servicePool) {
 		ArrayList<Service> result = new ArrayList<Service>();
-		ArrayList<URI> inputs_modelReferences = new ArrayList<URI>();
+		ArrayList<URI> inputsType = new ArrayList<URI>();
 		for (MessagePart messagePart_inputs : inputs) {
-			inputs_modelReferences.add(messagePart_inputs.getModelReference());
+			inputsType.add(messagePart_inputs.getType());
 		}
 
 		for (Service currentService : this.service_pool) {
 			boolean flag = true;
 			for (MessagePart messagePart : currentService.getAllInputs()) {
-				URI modelReference = messagePart.getModelReference();
-				if (!inputs_modelReferences.contains(modelReference)) {
+				URI type = messagePart.getType();
+				if (!inputsType.contains(type)) {
 					flag = false;
 				}
 			}

@@ -1,10 +1,8 @@
 package uk.ac.cam.cares.jps.servicespool;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -19,17 +17,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryFactory;
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.vocabulary.RDF;
@@ -43,7 +34,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.building.BuildingQueryPerformer;
 import uk.ac.cam.cares.jps.building.CRSTransformer;
 import uk.ac.cam.cares.jps.building.SimpleBuildingData;
-import uk.ac.cam.cares.jps.semantic.QueryWarehouse;
+import uk.ac.cam.cares.jps.semantic.JSONFlattenTool;
 
 
 @WebServlet("/GetBuildingDataForSimulation")
@@ -63,37 +54,40 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
  
-	
-		// Test semantic bundle data ... 
-		// Use query to separate data out ... 
-		// Plant IRI 
-		// City IRI
-		// Region 
-		
-		
-		
-		// Then perform query on the plant to get its coordinates 
-		
-		String value = request.getParameter("value").replace("$", "#").replace("@", "#");
-
-		Model model = ModelFactory.createDefaultModel();
-		RDFDataMgr.read(model, new ByteArrayInputStream(value.getBytes("UTF-8")), Lang.RDFJSON);
  
+		String value = request.getParameter("value");
+		
+		System.out.println(value);
+		
+		JSONObject input = null;
+		try {
+			input = new JSONObject(value);
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		JSONObject region = null;
+		try {
+			region = JSONFlattenTool.flattenRegion(input);
+			System.out.println("====================== Region ========================");
+			System.out.println(region.toString());
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
 		try {
 		 
 			double[] coords;
-			coords = queryPlantXY(model);
+			coords = queryPlantXY(input.getString("plant"));
 			double plantX = coords[0];
 			double plantY = coords[1];
-			String city = getCityIRI(model);
-			//JSONObject region = getRegion(model);
+			String city = input.getString("city");			
 			
-			JSONObject region = QueryWarehouse.getRegionCoordinates(model);
-			
-			double upperx = region.getDouble("xmax");
-			double uppery = region.getDouble("ymax");
-			double lowerx = region.getDouble("xmin");
-			double lowery = region.getDouble("ymin");
+			double upperx = Double.parseDouble(region.getString("upperx"));
+			double uppery = Double.parseDouble(region.getString("uppery"));
+			double lowerx = Double.parseDouble(region.getString("lowerx"));
+			double lowery = Double.parseDouble(region.getString("lowery"));
 			
 			
 			double plantx = 79831;
@@ -115,11 +109,21 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 				plantx = targetCenter[0];
 				planty = targetCenter[1];
 				
+				double[] upperPointOld = new double[] {Double.parseDouble(region.getString("upperx")),Double.parseDouble(region.getString("uppery"))};
+				double[] lowerPointOld = new double[] {Double.parseDouble(region.getString("lowerx")),Double.parseDouble(region.getString("lowery"))};
+				
+				double[] upperPointNew = CRSTransformer.transform(sourceCRS, targetCRS, upperPointOld);
+				double[] lowerPointNew = CRSTransformer.transform(sourceCRS, targetCRS, lowerPointOld);
+				
+				upperx= upperPointNew[0];
+				uppery= upperPointNew[1];
+				lowerx= lowerPointNew[0];
+				lowery= lowerPointNew[1];
+				
 				data = retrieveBuildingDataInJSON(BuildingQueryPerformer.BERLIN_IRI, plantx, planty, 25, lowerx, lowery, upperx, uppery);
 			}
 			
-			String buildingDataString = convertBuildingDataToSemantic(data);
-			response.getWriter().write(buildingDataString);
+			response.getWriter().write(data);
 
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -198,23 +202,9 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 	}
 	
 	
-	public double[] queryPlantXY(Model model) throws JSONException {
+	public double[] queryPlantXY(String plantIRI) throws JSONException {
 
-		String findPlantQuery = 
-				"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
-				"SELECT ?plant WHERE \n"
-				+ "{"
-				+ "		?plant rdf:type <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Plant> .\n"
-				+ "}";
-		Query query = QueryFactory.create(findPlantQuery);
-		QueryExecution qe = QueryExecutionFactory.create(query, model);
-		ResultSet results = qe.execSelect();
-		
-		ArrayList<String> plants = new ArrayList<String>();
-		while(results.hasNext()) {
-			QuerySolution nextSolution = results.nextSolution();
-			plants.add(nextSolution.getResource("plant").getURI());
-		}
+		 
 		
 		String myHost = "www.theworldavatar.com" ;
 		int myPort = 80;
@@ -236,7 +226,7 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 				+ "     ?vy       system:numericalValue ?plantY . \n"
 				+ "}";
 		
-		String finalQuery = String.format(plantXYQuery, plants.get(0));
+		String finalQuery = String.format(plantXYQuery, plantIRI);
 		URIBuilder builder;
 		builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath(myPath)
@@ -255,59 +245,6 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 		return new double[]{X,Y};	
 	}
 
-	public String getCityIRI(Model model) {
-		
-		String findCityQuery = 
-				"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
-				"SELECT ?city WHERE \n"
-				+ "{"
-				+ "		?city rdf:type <http://www.theworldavatar.com/OntoEIP/supporting_concepts/space_and_time_v1.owl#City> .\n"
-				+ "}";
-		
-		String cityIRI = "";
-		Query query = QueryFactory.create(findCityQuery);
-		QueryExecution qe = QueryExecutionFactory.create(query, model);
-		ResultSet results = qe.execSelect();
-		while(results.hasNext()) {
-			QuerySolution nextSolution = results.nextSolution();
-			cityIRI = (nextSolution.getResource("city").getURI());
-		}
-		return cityIRI;
-	}
-	
-	
-	public JSONObject getRegion(Model model) throws JSONException {
-
-		String regionQuery = 
-				"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
-				"SELECT ?upperX ?upperY ?lowerX ?lowerY WHERE \n"
-				+ "{"
-				+ "		?region <http://test.com/Property/upperPoint> ?upperPoint .\n"
-				+ "		?region <http://test.com/Property/lowerPoint> ?lowerPoint .\n"
-				+ "		?upperPoint <http://test.com/Property/hasX> ?upperX .\n"
-				+ "		?upperPoint <http://test.com/Property/hasY> ?upperY .\n"
-				+ "		?lowerPoint <http://test.com/Property/hasX> ?lowerX .\n"
-				+ "		?lowerPoint <http://test.com/Property/hasY> ?lowerY .\n"
-				+ "}";
-
-		Query query = QueryFactory.create(regionQuery);
-		QueryExecution qe = QueryExecutionFactory.create(query, model);
-		ResultSet results = qe.execSelect();
-		
-
-		JSONObject regionInJSON = new JSONObject();
-
-		while(results.hasNext()) {
-			QuerySolution nextSolution = results.nextSolution();
-			regionInJSON.put("upperX",  nextSolution.getLiteral("upperX").getValue());
-			regionInJSON.put("upperY",  nextSolution.getLiteral("upperY").getValue());
-			regionInJSON.put("lowerX",  nextSolution.getLiteral("lowerX").getValue());
-			regionInJSON.put("lowerY",  nextSolution.getLiteral("lowerY").getValue());
-		}
-		
-		return regionInJSON;
-	}
-	
 	
 	public String executeGet(URIBuilder builder) {
 		try {

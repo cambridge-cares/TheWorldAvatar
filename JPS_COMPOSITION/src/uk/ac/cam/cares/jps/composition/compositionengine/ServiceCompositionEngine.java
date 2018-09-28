@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscoveryTest;
 import uk.ac.cam.cares.jps.composition.enginemodel.Graph;
 import uk.ac.cam.cares.jps.composition.enginemodel.Layer;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
@@ -11,14 +12,13 @@ import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 import uk.ac.cam.cares.jps.composition.util.ConnectionBuilder;
 import uk.ac.cam.cares.jps.composition.util.MatchingTool;
 import uk.ac.cam.cares.jps.composition.util.OptimalPathSearcher;
-import uk.ac.cam.cares.jps.composition.webserver.ServiceDiscoveryOld;
 
 public class ServiceCompositionEngine {
 
 	public String fullHostName = "";
 	public String fileDirectory = null;
 	public Graph newGraph;
-	private ServiceDiscoveryOld serviceDiscovery;
+	private ServiceDiscoveryTest serviceDiscovery;
 	private ArrayList<MessagePart> inputsToAppend;
 	private ArrayList<URI> outputsRequired;
 
@@ -34,14 +34,14 @@ public class ServiceCompositionEngine {
 		this.fullHostName = host;
 		this.fileDirectory = fileDirectory;
 		this.newGraph.initialInputs = (ArrayList<MessagePart>) compositeAgent.getAllInputs();
-		this.serviceDiscovery = new ServiceDiscoveryOld();
+		this.serviceDiscovery = new ServiceDiscoveryTest();
 		this.inputsToAppend = new ArrayList<MessagePart>();
 		this.outputsRequired = new ArrayList<URI>();
 
 		this.outputsRequiredTemp = new ArrayList<URI>();
 		
 		for (MessagePart part : compositeAgent.getAllOutputs()) {
-			this.outputsRequired.add(part.getModelReference());
+			this.outputsRequired.add(part.getType());
 		}
 		this.outputsRequiredTemp.addAll(this.outputsRequired);
 		this.inputsToAppend = (ArrayList<MessagePart>) compositeAgent.getAllInputs();
@@ -78,9 +78,9 @@ public class ServiceCompositionEngine {
 		for (URI required : this.outputsRequiredTemp) {
 			boolean atLeastOneHit = false;
 			for (MessagePart output : this.inputsToAppend) {
-				URI modelRef = output.getModelReference(); // get the newly generated output and compare it to the
+				URI type = output.getType(); // get the newly generated output and compare it to the
 															// desired output.
-				if (modelRef.toString().contentEquals(required.toString())) {
+				if (type.toString().contentEquals(required.toString())) {
 					atLeastOneHit = true;
 					URIsToRemove.add(required);
 				}
@@ -107,11 +107,11 @@ public class ServiceCompositionEngine {
 				for (Layer layer_b : this.newGraph.layers) {
 					for (MessagePart part : layer_b.getAllInputs()) {
 						for (MessagePart service_part : service.getAllOutputs()) {
-							if (MatchingTool.compareURI(service_part.getModelReference(), part.getModelReference())) {
+							if (MatchingTool.compareURI(service_part.getType(), part.getType())) {
 								leadToNoInput = false; // Do not eliminate the agent
 							}
 							for (URI output : this.outputsRequired) {
-								if (MatchingTool.compareURI(service_part.getModelReference(), output)) {
+								if (MatchingTool.compareURI(service_part.getType(), output)) {
 									leadToNoInput = false; // Do not eliminate the agent
 								}
 							} // As long as there is one match, the service will survive.

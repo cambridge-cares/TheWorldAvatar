@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.composition.executor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,17 +15,18 @@ public class ExecutionPackage {
 	public String targetHttpUrl;
 	public ArrayList<String> keys;
 	public boolean readyToExecute = false;
+	public Map<String, Map<String, String>> nameMappingList;
 	
 	
 	public ExecutionPackage() {
 		this.keys = new ArrayList<String>();
 		this.result = new JSONObject();
+		this.nameMappingList = new HashMap<String, Map<String, String>>();
 	}
 	
 	public void appendNewResult(JSONObject newResult) throws JSONException {
 
 		boolean ready = true; 
-
 		for(String key: keys) {
 			if(newResult.has(key)) {
 				this.result.put(key, newResult.get(key));
@@ -36,6 +39,7 @@ public class ExecutionPackage {
 		
 		this.readyToExecute = ready; // Now the ExecutionPackage is ready. 
 	}
+	
 	
 
 }

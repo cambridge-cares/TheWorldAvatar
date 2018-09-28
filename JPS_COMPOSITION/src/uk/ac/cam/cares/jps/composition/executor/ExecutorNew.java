@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.composition.executor;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,6 +45,7 @@ public class ExecutorNew {
 				for(ExecutionLayer layer : this.executionChain) {
 					for(Task task : layer.taskList)	{  
 						String executionHttpUrl = task.httpUrl;
+						
 						ArrayList<String> targetHttpUrlList = task.targetHttpUrl;
 						ArrayList<ArrayList<String>> keysArray = task.keysArray;
 						String path = executionHttpUrl.replace("http://www.theworldavatar.com","");
@@ -52,6 +54,8 @@ public class ExecutorNew {
 									.setPath(path)
 									.setParameter("value", initialInput.toString());
 							JSONObject result = new JSONObject(executeGet(builder));
+							//System.out.println("\n\tResult: \n" + result);
+							
 							executeSingleTask(task, result, targetHttpUrlList, keysArray);
 						}
 						else {
@@ -59,10 +63,27 @@ public class ExecutorNew {
 							{
 								ExecutionPackage executionPackage = entry.getValue();
 								if(executionPackage.readyToExecute && (executionPackage.targetHttpUrl.equalsIgnoreCase(task.httpUrl))) {
+									
+									System.out.println("================= Replace the names ================");
+									
+									System.out.println("Result: \n");
+									System.out.println(executionPackage.result);
+									System.out.println("----------------------");
+									
+									
+									for(String key: executionPackage.keys) {
+										Map<String, String> nameMapping = executionPackage.nameMappingList.get(key);
+										executionPackage.result = replaceKeysInJSON(executionPackage.result,nameMapping);
+										System.out.println(executionPackage.result);
+									}
+									System.out.println("====================================================");
+									
 									URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 											.setPath(path)
 											.setParameter("value", executionPackage.result.toString());
-									JSONObject result = new JSONObject(executeGet(builder));
+									String resultInString = executeGet(builder);
+									System.out.println("Result : \n =====================\n" + resultInString);
+									JSONObject result = new JSONObject(resultInString);
 									executeSingleTask(task, result, targetHttpUrlList, keysArray);
 								}
 							}	
@@ -98,12 +119,36 @@ public class ExecutorNew {
 		return this.finalResult.toString();
 	}
 	
+ 
+	public JSONObject replaceKeysInJSON(JSONObject jsonObj, Map<String,String> nameMapping) throws JSONException
+	{ 
+		String jsonInString = jsonObj.toString();
+		// Collect keys first
+		ArrayList<String> keys = new ArrayList<String>();
+		for (Entry<String, String> entry : nameMapping.entrySet()) {
+			keys.add(entry.getKey());
+		}		
+		Collections.sort(keys);		
+		for(String key: keys) {
+			jsonInString = jsonInString.replace(key, nameMapping.get(key));
+		}
+		
+		return new JSONObject(jsonInString);
+	}
+	
+	
+	
+	
+	
 	
 	public void executeSingleTask(Task task, JSONObject result, ArrayList<String> targetHttpUrlList, ArrayList<ArrayList<String>> keysArray) throws JSONException {
 		if(task.targetHttpUrl.size() == 0) {
 			// The result is one of the final results ; 
 			this.finalResult.put(result);
 		}
+		
+		Map<String,Map<String, Map<String, String>>> NameMappingMap = task.httpToNameMapping;
+		// Get all the name mappings from the http first 
 	
 		for(int i = 0; i < targetHttpUrlList.size(); i++) {
 			String targetHttpUrl = targetHttpUrlList.get(i);
@@ -111,7 +156,8 @@ public class ExecutorNew {
 			if(!this.executionPackageMap.containsKey(targetHttpUrl)) {
 				ExecutionPackage newExecutionPackage = new ExecutionPackage();
 				newExecutionPackage.keys = keys;
-				newExecutionPackage.targetHttpUrl = targetHttpUrl;
+				newExecutionPackage.nameMappingList = NameMappingMap.get(targetHttpUrl); 
+				newExecutionPackage.targetHttpUrl = targetHttpUrl; // A single http address, assigned with and arrayList of name mapping... 
 				newExecutionPackage.appendNewResult(result);
 				this.executionPackageMap.put(targetHttpUrl, newExecutionPackage);
 			}

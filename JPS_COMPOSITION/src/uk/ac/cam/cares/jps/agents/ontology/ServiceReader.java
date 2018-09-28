@@ -188,7 +188,7 @@ public class ServiceReader {
         result = new MessagePart(new URI(individual.getURI()));
         
         String type = individual.getProperty(MSM.hasType.Property()).getString();
-        result.setModelReference(new URI(type));
+        result.setType(new URI(type));
         
         String array = individual.getProperty(MSM.isArray.Property()).getString();
         result.setArray(Boolean.valueOf(array));

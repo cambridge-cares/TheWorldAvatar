@@ -21,21 +21,26 @@ DATA:
 
 
 try:
-	weatherData = json.loads(sys.argv[2])
+	weatherData = json.loads(sys.argv[2].replace('$','"'))
 	fullPath = sys.argv[1]
 	
-	
-	cloudCover = weatherData['cloudCover']
-	windDirection = weatherData['windDirection']
-	windSpeed = weatherData['windSpeed']
-	precitipation = weatherData['precitipation']
-	temperature = weatherData['temperature']
+	cloudCover = weatherData['hascloudcover']['hascloudcovervalue']
+	cloudCover = (float(cloudCover) / 100) * 8
+	if weatherData['haswind']['hasdirection'] == '':
+		windDirection = 180
+	else:
+		windDirection = 180 + float(weatherData['haswind']['hasdirection'])
+	if windDirection > 360:
+		windDirection = windDirection % 360
+	windSpeed = weatherData['haswind']['hasspeed']
+	precitipation = weatherData['hasprecipation']['hasintensity']
+	temperature = weatherData['hasexteriortemperature']['hasvalue']
 	
 except:
 	print("ERROR: Invalid Input")
 
 try:
-	with open(fullPath + '/test.met', 'w') as file:
+	with open('./test.met', 'w') as file:
 		result =  template%(temperature,windSpeed,windDirection,precitipation,cloudCover)
 		file.write(result)
 		file.close()

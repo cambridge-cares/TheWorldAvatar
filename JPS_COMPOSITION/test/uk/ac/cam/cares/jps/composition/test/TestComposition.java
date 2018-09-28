@@ -56,14 +56,16 @@ public class TestComposition {
 			eliminationList.add(service.getUri().toASCIIString());
 		}
 		
-		System.out.println(FormatTranslator.convertGraphJavaClassTOJSON(graph));
+		//System.out.println(FormatTranslator.convertGraphJavaClassTOJSON(graph));
 		
 		ExecutorProcessor processor = new ExecutorProcessor(FormatTranslator.convertGraphJavaClassTOJSON(graph), eliminationList);
 		ArrayList<ExecutionLayer> executionChain = processor.generateExecutionChain();
 		ExecutorNew executor = new ExecutorNew(executionChain);
+		
 		System.out.println("Final Result ! \n"  + executor.execute(new JSONObject(input)));
 		
-		
+		JSONObject executorInJSON = FormatTranslator.convertExectorToJSON(executor);
+		System.out.println(executorInJSON.toString());
 		
  		
 //		ArrayList<Service> serviceEliminationList = OptimalPathSearcher.getAllServicesToBeDeleted(graph);
