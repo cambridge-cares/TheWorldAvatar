@@ -9,6 +9,7 @@ import uk.ac.cam.ceb.como.io.chem.file.jaxb.Module;
 
 import uk.ac.cam.ceb.como.jaxb.xml.generation.GenerateXml;
 import uk.ac.ceb.como.molhub.bean.GaussianUploadReport;
+
 import uk.ac.ceb.como.molhub.model.FolderManager;
 import uk.ac.ceb.como.molhub.model.XMLValidationManager;
 
@@ -17,6 +18,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -28,7 +30,6 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 
 import org.apache.log4j.Logger;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class UploadAction.
  *
@@ -65,10 +66,9 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	/**
 	 * The column.
 	 *
-	 * @author nk510
-	 * List of comun names in table that reports about uploading process of Gaussina
-	 * file. Columns are named as (uuid, file name, XML validation, OWL
-	 * consistency).
+	 * @author nk510 List of comun names in table that reports about uploading
+	 *         process of Gaussina file. Columns are named as (uuid, file name, XML
+	 *         validation, OWL consistency).
 	 */
 	List<String> column = new ArrayList<String>();
 
@@ -82,7 +82,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	private String uri = "http://como.cheng.cam.ac.uk/molhub/compchem/";
 
 	/** The rdf4j server url (localhost). */
-	private String serverUrl = "http://localhost:8080/rdf4j-server/";
+	private String serverUrl = "http://localhost:8080/rdf4j-server/repositories/compchemkb";
 
 	/*
 	 * (non-Javadoc)
@@ -93,7 +93,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	public String execute() throws Exception {
 
 		int fileNumber = 0;
-		
+
 		/**
 		 * @author nk510 Column names in generated table (report).
 		 */
@@ -138,7 +138,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 					+ ".owl";
 
 			File owlFile = new File(outputOwlPath);
-			
+
 			/**
 			 * @author nk510 Png file name is the same as the name of folder where that
 			 *         image is saved.
@@ -153,8 +153,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 			FolderManager.createFolder(folderName);
 
 			/**
-			 * @author nk510 Gaussian file and XML file are saved into generated
-			 *         folder.
+			 * @author nk510 Gaussian file and XML file are saved into generated folder.
 			 */
 			FolderManager.saveFileInFolder(inputG09File, f.getAbsolutePath());
 
@@ -202,81 +201,85 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 			 * 
 			 * @author nk510 Adding generated ontology files (owl) into RDF4J triple store,
 			 *         only in case when generated ontology (owl file) is consistent.
+			 *         
 			 * 
 			 */
+		 if (consistency) {
+		
+		 /**
+		 * @author nk510 Gets the repository connection.
+		 * @param serverUrl
+		 * remote sparql endpoint.
+		 */
+		
+		 Repository repository = new HTTPRepository(serverUrl);
+		
+		 repository.initialize();
+		
+		 RepositoryConnection connection = repository.getConnection();
+		
+		 try {
+		 /**
+		 * @author nk510 Begins a new transaction. Requires commit() or rollback() to
+		 be called to end the transaction.
+		 */
+		 connection.begin();
+		
+		 try {
+		
+		 /**
+		 * @author nk510 Each generated owl file will be stored in RDF4J triple store.
+		 */
+		 connection.add(owlFile, uri, RDFFormat.RDFXML);
+		
+		 connection.commit();
+		
+		 } catch (RepositoryException e) {
+		
+		 /**
+		 * @author nk510
+		 * If something is wrong during the transaction, it will return a message
+		 about
+		 * it.
+		 */
+		
+		 logger.info("RepositoryException: " + e.getMessage());
+		
+		 connection.rollback();
+		 }
+		
+		 } catch (Exception e) {
+		
+		 logger.info(e.getStackTrace());
+		
+		 }
+		 connection.close();
+		
+		 repository.shutDown();
+		
+		 }
+		
+		 /**
+		 *
+		 * In case of inconsistency of generated ontology (Abox) then Error message
+		 will
+		 * appear.
+		 *
+		 */
+		
+		 if (!consistency) {
+		
+		 addFieldError("term.name", "Ontology '" + owlFile.getName()
+		 + "' is not consistent. Owl file is not loaded into triple store.");
+		 return ERROR;
+		 }
+		
+		 fileNumber++;
+		 }
+		
+		 return INPUT;
 
-			if (consistency) {
-
-				/**
-				 * @author nk510 Gets the repository connection.
-				 * @param serverUrl
-				 *            remote sparql endpoint.
-				 */
-
-				Repository repository = new HTTPRepository(serverUrl);
-
-				repository.initialize();
-
-				RepositoryConnection connection = repository.getConnection();
-
-				try {
-					/**
-					 * @author nk510 Begins a new transaction. Requires commit() or rollback() to be called to end the transaction.
-					 */
-					connection.begin();
-
-					try {
-
-						/**
-						 * @author nk510 Each generated owl file will be stored in RDF4J triple store.
-						 */
-						connection.add(owlFile, uri, RDFFormat.RDFXML);
-
-						connection.commit();
-
-					} catch (RepositoryException e) {
-						
-						/**
-						 * @author nk510
-						 * If something is wrong during the transaction, it will return a message about
-						 * it.
-						 */
-						
-						logger.info("RepositoryException: " + e.getMessage());
-
-						connection.rollback();
-					}
-
-				} catch (Exception e) {
-
-					logger.info(e.getStackTrace());
-
-				}
-				connection.close();
-
-				repository.shutDown();
-
-			}
-
-			/**
-			 * 
-			 * In case of inconsistency of generated ontology (Abox) then Error message will
-			 * appear.
-			 * 
-			 */
-
-			if (!consistency) {
-
-				addFieldError("term.name", "Ontology '" + owlFile.getName()
-						+ "' is not consistent. Owl file is not loaded into triple store.");
-				return ERROR;
-			}
-
-			fileNumber++;
-		}
-
-		return INPUT;
-
+	
 	}
 
 	/**
@@ -329,7 +332,8 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	/**
 	 * Sets the upload report list.
 	 *
-	 * @param uploadReportList the new upload report list
+	 * @param uploadReportList
+	 *            the new upload report list
 	 */
 	public void setUploadReportList(List<GaussianUploadReport> uploadReportList) {
 		this.uploadReportList = uploadReportList;
@@ -347,7 +351,8 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	/**
 	 * Sets the gaussian upload report.
 	 *
-	 * @param gaussianUploadReport the new gaussian upload report
+	 * @param gaussianUploadReport
+	 *            the new gaussian upload report
 	 */
 	public void setGaussianUploadReport(GaussianUploadReport gaussianUploadReport) {
 		this.gaussianUploadReport = gaussianUploadReport;
@@ -365,7 +370,8 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	/**
 	 * Sets the column.
 	 *
-	 * @param column the new column
+	 * @param column
+	 *            the new column
 	 */
 	public void setColumn(List<String> column) {
 
@@ -388,10 +394,13 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	/**
 	 * Sets the upload file content type.
 	 *
-	 * @param uploadFileContentType the new upload file content type
+	 * @param uploadFileContentType
+	 *            the new upload file content type
 	 */
 	public void setUploadFileContentType(String uploadFileContentType) {
 		this.uploadFileContentType = uploadFileContentType;
 	}
+
+	
 
 }
