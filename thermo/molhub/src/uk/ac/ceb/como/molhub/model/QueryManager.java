@@ -4,11 +4,12 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.eclipse.rdf4j.IsolationLevels;
 import org.eclipse.rdf4j.query.BindingSet;
@@ -19,6 +20,7 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
+import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 
 import com.google.common.collect.Sets;
 
@@ -32,7 +34,6 @@ import uk.ac.ceb.como.molhub.bean.MoleculeProperty;
 import uk.ac.ceb.como.molhub.bean.QueryString;
 import uk.ac.ceb.como.molhub.bean.RotationalConstant;
 
-
 /**
  * @author nk510
  * The Class QueryManager. Implements methods for query RDF4J repository. 
@@ -40,7 +41,8 @@ import uk.ac.ceb.como.molhub.bean.RotationalConstant;
 public class QueryManager {
 
 	/** The server url. */
-	static String serverUrl = "http://localhost:8080/rdf4j-server/repositories/compchemkb";
+//	static String serverUrl = "http://localhost:8080/rdf4j-server/repositories/compchemkb";
+	static String serverUrl =    "http://172.24.155.69:8080/rdf4j-server/repositories/compchemkb";
 
 	/** The Constant logger. */
 	final static Logger logger = Logger.getLogger(QueryManager.class.getName());
@@ -57,7 +59,6 @@ public class QueryManager {
 	 *             Signals that an I/O exception has occurred.
 	 */
 	public static Set<String> performSPARQLQueryOnQueryString(Sentence sentence) throws IOException {
-//	public static Map<String,String> performSPARQLQueryOnQueryString(Sentence sentence) throws IOException {
 		/**
 		 * @author nk510 List of Strings that represents final solution of querying
 		 *         triple store by using input string (propositional formula).
@@ -75,7 +76,7 @@ public class QueryManager {
 		 */
 		EmpiricalFormulaParser empiricalFormulaParser = new EmpiricalFormulaParser();
 		
-        Repository repository =  new HTTPRepository(serverUrl); 
+        Repository repository =  new SPARQLRepository(serverUrl);//new HTTPRepository(serverUrl); 
 		
 		repository.initialize();
 		
@@ -91,10 +92,8 @@ public class QueryManager {
 
 				step++;
 
-//				HashSet<String> setB = new HashSet<String>();
+				HashSet<String> setB = new HashSet<String>();
 				
-				Map<String,String> setB = new HashMap<String,String>();
-
 				Set<Literal> literalSet = c.getLiterals();
 
 				for (Literal literal : literalSet) {
@@ -147,9 +146,7 @@ public class QueryManager {
 						 * 
 						 */
 
-//						HashSet<String> setA = new HashSet<String>();
-
-						Map<String,String> setA = new HashMap<String, String>();
+						HashSet<String> setA = new HashSet<String>();
 						
 						while (result.hasNext()) {
 
@@ -157,19 +154,15 @@ public class QueryManager {
 
 							/**
 							 * 
-							 * @author nk510 Add all results into a set for one literal .
+							 * @author nk510 Add all query results for one literal into a set.
 							 * 
 							 */
 
-//							setA.add(bindingSet.getValue("name").toString());
-							setA.put(bindingSet.getValue("uuid").toString(), bindingSet.getValue("name").toString());
+							setA.add(bindingSet.getValue("name").toString());
+
 						}
 						
-						
-
-//						setB.addAll(setA);
-						
-						setB.putAll(setA);
+						setB.addAll(setA);
 						
 						connection.commit();
 
@@ -183,24 +176,13 @@ public class QueryManager {
 					}
 				}
 				
-				
-				HashSet<String> setBa = new HashSet<String>();
-				
-				for (String set : setB.values()) {
-					
-					setBa.add(set);
-				}
-				
-
 				if (clauseSet.size() <= 1) {
 
-//					return setB;
-					return setBa;
+					return setB;
+
 				}
 
-//				listMoleculeNameSet.add(setB);
-				
-				listMoleculeNameSet.add(setBa);
+				listMoleculeNameSet.add(setB);
 				
 			}
 			
@@ -218,6 +200,7 @@ public class QueryManager {
 			repository.shutDown();
 
 		}
+		
 		/**
 		 * 
 		 * @author nk510 Calculates intersection of all results for all clauses
@@ -238,16 +221,14 @@ public class QueryManager {
 	 * @return for given molecule name sparql returns uuid, level of theory, and
 	 *         basis set.
 	 */
-	public static Map<String,MoleculeProperty> performSPARQLForMoleculeName(String moleculeName) {
-//	public static Set<MoleculeProperty> performSPARQLForMoleculeName(String moleculeName) {
 
-//		Set<MoleculeProperty> moleculePropertyList = new HashSet<MoleculeProperty>();
+	public static Set<MoleculeProperty> performSPARQLForMoleculeName(String moleculeName) {
 
-		Map<String,MoleculeProperty> moleculePropertyList = new HashMap<String,MoleculeProperty>();
+		Set<MoleculeProperty> moleculePropertyList = new HashSet<MoleculeProperty>();
 		
 		String queryString = QueryString.getAllTriplesMoleculeProperty(moleculeName);
-
-        Repository repository =  new HTTPRepository(serverUrl); 
+		
+        Repository repository =   new SPARQLRepository(serverUrl);// new SPARQLRepository(serverUrl); 
 			
 		repository.initialize();
 			
@@ -270,8 +251,8 @@ public class QueryManager {
 					MoleculeProperty moleculeProperty = new MoleculeProperty(bindingSet.getValue("uuid").stringValue(),
 							moleculeName, bindingSet.getValue("levelOfTheory").toString(),
 							bindingSet.getValue("basisSetValue").toString());
-
-					moleculePropertyList.put(bindingSet.getValue("uuid").stringValue(),moleculeProperty);
+					
+					moleculePropertyList.add(moleculeProperty);
 				}
 
 			} catch (Exception e) {
@@ -359,7 +340,7 @@ public class QueryManager {
 
 		String queryString = QueryString.geFrequency(uuid);
 		
-		Repository repository =  new HTTPRepository(serverUrl); 
+		Repository repository =  new SPARQLRepository(serverUrl);//new HTTPRepository(serverUrl); 
 		
 		repository.initialize();
 		
@@ -429,7 +410,7 @@ public class QueryManager {
 
 		List<MoleculeProperty> moleculePropertyList = new ArrayList<MoleculeProperty>();
 		
-		Repository repository =  new HTTPRepository(serverUrl); 
+		Repository repository =  new SPARQLRepository(serverUrl);//new HTTPRepository(serverUrl); 
 		
 		repository.initialize();
 		
@@ -500,7 +481,7 @@ public class QueryManager {
 
 		String rotationalSymmetryNumber = new String();
 		
-		Repository repository =  new HTTPRepository(serverUrl); 
+		Repository repository = new SPARQLRepository(serverUrl);// new HTTPRepository(serverUrl); 
 		
 		repository.initialize();
 		
@@ -569,7 +550,7 @@ public class QueryManager {
 
 		String spinMultiplicityValue = new String();
 		
-		Repository repository =  new HTTPRepository(serverUrl); 
+		Repository repository =  new SPARQLRepository(serverUrl);//new HTTPRepository(serverUrl); 
 		
 		repository.initialize();
 		
@@ -636,7 +617,7 @@ public class QueryManager {
 
 		String queryString = QueryString.getAtomicMass(uuid);
 		
-		Repository repository =  new HTTPRepository(serverUrl); 
+		Repository repository =  new SPARQLRepository(serverUrl);//new HTTPRepository(serverUrl); 
 		
 		repository.initialize();
 		
@@ -709,7 +690,7 @@ public class QueryManager {
 
 		String queryString = QueryString.getRotationalConstant(uuid);
 		
-		Repository repository =  new HTTPRepository(serverUrl); 
+		Repository repository = new SPARQLRepository(serverUrl);// new HTTPRepository(serverUrl); 
 		
 		repository.initialize();
 		

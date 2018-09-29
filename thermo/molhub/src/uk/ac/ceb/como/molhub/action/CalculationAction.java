@@ -45,7 +45,7 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 	/**
 	 * @author nk510 SPARQL query used in thermo - calculations. It queries
 	 *         generated ontology file (Abox of Compchem ontology) in a given folder
-	 *         name (uuid), and stores sparql results in json file in the folder
+	 *         name (uuid), and stores sparql results in json file in the same folder
 	 *         (uuid).
 	 */
 	String sparql = catalinaFolderPath + "/conf/Catalina/sparql_query/query_all.sparql";
@@ -68,7 +68,7 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 			return ERROR;
 		}
 		/**
-		 * @author nk510 Iterates over session HashMap and performs thermo calculations
+		 * @author nk510 Iterates over session HashMap and performs (runs) thermo calculations
 		 *         on generated json files stored in folder named by "uuid".
 		 */
 		for (Map.Entry<String, Object> mp : session.entrySet()) {

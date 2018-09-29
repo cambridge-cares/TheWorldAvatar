@@ -9,16 +9,19 @@ import uk.ac.cam.ceb.como.io.chem.file.jaxb.Module;
 
 import uk.ac.cam.ceb.como.jaxb.xml.generation.GenerateXml;
 import uk.ac.ceb.como.molhub.bean.GaussianUploadReport;
-
+import uk.ac.ceb.como.molhub.model.ExecutorManager;
 import uk.ac.ceb.como.molhub.model.FolderManager;
 import uk.ac.ceb.como.molhub.model.XMLValidationManager;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -63,6 +66,10 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	/** The upload file name. */
 	private String[] uploadFileName;
 
+	final long startTime = System.currentTimeMillis();	
+	
+	private String runningTime=null;
+	
 	/**
 	 * The column.
 	 *
@@ -82,8 +89,10 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	private String uri = "http://como.cheng.cam.ac.uk/molhub/compchem/";
 
 	/** The rdf4j server url (localhost). */
-	private String serverUrl = "http://localhost:8080/rdf4j-server/repositories/compchemkb";
+//	private String serverUrl = "http://localhost:8080/rdf4j-server/repositories/compchemkb";
 
+	private String serverUrl ="http://172.24.155.69:8080/rdf4j-server/repositories/compchemkb";
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -109,7 +118,6 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 		if (files.isEmpty()) {
 
 			addActionMessage("Please select Gaussian files first, and than press 'Upload' button.");
-
 		}
 
 		/**
@@ -206,59 +214,128 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 			 */
 		 if (consistency) {
 		
-		 /**
-		 * @author nk510 Gets the repository connection.
-		 * @param serverUrl
-		 * remote sparql endpoint.
-		 */
+			 ExecutorService executor = Executors.newSingleThreadExecutor();
+			 
+			 Thread threadTask = new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					/**
+					 * @author nk510 Gets the repository connection.
+					 * @param serverUrl
+					 * remote sparql endpoint.
+					 */
+					
+					 Repository repository = new HTTPRepository(serverUrl);
+					
+					 repository.initialize();
+					
+					 RepositoryConnection connection = repository.getConnection();
+					
+					 try {
+					 /**
+					 * @author nk510 Begins a new transaction. Requires commit() or rollback() to
+					 be called to end the transaction.
+					 */
+					 connection.begin();
+					
+					 try {
+					
+					 /**
+					 * @author nk510 Each generated owl file will be stored in RDF4J triple store.
+					 */
+					 connection.add(owlFile, uri, RDFFormat.RDFXML);
+					
+					 connection.commit();
+					
+					 } catch (RepositoryException e) {
+					
+					 /**
+					 * @author nk510
+					 * If something is wrong during the transaction, it will return a message
+					 about
+					 * it.
+					 */
+					
+					 logger.info("RepositoryException: " + e.getMessage());
+					
+					 connection.rollback();
+					 }
+					
+					 } catch (Exception e) {
+					
+					 logger.info(e.getStackTrace());
+					
+					 }
+					 connection.close();
+					
+					 repository.shutDown();
+				}
+				 
+			 });
+			 
+			 executor.submit(threadTask);
+			 ExecutorManager em= new ExecutorManager();
+			 
+			 em.shutdownExecutorService(executor);
+			 
+//		 /**
+//		 * @author nk510 Gets the repository connection.
+//		 * @param serverUrl
+//		 * remote sparql endpoint.
+//		 */
+//		
+//		 Repository repository = new HTTPRepository(serverUrl);
+//		
+//		 repository.initialize();
+//		
+//		 RepositoryConnection connection = repository.getConnection();
+//		
+//		 try {
+//		 /**
+//		 * @author nk510 Begins a new transaction. Requires commit() or rollback() to
+//		 be called to end the transaction.
+//		 */
+//		 connection.begin();
+//		
+//		 try {
+//		
+//		 /**
+//		 * @author nk510 Each generated owl file will be stored in RDF4J triple store.
+//		 */
+//		 connection.add(owlFile, uri, RDFFormat.RDFXML);
+//		
+//		 connection.commit();
+//		
+//		 } catch (RepositoryException e) {
+//		
+//		 /**
+//		 * @author nk510
+//		 * If something is wrong during the transaction, it will return a message
+//		 about
+//		 * it.
+//		 */
+//		
+//		 logger.info("RepositoryException: " + e.getMessage());
+//		
+//		 connection.rollback();
+//		 }
+//		
+//		 } catch (Exception e) {
+//		
+//		 logger.info(e.getStackTrace());
+//		
+//		 }
+//		 connection.close();
+//		
+//		 repository.shutDown();
 		
-		 Repository repository = new HTTPRepository(serverUrl);
-		
-		 repository.initialize();
-		
-		 RepositoryConnection connection = repository.getConnection();
-		
-		 try {
-		 /**
-		 * @author nk510 Begins a new transaction. Requires commit() or rollback() to
-		 be called to end the transaction.
-		 */
-		 connection.begin();
-		
-		 try {
-		
-		 /**
-		 * @author nk510 Each generated owl file will be stored in RDF4J triple store.
-		 */
-		 connection.add(owlFile, uri, RDFFormat.RDFXML);
-		
-		 connection.commit();
-		
-		 } catch (RepositoryException e) {
-		
-		 /**
-		 * @author nk510
-		 * If something is wrong during the transaction, it will return a message
-		 about
-		 * it.
-		 */
-		
-		 logger.info("RepositoryException: " + e.getMessage());
-		
-		 connection.rollback();
 		 }
+   
+		 
 		
-		 } catch (Exception e) {
-		
-		 logger.info(e.getStackTrace());
-		
-		 }
-		 connection.close();
-		
-		 repository.shutDown();
-		
-		 }
-		
+			
 		 /**
 		 *
 		 * In case of inconsistency of generated ontology (Abox) then Error message
@@ -277,8 +354,15 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 		 fileNumber++;
 		 }
 		
+		 NumberFormat formatter = new DecimalFormat("#00.000");
+			
+		 final long endTime = System.currentTimeMillis();
+			
+		 runningTime = formatter.format((endTime - startTime) / 1000d) + " seconds";
+		 
+		 addActionMessage("Upload completed in " + runningTime);
+				 
 		 return INPUT;
-
 	
 	}
 
@@ -399,6 +483,14 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	 */
 	public void setUploadFileContentType(String uploadFileContentType) {
 		this.uploadFileContentType = uploadFileContentType;
+	}
+
+	public String getRunningTime() {
+		return runningTime;
+	}
+
+	public void setRunningTime(String runningTime) {
+		this.runningTime = runningTime;
 	}
 
 	

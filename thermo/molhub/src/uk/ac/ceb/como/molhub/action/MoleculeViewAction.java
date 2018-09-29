@@ -17,7 +17,8 @@ import uk.ac.ceb.como.molhub.model.QueryManager;
 import org.apache.log4j.Logger;
 
 /**
- * The Class MoleculeViewAction.
+ * The Class MoleculeViewAction. 
+ * Shows all molecules properties stored in RDF4J triple store. 
  */
 public class MoleculeViewAction extends ActionSupport {
 

@@ -12,9 +12,8 @@ import java.util.Set;
 import org.apache.struts2.interceptor.SessionAware;
 
 import org.apache.struts2.dispatcher.SessionMap;
-
-
 import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.ValidationAware;
 
 import aima.core.logic.propositional.inference.DPLL;
 import aima.core.logic.propositional.inference.DPLLSatisfiable;
@@ -27,19 +26,23 @@ import uk.ac.cam.ceb.como.chem.periodictable.Element;
 import uk.ac.cam.ceb.como.chem.periodictable.PeriodicTable;
 import uk.ac.ceb.como.molhub.bean.MoleculeProperty;
 import uk.ac.ceb.como.molhub.bean.Term;
+
 import uk.ac.ceb.como.molhub.model.QueryManager;
 import uk.ac.ceb.como.molhub.model.SentenceManager;
 
 /**
- * The Class TermValidationAction.
+ * @author nk510 The Class TermValidationAction. Implements methods for querying
+ *         RDF4J repository by using propositional logic formulas. Each literal
+ *         in query string consists of atom name (as given in Periodic table)
+ *         and number of atoms appearing in molecule name.
  */
 
-public class TermValidationAction extends ActionSupport implements SessionAware {
-	
-	final long startTime = System.currentTimeMillis();	
-	
-	private String runningTime=null;
-	
+public class TermValidationAction extends ActionSupport implements SessionAware, ValidationAware {
+
+	final long startTime = System.currentTimeMillis();
+
+	private String runningTime = null;
+
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1222255700658500383L;
 
@@ -54,15 +57,15 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 
 	/** The periodic table element. */
 	private String periodicTableElement;
-	
+
 	Set<MoleculeProperty> finalSearchResultSet = new HashSet<MoleculeProperty>();
-	
+
 	Set<String> queryResultString;
-	
+
 	List<String> resultsColumn = new ArrayList<String>();
-	
-	Map<String,Object> session = new HashMap<String, Object>();	
-	
+
+	Map<String, Object> session = new HashMap<String, Object>();
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -70,48 +73,46 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 	 */
 	@Override
 	public String execute() throws Exception {
-		
-		
-		
+
 		PLParser parser = new PLParser();
 
 		DPLL dpll = new DPLLSatisfiable();
 
 		String periodicTableSymbol = null;
-		
-		resultsColumn.add("UUID:");		
+
+		resultsColumn.add("UUID:");
 		resultsColumn.add("URL:");
 		resultsColumn.add("Empirical Formula:");
 		resultsColumn.add("Basis Set:");
 		resultsColumn.add("Method: ");
-			
+
 		/**
-		 * @author nk510
-		 * This part of code is executing when a user presses button "Molhub Search". 
+		 * @author nk510 This part of code is executing when a user presses button
+		 *         "Molhub Search".
 		 */
-		if ((term.getName().length() == 0) || (term ==null)) {			
-			
-			if (!session.isEmpty()) {			
-				
-				for(Map.Entry<String, Object> mp: session.entrySet()) {
-				
-					session.remove(mp.getKey(),mp.getValue());
+		if ((term.getName().length() == 0) || (term == null)) {
+
+			if (!session.isEmpty()) {
+
+				for (Map.Entry<String, Object> mp : session.entrySet()) {
+
+					session.remove(mp.getKey(), mp.getValue());
 				}
-				
+
 			}
 
 			addFieldError("term.name", "Query string is empty.");
-			
+
 			return ERROR;
 		}
-		
-		if(!session.isEmpty()) {
-			
+
+		if (!session.isEmpty()) {
+
 			session.clear();
 		}
-		
-		try { 
-			
+
+		try {
+
 			Sentence sentence = parser.parse(getSearchTerm(term));
 
 			/**
@@ -133,24 +134,24 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 				Set<PropositionSymbol> ps = c.getSymbols();
 
 				for (PropositionSymbol ppSymbol : ps) {
-					
-					/**
-					 * @author nk510
-					 * Checking whether propositional symbol matches regular expression of periodic table elements.
-					 */
-					if(!ppSymbol.getSymbol().matches("[A-Z][a-z]{0,3}[0-9]+")) {
-						
-						addFieldError("term.name", "Propositional letter (" + ppSymbol.getSymbol()
-						+ ") does not match the naming of input query string.");
 
-				        return ERROR;
-					}else {
-						
+					/**
+					 * @author nk510 Checking whether propositional symbol matches regular
+					 *         expression of periodic table elements.
+					 */
+					if (!ppSymbol.getSymbol().matches("[A-Z][a-z]{0,3}[0-9]+")) {
+
+						addFieldError("term.name", "Propositional letter (" + ppSymbol.getSymbol()
+								+ ") does not match the naming of input query string.");
+
+						return ERROR;
+					} else {
+
 						/**
-						 * @author nk510
-						 * Removes appearing all numbers at the end of propositional symbol.
-						 */						
-						periodicTableSymbol = ppSymbol.getSymbol().replaceAll("[0-9]+","");
+						 * @author nk510 Removes appearing all numbers at the end of propositional
+						 *         symbol.
+						 */
+						periodicTableSymbol = ppSymbol.getSymbol().replaceAll("[0-9]+", "");
 					}
 					/**
 					 * 
@@ -161,8 +162,7 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 					 * 
 					 */
 
-					Element elementSymbol = PeriodicTable
-							.getElementBySymbol(periodicTableSymbol);
+					Element elementSymbol = PeriodicTable.getElementBySymbol(periodicTableSymbol);
 
 					if (elementSymbol.getSymbol() == null) {
 
@@ -184,78 +184,68 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 			 *         (DPLL) procedure.
 			 * 
 			 */
-			
+
 			setSatisfiable(dpll.dpllSatisfiable(sentence));
 
 			if (dpll.dpllSatisfiable(sentence)) {
 
 				setFormula(getSearchTerm(term));
-				
+
 				try {
-					
+
 					queryResultString = new HashSet<String>();
 
 					Set<String> listTemp = QueryManager.performSPARQLQueryOnQueryString(sentence);
-					
-					for(String mpp: listTemp) {
-						
+
+					for (String mpp : listTemp) {
+
 						queryResultString.add(mpp);
-						
+
 						/**
-						 * @author nk510
-						 *  Returns list of all molecule properties which will appear in query result. It remembers also image file name (.png file).  
+						 * @author nk510 Returns list of all molecule properties which will appear in
+						 *         query result. It remembers also image file name (.png file).
 						 */
-					
-						Map<String,MoleculeProperty> mapMoleculeProperty = new HashMap<String,MoleculeProperty>();
-						
-						mapMoleculeProperty = QueryManager.performSPARQLForMoleculeName(mpp);
-						
+
 						Set<MoleculeProperty> setMoleculeProperty = new HashSet<MoleculeProperty>();
-						
-						for (MoleculeProperty set : mapMoleculeProperty.values()) {
-							
-							setMoleculeProperty.add(set);
-						}
-						
+
+						setMoleculeProperty = QueryManager.performSPARQLForMoleculeName(mpp);
+
 						/**
-						 * @author nk510
-						 * Adds result in final search result set as Java Set of MoleculeProperties. 
+						 * @author nk510 Adds result in final search result set as Java Set of
+						 *         MoleculeProperties.
 						 */
 						finalSearchResultSet.addAll(setMoleculeProperty);
-						
+
 					}
-					
+
 					/**
-					 * @author nk510
-					 * Adding search results (uuid, molecule name) into session.
+					 * @author nk510 Adding search results (uuid, molecule name) into session.
 					 */
-					for(MoleculeProperty mp: finalSearchResultSet) {	
-					
-					session.put(mp.getUuid(),mp.getMoleculeName());
-					
-					}				
-					
-					
+					for (MoleculeProperty mp : finalSearchResultSet) {
+
+						session.put(mp.getUuid(), mp.getMoleculeName());
+
+					}
+
 					NumberFormat formatter = new DecimalFormat("#00.000");
-					
+
 					final long endTime = System.currentTimeMillis();
-					
+
 					runningTime = formatter.format((endTime - startTime) / 1000d) + " seconds";
-					
-					
-				}catch(Exception e) {
-					
+
+				} catch (Exception e) {
+
 					addFieldError("term.name", "Query result failed. Explanation: " + e.getMessage());
 
 					return ERROR;
 				}
-				
-				if(queryResultString.isEmpty()) {
-					
+
+				if (queryResultString.isEmpty()) {
+
 					addFieldError("term.name", "There are no results for given query string. Please, try again.");
 				}
-				
-				return SUCCESS;		
+
+				return SUCCESS;
 
 			} else {
 
@@ -263,9 +253,7 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 
 				return ERROR;
 			}
-			
 
-			
 		} catch (Exception e) {
 
 			/**
@@ -281,26 +269,22 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 
 			return ERROR;
 		}
-		
-		
-	} 
-	
-	
-	
+	}
+
 	@Override
 	public String input() {
-		
+
 		getFinalSearchResultSet();
-		
+
 		return INPUT;
 	}
-	 
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see com.opensymphony.xwork2.ActionSupport#validate()
 	 */
-	
+
 	public void validate() {
 
 		/**
@@ -313,7 +297,7 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 			addFieldError("term.name", "Query string is empty.");
 		}
 	}
-	
+
 	/**
 	 * Gets the term.
 	 *
@@ -388,7 +372,8 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 		String formula = "";
 
 		/**
-		 * @author nk510 Converts all letter into lower case.
+		 * @author nk510 Converts all logical operations letter into lower case
+		 *         keywords. Both notations can be used equally in search engine.
 		 */
 
 		formula = term.getName().replaceAll("and", "&");
@@ -426,7 +411,7 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 	public void setFinalSearchResultSet(Set<MoleculeProperty> finalSearchResultSet) {
 		this.finalSearchResultSet = finalSearchResultSet;
 	}
-	
+
 	public Set<String> getQueryResultString() {
 		return queryResultString;
 	}
@@ -446,31 +431,24 @@ public class TermValidationAction extends ActionSupport implements SessionAware 
 	public void setResultsColumn(List<String> resultsColumn) {
 		this.resultsColumn = resultsColumn;
 	}
-	
+
 	@Override
 	public void setSession(Map<String, Object> session) {
-		
-		this.session=(SessionMap<String, Object>)session;
-		
+
+		this.session = (SessionMap<String, Object>) session;
+
 	}
-	
+
 	public Map<String, Object> getSession() {
-		
+
 		return session;
 	}
-
-
 
 	public String getRunningTime() {
 		return runningTime;
 	}
 
-
-
 	public void setRunningTime(String runningTime) {
 		this.runningTime = runningTime;
-	}	
+	}
 }
-
-
-

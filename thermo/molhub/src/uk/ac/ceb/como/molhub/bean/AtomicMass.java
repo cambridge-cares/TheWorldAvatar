@@ -1,5 +1,10 @@
 package uk.ac.ceb.como.molhub.bean;
 
+/**
+ * 
+ * @author nk510
+ * Class provides a bean for atomic mass data : atomic mass value, atomic mass unit, and atom name.
+ */
 public class AtomicMass {
 	
 	

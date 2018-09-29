@@ -112,29 +112,29 @@
 <!--<s:property value="term"/>-->
 
 <s:if test="%{session.size>0}">
-<table style="width:50%;">
+<table style="width:80%;">
 <tbody>
 <tr>
-<td><b>Number of final results:</b> <s:property value="%{session.size}"/></td>
-<td><b>Query completed in :</b> <s:property value="runningTime"/></td>
+<td><b>Number of final results:</b></td><td><s:property value="%{session.size}"/></td>
+<td><b>Query completed in :</b> </td> <td><s:property value="runningTime"/></td>
 </tr>
 </tbody>
 </table>
 </s:if>
 
-
 <s:if test="%{queryResultString.size>0}">
 <b>Number of queries for each atom name:</b> <s:property value="%{queryResultString.size}"/>
-</s:if>
-</div>
 
 <b>Query result for each atom: </b> <P/>
 <s:property value="queryResultString"/>
 
-<P/>
+</s:if>
+</div>
 
+<s:if test="%{session.size>0}">
 Session result: <P/>
 <s:property value="session"/>
+</s:if>
 
 
 
