@@ -8,7 +8,6 @@ import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingBasisSet;
 import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingEnvironment;
 import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingLevelOfTheory;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class GenerateParameter.
  *
@@ -19,8 +18,8 @@ public class GenerateParameter {
 /**
  * Gets the parameter list environment module.
  *
- * @param file the g09 file
- * @return the parameter list environment module
+ * @param file the Gaussian file.
+ * @return the parameter list in environment module.
  * @throws IOException Signals that an I/O exception has occurred.
  */
 public static ParameterList getParameterListEnvironmentModule(File file) throws IOException {
@@ -37,10 +36,10 @@ public static ParameterList getParameterListEnvironmentModule(File file) throws 
 /**
  * Gets the parameter list initial module.
  *
- * @param file the g09 file
- * @param sumOfAtoms the sum of atoms
- * @return the parameter list initial module
- * @throws Exception the exception
+ * @param file the Gaussian file.
+ * @param sumOfAtoms the sum of atoms.
+ * @return the parameter list in initial module.
+ * @throws Exception the exception.
  */
 public static ParameterList getParameterListInitialModule(File file, int sumOfAtoms ) throws Exception {
 	

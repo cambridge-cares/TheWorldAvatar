@@ -2,11 +2,18 @@ package uk.ac.cam.ceb.como.jaxb.xml.generation;
 
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.Module;
 
+
+/**
+ * @author nk510
+ * The Class GenerateCompChemModule.
+ */
 public class GenerateCompChemModule {
 	
 	/**
+	 * Generate initial module.
+	 *
 	 * @author nk510
-	 * @return <p>Instance of Module class and sets dictRef value to 'cc:initialization'.</p>
+	 * @return <p>Instance of {@link uk.ac.cam.ceb.como.io.chem.file.jaxb.Module} class and sets dictRef value to 'cc:initialization'.</p>
 	 */
 	public static Module generateInitialModule() {
 		
@@ -18,8 +25,10 @@ public class GenerateCompChemModule {
 	}
 
 	/**
+	 * Generate final module.
+	 *
 	 * @author nk510
-	 * @return <p>Instance of Module class and sets dictRef value to 'cc:finalization'.</p>
+	 * @return <p>Instance of {@link uk.ac.cam.ceb.como.io.chem.file.jaxb.Module} class and sets dictRef value to 'cc:finalization'.</p>
 	 */
 
 	public static Module generateFinalModule() {
@@ -32,8 +41,10 @@ public class GenerateCompChemModule {
 	}
 	
 	/**
+	 * Gets the environment module.
+	 *
 	 * @author nk510
-	 * @return <p>Instance of Module class and sets dictRef value to 'cc:environment'.</p>
+	 * @return <p>Instance of {@link uk.ac.cam.ceb.como.io.chem.file.jaxb.Module}  class and sets dictRef value to 'cc:environment'.</p>
 	 */
 
 	public static Module getEnvironmentModule() {
@@ -51,8 +62,9 @@ public class GenerateCompChemModule {
 	 * @author nk510
 	 * @param initialModule the in module
 	 * @param finalModule the f module
+	 * @param environmentModule the environment module
 	 * @param rootModule the root module
-	 * @return <p>Returns object variable of Module JAXB class. It contains information
+	 * @return <p>Returns object variable of {@link uk.ac.cam.ceb.como.io.chem.file.jaxb.Module} class. It contains information
 	 *         (DictRef) about job lists, and job.</p>
 	 */
 	

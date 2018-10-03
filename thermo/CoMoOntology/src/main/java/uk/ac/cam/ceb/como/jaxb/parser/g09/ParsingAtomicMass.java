@@ -9,8 +9,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+/**
+ * The Class ParsingAtomicMass.
+ */
 public class ParsingAtomicMass {
 
+	/**
+	 * Gets the atomic weight string.
+	 *
+	 * @author nk510
+	 * @param file the file <p>It is a Gaussian file.</p>
+	 * @return the atomic weight <p>It is a feature given in Gaussian file and stored here as a string.</p>
+	 * @throws FileNotFoundException the file not found exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * 	
+	 */
+	
 	public static StringTokenizer getAtomicWeightString(File file) throws FileNotFoundException, IOException {
 
 		String atomicMassLine = "";
@@ -19,7 +33,7 @@ public class ParsingAtomicMass {
 		 * 
 		 * @author nk510
 		 *         <p>
-		 *         try block works under JavaSE 1.7
+		 *         Try-catch-block works under JavaSE 1.7
 		 *         </p>
 		 * 
 		 */
@@ -54,12 +68,12 @@ public class ParsingAtomicMass {
 	}
 	
 	/**
-	 * 
+	 * Gets the list of atomic mass.
+	 *
 	 * @author nk510
-	 * @param weightTokenizer
-	 * @return List of strings that represent atomic masses of each atom appearing in
-	 *         geometry optimisation module.
-	 *         
+	 * @param weightTokenizer <p>The weight tokenizer is a feature in Gaussian file.</p>
+	 * @return Java List <p>List of strings that represent atomic masses of each atom appearing in
+	 *         geometry optimisation module.</p>
 	 */
 
 	public static List<String> getListOfAtomicMass(StringTokenizer weightTokenizer) {

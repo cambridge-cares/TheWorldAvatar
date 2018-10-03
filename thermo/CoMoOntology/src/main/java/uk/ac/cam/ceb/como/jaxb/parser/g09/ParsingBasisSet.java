@@ -26,8 +26,8 @@ public class ParsingBasisSet {
 	 * Gets the basis set string.
 	 *
 	 * @param file
-	 *            the file
-	 * @return the basis set string extracted from the file (G09)
+	 *            <p>The Gaussian file</p> 
+	 * @return the basis set <It is an instance of String extracted from the file (G09)</p>
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred
 	 */
@@ -89,9 +89,9 @@ public class ParsingBasisSet {
 	 * Gets the basis set parameter.
 	 *
 	 * @param file
-	 *            the G09 file.
+	 *            the file is a Gaussina file.
 	 * @param numberOfAtoms
-	 *            number of atoms in one species extracted by parsing the file (G09)
+	 *            number of atoms in one species extracted by parsing the file (G09).
 	 * @return Jaxb Parameter instance that contains information about basis set
 	 *         value.
 	 * @throws Exception

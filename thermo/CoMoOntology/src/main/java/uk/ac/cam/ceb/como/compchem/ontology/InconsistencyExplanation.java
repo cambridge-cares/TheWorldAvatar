@@ -1,6 +1,3 @@
-/*
- * 
- */
 package uk.ac.cam.ceb.como.compchem.ontology;
 
 import java.io.File;
@@ -44,8 +41,8 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
 
 public class InconsistencyExplanation {	
 	
-	/** The ontochem file path. */
-	static String ontochemFilePath = "src/test/resources/ontology/ontochem_ontology/";
+	/** File path to generated ontologies (Abox of Compchem ontology). */
+	static String ontochemFilePath = "src/test/resources/ontology/ontochem_abox/";
 	
 	/**
 	 * The main method.
@@ -110,11 +107,13 @@ public class InconsistencyExplanation {
 	}
 
 	 /**
- 	 * Gets the ontology reasoner factory for hermit.
+	 * 
+ 	 * Gets the ontology reasoner factory for HermiT.
  	 *
- 	 * @param ontology the ontology
+ 	 * @param ontology the ontology as a file
  	 * @param factory the factory
- 	 * @return factory
+ 	 * @return factory the reasoner factory
+ 	 * 
  	 */
 
 	public static ReasonerFactory getOntologyReasonerFactoryForHermit(
@@ -170,7 +169,7 @@ public class InconsistencyExplanation {
 			 */
 
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-
+			
 			/**
 			 * 
 			 * @author nk510 <p>An instance of the data factory used in inference explanation.</p>
@@ -262,11 +261,11 @@ public class InconsistencyExplanation {
 	/**
 	 * Prints the explanation.
 	 *
-	 * @param multExplanator the mult explanator
+	 * @param multiExplanator the multi explanator
 	 * @param dataFactory the data factory
 	 */
 	
-	public static void printExplanation(HSTExplanationGenerator multExplanator, OWLDataFactory dataFactory) {
+	public static void printExplanation(HSTExplanationGenerator multiExplanator, OWLDataFactory dataFactory) {
 
 		/**
 		 * 
@@ -275,7 +274,7 @@ public class InconsistencyExplanation {
 		 * 
 		 */
 
-		Set<Set<OWLAxiom>> explanations = multExplanator.getExplanations(dataFactory.getOWLThing());
+		Set<Set<OWLAxiom>> explanations = multiExplanator.getExplanations(dataFactory.getOWLThing());
 
 		/**
 		 * 
@@ -334,20 +333,22 @@ public class InconsistencyExplanation {
 	
 	/**
 	 * 
-	 * @param owlFilePath input owl file for which consistency is checked
+	 * @param aboxOwlFilePath <p>Input owl file (as an Abox set of statement) for which consistency is checked with respect to Compchem ontology file.</p>
 	 * @return true if input owl file is consistent, and false if input owl file is inconsistent.
 	 * @throws OWLOntologyCreationException 
 	 * @throws FileNotFoundException
+	 * 
 	 */
-public static boolean getConsistencyOWLFile(String owlFilePath) throws OWLOntologyCreationException, FileNotFoundException {
+	
+public static boolean getConsistencyOWLFile(String aboxOwlFilePath) throws OWLOntologyCreationException, FileNotFoundException {
 		
 		boolean inconsistency = true;
 		
-		FileInputStream f = new FileInputStream(new File(owlFilePath));
+		FileInputStream aboxFile = new FileInputStream(new File(aboxOwlFilePath));
 		
 		/**
 		 * 
-		 * @author nk510 <p>Instance of OWLOntologyManager will be used to load and save
+		 * @author nk510 <p>Instance of {@link org.semanticweb.owlapi.model.OWLOntologyManager} will be used to load and save/load
 		 *         ontologies from local file.</p>
 		 * 
 		 */
@@ -360,14 +361,15 @@ public static boolean getConsistencyOWLFile(String owlFilePath) throws OWLOntolo
 		 * 
 		 */
 
-		OWLOntology ontology = manager.loadOntologyFromOntologyDocument(f);
+		OWLOntology ontology = manager.loadOntologyFromOntologyDocument(aboxFile);		
 
 		Configuration configuration = new Configuration();
+		
 		/**
 		 * 
 		 * @author nk510 <p>Hermit reasoner does not support explanation for inconsistency.
 		 *         To do that, we have to instantiate Hermit reasoner as an owl reasoner
-		 *         (OWLReasoner). For that reason, we instantiate ReasonerFactory. </p>
+		 *         ({@link org.semanticweb.owlapi.reasoner.OWLReasoner}). For that reason, we instantiate {@link org.semanticweb.HermiT.Reasoner.ReasonerFactory}. </p>
 		 *
 		 */
 
@@ -376,15 +378,13 @@ public static boolean getConsistencyOWLFile(String owlFilePath) throws OWLOntolo
 		/**
 		 * 
 		 * @author nk510 <p>A line below uses an instance of ReasonerFactory to obtain an
-		 *         instance of HermiT as an OWLReasoner. </p>
+		 *         instance of HermiT as an {@link org.semanticweb.owlapi.reasoner.OWLReasoner}. </p>
 		 * 
 		 */
 
 		OWLReasoner reasoner = factory.createReasoner(ontology, configuration);
 		
 		inconsistency= reasoner.isConsistent();
-		
-		
 		
 		return inconsistency;
 	}

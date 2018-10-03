@@ -14,14 +14,14 @@ import uk.ac.cam.ceb.como.io.chem.file.parser.formula.EmpiricalFormulaParser;
 import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingGeometry;
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.FormulaUtility;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class GenerateTiSpeciesProperties.
  *
  * @author nk510
  * This class implements methods for generating the following properties of species:
  * 1. File name.
- * 2. Number of Ti-species observed in g09 file.
+ * 2. Number of Ti-species observed in Gaussian (g09) file.
  * 3. Spin multiplicity.
  */
 

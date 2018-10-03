@@ -1,61 +1,61 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<module xmlns:h="http://www.w3.org/1999/xhtml" xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/" xmlns:convention="http://www.xml-cml.org/convention/">
-    <module dictRef="cc:jobList">
-        <module dictRef="cc:job">
-            <module dictRef="cc:initialization">
-                <molecule>
-                    <atomArray>
-                        <atom count="1.0" elementType="Cl"/>
-                        <atom count="1.0" elementType="O"/>
-                        <atom count="1.0" elementType="Ti"/>
-                    </atomArray>
-                    <formula concise="Cl 1 O 1 Ti 1 "/>
-                </molecule>
-                <parameterList>
-                    <parameter dictRef="cc:method">
-                        <scalar dataType="xsd:string">UB971</scalar>
-                    </parameter>
-                    <parameter dictRef="cc:basis">
-                        <scalar dataType="xsd:string">6-311+G(d,p)</scalar>
-                    </parameter>
-                </parameterList>
-            </module>
-            <module dictRef="cc:finalization">
-                <propertyList>
-                    <property dictRef="cc:vibrations">
-                        <array dataType="xsd:double" dictRef="cc:frequencies" size="3" units="nonSi:cm-1">110.4308 388.7549 1043.6705</array>
-                    </property>
-                    <property dictRef="cc:rotational_symmetry">
-                        <scalar units="si:none" dataType="xsd:integer">1</scalar>
-                    </property>
-                    <property dictRef="cc:rotational_constants">
-                        <array size="3" units="nonSi:GHZ">41.67181 2.94693 2.75229</array>
-                    </property>
-                    <property dictRef="cc:geometry_type">
-                        <scalar dataType="xsd:string">nonlinear</scalar>
-                    </property>
-                </propertyList>
-                <molecule id="mol-final-2" convention="convention:molecular" spinMultiplicity="2">
-                    <atomArray>
-                        <atom atomicMass="47.9479467" z3="0.984725" id="a1" x3="-1.062496" y3="0.004354" elementType="Ti"/>
-                        <atom atomicMass="15.9949146" z3="0.610239" id="a2" x3="-1.864795" y3="1.352996" elementType="O"/>
-                        <atom atomicMass="34.9688527" z3="2.974036" id="a3" x3="-0.81052" y3="-1.14085" elementType="Cl"/>
-                    </atomArray>
-                </molecule>
-            </module>
-            <module dictRef="cc:environment">
-                <parameterList>
-                    <parameter dictRef="cc:program">
-                        <scalar dataType="xsd:string">Gaussian</scalar>
-                    </parameter>
-                    <parameter dictRef="cc:programVersion">
-                        <scalar dataType="xsd:string">09</scalar>
-                    </parameter>
-                    <parameter dictRef="cc:runDate">
-                        <scalar dataType="xsd:string">Tue Jul 19 06:28:46 2016.</scalar>
-                    </parameter>
-                </parameterList>
-            </module>
-        </module>
-    </module>
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="http://www.xml-cml.org/schema" xmlns:convention="http://www.xml-cml.org/convention/" xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/" xmlns:cml="http://www.xml-cml.org/schema" xmlns:si="http://www.xml-cml.org/unit/si/" xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:x="http://www.xml-cml.org/dictionary/cmlx/" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:compchem="http://www.xml-cml.org/dictionary/compchem" xmlns:n="http://www.xml-cml.org/dictionary/nwchem/">
+   <module dictRef="cc:jobList" xmlns:conventions="http://www.xml-cml.org/convention/">
+      <module dictRef="cc:job" xmlns:conventions="http://www.xml-cml.org/convention/">
+         <module dictRef="cc:initialization" xmlns:conventions="http://www.xml-cml.org/convention/">
+            <molecule xmlns:conventions="http://www.xml-cml.org/convention/">
+               <atomArray>
+                  <atom count="1.0" elementType="Cl"/>
+                  <atom count="1.0" elementType="O"/>
+                  <atom count="1.0" elementType="Ti"/>
+               </atomArray>
+               <formula concise="Cl 1 O 1 Ti 1 "/>
+            </molecule>
+            <parameterList xmlns:conventions="http://www.xml-cml.org/convention/">
+               <parameter dictRef="cc:method">
+                  <scalar dataType="xsd:string">UB971</scalar>
+               </parameter>
+               <parameter dictRef="cc:basis">
+                  <scalar dataType="xsd:string">6-311+G(d,p)</scalar>
+               </parameter>
+            </parameterList>
+         </module>
+         <module dictRef="cc:finalization" xmlns:conventions="http://www.xml-cml.org/convention/">
+            <propertyList xmlns:conventions="http://www.xml-cml.org/convention/">
+               <property dictRef="cc:vibrations">
+                  <array dataType="xsd:double" dictRef="cc:frequencies" size="3" units="nonSi:cm-1">110.4308 388.7549 1043.6705</array>
+               </property>
+               <property dictRef="cc:rotational_symmetry">
+                  <scalar units="si:none" dataType="xsd:integer">1</scalar>
+               </property>
+               <property dictRef="cc:rotational_constants">
+                  <array size="3" units="nonSi:GHZ">41.67181 2.94693 2.75229</array>
+               </property>
+               <property dictRef="cc:geometry_type">
+                  <scalar dataType="xsd:string">nonlinear</scalar>
+               </property>
+            </propertyList>
+            <molecule id="mol-final-2" formalCharge="0" convention="convention:molecular" spinMultiplicity="2" xmlns:conventions="http://www.xml-cml.org/convention/">
+               <atomArray>
+                  <atom atomicMass="47.9479467" z3="0.984725" id="a1" x3="-1.062496" y3="0.004354" elementType="Ti"/>
+                  <atom atomicMass="15.9949146" z3="0.610239" id="a2" x3="-1.864795" y3="1.352996" elementType="O"/>
+                  <atom atomicMass="34.9688527" z3="2.974036" id="a3" x3="-0.81052" y3="-1.14085" elementType="Cl"/>
+               </atomArray>
+            </molecule>
+         </module>
+         <module dictRef="cc:environment" xmlns:conventions="http://www.xml-cml.org/convention/">
+            <parameterList xmlns:conventions="http://www.xml-cml.org/convention/">
+               <parameter dictRef="cc:program">
+                  <scalar dataType="xsd:string">Gaussian</scalar>
+               </parameter>
+               <parameter dictRef="cc:programVersion">
+                  <scalar dataType="xsd:string">09</scalar>
+               </parameter>
+               <parameter dictRef="cc:runDate">
+                  <scalar dataType="xsd:string">Tue Jul 19 06:28:46 2016.</scalar>
+               </parameter>
+            </parameterList>
+         </module>
+      </module>
+   </module>
 </module>

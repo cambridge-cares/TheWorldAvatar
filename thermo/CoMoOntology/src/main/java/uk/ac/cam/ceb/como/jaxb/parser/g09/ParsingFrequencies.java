@@ -1,6 +1,3 @@
-/*
- * 
- */
 package uk.ac.cam.ceb.como.jaxb.parser.g09;
 
 import java.io.File;
@@ -17,7 +14,7 @@ import uk.ac.cam.ceb.como.io.chem.file.jaxb.Array;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.Property;
 import uk.ac.cam.ceb.como.io.chem.file.parser.g09.FrequencyParser;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class ParsingFrequencies.
  *
@@ -122,15 +119,15 @@ public class ParsingFrequencies {
 						arrayXML.setDataType(array.getDataType());
 
 						/**
-						 * @author nk510 JAXB Property class sets DictRef value by using CMLProperty's
-						 *         DictRef.
+						 * @author nk510 <p>JAXB Property class sets DictRef value by using CMLProperty's
+						 *         DictRef.</p>
 						 */
 						frequencyProperty.setDictRef(cmlp.getDictRef());
 
 						/**
-						 * @author nk510 Based on CompChem XML Schema, any property may contain one or
+						 * @author nk510 <p>Based on CompChem XML Schema, any property may contain one or
 						 *         more arrays. Line below adds arrays (arrayXML object variable) to
-						 *         Property JAXB object variable 'fr_property'.
+						 *         Property JAXB object variable 'fr_property'.</p>
 						 */
 
 						frequencyProperty.getScalarOrArrayOrMatrix().add(arrayXML);

@@ -15,15 +15,15 @@ import uk.ac.cam.ceb.como.io.chem.file.jaxb.Scalar;
  */
 public class ParsingEnvironment {
 
-/** The br. */
+/** The br denotes an instantiation of <a href="java.io.BufferedReader">BufferedReader.</a> */
 private static BufferedReader br;
 
 /**
  * Gets the last line in G 09 file.
  *
- * @param file the file
- * @return the last line in G09 file
- * @throws IOException Signals that an I/O exception has occurred.
+ * @param file <p>The file is Gaussian file.</p>
+ * @return String <p>The last line in Gaussina file.</p>
+ * @throws IOException <p>Signals that an I/O exception has occurred.</p>
  */
 public static String getLastLineInG09File(File file) throws IOException {
 	
@@ -43,8 +43,8 @@ public static String getLastLineInG09File(File file) throws IOException {
 /**
  * Gets the program version.
  *
- * @param file the file
- * @return the program version
+ * @param file <p> It is a Gaussian file.</p>
+ * @return the program version <p>It is version of program used for calculations.</p>
  * @throws IOException Signals that an I/O exception has occurred.
  */
 public static Parameter getProgramVersion(File file) throws IOException {
@@ -71,8 +71,8 @@ public static Parameter getProgramVersion(File file) throws IOException {
 /**
  * Gets the program name.
  *
- * @param file the file
- * @return the program name
+ * @param file <p> It is a Gaussian file.</p>.
+ * @return the program name <p> It is a name of program used for thermo calculations.</p>
  */
 public static Parameter getProgramName(File file) {
 	
@@ -92,9 +92,9 @@ public static Parameter getProgramName(File file) {
 /**
  * Gets the run date stamp.
  *
- * @param file the file
- * @return the run date stamp
- * @throws IOException Signals that an I/O exception has occurred.
+ * @param file <p> It is Gaussian input file name</p>.
+ * @return the run date stamp <p> It denotes data of running Gaussian calculation.</p>
+ * @throws IOException Signals <p> It is an I/O exception has occurred.</p>
  */
 public static Parameter getRunDateStamp(File file) throws IOException {
 

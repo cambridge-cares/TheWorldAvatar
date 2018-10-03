@@ -16,9 +16,9 @@ public class GenerateProperty {
 /**
  * Gets the property list final module.
  *
- * @param file the Gaussian file (g09) 
- * @return the property list final module
- * @throws Exception the exception
+ * @param file the Gaussian file (g09). 
+ * @return the property list final module.
+ * @throws Exception the exception.
  */
 public static PropertyList getPropertyListFinalModule(File file) throws Exception {
 		
@@ -32,7 +32,7 @@ public static PropertyList getPropertyListFinalModule(File file) throws Exceptio
 		
 		/**
 		 * @author nk510 
-		 * <p>Generates 'Frequencies'.</p>
+		 * <p>Generates 'frequencies'.</p>
 		 * 
 		 */
 		pList.getPropertyOrPropertyListOrObservation()
@@ -41,7 +41,7 @@ public static PropertyList getPropertyListFinalModule(File file) throws Exceptio
 		/**
 		 * 
 		 * @author nk510 
-		 * <p>Generates 'Rotational symmetry'.</p>
+		 * <p>Generates 'rotational symmetry'.</p>
 		 * 
 		 * 
 		 */
@@ -51,7 +51,7 @@ public static PropertyList getPropertyListFinalModule(File file) throws Exceptio
 		/**
 		 * 
 		 * @author nk510 
-		 * <p>Generates 'Rotational constants'.</p>
+		 * <p>Generates 'rotational constants'.</p>
 		 * 
 		 */
 		pList.getPropertyOrPropertyListOrObservation()
@@ -60,7 +60,7 @@ public static PropertyList getPropertyListFinalModule(File file) throws Exceptio
 		/**
 		 * 
 		 * @author nk510
-		 * <p>Generates 'Geometry type'.</p>
+		 * <p>Generates 'geometry type'.</p>
 		 * 
 		 */
 		pList.getPropertyOrPropertyListOrObservation()

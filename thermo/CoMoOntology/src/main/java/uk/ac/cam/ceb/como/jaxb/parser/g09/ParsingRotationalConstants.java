@@ -21,7 +21,7 @@ import uk.ac.cam.ceb.como.io.chem.file.jaxb.Property;
  *
  * @author nk510
  * <p>This class implements methods for generating CompChem XML file
- *         by parsing 'Relational Constants' values by parsing from g09 files.</p>
+ *         by parsing 'rotational constants' values from Gaussian files.</p>
  */
 
 public class ParsingRotationalConstants {
@@ -29,8 +29,8 @@ public class ParsingRotationalConstants {
 	/**
 	 * Generate rotational constants from G 09.
 	 *
-	 * @param file the file
-	 * @return the property
+	 * @param file <p>Gaussian file </p>
+	 * @return the property <p>It is instance of class Property.</p>
 	 * @throws Exception the exception
 	 */
 	public Property generateRotationalConstantsFromG09(File file) throws Exception {
@@ -38,7 +38,7 @@ public class ParsingRotationalConstants {
 		/**
 		 * 
 		 * @author nk510 
-		 * <p>The following three lines extract 'Relational Constants' values
+		 * <p>The following three lines extract 'rotational constants' values
 		 *         and units from Gaussian files (for example Cl2O6.g09).</p>
 		 * 
 		 */
@@ -49,8 +49,8 @@ public class ParsingRotationalConstants {
 
 		/**
 		 * @author nk510 
-		 * <p>'rc_property' is object variable of Property jxb class.
-		 *         Property class is generated from CompChem XML schema.</p>
+		 * <p>'rc_property' is object variable of {@link uk.ac.cam.ceb.como.io.chem.file.jaxb.Property} class.
+		 *         The class is generated from CompChem XML schema.</p>
 		 */
 		Property rc_property = new Property();
 
@@ -76,8 +76,8 @@ public class ParsingRotationalConstants {
 	 *
 	 * @author nk510
 	 * <p>Code in the method below is used to extract last string that
-	 *         starts with 'Rotational constants' in G09 files.</p>
-	 * @param file the file
+	 *         starts with 'rotational constants' in Gaussian files.</p>
+	 * @param file <p>Gaussian file</p>
 	 * @return the rotational constants string
 	 * @throws FileNotFoundException the file not found exception
 	 * @throws IOException Signals that an I/O exception has occurred.
@@ -89,7 +89,7 @@ public class ParsingRotationalConstants {
 
 		/**
 		 * @author nk510
-		 * <p>try block works under JavaSE 1.7</p>
+		 * <p>try-catch block works under JavaSE 1.7</p>
 		 */
 		
 	 		BufferedReader br = new BufferedReader(new FileReader(file));
@@ -101,7 +101,7 @@ public class ParsingRotationalConstants {
 
 					/**
 					 * @author nk510 
-					 * <p>Returns string that starts with "Rotational constants" string.
+					 * <p>Returns string that starts with 'rotational constants' string.
 					 *         If there are more than one string it returns, last one.</p>
 					 */
 
@@ -120,8 +120,8 @@ public class ParsingRotationalConstants {
 	 * @author nk510
 	 * @param line the line
 	 * @return <p>This method extracts numbers from given string that starts with
-	 *         'Rotational constants' as a String object variable. These numbers
-	 *         represent 'Rotational constants' values.</p>
+	 *         'rotational constants' as a String object variable. These numbers
+	 *         represent 'rotational constants' values.</p>
 	 */
 
 	public static String getRotationalContantsValue(String line) {
@@ -138,7 +138,7 @@ public class ParsingRotationalConstants {
 	 *
 	 * @author nk510
 	 * @param rc the rc
-	 * @return <p>Method below returns 'Rotational constants' size. It splits string
+	 * @return <p>Method below returns 'rotational constants' size. It splits string
 	 *         that contains rotational constants values (strings) into array of
 	 *         strings. In counting number of these values (size), it skips
 	 *         empty/bank strings.</p>
@@ -167,7 +167,7 @@ public class ParsingRotationalConstants {
 	 *
 	 * @author nk510
 	 * @param line the line
-	 * @return <p>The method below returns unit name for rotational constants. The
+	 * @return <p>The method below returns unit name for 'rotational constants'. The
 	 *         string is given between brackets in resulted 'rotational constants'
 	 *         string.</p>
 	 */

@@ -1,6 +1,3 @@
-/*
- * 
- */
 package uk.ac.cam.ceb.como.jaxb.parser.g09;
 
 import java.io.File;
@@ -20,23 +17,23 @@ import uk.ac.cam.ceb.como.io.chem.file.parser.g09.FrequencyParser;
  *
  * @author nk510
  * <p>This class implements methods for extracting 'Rotational
- *         Symmetry' value from g09 file. It uses method parse() from
- *         GaussianParser class.</p>
+ *         Symmetry' value from Gaussian file. It uses method {@link uk.ac.cam.ceb.como.io.chem.file.parser.g09.FrequencyParser#parse()} from
+ *         {@link uk.ac.cam.ceb.como.io.chem.file.parser.g09.GaussianParser} class.</p>
  */
 public class ParsingRotationalSymmetry {
 
 	/**
-	 * Generate rotational symmetry from G 09.
+	 * Generate rotational symmetry from Gaussian file.
 	 *
 	 * @param file the file
-	 * @return the property
+	 * @return the property <p>It is instance of class {@link uk.ac.cam.ceb.como.io.chem.file.jaxb.Property} </p>
 	 * @throws Exception the exception
 	 */
 	public Property generateRotationalSymmetryFromG09(File file) throws Exception {
 
 		/**
 		 * @author nk510 
-		 * <p>propertyJaxb is object variable of Property jxb class.
+		 * <p>propertyJaxb is object variable of {@link uk.ac.cam.ceb.como.io.chem.file.jaxb.Property} class.
 		 *         Property class is generated from CompChem XML schema.</p>
 		 */
 
@@ -55,7 +52,7 @@ public class ParsingRotationalSymmetry {
 
 		/**
 		 * @author nk510 
-		 * <p>Iterates of List<CMLProperty> members in order extract
+		 * <p>Iterates of a List of {@link org.xmlcml.cml.element.CMLProperty} members in order extract
 		 *         'Rotational Symmetry' value.</p>
 		 */
 		

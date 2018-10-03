@@ -27,9 +27,9 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
  * The Class GenerateXml.
  *
  * @author nk510
- * <p>Generates CompChem XML files by parsing Gaussian (g09) files
- *         which are stored in folder 'src/test/resources/g09/' of CoMoOntology
- *         project. In CoMoOntology project, we use parser implemented by
+ * <p>Generates CompChem XML files by parsing Gaussian (g09) files.
+ *         which are stored in folder 'src/test/resources/g09/' of CoMoOntology.
+ *         project. In CoMoOntology project, we use parser implemented by.
  *         {@author pb556} in CoMoIOChemistry, and CoMoEnthalpyEstimation projects.</p>
  */
 
@@ -39,12 +39,12 @@ public class GenerateXml {
 	 * 
 	 * The main method.
 	 *
-	 * @param args the arguments
-	 * @throws Exception the exception
-	 * @throws JAXBException the JAXB exception
+	 * @param args the arguments.
+	 * @throws Exception the exception.
+	 * @throws JAXBException the JAXB exception.
 	 * @throws IOException Signals that an I/O exception has occurred.
-	 * @throws XMLStreamException the XML stream exception
-	 * @throws FactoryConfigurationError the factory configuration error
+	 * @throws XMLStreamException the XML stream exception.
+	 * @throws FactoryConfigurationError the factory configuration error.
 	 * 
 	 */
 
@@ -58,28 +58,28 @@ public class GenerateXml {
 		 * Gets g09 the file list.
 		 *
 		 * @author nk510
-		 * @param folderPath the folder path
+		 * @param folderPath the folder path where Gaussian files are saved.
 		 * @return <p>Read all files which end with '.g09'. Returns array of these files.</p>
 		 */
 		
 		File[] fileList = utility.getFileList("src/test/resources/g09/",".g09");
 
-		for (File f : fileList) {
+		for (File gaussianFile : fileList) {
 
 			Module rootModule = new Module();
 			
-			String fileName = f.getName().replaceAll(".g09","");
+			String fileName = gaussianFile.getName().replaceAll(".g09","");
 
 			/**
 			 * 
 			 * @author nk510
-			 * <p>Folder where we save all generated CompChem XML files.</p>
+			 * <p>Folder where we save all generated compchem XML files.</p>
 			 * 
 			 */
 			
 			File outputFile = new File("src/test/resources/ontochem_xml/" + fileName + ".xml");
 
-			generateRootModule(f, outputFile, rootModule);
+			generateRootModule(gaussianFile, outputFile, rootModule);
 
 		}
 	}
@@ -88,10 +88,10 @@ public class GenerateXml {
 	 * Gets the empirical parser.
 	 *
 	 * @author nk510
-	 * @param formulaName the formula name
+	 * @param formulaName the formula name.
 	 * @return <p>Parses formula name and return Composition values of that formula,
-	 *         including formula name. It uses EmpiricalFormulaParser class.</p>
-	 *         
+	 *         including formula name. It uses {@link uk.ac.cam.ceb.como.io.chem.file.parser.formula.EmpiricalFormulaParser} class.</p>
+	 *
 	 */
 	
 	public static Molecule getEmpiricalParser(String formulaName) {
@@ -99,19 +99,18 @@ public class GenerateXml {
 		EmpiricalFormulaParser empParser = new EmpiricalFormulaParser();
 
 		return empParser.parseModule(formulaName);
-
 	}
 
 	/**
 	 * Generate root module.
 	 *
 	 * @author nk510
-	 * @param file the file to be parsed. 
+	 * @param file the file to be parsed.
 	 * @param rootModule the root module as instance of class <code>Module</code>.
-	 * @return the module as instance of class <code>Module</code>.
+	 * @return the module as instance of class <code>{@link uk.ac.cam.ceb.como.io.chem.file.jaxb.Module}</code>.
 	 * @throws Exception            <p>Generates CompChem XML whole file based on parsing g09 files.
-	 *             Currently it supports the following features: Formula,
-	 *             Composition, Frequencies, Symmetry Nr, Geometry, Geometry type,
+	 *             Currently it supports the following features: Formula, Basis Set, Level of Theory, 
+	 *             Composition, Frequencies, Rotational Symmetry Number, Geometry, Geometry type,
 	 *             Rotational Constants, Spin Multiplicity, Atomic mass.</p>
 	 */
 
@@ -155,9 +154,9 @@ public class GenerateXml {
 			
 			/**
 			 * 
-			 * @author nk510 
-			 * <p>Adds 'Geometry type' value in PropertyList as a value of
-			 *         Property.</p>
+			 * @author nk510
+			 * <p>Adds 'geometry type' value in {@link uk.ac.cam.ceb.como.io.chem.file.jaxb.PropertyList} as a instance of class
+			 *         {@link uk.ac.cam.ceb.como.io.chem.file.jaxb.Property}.</p>
 			 *         
 			 */
 			PropertyList propertyListFinalModule = new PropertyList();
@@ -167,7 +166,7 @@ public class GenerateXml {
 			/**
 			 * 
 			 * @author nk510
-			 * Returns an instance of Molecule class that contains atomic mass number of one atom.
+			 * Returns an instance of {@link uk.ac.cam.ceb.como.io.chem.file.jaxb.Molecule} class that contains atomic mass number of one atom.
 			 *  
 			 */
 			Molecule geometryMolecule = new Molecule();

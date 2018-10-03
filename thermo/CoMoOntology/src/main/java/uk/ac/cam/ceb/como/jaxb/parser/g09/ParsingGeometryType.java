@@ -13,24 +13,23 @@ import uk.ac.cam.ceb.como.io.chem.file.parser.compchem.CompChemParser;
 import uk.ac.cam.ceb.como.io.chem.file.parser.g09.FrequencyParser;
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.FormulaUtility;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ParsingGeometryType.
  *
  * @author nk510
  * <p>This class implements methods for extracting 'Geometry type' by
- *         parsing g09 files and using FrequencyParser. The algorithm
+ *         parsing Gaussian files and using FrequencyParser. The algorithm
  *         implemented here is given by Dr Daniel Nurkowski
  *         (danieln@cmclinnovations.com).</p>
  */
 public class ParsingGeometryType {
 
 	/**
-	 * Gets the geometry type from G 09.
+	 * Gets the geometry type from Gaussian file (g09).
 	 *
 	 * @author nk510
 	 * @param file the file
-	 * @return the geometry type from G 09
+	 * @return the geometry type from Gaussian file (g09)
 	 * @throws Exception  
 	 * <p>Algorithm implemented in this method determines 'Geometry type' for
 	 *         each formula, based on the sum of all atom numbers and based on
@@ -53,8 +52,8 @@ public class ParsingGeometryType {
 
 		ParsingRotationalConstants prc = new ParsingRotationalConstants();
 
-		Property pg = new Property();
-		pg.setDictRef("cc:geometry_type");
+		Property property = new Property();
+		property.setDictRef("cc:geometry_type");
 
 		/**
 		 * @author nk510 
@@ -76,7 +75,7 @@ public class ParsingGeometryType {
 		FormulaUtility fUtility = new FormulaUtility();
 
 		/**
-		 * @author nk510 Extracts formula name from G09 file.
+		 * @author nk510 <p>Extracts formula name from G09 file.</p>
 		 */
 		String f_name = fUtility.extractFormulaName(file);
 
@@ -95,7 +94,7 @@ public class ParsingGeometryType {
 		if (sum_atoms <= 1 && sum_atoms > 0) {
 
 			sg.setValue("atomic");
-			pg.getScalarOrArrayOrMatrix().add(sg);
+			property.getScalarOrArrayOrMatrix().add(sg);
 
 		} else {
 
@@ -108,7 +107,7 @@ public class ParsingGeometryType {
 			if (sum_atoms == 2) {
 
 				sg.setValue("linear");
-				pg.getScalarOrArrayOrMatrix().add(sg);
+				property.getScalarOrArrayOrMatrix().add(sg);
 
 			}
 
@@ -153,12 +152,12 @@ public class ParsingGeometryType {
 					if (rc.getValue(0) != 0 && rc.getValue(1) != 0 && rc.getValue(2) != 0) {
 
 						sg.setValue("nonlinear");
-						pg.getScalarOrArrayOrMatrix().add(sg);
+						property.getScalarOrArrayOrMatrix().add(sg);
 
 					} else {
 
 						sg.setValue("linear");
-						pg.getScalarOrArrayOrMatrix().add(sg);
+						property.getScalarOrArrayOrMatrix().add(sg);
 					}
 
 				}
@@ -168,6 +167,6 @@ public class ParsingGeometryType {
 
 		}
 
-		return pg;
+		return property;
 	}
 }

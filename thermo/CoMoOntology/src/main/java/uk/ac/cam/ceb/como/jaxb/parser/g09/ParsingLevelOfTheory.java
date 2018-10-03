@@ -24,11 +24,11 @@ public class ParsingLevelOfTheory {
 	
 	/**
 	 * 
-	 * @param f
-	 * @return A String instance/object that contains information about level of theory for given Gaussian file. The string starts with "#p" and ends with first appearing "/" character.
+	 * @param file <p>It denotes Gaussian file.</p>
+	 * @return A String <p>It contains information about level of theory for given Gaussian file. The string starts with "#p" and ends with first appearing "/" character.</p>
 	 * @throws IOException
 	 */
-	public static String getLevelOfTheoryString(File f) throws IOException {
+	public static String getLevelOfTheoryString(File file) throws IOException {
 		
 		String levelOfTheory= "";	
 		
@@ -36,12 +36,12 @@ public class ParsingLevelOfTheory {
 		 * 
 		 * @author nk510
 		 *         <p>
-		 *         try block works under JavaSE 1.7
+		 *         Try-catch-block works under JavaSE 1.7.
 		 *         </p>
 		 * 
 		 */
 
-		BufferedReader br = new BufferedReader(new FileReader(f));
+		BufferedReader br = new BufferedReader(new FileReader(file));
 
 		for (String line; (line = br.readLine()) != null;) {
 
@@ -73,12 +73,12 @@ public class ParsingLevelOfTheory {
 	}
 	/**
 	 * 
-	 * @param f
-	 * @param numberOfAtoms
-	 * @return Jaxb Parametar instance that contains information about level of theory. Parameter contains one scalar.
+	 * @param file <p> It represents a Gaussian file. </p>
+	 * @param numberOfAtoms <p>It represents number of atoms.</p>
+	 * @return Jaxb Parametar <p> It contains information about level of theory. Parameter contains one scalar.</p>
 	 * @throws Exception
 	 */
-	public static Parameter getLevelOfTheryParameter(File f, int numberOfAtoms) throws Exception {
+	public static Parameter getLevelOfTheryParameter(File file, int numberOfAtoms) throws Exception {
 		
 		
 		Parameter parameter = new Parameter();
@@ -88,7 +88,7 @@ public class ParsingLevelOfTheory {
 		if(numberOfAtoms>1) {
 		
 			FrequencyParser parser = new FrequencyParser();
-			 parser.set(f);
+			 parser.set(file);
 			 parser.parse();
 			 
 			 CompChem cc = (CompChem) parser.get();
@@ -104,8 +104,8 @@ public class ParsingLevelOfTheory {
 			 for(CMLParameter p: cmlP) {
 			 	
 			    	/**
-					 *
-					 *  Finds level of theory when attribute dictRef has value that is equal to 'cc:method'
+					 * @author nk510
+					 * <p> Finds level of theory when attribute dictRef has value that is equal to 'cc:method'. </p>
 					 *
 					 */
 				 if(p.getDictRef().equals("cc:method")) {
@@ -120,7 +120,7 @@ public class ParsingLevelOfTheory {
 		}else {
 			
 		 	parameter.setDictRef("cc:method");
-		 	scalar.setValue(getLevelOfTheoryString(f));
+		 	scalar.setValue(getLevelOfTheoryString(file));
 		 	scalar.setDataType("xsd:string");
 		 	
 		 	parameter.getScalarOrArrayOrMatrix().add(scalar);
