@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
  * @author nk510
  *         <p>
  * 		Implement method which runs sparql query on generated Abox (owl
- *         files) of Ontochem ontology. Runs thermo calculations implemented in
+ *         files) of Compchem ontology. Runs thermo calculations implemented in
  *         Python, and generated results using json format.
  *         </p>
  */
@@ -35,7 +35,7 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * @author nk510 Struts2 HashMap that remembers session as pair (uuid, molecule
+	 * @author nk510 session is instance of {@link java.util.Map} that remembers session as pair (uuid, molecule
 	 *         name).
 	 */
 	Map<String, Object> session;
@@ -43,10 +43,10 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 	String catalinaFolderPath = System.getProperty("catalina.home");
 
 	/**
-	 * @author nk510 SPARQL query used in thermo - calculations. It queries
+	 * @author nk510 <p>SPARQL query used in thermo - calculations. It queries
 	 *         generated ontology file (Abox of Compchem ontology) in a given folder
 	 *         name (uuid), and stores sparql results in json file in the same folder
-	 *         (uuid).
+	 *         (uuid).</p>
 	 */
 	String sparql = catalinaFolderPath + "/conf/Catalina/sparql_query/query_all.sparql";
 
@@ -58,8 +58,8 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 		File sparqlFile = new File(sparql);
 
 		/**
-		 * @author nk510 If there are no species (uuid, molecule name) appearing in
-		 *         search results, then session map is empty.
+		 * @author nk510 <p>If there are no species (uuid, molecule name) appearing in
+		 *         search results, then session map is empty.</p>
 		 */
 		if (session.isEmpty()) {
 
@@ -68,8 +68,8 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 			return ERROR;
 		}
 		/**
-		 * @author nk510 Iterates over session HashMap and performs (runs) thermo calculations
-		 *         on generated json files stored in folder named by "uuid".
+		 * @author nk510 <p>Iterates over session HashMap and performs (runs) thermo calculations
+		 *         on generated json files stored in folder named by "uuid".</p>
 		 */
 		for (Map.Entry<String, Object> mp : session.entrySet()) {
 
@@ -93,7 +93,7 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 				logger.info("jsonFile.getAbsolutePath(): " + jsonFiles.get(i).getAbsolutePath());
 
 				/**
-				 * @author nk510 Runs Python script for thermodynamic calculations.
+				 * @author nk510 Runs Python script for thermodynamic calculations. Python script implemented by {@author 
 				 */
 
 				String[] cmd = { "python", "C:/Users/nk510/git/c4e-dln22-TDC/Source/thermoDriver.py", "-j",
@@ -101,14 +101,20 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 
 				Runtime.getRuntime().exec(cmd);
 			}
-
-			/**
-			 * @author nk510 Remove session keys.
-			 */
-			session.remove(mp.getKey());
-
+			
 		}
-
+		
+		/**
+		 * @author nk510
+		 * Removes all data from session's map after finishing thermo calculations.
+		 * 
+		 */
+		for (Map.Entry<String, Object> entry : session.entrySet()) {
+		     
+		        session.remove(entry.getKey());
+		      
+		}
+		
 		addActionMessage("Calculations successfully completed.");
 
 		return SUCCESS;

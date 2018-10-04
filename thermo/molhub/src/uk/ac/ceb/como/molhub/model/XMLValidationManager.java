@@ -9,13 +9,17 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import org.xml.sax.SAXException;
 
-
+/**
+ * The Class XMLValidationManager.
+ */
 public class XMLValidationManager {
 
 	/**
-	 * @author nk510 
+	 * <p>Validates Generated Compchem XML files against Compchem XML schema.</p>
+	 *
+	 * @author nk510
 	 * @param xsdPath a path to Compchem xml schema.
-	 * @param xmlPath a path to Compchem xml file.
+	 * @param xmlFile the xml file
 	 * @return true if generated xml file is valid, and false if generated xml file is not valid.
 	 */
 	public static boolean validateXMLSchema(String xsdPath, File xmlFile) {
@@ -30,5 +34,5 @@ public class XMLValidationManager {
 			return false;
 		}
 		return true;
-}
+    }
 }

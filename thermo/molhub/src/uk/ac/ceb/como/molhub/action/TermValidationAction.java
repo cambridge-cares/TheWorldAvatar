@@ -30,17 +30,22 @@ import uk.ac.ceb.como.molhub.bean.Term;
 import uk.ac.ceb.como.molhub.model.QueryManager;
 import uk.ac.ceb.como.molhub.model.SentenceManager;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author nk510 The Class TermValidationAction. Implements methods for querying
+ * The Class TermValidationAction.
+ *
+ * @author nk510 <p>Implements methods for querying
  *         RDF4J repository by using propositional logic formulas. Each literal
  *         in query string consists of atom name (as given in Periodic table)
- *         and number of atoms appearing in molecule name.
+ *         and number of atoms appearing in molecule name.</p>
  */
 
 public class TermValidationAction extends ActionSupport implements SessionAware, ValidationAware {
 
+	/** The start time. */
 	final long startTime = System.currentTimeMillis();
 
+	/** The running time. */
 	private String runningTime = null;
 
 	/** The Constant serialVersionUID. */
@@ -58,14 +63,20 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 	/** The periodic table element. */
 	private String periodicTableElement;
 
+	/** The final search result set. */
 	Set<MoleculeProperty> finalSearchResultSet = new HashSet<MoleculeProperty>();
 
+	/** The query result string. */
 	Set<String> queryResultString;
 
+	/** The results column. */
 	List<String> resultsColumn = new ArrayList<String>();
 
+	/** The session. */
 	Map<String, Object> session = new HashMap<String, Object>();
 
+	/** The query result map. */
+	Map<String, String> queryResultMap = new HashMap<String, String>();
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -116,16 +127,16 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 			Sentence sentence = parser.parse(getSearchTerm(term));
 
 			/**
-			 * @author nk510 Gets a set of all clauses.
+			 * @author nk510 <p>Gets a set of all clauses.</p>
 			 */
 			Set<Clause> clauseSet = SentenceManager.getClauseSet(sentence);
 
 			/**
 			 * 
-			 * @author nk510 Iterates over set of clauses. Validation of query string: 1.
+			 * @author nk510 <p>Iterates over set of clauses. Validation of query string: 1.
 			 *         Checks whether each clause starts with one or more letter and ends
 			 *         with one or more digit. 2. Removes numbers at the end of each clause
-			 *         and checks whether the literal belongs to periodic table.
+			 *         and checks whether the literal belongs to periodic table.</p>
 			 * 
 			 */
 
@@ -136,8 +147,8 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 				for (PropositionSymbol ppSymbol : ps) {
 
 					/**
-					 * @author nk510 Checking whether propositional symbol matches regular
-					 *         expression of periodic table elements.
+					 * @author nk510 <p>Checking whether propositional symbol matches regular
+					 *         expression of periodic table elements.</p>
 					 */
 					if (!ppSymbol.getSymbol().matches("[A-Z][a-z]{0,3}[0-9]+")) {
 
@@ -155,10 +166,10 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 					}
 					/**
 					 * 
-					 * @author nk510 Extracts each propositional letter (propositional symbol) in
+					 * @author nk510 <p>Extracts each propositional letter (propositional symbol) in
 					 *         each clause and checks whether that symbol is member of periodic
 					 *         table. To check whether propositional symbol belongs to period table
-					 *         we use <b>{@author pb556}</b> parser.
+					 *         we use <b>{@author pb556}</b> parser.</p>
 					 * 
 					 */
 
@@ -179,9 +190,9 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 
 			/**
 			 * 
-			 * @author nk510 Checks whether input propositional sentence (query string) is
+			 * @author nk510 <p>Checks whether input propositional sentence (query string) is
 			 *         satisfiable. It is checked by using Davis–Putnam–Logemann–Loveland
-			 *         (DPLL) procedure.
+			 *         (DPLL) procedure.</p>
 			 * 
 			 */
 
@@ -193,17 +204,17 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 
 				try {
 
-					queryResultString = new HashSet<String>();
+					queryResultString = new HashSet<String>();				
+					
+					queryResultString = QueryManager.performSPARQLQueryOnQueryString(sentence);
 
-					Set<String> listTemp = QueryManager.performSPARQLQueryOnQueryString(sentence);
+// optional solution: Set<String> listTemp = QueryManager.performSPARQLQueryOnQueryString(sentence);
 
-					for (String mpp : listTemp) {
-
-						queryResultString.add(mpp);
-
+					for (String mpp : queryResultString) {
+						
 						/**
-						 * @author nk510 Returns list of all molecule properties which will appear in
-						 *         query result. It remembers also image file name (.png file).
+						 * @author nk510 <p>Returns list of all molecule properties which will appear in
+						 *         query result. It remembers also image file name (.png file).</p>
 						 */
 
 						Set<MoleculeProperty> setMoleculeProperty = new HashSet<MoleculeProperty>();
@@ -211,23 +222,23 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 						setMoleculeProperty = QueryManager.performSPARQLForMoleculeName(mpp);
 
 						/**
-						 * @author nk510 Adds result in final search result set as Java Set of
-						 *         MoleculeProperties.
+						 * @author nk510 <p>Adds result in final search result set as Java Set of
+						 *         MoleculeProperties.</p>
 						 */
 						finalSearchResultSet.addAll(setMoleculeProperty);
 
 					}
 
 					/**
-					 * @author nk510 Adding search results (uuid, molecule name) into session.
+					 * @author nk510 <p>Adding search results as 2-tuple (uuid, molecule name) into session to be used by {@link uk.ac.ceb.como.molhub.action.CalculationAction}.</p>
 					 */
 					for (MoleculeProperty mp : finalSearchResultSet) {
-
+						
 						session.put(mp.getUuid(), mp.getMoleculeName());
 
 					}
 
-					NumberFormat formatter = new DecimalFormat("#00.000");
+					NumberFormat formatter = new DecimalFormat("#00.00");
 
 					final long endTime = System.currentTimeMillis();
 
@@ -260,8 +271,8 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 			 * 
 			 * @author nk510
 			 * 
-			 *         Checks whether input query string is propositionally valid. For
-			 *         example "(P and not P" is not propositionally valid statement.
+			 *         <p>Checks whether input query string is propositionally valid. For
+			 *         example "(P and not P" is not propositionally valid statement.</p>
 			 * 
 			 */
 
@@ -271,6 +282,9 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.opensymphony.xwork2.ActionSupport#input()
+	 */
 	@Override
 	public String input() {
 
@@ -289,7 +303,7 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 
 		/**
 		 * 
-		 * @author nk510 Checks whether input query string is empty.
+		 * @author nk510 <p>Checks whether input query string is empty.</p>
 		 * 
 		 */
 		if (term.getName().length() == 0) {
@@ -372,8 +386,8 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 		String formula = "";
 
 		/**
-		 * @author nk510 Converts all logical operations letter into lower case
-		 *         keywords. Both notations can be used equally in search engine.
+		 * @author nk510 <p>Converts all logical operations letter into lower case
+		 *         keywords. Both notations can be used equally in search engine.</p>
 		 */
 
 		formula = term.getName().replaceAll("and", "&");
@@ -404,34 +418,72 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 		this.periodicTableElement = periodicTableElement;
 	}
 
+	/**
+	 * Gets the final search result set.
+	 *
+	 * @return the final search result set
+	 */
 	public Set<MoleculeProperty> getFinalSearchResultSet() {
 		return finalSearchResultSet;
 	}
 
+	/**
+	 * Sets the final search result set.
+	 *
+	 * @param finalSearchResultSet the new final search result set
+	 */
 	public void setFinalSearchResultSet(Set<MoleculeProperty> finalSearchResultSet) {
 		this.finalSearchResultSet = finalSearchResultSet;
 	}
 
+	/**
+	 * Gets the query result string.
+	 *
+	 * @return the query result string
+	 */
 	public Set<String> getQueryResultString() {
 		return queryResultString;
 	}
 
+	/**
+	 * Sets the query result string.
+	 *
+	 * @param queryResultString the new query result string
+	 */
 	public void setQueryResultString(Set<String> queryResultString) {
 		this.queryResultString = queryResultString;
 	}
 
+	/**
+	 * Gets the serialversionuid.
+	 *
+	 * @return the serialversionuid
+	 */
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
 
+	/**
+	 * Gets the results column.
+	 *
+	 * @return the results column
+	 */
 	public List<String> getResultsColumn() {
 		return resultsColumn;
 	}
 
+	/**
+	 * Sets the results column.
+	 *
+	 * @param resultsColumn the new results column
+	 */
 	public void setResultsColumn(List<String> resultsColumn) {
 		this.resultsColumn = resultsColumn;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.apache.struts2.interceptor.SessionAware#setSession(java.util.Map)
+	 */
 	@Override
 	public void setSession(Map<String, Object> session) {
 
@@ -439,15 +491,30 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 
 	}
 
+	/**
+	 * Gets the session.
+	 *
+	 * @return the session
+	 */
 	public Map<String, Object> getSession() {
 
 		return session;
 	}
 
+	/**
+	 * Gets the running time.
+	 *
+	 * @return the running time needed to query molhub knowledge base and show result.
+	 */
 	public String getRunningTime() {
 		return runningTime;
 	}
 
+	/**
+	 * Sets the running time.
+	 *
+	 * @param runningTime the new running time
+	 */
 	public void setRunningTime(String runningTime) {
 		this.runningTime = runningTime;
 	}

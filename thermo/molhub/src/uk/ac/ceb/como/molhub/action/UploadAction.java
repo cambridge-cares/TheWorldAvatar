@@ -33,12 +33,13 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 
 import org.apache.log4j.Logger;
 
+
 /**
  * The Class UploadAction.
  *
- * @author nk510 The Class UploadAction: Uploads one or more selected Gaussian
+ * @author nk510 <p>The Class UploadAction: Uploads one or more selected Gaussian
  *         files (g09) on server, and generates XML, ontology file, image file,
- *         and adds ontology files into tripe store (RDF4J).
+ *         and adds ontology files into tripe store (RDF4J).</p>
  */
 public class UploadAction extends ActionSupport implements ValidationAware {
 
@@ -59,7 +60,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 
 	/** The xsd. */
 	private String xsd = catalinaFolderPath + "/conf/Catalina/xml_schema/schema.xsd";
-
+	
 	/** The files. */
 	private List<File> files = new ArrayList<File>();
 
@@ -73,9 +74,9 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	/**
 	 * The column.
 	 *
-	 * @author nk510 List of comun names in table that reports about uploading
+	 * @author nk510 <p>List of comun names in table that reports about uploading
 	 *         process of Gaussina file. Columns are named as (uuid, file name, XML
-	 *         validation, OWL consistency).
+	 *         validation, OWL consistency).</p>
 	 */
 	List<String> column = new ArrayList<String>();
 
@@ -104,7 +105,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 		int fileNumber = 0;
 
 		/**
-		 * @author nk510 Column names in generated table (report).
+		 * @author nk510 <p>Column names in generated table (report) appearing after completing upload action.</p>
 		 */
 
 		if (!files.isEmpty()) {
@@ -122,7 +123,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 
 		/**
 		 * 
-		 * @author nk510 Iterates over selected (uploaded) files.
+		 * @author nk510 <p>Iterates over selected (uploaded) files.</p>
 		 * 
 		 */
 
@@ -131,8 +132,8 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 			Module rootModule = new Module();
 
 			/**
-			 * @author nk510 Creates unique folder name for each uploaded Gaussian file.
-			 *         (g09), XML file, OWL file, and PNG file.
+			 * @author nk510 <p>Creates unique folder name for each uploaded Gaussian file.
+			 *         (g09), XML file, OWL file, and PNG file.</p>
 			 */
 
 			String folderName = FolderManager.generateUniqueFolderName(f.getName(), catalinaFolderPath);
@@ -148,8 +149,8 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 			File owlFile = new File(outputOwlPath);
 
 			/**
-			 * @author nk510 Png file name is the same as the name of folder where that
-			 *         image is saved.
+			 * @author nk510 <p>Png file name is the same as the name of folder where that
+			 *         image is saved.</p>
 			 */
 
 			File pngFile = new File(folderName + "/" + folderName.substring(folderName.lastIndexOf("/") + 1) + ".png");
@@ -161,7 +162,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 			FolderManager.createFolder(folderName);
 
 			/**
-			 * @author nk510 Gaussian file and XML file are saved into generated folder.
+			 * @author nk510 <p>Gaussian file and XML file are saved into generated folder.</p>
 			 */
 			FolderManager.saveFileInFolder(inputG09File, f.getAbsolutePath());
 
@@ -169,8 +170,8 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 
 			/**
 			 * 
-			 * @author nk510 Runs Xslt transformation. Here we use just created folder name
-			 *         as a part of IRI in generated ontology (owl file).
+			 * @author nk510 <p>Runs Xslt transformation. Here we use just created folder name
+			 *         as a part of IRI in generated ontology (owl file).</p>
 			 * 
 			 */
 
@@ -179,8 +180,8 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 					new StreamSource(xslt));
 
 			/**
-			 * @author nk510 Generate image (.png file) from uploaded Gaussian file by using
-			 *         JmolData.
+			 * @author nk510 <p>Generate image (.png file) from uploaded Gaussian file by using
+			 *         JmolData.</p>
 			 */
 
 			String[] cmd = { "java", "-jar", catalinaFolderPath + "/conf/Catalina/jmol/JmolData.jar", "--nodisplay",
@@ -190,9 +191,9 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 			Runtime.getRuntime().exec(cmd);
 
 			/**
-			 * @author nk510 Validates of generated Compchem xml file against Compchem XML
+			 * @author nk510 <p>Validates of generated Compchem xml file against Compchem XML
 			 *         schema, and checks consistency of generated Compchem ontology (owl
-			 *         file).
+			 *         file).</p>
 			 * 
 			 */
 
@@ -207,9 +208,8 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 
 			/**
 			 * 
-			 * @author nk510 Adding generated ontology files (owl) into RDF4J triple store,
-			 *         only in case when generated ontology (owl file) is consistent.
-			 *         
+			 * @author nk510 <p>Adding generated ontology files (owl) into RDF4J triple store,
+			 *         only in case when generated ontology (owl file) is consistent.</p>			 
 			 * 
 			 */
 		 if (consistency) {
@@ -220,11 +220,11 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 
 				@Override
 				public void run() {
-					// TODO Auto-generated method stub
+					
 					/**
 					 * @author nk510 Gets the repository connection.
-					 * @param serverUrl
-					 * remote sparql endpoint.
+					 * @param serverUrl remote molhub sparql endpoint.
+					 * 
 					 */
 					
 					 Repository repository = new HTTPRepository(serverUrl);
@@ -234,28 +234,28 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 					 RepositoryConnection connection = repository.getConnection();
 					
 					 try {
-					 /**
-					 * @author nk510 Begins a new transaction. Requires commit() or rollback() to
-					 be called to end the transaction.
+					 
+				    /**
+					 * @author nk510 <p>Begins a new transaction. Requires commit() or rollback() to be called to end the transaction.</p>
 					 */
+						 
 					 connection.begin();
 					
 					 try {
 					
 					 /**
-					 * @author nk510 Each generated owl file will be stored in RDF4J triple store.
+					 * @author nk510 <p>Each generated owl file will be stored in RDF4J triple store.</p>
 					 */
 					 connection.add(owlFile, uri, RDFFormat.RDFXML);
 					
 					 connection.commit();
+					 
 					
 					 } catch (RepositoryException e) {
 					
 					 /**
-					 * @author nk510
-					 * If something is wrong during the transaction, it will return a message
-					 about
-					 * it.
+					 * @author nk510  <p> If something is wrong during the transaction, it will return a message about it. </p>					 
+					 * 
 					 */
 					
 					 logger.info("RepositoryException: " + e.getMessage());
@@ -268,6 +268,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 					 logger.info(e.getStackTrace());
 					
 					 }
+					 
 					 connection.close();
 					
 					 repository.shutDown();
@@ -276,71 +277,17 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 			 });
 			 
 			 executor.submit(threadTask);
+			 
 			 ExecutorManager em= new ExecutorManager();
 			 
 			 em.shutdownExecutorService(executor);
-			 
-//		 /**
-//		 * @author nk510 Gets the repository connection.
-//		 * @param serverUrl
-//		 * remote sparql endpoint.
-//		 */
-//		
-//		 Repository repository = new HTTPRepository(serverUrl);
-//		
-//		 repository.initialize();
-//		
-//		 RepositoryConnection connection = repository.getConnection();
-//		
-//		 try {
-//		 /**
-//		 * @author nk510 Begins a new transaction. Requires commit() or rollback() to
-//		 be called to end the transaction.
-//		 */
-//		 connection.begin();
-//		
-//		 try {
-//		
-//		 /**
-//		 * @author nk510 Each generated owl file will be stored in RDF4J triple store.
-//		 */
-//		 connection.add(owlFile, uri, RDFFormat.RDFXML);
-//		
-//		 connection.commit();
-//		
-//		 } catch (RepositoryException e) {
-//		
-//		 /**
-//		 * @author nk510
-//		 * If something is wrong during the transaction, it will return a message
-//		 about
-//		 * it.
-//		 */
-//		
-//		 logger.info("RepositoryException: " + e.getMessage());
-//		
-//		 connection.rollback();
-//		 }
-//		
-//		 } catch (Exception e) {
-//		
-//		 logger.info(e.getStackTrace());
-//		
-//		 }
-//		 connection.close();
-//		
-//		 repository.shutDown();
 		
 		 }
-   
 		 
-		
-			
 		 /**
 		 *
-		 * In case of inconsistency of generated ontology (Abox) then Error message
-		 will
-		 * appear.
+		 *@author nk510
+		 * <p> In case of inconsistency of generated ontology (Abox) Error message will appear.</p>		 
 		 *
 		 */
 		

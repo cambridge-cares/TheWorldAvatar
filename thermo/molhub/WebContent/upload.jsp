@@ -9,6 +9,7 @@
 <!--  after pressing refresh button it clears content of page. -->
 <head>
 <!-- <meta http-equiv="refresh" content="300;url=upload.action" /> -->
+ 
 <link rel="icon"
 	href="${pageContext.request.contextPath}/css/static/group/favicon.ico" />
 <link rel="stylesheet" type="text/css"

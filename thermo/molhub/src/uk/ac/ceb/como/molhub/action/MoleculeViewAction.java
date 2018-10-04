@@ -78,40 +78,41 @@ public class MoleculeViewAction extends ActionSupport {
 	public String execute() {
 
 		/**
-		 * @author nk510 SPARQL returns a list of frequencies for given uuid.
+		 * @author nk510 <p>SPARQL returns a list of frequencies for given uuid.</p>
 		 */
 		frequencyList = QueryManager.getAllFrequencies(getUuid());
 
 		/**
-		 * @author nk510 SPARQL returns an object that remembers uud, molecule name,
-		 *         basis set value, level of theory, and geometry type value.
+		 * @author nk510 <p>SPARQL returns an object that remembers uud, molecule name,
+		 *         basis set value, level of theory, and geometry type value.</p>
 		 */
 
 		moleculePropertyList = QueryManager.getAllNonCompositetMoleculeProperties(getUuid());
 
 		/**
-		 * @author nk510 SPARQL returns String that remembers rotational symmetry number
-		 *         for given uuid.
+		 * @author nk510 <p>SPARQL returns String that remembers rotational symmetry number
+		 *         for given uuid.</p>
 		 */
 
 		rotationalSymmetryNumber = QueryManager.getAllRotationalSymmertyNumber(getUuid());
 
 		/**
-		 * @author nk510 SPARQL returns String that remembers spin multiplicity value
-		 *         for gien uuid.
+		 * @author nk510 <p>SPARQL returns String that remembers spin multiplicity value
+		 *         for gien uuid.</p>
 		 */
 
 		spinMultiplicityValue = QueryManager.getAllSpinMultiplicity(getUuid());
 
 		/**
-		 * @author nk510 Remembers atomic masses for each atom appearing in a molecule (species) based on uuid. It
-		 *         includes atomic mass value, atomic mass unit, and atom name.
+		 * @author nk510 <p>Remembers atomic masses for each atom appearing in a molecule (species) based on uuid. It
+		 *         includes atomic mass value, atomic mass unit, and atom name.</p>
 		 */
 		atomicMassList = QueryManager.getAllAtomicMass(getUuid());
 		
 		/**
 		 * @author nk510 
-		 * 
+		 * <p> Remembers rotational constant in the following form (rotational constant size, rotational
+	     *         constant value, rotational constant unit).</p> 
 		 */
 
 		rotationalConstantList = QueryManager.getAllRotationalConstant(getUuid());

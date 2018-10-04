@@ -4,12 +4,10 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
 import java.util.HashSet;
 import java.util.List;
+
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.eclipse.rdf4j.IsolationLevels;
 import org.eclipse.rdf4j.query.BindingSet;
@@ -20,7 +18,6 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
-import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 
 import com.google.common.collect.Sets;
 
@@ -36,8 +33,9 @@ import uk.ac.ceb.como.molhub.bean.RotationalConstant;
 
 /**
  * @author nk510
- * The Class QueryManager. Implements methods for query RDF4J repository. 
+ * <p>The Class QueryManager. Implements methods for query remote RDF4J repository.</p> 
  */
+
 public class QueryManager {
 
 	/** The server url. */
@@ -48,35 +46,36 @@ public class QueryManager {
 	final static Logger logger = Logger.getLogger(QueryManager.class.getName());
 
 	/**
-	 * Perform SPARQL query on query string.
+	 * <p>Runs SPARQL query. </p> 
 	 *
 	 * @param sentence
-	 *            input query string given as propositional formula. Each literal in
-	 *            this query string contains atom name and number of atoms.
-	 * @return a list of molecule names as a result of sparql queries on RDF4J
+	 *            <p>Input query string given as propositional formula. Each literal in
+	 *            this query string contains atom name and number of atoms.</p>
+	 * @return a list of molecule names as a result of sparql queries RDF4J triple store
 	 *         triple store.
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
 	public static Set<String> performSPARQLQueryOnQueryString(Sentence sentence) throws IOException {
+	
 		/**
-		 * @author nk510 List of Strings that represents final solution of querying
-		 *         triple store by using input string (propositional formula).
+		 * @author nk510 <p>List of Strings that represents final solution of querying
+		 *         triple store by using input string (propositional logic formula).</p>
 		 */
 		List<Set<String>> listMoleculeNameSet = new ArrayList<Set<String>>();
 		
 		/**
-		 * @author nk510 Set of all clauses built based on input query.
+		 * @author nk510 <p>Set of all clauses built based on input query.</p>
 		 */
 		
 		Set<Clause> clauseSet = SentenceManager.getClauseSet(sentence);
 		
 		/**
-		 * @author nk510 Here we use Philip's parser for empirical formula.
+		 * @author nk510 <p>Here we use Philip's parser for empirical formula.</p>
 		 */
 		EmpiricalFormulaParser empiricalFormulaParser = new EmpiricalFormulaParser();
 		
-        Repository repository =  new SPARQLRepository(serverUrl);//new HTTPRepository(serverUrl); 
+        Repository repository =  new HTTPRepository(serverUrl); 
 		
 		repository.initialize();
 		
@@ -84,38 +83,37 @@ public class QueryManager {
 		
 		try {
 
-			connection.begin(IsolationLevels.SNAPSHOT_READ);
+			connection.begin();
 
-			int step = 0;
-
-			for (Clause c : clauseSet) {
-
-				step++;
-
+//			int step = 0;
+			
+			for (Clause c : clauseSet) {				
+				
 				HashSet<String> setB = new HashSet<String>();
 				
 				Set<Literal> literalSet = c.getLiterals();
 
 				for (Literal literal : literalSet) {
+					
 
 					String queryString = "";
 
 					/**
-					 * @author nk510 Returns atom name by parsing each literal in clause. Here we
-					 *         use {@author pb556} parser.
+					 * @author nk510 <p>Returns atom name by parsing each literal in clause. Here we
+					 *         use {@author pb556} parser.</p>
 					 */
 					String atomName = empiricalFormulaParser.getAtomName(literal.getAtomicSentence().toString());
 
 					/**
-					 * @author nk510 Returns number of atoms by parsing literal in clause. Here we
-					 *         use {@author pb556} parser.
+					 * @author nk510 <p>Returns number of atoms by parsing literal in clause. Here we
+					 *         use {@author pb556} parser.</p>
 					 */
 					int numberOfAtoms = empiricalFormulaParser.getAtomSum(literal.getAtomicSentence().toString());
 
 					/**
-					 * @author nk510 If literal is positive then query manager returns sparql query
+					 * @author nk510 <p>If literal is positive then query manager returns sparql query
 					 *         string that will query those molecule name containing selected atom
-					 *         name and selected number of atoms.
+					 *         name and selected number of atoms.</p>
 					 */
 					if (literal.isPositiveLiteral()) {
 
@@ -123,9 +121,9 @@ public class QueryManager {
 					}
 
 					/**
-					 * @author nk510 If literal is negative then query manager returns sparql query
+					 * @author nk510 <p>If literal is negative then query manager returns sparql query
 					 *         string that will query those molecule name not containing selected
-					 *         atom name and selected number of atoms.
+					 *         atom name and selected number of atoms.</p>
 					 */
 
 					if (literal.isNegativeLiteral()) {
@@ -142,7 +140,7 @@ public class QueryManager {
 
 						/**
 						 * 
-						 * @author nk510 Evaluates sparql query and populates 'MoleculeProperty' beans.
+						 * @author nk510 <p>Evaluates sparql query and populates 'MoleculeProperty' beans.</p>
 						 * 
 						 */
 
@@ -151,10 +149,10 @@ public class QueryManager {
 						while (result.hasNext()) {
 
 							BindingSet bindingSet = result.next();
-
+							
 							/**
 							 * 
-							 * @author nk510 Add all query results for one literal into a set.
+							 * @author nk510 <p>Add all query results for one literal into a set.</p>
 							 * 
 							 */
 
@@ -163,6 +161,7 @@ public class QueryManager {
 						}
 						
 						setB.addAll(setA);
+						
 						
 						connection.commit();
 
@@ -174,17 +173,18 @@ public class QueryManager {
 						
 						result.close();
 					}
-				}
+				}//literalSet
 				
 				if (clauseSet.size() <= 1) {
 
 					return setB;
 
 				}
-
+				
 				listMoleculeNameSet.add(setB);
 				
-			}
+				
+			}//clauseSet
 			
 		} catch(RepositoryException e) {
 			
@@ -203,13 +203,13 @@ public class QueryManager {
 		
 		/**
 		 * 
-		 * @author nk510 Calculates intersection of all results for all clauses
-		 *         (unions).
+		 * @author nk510 <p>Calculates intersection of all results for all clauses
+		 *         (unions).</p>
 		 * 
 		 */
-
+		
 		return intersection(listMoleculeNameSet);
-
+		
 	}
 
 	/**
@@ -218,8 +218,8 @@ public class QueryManager {
 	 * @author nk510
 	 * @param moleculeName
 	 *            a name of a molecule
-	 * @return for given molecule name sparql returns uuid, level of theory, and
-	 *         basis set.
+	 * @return a Java Set. <p>For given molecule name sparql returns uuid, level of theory, and
+	 *         basis set. </p>
 	 */
 
 	public static Set<MoleculeProperty> performSPARQLForMoleculeName(String moleculeName) {
@@ -228,7 +228,7 @@ public class QueryManager {
 		
 		String queryString = QueryString.getAllTriplesMoleculeProperty(moleculeName);
 		
-        Repository repository =   new SPARQLRepository(serverUrl);// new SPARQLRepository(serverUrl); 
+        Repository repository =   new HTTPRepository(serverUrl); 
 			
 		repository.initialize();
 			
@@ -264,7 +264,6 @@ public class QueryManager {
 				result.close();
 			}
 			
-
 			connection.commit();
 
 		} catch (RepositoryException e) {
@@ -290,8 +289,8 @@ public class QueryManager {
 	 *
 	 * @author nk510
 	 * @param listOfSets
-	 *            a list that contains sets of all unions in all clauses.
-	 * @return intersection of all clauses as a set of strings.
+	 *            <p>A list that contains sets of all unions in all clauses.</p>
+	 * @return a Java Set. <p>Intersection of all clauses as sets of strings.</p>
 	 */
 	public static Set<String> intersection(List<Set<String>> listOfSets) {
 
@@ -325,14 +324,14 @@ public class QueryManager {
 
 		return finalSet;
 	}
-
+	
 	/**
 	 * Gets the all frequencies.
 	 *
 	 * @author nk510
 	 * @param uuid
 	 *            unique folder name.
-	 * @return a list of all frequencies (size, value, unit) for given uuid.
+	 * @return A Java List. <p>A list of all frequencies (size, value, unit) for given uuid.</p>
 	 */
 	public static List<Frequency> getAllFrequencies(String uuid) {
 
@@ -340,7 +339,7 @@ public class QueryManager {
 
 		String queryString = QueryString.geFrequency(uuid);
 		
-		Repository repository =  new SPARQLRepository(serverUrl);//new HTTPRepository(serverUrl); 
+		Repository repository =  new HTTPRepository(serverUrl);
 		
 		repository.initialize();
 		
@@ -402,7 +401,7 @@ public class QueryManager {
 	 *
 	 * @param uuid
 	 *            the uuid is name for unique folder name
-	 * @return the all non compositet molecule properties
+	 * @return A Java List. <p>all non composite molecule properties . Non composite molecule properties includes: molecule name, basis set value, level of theory, and geometry type.</p>
 	 */
 	public static List<MoleculeProperty> getAllNonCompositetMoleculeProperties(String uuid) {
 
@@ -410,7 +409,7 @@ public class QueryManager {
 
 		List<MoleculeProperty> moleculePropertyList = new ArrayList<MoleculeProperty>();
 		
-		Repository repository =  new SPARQLRepository(serverUrl);//new HTTPRepository(serverUrl); 
+		Repository repository =  new HTTPRepository(serverUrl); 
 		
 		repository.initialize();
 		
@@ -472,8 +471,8 @@ public class QueryManager {
 	 * Gets the all rotational symmerty number.
 	 *
 	 * @param uuid
-	 *            the uuid is name for unique folder
-	 * @return the all rotational symmerty number
+	 *            the uuid is name for unique folder name.
+	 * @return the rotational symmerty number.
 	 */
 	public static String getAllRotationalSymmertyNumber(String uuid) {
 
@@ -481,7 +480,7 @@ public class QueryManager {
 
 		String rotationalSymmetryNumber = new String();
 		
-		Repository repository = new SPARQLRepository(serverUrl);// new HTTPRepository(serverUrl); 
+		Repository repository = new HTTPRepository(serverUrl);
 		
 		repository.initialize();
 		
@@ -541,8 +540,8 @@ public class QueryManager {
 	 * Gets the all spin multiplicity.
 	 *
 	 * @param uuid
-	 *            the uuid is name for unique folder
-	 * @return the all spin multiplicity value
+	 *            the uuid is name for unique folder name.
+	 * @return the spin multiplicity value.
 	 */
 	public static String getAllSpinMultiplicity(String uuid) {
 
@@ -550,7 +549,7 @@ public class QueryManager {
 
 		String spinMultiplicityValue = new String();
 		
-		Repository repository =  new SPARQLRepository(serverUrl);//new HTTPRepository(serverUrl); 
+		Repository repository =  new HTTPRepository(serverUrl);
 		
 		repository.initialize();
 		
@@ -608,8 +607,8 @@ public class QueryManager {
 	 * Gets the all atomic mass.
 	 *
 	 * @param uuid
-	 *            the uuid is name for unique folder
-	 * @return the all atomic mass (atom name, atomic mass value, atomic mass unit)
+	 *            the uuid is name for unique folder name.
+	 * @return the atomic masses. <p>These data are given as the following 3-tuple (atom name, atomic mass value, atomic mass unit). </p>
 	 */
 	public static List<AtomicMass> getAllAtomicMass(String uuid) {
 
@@ -617,7 +616,7 @@ public class QueryManager {
 
 		String queryString = QueryString.getAtomicMass(uuid);
 		
-		Repository repository =  new SPARQLRepository(serverUrl);//new HTTPRepository(serverUrl); 
+		Repository repository =  new HTTPRepository(serverUrl); 
 		
 		repository.initialize();
 		
@@ -681,8 +680,8 @@ public class QueryManager {
 	 *
 	 * @param uuid
 	 *            the uuid is name for unique folder.
-	 * @return the all rotational constant (rotational constant size, rotational
-	 *         constant value, rotational constant unit).
+	 * @return the rotational constant. <p>These data are given as the following 3-tuple (rotational constant size, rotational constant value, rotational constant unit).</p>
+	 *         
 	 */
 	public static List<RotationalConstant> getAllRotationalConstant(String uuid) {
 
@@ -690,7 +689,7 @@ public class QueryManager {
 
 		String queryString = QueryString.getRotationalConstant(uuid);
 		
-		Repository repository = new SPARQLRepository(serverUrl);// new HTTPRepository(serverUrl); 
+		Repository repository = new HTTPRepository(serverUrl);
 		
 		repository.initialize();
 		
