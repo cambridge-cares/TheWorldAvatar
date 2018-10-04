@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module xmlns="http://www.xml-cml.org/schema" xmlns:convention="http://www.xml-cml.org/convention/" xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/" xmlns:cml="http://www.xml-cml.org/schema" xmlns:si="http://www.xml-cml.org/unit/si/" xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:x="http://www.xml-cml.org/dictionary/cmlx/" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:compchem="http://www.xml-cml.org/dictionary/compchem" xmlns:n="http://www.xml-cml.org/dictionary/nwchem/">
-   <module dictRef="cc:jobList" xmlns:conventions="http://www.xml-cml.org/convention/">
-      <module dictRef="cc:job" xmlns:conventions="http://www.xml-cml.org/convention/">
-         <module dictRef="cc:initialization" xmlns:conventions="http://www.xml-cml.org/convention/">
-            <molecule xmlns:conventions="http://www.xml-cml.org/convention/">
+<module xmlns="http://www.xml-cml.org/schema" xmlns:convention="http://www.xml-cml.org/convention/" xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/" xmlns:cml="http://www.xml-cml.org/schema" xmlns:si="http://www.xml-cml.org/unit/si/" xmlns:x="http://www.xml-cml.org/dictionary/cmlx/" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:compchem="http://www.xml-cml.org/dictionary/compchem" xmlns:n="http://www.xml-cml.org/dictionary/nwchem/">
+   <module dictRef="cc:jobList">
+      <module dictRef="cc:job">
+         <module dictRef="cc:initialization">
+            <molecule>
                <atomArray>
                   <atom count="2.0" elementType="Cl"/>
                   <atom count="10.0" elementType="O"/>
@@ -11,7 +11,7 @@
                </atomArray>
                <formula concise="Cl 2 O 10 Ti 3 "/>
             </molecule>
-            <parameterList xmlns:conventions="http://www.xml-cml.org/convention/">
+            <parameterList>
                <parameter dictRef="cc:method">
                   <scalar dataType="xsd:string">RB971</scalar>
                </parameter>
@@ -20,8 +20,8 @@
                </parameter>
             </parameterList>
          </module>
-         <module dictRef="cc:finalization" xmlns:conventions="http://www.xml-cml.org/convention/">
-            <propertyList xmlns:conventions="http://www.xml-cml.org/convention/">
+         <module dictRef="cc:finalization">
+            <propertyList>
                <property dictRef="cc:vibrations">
                   <array dataType="xsd:double" dictRef="cc:frequencies" size="39" units="nonSi:cm-1">7.3101 8.6597 12.9525 16.9093 29.0444 34.4826 43.2273 49.1572 63.4482 67.5679 100.5147 107.1816 119.8488 133.0918 148.4773 163.2157 166.5326 183.1336 233.0512 233.3814 250.1942 250.9012 337.1412 422.4791 503.7039 523.5043 637.8279 638.9819 647.6525 671.8849 685.0075 690.7293 819.0391 900.0573 903.9359 910.9357 946.1856 949.1652 958.4558</array>
                </property>
@@ -35,7 +35,7 @@
                   <scalar dataType="xsd:string">nonlinear</scalar>
                </property>
             </propertyList>
-            <molecule id="mol-final-2" formalCharge="0" convention="convention:molecular" spinMultiplicity="1" xmlns:conventions="http://www.xml-cml.org/convention/">
+            <molecule id="mol-final-2" formalCharge="0" convention="convention:molecular" spinMultiplicity="1">
                <atomArray>
                   <atom atomicMass="47.9479467" z3="-0.476006" id="a1" x3="-3.447423" y3="-0.20337" elementType="Ti"/>
                   <atom atomicMass="47.9479467" z3="-3.684695" id="a2" x3="1.657632" y3="1.839146" elementType="Ti"/>
@@ -55,8 +55,8 @@
                </atomArray>
             </molecule>
          </module>
-         <module dictRef="cc:environment" xmlns:conventions="http://www.xml-cml.org/convention/">
-            <parameterList xmlns:conventions="http://www.xml-cml.org/convention/">
+         <module dictRef="cc:environment">
+            <parameterList>
                <parameter dictRef="cc:program">
                   <scalar dataType="xsd:string">Gaussian</scalar>
                </parameter>

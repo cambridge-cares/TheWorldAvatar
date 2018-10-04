@@ -6,17 +6,18 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-// TODO: Auto-generated Javadoc
 /**
+ * 
  * @author nk510 The Class ParsingCharge.
  * 
  *         <p>The call has implemented method for extracting formal charge from
  *         Gaussian file. We use this method for parsing Gaussian files (g09)
  *         which contain molecules with one atom.</p>
+ *         
  */
 public class ParsingCharge {
 
-	/** The br. */
+	/** The buffered reader */
 	private static BufferedReader br;
 
 	/**
@@ -28,7 +29,8 @@ public class ParsingCharge {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public static String getFormalCharge(File file) throws IOException {
+	
+	public static Long getFormalCharge(File file) throws IOException {
 
 		String formalCharge = "";
 
@@ -68,6 +70,8 @@ public class ParsingCharge {
 
 		br.close();
 
-		return formalCharge;
+		Long formarChargeInteger = Long.valueOf(formalCharge);
+		
+		return formarChargeInteger;
 	}
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module xmlns="http://www.xml-cml.org/schema" xmlns:convention="http://www.xml-cml.org/convention/" xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/" xmlns:cml="http://www.xml-cml.org/schema" xmlns:si="http://www.xml-cml.org/unit/si/" xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:x="http://www.xml-cml.org/dictionary/cmlx/" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:compchem="http://www.xml-cml.org/dictionary/compchem" xmlns:n="http://www.xml-cml.org/dictionary/nwchem/">
-   <module dictRef="cc:jobList" xmlns:conventions="http://www.xml-cml.org/convention/">
-      <module dictRef="cc:job" xmlns:conventions="http://www.xml-cml.org/convention/">
-         <module dictRef="cc:initialization" xmlns:conventions="http://www.xml-cml.org/convention/">
-            <molecule xmlns:conventions="http://www.xml-cml.org/convention/">
+<module xmlns="http://www.xml-cml.org/schema" xmlns:convention="http://www.xml-cml.org/convention/" xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/" xmlns:cml="http://www.xml-cml.org/schema" xmlns:si="http://www.xml-cml.org/unit/si/" xmlns:x="http://www.xml-cml.org/dictionary/cmlx/" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:compchem="http://www.xml-cml.org/dictionary/compchem" xmlns:n="http://www.xml-cml.org/dictionary/nwchem/">
+   <module dictRef="cc:jobList">
+      <module dictRef="cc:job">
+         <module dictRef="cc:initialization">
+            <molecule>
                <atomArray>
                   <atom count="2.0" elementType="Cl"/>
                   <atom count="2.0" elementType="O"/>
@@ -11,7 +11,7 @@
                </atomArray>
                <formula concise="Cl 2 O 2 Ti 1 "/>
             </molecule>
-            <parameterList xmlns:conventions="http://www.xml-cml.org/convention/">
+            <parameterList>
                <parameter dictRef="cc:method">
                   <scalar dataType="xsd:string">UB971</scalar>
                </parameter>
@@ -20,8 +20,8 @@
                </parameter>
             </parameterList>
          </module>
-         <module dictRef="cc:finalization" xmlns:conventions="http://www.xml-cml.org/convention/">
-            <propertyList xmlns:conventions="http://www.xml-cml.org/convention/">
+         <module dictRef="cc:finalization">
+            <propertyList>
                <property dictRef="cc:vibrations">
                   <array dataType="xsd:double" dictRef="cc:frequencies" size="9" units="nonSi:cm-1">99.7777 112.8967 147.3616 148.3138 183.3233 269.3951 345.7526 391.3515 886.3464</array>
                </property>
@@ -35,7 +35,7 @@
                   <scalar dataType="xsd:string">nonlinear</scalar>
                </property>
             </propertyList>
-            <molecule id="mol-final-2" formalCharge="-2" convention="convention:molecular" spinMultiplicity="3" xmlns:conventions="http://www.xml-cml.org/convention/">
+            <molecule id="mol-final-2" formalCharge="-2" convention="convention:molecular" spinMultiplicity="3">
                <atomArray>
                   <atom atomicMass="15.9949146" z3="0.73636" id="a1" x3="-2.52396" y3="0.62224" elementType="O"/>
                   <atom atomicMass="34.9688527" z3="-2.26658" id="a2" x3="-0.95626" y3="0.96899" elementType="Cl"/>
@@ -45,8 +45,8 @@
                </atomArray>
             </molecule>
          </module>
-         <module dictRef="cc:environment" xmlns:conventions="http://www.xml-cml.org/convention/">
-            <parameterList xmlns:conventions="http://www.xml-cml.org/convention/">
+         <module dictRef="cc:environment">
+            <parameterList>
                <parameter dictRef="cc:program">
                   <scalar dataType="xsd:string">Gaussian</scalar>
                </parameter>

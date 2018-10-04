@@ -1,6 +1,3 @@
-/*
- * 
- */
 package uk.ac.cam.ceb.como.jaxb.parser.g09;
 
 import java.io.File;
@@ -145,7 +142,7 @@ public class ParsingGeometry {
 
 		/**
 		 * @author nk510 Suggested by Dr Daniel Nurkowski (danieln@cmclinnovations.com):
-		 *         to set all coordinates 0.00 in case of having molecule with one atom.
+		 *         Set all coordinates 0.00 in case when a molecule has one atom.
 		 */
 		atomJxb.setX3(0.00);
 		atomJxb.setY3(0.00);
@@ -165,8 +162,15 @@ public class ParsingGeometry {
 
 		molecule.setId("mol-final-2");
 		molecule.setConvention("convention:molecular");
-
 		
+		/**
+		 * @author nk510
+		 * Extract formalCharge from Gaussian file (g09).
+		 * 
+		 */
+		molecule.setFormalCharge(BigInteger.valueOf(ParsingCharge.getFormalCharge(file)));
+		
+		molecule.setSpinMultiplicity(BigInteger.valueOf(ParsingSpinMultiplicity.getSpinMultiplicity(file)));
 
 		molecule.getAngleOrArgOrArray().add(atomArrayJxb);
 
