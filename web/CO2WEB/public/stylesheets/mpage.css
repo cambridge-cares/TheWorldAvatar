@@ -410,3 +410,44 @@ th {
 .plot-title {
     font-size: 20px
 }
+
+
+#readme-button {
+    float: right;
+    cursor: pointer;
+    color: white;
+    background: transparent;
+
+    /*position: absolute;*/
+    /*top: 55px;*/
+    /*right: 690px;*/
+    font-size: 20px;
+    width: 30px;
+
+    border: 2px solid white;
+    border-radius: 50%;
+    margin: 0px 100px 0px 0px;
+}
+
+#readme-text {
+    display: none;
+    box-sizing: border-box;
+    height: 271px;
+    width: 709px;
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 5px 5px;
+    margin: 0px 100px 0px 0px;
+
+    position: absolute;
+    top: 25px;
+    right: 28px;
+
+    background: white;
+    z-index: 1;
+
+    text-align: left;
+    overflow-y: scroll;
+	font-size: 16px;
+	color: black; !important
+}
