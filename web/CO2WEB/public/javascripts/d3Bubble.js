@@ -970,7 +970,7 @@ $(window).load(function () {// when web dom ready
                                 }
                                 
                             }
-                            map.update(links, coords);
+                            map.update(links, coords, [],true );
                             
                             
                         }

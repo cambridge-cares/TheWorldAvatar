@@ -34,8 +34,8 @@ const request = require('request'),
      
     },
     singleCall: function ({uris, updateQs}, merrCB) {
-        console.log(uris)
-        console.log(updateQs)
+        console.log("list of uris= "+uris)
+        console.log("list of updatedQs= "+updateQs)
 
       let url = this.constructUrl(uris, updateQs)
         console.log("requesting SPARQL ENDPOINT")

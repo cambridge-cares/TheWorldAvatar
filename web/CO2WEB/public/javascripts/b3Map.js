@@ -1,19 +1,18 @@
-
 var b3map = new PopupMap({useCluster:true,  editable: true});
 
 var socket = io();
 
-socket.emit("join", JSON.stringify([{uri:"http://www.theworldavatar.com/E-301.owl", withData:true}
-    ,{uri:"http://www.theworldavatar.com/R-301.owl", withData:true}
-,{uri:"http://www.theworldavatar.com/T-601002.owl", withData:true}
-,{uri:"http://www.theworldavatar.com/R-302.owl", withData:true}
-,{uri:"http://www.theworldavatar.com/P-302.owl", withData:true}
+socket.emit("join", JSON.stringify([{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/E-301.owl", withData:true}
+    ,{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-301.owl", withData:true}
+,{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant2/T-601002.owl", withData:true}
+,{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-302.owl", withData:true}
+,{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/P-302.owl", withData:true}
 
-    ,{uri:"http://www.theworldavatar.com/E-601008.owl", withData:true}
-    ,{uri:"http://www.theworldavatar.com/E-601001.owl", withData:true}
-    ,{uri:"http://www.theworldavatar.com/E-601002.owl", withData:true}
-    ,{uri:"http://www.theworldavatar.com/E-601003.owl", withData:true}
-    ,{uri:"http://www.theworldavatar.com/E-601004.owl", withData:true}
+    ,{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant2/E-601008.owl", withData:true}
+    ,{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant2/E-601001.owl", withData:true}
+    ,{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant2/E-601002.owl", withData:true}
+    ,{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant2/E-601003.owl", withData:true}
+    ,{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant2/E-601004.owl", withData:true}
 
 
 ]));
@@ -60,8 +59,10 @@ socket.on('update', function (udata) {
     console.log(udata);
     //Blinking any modified object
     let uri1 = udata.uri.replace("C:\\TOMCAT\\webapps\\ROOT\\", "http://www.theworldavatar.com/");
-    let uri2 = udata.uri.replace("C:\\TOMCAT\\webapps\\ROOT\\", "http://www.jparksimulator.com/");
-
+	 uri1 = uri1.replace(/\\/g, "/");
+	
+	let uri2 = udata.uri.replace("C:\\TOMCAT\\webapps\\ROOT\\", "http://www.jparksimulator.com/");
+	uri2 = uri2.replace(/\\/g, "/");
 
                     [uri1, uri2].forEach((uri)=>{
                         console.log(uri);
@@ -180,17 +181,17 @@ return result;
 
 //Output attr map
 var outputMap = {
-    "ValueOfHeatDutyOfR-301":{uri : "http://www.jparksimulator.com/R-301.owl", name:"ValueOfHeatDutyOfR-301"}
-    ,"V_Angle_LoadPoint_R-301":{uri : "http://www.theworldavatar.com/R-301load.owl", name:"V_Angle_LoadPoint_R-602001"}
-    ,"V_ActualVoltage_LoadPoint_R-301":{uri : "http://www.theworldavatar.com/R-301load.owl", name:"V_ActualVoltage_LoadPoint_R-602001"}
-        ,"ValueOfHeatDutyOfR-302":{uri : "http://www.jparksimulator.com/R-302.owl", name:"ValueOfHeatDutyOfR-302"}
-    ,"V_Angle_LoadPoint_R-302":{uri : "http://www.theworldavatar.com/R-302load.owl", name:"V_Angle_LoadPoint_R-602002"}
-    ,"V_ActualVoltage_LoadPoint_R-302":{uri : "http://www.theworldavatar.com/R-302load.owl", name:"V_ActualVoltage_LoadPoint_R-602002"}
-    ,"V_molarF_601039":{uri : "http://www.theworldavatar.com/T-601002.owl", name:"V_molarF_601039"}
-    ,"ValueOfHeatDutyOfE-601001":{uri : "http://www.jparksimulator.com/E-601001.owl", name:"ValueOfHeatDutyOfE-601001"}
-    ,"ValueOfHeatDutyOfE-601002":{uri : "http://www.jparksimulator.com/E-601002.owl", name:"ValueOfHeatDutyOfE-601002"}
-    ,"ValueOfHeatDutyOfE-601003":{uri : "http://www.jparksimulator.com/E-601003.owl", name:"ValueOfHeatDutyOfE-601003"}
-    ,"ValueOfHeatDutyOfE-601004":{uri : "http://www.jparksimulator.com/E-601004.owl", name:"ValueOfHeatDutyOfE-601004"}
+    "ValueOfHeatDutyOfR-301":{uri : "http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-301.owl", name:"ValueOfHeatDutyOfR-301"}
+    ,"V_Angle_LoadPoint_R-301":{uri : "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/R-301load.owl", name:"V_theta_R-301load"}
+    ,"V_ActualVoltage_LoadPoint_R-301":{uri : "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/R-301load.owl", name:"V_ActualV_R-301load"}
+        ,"ValueOfHeatDutyOfR-302":{uri : "http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-302.owl", name:"ValueOfHeatDutyOfR-302"}
+    ,"V_Angle_LoadPoint_R-302":{uri : "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/R-302load.owl", name:"V_theta_R-302load"}
+    ,"V_ActualVoltage_LoadPoint_R-302":{uri : "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/R-302load.owl", name:"V_ActualV_R-302load"}
+    ,"V_molarF_601039":{uri : "http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant2/T-601002.owl", name:"V_molarF_601039"}
+    ,"ValueOfHeatDutyOfE-601001":{uri : "http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant2/E-601001.owl", name:"ValueOfHeatDutyOfE-601001"}
+    ,"ValueOfHeatDutyOfE-601002":{uri : "http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant2/E-601002.owl", name:"ValueOfHeatDutyOfE-601002"}
+    ,"ValueOfHeatDutyOfE-601003":{uri : "http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant2/E-601003.owl", name:"ValueOfHeatDutyOfE-601003"}
+    ,"ValueOfHeatDutyOfE-601004":{uri : "http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant2/E-601004.owl", name:"ValueOfHeatDutyOfE-601004"}
 };
 
 
@@ -212,7 +213,7 @@ function processResult(resultStr) {
         let name = nvpair[0].trim(), value = nvpair[1];
         if(name in outputMap){
             outputMap[name]["value"] = value;
-            outputMap[name]["p"] = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue";
+            outputMap[name]["p"] = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue";
             outputMap[name]["datatype"] = "float";
          attrObjs.push(outputMap[name])
         }

@@ -44,11 +44,3 @@ function  getSemakauCoordi(callback) {
 
 
 module.exports = getSemakauCoordi
-
-getSemakauCoordi((err, result)=>{
-    "use strict";
-    
-    console.log(result)
-})
-
-

@@ -1,4 +1,5 @@
 (function PPMapAlt(){
+		
     var ppMap = new PopupMap({useCluster:true});
 
 

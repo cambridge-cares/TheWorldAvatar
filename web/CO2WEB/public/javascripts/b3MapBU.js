@@ -3,9 +3,9 @@ var b3map = new PopupMap({useCluster:true,  editable: true});
 
 var socket = io();
 
-socket.emit("join", JSON.stringify([{uri:"http://www.theworldavatar.com/E-301.owl", withData:true}
-    ,{uri:"http://www.theworldavatar.com/R-301.owl", withData:true}
-,{uri:"http://www.theworldavatar.com/P-302.owl", withData:true}]));
+socket.emit("join", JSON.stringify([{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/E-301.owl", withData:true}
+    ,{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-301.owl", withData:true}
+,{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/P-302.owl", withData:true}]));
 
 var dataMap = {
 "V_molarF_3-1": 0,
@@ -120,12 +120,12 @@ function SendSimulationQuery(variables) {
 
 //Output attr map
 var outputMap = {
-    "ValueOfHeatDutyOfR-301":{uri : "http://www.jparksimulator.com/R-301.owl", name:"ValueOfHeatDutyOfR-301"}
-    ,"V_Angle_LoadPoint_R-301":{uri : "http://www.theworldavatar.com/R-301load.owl", name:"V_Angle_LoadPoint_R-602001"}
-    ,"V_ActualVoltage_LoadPoint_R-301":{uri : "http://www.theworldavatar.com/R-301load.owl", name:"V_ActualVoltage_LoadPoint_R-602001"}
-        ,"ValueOfHeatDutyOfR-302":{uri : "http://www.jparksimulator.com/R-302.owl", name:"ValueOfHeatDutyOfR-302"}
-    ,"V_Angle_LoadPoint_R-302":{uri : "http://www.theworldavatar.com/R-302load.owl", name:"V_Angle_LoadPoint_R-602002"}
-    ,"V_ActualVoltage_LoadPoint_R-302":{uri : "http://www.theworldavatar.com/R-302load.owl", name:"V_ActualVoltage_LoadPoint_R-602002"}
+    "ValueOfHeatDutyOfR-301":{uri : "http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-301.owl", name:"ValueOfHeatDutyOfR-301"}
+    ,"V_Angle_LoadPoint_R-301":{uri : "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/R-301load.owl", name:"V_theta_R-301load"}
+    ,"V_ActualVoltage_LoadPoint_R-301":{uri : "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/R-301load.owl", name:"V_ActualV_R-301load"}
+        ,"ValueOfHeatDutyOfR-302":{uri : "http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-302.owl", name:"ValueOfHeatDutyOfR-302"}
+    ,"V_Angle_LoadPoint_R-302":{uri : "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/R-302load.owl", name:"V_theta_R-302load"}
+    ,"V_ActualV_R-302load":{uri : "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/R-302load.owl", name:"V_ActualV_R-301load"}
 
 };
 
@@ -145,7 +145,7 @@ function processResult(resultStr) {
         let name = nvpair[0].trim(), value = nvpair[1];
         if(name in outputMap){
             outputMap[name]["value"] = value;
-            outputMap[name]["p"] = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue";
+            outputMap[name]["p"] = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue";
             outputMap[name]["datatype"] = "float";
         }
     })

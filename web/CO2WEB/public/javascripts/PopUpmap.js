@@ -1,6 +1,38 @@
 /**
  * Module for map visualization, make cluster an option
  */
+
+//-----------------------------------------------------------------------------------//
+	
+	const toggleDisplay = elemId => {
+        let x = document.getElementById(elemId);
+        if (x.style.display !== 'block') {
+            x.style.display = 'block';
+        } else {
+            x.style.display = 'none';
+        }
+    };
+
+    $("#readme-button").click(function() {
+        toggleDisplay("readme-text");
+    });
+
+    document.addEventListener("click", function(evt) {
+        var readmeButtonElement = document.getElementById('readme-button'),
+            readmeTextElement = document.getElementById('readme-text'),
+            targetElement = evt.target;  // clicked element
+
+        if (targetElement == readmeButtonElement || targetElement == readmeTextElement) {
+            return; //readme-button or readme-text is clicked. do nothing.
+        }
+
+        if(readmeTextElement.style.display === 'block') {
+            readmeTextElement.style.display = 'none';
+        }
+    });
+    
+    //-----------------------------------------------------------------------------------//
+
 /*Map with Popup markers**/
 function PopupMap(options) {
     //var googleMap;//the map entity
@@ -20,12 +52,13 @@ function PopupMap(options) {
         scale: 0.3
         },
 
-        "load": {
+        "powerload": {
             "path": "M -2 -151 L -2 -151 L 148 -1 L -2 149 L -152 -1 Z"
             ,"scale": 0.3
 
         },
-        "solarcellfarm": {
+        //"photovoltaicgenerator": {
+		"solargen": {
             "path": "M 250 150 L 400 150 L 550 150 L 550 250 L 400 250 L 400 150 L 250 150 L 250 250 L 400 250 L 400 350 L 550 350 L 550 250 L 400 250 L 250 250 L 250 350 L 400 350 "
             ,"scale": 0.3
 
@@ -35,32 +68,38 @@ function PopupMap(options) {
             ,"scale": 0.3
 
         },
-        "dieselgenerators": {
+		"dieselgen": {
+        //"fossilfuelgenerator": {
             "path": "M 250 200 L 450 200 L 500 350 L 200 350 L 250 200 "
             ,"scale": 0.3
 
         },
-        "marineturbinegenerators": {
+        "tidalgen": {
+		//"tidalgenerator": {
             "path": "M 400 300 Q 350 200 400 100 L 400 100 Q 450 200 400 300 Q 500 250 600 300 Q 500 350 400 300 Q 450 400 400 500 Q 350 400 400 300 Q 300 350 200 300 Q 300 250 400 300 "
             ,"scale": 0.3
 
         },
-        "windturbinegenerators": {
+        "windgen": {
+		//"windgenerator": {
             "path": "M 400 300 Q 450 150 400 50 Q 350 150 400 300 Q 250 350 200 450 Q 350 400 400 300 Q 550 350 600 450 Q 450 400 400 300 "
             ,"scale": 0.3
 
         },
-        "rectifier": {
+        "rec": {
+		//"rectifier": {
             "path": "M 400 150 L 250 300 L 400 450 L 550 300 L 400 150 L 400 450 L 250 300 L 550 300 "
-            ,"scale": 0.3
+            ,"scale": 0.15
 
         },
-        "powerinverter": {
+		"inv": {
+        //"inverter": {
             "path": "M 300 150 L 250 200 L 300 250 L 350 200 L 300 150 L 350 200 L 400 150 L 450 200 L 400 250 L 350 200 L 400 250 L 450 300 L 400 350 L 350 300 L 400 250 L 350 300 L 300 350 L 250 300 L 300 250 L 350 300 "
-            ,"scale": 0.3
+            ,"scale": 0.15
 
         },
-        "transformer": {
+        "substn": {
+		//"substation": {
             "path": "M 100 300 L 100 50 L 200 50 L 200 300 L 300 500 L 0 500 L 100 300 L 250 400 L 0 500 L 300 500 L 50 400 L 200 300 L 100 300 L 200 200 L 200 300 L 100 200 L 200 100 L 200 200 L 100 100 L 200 50 L 200 100 L 100 50 L 50 100 L 100 100 L 250 100 L 200 50 L 250 100 L 200 100 L 250 150 L 50 150 L 100 100 "
             ,"scale": 0.3
         },
@@ -95,6 +134,10 @@ function PopupMap(options) {
         "s": {
             "path": "M 15 2 34 17 9 30 15 2Z",
             "scale": 2
+        },
+		"mix": {
+            "path": "M 5 34 36 18 24 51 5 34Z",
+            "scale": 1
         },
         "m": {
             "path": "M 5 34 36 18 24 51 5 34Z",
@@ -182,20 +225,30 @@ PopupMap.prototype = {
      * @param datum
      * @returns {null}
      */
-    getIconByType: function (type) {
+    getIconByType: function (type, highlight) {
         //switch, type, if not found ,extract name, still no, use default
 
         if (!type) {
             return null;
         }
         console.log("looking for " + type)
+		
+		console.log("Highlighted: ", highlight);
+		
         //loop type through all in json map
         let shape = this.deviceMap.get(type.toLowerCase());
         console.log("got shape: " + shape)
         if (shape) {
-            shape["fillColor"] = this.colorMap.returnColor(shape);
-            shape["strokeColor"] = "black";
-            shape["strokeWeight"] = 2;
+			if(highlight){
+			shape["strokeColor"] = "yellow";
+            shape["strokeWeight"] = 4;
+			}
+			else{
+			shape["strokeColor"] = "black";
+            shape["strokeWeight"] = 2;            
+
+			}
+			shape["fillColor"] = this.colorMap.returnColor(shape);
             shape["fillOpacity"] = 1;
         }
         return shape;
@@ -241,8 +294,19 @@ PopupMap.prototype = {
          pps.forEach(function (pp) {
             let muri = pp.uri;
             //check type to determine what icon to use
-            let icon = self.getIconByType(pp.type);
+			
+			var highlight = false;
+            
+			if(muri === 'http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/E-301.owl'){
+				highlight = true;
+			}
+			
+			
+			let icon = self.getIconByType(pp.type, highlight);
 
+			
+			
+			
             console.log("drawing type: " + icon)
              console.log("Drawing for "+muri+" at N"+pp.location.lat)
              console.log("Drawing for "+muri+" at E"+pp.location.lng)

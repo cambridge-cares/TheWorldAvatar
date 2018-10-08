@@ -11,7 +11,7 @@ const xmlParser = require('./fileConnection2Way'),
       async = require('async'),
       path = require('path'),
       fs = require('graceful-fs'),
-      worldNode  = config.worldNode,
+      worldNode  = config.ppNode;
       processor = Object.create(xmlParser);
 
 
@@ -24,6 +24,7 @@ function readPPCoordi(callback) {
  
  
             PPchildren = PPchildren.map((item)=>item['target'])
+			//console.log("ppcildren= "+PPchildren);
             //now, read each file, parse as rdf, query its geographic information
             let listUrinLoc = xmlParser.uriList2DiskLoc(PPchildren,config.ppFolder);
 
@@ -44,7 +45,8 @@ function readPPCoordi(callback) {
                     for(let uri in item){
                         if(item.hasOwnProperty(uri)){
                             //let toGoogle = xmlParser.convertCoordinate(item[uri].x, item[uri].y, false);
-                            return {uri: uri, location :{lat: parseFloat(item[uri].x), lng:parseFloat(item[uri].y)}}
+                            return {uri: uri, location :{lat: parseFloat(item[uri].y), lng:parseFloat(item[uri].x)}}
+							//return {uri: uri, location :{lat: parseFloat(item[uri].x), lng:parseFloat(item[uri].y)}}
                         }
                     }
                 })

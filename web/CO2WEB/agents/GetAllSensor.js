@@ -16,7 +16,7 @@ const bmsNode = config.bmsNode
 
 /*SPRAQL Query******************/
 const SPA = `
-    PREFIX industrialPark: <http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#>
+    PREFIX industrialPark: <http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX owl: <http://www.w3.org/2002/07/owl#>
     PREFIX xmls: <http://www.w3.org/2001/XMLSchema#>

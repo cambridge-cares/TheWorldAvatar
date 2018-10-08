@@ -117,13 +117,14 @@ RdfParser.RdfParser.prototype =  {
     geoCoordsQuery : function (callback) {
         let self = this
         var qs = `
-    PREFIX j.1: <http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#>
-        PREFIX j.2: <http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+    PREFIX j.1: <http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#>
+        PREFIX j.2: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+		PREFIX j.3: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#>
   
         select distinct ?cVname ?cName ?value
         where {
-        ?cVname a j.1:CoordinateValue;
-    j.2:isValueOf ?cName.
+        ?cName a j.3:StraightCoordinate;
+    j.2:hasValue ?cVname.
 
         ?cVname a j.1:CoordinateValue;
     j.2:numericalValue ?value.
