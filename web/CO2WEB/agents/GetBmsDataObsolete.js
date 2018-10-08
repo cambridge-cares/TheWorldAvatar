@@ -17,7 +17,7 @@ const fs = require('graceful-fs')
 /*SPRAQL Query******************/
 const SPA = `
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX system: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+    PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
     PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
     select distinct ?DataPoint ?ValueOf_DataPoint

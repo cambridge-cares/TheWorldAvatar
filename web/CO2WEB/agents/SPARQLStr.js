@@ -5,7 +5,7 @@
 
 
     var SPARQLStr  = {
-        numericalP : "<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue>",
+        numericalP : "<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue>",
         constructNUpdates : function (attrs) {
         let list = []
         for(let attr of attrs){
@@ -98,19 +98,36 @@
     
         constructCoordinate({name,url, x,y}){
         let prefix = {
-        "coordisystem" :"http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#",
-            "system":"http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+        "coordisystem" :"http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#",
+		"spacetime" :"http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#",
+		"pp" :"http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#",
+		"straightcor" :"http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#",
+            "system":"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
         }
         let list = [];
+		
+		list.push(this.construct("insertdata",  `<${url}#${name}>`, 'a', `pp:PowerPlant` , prefix));
+		
+		list.push(this.construct("insertdata",  `<${url}#${name}>`, 'spacetime:hasGISCoordinateSystem', `<${url}#CoordinateSystem_of_${name}>` , prefix));
+		//list.push(this.construct("insertdata", `<${url}#${name}>`,"<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#hasGISCoordinateSystem>", `<${url}#CoordinateSystem_of_${name}>`));
+		
+		list.push(this.construct("insertdata",  `<${url}#CoordinateSystem_of_${name}>`, 'a', `spacetime:GISCoordinateSystem` , prefix));
+		//list.push(this.construct("insertdata",  `<${url}#CoordinateSystem_of_${name}>`, 'spacetime:hasProjectedCoordinate_x', '<${url}#x_coordinate_of_${name}>' , prefix));
+		//list.push(this.construct("insertdata",  `<${url}#CoordinateSystem_of_${name}>`, 'spacetime:hasProjectedCoordinate_y', '<${url}#y_coordinate_of_${name}>' , prefix));
+		
         //x
-        list.push(this.construct("insertdata", this.chevron(url+"#"+name),"<http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#hasCoordinate>", `<${prefix.coordisystem}#x_coordinate_of_${name}>` ));
-        list.push(this.construct("insertdata",  `<${url}#x_coordinate_of_${name}>`, 'a', 'coordisystem:Coordinate' , prefix));
+        list.push(this.construct("insertdata", `<${url}#CoordinateSystem_of_${name}>`,"<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#hasProjectedCoordinate_x>", `<${url}#x_coordinate_of_${name}>` ));
+	   // list.push(this.construct("insertdata", this.chevron(url+"#"+name),"<http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#hasCoordinate>", `<${prefix.coordisystem}#x_coordinate_of_${name}>` ));
+       
+        list.push(this.construct("insertdata",  `<${url}#x_coordinate_of_${name}>`, 'a', 'straightcor:StraightCoordinate' , prefix));
             list.push(this.construct("insertdata",  `<${url}#x_coordinate_of_${name}>`, 'system:hasValue', `<${url}#v_xcoordinate_of_${name}>` , prefix));
             list.push(this.construct("insertdata",  `<${url}#v_xcoordinate_of_${name}>`, 'a', `coordisystem:CoordinateValue` , prefix));
             list.push(this.construct("insertdata",  `<${url}#v_xcoordinate_of_${name}>`, 'system:numericalValue', {value:x, type:'float'} , prefix));
     //y
-            list.push(this.construct("insertdata", this.chevron(url+"#"+name),"<http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#hasCoordinate>", `<${prefix.coordisystem}#y_coordinate_of_${name}>` ));
-            list.push(this.construct("insertdata",  `<${url}#y_coordinate_of_${name}>`, 'a', 'coordisystem:Coordinate' , prefix));
+           // list.push(this.construct("insertdata", this.chevron(url+"#"+name),"<http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#hasCoordinate>", `<${prefix.coordisystem}#y_coordinate_of_${name}>` ));
+		   list.push(this.construct("insertdata", `<${url}#CoordinateSystem_of_${name}>`,"<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#hasProjectedCoordinate_y>", `<${url}#y_coordinate_of_${name}>` ));
+		   
+            list.push(this.construct("insertdata",  `<${url}#y_coordinate_of_${name}>`, 'a', 'straightcor:StraightCoordinate' , prefix));
             list.push(this.construct("insertdata",  `<${url}#y_coordinate_of_${name}>`, 'system:hasValue', `<${url}#v_ycoordinate_of_${name}>` , prefix));
             list.push(this.construct("insertdata",  `<${url}#v_ycoordinate_of_${name}>`, 'a', `coordisystem:CoordinateValue` , prefix));
             list.push(this.construct("insertdata",  `<${url}#v_ycoordinate_of_${name}>`, 'system:numericalValue', {value:y, type:'float'} , prefix));
@@ -120,17 +137,19 @@
     
         constructCapacity({name, url, value}){
             let prefix = {
-                "sr" :"http://www.theworldavatar.com/OntoEIP/system_aspects/system_realization.owl#",
-                "system":"http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+                "sr" :"http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#",
+                "system":"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
             }
             let list = [];
-            list.push(this.construct("insertdata", this.chevron(url+"#"+name),"sr:designCapacity", `<${url}#capa_of_${name}>`, prefix ));
-            list.push(this.construct("insertdata", `<${url}#capa_of_${name}>`,'a',"sr:DesignCapacity", prefix ));
+			//list.push(this.construct("insertdata", `<${url}#${name}>`,"<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#designCapacity>", `<${url}#capa_of_${name}>`));
+			list.push(this.construct("insertdata", `<${url}#${name}>`,'sr:designCapacity', `<${url}#capa_of_${name}>`, prefix ));
+            //list.push(this.construct("insertdata", this.chevron(url+"#"+name),'sr:designCapacity', `<${url}#capa_of_${name}>`, prefix ));
+			list.push(this.construct("insertdata", `<${url}#capa_of_${name}>`,'a','sr:DesignCapacity', prefix ));
             list.push(this.construct("insertdata", `<${url}#capa_of_${name}>`,'system:hasValue',`<${url}#v_capa_${name}>`, prefix ));
             list.push(this.construct("insertdata", `<${url}#v_capa_${name}>`,'a',`system:ScalarValue`, prefix ));
             list.push(this.construct("insertdata", `<${url}#v_capa_${name}>`,'system:numericalValue',{value:value, type:'float'} , prefix ));
             
-            return list
+            return list;
             
         },
     

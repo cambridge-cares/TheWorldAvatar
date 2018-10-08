@@ -54,7 +54,7 @@ function runGAMSPredefined(id, cb){
             let csvresult = data.map((item) =>{
                 return {
                     name:'nuc'+item[0],
-					uri:'http://www.theworldavatar.com/nuc'+item[0]+'.owl',
+					uri:'http://www.jparksimulator.com/kb/sgp/jurongisland/nuclearpowerplants/nuc'+item[0]+'.owl',
 
                     capacity:item[1],
                     location:{lat:parseFloat(item[2]), lng:parseFloat(item[3])},
@@ -70,7 +70,8 @@ function runGAMSPredefined(id, cb){
             //[{tempLoc, attrList, newFileName}]
             
             /*call API to delete old files, since API not completed, do it natively for now**/
-            fs.readdir(config.root, (err, files)=>{
+            //fs.readdir(config.root, (err, files)=>{
+			fs.readdir("C:/TOMCAT/webapps/ROOT/kb/sgp/jurongisland/nuclearpowerplants", (err, files)=>{	
                 if(err)
                     throw err
                 
@@ -79,7 +80,8 @@ function runGAMSPredefined(id, cb){
                 })
                 
                 console.log(oldPPfiles)
-                oldPPfiles = oldPPfiles.map( name=> path.join(config.root, name))
+                //oldPPfiles = oldPPfiles.map( name=> path.join(config.root, name))
+				oldPPfiles = oldPPfiles.map( name=> path.join("C:/TOMCAT/webapps/ROOT/kb/sgp/jurongisland/nuclearpowerplants", name))
                 
                 //delete them all natively
                 async.each(oldPPfiles, fs.unlink, (err)=>{
@@ -89,15 +91,15 @@ function runGAMSPredefined(id, cb){
                     //SPARQLStr.constructNDeletes()
     
                     let uriList = [], QList = []
-                    let parenturi = "http://www.theworldavatar.com/NuclearPlants.owl";
+                    let parenturi = "http://www.jparksimulator.com/kb/sgp/jurongisland/nuclearpowerplants/NuclearPowerPlants.owl";
                     let baseUri = config.baseUri;
                     /*call API to update the top node****/
-                    let deleteStr = SPARQLStr.construct('delete', '<http://www.w3.org/2002/07/owl#NamedIndividual>','Eco-industrialPark:hasIRI','?o', {'Eco-industrialPark':'http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#'});
+                    let deleteStr = SPARQLStr.construct('delete', '<http://www.jparksimulator.com/kb/sgp/jurongisland/nuclearpowerplants/NuclearPowerPlants.owl#JurongIslandNuclearPlants>','Eco-industrialPark:hasIRI','?o', {'Eco-industrialPark':'http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#'});
                     console.log(deleteStr)
                     QList.push(deleteStr)
                     csvresult.forEach((item) =>{
-                        let childuri = baseUri+"/"+item.name+'.owl';
-                        let updateStr=  SPARQLStr.construct('insertdata', '<http://www.w3.org/2002/07/owl#NamedIndividual>','<http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#hasIRI>',{value:childuri, type:"string"});
+                        let childuri = baseUri+"/kb/sgp/jurongisland/nuclearpowerplants/"+item.name+'.owl';
+                        let updateStr=  SPARQLStr.construct('insertdata', '<http://www.jparksimulator.com/kb/sgp/jurongisland/nuclearpowerplants/NuclearPowerPlants.owl#JurongIslandNuclearPlants>','<http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#hasIRI>',{value:childuri, type:"string"});
                         QList.push(updateStr)
                         console.log(updateStr)
 
@@ -117,20 +119,22 @@ function runGAMSPredefined(id, cb){
     
     
     
-    
-                    let tempLoc = path.join(config.root, 'powerplantTemp.owl');
+					//let tempLoc = path.join(config.root, 'powerplantTemp.owl');
+                    let tempLoc = path.join("C:/TOMCAT/webapps/ROOT/kb/sgp/jurongisland/nuclearpowerplants", 'powerplantTemp.owl');
                     //{temp, name, attrs[{s,p,o}]}
                     //TODO:　pack into above format
     
                     let packed = csvresult.map((item)=>{
-                        let childuri = baseUri+"/"+item.name + '.owl';
+                        let childuri = baseUri+"/kb/sgp/jurongisland/nuclearpowerplants/"+item.name + '.owl';
                         let path = item.name+'.owl'
-                        let attrs = []
+						let attrs = []
                         //capacity, xcoord, ycoord
                         attrs['x'] = item.location.lng
                         attrs['y'] = item.location.lat
                         attrs['capacity'] = item.capacity
-                        attrs['imports'] = ["http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl","http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl"]
+                        attrs['imports'] = ["http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl","http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl",
+						"http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl",
+						"http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl"]
                         //TODO: here
                         console.log(attrs)
 
@@ -143,7 +147,7 @@ function runGAMSPredefined(id, cb){
     
                     //werite new files
                     async.each(packed, writefromTemp.createFile,(err)=>{
-                        console.log(err)
+                        //console.log("error in gamsowl="+err)
                        // cb(err)
                     } )
                 

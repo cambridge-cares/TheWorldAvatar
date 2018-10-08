@@ -125,7 +125,7 @@ owlProcessor.getChildrenRecur = function(options, callback) {
         namespaceOb['owl'] = "http://www.w3.org/2002/07/owl#";
 
         namespaceOb["rdf"] = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-        namespaceOb['Eco-industrialPark'] = "http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#";
+        namespaceOb['Eco-industrialPark'] = "http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#";
 
         var uris = root.find("//owl:NamedIndividual[rdf:type[contains(@rdf:resource,'http://www.theworldavatar.com/Service.owl')]]", namespaceOb);
       //  logger.debug("found Service node :"+uris.length);
@@ -384,8 +384,8 @@ owlProcessor.getChildren = function(root) {
     //TODO: use getNSList instead
 
     namespaceOb['owl'] = "http://www.w3.org/2002/07/owl#";
-    namespaceOb['Eco-industrialPark'] = "http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#";
-    namespaceOb['system'] = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#";
+    namespaceOb['Eco-industrialPark'] = "http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#";
+    namespaceOb['system'] = "http://www.theworldavatar.com/ontocape/ontocape/upper_level/system.owl#";
 
     //find all node with hasIRI property
     var uris = root.find("//Eco-industrialPark:hasIRI", namespaceOb);
@@ -422,18 +422,26 @@ owlProcessor.getPPChildren = function (root) {
     }
     var children = [];
     var namespaceOb = {};//construct namespaceOb for find in root with nested namespace
-   // namespaceOb['system'] = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#";
+    //namespaceOb['system'] = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#";
    // namespaceOb['f'] ="http://www.theworldavatar.com/TheWorld.owl#";
     //find all node with SYSTEM:hasIRI property
-    let uris = root.find("//self:PowerPlant//system:hasIRI", owlProcessor.getNSList(root));
-    //logger.debug("found node system:hasIRI:"+urisS.length);
+	
+    //let uris = root.find("//self:PowerPlant//system:hasIRI", owlProcessor.getNSList(root));
+	let uris = root.find("//system:hasSubsystem", owlProcessor.getNSList(root));
+	//console.log("second format= "+owlProcessor.getNSList(root));
+	//console.log("uris in file connection= "+uris);
+	
+    
+	//logger.debug("found node system:hasIRI:"+urisS.length);
 
    // logger.debug("find pp:"+uris.length)
 
     for(let curi of uris){
         //    logger.debug(curi.name());
        //logger.debug(JSON.stringify(curi.path()))
-         children.push(curi.text().trim());//push to targets list
+         //children.push(curi.text().trim());//push to targets list
+		 children.push(curi.attr("resource").value().split('#')[0]);
+		 console.log("curi in file connection= "+curi.attr("resource").value().split('#')[0]);
     }
 
     return children;

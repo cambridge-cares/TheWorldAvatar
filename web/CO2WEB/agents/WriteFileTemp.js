@@ -23,7 +23,7 @@ var WriteFileTemp = {
      createFile:function({temp, path, attrs}, cb){
 //construct update string according to attrs
          //pack attr list
-                    let loc = config.root+"/"+path
+                    let loc = config.root+"/kb/sgp/jurongisland/nuclearpowerplants/"+path
 
          console.log(`temp: ${temp}`)
                   console.log(`mypath: ${loc}`)
@@ -36,7 +36,8 @@ var WriteFileTemp = {
             // todo:SPARQLStr.constructOwlDef()
             console.log("now modify it")
 
-            let url = config.baseUri+"/"+path
+            //let url = config.baseUri+"/kb/sgp/jurongisland/nuclearpowerplants/"+path
+			let url = "http://www.jparksimulator.com"+"/kb/sgp/jurongisland/nuclearpowerplants/"+path
             console.log(url)
 
             let QList = SPARQLStr.constructOwlDef({uri:url, imports:attrs.imports||[]})
@@ -46,17 +47,18 @@ var WriteFileTemp = {
 
             if(attrs.x &&  attrs.y) {
                QList= QList.concat(SPARQLStr.constructCoordinate({name: path, url:url, x: attrs.x, y: attrs.y}))
-            }
+			}
             
             if(attrs.capacity) {
                 //TODO: a bug here , probably too many requests at one time, probably this is wrong
-                //QList = QList.concat(SPARQLStr.constructCapacity({name: path, url:url, value: attrs.capacity}))
+             //   QList = QList.concat(SPARQLStr.constructCapacity({name: path, url:url, value: attrs.capacity}))
             }
             //todo, rest of the attrs
             
             let uriList = Array(QList.length).fill(url)
 
-            console.log(QList)
+            //console.log(QList)
+			console.log("this is QLIST= "+QList)
 
 
              SPARQLEpReq.call(uriList, QList, (err)=>{
