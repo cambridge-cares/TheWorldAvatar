@@ -18,7 +18,7 @@ function  getSemakauCoordi(callback) {
     /***
      *
      */
-    xmlProcessor.getChildrenRecur({topnode : config.semakauNode}, function (err, results) {
+    xmlProcessor.getChildrenRecur({topnode : config.jurongNode}, function (err, results) {
 
         if(err){
             console.log(err);
@@ -44,5 +44,11 @@ function  getSemakauCoordi(callback) {
 
 
 module.exports = getSemakauCoordi
+
+getSemakauCoordi((err, result)=>{
+    "use strict";
+    
+    console.log(result)
+})
 
 

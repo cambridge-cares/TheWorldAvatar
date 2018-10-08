@@ -6,10 +6,11 @@ var logger = log4js.getLogger();
 logger.level = 'debug';
 
 const util = require('util')
-const parser = require('../agents/rdfParser');
 const fs = require('graceful-fs')
-const xmlParser = require("./fileConnection");
-const config = require('../config')
+const xmlParser = require("./fileConnection2Way");
+const config = require('../config');
+const processor = Object.create(xmlParser);
+
 
 const bmsNode = config.bmsNode
 
@@ -32,19 +33,15 @@ const SPA = `
 function getAllSensors(callback) {
     //readPPChildren
     //request on each to get geo info
+    
+    processor.init({})
+    
+    processor.doConnect(bmsNode,0).then((children)=>{
 
-
-        xmlParser.getChildrenRecur({topnode:bmsNode}, function (err, children) {
-            if(err){
-                //TODO: err handle
-                logger.debug(err);
-                callback(err)
-                return;
-            }
             logger.debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             logger.debug(children);
 
-            children = children['connections'].map((conn)=>{return conn.target});
+            children = children.map((conn)=>{return conn.target});
             let sschildren = children.filter((uri)=>{return uri.toLowerCase().includes("sensor")});
 
             logger.debug("************");
@@ -68,5 +65,10 @@ function getAllSensors(callback) {
 }
 
 
-
+getAllSensors((err, result)=>{
+    "use strict";
+    if(err) console.log(err)
+    console.log(result)
+    
+})
 module.exports = getAllSensors;

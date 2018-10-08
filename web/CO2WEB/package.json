@@ -20,6 +20,7 @@
     "nock": "^9.0.13",
     "proj4": "^2.4.3",
     "pug": "^2.0.0-beta11",
+    "rabbitmq-node": "^0.5.0",
     "rdflib": "^0.15.0",
     "rdfstore": "^0.9.17",
     "readdirp": "^2.1.0",

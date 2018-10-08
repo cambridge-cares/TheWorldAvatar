@@ -9,12 +9,14 @@ logger.level = 'debug';
 
 const config =  require('../config');
 const worldNode = config.worldNode;
-const xmlParser = require("./fileConnection");
+const xmlParser = require("./fileConnection2Way");
 const parser = require('./rdfParser');
 const async = require('async');
 const fs =require('graceful-fs')
 const util = require('util');
 const path = require('path')
+const processor = Object.create(xmlParser);
+
 
 var qsTypeCountry = `
     PREFIX system_realization: <http://www.theworldavatar.com/OntoEIP/system_aspects/system_realization.owl#>
@@ -55,13 +57,16 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
             //replace uri with disk location
             let pp = xmlParser.uriList2DiskLoc(ppraw, ppRoot);
 
-            async.concat(pp, query, function (err, plantData) {
+            async.concat(pp, query, function (err, plantDataO) {
                 //For each point, calculates emission
                 if(err){
                     throw err;
                 }
 
                 var sum = 0;
+                let plantData = []
+                plantDataO.forEach((item)=>{if(item){plantData.push(item)}})
+                
                 plantData.forEach(function (plantDatum) {
                     plantDatum.emission = calculateEmission(plantDatum.type, plantDatum.capacity);
                  sum+=plantDatum.emission;
@@ -149,17 +154,10 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
 
         function getWorldPPChild(callback) {
             //loop through world node children , compare type to be PP or not
-            fs.readFile(worldNode, function (err, file) {
-                if (err) {
-                    logger.debug("errReadingFile");
-                    callback(err);
-                    return;
-                }
-                const root = xmlParser.parseXMLFile(file);
-                var PP = xmlParser.getPPChildren(root);
-
-
-                logger.debug("children length: "+ PP.length);
+            processor.init({});
+    
+            processor.doConnect(worldNode,0).then((PPchildren)=>{
+                var PP =  PPchildren.map((item)=>item['target'])
                 callback(null, PP);
             })
         }
@@ -169,7 +167,7 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
         function query(item, callback) {
             fs.readFile(item.diskLoc, function (err, file) {
                 if(err){
-                    callback(err);
+                    callback(null,null);
                 return;
                 }
                 var mparser = new parser.RdfParser({file: file, uri:item.uri});
@@ -212,8 +210,13 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
     }
 
 
+/**
+getPlantAggregation((err, result)=>{
+    "use strict";
+    if(err) {console.log(err)};
+    console.log('print result')
+    console.log(result)
+})
 
-
-
-
+**/
 module.exports = {getPlantAggregation};

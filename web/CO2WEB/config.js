@@ -14,7 +14,7 @@ config.baseUri = "http://www.theworldavatar.com"
 
 configDevelop();
 //configDeploy();
-config.worldNode = path.join(config.root , "TheWorld.owl");
+config.worldNode = path.join(config.root, "TheWorld.owl");
 config.jurongNode = path.join(config.root ,"JurongIsland.owl");
 config.b3Node = path.join(config.root , "BiodieselPlant3.owl");
 config.ontoENNode = path.join(config.root, "ElectricalNetwork.owl");

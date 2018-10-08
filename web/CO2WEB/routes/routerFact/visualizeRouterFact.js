@@ -4,8 +4,9 @@
  * @type {*}
  */
 var express = require('express');
-var connectionsReader = require("../../agents/fileConnection.js");
+var owlProcesser = require("../../agents/fileConnection2Way.js");
 
+var connectionsReader = Object.create(owlProcesser)
 /* GET users listing. */
 
 //TODO: buffer logic, so no need recalculate for each request, but still robust,
@@ -20,43 +21,41 @@ var visualizationRouterFactory = function (topNodeAddress) {
     router.get('/', function(req, res, next) {
 
 
-            connectionsReader.getChildrenRecur({topnode : topNodeAddress}, function (err, results) {
+            connectionsReader.process({topnode : topNodeAddress}).then((results)=>{
 
+                /**
                 if(err){
                     res.status(500).send(err);
                     console.log(err);
                     return;
                 }
+                 ***/
 
                 console.log("read connections");
-
+                
                 //res.setHeader('Content-Type', 'application/json');
                 //res.json(results);//for testing
                 conns = results;
                 results.topnode = topNodeAddress;
                 
                 
-                res.render('visual', { result: JSON.stringify(results) }); //render the view with this value
+                res.render('visual'); //render the view with this value, { result: JSON.stringify(results)
 
             });
 
     });
     
     router.get('/links', function(req, res, next) {
-        
-        
-        connectionsReader.getChildrenRecur({topnode : topNodeAddress}, function (err, results) {
-            
-            if(err){
-                res.status(500).send(err);
-                console.log(err);
-                return;
-            }
+    
+    
+        connectionsReader.process({topnode : topNodeAddress}).then((results)=>{
+
             
             console.log("read connections");
             
             //res.setHeader('Content-Type', 'application/json');
             //res.json(results);//for testing
+            console.log(results)
             conns = results;
             results.topnode = topNodeAddress;
     
@@ -66,6 +65,7 @@ var visualizationRouterFactory = function (topNodeAddress) {
         });
         
     });
+    /***
     router.get('/includeImport', function(req, res, next) {
 
 
@@ -106,7 +106,7 @@ var visualizationRouterFactory = function (topNodeAddress) {
 
 
     });
-
+***/
     return router;
 };
 

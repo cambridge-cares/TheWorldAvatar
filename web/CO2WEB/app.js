@@ -4,10 +4,10 @@
  */
 var log4js = require('log4js');
 log4js.configure({
-  appenders: { cheese: { type: 'file', filename: 'cheese.log' } },
-  categories: { default: { appenders: ['cheese'], level: 'error' } }
+  appenders: { defaultLogger: { type: 'file', filename: 'C:/jps/temp/logs/js-server.log' } },
+  categories: { default: { appenders: ['defaultLogger'], level: 'error' } }
 });
-var logger = log4js.getLogger('cheese');
+var logger = log4js.getLogger('defaultLogger');
 logger.level = 'debug';
 
 var express = require('express');
@@ -28,23 +28,24 @@ var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
 
  var showCO2 = require("./routes/showCO2Cached");
 var bmsplot= require("./routes/plotBMSCached.js");
-var getCS =require("./routes/getChildrenSingle");
 var getAttrList =require("./routes/getAttrList");
 var getSpecAttr =require("./routes/getSpecificLiteralAttrCached");
-var MAU = require("./routes/runMAU")
+//var MAU = require("./routes/runMAU")
 var MAUPlot = require("./routes/plotMAU")
 var HW =require("./routes/runHeatWasteNetworkMap")
 var PPCO2 = require("./routes/powerplantCO2Cached");
 
 var ppMap = require('./routes/mapPowerPlant');
+
 var semakauMap = require("./routes/mapSemakau")
 //var b3Map = require("./routes/mapB3")
 var b2Map = require("./routes/mapB2")
 var ppalt = require("./routes/mapPPAlt")
 
 var literalData = require('./agents/GetLiteralData');
-var BMSWatcher = require('./agents/setBMSWatcher');
 var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
+
+var BMSWatcher = require('./agents/setBMSWatcher');
 
 var app = express();
 var port = config.port;
@@ -75,7 +76,7 @@ app.use('/visualizeJurong', visualizeJurong);
 app.use('/PowerPlantCO2',  PPCO2);
 app.use('/semakaumap', semakauMap);
 app.use('/ppalt', ppalt);
-app.use('/JurongIsland.owl/showCO2', showCO2);
+app.use('/JuronMAgIsland.owl/showCO2', showCO2);
 app.use('/visualizeOntoEN',visualizeOntoEN);
 
 
@@ -83,14 +84,14 @@ app.use("/bmsplot", bmsplot);
 
 app.use('/ppmap', ppMap);
 
+
 app.use('/b2map', b2Map)
  app.use("/hw", HW);
 
 app.use("/mauplot", MAUPlot);
-app.use('/getChildrenSingle', getCS);
 app.use("/getAttrList", getAttrList);
 app.use("/getSpecAttr", getSpecAttr);
-app.use("/MAU", MAU);
+//app.use("/MAU", MAU);
 
 
 
@@ -223,21 +224,6 @@ app.use(function(err, req, res, next) {
 /********************/
 
 
-/***
-http.on('close', function () {
-   //now deregister it
-    registerer.deregister(registerUrl, myUrl, function (err, result) {
-          //server is close down, no way to put this msg to anyone, just print it out
-          if(err){
-              logger.debug(err);
-          }
-
-          logger.debug(result);
-      })
-
-
-});
-***/
 http.listen(port, function () {
   console.log('Server listening on port '+port);
 });

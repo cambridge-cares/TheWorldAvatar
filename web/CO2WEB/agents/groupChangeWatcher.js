@@ -20,7 +20,6 @@ var async = require('async')
 var fsre = require('fs-readdir-recursive')
 var path = require('path')
 
-var BMSData =require('./GetBmsDataObsolete');
 
 var LiteralData =require('./GetLiteralData');
 
