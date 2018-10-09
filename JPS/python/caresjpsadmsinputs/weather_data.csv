@@ -1,0 +1,3 @@
+Date,Temperature (C),Wind direction (deg),Wind speed (m/s),Humidity (%),Pressure (hPa),UV Index,Cloud Cover (%),Ceiling (m),Dew Point (C),Visibility (m)
+16 Aug 2018 02:45:07 GMT,30,180.0,4.16667,69.0,1010.0,6,70.0,9144.0,24.0,16000.0
+16 Aug 2018 02:45:25 GMT,30,180.0,4.16667,69.0,1010.0,6,70.0,9144.0,24.0,16000.0
