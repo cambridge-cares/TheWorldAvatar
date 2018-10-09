@@ -20,7 +20,12 @@ public class ServicePoolTool {
 	public JSONObject readTheServicePool() throws Exception {
 
 		FilePathManager m = new FilePathManager();
-		String filepath = m.getFilePath(this.fullHostName) + filename;
+		String filepath = m.getFilePath(this.fullHostName) + '/' +filename;
+		if(m.getFilePath(this.fullHostName) == null) { // It means the system is running without a server
+			filepath = "E:" + filename;
+		}
+		
+		System.out.println(filepath);
 		String wholeContent = "";
 		File thefile = new File(filepath);
 		if (!thefile.exists()) {
@@ -44,8 +49,10 @@ public class ServicePoolTool {
 	}
 
 	public void writeToTheServicePool(String content) throws Exception {
-		FileWriter fw = new FileWriter(
-				"/home/zhouxiaochi/Documents/JPS/JParkSimulator-git/JPS_COMPOSITION/WebContent/service_pool.txt");
+		
+		FilePathManager m = new FilePathManager();
+		String filepath = m.getFilePath(this.fullHostName) + '/' +filename;
+		FileWriter fw = new FileWriter(filepath);
 		fw.write(content);
 		fw.close();
 	}

@@ -363,7 +363,7 @@ public class Tools {
 		 * owlmodel is changed, with every Pipe and Stream now having hasIRI property
 		 * 
 		 */
-		OWLDatatypeProperty hasIRI = owlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/Eco-industrialPark.owl#hasIRI");
+		OWLDatatypeProperty hasIRI = owlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#hasIRI");
 		
 		List<OWLIndividual> OWLIndividuals = new ArrayList<OWLIndividual>(owlModel.getOWLIndividuals());
 		for (int i=0; i<OWLIndividuals.size(); i++) {
@@ -371,13 +371,13 @@ public class Tools {
 				OWLIndividual obj = OWLIndividuals.get(i);
 				if (obj.getLocalName().startsWith("Pipe_")) {
 					String PipeName = obj.getLocalName();
-					obj.addPropertyValue(hasIRI, "http://www.jparksimulator.com/" + PipeName + ".owl#" + PipeName);
+					obj.addPropertyValue(hasIRI, "http://www.jparksimulator.com/kb/sgp/jurongisland/" + PipeName + ".owl#" + PipeName);
 				} 
 				else if (obj.getLocalName().startsWith("ProcessStream_") || obj.getLocalName().startsWith("UtilityStream_") || obj.getLocalName().startsWith("FeedStream_") || obj.getLocalName().startsWith("WasteStream_") || obj.getLocalName().startsWith("ProductStream_")) {
 					String StreamName = obj.getLocalName();
 					String StreamNumber = StreamName.substring(StreamName.length()-6);
 					String PipeName = "Pipe_" + StreamNumber;
-					obj.addPropertyValue(hasIRI, "http://www.jparksimulator.com/" + PipeName + ".owl#" + StreamName);
+					obj.addPropertyValue(hasIRI, "http://www.jparksimulator.com/kb/sgp/jurongisland/" + PipeName + ".owl#" + StreamName);
 				} 
 				else {}
 			} catch (ClassCastException e) {}

@@ -3,6 +3,7 @@ package ontology_creator;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import ontology_creator.Plant;
 
 public class Compressor {
 	private String name;
@@ -15,7 +16,7 @@ public class Compressor {
 	Compressor(String name) {
 		this.name = name;
 		this.filename = name + ".owl";
-	}
+			}
 	
 	public String getName() {
 		return name;
@@ -48,7 +49,7 @@ public class Compressor {
 		this.outPressure = outPressure;
 	}
 	
-	public void createOWLFile() {
+	public void createOWLFile(String plantName) {
 		/**
 		 * Precondition:
 		 * Assumes that the template file exists at the specified location
@@ -60,13 +61,14 @@ public class Compressor {
 		Tools.replaceString("C-340001", getName(), "OWL Templates/C-340001_Template.owl", filename);
 		Tools.replaceString("_340007", "_" + getFeedStream(), filename);
 		Tools.replaceString("_340008", "_" + getProdStream(), filename);
+		String subdirofplantname= plantName.toLowerCase();
 		
 		JenaOWLModel owlmodel = Tools.callJena(filename);
 
-		OWLIndividual Power = owlmodel.getOWLIndividual("http://www.jparksimulator.com/" + getName() + ".owl#ValueOfHeatDutyOf" + getName());
-		OWLIndividual Pressure = owlmodel.getOWLIndividual("http://www.jparksimulator.com/"	+ getName() + ".owl#ValueOfOutletPressureOf" + getName());
+		OWLIndividual Power = owlmodel.getOWLIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#ValueOfHeatDutyOf" + getName());
+		OWLIndividual Pressure = owlmodel.getOWLIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#ValueOfOutletPressureOf" + getName());
 
-		OWLDatatypeProperty numericalvalue = owlmodel.getOWLDatatypeProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue");
+		OWLDatatypeProperty numericalvalue = owlmodel.getOWLDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 		
 		Power.setPropertyValue(numericalvalue, getPower());
 		Pressure.setPropertyValue(numericalvalue, getOutPressure());

@@ -9,10 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONException;
-
 import uk.ac.cam.cares.jps.composition.executor.ExecutionLayer;
-import uk.ac.cam.cares.jps.composition.executor.Executor;
+import uk.ac.cam.cares.jps.composition.executor.ExecutorNew;
 import uk.ac.cam.cares.jps.composition.executor.ExecutorProcessor;
 import uk.ac.cam.cares.jps.composition.util.FormatTranslator;
 import uk.ac.cam.cares.jps.composition.util.JSONReader;
@@ -37,11 +35,10 @@ public class ServiceExecutorEndpoint extends HttpServlet {
 		try {
 			ExecutorProcessor executorprocessor = new ExecutorProcessor(JSONReader.readJSONFromRequest(request));
 			ArrayList<ExecutionLayer> executionChain = executorprocessor.generateExecutionChain();
-			Executor executor = new Executor(executionChain);
+			ExecutorNew executor = new ExecutorNew(executionChain);
 			response.getWriter().write(FormatTranslator.convertExectorToJSON(executor).toString());
 
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

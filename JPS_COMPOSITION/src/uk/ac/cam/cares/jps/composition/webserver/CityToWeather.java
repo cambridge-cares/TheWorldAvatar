@@ -10,6 +10,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -19,10 +25,7 @@ import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.vocabulary.RDF;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.ResultSet;
+import org.json.JSONStringer;
 
 import uk.ac.cam.cares.jps.composition.util.SendRequest;
 
@@ -44,11 +47,28 @@ public class CityToWeather extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String cityIRI = request.getParameter("value");
+		
+		String value = request.getParameter("value");
+ 		
+		JSONObject inputInJSON = null;
+		String cityIRI = null;
+		try {
+			inputInJSON = new JSONObject(value);
+ 			cityIRI = inputInJSON.getString("city");
+ 		} catch (JSONException e1) {
+			e1.printStackTrace();
+		}
+		 
 		if (cityIRI.length() >= 1) {
 			String cityName = queryCityNameLabel(cityIRI);
 			try {
-				response.getWriter().write(constructSemanticResponse(getWeatherFromCity(cityName), cityName, cityIRI));
+				System.out.println(cityName);
+				if(cityName.equalsIgnoreCase("The Hague")) {
+					cityName = "Den%20Haag";
+				}
+				System.out.println(cityName);
+				response.getWriter().write(constructJSONResponse(getWeatherFromCity(cityName)));
+				//response.getWriter().write(constructSemanticResponse(getWeatherFromCity(cityName), cityName.replaceAll("%20", "_"), cityIRI));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -94,6 +114,7 @@ public class CityToWeather extends HttpServlet {
 
 	public String getWeatherFromCity(String cityName) throws Exception {
 		String requestURL = String.format(weatherRequest, cityName);
+		System.out.println(requestURL);
 		String result = SendRequest.sendGet(requestURL);
 		System.out.println(result);
 		return result;
@@ -185,7 +206,7 @@ public class CityToWeather extends HttpServlet {
 
 	public String constructSemanticResponse(String weatherInString, String cityName, String cityIRI)
 			throws JSONException {
-		JSONObject weatherInJSON = new JSONObject(weatherInString);
+		JSONObject weatherInJSON = new JSONObject(weatherInString.replace("%20", "_"));
 		JSONObject main = weatherInJSON.getJSONObject("main");
 		JSONObject weatherObject = weatherInJSON.getJSONArray("weather").getJSONObject(0);
 
@@ -194,6 +215,10 @@ public class CityToWeather extends HttpServlet {
 
 		String humidity = main.getString("humidity");
 		String temperature = main.getString("temp");
+		String precipitationIntensity = "0.0";
+		
+		String cloudCover = weatherInJSON.getJSONObject("clouds").getString("all");
+		
 		JSONObject windInJSON = weatherInJSON.getJSONObject("wind");
 		String wind_speed = windInJSON.getString("speed");
 		String wind_direction = "";
@@ -202,6 +227,11 @@ public class CityToWeather extends HttpServlet {
 		} else {
 			wind_direction = "";
 		}
+		
+		if (weatherInJSON.has("rain")) {
+			precipitationIntensity = weatherInJSON.getJSONObject("rain").getString("3h");
+		}
+		
 
 		Model rdfModel = ModelFactory.createDefaultModel();
 		Resource weather = rdfModel
@@ -223,13 +253,28 @@ public class CityToWeather extends HttpServlet {
 		wind.addProperty(RDF.type,
 				"https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Wind");
 		Property weatherIcon = rdfModel.createProperty("http://www.theworldavatar.com/weather.owl#hasIcon");
-
 		Resource weatherConditionResource = selectWeatherCondition(cityName, rdfModel, description);
 		Property hasWeatherCondition = rdfModel.createProperty(
 				"https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasWeatherCondition");
 
 		Property locationCity = rdfModel.createProperty("http://dbpedia.org/ontology/locationCity");
 		Resource City = rdfModel.createResource(cityIRI);
+
+		Resource precipitation = rdfModel.createResource("https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Precipitation");
+		Property hasPrecipitation = rdfModel.createProperty("https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasPrecipitation");
+		Property hasIntensity = rdfModel.createProperty("https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasIntensity");
+
+
+		Property hasCloudCover = rdfModel.createProperty("https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasCloudCover");
+		
+		
+		
+		
+		Resource myPrecipitation = rdfModel.createResource("http://www.theworldavatar.com/PecipitationOf" + cityName + cityName.hashCode());
+		myPrecipitation.addProperty(RDF.type, precipitation);
+		myPrecipitation.addLiteral(hasIntensity, precipitationIntensity);		
+		weather.addProperty(hasPrecipitation, myPrecipitation);
+		
 
 		wind.addProperty(hasSpeed, wind_speed);
 		wind.addProperty(hasDirection, wind_direction);
@@ -239,10 +284,76 @@ public class CityToWeather extends HttpServlet {
 		weather.addLiteral(weatherIcon, icon);
 		weather.addProperty(hasWeatherCondition, weatherConditionResource);
 		weather.addProperty(locationCity, City);
-
+		weather.addLiteral(hasCloudCover, cloudCover);
+		
+		
 		StringWriter out = new StringWriter();
 		RDFDataMgr.write(out, rdfModel, RDFFormat.RDFJSON);
 		return out.toString();
+	}
+	
+	
+	public String constructJSONResponse(String weatherInString) throws JSONException {
+		JSONObject weatherInJSON = new JSONObject(weatherInString.replace("%20", "_"));
+		JSONObject main = weatherInJSON.getJSONObject("main");
+		JSONObject weatherObject = weatherInJSON.getJSONArray("weather").getJSONObject(0);
+		String humidity = main.getString("humidity");
+		String temperature = main.getString("temp");
+		String precipitationIntensity = "0.0";
+		String cloudCover = weatherInJSON.getJSONObject("clouds").getString("all");
+		JSONObject windInJSON = weatherInJSON.getJSONObject("wind");
+		String wind_speed = windInJSON.getString("speed");
+		String wind_direction = "";
+		String description = weatherObject.getString("description");
+
+		if (windInJSON.has("deg")) {
+			wind_direction = windInJSON.getString("deg");
+		} else {
+			wind_direction = "";
+		}
+		if (weatherInJSON.has("rain")) {
+			precipitationIntensity = weatherInJSON.getJSONObject("rain").getString("3h");
+		}
+		String result = new JSONStringer().object().
+				key("weatherstate").object()
+					.key("hashumidity").object() //52.508287, 13.415407
+						.key("hasvalue").value(humidity).endObject()
+					.key("hasexteriortemperature").object()
+						.key("hasvalue").value(temperature).endObject()
+					.key("haswind").object()
+						.key("hasspeed").value(wind_speed)
+						.key("hasdirection").value(wind_direction).endObject()	
+					.key("hascloudcover").object()
+						.key("hascloudcovervalue").value(cloudCover).endObject()
+					.key("hasweathercondition").value(description.replace(" ","_"))			
+					.key("hasprecipation").object()
+						.key("hasintensity").value(precipitationIntensity).endObject()
+			.endObject().endObject().toString(); 
+		
+		
+		return result;
+	}
+	
+	
+	public String getCityIRI(Model model) {
+		
+		String findCityQuery = 
+				"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
+				"SELECT ?city WHERE \n"
+				+ "{"
+				+ "		?city rdf:type <http://www.theworldavatar.com/OntoEIP/supporting_concepts/space_and_time_v1.owl#City> .\n"
+				+ "}";
+		
+		String cityIRI = "";
+		Query query = QueryFactory.create(findCityQuery);
+		QueryExecution qe = QueryExecutionFactory.create(query, model);
+		ResultSet results = qe.execSelect();
+		while(results.hasNext()) {
+			QuerySolution nextSolution = results.nextSolution();
+			cityIRI = (nextSolution.getResource("city").getURI());
+			System.out.println("---- CityIRI ----" + cityIRI);
+		}
+		return cityIRI;
 	}
 
 }

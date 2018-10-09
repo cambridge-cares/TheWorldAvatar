@@ -8,9 +8,9 @@ var defaultRealService = {"class": "go.GraphLinksModel",
         {"key":1, "text":"Composite_Service_11Yju7k1", "category":"Service", "fullIRI":"http://www.theworldavatar.com/Composite_Service_11Yju7k1"},
         {"text":"Operation_pexDwAC", "category":"Operation", "fullIRI":"http://www.theworldavatar.com/Operation_pexDwAC", "httpUrl":"http://www.theworldavatar.com/JPS_COMPOSITION/CoordinateToWeather", "key":-2},
         {"text":"MessageContent_Input_xzbAvBW", "category":"MessageContent_Input", "fullIRI":"http://www.theworldavatar.com/MessageContent_Input_xzbAvBW", "key":-3},
-        {"text":"Mandatory_MessagePart_CghedAK", "category":"Mandatory_MessagePart", "fullIRI":"http://www.theworldavatar.com/Mandatory_MessagePart_CghedAK", "key":-4, "params":{"hasValue":"", "hasDatatype":"", "modelReference":"http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#Coordinate"}},
+        {"text":"Mandatory_MessagePart_CghedAK", "category":"Mandatory_MessagePart", "fullIRI":"http://www.theworldavatar.com/Mandatory_MessagePart_CghedAK", "key":-4, "params":{"hasValue":"", "hasDatatype":"", "modelReference":"http://test.com/ontology/Region"}},
         {"text":"MessageContent_Output_18YRk5SC", "category":"MessageContent_Output", "fullIRI":"http://www.theworldavatar.com/MessageContent_Output_18YRk5SC", "key":-5},
-        {"text":"Mandatory_MessagePart_15wGxcwo", "category":"Mandatory_MessagePart", "fullIRI":"http://www.theworldavatar.com/Mandatory_MessagePart_15wGxcwo", "key":-6, "params":{"hasValue":"", "hasDatatype":"", "modelReference":"https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#WeatherState"}}
+        {"text":"Mandatory_MessagePart_15wGxcwo", "category":"Mandatory_MessagePart", "fullIRI":"http://www.theworldavatar.com/Mandatory_MessagePart_15wGxcwo", "key":-6, "params":{"hasValue":"", "hasDatatype":"", "modelReference":"http://test.com/ontology/ADMSSimulation"}}
     ],
     "linkDataArray": [
         {"from":1, "to":-2},
@@ -231,7 +231,6 @@ function convertJSONToOWL() {
 }
 
 function goToVisualization(event) {
-	
 
     var baseUrl = event.srcElement.parentElement.getAttribute('data');
     baseUrl = baseUrl.replace('www.theworldavatar.com', window.location.host);
@@ -245,6 +244,8 @@ function composeService() {
     $("#myDiagramDiv").width("0%");
     $("#myDiagramDiv2").height("700px");
 
+	console.log('model', convertNodeObjToMSMObj(myDiagram.model));
+	
     $.ajax({
         method: "POST",
         url: hostname + "ServiceCompositionEndpoint",
@@ -266,8 +267,12 @@ function composeService() {
 }
 
 function loadRealComposite() {
-	document.getElementById("mySavedModel").value =  JSON.stringify(defaultRealService);
-    refresh(defaultRealService);
+
+    console.log("new .... ");
+    console.log(myDiagram.model);
+
+	//document.getElementById("mySavedModel").value =  JSON.stringify(defaultRealService);
+    //refresh(defaultRealService);
 
 }
 
@@ -291,7 +296,16 @@ function sendToExecutor(){
     })
         .done(function (msg) {
             executionChain = JSON.parse(msg);
-        	console.log(msg);
+
+        	console.log("==== Trigger recommendation ====");
+        	// Get the inputs ... Make the recommendation
+
+
+            let agents = selectInputMap(getInputTypes(compositeServiceObj['initialInputs'])[0]);
+            let HTML = generateAgentCardHTML(agents);
+            PopulateInputs(HTML);
+
+
         })
         .fail(function (error) {
             alert('This might not be a valid composite service')

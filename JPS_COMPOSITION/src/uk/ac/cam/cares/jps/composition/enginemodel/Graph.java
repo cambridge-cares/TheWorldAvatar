@@ -20,8 +20,12 @@ public class Graph {
 	public ArrayList<MessagePart> initialInputs;
 	public ArrayList<Edge> edges;
 	public Map<String, Integer> updatesMap;
-
+	
 	public Graph() {
+		
+	}
+	
+	public Graph(URI uri) {
 		this.initialInputs = new ArrayList<MessagePart>();
 		this.inputPool = new ArrayList<MessagePart>();
 		this.layers = new ArrayList<Layer>();

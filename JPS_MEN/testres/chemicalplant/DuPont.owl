@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://www.jparksimulator.com/DuPont.owl#"
-     xml:base="http://www.jparksimulator.com/DuPont.owl"
+<rdf:RDF xmlns="http://www.jparksimulator.com/kb/sgp/jurongisland/DuPont.owl#"
+     xml:base="http://www.jparksimulator.com/kb/sgp/jurongisland/DuPont.owl"
      xmlns:p1="file:/C:/OntoCAPE/meta_model/data_structures/binary_tree.owl#"
      xmlns:p2="file:/C:/OntoCAPE/meta_model/data_structures/array.owl#"
      xmlns:p3="file:/C:/OntoCAPE/meta_model/data_structures/linked_list.owl#"
@@ -9,39 +9,39 @@
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:p6="file:/C:/OntoCAPE/meta_model/topology/topology.owl#"
      xmlns:p7="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#"
-     xmlns:p8="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#"
+     xmlns:p8="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
-     xmlns:p9="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/network_system.owl#"
+     xmlns:p9="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:p10="http://www.theworldavatar.com/OntoEIP/upper_level/system_v1.owl#"
-     xmlns:p12="http://www.theworldavatar.com/OntoEIP/upper_level/system_function.owl#"
-     xmlns:p11="http://www.theworldavatar.com/OntoEIP/upper_level/system_behavior.owl#"
-     xmlns:p14="http://www.theworldavatar.com/OntoEIP/upper_level/system_realization.owl#"
-     xmlns:p13="http://www.theworldavatar.com/OntoEIP/upper_level/system_performance.owl#"
+     xmlns:p10="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#"
+     xmlns:p12="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_function.owl#"
+     xmlns:p11="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_behavior.owl#"
+     xmlns:p14="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_realization.owl#"
+     xmlns:p13="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_performance.owl#"
      xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
      xmlns:p16="http://www.jparksimulator.com/OntoCAPE/meta_model/data_structures/binary_tree.owl#"
      xmlns:terms="http://purl.org/dc/terms/"
-     xmlns:p15="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#"
+     xmlns:p15="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#"
      xmlns:p18="http://www.jparksimulator.com/OntoCAPE/meta_model/data_structures/linked_list.owl#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:p17="http://www.jparksimulator.com/OntoCAPE/meta_model/data_structures/array.owl#"
      xmlns:p19="http://www.jparksimulator.com/OntoCAPE/meta_model/data_structures/loop.owl#"
      xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
      xmlns:swrl="http://www.w3.org/2003/11/swrl#"
-     xmlns:j.1="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#"
-     xmlns:j.0="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#"
+     xmlns:j.1="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#"
+     xmlns:j.0="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#"
      xmlns:p21="http://www.jparksimulator.com/OntoCAPE/meta_model/topology/topology.owl#"
-     xmlns:j.3="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#"
-     xmlns:j.2="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+     xmlns:j.3="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#"
+     xmlns:j.2="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
      xmlns:p20="http://www.jparksimulator.com/OntoCAPE/meta_model/data_structures/multiset.owl#"
-     xmlns:p23="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#"
-     xmlns:p22="http://www.jparksimulator.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
-     xmlns:p24="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+     xmlns:p23="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#"
+     xmlns:p22="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+     xmlns:p24="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <owl:Ontology rdf:about="http://www.jparksimulator.com/DuPont.owl">
-        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
-        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl"/>
+    <owl:Ontology rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/DuPont.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl"/>
     </owl:Ontology>
     
 
@@ -57,156 +57,156 @@
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfPolyamides66ByDuPont -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#CapacityOfPolyamides66ByDuPont -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfPolyamides66ByDuPont">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Capacity"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_CapacityOfPolyamides66ByDuPont"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#CapacityOfPolyamides66ByDuPont">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Capacity"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_CapacityOfPolyamides66ByDuPont"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#DemandOfAdipicAcidByDuPont -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#DemandOfAdipicAcidByDuPont -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#DemandOfAdipicAcidByDuPont">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Demand"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_DemandOfAdipicAcidByDuPont"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#DemandOfAdipicAcidByDuPont">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Demand"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_DemandOfAdipicAcidByDuPont"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#DuPont -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#DuPont -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#DuPont">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#ChemicalPlant"/>
-        <p24:hasGISCoordinateSystem rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#DuPontCoordinateSystem"/>
-        <j.0:consumes rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#DuPontAdipicAcid"/>
-        <j.0:produces rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#DuPontPolyamides66"/>
-        <p10:isOwnedBy rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#DuPontCompany(Singapore)PteLtd"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#DuPont">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ChemicalPlant"/>
+        <p24:hasGISCoordinateSystem rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#DuPontCoordinateSystem"/>
+        <j.0:consumes rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#DuPontAdipicAcid"/>
+        <j.0:produces rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#DuPontPolyamides66"/>
+        <p10:isOwnedBy rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#DuPontCompany(Singapore)PteLtd"/>
         <p24:nearSea rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</p24:nearSea>
         <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">DuPontCompanySingaporePteLtd</p10:hasName>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#DuPontAdipicAcid -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#DuPontAdipicAcid -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#DuPontAdipicAcid">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Material"/>
-        <j.0:hasDemand rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#DemandOfAdipicAcidByDuPont"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#DuPontAdipicAcid">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Material"/>
+        <j.0:hasDemand rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#DemandOfAdipicAcidByDuPont"/>
         <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AdipicAcid</p10:hasName>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#DuPontCoordinateSystem -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#DuPontCoordinateSystem -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#DuPontCoordinateSystem">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#ProjectedCoordinateSystem"/>
-        <p24:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#x_DuPont"/>
-        <p24:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#y_DuPont"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#DuPontCoordinateSystem">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#ProjectedCoordinateSystem"/>
+        <p24:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#x_DuPont"/>
+        <p24:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#y_DuPont"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#DuPontPolyamides66 -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#DuPontPolyamides66 -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#DuPontPolyamides66">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl#Product"/>
-        <j.0:hasCapacity rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfPolyamides66ByDuPont"/>
-        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfPolyamides66ByDuPont"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#DuPontPolyamides66">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Product"/>
+        <j.0:hasCapacity rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#CapacityOfPolyamides66ByDuPont"/>
+        <j.3:hasPrice rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfPolyamides66ByDuPont"/>
         <p10:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Polyamides66</p10:hasName>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfPolyamides66ByDuPont -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfPolyamides66ByDuPont -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#PriceOfPolyamides66ByDuPont">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl#Price"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfPolyamides66ByDuPont"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#PriceOfPolyamides66ByDuPont">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Price"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfPolyamides66ByDuPont"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_CapacityOfPolyamides66ByDuPont -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_CapacityOfPolyamides66ByDuPont -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_CapacityOfPolyamides66ByDuPont">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kton/year"/>
-        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#CapacityOfPolyamides66ByDuPont"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_CapacityOfPolyamides66ByDuPont">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kton/year"/>
+        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#CapacityOfPolyamides66ByDuPont"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">60000.0</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_DemandOfAdipicAcidByDuPont -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_DemandOfAdipicAcidByDuPont -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_DemandOfAdipicAcidByDuPont">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kton/year"/>
-        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#DemandOfAdipicAcidByDuPont"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_DemandOfAdipicAcidByDuPont">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kton/year"/>
+        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#DemandOfAdipicAcidByDuPont"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">38800.0</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfPolyamides66ByDuPont -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfPolyamides66ByDuPont -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_PriceOfPolyamides66ByDuPont">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_PriceOfPolyamides66ByDuPont">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">4085.0</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_x_DuPont -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_x_DuPont -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_x_DuPont">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
-        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#x_DuPont"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_x_DuPont">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#x_DuPont"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">356508.03752699745</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_y_DuPont -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_y_DuPont -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_y_DuPont">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
-        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
-        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#y_DuPont"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_y_DuPont">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <j.2:isValueOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#y_DuPont"/>
         <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">139017.58536401406</j.2:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#x_DuPont -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#x_DuPont -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#x_DuPont">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
-        <j.1:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_x_DuPont"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#x_DuPont">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <j.1:refersToAxis rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_x_DuPont"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#y_DuPont -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#y_DuPont -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#y_DuPont">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
-        <j.1:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
-        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#V_y_DuPont"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#y_DuPont">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <j.1:refersToAxis rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+        <j.2:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#V_y_DuPont"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#DuPontCompany(Singapore)PteLtd -->
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#DuPontCompany(Singapore)PteLtd -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl#DuPontCompany(Singapore)PteLtd">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoEIP/upper_level/system_v1.owl#Organization"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#DuPontCompany(Singapore)PteLtd">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#Organization"/>
     </owl:NamedIndividual>
 </rdf:RDF>
 

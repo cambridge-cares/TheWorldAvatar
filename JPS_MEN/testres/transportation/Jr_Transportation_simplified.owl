@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <rdf:RDF xmlns="http://www.jparksimulator.com/Jr_Transportation_simplified.owl#"
      xml:base="http://www.jparksimulator.com/Jr_Transportation_simplified.owl"
-     xmlns:system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+     xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:terms="http://purl.org/dc/terms/"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
@@ -31,7 +31,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#EmissionOfLT_01 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#EmissionOfLT_01">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
         <system:hasValue rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#V_EmissionOfLT_01"/>
     </owl:NamedIndividual>
     
@@ -40,7 +40,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#EmissionOfLT_02 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#EmissionOfLT_02">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
         <system:hasValue rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#V_EmissionOfLT_02"/>
     </owl:NamedIndividual>
     
@@ -49,7 +49,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#EmissionOfSST_01 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#EmissionOfSST_01">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
         <system:hasValue rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#V_EmissionOfSST_01"/>
     </owl:NamedIndividual>
     
@@ -58,7 +58,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#EmissionOfSST_02 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#EmissionOfSST_02">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
         <system:hasValue rdf:resource="http://www.jparksimulator.com/transportation_simple.owl#V_EmissionOfSST_02"/>
     </owl:NamedIndividual>
     
@@ -187,7 +187,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#V_EmissionOfLT_01 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#V_EmissionOfLT_01">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#g"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">138.0</system:numericalValue>
     </owl:NamedIndividual>
@@ -197,7 +197,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#V_EmissionOfLT_02 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#V_EmissionOfLT_02">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#g"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">10.0</system:numericalValue>
     </owl:NamedIndividual>
@@ -207,7 +207,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#V_EmissionOfSST_01 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#V_EmissionOfSST_01">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#g"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">10.0</system:numericalValue>
     </owl:NamedIndividual>
@@ -217,7 +217,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#V_EmissionOfSST_02 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#V_EmissionOfSST_02">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#g"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">31.0</system:numericalValue>
     </owl:NamedIndividual>
@@ -227,7 +227,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#V_InstallationCostOfLT_01 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#V_InstallationCostOfLT_01">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</system:numericalValue>
     </owl:NamedIndividual>
@@ -237,7 +237,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#V_InstallationCostOfLT_02 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#V_InstallationCostOfLT_02">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">85320.0</system:numericalValue>
     </owl:NamedIndividual>
@@ -247,7 +247,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#V_InstallationCostOfSST_01 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#V_InstallationCostOfSST_01">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">620000.0</system:numericalValue>
     </owl:NamedIndividual>
@@ -257,7 +257,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#V_InstallationCostOfSST_02 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#V_InstallationCostOfSST_02">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</system:numericalValue>
     </owl:NamedIndividual>
@@ -267,7 +267,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#V_TransportationCostOfLT_01 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#V_TransportationCostOfLT_01">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.1</system:numericalValue>
     </owl:NamedIndividual>
@@ -277,7 +277,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#V_TransportationCostOfLT_02 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#V_TransportationCostOfLT_02">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0017</system:numericalValue>
     </owl:NamedIndividual>
@@ -287,7 +287,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#V_TransportationCostOfSST_01 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#V_TransportationCostOfSST_01">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0017</system:numericalValue>
     </owl:NamedIndividual>
@@ -297,7 +297,7 @@
     <!-- http://www.jparksimulator.com/transportation_simple.owl#V_TransportationCostOfSST_02 -->
 
     <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/transportation_simple.owl#V_TransportationCostOfSST_02">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.015</system:numericalValue>
     </owl:NamedIndividual>

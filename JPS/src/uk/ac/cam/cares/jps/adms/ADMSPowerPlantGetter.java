@@ -33,6 +33,9 @@ public class ADMSPowerPlantGetter extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		String location = request.getParameter("location");
+		
+		System.out.println("location: " + location);
+		
 		String powerPlantIRI = "";
 		String epsg = "";
 		String powerplantKnowledgeBase = "";

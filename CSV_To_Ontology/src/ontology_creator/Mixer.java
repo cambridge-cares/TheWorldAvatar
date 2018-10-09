@@ -76,21 +76,21 @@ public class Mixer {
 		Tools.replaceString("_340002", "_" + getFeedStreams().get(1), filename);
 		JenaOWLModel owlmodel = Tools.callJena(filename);
 		if (getFeedStreams().size()>2) {
-			OWLNamedClass NozzleClass = owlmodel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Nozzle");
-			OWLNamedClass ProcessStreamClass = owlmodel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#ProcessStream");
-			OWLNamedClass PipeClass = owlmodel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Pipe");
+			OWLNamedClass NozzleClass = owlmodel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Nozzle");
+			OWLNamedClass ProcessStreamClass = owlmodel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#ProcessStream");
+			OWLNamedClass PipeClass = owlmodel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Pipe");
 
-			OWLIndividual MixingProcess = owlmodel.getOWLIndividual("http://www.jparksimulator.com/" + getName() + ".owl#Mixing1");
-			OWLIndividual MixerInstance = owlmodel.getOWLIndividual("http://www.jparksimulator.com/" + getName() + ".owl#" + getName());
+			OWLIndividual MixingProcess = owlmodel.getOWLIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#Mixing1");
+			OWLIndividual MixerInstance = owlmodel.getOWLIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#" + getName());
 
-			OWLObjectProperty hasConnector = owlmodel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#hasConnector");
-			OWLObjectProperty hasInput = owlmodel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/network_system.owl#hasInput");
-			OWLObjectProperty isDirectlyConnectedTo = owlmodel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#isDirectlyConnectedTo");
+			OWLObjectProperty hasConnector = owlmodel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#hasConnector");
+			OWLObjectProperty hasInput = owlmodel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#hasInput");
+			OWLObjectProperty isDirectlyConnectedTo = owlmodel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyConnectedTo");
 			
 			for (int index=2; index<getFeedStreams().size(); index++) {
-				RDFIndividual Nozzle = NozzleClass.createRDFIndividual("http://www.jparksimulator.com/" + getName() + ".owl#" + getName() + "_N_" + Integer.toString(index + 2));
-				RDFIndividual ProcessStream = ProcessStreamClass.createRDFIndividual("http://www.jparksimulator.com/" + getName() + ".owl#ProcessStream" + getFeedStreams().get(index));
-				RDFIndividual Pipe = PipeClass.createRDFIndividual("http://www.jparksimulator.com/" + getName() + ".owl#Pipe_" + getFeedStreams().get(index));
+				RDFIndividual Nozzle = NozzleClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#" + getName() + "_N_" + Integer.toString(index + 2));
+				RDFIndividual ProcessStream = ProcessStreamClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#ProcessStream" + getFeedStreams().get(index));
+				RDFIndividual Pipe = PipeClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#Pipe_" + getFeedStreams().get(index));
 				
 				MixerInstance.addPropertyValue(hasConnector, Nozzle);
 				MixingProcess.addPropertyValue(hasInput, ProcessStream);

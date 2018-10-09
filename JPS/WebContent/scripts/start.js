@@ -136,8 +136,8 @@ $(function(){
     $('#start').click(function(){
     	//$('#start').attr("disabled", true);
     	
-    	const BERLIN_IRI = "http://dbpedia.org/page/Berlin";
-    	const THE_HAGUE_IRI = "http://dbpedia.org/page/The_Hague";
+    	const BERLIN_IRI = "http://dbpedia.org/resource/Berlin";
+    	const THE_HAGUE_IRI = "http://dbpedia.org/resource/The_Hague";
         
         let xmax = parseInt($('#xupper').val());
         let xmin = parseInt($('#xlower').val());
@@ -178,9 +178,10 @@ $(function(){
 	        		upperx,
 	        		uppery
 	        	});
-        }
+        };
         
         $.when(getBuildingIRIs(locationIRI, lowerx, lowery, upperx, uppery)).done(buildingIRIs => {
+            
         	initadms3dmap(buildingIRIs, [xmin, xmax, ymin, ymax], osmb, location, coordinatesMid, locationIRI);
         });
          

@@ -24,8 +24,7 @@ public class ADMSWrapper extends HttpServlet {
 	 * Default constructor.
 	 */
 	public ADMSWrapper() {
-		// TODO Auto-generated constructor stub
-	}
+ 	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
@@ -33,8 +32,7 @@ public class ADMSWrapper extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-
+ 
 		String selectedSource = request.getParameter("selectedSource");
 		String buildingTopNode = request.getParameter("buildingTopNode");
 		String coordinates = request.getParameter("coordinates");
@@ -75,8 +73,7 @@ public class ADMSWrapper extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+ 		doGet(request, response);
 	}
 
 }

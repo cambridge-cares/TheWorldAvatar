@@ -6,10 +6,10 @@ package uk.ac.cam.cares.jps.composition.servicemodel;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,10 +21,14 @@ public class MessagePart{
 	public  URI uri;
 	private List<MessagePart> mandatoryParts;
 	private List<MessagePart> optionalParts;
-	private String value;
+	// TODO-AE URGENT rename to objectValue with type URI
+	private URI objectValue;
+	// TODO-AE URGENT rename to dataValue
 	private String datatypeValue;
-	private URI modelReference; 
-	
+	private URI type; 
+	public String name;
+	private boolean array = false;
+	// TODO-AE URGENT remove output and input edges from here and other MSM classes
 	public ArrayList<Edge> outputEdges;
 	public ArrayList<Edge> inputEdges;
 
@@ -35,25 +39,22 @@ public class MessagePart{
 	 * A messagePart can be merely a 
 	 */
 	
-	public MessagePart()
-	{
+	public MessagePart() {
         this.outputEdges = new ArrayList<Edge>();
         this.inputEdges = new ArrayList<Edge>();
+		this.mandatoryParts = new ArrayList<MessagePart>();
+
 	}
 	
-	public MessagePart(URI uri) 
-	{
+	public MessagePart(URI uri) {
 		this.uri = uri;
 		this.mandatoryParts = new ArrayList<MessagePart>();
         this.optionalParts = new ArrayList<MessagePart>();
-        this.value = null;
+        this.objectValue = null;
         this.datatypeValue = null;
-        this.modelReference = null;
-        
+       
         this.outputEdges = new ArrayList<Edge>();
         this.inputEdges = new ArrayList<Edge>();
-        
-        
 	}
 	
     public List<MessagePart> getMandatoryParts() {
@@ -63,22 +64,13 @@ public class MessagePart{
     public List<MessagePart> getOptionalParts() {
         return optionalParts;
     }
-
-    public void setModelReference(URI uri)
-    {
-    	this.modelReference = uri;
+    
+    public void setValue(URI value) {
+    	this.objectValue = value;
     }
     
-    public URI getModelReference() {
-    	return this.modelReference;
-    }
-    
-    public void setValue(String value) {
-    	this.value = value;
-    }
-    
-    public String getValue() {
-    	return this.value;
+    public URI getValue() {
+    	return this.objectValue;
     }
     
     public void setDatatypeValue(String dataTypeValue) {
@@ -89,8 +81,6 @@ public class MessagePart{
     {
     	return this.datatypeValue;
     }
-    
-    
     
     public void setMandatoryParts(List<MessagePart> mandatoryParts) {
         this.mandatoryParts = mandatoryParts;
@@ -122,6 +112,87 @@ public class MessagePart{
         }
         return false;
     }
+    
+	public Map<String,String> getTypeNamesUnderThisMessagePart(){
+		return getNamesUnderAMessagePart(this);
+	}
+	
+	public static Map<String,String> getTypeNamesUnderMessagePart(MessagePart mp){
+		return getNamesUnderAMessagePart(mp);
+	}
+	
+	public Map<String, Map<String,String>> getMapOfUpstreamNamesAndDownstreamNames(Service upstreamService) {
+		// Get downstream type-name mapping of this messagePart type
+		// Get upstream type-name mapping of this messagePart type 
+		String downstreamMPType = this.getType().toASCIIString();
+		MessagePart upstreamMP = null;
+		 
+		for(MessagePart mp : upstreamService.getAllOutputs()) {
+			String upstreamMPType = mp.getType().toASCIIString();
+ 			if(downstreamMPType.equalsIgnoreCase(upstreamMPType)) {
+				upstreamMP = mp;
+				break;
+			}
+		}
+		
+		if(upstreamMP == null) {
+			return null;
+		}
+		Map<String,String> upstreamTypeToNameMap = getTypeNamesUnderMessagePart(upstreamMP);
+		Map<String,String> downstreamTypeToNameMap = getTypeNamesUnderThisMessagePart();
+		Map<String,String> upToDownNameToNameMap = new HashMap<String,String>();
+		
+		// Firstly, make the root key mapping 
+ 
+		System.out.println("This messagePart type : " + this.getType().toASCIIString());
+		System.out.println("This messagePart name : " + this.getName());
+		System.out.println("This mp IRI :" + this.getUri().toString());
+	    upToDownNameToNameMap.put(upstreamMP.getName(), this.getName());
+		 
+		
+		for (Map.Entry<String, String> upstreamEntry : upstreamTypeToNameMap.entrySet())
+		{
+			for (Map.Entry<String, String> downstreamEntry : downstreamTypeToNameMap.entrySet())
+			{
+				if(upstreamEntry.getKey().equalsIgnoreCase(downstreamEntry.getKey())){
+					// The type matches, put the upstream name as key and downstream name as value...
+					upToDownNameToNameMap.put(upstreamEntry.getValue(), downstreamEntry.getValue());
+					break;
+				}
+			}
+		}
+		
+		Map<String, Map<String,String>> result = new HashMap<String, Map<String,String>>();
+		result.put(upstreamMP.getName(), upToDownNameToNameMap);
+		return result;
+		
+	}
+	
+	
+	public static Map<String,String> getNamesUnderAMessagePart(MessagePart messagePart){
+		Map<String,String> names = new HashMap<String,String>();
+		if(messagePart != null) {
+			if(messagePart.getMandatoryParts().size()!= 0) {
+				// The messagePart still has children 
+				for(MessagePart childPart: messagePart.getMandatoryParts()) {
+					names.putAll(getNamesUnderAMessagePart(childPart));
+				}
+				return names;
+			}
+			else {
+				// The messagePart has no child, therefore, return its names
+				names.put(messagePart.getType().toASCIIString(),messagePart.getName());
+				return names;
+			}
+		}
+		else {
+			return names;
+		}
+		
+	}
+	
+	
+	
 
     public boolean removeMandatoryPart(MessagePart part) {
         if (part != null) {
@@ -138,11 +209,40 @@ public class MessagePart{
     	try {
 			return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return "Can not serialize this MessagePart Object to JSON";
     }
 	
-	
+	public URI getUri() {
+		return uri;
+	}
+
+	public void setUri(URI uri) {
+		this.uri = uri;
+	}
+
+	public URI getType() {
+		return type;
+	}
+
+	public void setType(URI type) {
+		this.type = type;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public boolean isArray() {
+		return array;
+	}
+
+	public void setArray(boolean array) {
+		this.array = array;
+	}
 }

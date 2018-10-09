@@ -8,7 +8,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
-import uk.ac.cam.cares.jps.base.util.MatrixToJsonConverter;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 
 public class TestUtils extends TestCase {
@@ -37,7 +37,7 @@ public class TestUtils extends TestCase {
 				"http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_94405F3C-FB53-4EC8-93A1-5F95FEC74CBD,{94405F3C-FB53-4EC8-93A1-5F95FEC74CBD}\r\n" + 
 				"http://www.theworldavatar.com/Building/10_buildings0.owl#BuildingGUID_8D251403-40CD-463F-AE65-AC8951A1B2FD,{8D251403-40CD-463F-AE65-AC8951A1B2FD}";
 		
-		Map<String, List<String>> matrix = MatrixToJsonConverter.fromCsv(csv);
+		Map<String, List<String>> matrix = MatrixConverter.fromCsv(csv);
 		
 		//assertEquals(2, matrix.size());
 		assertEquals(5, matrix.get("building").size());

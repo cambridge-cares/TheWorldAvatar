@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.composition.webserver;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -10,9 +11,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.RDFFormat;
+import org.apache.jena.vocabulary.RDF;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 
 import uk.ac.cam.cares.jps.composition.util.SendRequest;
 
@@ -33,7 +41,7 @@ public class CoordinateToCity extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-			JSONObject value = new JSONObject(request.getParameter("value").replaceAll("@", "#"));
+			JSONObject value = new JSONObject(request.getParameter("value").replace("@", "#").replace("$", "#"));
 			JSONObject coordinate = value.getJSONObject(
 					"http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#Coordinate");
 			JSONArray lat = coordinate.getJSONArray(
@@ -49,7 +57,9 @@ public class CoordinateToCity extends HttpServlet {
 			String result = getCityNameFromCoordinate(lat_value, lon_value);
 			String cityName = extractCityName(result);
 			if (cityName != null) {
-				response.getWriter().write(lookUpCityName(cityName));
+				String cityIRI = lookUpCityName(cityName);
+				String resultRDF = convertIRIToRDF(cityIRI);
+				response.getWriter().write(resultRDF);
 			} else {
 				response.getWriter().write("NOT A CITY");
 			}
@@ -70,6 +80,18 @@ public class CoordinateToCity extends HttpServlet {
 	public String getCityNameFromCoordinate(String lat, String lon) throws Exception {
 		String url = String.format(requestUrl, lat, lon);
 		return SendRequest.sendGet(url);
+	}
+	
+	public String convertIRIToRDF(String cityIRI) {
+		Model cityModel = ModelFactory.createDefaultModel();
+		Resource myCity = cityModel.createResource(cityIRI);
+		Resource city = cityModel.createResource("http://www.theworldavatar.com/OntoEIP/supporting_concepts/space_and_time_v1.owl#City");
+		myCity.addProperty(RDF.type,city);
+		
+		
+		StringWriter out = new StringWriter();		
+		RDFDataMgr.write(out, cityModel, RDFFormat.RDFJSON);
+		return out.toString();
 	}
 
 	public String extractCityName(String res) throws JSONException {
@@ -106,6 +128,7 @@ public class CoordinateToCity extends HttpServlet {
 		String url = String.format(temp, cityName.replace(" ", "_"));
 
 		String result = SendRequest.sendGet(url);
+		System.out.println("City Query :===================");
 		System.out.println(result);
 		if (result != null) {
 			JSONObject result_JSON = new JSONObject(SendRequest.sendGet(url));

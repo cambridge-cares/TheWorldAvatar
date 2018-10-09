@@ -1,28 +1,28 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://www.jparksimulator.com/E-340001.owl#"
-     xml:base="http://www.jparksimulator.com/E-340001.owl"
-     xmlns:space_and_time_extended="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+<rdf:RDF xmlns="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#"
+     xml:base="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl"
+     xmlns:space_and_time_extended="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
-     xmlns:topology="http://www.theworldavatar.com/OntoCAPE/meta_model/topology/topology.owl#"
-     xmlns:network_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/network_system.owl#"
+     xmlns:topology="http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#"
+     xmlns:network_system="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+     xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:terms="http://purl.org/dc/terms/"
-     xmlns:coordinate_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#"
+     xmlns:coordinate_system="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
-     xmlns:plant="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#"
-     xmlns:technical_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/technical_system.owl#"
-     xmlns:behavior="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#">
-    <owl:Ontology rdf:about="http://www.jparksimulator.com/E-340001.owl">
-		<owl:imports rdf:resource="http://www.theworldavatar.com/Eco-industrialPark.owl"/>
-        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/technical_system.owl"/>
-        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl"/>
-        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/OntoCAPE.owl"/>
-        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl"/>
-        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl"/>
-        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
+     xmlns:plant="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#"
+     xmlns:technical_system="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#"
+     xmlns:behavior="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#">
+    <owl:Ontology rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl">
+		<owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/OntoCAPE.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
     </owl:Ontology>
     
 
@@ -38,9 +38,9 @@
     
 
 
-    <!-- http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#SensibleHeat -->
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#SensibleHeat -->
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#SensibleHeat"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#SensibleHeat"/>
     
 
 
@@ -55,207 +55,207 @@
     
 
 
-    <!-- http://www.jparksimulator.com/E-340001.owl#Cooling_ProcessStream_340008 -->
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#Cooling_ProcessStream_340008 -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/E-340001.owl#Cooling_ProcessStream_340008">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#TemperatureChange"/>
-        <behavior:hasHeatDuty rdf:resource="http://www.jparksimulator.com/E-340001.owl#HeatDutyOfE-340001"/>
-        <network_system:hasInput rdf:resource="http://www.jparksimulator.com/E-340001.owl#ProcessStream_340008"/>
-        <network_system:hasInput rdf:resource="http://www.jparksimulator.com/E-340001.owl#ProcessStream_340031"/>
-        <network_system:hasOutput rdf:resource="http://www.jparksimulator.com/E-340001.owl#ProcessStream_340009"/>
-        <network_system:hasOutput rdf:resource="http://www.jparksimulator.com/E-340001.owl#ProcessStream_340032"/>
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#Cooling_ProcessStream_340008">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#TemperatureChange"/>
+        <behavior:hasHeatDuty rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#HeatDutyOfE-340001"/>
+        <network_system:hasInput rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#ProcessStream_340008"/>
+        <network_system:hasInput rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#ProcessStream_340031"/>
+        <network_system:hasOutput rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#ProcessStream_340009"/>
+        <network_system:hasOutput rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#ProcessStream_340032"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.jparksimulator.com/E-340001.owl#E-340001 -->
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#E-340001 -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/E-340001.owl#E-340001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#ShellTubeApparatus"/>
-        <plant:hasConnector rdf:resource="http://www.jparksimulator.com/E-340001.owl#E-340001_N_1"/>
-        <plant:hasConnector rdf:resource="http://www.jparksimulator.com/E-340001.owl#E-340001_N_2"/>
-        <plant:hasConnector rdf:resource="http://www.jparksimulator.com/E-340001.owl#E-340001_N_3"/>
-        <plant:hasConnector rdf:resource="http://www.jparksimulator.com/E-340001.owl#E-340001_N_4"/>
-        <space_and_time_extended:hasGISCoordinateSystem rdf:resource="http://www.jparksimulator.com/E-340001.owl#E-340001_CoordinateSystem"/>
-        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/E-340001.owl#Cooling_ProcessStream_340008"/>
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#E-340001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#ShellTubeApparatus"/>
+        <plant:hasConnector rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#E-340001_N_1"/>
+        <plant:hasConnector rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#E-340001_N_2"/>
+        <plant:hasConnector rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#E-340001_N_3"/>
+        <plant:hasConnector rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#E-340001_N_4"/>
+        <space_and_time_extended:hasGISCoordinateSystem rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#E-340001_CoordinateSystem"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#Cooling_ProcessStream_340008"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.jparksimulator.com/E-340001.owl#E-340001_CoordinateSystem -->
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#E-340001_CoordinateSystem -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/E-340001.owl#E-340001_CoordinateSystem">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
-        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.jparksimulator.com/E-340001.owl#x_E-340001"/>
-        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.jparksimulator.com/E-340001.owl#y_E-340001"/>
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#E-340001_CoordinateSystem">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#x_E-340001"/>
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#y_E-340001"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.jparksimulator.com/E-340001.owl#E-340001_N_1 -->
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#E-340001_N_1 -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/E-340001.owl#E-340001_N_1">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Nozzle"/>
-        <system:isDirectlyConnectedTo rdf:resource="http://www.jparksimulator.com/E-340001.owl#Pipe_340008"/>
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#E-340001_N_1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Nozzle"/>
+        <system:isDirectlyConnectedTo rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#Pipe_340008"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.jparksimulator.com/E-340001.owl#E-340001_N_2 -->
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#E-340001_N_2 -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/E-340001.owl#E-340001_N_2">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Nozzle"/>
-        <system:isDirectlyConnectedTo rdf:resource="http://www.jparksimulator.com/E-340001.owl#Pipe_340009"/>
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#E-340001_N_2">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Nozzle"/>
+        <system:isDirectlyConnectedTo rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#Pipe_340009"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.jparksimulator.com/E-340001.owl#E-340001_N_3 -->
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#E-340001_N_3 -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/E-340001.owl#E-340001_N_3">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Nozzle"/>
-        <system:isDirectlyConnectedTo rdf:resource="http://www.jparksimulator.com/E-340001.owl#Pipe_340031"/>
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#E-340001_N_3">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Nozzle"/>
+        <system:isDirectlyConnectedTo rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#Pipe_340031"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.jparksimulator.com/E-340001.owl#E-340001_N_4 -->
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#E-340001_N_4 -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/E-340001.owl#E-340001_N_4">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Nozzle"/>
-        <system:isDirectlyConnectedTo rdf:resource="http://www.jparksimulator.com/E-340001.owl#Pipe_340032"/>
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#E-340001_N_4">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Nozzle"/>
+        <system:isDirectlyConnectedTo rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#Pipe_340032"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.jparksimulator.com/E-340001.owl#HeatDutyOfE-340001 -->
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#HeatDutyOfE-340001 -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/E-340001.owl#HeatDutyOfE-340001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#SensibleHeat"/>
-        <system:hasValue rdf:resource="http://www.jparksimulator.com/E-340001.owl#ValueOfHeatDutyOfE-340001"/>
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#HeatDutyOfE-340001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#SensibleHeat"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#ValueOfHeatDutyOfE-340001"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.jparksimulator.com/E-340001.owl#Pipe_340008 -->
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#Pipe_340008 -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/E-340001.owl#Pipe_340008">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Pipe"/>
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#Pipe_340008">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Pipe"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.jparksimulator.com/E-340001.owl#Pipe_340009 -->
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#Pipe_340009 -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/E-340001.owl#Pipe_340009">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Pipe"/>
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#Pipe_340009">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Pipe"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.jparksimulator.com/E-340001.owl#Pipe_340031 -->
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#Pipe_340031 -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/E-340001.owl#Pipe_340031">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Pipe"/>
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#Pipe_340031">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Pipe"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.jparksimulator.com/E-340001.owl#Pipe_340032 -->
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#Pipe_340032 -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/E-340001.owl#Pipe_340032">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Pipe"/>
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#Pipe_340032">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Pipe"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.jparksimulator.com/E-340001.owl#ProcessStream_340008 -->
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#ProcessStream_340008 -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/E-340001.owl#ProcessStream_340008">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#ProcessStream"/>
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#ProcessStream_340008">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#ProcessStream"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.jparksimulator.com/E-340001.owl#ProcessStream_340009 -->
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#ProcessStream_340009 -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/E-340001.owl#ProcessStream_340009">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#ProcessStream"/>
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#ProcessStream_340009">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#ProcessStream"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.jparksimulator.com/E-340001.owl#ProcessStream_340031 -->
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#ProcessStream_340031 -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/E-340001.owl#ProcessStream_340031">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#ProcessStream_340031">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Utility"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.jparksimulator.com/E-340001.owl#ProcessStream_340032 -->
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#ProcessStream_340032 -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/E-340001.owl#ProcessStream_340032">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#ProcessStream_340032">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Utility"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.jparksimulator.com/E-340001.owl#ValueOfHeatDutyOfE-340001 -->
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#ValueOfHeatDutyOfE-340001 -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/E-340001.owl#ValueOfHeatDutyOfE-340001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kW"/>
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#ValueOfHeatDutyOfE-340001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kW"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">2532.0</system:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.jparksimulator.com/E-340001.owl#ValueOf_x_E-340001 -->
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#ValueOf_x_E-340001 -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/E-340001.owl#ValueOf_x_E-340001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#ValueOf_x_E-340001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0</system:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.jparksimulator.com/E-340001.owl#ValueOf_y_E-340001 -->
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#ValueOf_y_E-340001 -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/E-340001.owl#ValueOf_y_E-340001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#ValueOf_y_E-340001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0</system:numericalValue>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.jparksimulator.com/E-340001.owl#x_E-340001 -->
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#x_E-340001 -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/E-340001.owl#x_E-340001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
-        <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
-        <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
-        <system:hasValue rdf:resource="http://www.jparksimulator.com/E-340001.owl#ValueOf_x_E-340001"/>
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#x_E-340001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#ValueOf_x_E-340001"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.jparksimulator.com/E-340001.owl#y_E-340001 -->
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#y_E-340001 -->
 
-    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/E-340001.owl#y_E-340001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
-        <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
-        <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
-        <system:hasValue rdf:resource="http://www.jparksimulator.com/E-340001.owl#ValueOf_y_E-340001"/>
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#y_E-340001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/E-340001.owl#ValueOf_y_E-340001"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kW -->
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kW -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kW"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kW"/>
 </rdf:RDF>
 
 

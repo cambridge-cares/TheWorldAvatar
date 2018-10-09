@@ -71,7 +71,8 @@ def sparqlBuildingCoordinates(building, sparqlEndPoint):
             }}
             ORDER BY ?polygon ?points
     '''.format(building)
-    
+    with open('query.txt', 'w') as file:
+        file.write(queryString)
     return sparqlQuery(queryString, sparqlEndPoint)
 
 
@@ -184,19 +185,22 @@ def getGeoJSON(listBuildingCoordinates, listBuildingHeights):
 
 def return_buildings():
     
-    listOfIRIs = json.loads(sys.argv[1])
+    listOfIRIs = sys.argv[1].strip().replace('"','').replace("'",'')[1:-1].split(',')
     cityiri = sys.argv[2]
+    with open('./log.txt','w') as file:
+        file.write(str(listOfIRIs))
+        file.write(cityiri)
     sparqlEndPoint = None
     owlCRS = None
     osmCRS = Proj(init='epsg:4326')
     
-    if cityiri == "http://dbpedia.org/page/The_Hague":
+    if cityiri == "http://dbpedia.org/resource/The_Hague":
         owlCRS = Proj(init='epsg:28992')
         sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/thehaguebuildings/sparql"
-    elif cityiri == "http://dbpedia.org/page/Berlin":
+    elif cityiri == "http://dbpedia.org/resource/Berlin":
         owlCRS = Proj(init='epsg:25833')
         sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/berlinbuildings/sparql"
-    
+
     if listOfIRIs == []:
         raise ValueError("EMPTY ARRAY")
 
