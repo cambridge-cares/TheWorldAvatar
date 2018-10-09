@@ -103,6 +103,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/slf4j-api-1.5.8.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/slf4j-log4j12-1.5.8.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xercesImpl.jar"/>
-	<classpathentry kind="lib" path="/JPS_BASE/workingdir/jps_base.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jps_base.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -42,18 +42,21 @@
     <span id="readme-button">?</span>
 
     <span id="readme-text">
-        This agent has considered the effect of surrounding buildings and weather data for simulation of atmospheric dispersion for an emission source (black building).
+        This agent considers the effect of surrounding buildings and weather data for simulation of atmospheric dispersion for an emission source (black building).
         <br/><br/>The pollutants in the emission source are CO<sub>2</sub>, CO and unburned hydrocarbon.
-        The pollutants emission rate has been arbitrarily assigned as 446 g/s for CO, 1970 g/s for CO2 and 803 g/s for unburned hydrocarbon.
-        <br/><br/> The effects of the closest 25 buildings from the emission source and real-time weather data (sourced from http://www.accuweather.com/en/sg/singapore/300597/current-weather/300597) on atmospheric dispersion are simulated and visualised in the dispersion profile.
-        The weather data is updated every time the agent is executed.
+        The pollutants emission rate has been arbitrarily assigned as 446 g/s for CO, 1970 g/s for CO<sub>2</sub> and 803 g/s for unburned hydrocarbon.
+        <br/><br/> The effects of the closest 25 buildings from the emission source within the selected region and real-time weather data (sourced from <a href="http://www.accuweather.com/en/sg/singapore/300597/current-weather/300597">http://www.accuweather.com/en/sg/singapore/300597/current-weather/300597</a>) on atmospheric dispersion are simulated and visualised in the dispersion profile. 
+		The weather data is updated every time the agent is executed. 
         <br/><br/>The user can modify the area of interest between Den Haag and Berlin by selecting from the dropdown list and executing the simulation to determine the corresponding dispersion profile.
-        <br/>The emission source in Den Haag was chosen as the Uniper Stadcentrale Den Haag plant while the emission source in Berlin was chosen as the Heizkraftwerk Mitte plant.
-        <br/>The emission sources have emission heights of 83.6 m in Den Haag scenario and 99.3 m in Berlin scenario respectively.
-        <br/><br/>The user can also select the region to focus on the dispersion profile computation by modifying the coordinates of interest (X lower, X upper, Y lower and Y upper values
-        in coordinate reference system Amersfoort RD New (epsg:28992)).
-        <br/>The dispersion profile can be viewed at a height of 0 m to 30 m by moving the slider on the left. The user can also choose to view the different pollutants’
-        dispersion profiles by selecting the listed pollutants.</span>
+        <br/>The emission source in Den Haag was chosen as the Uniper Stadcentrale Den Haag plant, while the emission source in Berlin was chosen as the Heizkraftwerk Mitte plant.
+        <br/>The emission sources have emission heights of 83.6 m in the Den Haag scenario and 99.3 m in the Berlin scenario respectively.
+        <br/><br/>The user can also select the region to focus on for the dispersion profile computation by modifying the coordinates of interest (X lower, X upper, Y lower and Y upper values in coordinate reference system Amersfoort RD New (epsg:28992)). 
+        <br/>It is recommended that the selected region approximates a square with length of minimum 400 m.
+		<br/><br/>The selected region has to be inline with the wind direction in order for the dispersion profile to be displayed.
+		The dispersion profile can be viewed at a height of 0 m to 30 m by moving the slider on the left. 
+		<br/><br/>The user can also choose to view the different pollutants’ dispersion profiles by selecting the listed pollutants. 
+		The user should reload the agent before modifying the coordinates of interest. 
+		The recommended region for the Den Haag scenario is between 79173.323 and 80199.621 for X and between 454193.456 and 455030.337 for Y.</span>
 
 </div>
 
@@ -81,13 +84,13 @@
     <input id="xlower" type="text" value='79480'/>
 
     <label for="xupper">X upper:</label>
-    <input id="xupper" type="text" value='85000'/>
+    <input id="xupper" type="text" value='80000'/>
 
     <label for="ylower">Y lower:</label>
     <input id="ylower" type="text" value='454670'/>
 
     <label for="yupper">Y upper:</label>
-    <input id="yupper" type="text" value='460000'/>
+    <input id="yupper" type="text" value='455190'/>
 
 
     <button id="start">Start simulation</button>
