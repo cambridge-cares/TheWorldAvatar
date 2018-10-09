@@ -21,6 +21,6 @@ public class SurrogateModel extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		String powerplantJson = request.getParameter("query");
-		System.out.println("INSIDE SURROGATE MODEL: " + powerplantJson);
+		System.out.println(powerplantJson);
 	}
 }
