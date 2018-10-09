@@ -21,15 +21,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.util.MatrixToJsonConverter;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.building.SimpleShapeConverter.SimpleShape;
 
 public class BuildingQueryPerformer implements SparqlConstants {
 
 	// TODO-AE should be changed to "EPSG:4326"; // WGS 84 which is the standard of GeoJSON, GIS, Google
 	public static final String DEFAULT_CRS_NAME = CRSTransformer.EPSG_28992;
-	public static final String BERLIN_IRI = "http://dbpedia.org/page/Berlin";
-	public static final String THE_HAGUE_IRI = "http://dbpedia.org/page/The_Hague";
+	public static final String BERLIN_IRI = "http://dbpedia.org/resource/Berlin";
+	public static final String THE_HAGUE_IRI = "http://dbpedia.org/resource/The_Hague"; // The IRIs have be changed to /resource instead of /page
 	
 	private Logger logger = LoggerFactory.getLogger(BuildingQueryPerformer.class);
 	private String host;
@@ -72,9 +72,6 @@ public class BuildingQueryPerformer implements SparqlConstants {
 				.setParameter("query", query);
 	
 		String result = executeGet(builder);
-		
-		logger.debug("query result = \n" + result);
-		
 		return result;
 	}
 	
@@ -139,9 +136,9 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			uy = p[1];
 		}
 		
-		String query = getQueryBuildingsFromRegion(buildingLimit, lx, ly, ux, uy);		
+		String query = getQueryBuildingsFromRegion(buildingLimit, lx, ly, ux, uy);	
 		String result = performQuery(cityIRI, query);
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		return map.get("bdn");
 	}
 	
@@ -170,7 +167,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		
 		String query = getQueryClosestBuildingsFromRegion(200, lx, ly, ux, uy);		
 		String result = performQuery(cityIRI, query);
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		
 		return selectClosestBuilding(plx, ply, buildingLimit, map);
 	}
@@ -388,7 +385,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 					
 			String query = getQueryBdnVerticesWithAndWithoutBuildingParts(currentIRI);
 			String queryResult = performQuery(cityIRI, query);
-			Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(queryResult);
+			Map<String, List<String>> map = MatrixConverter.fromCsv(queryResult);
 			
 			String sourceCRSName = getCRSName(cityIRI);
 			if (!DEFAULT_CRS_NAME.equals(sourceCRSName)) {
@@ -425,7 +422,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			
 			String queryHeigt = getQueryBdnHeight(currentIRI);
 			String queryHeightResult = performQuery(cityIRI, queryHeigt);
-			map = MatrixToJsonConverter.fromCsv(queryHeightResult);
+			map = MatrixConverter.fromCsv(queryHeightResult);
 			double height = Double.valueOf((String) map.get("h").get(0));
 			result.BldHeight.add(height);
 		}

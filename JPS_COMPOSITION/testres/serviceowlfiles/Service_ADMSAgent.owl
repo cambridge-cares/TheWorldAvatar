@@ -1,0 +1,187 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:msm="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#">
+  <msm:Service rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#Service">
+    <msm:hasOperation>
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#Operation_7cc46863-879a-47b8-aebf-cc5e3e61cd4a">
+        <msm:hasOutput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessageContent_19690987-ea12-47df-9fc1-b9a4694aa53e">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_59a65655-964e-4e51-b2f8-038ead2fdc8f">
+                <msm:hasName>dispersiongrid</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>https://www.w3.org/ns/csvw#Table</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasOutput>
+        <msm:hasInput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessageContent_90394f74-51e8-4ed8-bba5-e2d40d6ba30e">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_4d94f7e5-26bb-4b0f-b4c6-bc23ae32adbf">
+                <msm:hasMandatoryPart>
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_92571fac-925d-48c7-8593-ba0b04b8de0e">
+                    <msm:hasMandatoryPart>
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_61230906-47f8-47f6-9efe-3a861c1b28d9">
+                        <msm:hasName>value</msm:hasName>
+                        <msm:isArray>false</msm:isArray>
+                        <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasValue</msm:hasType>
+                      </msm:MessagePart>
+                    </msm:hasMandatoryPart>
+                    <msm:hasName>humidity</msm:hasName>
+                    <msm:isArray>false</msm:isArray>
+                    <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasHumidity</msm:hasType>
+                  </msm:MessagePart>
+                </msm:hasMandatoryPart>
+                <msm:hasMandatoryPart>
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_2a74d5fa-fa0e-46d2-886e-06c956930755">
+                    <msm:hasMandatoryPart>
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_9b51ea89-b6d2-42ce-b4e1-4e5502962d7a">
+                        <msm:hasName>direction</msm:hasName>
+                        <msm:isArray>false</msm:isArray>
+                        <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasDirection</msm:hasType>
+                      </msm:MessagePart>
+                    </msm:hasMandatoryPart>
+                    <msm:hasMandatoryPart>
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_dc0868dc-d193-400b-9033-4dac31c9508d">
+                        <msm:hasName>speed</msm:hasName>
+                        <msm:isArray>false</msm:isArray>
+                        <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasSpeed</msm:hasType>
+                      </msm:MessagePart>
+                    </msm:hasMandatoryPart>
+                    <msm:hasName>haswind</msm:hasName>
+                    <msm:isArray>false</msm:isArray>
+                    <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasWind</msm:hasType>
+                  </msm:MessagePart>
+                </msm:hasMandatoryPart>
+                <msm:hasMandatoryPart>
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_2183d766-b047-45dc-a142-198b60679635">
+                    <msm:hasName>weathercondition</msm:hasName>
+                    <msm:isArray>false</msm:isArray>
+                    <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasWeatherCondition</msm:hasType>
+                  </msm:MessagePart>
+                </msm:hasMandatoryPart>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasMandatoryPart>
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_c7af3059-f4c9-4db2-bd48-6e7f68682682">
+                    <msm:hasMandatoryPart>
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_aea261c8-e353-4ab5-89e9-94aa8a96a13d">
+                        <msm:hasName>value</msm:hasName>
+                        <msm:isArray>false</msm:isArray>
+                        <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasValue</msm:hasType>
+                      </msm:MessagePart>
+                    </msm:hasMandatoryPart>
+                    <msm:hasName>exteriortemperature</msm:hasName>
+                    <msm:isArray>false</msm:isArray>
+                    <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasExteriorTemperature</msm:hasType>
+                  </msm:MessagePart>
+                </msm:hasMandatoryPart>
+                <msm:hasMandatoryPart>
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_692c5ecf-4274-4da6-b74a-ffbf24cb2757">
+                    <msm:hasMandatoryPart>
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_63983d7d-0840-43ca-8dd9-889d28c9f66a">
+                        <msm:hasName>cloudcovervalue</msm:hasName>
+                        <msm:isArray>false</msm:isArray>
+                        <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasCloudCoverValue</msm:hasType>
+                      </msm:MessagePart>
+                    </msm:hasMandatoryPart>
+                    <msm:hasName>cloudcover</msm:hasName>
+                    <msm:isArray>false</msm:isArray>
+                    <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasCloudCover</msm:hasType>
+                  </msm:MessagePart>
+                </msm:hasMandatoryPart>
+                <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#WeatherState</msm:hasType>
+                <msm:hasName>weatherstate</msm:hasName>
+                <msm:hasMandatoryPart>
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_f46f3ef6-742c-4b3e-9639-21de4abcabb2">
+                    <msm:hasMandatoryPart>
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_b34238fc-6dee-475c-80ac-590885519f0f">
+                        <msm:hasName>intensity</msm:hasName>
+                        <msm:isArray>false</msm:isArray>
+                        <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasIntensity</msm:hasType>
+                      </msm:MessagePart>
+                    </msm:hasMandatoryPart>
+                    <msm:hasName>precipation</msm:hasName>
+                    <msm:isArray>false</msm:isArray>
+                    <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasPrecipitation</msm:hasType>
+                  </msm:MessagePart>
+                </msm:hasMandatoryPart>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_ff96194c-5daf-4c6a-b3a4-ff8a7a3f0adb">
+                <msm:hasName>plant</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Plant</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_1a68a43d-a17a-4317-a423-836073543d90">
+                <msm:hasName>city</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://dbpedia.org/ontology/city</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_b7f16945-d77d-4830-89ca-fa9f5c4afdf1">
+                <msm:hasMandatoryPart>
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_3663c631-f5d6-4e7f-a04d-33ae49a5993f">
+                    <msm:hasName>srsname</msm:hasName>
+                    <msm:isArray>false</msm:isArray>
+                    <msm:hasType>http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#srsname</msm:hasType>
+                  </msm:MessagePart>
+                </msm:hasMandatoryPart>
+                <msm:hasMandatoryPart>
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_f09ece67-729d-4292-a420-033e1a8419d8">
+                    <msm:hasMandatoryPart>
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_0653514e-c30e-493b-a1fe-9eecf752cc09">
+                        <msm:hasName>uppery</msm:hasName>
+                        <msm:isArray>false</msm:isArray>
+                        <msm:hasType>https://www.w3.org/2001/XMLSchema#double</msm:hasType>
+                      </msm:MessagePart>
+                    </msm:hasMandatoryPart>
+                    <msm:hasMandatoryPart>
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_2c0b03b1-69a5-4bf8-81e1-5216da43ea03">
+                        <msm:hasName>upperx</msm:hasName>
+                        <msm:isArray>false</msm:isArray>
+                        <msm:hasType>https://www.w3.org/2001/XMLSchema#double</msm:hasType>
+                      </msm:MessagePart>
+                    </msm:hasMandatoryPart>
+                    <msm:hasName>uppercornerpoint</msm:hasName>
+                    <msm:isArray>false</msm:isArray>
+                    <msm:hasType>http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#upperCornerPoint</msm:hasType>
+                  </msm:MessagePart>
+                </msm:hasMandatoryPart>
+                <msm:hasMandatoryPart>
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_da8fb712-3798-44a5-adad-b82bad167b2e">
+                    <msm:hasMandatoryPart>
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_764e468f-fc4f-486d-b9b9-619f49a886f1">
+                        <msm:hasName>lowery</msm:hasName>
+                        <msm:isArray>false</msm:isArray>
+                        <msm:hasType>https://www.w3.org/2001/XMLSchema#double</msm:hasType>
+                      </msm:MessagePart>
+                    </msm:hasMandatoryPart>
+                    <msm:hasMandatoryPart>
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service_ADMS.owl#MessagePart_b386ca9c-fa75-41b0-8cbb-bc0b4fb67062">
+                        <msm:hasName>lowerx</msm:hasName>
+                        <msm:isArray>false</msm:isArray>
+                        <msm:hasType>https://www.w3.org/2001/XMLSchema#double</msm:hasType>
+                      </msm:MessagePart>
+                    </msm:hasMandatoryPart>
+                    <msm:hasName>lowercornerpoint</msm:hasName>
+                    <msm:isArray>false</msm:isArray>
+                    <msm:hasType>http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#lowerCornerPoint</msm:hasType>
+                  </msm:MessagePart>
+                </msm:hasMandatoryPart>
+                <msm:hasName>region</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasInput>
+        <msm:hasHttpUrl>http://www.theworldavatar.com/JPS/ADMSAgent</msm:hasHttpUrl>
+      </msm:Operation>
+    </msm:hasOperation>
+  </msm:Service>
+</rdf:RDF>

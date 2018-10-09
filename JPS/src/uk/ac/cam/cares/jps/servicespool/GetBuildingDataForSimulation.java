@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.servicespool;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.net.URI;
 import java.util.List;
 
@@ -17,13 +16,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.RDFFormat;
-import org.apache.jena.vocabulary.RDF;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,9 +35,9 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 	public static final String BUILDING_IRI_THE_HAGUE_PREFIX = "http://www.theworldavatar.com/kb/nld/thehague/buildings/";
  
 	// This agent takes selected region, plant IRI and CityIRI
-	// returns BuildingDataForSimulation (Semantic)
+	// returns BuildingDataForSimulation
+	// It is currently merged with ADMSAgent. 
 	
-	 
 	
 	public GetBuildingDataForSimulation() {
         super();
@@ -55,33 +47,24 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
  
  
-		String value = request.getParameter("value");
-		
-		System.out.println(value);
-		
+		String value = request.getParameter("value");		
 		JSONObject input = null;
 		try {
 			input = new JSONObject(value);
 		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		JSONObject region = null;
 		try {
 			region = JSONFlattenTool.flattenRegion(input);
-			System.out.println("====================== Region ========================");
-			System.out.println(region.toString());
 		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
 		try {
 		 
 			double[] coords;
-			coords = queryPlantXY(input.getString("plant"));
-			double plantX = coords[0];
-			double plantY = coords[1];
+			coords = queryPlantXY(input.getString("plant"));//400
 			String city = input.getString("city");			
 			
 			double upperx = Double.parseDouble(region.getString("upperx"));
@@ -95,8 +78,6 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 			
 			String data = "";
 			
-			city = city.replace("page", "resource");
-			
 			if(city.equalsIgnoreCase("http://dbpedia.org/resource/The_Hague")) {
 				//response.getWriter().write("This is HAGUE -- " + "|" + city + "|" + String.valueOf(upperx) + "|" +String.valueOf(uppery) + "|" + String.valueOf(lowerx) + "|" + String.valueOf(lowery) + "|" + String.valueOf(plantx) +"|" +  String.valueOf(planty));
 				data = retrieveBuildingDataInJSON(BuildingQueryPerformer.THE_HAGUE_IRI, plantx, planty, 25, lowerx, lowery, upperx, uppery);			
@@ -108,7 +89,6 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 				double[] targetCenter = CRSTransformer.transform(sourceCRS, targetCRS, sourceCenter);
 				plantx = targetCenter[0];
 				planty = targetCenter[1];
-				
 				double[] upperPointOld = new double[] {Double.parseDouble(region.getString("upperx")),Double.parseDouble(region.getString("uppery"))};
 				double[] lowerPointOld = new double[] {Double.parseDouble(region.getString("lowerx")),Double.parseDouble(region.getString("lowery"))};
 				
@@ -119,7 +99,6 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 				uppery= upperPointNew[1];
 				lowerx= lowerPointNew[0];
 				lowery= lowerPointNew[1];
-				
 				data = retrieveBuildingDataInJSON(BuildingQueryPerformer.BERLIN_IRI, plantx, planty, 25, lowerx, lowery, upperx, uppery);
 			}
 			
@@ -133,57 +112,7 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
 	}
-
-	public String convertBuildingDataToSemantic(String buildingData) {
-	
-		Model BuildingDataModel = ModelFactory.createDefaultModel();
-		Property hasBuildingType = BuildingDataModel.createProperty("http://test.com/Property/hasBuildingType");
-		Property hasBuildingX = BuildingDataModel.createProperty("http://test.com/Property/hasBuildingX");
-		Property hasBuildingY = BuildingDataModel.createProperty("http://test.com/Property/hasBuildingY");
-		Property hasBuildingName = BuildingDataModel.createProperty("http://test.com/Property/hasBuildingName");
-		Property hasBuildingHeight = BuildingDataModel.createProperty("http://test.com/Property/hasBuildingHeigth");
-		Property hasBuildingLength = BuildingDataModel.createProperty("http://test.com/Property/hasBuildingLength");
-		Property hasBuildingWidth = BuildingDataModel.createProperty("http://test.com/Property/hasBuildingWidth");
-		Property hasBuildingAngle = BuildingDataModel.createProperty("http://test.com/Property/hasBuildingAngel");
-
-		
-		try {
-			JSONObject buildingDataInJSON = new JSONObject(buildingData);
-			int length = buildingDataInJSON.getJSONArray("BldName").length();
-			for(int i = 0; i < length; i++) {
-				String BuildingIRI =      buildingDataInJSON.getJSONArray("BldIRI").getString(i);
-				String BuildingName =     buildingDataInJSON.getJSONArray("BldName").getString(i);
-				int BuildingType =        buildingDataInJSON.getJSONArray("BldType").getInt(i);
-				double BuildingX =   	  buildingDataInJSON.getJSONArray("BldX").getDouble(i);
-				double BuildingY =        buildingDataInJSON.getJSONArray("BldY").getDouble(i);
-				double BuildingHeight =   buildingDataInJSON.getJSONArray("BldHeight").getDouble(i);
-				double BuildingLength =   buildingDataInJSON.getJSONArray("BldLength").getDouble(i);
-				double BuildingWidth =    buildingDataInJSON.getJSONArray("BldWidth").getDouble(i);
-				double BuildingAngle =    buildingDataInJSON.getJSONArray("BldAngle").getDouble(i);
-				Resource building = BuildingDataModel.createResource(BuildingIRI);
-				building.addProperty(RDF.type, "http://test.com/Ontology/Building");
-				building.addLiteral(hasBuildingType, BuildingType);
-				building.addLiteral(hasBuildingX, BuildingX);
-				building.addLiteral(hasBuildingY, BuildingY);
-				building.addLiteral(hasBuildingName, BuildingName);
-				building.addLiteral(hasBuildingHeight, BuildingHeight);
-				building.addLiteral(hasBuildingLength, BuildingLength);
-				building.addLiteral(hasBuildingWidth, BuildingWidth);
-				building.addLiteral(hasBuildingAngle, BuildingAngle);
-			}
-			
-			
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		
-		StringWriter out = new StringWriter();
-		RDFDataMgr.write(out, BuildingDataModel, RDFFormat.RDFJSON);
-
-
-		return out.toString();
-	}
-	
+ 
 	
 	
 	public String retrieveBuildingDataInJSON(String cityIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
@@ -202,15 +131,18 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 	}
 	
 	
+	/* 
+	 * This function queries the sparql endpoint to get the coordinates 
+	 * @param plantIRI The IRI of the plant 
+	 * @return double[] x and y of the plant in doubl
+	 */
 	public double[] queryPlantXY(String plantIRI) throws JSONException {
 
-		 
-		
 		String myHost = "www.theworldavatar.com" ;
 		int myPort = 80;
 		String myPath = "/damecoolquestion/composition/query";
+		// This specific endpoint loads kb of two plants. 
 		
-		//space_and_time_extended:hasGISCoordinateSystem
 		String plantXYQuery =
 					"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
 				+   "PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>\n"
@@ -227,11 +159,13 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 				+ "}";
 		
 		String finalQuery = String.format(plantXYQuery, plantIRI);
+
 		URIBuilder builder;
 		builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath(myPath)
 				.setParameter("query", finalQuery)
 				.setParameter("output", "json");
+		
 		String result = executeGet(builder);
 		JSONObject resultInJSON = new JSONObject(result);
 		JSONArray bindings = resultInJSON.getJSONObject("results").getJSONArray("bindings");
@@ -241,7 +175,7 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 			Y = (binding.getJSONObject("plantY").getDouble("value"));
 			X = (binding.getJSONObject("plantX").getDouble("value"));
 		}
-	
+			
 		return new double[]{X,Y};	
 	}
 

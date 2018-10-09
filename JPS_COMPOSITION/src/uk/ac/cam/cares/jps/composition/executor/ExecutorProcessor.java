@@ -8,7 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscoveryTest;
+import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
@@ -20,7 +20,7 @@ public class ExecutorProcessor {
 	public Map<String, ArrayList<String>> resultPool;
 	public ArrayList<String> eliminationList;
 	public JSONObject map;
- 	public ServiceDiscoveryTest discovery;
+ 	public ServiceDiscovery discovery;
 	
 	public ExecutorProcessor(JSONObject compositionResult, ArrayList<String> eliminationList) throws Exception {
 		this.compositeService = compositionResult;
@@ -31,7 +31,7 @@ public class ExecutorProcessor {
 		this.map = new JSONObject();
 	
 		// Initiate a new ServiceDiscoveryPool
-		this.discovery = new ServiceDiscoveryTest();
+		this.discovery = new ServiceDiscovery();
 	}
 	
 	public ExecutorProcessor(JSONObject compositionResult) throws Exception {
@@ -47,7 +47,7 @@ public class ExecutorProcessor {
 		
 		this.resultPool = new HashMap<String, ArrayList<String>>();
 		this.map = new JSONObject();
-		this.discovery = new ServiceDiscoveryTest();
+		this.discovery = new ServiceDiscovery();
 
 	}
 	
@@ -94,21 +94,23 @@ public class ExecutorProcessor {
 				}
 			}
 			task.targetHttpUrl = nextHttpUrlList;
-			task.keysArray.add(getAllOutputKeysFromTargetHTTP(httpUrl));
+			for(int i = 0; i < nextHttpUrlList.size(); i++) {
+				task.keysArray.add(getAllOutputKeysFromTargetHTTP(httpUrl));
+			}
 			
 			// Find the mapping of 
 			
 			// ======================================= A task has multiple target http url =====================
 			// 
 			for(String url : task.targetHttpUrl) {
-			
- 
-				Service downstreamService = this.discovery.getServiceFromHttpUrl(url);
+			    Service downstreamService = this.discovery.getServiceFromHttpUrl(url);
 				Map<String, Map<String,String>> listOfMaps = new HashMap<String, Map<String,String>>();
 				for(MessagePart input : downstreamService.getAllInputs()) {
 					Map<String,Map<String,String>> nameToNameMap = input.getMapOfUpstreamNamesAndDownstreamNames(upstreamService);
-					// This is the nested leaved of a certain input ... 
-					listOfMaps.putAll(nameToNameMap);
+					// This is the nested leaved of a certain input ...
+					if(nameToNameMap!=null) {
+						listOfMaps.putAll(nameToNameMap);
+					}
 				}
 				
 				task.httpToNameMapping.put(url, listOfMaps);

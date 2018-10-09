@@ -126,19 +126,29 @@ public class MessagePart{
 		// Get upstream type-name mapping of this messagePart type 
 		String downstreamMPType = this.getType().toASCIIString();
 		MessagePart upstreamMP = null;
+		 
 		for(MessagePart mp : upstreamService.getAllOutputs()) {
 			String upstreamMPType = mp.getType().toASCIIString();
-			if(downstreamMPType.equalsIgnoreCase(upstreamMPType)) {
+ 			if(downstreamMPType.equalsIgnoreCase(upstreamMPType)) {
 				upstreamMP = mp;
 				break;
 			}
+		}
+		
+		if(upstreamMP == null) {
+			return null;
 		}
 		Map<String,String> upstreamTypeToNameMap = getTypeNamesUnderMessagePart(upstreamMP);
 		Map<String,String> downstreamTypeToNameMap = getTypeNamesUnderThisMessagePart();
 		Map<String,String> upToDownNameToNameMap = new HashMap<String,String>();
 		
 		// Firstly, make the root key mapping 
-		upToDownNameToNameMap.put(upstreamMP.getName(), this.getName());
+ 
+		System.out.println("This messagePart type : " + this.getType().toASCIIString());
+		System.out.println("This messagePart name : " + this.getName());
+		System.out.println("This mp IRI :" + this.getUri().toString());
+	    upToDownNameToNameMap.put(upstreamMP.getName(), this.getName());
+		 
 		
 		for (Map.Entry<String, String> upstreamEntry : upstreamTypeToNameMap.entrySet())
 		{
@@ -161,18 +171,24 @@ public class MessagePart{
 	
 	public static Map<String,String> getNamesUnderAMessagePart(MessagePart messagePart){
 		Map<String,String> names = new HashMap<String,String>();
-		if(messagePart.getMandatoryParts().size()!= 0) {
-			// The messagePart still has children 
-			for(MessagePart childPart: messagePart.getMandatoryParts()) {
-				names.putAll(getNamesUnderAMessagePart(childPart));
+		if(messagePart != null) {
+			if(messagePart.getMandatoryParts().size()!= 0) {
+				// The messagePart still has children 
+				for(MessagePart childPart: messagePart.getMandatoryParts()) {
+					names.putAll(getNamesUnderAMessagePart(childPart));
+				}
+				return names;
 			}
-			return names;
+			else {
+				// The messagePart has no child, therefore, return its names
+				names.put(messagePart.getType().toASCIIString(),messagePart.getName());
+				return names;
+			}
 		}
 		else {
-			// The messagePart has no child, therefore, return its names
-			names.put(messagePart.getType().toASCIIString(),messagePart.getName());
 			return names;
 		}
+		
 	}
 	
 	

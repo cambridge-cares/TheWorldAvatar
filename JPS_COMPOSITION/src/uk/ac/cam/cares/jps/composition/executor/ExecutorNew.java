@@ -25,7 +25,7 @@ public class ExecutorNew {
 	public String myHost = "localhost";
 	public int myPort = 8080;
 	public JSONArray finalResult = new JSONArray();
-	
+	public JSONObject initialInput;
 	
 	public ExecutorNew() {
 		
@@ -34,9 +34,9 @@ public class ExecutorNew {
 	public ExecutorNew(ArrayList<ExecutionLayer> executionChain) {
 		this.executionChain = executionChain;
 	}
-	
-	
+
 	public String execute(JSONObject initialInput) throws JSONException {
+		this.initialInput = initialInput;
 		int agentType = checkCompositeAgentType();
 		switch(agentType) {
 			case -1 : {
@@ -45,7 +45,6 @@ public class ExecutorNew {
 				for(ExecutionLayer layer : this.executionChain) {
 					for(Task task : layer.taskList)	{  
 						String executionHttpUrl = task.httpUrl;
-						
 						ArrayList<String> targetHttpUrlList = task.targetHttpUrl;
 						ArrayList<ArrayList<String>> keysArray = task.keysArray;
 						String path = executionHttpUrl.replace("http://www.theworldavatar.com","");
@@ -53,43 +52,33 @@ public class ExecutorNew {
 							URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 									.setPath(path)
 									.setParameter("value", initialInput.toString());
-							JSONObject result = new JSONObject(executeGet(builder));
+							String resultString = executeGet(builder);
+							JSONObject result = new JSONObject(resultString);
 							//System.out.println("\n\tResult: \n" + result);
-							
 							executeSingleTask(task, result, targetHttpUrlList, keysArray);
 						}
 						else {
 							for (Entry<String, ExecutionPackage> entry : this.executionPackageMap.entrySet())
 							{
+								// Iterate through the executionPackageMap. 
+								// Each executionPackage within the map contains a targetHttpUrl
+								// If the targetHttpUrl 
 								ExecutionPackage executionPackage = entry.getValue();
-								if(executionPackage.readyToExecute && (executionPackage.targetHttpUrl.equalsIgnoreCase(task.httpUrl))) {
-									
-									System.out.println("================= Replace the names ================");
-									
-									System.out.println("Result: \n");
-									System.out.println(executionPackage.result);
-									System.out.println("----------------------");
-									
-									
+								if(executionPackage.targetHttpUrl.equalsIgnoreCase(task.httpUrl)) {
 									for(String key: executionPackage.keys) {
 										Map<String, String> nameMapping = executionPackage.nameMappingList.get(key);
 										executionPackage.result = replaceKeysInJSON(executionPackage.result,nameMapping);
-										System.out.println(executionPackage.result);
 									}
-									System.out.println("====================================================");
-									
 									URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 											.setPath(path)
 											.setParameter("value", executionPackage.result.toString());
-									String resultInString = executeGet(builder);
-									System.out.println("Result : \n =====================\n" + resultInString);
+									String resultInString = executeGet(builder);	 
 									JSONObject result = new JSONObject(resultInString);
 									executeSingleTask(task, result, targetHttpUrlList, keysArray);
 								}
 							}	
 						}
 					}
-
 					layerCounter++;
 				}
 				break;
@@ -125,7 +114,10 @@ public class ExecutorNew {
 		String jsonInString = jsonObj.toString();
 		// Collect keys first
 		ArrayList<String> keys = new ArrayList<String>();
-		for (Entry<String, String> entry : nameMapping.entrySet()) {
+		
+		if(nameMapping!=null) {
+		
+ 		for (Entry<String, String> entry : nameMapping.entrySet()) {
 			keys.add(entry.getKey());
 		}		
 		Collections.sort(keys);		
@@ -134,13 +126,12 @@ public class ExecutorNew {
 		}
 		
 		return new JSONObject(jsonInString);
+		}
+		else {
+			return jsonObj;
+		}
 	}
-	
-	
-	
-	
-	
-	
+	 
 	public void executeSingleTask(Task task, JSONObject result, ArrayList<String> targetHttpUrlList, ArrayList<ArrayList<String>> keysArray) throws JSONException {
 		if(task.targetHttpUrl.size() == 0) {
 			// The result is one of the final results ; 
@@ -149,15 +140,16 @@ public class ExecutorNew {
 		
 		Map<String,Map<String, Map<String, String>>> NameMappingMap = task.httpToNameMapping;
 		// Get all the name mappings from the http first 
-	
+		
 		for(int i = 0; i < targetHttpUrlList.size(); i++) {
 			String targetHttpUrl = targetHttpUrlList.get(i);
-			ArrayList<String> keys = keysArray.get(i);
 			if(!this.executionPackageMap.containsKey(targetHttpUrl)) {
+				ArrayList<String> keys = keysArray.get(i);
 				ExecutionPackage newExecutionPackage = new ExecutionPackage();
 				newExecutionPackage.keys = keys;
 				newExecutionPackage.nameMappingList = NameMappingMap.get(targetHttpUrl); 
 				newExecutionPackage.targetHttpUrl = targetHttpUrl; // A single http address, assigned with and arrayList of name mapping... 
+				newExecutionPackage.appendNewResult(this.initialInput);
 				newExecutionPackage.appendNewResult(result);
 				this.executionPackageMap.put(targetHttpUrl, newExecutionPackage);
 			}

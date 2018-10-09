@@ -34,20 +34,19 @@ public class ADMSAgent extends HttpServlet {
 
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// ADMSAgent takes the following parameters 
 		
-		// 1. Buildings with building parameters ... 
-		// 2. Emission source ---> Emission coordinate + Emission Substance
-		// 3. Weather in semantic 
+		/*
+		 * This agent takes: region, plantIRI, city, weatherstate and later emission stream 
+		 * Then writes input files for adms : apl + met
+		 * Then starts ADMS and generates output file test.levels.gst
+		 * Later it should returns data in the form of Tabular JSON
+		 */
 		
-		// The requester passes a whole bundle of data in the form of JSON, where the keys to be the IRI of something ... e.g. http://www.theworldavatar.com/Weather
-		// Plan 1, get the JSON and convert it to rdf, the perform a query upon it. 
-		// Plan 2, get the JSON and retrieve the info directly.
+ 
+		String myHost = request.getServerName();
+		int myPort = request.getServerPort(); // Define the server name and port number without any hardcoding
 		
-		// Lets do both of them and then discuss later.
-		// Receive the IRI of the source emission and then make the query ... 
-		// 
-		String value = request.getParameter("value");
+ 		String value = request.getParameter("value");
 		try {
 			JSONObject input = new JSONObject(value);
 			input = new JSONObject(value);
@@ -55,33 +54,33 @@ public class ADMSAgent extends HttpServlet {
 		 	String plantIRI = input.getString("plant");
 		 	String cityIRI = input.getString("city");
 			JSONObject weather = input.getJSONObject("weatherstate");
+			
+			//================== request agent GetBuildingDataForSimulation ===============
+			// It was previously an independent agent, currently it is merged with ADMSAgent
 			JSONObject bundle = new JSONObject();
 			bundle.put("city", cityIRI);
 			bundle.put("plant", plantIRI);
 			bundle.put("region", region);
-	 		
-			String myHost = request.getServerName();
-			int myPort = request.getServerPort();
-			
+
 			URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 					.setPath("/JPS/GetBuildingDataForSimulation")
 					.setParameter("value", bundle.toString());
-			
 			String buildingsInString = executeGet(builder);	 	
+			//==============================================================================
+			
 			writeAPLFile(buildingsInString,plantIRI, region);
 			writeMetFile(weather);
 			
+			// =================== Start ADMS when input files are written =======================
 			String path = "/JPS/ADMSStarter";
-			
 			URIBuilder builder2 = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 					.setPath(path)
 					.setParameter("targetFolder",AgentLocator.getPathToWorkingDir(this));
-	 
 			String finalResult = executeGet(builder2);
-			response.getWriter().write(finalResult.toString());
+			response.getWriter().write(finalResult.toString()); // TODO: ZXC Read the output file and then return JSON
+			// ====================================================================================
 			
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -113,18 +112,16 @@ public class ADMSAgent extends HttpServlet {
 		args.add("python");
 		args.add("admsTest.py"); 
   		args.add(buildingInString.replace("\"", "'"));
- 		args.add(regionInJSON.toString().replace("\"", "'"));
+ 		args.add(regionInJSON.toString().replace("\"", "'")); //TODO ZXC: We should solve the encoding problem once for all 
  		args.add(plantIRI.replace("\"", "'"));
  		args.add(fullPath.replace("/", "\\"));
- 	 
- 		
   		String result = CommandHelper.executeCommands(targetFolder, args);
 		return result;		
 	}
 
 
 
-	public String executeGet(URIBuilder builder) {
+	public String executeGet(URIBuilder builder) { // TODO: ZXC: Put this function in utility
 		try {
 			URI uri = builder.build();
 			HttpGet request = new HttpGet(uri);

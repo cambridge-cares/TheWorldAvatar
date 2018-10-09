@@ -11,12 +11,7 @@ public class JSONFlattenTool {
 	
 	public static JSONObject flattenRegion (JSONObject input) throws JSONException {	
 		
- 
-		
 		JSONObject region = new JSONObject();
-		
-		System.out.println(input.toString());
-		
 		JSONObject lowercorner = input.getJSONObject("region").getJSONObject("lowercorner");
 		JSONObject uppercorner = input.getJSONObject("region").getJSONObject("uppercorner");
 		String lowerx = lowercorner.getString("lowerx");
@@ -24,11 +19,7 @@ public class JSONFlattenTool {
 		String upperx = uppercorner.getString("upperx");
 		String uppery = uppercorner.getString("uppery");
 		String srsname = input.getJSONObject("region").getString("srsname");
-		
-		System.out.println("srsname: " + srsname);
-		 
 		String targetCRS = CRSTransformer.EPSG_25833;
-
 		double[] oldLowerPoint = new double[] {Double.parseDouble(lowerx),Double.parseDouble(lowery)};
 		double[] newLowerPoint = CRSTransformer.transform(srsname, targetCRS, oldLowerPoint);
 
@@ -39,15 +30,12 @@ public class JSONFlattenTool {
 		double ylower = newLowerPoint[1];
 		double xupper = newUpperPoint[0];
 		double yupper = newUpperPoint[1];
-		
-//		System.out.println(xlower + "|" + ylower);
-//		System.out.println(xupper + "|" + yupper);
-
+		 
 		region.put("lowerx", String.valueOf(xlower));
 		region.put("lowery", String.valueOf(ylower));
 		region.put("upperx", String.valueOf(xupper));
 		region.put("uppery", String.valueOf(yupper));
-		region.put("srsname", srsname);
+		region.put("srsname", targetCRS);
  
 		return region;
 	}

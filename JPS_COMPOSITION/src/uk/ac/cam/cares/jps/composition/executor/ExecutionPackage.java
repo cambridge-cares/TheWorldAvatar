@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.composition.executor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.json.JSONException;
@@ -26,18 +27,22 @@ public class ExecutionPackage {
 	
 	public void appendNewResult(JSONObject newResult) throws JSONException {
 
-		boolean ready = true; 
-		for(String key: keys) {
-			if(newResult.has(key)) {
-				this.result.put(key, newResult.get(key));
-			}
-			
-			if(!this.result.has(key)) {
-				ready = false;
-			}
+		
+		
+		
+		Iterator<String> keys = newResult.keys();
+		while(keys.hasNext()) {
+			String key = (String) keys.next();
+			this.result.put(key, newResult.get(key));
+			this.keys.add(key);
 		}
 		
-		this.readyToExecute = ready; // Now the ExecutionPackage is ready. 
+//		
+//		System.out.println("============== APPENDING ==============");
+//		System.out.println("Target: " + this.targetHttpUrl);
+//		System.out.println(this.result);
+//		System.out.println("=======================================");
+
 	}
 	
 	

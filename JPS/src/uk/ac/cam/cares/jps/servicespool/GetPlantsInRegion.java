@@ -16,10 +16,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.RDF;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,8 +48,7 @@ public class GetPlantsInRegion extends HttpServlet {
  			e2.printStackTrace();
 		}
  
-		System.out.println(output);
-		
+ 		
 		String PlantSelectionQuery = 
 				"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" + 
 				"PREFIX space_and_time_extended:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>" + 
@@ -113,7 +108,11 @@ public class GetPlantsInRegion extends HttpServlet {
 				}
 			}
  
- 			response.getWriter().write(plants.toString());
+			JSONObject resultObj = new JSONObject();
+			JSONArray plantJSONArray = new JSONArray();
+			plantJSONArray.put(plants);
+			resultObj.put("plant", plants.get(0));
+ 			response.getWriter().write(resultObj.toString());
 			
 
  			
@@ -123,17 +122,7 @@ public class GetPlantsInRegion extends HttpServlet {
 
 		 
 	}
-	public Model convertPlantToSemantic(ArrayList<String> plants) {
-		
-		Model plantIRIs = ModelFactory.createDefaultModel();
-		for(String plantIRI : plants) {
-			Resource myPlant = plantIRIs.createResource(plantIRI);
-			Resource plant = plantIRIs.createResource("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Plant");
-			myPlant.addProperty(RDF.type, plant);
-		}
-		return plantIRIs; 
-	}
-  
+ 
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
  		doGet(request, response);

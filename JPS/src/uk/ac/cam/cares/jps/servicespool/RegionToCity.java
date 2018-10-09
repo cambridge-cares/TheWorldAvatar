@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.servicespool;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -22,12 +21,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.RDFFormat;
-import org.apache.jena.vocabulary.RDF;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,31 +33,27 @@ import uk.ac.cam.cares.jps.building.CRSTransformer;
 @WebServlet("/RegionToCity")
 public class RegionToCity extends HttpServlet {
  
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 	public String requestUrlTemplate = "https://maps.googleapis.com/maps/api/geocode/json?latlng=%s&key=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA";
 	public String requestUrl = "";
-	String myHost = "localhost";
-	int myPort = 8080;
-	
+  
     public RegionToCity() {
         
     }
  
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+		
+		/**
+		 * This agent takes 
+		 */
+		
 		JSONObject input = null;
 		JSONObject region = new JSONObject();
 		try {
 			input = new JSONObject(request.getParameter("value"));
-			/*{"region":{"uppercorner":{"uppery":"21.00","upperx":"20.00"},
-			 * "srsname":"EPSG:4326","lowercorner":{"lowery":"11.00","lowerx":"10.00"}}}
-			 */
-			
-			System.out.println(input.toString());
-			
+  
 			region.put("srsname", input.getJSONObject("region").get("srsname"));
 			region.put("uppery", input.getJSONObject("region").getJSONObject("uppercorner").get("uppery"));
 			region.put("upperx", input.getJSONObject("region").getJSONObject("uppercorner").get("upperx"));
@@ -97,22 +86,11 @@ public class RegionToCity extends HttpServlet {
 	}
 	
 	public String getCityNameFromCoordinate(String latlng) throws Exception {
- 
 		requestUrl = String.format(requestUrlTemplate, latlng);
 		String result = sendGet(requestUrl);
-		System.out.println(requestUrl);
 		return result;
 	}
-	
-	public String convertIRIToRDF(String cityIRI) {
-		Model cityModel = ModelFactory.createDefaultModel();
-		Resource myCity = cityModel.createResource(cityIRI.replace("Rijswijk", "The_Hague"));
-		Resource city = cityModel.createResource("http://www.theworldavatar.com/OntoEIP/supporting_concepts/space_and_time_v1.owl#City");
-		myCity.addProperty(RDF.type,city);
-		StringWriter out = new StringWriter();		
-		RDFDataMgr.write(out, cityModel, RDFFormat.RDFJSON);
-		return out.toString();
-	}
+	 
 
 	public String extractCityName(String res) throws JSONException {
 		JSONObject result = new JSONObject(res);
@@ -201,7 +179,7 @@ public class RegionToCity extends HttpServlet {
 		if (cityName.endsWith("-shi")) {
 			cityName = cityName.replace("-shi", "");
 		}
-		System.out.println(cityName);
+		System.out.println("City Selected : " + cityName);
 		return URLEncoder.encode(cityName, "utf-8");
 	}
 	public String executeGet(URIBuilder builder) {

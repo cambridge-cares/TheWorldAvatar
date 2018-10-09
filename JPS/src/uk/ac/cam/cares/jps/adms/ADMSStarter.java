@@ -2,14 +2,15 @@ package uk.ac.cam.cares.jps.adms;
 
 import java.io.IOException;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 
 @WebServlet("/ADMSStarter")
@@ -25,12 +26,19 @@ public class ADMSStarter extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String targetFolder = request.getParameter("targetFolder");
+		JSONObject result = new JSONObject();
+		try {
+			result.put("folder", targetFolder);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if(request.getServerName().contains("localhost")) {
-			response.getWriter().write("Running in localhost, ADMS won't be started");
+			response.getWriter().write(result.toString());
 		}
 		else {
 			String res = startADMS(targetFolder);
-			response.getWriter().write("ADMS finished simulation");
+			response.getWriter().write(result.toString());
 		}
 
 	}

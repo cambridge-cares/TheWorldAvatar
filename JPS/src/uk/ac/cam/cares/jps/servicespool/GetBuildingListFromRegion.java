@@ -19,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.building.CRSTransformer;
 
 
 @WebServlet("/GetBuildingListFromRegion")
@@ -33,13 +34,16 @@ public class GetBuildingListFromRegion extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
  
+		/*
+		 * This agent takes region and city and returns a list of building IRIs
+		 */
 		String value = request.getParameter("value");
 		String city = null;
 		JSONObject region = new JSONObject();
-		JSONObject input;
+		JSONObject input = new JSONObject();
 		try {
 			input = new JSONObject(value);
-		    region = input.getJSONObject("region");
+			region = input.getJSONObject("region"); // The name of the key should corresponds its own agent description 
 		    city = input.getString("city");
 		} catch (JSONException e1) {
 			e1.printStackTrace();
@@ -47,22 +51,42 @@ public class GetBuildingListFromRegion extends HttpServlet {
 		
 		String myHost = request.getServerName();
 		int myPort = request.getServerPort();
-		
-		
 		String myPathBuildingList = "/JPS/buildings/fromregion";
 		URIBuilder builderBuildingList;
+		
+		String upperx = null;
+		String uppery = null;
+		String lowerx = null;
+		String lowery = null;
 		try {
+			 
+ 			String sourceCRS = CRSTransformer.EPSG_4326; // Google
+			String targetCRS = CRSTransformer.EPSG_28992; // Berlin and Den Hague
+	 
+			double[] upperPointOld = new double[] {Double.parseDouble(region.getJSONObject("uppercorner").getString("upperx")),Double.parseDouble(region.getJSONObject("uppercorner").getString("uppery"))};
+			double[] lowerPointOld = new double[] {Double.parseDouble(region.getJSONObject("lowercorner").getString("lowerx")),Double.parseDouble(region.getJSONObject("lowercorner").getString("lowery"))};
+			
+			double[] upperPointNew = CRSTransformer.transform(sourceCRS, targetCRS, upperPointOld);
+			double[] lowerPointNew = CRSTransformer.transform(sourceCRS, targetCRS, lowerPointOld);
+			
+			upperx= String.valueOf(upperPointNew[0]);
+			uppery= String.valueOf(upperPointNew[1]);
+			lowerx= String.valueOf(lowerPointNew[0]);
+			lowery= String.valueOf(lowerPointNew[1]);
+ 
+		    System.out.println(upperx + "|" + lowerx + "|" + uppery + "|" + lowery); 
+			 
 			builderBuildingList = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 					.setPath(myPathBuildingList)
 					.setParameter("cityiri", city.trim())
 					.setParameter("buildinglimit", "25")
-					.setParameter("lowerx", String.valueOf(region.getDouble("xmin")) )
-					.setParameter("lowery", String.valueOf(region.getDouble("ymin")) )
-					.setParameter("upperx", String.valueOf(region.getDouble("xmax")) )
-					.setParameter("uppery", String.valueOf(region.getDouble("ymax")) );
+					.setParameter("lowerx", lowerx) 
+					.setParameter("lowery", lowery) 
+					.setParameter("upperx", upperx) 
+					.setParameter("uppery", uppery);
 			String buildingList = executeGet(builderBuildingList);
 			JSONObject result = new JSONObject();
-			result.put("building", buildingList);
+			result.put("building", buildingList); // The result is wrapped into an JSONObject with key "building", which is indicated in its description. 
 			response.getWriter().write(result.toString());
 		} catch (JSONException e) {
 			e.printStackTrace();

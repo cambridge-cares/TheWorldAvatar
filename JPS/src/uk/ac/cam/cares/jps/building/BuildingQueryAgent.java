@@ -40,10 +40,9 @@ public class BuildingQueryAgent extends HttpServlet {
 			double plantx = 79831;
 			double planty = 454766;
 			
-			if(cityIRI.equalsIgnoreCase(BuildingQueryPerformer.THE_HAGUE_IRI) || cityIRI.equalsIgnoreCase("http://dbpedia.org/resouce/The_Hague")) {
+			if(cityIRI.equalsIgnoreCase(BuildingQueryPerformer.THE_HAGUE_IRI)) {
 				plantx = 79831;
 				planty = 454766;
-				System.out.println("================= THE HAGUE ===============");
 			}
 			else {
 				String sourceCRS = CRSTransformer.EPSG_25833; // Berlin
@@ -52,8 +51,6 @@ public class BuildingQueryAgent extends HttpServlet {
 				double[] targetCenter = CRSTransformer.transform(sourceCRS, targetCRS, sourceCenter);
 				plantx = targetCenter[0];
 				planty = targetCenter[1];
-				System.out.println("================= B E R L I N ===============");
-				System.out.println(lowerx + "|" + lowery + "|" + cityIRI);
 			}
 			
 			

@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscoveryTest;
+import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
 import uk.ac.cam.cares.jps.composition.enginemodel.Graph;
 import uk.ac.cam.cares.jps.composition.enginemodel.Layer;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
@@ -18,7 +18,7 @@ public class ServiceCompositionEngine {
 	public String fullHostName = "";
 	public String fileDirectory = null;
 	public Graph newGraph;
-	private ServiceDiscoveryTest serviceDiscovery;
+	private ServiceDiscovery serviceDiscovery;
 	private ArrayList<MessagePart> inputsToAppend;
 	private ArrayList<URI> outputsRequired;
 
@@ -34,7 +34,7 @@ public class ServiceCompositionEngine {
 		this.fullHostName = host;
 		this.fileDirectory = fileDirectory;
 		this.newGraph.initialInputs = (ArrayList<MessagePart>) compositeAgent.getAllInputs();
-		this.serviceDiscovery = new ServiceDiscoveryTest();
+		this.serviceDiscovery = new ServiceDiscovery();
 		this.inputsToAppend = new ArrayList<MessagePart>();
 		this.outputsRequired = new ArrayList<URI>();
 

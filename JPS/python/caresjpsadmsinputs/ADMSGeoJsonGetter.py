@@ -194,10 +194,10 @@ def return_buildings():
     owlCRS = None
     osmCRS = Proj(init='epsg:4326')
     
-    if cityiri == "http://dbpedia.org/page/The_Hague":
+    if cityiri == "http://dbpedia.org/resource/The_Hague":
         owlCRS = Proj(init='epsg:28992')
         sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/thehaguebuildings/sparql"
-    elif cityiri == "http://dbpedia.org/page/Berlin":
+    elif cityiri == "http://dbpedia.org/resource/Berlin":
         owlCRS = Proj(init='epsg:25833')
         sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/berlinbuildings/sparql"
 
