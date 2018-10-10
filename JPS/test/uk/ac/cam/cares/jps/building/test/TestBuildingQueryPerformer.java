@@ -21,8 +21,6 @@ import uk.ac.cam.cares.jps.building.SparqlConstants;
 
 public class TestBuildingQueryPerformer extends TestCase implements SparqlConstants {
 	
-	// IRI for old KB of THE Hague
-	//public static final String BUILDING_IRI_THE_HAGUE_PREFIX = "http://www.theworldavatar.com/Building/";
 	public static final String BUILDING_IRI_THE_HAGUE_PREFIX = "http://www.theworldavatar.com/kb/nld/thehague/buildings/";
 
 	// the following building from The Hague doesn't have any building parts and only contains one ground surface
@@ -32,12 +30,6 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 	public static final String BUILDING_IRI_BERLIN_PLANT = "http://www.theworldavatar.com/kb/deu/berlin/buildings/3920_5819.owl#BuildingDEB_LOD2_UUID_ccf8cd7c-b41b-4c1e-a60c-0a645c6c5c4b";
 	
 	public static BuildingQueryPerformer createQueryPerformerForTheHague() {
-	
-		// TODO-AE URGENT remove this as soon as we don't need the old KB for The Hague anymore
-		if (BUILDING_IRI_THE_HAGUE_PREFIX.equals("http://www.theworldavatar.com/Building/")) {
-			return new BuildingQueryPerformer("www.theworldavatar.com", 80, "/damecoolquestion/buildingsLite/query");
-		}
-		
 		return new BuildingQueryPerformer();
 	}
 	
@@ -252,7 +244,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 	
 	public void testSimpleBuildingDataWithoutExceptions() {
 		
-		List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryBuildingsFromRegion(BuildingQueryPerformer.THE_HAGUE_IRI, 25, 79000., 454000., 79800., 455200.);
+		List<String> buildingIRIs = new BuildingQueryPerformer().performQueryClosestBuildingsFromRegion(BuildingQueryPerformer.THE_HAGUE_IRI, 79831, 454766,  25, 79000., 454000., 79800., 455200.);
 		SimpleBuildingData result = createQueryPerformerForTheHague().performQuerySimpleBuildingData(BuildingQueryPerformer.THE_HAGUE_IRI, buildingIRIs);
 		
 		assertEquals(25, result.BldIRI.size());
@@ -286,59 +278,6 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		//"99.28999999999999"^^xsd:double
 		// the next value was read from the knowledge base
 		assertEquals(99.29, data.BldHeight.get(0), 0.1);
-	}
-	
-	public void testBerlinPerformQueryBuildingsFromRegionAroundPlant() {
-		
-		// transform the points into the CRS of GUI, BuildingQueryPerformer will translate them back to Berlin CRS
-		String sourceCRS = CRSTransformer.EPSG_25833; // Berlin
-		//double[] sourcePoints = new double[]{390000., 5815000., 396000., 5826000.};
-		double[] sourcePoints = new double[]{370000., 5805000., 406000., 5926000.};
-		String targetCRS = CRSTransformer.EPSG_28992; // The Hague
-		double[] targetPoints = CRSTransformer.transform(sourceCRS, targetCRS, sourcePoints);
-		
-		List<String> buildingIRIs = new BuildingQueryPerformer().performQueryBuildingsFromRegion(BuildingQueryPerformer.BERLIN_IRI, 25, 
-				targetPoints[0], targetPoints[1], targetPoints[2], targetPoints[3]);
-		assertEquals(25, buildingIRIs.size());
-		
-		String[] expectedBuildingNames = new String[] {"BuildingBLDG_000300000025061b",
-				"BuildingBLDG_00030000002573e8",  
-				"BuildingDEB_LOD2_UUID_a02d5dfa-2b41-4e94-8fd5-be8b4f606e5f",  
-				"BuildingBLDG_0003000f00153e86",  
-				"BuildingBLDG_0003000f00153e80",  
-				"BuildingBLDG_0003000f00153e99",  
-				"BuildingBLDG_0003000b00415fe7",  
-				"BuildingBLDG_0003000b003bf3c6",  
-				"BuildingBLDG_0003000200260464",  
-				"BuildingBLDG_0003000f00153e5c",  
-				"BuildingBLDG_0003000f00153e8c",  
-				"BuildingBLDG_0003000f00153e92",  
-				"BuildingBLDG_0003000f00153e71",  
-				"BuildingBLDG_00030002001b0953",  
-				"BuildingBLDG_0003000000242a00",  
-				"BuildingBLDG_0003000a003ec93a",  
-				"BuildingBLDG_00030000002573b2",  
-				"BuildingBLDG_0003000000194844",  
-				"BuildingBLDG_0003000f00153e95",  
-				"BuildingBLDG_0003000f003c8ad4",  
-				"BuildingBLDG_0003000900613659",  
-				"BuildingDEB_LOD2_UUID_7218b0e2-3f98-43bb-93b2-57cfa5905623",  
-				"BuildingDEB_LOD2_UUID_84a501bb-34cb-4d2b-b5f5-602ca0d6c13e",  
-				"BuildingBLDG_0003000000243b13",  
-				"BuildingDEB_LOD2_UUID_50ff0cfe-a996-4c2e-be50-67b3135bd638"	
-			};
-
-		for (String expectedName : expectedBuildingNames) {
-			boolean found = false;
-			for (String buildingIRI : buildingIRIs) {
-				String[] splits = buildingIRI.split("#");
-				if (expectedName.equals(splits[1])) {
-					found = true;
-					break;
-				}
-			}	
-			assertTrue("building not found, buildingName = " + expectedName, found);
-		}
 	}
 	
 	public void testBerlinPerformQueryCLosestBuildingsFromRegionAroundPlant() {
