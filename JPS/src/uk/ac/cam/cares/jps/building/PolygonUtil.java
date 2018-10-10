@@ -175,32 +175,7 @@ public class PolygonUtil {
 	public static double length(Point2d p) {
 		return Math.sqrt((Math.pow(p.getX(), 2) + Math.pow(p.getY(), 2)));
 	}
-	
-	/**
-	 * The original method had the same problem as {@link #calculateSignedArea(List)} and was adapted.<br>
-	 * <br>
-	 * Function to calculate the area of a polygon, according to the algorithm
-	 * defined at http://local.wasp.uwa.edu.au/~pbourke/geometry/polyarea/
-	 * 
-	 * @author Christopher Fuhrman (christopher.fuhrman@gmail.com)
-	 * 
-	 * @param points
-	 * @return
-	 */
-	// TODO-AE remove this method if not needed anymore
-	private static double calculateSignedAreaAdaptedFromFuhrman(List<Point2d> points) {
-		int i, j, n = points.size();
-		double area = 0;
 
-		for (i = 0; i < n; i++) {
-			j = (i + 1) % n;
-			area += ((double) points.get(i).getX()) * ((double) points.get(j).getY());
-			area -= ((double) points.get(j).getX()) * ((double) points.get(i).getY());
-		}
-		area /= 2.0;
-		return (area);
-	}
-	
 	/**
 	 * Calculate the area of the polygon. This does not take into account holes
 	 * in the polygon.
@@ -252,44 +227,6 @@ public class PolygonUtil {
 		double x = ((double) p1.getX() + (double) p2.getX()) / 2.d;
 		double y = ((double) p1.getY() + (double) p2.getY()) / 2.d;
 		return new Point2dImpl(x, y);
-	}
-	
-	/**
-	 * This method was adapted for JPS.
-	 * BUT: this method seems to calculate nonsense if the orientation of
-	 * the polygon is clockwise
-	 * 
-	 * 
-	 * Function to calculate the center of mass for a given polygon, according
-	 * to the algorithm defined at
-	 * http://local.wasp.uwa.edu.au/~pbourke/geometry/polyarea/
-	 * 
-	 * @author Christopher Fuhrman (christopher.fuhrman@gmail.com)
-	 * @version 2006-09-27
-	 * 
-	 * @param points in the polygon
-	 * @return point that is the center of mass
-	 */
-	// TODO-AE: remove this method 
-	private static Point2d calculateCenterOfMassWRONG(List<Point2d> points) {
-		double cx = 0, cy = 0;
-		double area = calculateSignedArea(points);
-		
-		int i, j, n = points.size();
-
-		double factor = 0;
-		for (i = 0; i < n; i++) {
-			j = (i + 1) % n;
-			factor = (points.get(i).getX() * points.get(j).getY()
-					- points.get(j).getX() * points.get(i).getY());
-			cx += (points.get(i).getX() + points.get(j).getX()) * factor;
-			cy += (points.get(i).getY() + points.get(j).getY()) * factor;
-		}
-		area *= 6.0f;
-		factor = 1 / area;
-		cx *= factor;
-		cy *= factor;
-		return new Point2dImpl(cx, cy);
 	}
 	
 	/**

@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.base.discovery;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,6 +12,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +25,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class AgentCaller {
 	
+	private static final String JSON_PARAMETER_KEY = "query";
 	private static Logger logger = LoggerFactory.getLogger(AgentCaller.class);
 	private static String hostPort = null;
 	
@@ -57,6 +61,42 @@ public class AgentCaller {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		} 
 	}	
+	
+	public static String executeGetWithJsonParameter(String path, String json) {
+		URIBuilder builder = new URIBuilder().setScheme("http").setHost(getHostPort())
+				.setPath(path);
+		
+		builder.setParameter(JSON_PARAMETER_KEY, json);
+				
+		try {
+			return executeGet(builder);
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		} 
+	}	
+	
+	public static JSONObject getJsonParameter(HttpServletRequest request) {
+			
+		try {
+			
+			String json = request.getParameter(JSON_PARAMETER_KEY);
+			if (json != null) {
+				return new JSONObject(json);
+			} 
+			
+			JSONObject jsonobject = new JSONObject();
+			Enumeration<String> keys = request.getParameterNames();
+			while (keys.hasMoreElements()) {
+				String key = keys.nextElement();
+				String value = request.getParameter(key);
+				jsonobject.put(key, value);
+			}
+			return jsonobject;	
+			
+		} catch (JSONException e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		}
+	}
 		
 	// TODO-AE turn from public to private
 	public static String executeGet(URIBuilder builder) {
@@ -92,6 +132,7 @@ public class AgentCaller {
 	    }
 	}
 	
+	@Deprecated
 	public static AgentResponse callAgent(String contextPath, AgentRequest agentRequest)  {
 		
 		Gson gson = new Gson();
@@ -114,6 +155,7 @@ public class AgentCaller {
 		}
 	}
 	
+	@Deprecated
 	public static AgentRequest getAgentRequest(HttpServletRequest req) {
 		String serializedAgentRequest = req.getParameter("agentrequest");
 		return new Gson().fromJson(serializedAgentRequest, AgentRequest.class);
