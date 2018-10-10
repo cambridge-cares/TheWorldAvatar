@@ -27,7 +27,7 @@ function getContourMaps(address) {
     
                 //=============contour consts======================//
                 
-                  const thresholds = d3.range(0, THRESHOULD_NUM)
+                  const thresholds = d3.range(0, THRESHOULD_NUM) // [0, 1, 2, 3, 4, 5, 6, 7, 8]
                     .map(function (p) {
                         return Math.pow(4, p);
                     });//todo: custom this, need to know output features

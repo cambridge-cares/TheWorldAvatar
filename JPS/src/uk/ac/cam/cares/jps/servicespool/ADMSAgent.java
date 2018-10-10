@@ -1,9 +1,6 @@
 package uk.ac.cam.cares.jps.servicespool;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.ArrayList;
 
@@ -19,20 +16,12 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.RDFFormat;
-import org.apache.jena.vocabulary.RDF;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
-import uk.ac.cam.cares.jps.semantic.QueryWarehouse;
 
 
 @WebServlet("/ADMSAgent")
@@ -45,61 +34,56 @@ public class ADMSAgent extends HttpServlet {
 
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// ADMSAgent takes the following parameters 
 		
-		// 1. Buildings with building parameters ... 
-		// 2. Emission source ---> Emission coordinate + Emission Substance
-		// 3. Weather in semantic 
+		/*
+		 * This agent takes: region, plantIRI, city, weatherstate and later emission stream 
+		 * Then writes input files for adms : apl + met
+		 * Then starts ADMS and generates output file test.levels.gst
+		 * Later it should returns data in the form of Tabular JSON
+		 */
 		
-		// The requester passes a whole bundle of data in the form of JSON, where the keys to be the IRI of something ... e.g. http://www.theworldavatar.com/Weather
-		// Plan 1, get the JSON and convert it to rdf, the perform a query upon it. 
-		// Plan 2, get the JSON and retrieve the info directly.
-		
-		// Lets do both of them and then discuss later.
-		// Receive the IRI of the source emission and then make the query ... 
-		// 
-		String value = request.getParameter("value").replace("$", "#").replace("@", "#");
-
  
-		
-		Model model = ModelFactory.createDefaultModel();
-		RDFDataMgr.read(model, new ByteArrayInputStream(value.getBytes("UTF-8")), Lang.RDFJSON);
-	
-		JSONObject regionInJSON = QueryWarehouse.getRegionCoordinates(model);
-		JSONObject weatherInJSON = QueryWarehouse.getWeatherData(model);
-		String buildingsInString = QueryWarehouse.getBuildingData(model);
-	 	String plantIRI = QueryWarehouse.getPlantIRI(model);
-	 	
-		writeAPLFile(buildingsInString,plantIRI, regionInJSON);
-		writeMetFile(weatherInJSON);
-		
 		String myHost = request.getServerName();
-		int myPort = request.getServerPort();
-		String path = "/JPS/ADMSStarter";
+		int myPort = request.getServerPort(); // Define the server name and port number without any hardcoding
 		
-		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
-				.setPath(path)
-				.setParameter("targetFolder",AgentLocator.getPathToWorkingDir(this));
-		
-		Model rdfModel = ModelFactory.createDefaultModel();
-		Resource ADMSOutput = rdfModel.createResource("http://test.com/Instance/myADMSOutput");
-		Resource ADMSOutputType = rdfModel.createResource("http://test.com/ontology/ADMSSimulation");
-		Property hasPath = rdfModel.createProperty("http://test.com/Property/hasOutputPosition");
-		ADMSOutput.addProperty(RDF.type,ADMSOutputType);
-		ADMSOutput.addLiteral(hasPath,AgentLocator.getPathToWorkingDir(this));
-		
- 
-		executeGet(builder);
-		
-		rdfModel.add(model);		
-		StringWriter out = new StringWriter();		
-		RDFDataMgr.write(out, rdfModel, RDFFormat.RDFJSON);
-		response.getWriter().write(out.toString().replace("$", "#"));
-		
-		//response.getWriter().write("\nInput files are at : " + AgentLocator.getPathToWorkingDir(this));
-		
-		
-	
+ 		String value = request.getParameter("value");
+		try {
+			JSONObject input = new JSONObject(value);
+			input = new JSONObject(value);
+			JSONObject region = input.getJSONObject("region");
+		 	String plantIRI = input.getString("plant");
+		 	String cityIRI = input.getString("city");
+			JSONObject weather = input.getJSONObject("weatherstate");
+			
+			//================== request agent GetBuildingDataForSimulation ===============
+			// It was previously an independent agent, currently it is merged with ADMSAgent
+			JSONObject bundle = new JSONObject();
+			bundle.put("city", cityIRI);
+			bundle.put("plant", plantIRI);
+			bundle.put("region", region);
+
+			URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
+					.setPath("/JPS/GetBuildingDataForSimulation")
+					.setParameter("value", bundle.toString());
+			String buildingsInString = executeGet(builder);	 	
+			//==============================================================================
+			
+			writeAPLFile(buildingsInString,plantIRI, region);
+			writeMetFile(weather);
+			
+			// =================== Start ADMS when input files are written =======================
+			String path = "/JPS/ADMSStarter";
+			URIBuilder builder2 = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
+					.setPath(path)
+					.setParameter("targetFolder",AgentLocator.getPathToWorkingDir(this));
+			String finalResult = executeGet(builder2);
+			response.getWriter().write(finalResult.toString()); // TODO: ZXC Read the output file and then return JSON
+			// ====================================================================================
+			
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -115,7 +99,7 @@ public class ADMSAgent extends HttpServlet {
 			args.add("python");
 			args.add("admsMetWriter.py"); 
 			args.add(fullPath);
-			args.add(weatherInJSON.toString().replace("\"", "\\\""));
+			args.add(weatherInJSON.toString().replace("\"", "$"));
 			String result = CommandHelper.executeCommands(targetFolder, args);
 			return result;
 	}
@@ -128,26 +112,16 @@ public class ADMSAgent extends HttpServlet {
 		args.add("python");
 		args.add("admsTest.py"); 
   		args.add(buildingInString.replace("\"", "'"));
- 		args.add(regionInJSON.toString().replace("\"", "'"));
+ 		args.add(regionInJSON.toString().replace("\"", "'")); //TODO ZXC: We should solve the encoding problem once for all 
  		args.add(plantIRI.replace("\"", "'"));
  		args.add(fullPath.replace("/", "\\"));
- 	 
- 		
   		String result = CommandHelper.executeCommands(targetFolder, args);
 		return result;		
 	}
 
-	public String convertBuildingData(JSONObject buildings) {
- 		Model model = ModelFactory.createDefaultModel();
-		try {
-			RDFDataMgr.read(model, new ByteArrayInputStream(buildings.toString().getBytes("UTF-8")), Lang.RDFJSON);
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		return 	QueryWarehouse.getBuildingData(model);
-	}
 
-	public String executeGet(URIBuilder builder) {
+
+	public String executeGet(URIBuilder builder) { // TODO: ZXC: Put this function in utility
 		try {
 			URI uri = builder.build();
 			HttpGet request = new HttpGet(uri);

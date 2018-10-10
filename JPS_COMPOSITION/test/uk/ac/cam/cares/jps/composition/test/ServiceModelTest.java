@@ -28,13 +28,13 @@ public class ServiceModelTest {
 		// =======================================================================================
 		// Here we declare the two input parameters
 		MessagePart messagePartCity = new MessagePart(new URI("http://www.theworldvatar.com/wInParamCityXYZ123"));
-		messagePartCity.setModelReference(new URI("http://www.theworldavatar.com/CityGML.owl#City"));
+		messagePartCity.setType(new URI("http://www.theworldavatar.com/CityGML.owl#City"));
 		messagePartCity.setValue(new URI("http://dbpedia.org/resource/Singapore"));
 		messagePartCity.setDatatypeValue("xsd:anyURI");
 		// We put value and value data type in the class MessagePart...
 
 		MessagePart messagePartDate = new MessagePart(new URI("http://www.theworldvatar.com/wInParamDateXYZ123"));
-		messagePartDate.setModelReference(new URI("http://www.theworldavatar.com/Date.owl#Date"));
+		messagePartDate.setType(new URI("http://www.theworldavatar.com/Date.owl#Date"));
 		// =======================================================================================
 
 		String MessagePartInJSON = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(messagePartDate);
@@ -52,10 +52,10 @@ public class ServiceModelTest {
 
 		MessagePart messagePartTemperature = new MessagePart(
 				new URI("http://www.theworldavatar.com/wOutParamTempXYX123"));
-		messagePartTemperature.setModelReference(new URI("http://www.theworldavatar.com/Weather.owl#Temperature"));
+		messagePartTemperature.setType(new URI("http://www.theworldavatar.com/Weather.owl#Temperature"));
 		MessagePart messagePartWinddirection = new MessagePart(
 				new URI("http://www.theworldavatar.com/wOutParamWindXYX123"));
-		messagePartWinddirection.setModelReference(new URI("http://www.theworldavatar.com/Weather.owl#Winddirection"));
+		messagePartWinddirection.setType(new URI("http://www.theworldavatar.com/Weather.owl#Winddirection"));
 
 		URI uri_messageContent_output = new URI("http://www.theworldavatar.com/weatherOutXYZ123");
 		MessageContent messageContent_output = new MessageContent(uri_messageContent_output);

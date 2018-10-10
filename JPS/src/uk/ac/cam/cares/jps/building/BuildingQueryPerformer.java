@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -29,8 +28,8 @@ public class BuildingQueryPerformer implements SparqlConstants {
 
 	// TODO-AE should be changed to "EPSG:4326"; // WGS 84 which is the standard of GeoJSON, GIS, Google
 	public static final String DEFAULT_CRS_NAME = CRSTransformer.EPSG_28992;
-	public static final String BERLIN_IRI = "http://dbpedia.org/page/Berlin";
-	public static final String THE_HAGUE_IRI = "http://dbpedia.org/page/The_Hague";
+	public static final String BERLIN_IRI = "http://dbpedia.org/resource/Berlin";
+	public static final String THE_HAGUE_IRI = "http://dbpedia.org/resource/The_Hague"; // The IRIs have be changed to /resource instead of /page
 	
 	private Logger logger = LoggerFactory.getLogger(BuildingQueryPerformer.class);
 	private String host;
@@ -73,9 +72,6 @@ public class BuildingQueryPerformer implements SparqlConstants {
 				.setParameter("query", query);
 	
 		String result = executeGet(builder);
-		
-		logger.debug("query result = \n" + result);
-		
 		return result;
 	}
 	
@@ -140,7 +136,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			uy = p[1];
 		}
 		
-		String query = getQueryBuildingsFromRegion(buildingLimit, lx, ly, ux, uy);		
+		String query = getQueryBuildingsFromRegion(buildingLimit, lx, ly, ux, uy);	
 		String result = performQuery(cityIRI, query);
 		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		return map.get("bdn");
@@ -379,6 +375,9 @@ public class BuildingQueryPerformer implements SparqlConstants {
 	}
 	
 	public SimpleBuildingData performQuerySimpleBuildingData(String cityIRI, List<String> buildingIRIs) {
+		
+		
+		
 		
 		SimpleBuildingData result = new SimpleBuildingData();
 		

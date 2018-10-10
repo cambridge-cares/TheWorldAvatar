@@ -25,6 +25,7 @@ import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.vocabulary.RDF;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONStringer;
 
 import uk.ac.cam.cares.jps.composition.util.SendRequest;
 
@@ -66,7 +67,7 @@ public class CityToWeather extends HttpServlet {
 					cityName = "Den%20Haag";
 				}
 				System.out.println(cityName);
-				response.getWriter().write(getWeatherFromCity(cityName));
+				response.getWriter().write(constructJSONResponse(getWeatherFromCity(cityName)));
 				//response.getWriter().write(constructSemanticResponse(getWeatherFromCity(cityName), cityName.replaceAll("%20", "_"), cityIRI));
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -290,6 +291,49 @@ public class CityToWeather extends HttpServlet {
 		RDFDataMgr.write(out, rdfModel, RDFFormat.RDFJSON);
 		return out.toString();
 	}
+	
+	
+	public String constructJSONResponse(String weatherInString) throws JSONException {
+		JSONObject weatherInJSON = new JSONObject(weatherInString.replace("%20", "_"));
+		JSONObject main = weatherInJSON.getJSONObject("main");
+		JSONObject weatherObject = weatherInJSON.getJSONArray("weather").getJSONObject(0);
+		String humidity = main.getString("humidity");
+		String temperature = main.getString("temp");
+		String precipitationIntensity = "0.0";
+		String cloudCover = weatherInJSON.getJSONObject("clouds").getString("all");
+		JSONObject windInJSON = weatherInJSON.getJSONObject("wind");
+		String wind_speed = windInJSON.getString("speed");
+		String wind_direction = "";
+		String description = weatherObject.getString("description");
+
+		if (windInJSON.has("deg")) {
+			wind_direction = windInJSON.getString("deg");
+		} else {
+			wind_direction = "";
+		}
+		if (weatherInJSON.has("rain")) {
+			precipitationIntensity = weatherInJSON.getJSONObject("rain").getString("3h");
+		}
+		String result = new JSONStringer().object().
+				key("weatherstate").object()
+					.key("hashumidity").object() //52.508287, 13.415407
+						.key("hasvalue").value(humidity).endObject()
+					.key("hasexteriortemperature").object()
+						.key("hasvalue").value(temperature).endObject()
+					.key("haswind").object()
+						.key("hasspeed").value(wind_speed)
+						.key("hasdirection").value(wind_direction).endObject()	
+					.key("hascloudcover").object()
+						.key("hascloudcovervalue").value(cloudCover).endObject()
+					.key("hasweathercondition").value(description.replace(" ","_"))			
+					.key("hasprecipation").object()
+						.key("hasintensity").value(precipitationIntensity).endObject()
+			.endObject().endObject().toString(); 
+		
+		
+		return result;
+	}
+	
 	
 	public String getCityIRI(Model model) {
 		

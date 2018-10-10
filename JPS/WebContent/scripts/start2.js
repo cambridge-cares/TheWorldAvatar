@@ -12,8 +12,8 @@ let testObj = getParameter();
     // TODO: For testing, we predefine variables
     globalResult = result;
     
-    const BERLIN_IRI = "http://dbpedia.org/page/Berlin";
-    const THE_HAGUE_IRI = "http://dbpedia.org/page/The_Hague";
+    const BERLIN_IRI = "http://dbpedia.org/resource/Berlin";
+    const THE_HAGUE_IRI = "http://dbpedia.org/resource/The_Hague";
 
     let xmin = globalResult['Region']['xmin'];
     let xmax = globalResult['Region']['xmax'];
@@ -33,7 +33,7 @@ let testObj = getParameter();
     [xmin, xmax, ymin, ymax] = appro2ratio(xmin, xmax, ymin, ymax);
 
 
-    let locationIRI =  globalResult['City'].replace('resource','page');
+    let locationIRI =  globalResult['City'];
      
     
     const coordinatesMin = getOSMPoint(lowerx, lowery);

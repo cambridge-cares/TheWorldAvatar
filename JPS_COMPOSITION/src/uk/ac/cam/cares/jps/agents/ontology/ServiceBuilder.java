@@ -99,7 +99,7 @@ public class ServiceBuilder {
 		}
 			
 		currentPart = new MessagePart();
-		currentPart.setModelReference(uri(type));
+		currentPart.setType(uri(type));
 		currentPart.setArray(array);
 		currentPart.setName(name);
 		parts.add(currentPart);

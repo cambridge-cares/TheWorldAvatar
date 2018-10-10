@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
 import uk.ac.cam.cares.jps.composition.servicemodel.Operation;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
-import uk.ac.cam.cares.jps.composition.webserver.ServiceDiscoveryOld;
 
 public class TestAgentOntology extends TestCase {
 	
@@ -20,7 +20,7 @@ public class TestAgentOntology extends TestCase {
 		
 		for (String current : types) {
 			MessagePart part = new MessagePart();
-			part.setModelReference(new URI(current));
+			part.setType(new URI(current));
 			result.add(part);
 		}
 		
@@ -42,22 +42,22 @@ public class TestAgentOntology extends TestCase {
 		Operation op1 = service.getOperations().get(0);
 		assertEquals("http://www.theworldavatar.com/test1", op1.getHttpUrl());
 		MessagePart part = op1.getInputs().get(0).getMandatoryParts().get(0);
-		assertEquals("inputrefuri1", part.getModelReference().toASCIIString());
+		assertEquals("inputrefuri1", part.getType().toASCIIString());
 		assertEquals("inputname1", part.getName());
 		part = op1.getInputs().get(0).getOptionalParts().get(0);
-		assertEquals("inputrefuri2", part.getModelReference().toASCIIString());
+		assertEquals("inputrefuri2", part.getType().toASCIIString());
 		assertEquals("inputname2", part.getName());
 		part = op1.getOutputs().get(0).getMandatoryParts().get(0);
-		assertEquals("outputrefuri3", part.getModelReference().toASCIIString());
+		assertEquals("outputrefuri3", part.getType().toASCIIString());
 		assertEquals("outputname3", part.getName());
 		part = op1.getOutputs().get(0).getOptionalParts().get(0);
-		assertEquals("outputrefuri4", part.getModelReference().toASCIIString());
+		assertEquals("outputrefuri4", part.getType().toASCIIString());
 		assertEquals("outputname4", part.getName());
 		
 		Operation op2 = service.getOperations().get(1);
 		assertEquals("http://www.theworldavatar.com/test2", op2.getHttpUrl());
 		part = op2.getInputs().get(0).getMandatoryParts().get(0);
-		assertEquals("inputrefuri5", part.getModelReference().toString());
+		assertEquals("inputrefuri5", part.getType().toString());
 		assertEquals("inputname5", part.getName());
 	}	
 	
@@ -87,7 +87,7 @@ public class TestAgentOntology extends TestCase {
 		assertEquals(1, op.getInputs().get(0).getMandatoryParts().size());
 		assertEquals(0, op.getInputs().get(0).getOptionalParts().size());
 		MessagePart part = op.getInputs().get(0).getMandatoryParts().get(0);
-		assertEquals("inputrefuri1", part.getModelReference().toASCIIString());
+		assertEquals("inputrefuri1", part.getType().toASCIIString());
 		assertEquals(false, part.isArray());
 		assertEquals("inputname1", part.getName());
 		
@@ -96,7 +96,7 @@ public class TestAgentOntology extends TestCase {
 		assertEquals(1, op.getOutputs().get(0).getMandatoryParts().size());
 		assertEquals(0, op.getOutputs().get(0).getOptionalParts().size());
 		part = op.getOutputs().get(0).getMandatoryParts().get(0);
-		assertEquals("outputrefuri2", part.getModelReference().toASCIIString());
+		assertEquals("outputrefuri2", part.getType().toASCIIString());
 		assertEquals(false, part.isArray());
 		assertEquals("outputname2", part.getName());
 	}
@@ -134,20 +134,20 @@ public class TestAgentOntology extends TestCase {
 		assertEquals(2, op.getInputs().get(0).getMandatoryParts().size());
 		assertEquals(1, op.getInputs().get(0).getOptionalParts().size());
 		MessagePart part = op.getInputs().get(0).getMandatoryParts().get(0);
-		assertEquals("inputrefuri2", part.getModelReference().toASCIIString());
+		assertEquals("inputrefuri2", part.getType().toASCIIString());
 		part = op.getInputs().get(0).getMandatoryParts().get(1);
-		assertEquals("inputrefuri5", part.getModelReference().toASCIIString());
+		assertEquals("inputrefuri5", part.getType().toASCIIString());
 		part = op.getInputs().get(0).getOptionalParts().get(0);
-		assertEquals("inputrefuri4", part.getModelReference().toASCIIString());
+		assertEquals("inputrefuri4", part.getType().toASCIIString());
 
 		// assert output parameters
 		assertEquals(1, op.getOutputs().size());
 		assertEquals(2, op.getOutputs().get(0).getMandatoryParts().size());
 		assertEquals(0, op.getOutputs().get(0).getOptionalParts().size());
 		part = op.getOutputs().get(0).getMandatoryParts().get(0);
-		assertEquals("outputrefuri1", part.getModelReference().toASCIIString());
+		assertEquals("outputrefuri1", part.getType().toASCIIString());
 		part = op.getOutputs().get(0).getMandatoryParts().get(1);
-		assertEquals("outputrefuri3", part.getModelReference().toASCIIString());
+		assertEquals("outputrefuri3", part.getType().toASCIIString());
 		
 		// assert second operation
 		op = services.get(0).getOperations().get(1);
@@ -158,14 +158,14 @@ public class TestAgentOntology extends TestCase {
 		assertEquals(1, op.getInputs().get(0).getMandatoryParts().size());
 		assertEquals(0, op.getInputs().get(0).getOptionalParts().size());
 		part = op.getInputs().get(0).getMandatoryParts().get(0);
-		assertEquals("inputrefuri6", part.getModelReference().toASCIIString());
+		assertEquals("inputrefuri6", part.getType().toASCIIString());
 		
 		// assert output parameters
 		assertEquals(1, op.getOutputs().size());
 		assertEquals(1, op.getOutputs().get(0).getMandatoryParts().size());
 		assertEquals(0, op.getOutputs().get(0).getOptionalParts().size());
 		part = op.getOutputs().get(0).getMandatoryParts().get(0);
-		assertEquals("outputrefuri7", part.getModelReference().toASCIIString());
+		assertEquals("outputrefuri7", part.getType().toASCIIString());
 	}
 	
 	public void testOWLSerializationWithArrayParameters() throws FileNotFoundException, URISyntaxException {
@@ -252,35 +252,35 @@ public class TestAgentOntology extends TestCase {
 		assertEquals(2, op.getInputs().get(0).getMandatoryParts().size());
 		assertEquals(0, op.getInputs().get(0).getOptionalParts().size());
 		MessagePart part = op.getInputs().get(0).getMandatoryParts().get(0);
-		assertEquals("inputrefuri1", part.getModelReference().toASCIIString());
+		assertEquals("inputrefuri1", part.getType().toASCIIString());
 		assertEquals("region", part.getName());
 		assertEquals(3, part.getMandatoryParts().size());
 		MessagePart partDown = part.getMandatoryParts().get(0);
-		assertEquals("inputrefuri2", partDown.getModelReference().toASCIIString());
+		assertEquals("inputrefuri2", partDown.getType().toASCIIString());
 		assertEquals("lowercorner", partDown.getName());
 		assertEquals(2, partDown.getMandatoryParts().size());
 		MessagePart partDownDown = partDown.getMandatoryParts().get(0);
-		assertEquals("inputrefuri3", partDownDown.getModelReference().toASCIIString());
+		assertEquals("inputrefuri3", partDownDown.getType().toASCIIString());
 		assertEquals("lowerx", partDownDown.getName());
 		partDownDown = partDown.getMandatoryParts().get(1);
-		assertEquals("inputrefuri4", partDownDown.getModelReference().toASCIIString());
+		assertEquals("inputrefuri4", partDownDown.getType().toASCIIString());
 		assertEquals("lowery", partDownDown.getName());
 		partDown = part.getMandatoryParts().get(1);
-		assertEquals("inputrefuri5", partDown.getModelReference().toASCIIString());
+		assertEquals("inputrefuri5", partDown.getType().toASCIIString());
 		assertEquals("uppercorner", partDown.getName());
 		assertEquals(2, partDown.getMandatoryParts().size());
 		partDownDown = partDown.getMandatoryParts().get(0);
-		assertEquals("inputrefuri6", partDownDown.getModelReference().toASCIIString());
+		assertEquals("inputrefuri6", partDownDown.getType().toASCIIString());
 		assertEquals("upperx", partDownDown.getName());
 		partDownDown = partDown.getMandatoryParts().get(1);
-		assertEquals("inputrefuri7", partDownDown.getModelReference().toASCIIString());
+		assertEquals("inputrefuri7", partDownDown.getType().toASCIIString());
 		assertEquals("uppery", partDownDown.getName());
 		partDown = part.getMandatoryParts().get(2);
-		assertEquals("inputrefuri8", partDown.getModelReference().toASCIIString());
+		assertEquals("inputrefuri8", partDown.getType().toASCIIString());
 		assertEquals("srsname", partDown.getName());
 		assertEquals(0, partDown.getMandatoryParts().size());
 		part = op.getInputs().get(0).getMandatoryParts().get(1);
-		assertEquals("inputrefuri9", part.getModelReference().toASCIIString());
+		assertEquals("inputrefuri9", part.getType().toASCIIString());
 		assertEquals("foo", part.getName());
 		
 		// assert output parameters
@@ -288,14 +288,14 @@ public class TestAgentOntology extends TestCase {
 		assertEquals(1, op.getOutputs().get(0).getMandatoryParts().size());
 		assertEquals(0, op.getOutputs().get(0).getOptionalParts().size());
 		part = op.getOutputs().get(0).getMandatoryParts().get(0);
-		assertEquals("outputrefuri1", part.getModelReference().toASCIIString());
+		assertEquals("outputrefuri1", part.getType().toASCIIString());
 		assertEquals("city", part.getName());
 	}
 	
 	public void testServiceDiscovery() throws Exception {
 		
 		String fileDirectory = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres/serviceowlfiles";
-		ServiceDiscoveryOld discovery = new ServiceDiscoveryOld();
+		ServiceDiscovery discovery = new ServiceDiscovery();
 		List<MessagePart> inputs = createMessageParts("op2inputrefuri1");
 		List<Service> result = discovery.getAllServiceCandidates(inputs, new ArrayList<Service>());
 		

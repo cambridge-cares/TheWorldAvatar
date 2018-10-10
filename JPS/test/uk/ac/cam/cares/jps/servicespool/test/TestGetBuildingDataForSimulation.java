@@ -1,10 +1,7 @@
 package uk.ac.cam.cares.jps.servicespool.test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.io.StringWriter;
-
 import java.net.URI;
+import java.util.ArrayList;
 
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -12,73 +9,73 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.RDFFormat;
-import org.apache.jena.vocabulary.RDF;
-import org.junit.jupiter.api.Test;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONStringer;
+import org.junit.Test;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.building.BuildingQueryPerformer;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
 
-class TestGetBuildingDataForSimulation {
-
+public class TestGetBuildingDataForSimulation {
+	String myHost = "localhost";
+	int myPort = 8080;
 	@Test
-	void test() {
+	public void test() throws JSONException {
+	 
+		String regionInString = new JSONStringer().object().
+				key("region").object()
+					.key("lowercorner").object() //52.508287, 13.415407
+						.key("lowerx").value("13.415407")
+						.key("lowery").value("52.508287").endObject()
+					.key("uppercorner").object()
+						.key("upperx").value("13.424336") //52.511112, 13.424336
+						.key("uppery").value("52.511112").endObject()
+					.key("srsname").value("EPSG:4326")
+				.endObject()
+				.endObject().toString(); 
+		
+		
+		JSONObject regionJSON = new JSONObject(regionInString);
+		JSONObject bundle = new JSONObject();
+		
+		bundle.put("city", "http://dbpedia.org/resource/Berlin");
+		bundle.put("plant", "http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002");
+		bundle.put("region", regionJSON.getJSONObject("region"));
 
-
-	
-		Model regionModel = ModelFactory.createDefaultModel();
-		Property hasX = regionModel.createProperty("http://test.com/Property/hasX");
-		Property hasY = regionModel.createProperty("http://test.com/Property/hasY");
-		Property hasUpperPoint = regionModel.createProperty("http://test.com/Property/upperPoint");
-		Property hasLowerPoint = regionModel.createProperty("http://test.com/Property/lowerPoint");
-		Resource Region = regionModel.createResource("http://test.com/aRegionInstance");
-		Region.addProperty(RDF.type, "http://test.com/ontology/Region");
-		Resource UpperPoint = regionModel.createResource("http://test.com/upperPoint");
-		UpperPoint.addProperty(RDF.type, "http://test.com/ontology/Point");
-		UpperPoint.addLiteral(hasX, 80000);
-		UpperPoint.addLiteral(hasY, 455190);
-		Resource LowerPoint = regionModel.createResource("http://test.com/lowerPoint");
-		LowerPoint.addProperty(RDF.type, "http://test.com/ontology/Point");
-		LowerPoint.addLiteral(hasX, 79480);
-		LowerPoint.addLiteral(hasY, 454670);
-		Region.addProperty(hasLowerPoint, LowerPoint);
-		Region.addProperty(hasUpperPoint, UpperPoint);
-		Model plantIRI = ModelFactory.createDefaultModel();
-		Resource myPlant = plantIRI.createResource("http://www.theworldavatar.com/Plant-001.owl#Plant-001");
-		Resource plant = plantIRI.createResource("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Plant");
-		myPlant.addProperty(RDF.type, plant);
-		Model cityIRI = ModelFactory.createDefaultModel();
-		Resource myCity = cityIRI.createResource(BuildingQueryPerformer.THE_HAGUE_IRI);
-		Resource city = cityIRI.createResource("http://www.theworldavatar.com/OntoEIP/supporting_concepts/space_and_time_v1.owl#City");
-		myCity.addProperty(RDF.type,city);
-		
-		
-		
-		Model dataBundle = ModelFactory.createDefaultModel();
-		dataBundle.add(plantIRI);
-		dataBundle.add(cityIRI); 
-		dataBundle.add(regionModel);
-		 
-		String myHost = "localhost";
-		int myPort = 8080;
-		String ADMSAgentPath = "/JPS/GetBuildingDataForSimulation";
-		
-		StringWriter out = new StringWriter();
-		RDFDataMgr.write(out, dataBundle, RDFFormat.RDFJSON);
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
-				.setPath(ADMSAgentPath)
-				.setParameter("value", out.toString());
+				.setPath("/JPS/GetBuildingDataForSimulation")
+				.setParameter("value", bundle.toString());
+		
 		String result = executeGet(builder);
-		System.out.println("---------- Result Now ---------- xx" + result);
-
+		writeAPLFile(result, bundle.getString("plant"), regionJSON.getJSONObject("region"));	
+	
+	
+	
+	
+	
+	
+	
+	
 	}
 	
-	
+	public String writeAPLFile(String buildingInString, String plantIRI, JSONObject regionInJSON)
+	{
+		String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
+		String fullPath = AgentLocator.getPathToWorkingDir(this) + "/" + "ADMS";
+		ArrayList<String> args = new ArrayList<String>();
+		args.add("python");
+		args.add("admsTest.py"); 
+  		args.add(buildingInString.replace("\"", "'"));
+ 		args.add(regionInJSON.toString().replace("\"", "'"));
+ 		args.add(plantIRI.replace("\"", "'"));
+ 		args.add(fullPath.replace("/", "\\"));
+ 	 
+ 		
+  		String result = CommandHelper.executeCommands(targetFolder, args);
+		return result;		
+	}
 	
 	public String executeGet(URIBuilder builder) {
 		try {
@@ -94,5 +91,6 @@ class TestGetBuildingDataForSimulation {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		} 
 	}
+ 
 
 }

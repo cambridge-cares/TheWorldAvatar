@@ -103,6 +103,10 @@ public class Service {
 		}
 		return result;
 	}
+	 
+
+	
+	
 
 	public URI getUri() {
 		return uri;

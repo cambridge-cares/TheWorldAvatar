@@ -8,6 +8,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
+import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
+import uk.ac.cam.cares.jps.composition.servicemodel.Service;
+
 public class ExecutorProcessor {
 
 	public JSONObject compositeService;
@@ -16,18 +20,21 @@ public class ExecutorProcessor {
 	public Map<String, ArrayList<String>> resultPool;
 	public ArrayList<String> eliminationList;
 	public JSONObject map;
- 	
+ 	public ServiceDiscovery discovery;
 	
-	public ExecutorProcessor(JSONObject compositionResult, ArrayList<String> eliminationList) throws JSONException {
+	public ExecutorProcessor(JSONObject compositionResult, ArrayList<String> eliminationList) throws Exception {
 		this.compositeService = compositionResult;
 		this.layers = this.compositeService.getJSONArray("layers");
 		this.taskList = new ArrayList<Task>();
 		this.eliminationList = eliminationList;
 		this.resultPool = new HashMap<String, ArrayList<String>>();
 		this.map = new JSONObject();
+	
+		// Initiate a new ServiceDiscoveryPool
+		this.discovery = new ServiceDiscovery();
 	}
 	
-	public ExecutorProcessor(JSONObject compositionResult) throws JSONException {
+	public ExecutorProcessor(JSONObject compositionResult) throws Exception {
 		this.compositeService = compositionResult;
 		this.layers = this.compositeService.getJSONArray("layers");
 		this.taskList = new ArrayList<Task>();
@@ -40,10 +47,13 @@ public class ExecutorProcessor {
 		
 		this.resultPool = new HashMap<String, ArrayList<String>>();
 		this.map = new JSONObject();
+		this.discovery = new ServiceDiscovery();
+
 	}
+	
+	
 
 	public ExecutionLayer LayerAnalyzer(JSONObject layer) throws JSONException {
-		System.out.println("=============== Layer ===============");
 		ExecutionLayer newExecutionLayer = new ExecutionLayer();
 		int layerOffSet = 0;
 		for (int i = 0; i < layer.getJSONArray("services").length(); i++) {
@@ -61,12 +71,13 @@ public class ExecutorProcessor {
 		// get the index of its target service in the next layer...
 		JSONObject operation = service.getJSONArray("operations").getJSONObject(0);
 		String httpUrl = operation.getString("httpUrl");
+		// httpUrl is the upstream agent which produces the outputs 
+		Service upstreamService = this.discovery.getServiceFromHttpUrl(httpUrl); 
+					
 		Task task = new Task(httpUrl);
 		task.outputIndexArray = getIndex(service).get(0);
 		task.inputIndexArray = getIndex(service).get(1);
 		if (!this.eliminationList.contains(service.getString("uri"))) {
-			System.out.println(httpUrl);
-			System.out.println(service.get("uri"));
 			ArrayList<String> nextHttpUrlList = new ArrayList<String>();
 			for (int[] array : task.outputIndexArray) {
 				if (this.map.has(array[0] + "_" + array[1])) {
@@ -83,12 +94,33 @@ public class ExecutorProcessor {
 				}
 			}
 			task.targetHttpUrl = nextHttpUrlList;
-			
-			for(String url : task.targetHttpUrl) {
-				task.keysArray.add(getAllKeysFromTargetHTTP(url));
+			for(int i = 0; i < nextHttpUrlList.size(); i++) {
+				task.keysArray.add(getAllOutputKeysFromTargetHTTP(httpUrl));
 			}
-			 
-			System.out.println(nextHttpUrlList);
+			
+			// Find the mapping of 
+			
+			// ======================================= A task has multiple target http url =====================
+			// 
+			for(String url : task.targetHttpUrl) {
+			    Service downstreamService = this.discovery.getServiceFromHttpUrl(url);
+				Map<String, Map<String,String>> listOfMaps = new HashMap<String, Map<String,String>>();
+				for(MessagePart input : downstreamService.getAllInputs()) {
+					Map<String,Map<String,String>> nameToNameMap = input.getMapOfUpstreamNamesAndDownstreamNames(upstreamService);
+					// This is the nested leaved of a certain input ...
+					if(nameToNameMap!=null) {
+						listOfMaps.putAll(nameToNameMap);
+					}
+				}
+				
+				task.httpToNameMapping.put(url, listOfMaps);
+
+			}
+			//=====================================================================================================
+			
+	
+			
+			
 			return task;
 		} else {
 			return null;
@@ -138,7 +170,7 @@ public class ExecutorProcessor {
 		return result;
 	}
 	
-	public ArrayList<String> getAllKeysFromTargetHTTP(String targetHttp) throws JSONException {
+	public ArrayList<String> getAllInputKeysFromTargetHTTP(String targetHttp) throws JSONException {
 		JSONArray layers = this.compositeService.getJSONArray("layers");
 		ArrayList<String> result = new ArrayList<String>();
 		for (int i = 0; i < layers.length(); i++) {
@@ -168,7 +200,96 @@ public class ExecutorProcessor {
 	}
 	
 	
+	public ArrayList<String> getAllOutputKeysFromTargetHTTP(String targetHttp) throws JSONException {
+		JSONArray layers = this.compositeService.getJSONArray("layers");
+		ArrayList<String> result = new ArrayList<String>();
+		for (int i = 0; i < layers.length(); i++) {
+			JSONObject layer = layers.getJSONObject(i);
+			JSONArray services = layer.getJSONArray("services");
+			for(int j = 0; j < services.length(); j++) {
+				JSONObject service = services.getJSONObject(j);
+				JSONObject operation = service.getJSONArray("operations").getJSONObject(0);
+				String http = operation.getString("httpUrl");
 
+				if(targetHttp.equalsIgnoreCase(http)) {
+					JSONArray inputs = operation.getJSONArray("outputs");
+					for (int l = 0; l < inputs.length(); l++) {
+						JSONObject input = inputs.getJSONObject(l);
+						JSONArray InputMandatoryParts = input.getJSONArray("mandatoryParts");
+						for (int m = 0; m < InputMandatoryParts.length(); m++) {
+							if (InputMandatoryParts.getJSONObject(m).has("name")) {
+								String name = InputMandatoryParts.getJSONObject(m).getString("name");
+								result.add(name);
+							}
+						}
+					}
+				}
+			}
+		}
+		return result;
+	}
+	
+	public ArrayList<String> getAllTypesFromTargetHTTP(String targetHttp) throws JSONException {
+		JSONArray layers = this.compositeService.getJSONArray("layers");
+		ArrayList<String> result = new ArrayList<String>();
+		for (int i = 0; i < layers.length(); i++) {
+			JSONObject layer = layers.getJSONObject(i);
+			JSONArray services = layer.getJSONArray("services");
+			for(int j = 0; j < services.length(); j++) {
+				JSONObject service = services.getJSONObject(j);
+				JSONObject operation = service.getJSONArray("operations").getJSONObject(0);
+				String http = operation.getString("httpUrl");
+
+				if(targetHttp.equalsIgnoreCase(http)) {
+					JSONArray inputs = operation.getJSONArray("inputs");
+					for (int l = 0; l < inputs.length(); l++) {
+						JSONObject input = inputs.getJSONObject(l);
+						JSONArray InputMandatoryParts = input.getJSONArray("mandatoryParts");
+						for (int m = 0; m < InputMandatoryParts.length(); m++) {
+							if (InputMandatoryParts.getJSONObject(m).has("modelReference")) {
+								String type = InputMandatoryParts.getJSONObject(m).getString("modelReference");
+								result.add(type);
+							}
+						}
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+	public String getKeyFromType(String type) throws JSONException {
+		JSONArray layers = this.compositeService.getJSONArray("layers");
+		String result = null;
+		for (int i = 0; i < layers.length(); i++) {
+			JSONObject layer = layers.getJSONObject(i);
+			JSONArray services = layer.getJSONArray("services");
+			for(int j = 0; j < services.length(); j++) {
+				JSONObject service = services.getJSONObject(j);
+				JSONObject operation = service.getJSONArray("operations").getJSONObject(0);
+				JSONArray inputs = operation.getJSONArray("inputs");
+				for (int l = 0; l < inputs.length(); l++) {
+					JSONObject input = inputs.getJSONObject(l);
+					JSONArray InputMandatoryParts = input.getJSONArray("mandatoryParts");
+					for (int m = 0; m < InputMandatoryParts.length(); m++) {
+						if (InputMandatoryParts.getJSONObject(m).has("modelReference")) {
+							String _type = InputMandatoryParts.getJSONObject(m).getString("modelReference");
+							if(_type.equalsIgnoreCase(type)) {
+								String name = InputMandatoryParts.getJSONObject(m).getString("name");
+								result = name;
+							}
+						}
+					}
+				}
+				
+			}
+		}
+		return result;
+	}
+	
+	
+	
+	
 	public String getHttpUrl(int[] index) throws JSONException {
 		JSONObject layer = this.layers.getJSONObject(index[0]);
 		JSONObject service = layer.getJSONArray("services").getJSONObject(index[1]);

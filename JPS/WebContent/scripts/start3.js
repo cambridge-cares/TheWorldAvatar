@@ -159,8 +159,8 @@ $(function(){
     let ymax = finalResult['Region']['ymax'];
 
 
-    const BERLIN_IRI = "http://dbpedia.org/page/Berlin";
-	const THE_HAGUE_IRI = "http://dbpedia.org/page/The_Hague";
+    const BERLIN_IRI = "http://dbpedia.org/resource/Berlin";
+	const THE_HAGUE_IRI = "http://dbpedia.org/resource/The_Hague";
     const lowerx = xmin;
     const lowery = ymin;
     const upperx = xmax;

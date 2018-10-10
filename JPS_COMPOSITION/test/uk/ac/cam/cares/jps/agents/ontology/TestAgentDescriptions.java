@@ -11,6 +11,8 @@ import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 public class TestAgentDescriptions extends TestCase {
 
 	private static final String JPS = "http://www.theworldavatar.com/JPS";
+	private static final String JPS_COMPOSITION = "http://www.theworldavatar.com/JPS_COMPOSITION";
+	
 	private static final String WEATHER = "https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl";
 	
 	private ServiceBuilder addInputRegion(ServiceBuilder builder) {
@@ -27,23 +29,23 @@ public class TestAgentDescriptions extends TestCase {
 	public void testcreateDescription() throws URISyntaxException, FileNotFoundException {
 		
 		Service service = createDescrForAgentRegionToCity();
-		backAndforthAndWrite(service, "RegionToCity");
+		backAndforthAndWrite(service, "_RegionToCity");
 		service = createDescrForAgentGetPlantsInRegion();
-		backAndforthAndWrite(service, "GetPlantsInRegion");
+		backAndforthAndWrite(service, "_GetPlantsInRegion");
 		service = createDescrForAgentWeather();
-		backAndforthAndWrite(service, "OpenWeatherMap");
+		backAndforthAndWrite(service, "_OpenWeatherMap");
 		service = createDescrForAgentSRMEmissions();
-		backAndforthAndWrite(service, "SRMEmissions");
+		backAndforthAndWrite(service, "_SRMEmissions");
 		service = createDescrForAgentBuildingQuery();
-		backAndforthAndWrite(service, "BuildingQuery");
+		backAndforthAndWrite(service, "_BuildingQuery");
 		service = createDescrForAgentADMS();
-		backAndforthAndWrite(service, "ADMS");
+		backAndforthAndWrite(service, "_ADMS");
 	}
 	
 	private void backAndforthAndWrite(Service service, String name) throws URISyntaxException, FileNotFoundException {
 		
-		//new ServiceWriter().writeAsOwlFile(service, name, "C:\\Users\\nasac\\Documents\\TMP\\newAgentsMSM");
-		new ServiceWriter().writeAsOwlFile(service, name, "C:\\Users\\Andreas\\TMP\\newAgentsMSM");
+		new ServiceWriter().writeAsOwlFile(service, name, "C:\\Users\\nasac\\Documents\\TMP\\newAgentsMSM");
+		//new ServiceWriter().writeAsOwlFile(service, name, "C:\\Users\\Andreas\\TMP\\newAgentsMSM");
 		
 		
 		service.setUri(null);
@@ -64,12 +66,12 @@ public class TestAgentDescriptions extends TestCase {
 	
 	private Service createDescrForAgentGetPlantsInRegion() {
 		return addInputRegion(new ServiceBuilder().operation(null, JPS + "/GetPlantsInRegion"))
-			.output("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Plant", true, "plant", true)
+			.output("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", true, "plant", true)
 			.build();
 	}
 	
 	private Service createDescrForAgentWeather() {
-		ServiceBuilder builder = new ServiceBuilder().operation(null, JPS + "/GetCurrentWeather")
+		ServiceBuilder builder = new ServiceBuilder().operation(null, JPS_COMPOSITION + "/CityToWeather")
 			.input("http://dbpedia.org/ontology/city", "city")
 			.output(WEATHER + "#WeatherState", "weatherstate").down()
 				.output(WEATHER + "#hasHumidity", "hashumidity").down()
@@ -91,25 +93,37 @@ public class TestAgentDescriptions extends TestCase {
 	
 	private Service createDescrForAgentSRMEmissions() {
 		return new ServiceBuilder().operation(null, JPS + "/calculateEmissionStream")
-			.input("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
-			.output("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
+			.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
+			.output("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
 			.build();
 	}
 	
 	private Service createDescrForAgentBuildingQuery() {
-		return addInputRegion(new ServiceBuilder().operation(null, JPS + "/buildings/fromregion"))
-			.input("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
-			.output("http://www.theworldavatar.com/CityGMLOntology.owl#BuildingType", true, "buildings", true)
+		return addInputRegion(new ServiceBuilder().operation(null, JPS + "/GetBuildingListFromRegion"))
+			.input("http://dbpedia.org/ontology/city", "city")
+			.output("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType", true, "buildings", true)
 			.build();
 	}
 	
 	private Service createDescrForAgentADMS() {
 		return addInputRegion(new ServiceBuilder().operation(null, JPS + "/ADMSAgent"))
 			.input("http://dbpedia.org/ontology/city", "city")
-			.input("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
-			.input("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
-			.input(WEATHER + "#WeatherState", "weatherstate")
-			.input("http://www.theworldavatar.com/CityGMLOntology.owl#BuildingType", true, "buildings", true)
+			.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
+			//.input("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
+			.input(WEATHER + "#WeatherState", "weatherstate").down()
+			.input(WEATHER + "#hasHumidity", "humidity").down()
+				.input(WEATHER + "#hasValue", "value").up()
+			.input(WEATHER + "#hasExteriorTemperature", "exteriortemperature").down()
+				.input(WEATHER + "#hasValue", "value").up()
+			.input(WEATHER + "#hasWind", "haswind").down()
+				.input(WEATHER + "#hasSpeed", "speed")
+				.input(WEATHER + "#hasDirection", "direction").up()
+			.input(WEATHER + "#hasWeatherCondition", "weathercondition") // not required for ADMS
+			.input(WEATHER + "#hasCloudCover", "cloudcover").down()
+				.input(WEATHER + "#hasCloudCoverValue", "cloudcovervalue").up()
+			.input(WEATHER + "#hasPrecipitation", "precipation").down()
+				.input(WEATHER + "#hasIntensity", "intensity").up()	
+			.up()
 			.output("https://www.w3.org/ns/csvw#Table", "dispersiongrid")
 			.build();
 	}
