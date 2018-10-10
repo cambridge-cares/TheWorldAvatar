@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre1.8.0_161">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
@@ -30,10 +29,11 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/log4j-slf4j-impl-2.11.0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/org.json.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/slf4j-api-1.7.25.jar"/>
-	<classpathentry kind="lib" path="/JPS_BASE/workingdir/jps_base.jar">
+	<classpathentry kind="lib" path="/JPS_BASE/workingdir/jps_base.jar" sourcepath="/JPS_BASE">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/amqp-client-4.0.2.jar"/>
+	<classpathentry kind="output" path="build/classes"/>
 </classpath>
