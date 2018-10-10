@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.base.discovery.test;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -28,10 +27,8 @@ public class AgentOne extends HttpServlet {
 		response.setContentType("text/plain");
 		response.setCharacterEncoding("UTF-8");
 
-		JSONObject json = AgentCaller.getJsonParameter(request);
-		PrintWriter out = response.getWriter();
-		String message = json.toString();
-		out.print(message);
-		logger.info(message);
+		JSONObject json = AgentCaller.readJsonParameter(request);
+		logger.info("input: = " + json);
+		AgentCaller.writeJsonParameter(response, json);
 	}
 }
