@@ -68,7 +68,10 @@ public class CoordinatesAndCityToADMSOutput extends HttpServlet {
 			targetCenter = CRSTransformer.transform(sourceCRS, targetCRS, sourceCenter);
 			double plantx = targetCenter[0];
 			double planty = targetCenter[1];
-			 
+			
+			System.out.println("==================== Berlin ====================");
+			System.out.println(cityIRI + "|" +  plantIRI + "|" + plantx + "|" + planty + "|" + buildingLimit + "|" + lowerx + "|" + lowery + "|" + upperx + "|" + uppery);
+			
 			try {
 				response.getWriter().write(startIntegrationWithPython(cityIRI, plantIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery));
 			} catch (InterruptedException e) {
@@ -81,6 +84,10 @@ public class CoordinatesAndCityToADMSOutput extends HttpServlet {
 			String plant = "http://www.theworldavatar.com/Plant-001.owl";
 			double plantx = 79831;
 			double planty = 454766;
+			System.out.println("==================== THE HAGUE ====================");
+			System.out.println(cityIRI + "|" +  plantIRI + "|" + plantx + "|" + planty + "|" + buildingLimit + "|" + lowerx + "|" + lowery + "|" + upperx + "|" + uppery);
+
+			
 			try {
 				response.getWriter().write(startIntegrationWithPython(city, plant, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery));
 			} catch (InterruptedException e) {

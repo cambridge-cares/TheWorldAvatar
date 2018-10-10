@@ -2,8 +2,6 @@ package uk.ac.cam.cares.jps.coordination;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -17,17 +15,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.gson.Gson;
-
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.util.CommandHelper;
-import uk.ac.cam.cares.jps.building.BuildingQueryPerformer;
-import uk.ac.cam.cares.jps.building.CRSTransformer;
-import uk.ac.cam.cares.jps.building.SimpleBuildingData;
 
 /**
  * Servlet implementation class ADMSCoordinationAgentNew
@@ -58,7 +48,6 @@ public class ADMSCoordinationAgentNew extends HttpServlet {
 		String myHost = request.getServerName();
 		int myPort = request.getServerPort();
 		String myPathGenerateInput = "/JPS/CoordinatesAndCityToADMSOutput";
-		
 		
 		URIBuilder builderGenerateInput = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath(myPathGenerateInput)
