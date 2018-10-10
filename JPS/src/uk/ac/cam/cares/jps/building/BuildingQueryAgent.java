@@ -55,8 +55,8 @@ public class BuildingQueryAgent extends HttpServlet {
 			
 			
 			
-			List<String> buildingIRIs = performer.performQueryBuildingsFromRegion(cityIRI, buildingLimit, lowerx, lowery, upperx, uppery);
-			//List<String> buildingIRIs = performer.performQueryClosestBuildingsFromRegion(cityIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
+			//List<String> buildingIRIs = performer.performQueryBuildingsFromRegion(cityIRI, buildingLimit, lowerx, lowery, upperx, uppery);
+			List<String> buildingIRIs = performer.performQueryClosestBuildingsFromRegion(cityIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
 			String message = new Gson().toJson(buildingIRIs);
 			print(resp, message);
 			

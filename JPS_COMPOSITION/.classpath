@@ -58,6 +58,6 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/JPS_BASE/workingdir/jps_base.jar" sourcepath="/JPS_BASE"/>
+	<classpathentry kind="lib" path="/JPS_BASE/workingdir/jps_base.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
