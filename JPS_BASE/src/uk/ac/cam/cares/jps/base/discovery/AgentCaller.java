@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.base.discovery;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,7 +41,12 @@ public class AgentCaller {
 	public static String executeGet(String path) {
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(getHostPort())
 				.setPath(path);
-		return executeGet(builder);
+		try {
+			HttpGet request = new HttpGet(builder.build());
+			return executeGet(request);
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		} 
 	}
 	
 	public static String executeGet(String path, String... keyOrvalue) {
@@ -56,12 +62,20 @@ public class AgentCaller {
 		}
 				
 		try {
-			return executeGet(builder);
+			HttpGet request = new HttpGet(builder.build());
+			return executeGet(request);
 		} catch (Exception e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		} 
 	}	
 	
+	/**
+	 * Executes GET request <host>/path?query=<json> 
+	 * 
+	 * @param path
+	 * @param json
+	 * @return
+	 */
 	public static String executeGetWithJsonParameter(String path, String json) {
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(getHostPort())
 				.setPath(path);
@@ -69,13 +83,25 @@ public class AgentCaller {
 		builder.setParameter(JSON_PARAMETER_KEY, json);
 				
 		try {
-			return executeGet(builder);
+			HttpGet request = new HttpGet(builder.build());
+			request.setHeader("Accept", "application/json");
+			request.setHeader("Content-type", "application/json");
+			
+			return executeGet(request);
 		} catch (Exception e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		} 
 	}	
 	
-	public static JSONObject getJsonParameter(HttpServletRequest request) {
+	/**
+	 * Returns the JSONObject for the serialized JSON document of parameter with key "query". If there no such key, 
+	 * then a JSONObject is created of the form { "key1": "value1", "key2": "value2", ... }. for the url query component
+	 * ?key1=value1&key2=value2&...
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public static JSONObject readJsonParameter(HttpServletRequest request) {
 			
 		try {
 			
@@ -98,11 +124,16 @@ public class AgentCaller {
 		}
 	}
 		
-	// TODO-AE turn from public to private
-	public static String executeGet(URIBuilder builder) {
+	public static void writeJsonParameter(HttpServletResponse response, JSONObject json) throws IOException {
+
+		response.setContentType("application/json");
+		PrintWriter out = response.getWriter();
+		String message = json.toString();
+		out.print(message);
+	}
+	
+	private static String executeGet(HttpGet request) {
 		try {
-			HttpGet request = new HttpGet(builder.build());
-						
 			logger.debug(request.toString());
 			HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 			
