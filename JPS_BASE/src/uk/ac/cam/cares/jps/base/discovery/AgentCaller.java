@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.base.discovery;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,6 +13,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +26,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class AgentCaller {
 	
+	private static final String JSON_PARAMETER_KEY = "query";
 	private static Logger logger = LoggerFactory.getLogger(AgentCaller.class);
 	private static String hostPort = null;
 	
@@ -36,7 +41,12 @@ public class AgentCaller {
 	public static String executeGet(String path) {
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(getHostPort())
 				.setPath(path);
-		return executeGet(builder);
+		try {
+			HttpGet request = new HttpGet(builder.build());
+			return executeGet(request);
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		} 
 	}
 	
 	public static String executeGet(String path, String... keyOrvalue) {
@@ -52,17 +62,78 @@ public class AgentCaller {
 		}
 				
 		try {
-			return executeGet(builder);
+			HttpGet request = new HttpGet(builder.build());
+			return executeGet(request);
 		} catch (Exception e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		} 
 	}	
+	
+	/**
+	 * Executes GET request <host>/path?query=<json> 
+	 * 
+	 * @param path
+	 * @param json
+	 * @return
+	 */
+	public static String executeGetWithJsonParameter(String path, String json) {
+		URIBuilder builder = new URIBuilder().setScheme("http").setHost(getHostPort())
+				.setPath(path);
 		
-	// TODO-AE turn from public to private
-	public static String executeGet(URIBuilder builder) {
+		builder.setParameter(JSON_PARAMETER_KEY, json);
+				
 		try {
 			HttpGet request = new HttpGet(builder.build());
-						
+			request.setHeader("Accept", "application/json");
+			request.setHeader("Content-type", "application/json");
+			
+			return executeGet(request);
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		} 
+	}	
+	
+	/**
+	 * Returns the JSONObject for the serialized JSON document of parameter with key "query". If there no such key, 
+	 * then a JSONObject is created of the form { "key1": "value1", "key2": "value2", ... }. for the url query component
+	 * ?key1=value1&key2=value2&...
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public static JSONObject readJsonParameter(HttpServletRequest request) {
+			
+		try {
+			
+			String json = request.getParameter(JSON_PARAMETER_KEY);
+			if (json != null) {
+				return new JSONObject(json);
+			} 
+			
+			JSONObject jsonobject = new JSONObject();
+			Enumeration<String> keys = request.getParameterNames();
+			while (keys.hasMoreElements()) {
+				String key = keys.nextElement();
+				String value = request.getParameter(key);
+				jsonobject.put(key, value);
+			}
+			return jsonobject;	
+			
+		} catch (JSONException e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		}
+	}
+		
+	public static void writeJsonParameter(HttpServletResponse response, JSONObject json) throws IOException {
+
+		response.setContentType("application/json");
+		PrintWriter out = response.getWriter();
+		String message = json.toString();
+		out.print(message);
+	}
+	
+	private static String executeGet(HttpGet request) {
+		try {
 			logger.debug(request.toString());
 			HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 			
@@ -92,6 +163,7 @@ public class AgentCaller {
 	    }
 	}
 	
+	@Deprecated
 	public static AgentResponse callAgent(String contextPath, AgentRequest agentRequest)  {
 		
 		Gson gson = new Gson();
@@ -114,6 +186,7 @@ public class AgentCaller {
 		}
 	}
 	
+	@Deprecated
 	public static AgentRequest getAgentRequest(HttpServletRequest req) {
 		String serializedAgentRequest = req.getParameter("agentrequest");
 		return new Gson().fromJson(serializedAgentRequest, AgentRequest.class);

@@ -16,10 +16,6 @@ import uk.ac.cam.cares.jps.building.SimpleBuildingData;
 
 public class TestBuildingQueryAgent extends TestCase {
 	
-	public static BuildingQueryPerformer createQueryPerformerForTheHague() {
-		return TestBuildingQueryPerformer.createQueryPerformerForTheHague();
-	}
-
 	public void testTheHagueAgentBuildingsFromRegion() {
 		
 		String response = AgentCaller.executeGet("/JPS/buildings/fromregion", "cityiri", BuildingQueryPerformer.THE_HAGUE_IRI, "buildinglimit", "25", 
@@ -31,11 +27,13 @@ public class TestBuildingQueryAgent extends TestCase {
 	
 	public void testTheHagueAgentBuildingsSimpleShape() {
 		
-		String buildingIRIs = "[\"" + TestBuildingQueryPerformer.BUILDING_IRI_THE_HAGUE_PREFIX + "10_buildings0.owl#BuildingGUID_83EFA0E4-FC06-46B3-8482-E38C8CF602BC\","
-				+ "\"" + TestBuildingQueryPerformer.BUILDING_IRI_THE_HAGUE_PREFIX + "10_buildings0.owl#BuildingGUID_21FFA968-1D0D-46F1-9C6A-DEB511EDE8EC\","
-				+ "\"" + TestBuildingQueryPerformer.BUILDING_IRI_THE_HAGUE_PREFIX + "10_buildings0.owl#BuildingGUID_E7EAC652-9675-4075-9B77-9119130FFC01\","
-				+ "\"" + TestBuildingQueryPerformer.BUILDING_IRI_THE_HAGUE_PREFIX + "10_buildings0.owl#BuildingGUID_0DDFE8F6-C689-411B-A40B-7AB0B322DAA4\","
-				+ "\"" + TestBuildingQueryPerformer.BUILDING_IRI_THE_HAGUE_PREFIX + "10_buildings0.owl#BuildingGUID_75633FA6-1816-4681-AED1-28477B9E8306\"]";		
+		String prefix = TestBuildingQueryPerformer.BUILDING_IRI_THE_HAGUE_PREFIX;
+		
+		String buildingIRIs = "[\"" + prefix + "10_buildings0.owl#BuildingGUID_83EFA0E4-FC06-46B3-8482-E38C8CF602BC\","
+				+ "\"" + prefix + "10_buildings0.owl#BuildingGUID_21FFA968-1D0D-46F1-9C6A-DEB511EDE8EC\","
+				+ "\"" + prefix + "10_buildings0.owl#BuildingGUID_E7EAC652-9675-4075-9B77-9119130FFC01\","
+				+ "\"" + prefix + "10_buildings0.owl#BuildingGUID_0DDFE8F6-C689-411B-A40B-7AB0B322DAA4\","
+				+ "\"" + prefix + "10_buildings0.owl#BuildingGUID_75633FA6-1816-4681-AED1-28477B9E8306\"]";		
 		
 		String response = AgentCaller.executeGet("/JPS/buildings/simpleshape", "cityiri", BuildingQueryPerformer.THE_HAGUE_IRI, "buildingiris", buildingIRIs);
 		System.out.println(response);
@@ -86,10 +84,7 @@ public class TestBuildingQueryAgent extends TestCase {
 		double lowery = 533059.02;
 		double upperx = 699959.88;
 		double uppery = 533841.67;
-		String targetFolder = startIntegrationWithPython(cityIRI, plantIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
-		//long delta = System.currentTimeMillis() - GetLastModifiedTime(targetFolder, "test.apl");
-		//assertTrue(delta <= 1000*60);
-		// TODO-AE assert statement is missing here 
+		startIntegrationWithPython(cityIRI, plantIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
 	}
 	
 	private String startIntegrationWithPython(String cityIRI, String plantIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) throws InterruptedException {
@@ -112,15 +107,12 @@ public class TestBuildingQueryAgent extends TestCase {
 		
 		String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
 		System.out.println(targetFolder);
-		String result = CommandHelper.executeCommands(targetFolder, args);
-		return targetFolder;
+		return CommandHelper.executeCommands(targetFolder, args);
 	}	
 	
 	private String retrieveBuildingDataInJSON(String cityIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
-		// TODO-AE URGENT URGENT activate the query for closest buildings from Region
-		//List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryBuildingsFromRegion(cityIRI , buildingLimit, lowerx, lowery, upperx, uppery);
-		List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryClosestBuildingsFromRegion(cityIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
-		SimpleBuildingData result = createQueryPerformerForTheHague().performQuerySimpleBuildingData(cityIRI, buildingIRIs);
+		List<String> buildingIRIs = new BuildingQueryPerformer().performQueryClosestBuildingsFromRegion(cityIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
+		SimpleBuildingData result = new BuildingQueryPerformer().performQuerySimpleBuildingData(cityIRI, buildingIRIs);
 		String argument = new Gson().toJson(result);
 		return argument;
 	}

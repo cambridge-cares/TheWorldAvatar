@@ -24,9 +24,7 @@ import uk.ac.cam.cares.jps.building.SimpleBuildingData;
 @WebServlet("/CoordinatesAndCityToADMSOutput")
 public class CoordinatesAndCityToADMSOutput extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	public static final String BUILDING_IRI_THE_HAGUE_PREFIX = "http://www.theworldavatar.com/kb/nld/thehague/buildings/";
 
-	
 	
     /**
      * @see HttpServlet#HttpServlet()
@@ -68,7 +66,10 @@ public class CoordinatesAndCityToADMSOutput extends HttpServlet {
 			targetCenter = CRSTransformer.transform(sourceCRS, targetCRS, sourceCenter);
 			double plantx = targetCenter[0];
 			double planty = targetCenter[1];
-			 
+			
+			System.out.println("==================== Berlin ====================");
+			System.out.println(cityIRI + "|" +  plantIRI + "|" + plantx + "|" + planty + "|" + buildingLimit + "|" + lowerx + "|" + lowery + "|" + upperx + "|" + uppery);
+			
 			try {
 				response.getWriter().write(startIntegrationWithPython(cityIRI, plantIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery));
 			} catch (InterruptedException e) {
@@ -81,6 +82,10 @@ public class CoordinatesAndCityToADMSOutput extends HttpServlet {
 			String plant = "http://www.theworldavatar.com/Plant-001.owl";
 			double plantx = 79831;
 			double planty = 454766;
+			System.out.println("==================== THE HAGUE ====================");
+			System.out.println(cityIRI + "|" +  plantIRI + "|" + plantx + "|" + planty + "|" + buildingLimit + "|" + lowerx + "|" + lowery + "|" + upperx + "|" + uppery);
+
+			
 			try {
 				response.getWriter().write(startIntegrationWithPython(city, plant, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery));
 			} catch (InterruptedException e) {
@@ -123,20 +128,9 @@ public class CoordinatesAndCityToADMSOutput extends HttpServlet {
 	}
 	
 	private String retrieveBuildingDataInJSON(String cityIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
-		// TODO-AE URGENT URGENT activate the query for closest buildings from Region
-		//List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryBuildingsFromRegion(cityIRI , buildingLimit, lowerx, lowery, upperx, uppery);
-		List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryClosestBuildingsFromRegion(cityIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
-		SimpleBuildingData result = createQueryPerformerForTheHague().performQuerySimpleBuildingData(cityIRI, buildingIRIs);
+		List<String> buildingIRIs = new BuildingQueryPerformer().performQueryClosestBuildingsFromRegion(cityIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
+		SimpleBuildingData result = new BuildingQueryPerformer().performQuerySimpleBuildingData(cityIRI, buildingIRIs);
 		String argument = new Gson().toJson(result);
 		return argument;
 	}
-	
-	public static BuildingQueryPerformer createQueryPerformerForTheHague() {
-		// TODO-AE URGENT remove this as soon as we don't need the old KB for The Hague anymore
-		if (BUILDING_IRI_THE_HAGUE_PREFIX.equals("http://www.theworldavatar.com/Building/")) {
-			return new BuildingQueryPerformer("www.theworldavatar.com", 80, "/damecoolquestion/buildingsLite/query");
-		}
-		return new BuildingQueryPerformer();
-	}
-
 }

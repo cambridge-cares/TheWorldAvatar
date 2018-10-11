@@ -1,0 +1,82 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:msm="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#">
+  <msm:Service rdf:about="http://www.theworldavatar.com/kb/agents/Service__RegionToCity.owl#Service">
+    <msm:hasOperation>
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__RegionToCity.owl#Operation_0af48c6c-30c0-479b-8f66-6ec05edc9730">
+        <msm:hasOutput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__RegionToCity.owl#MessageContent_1548f8b4-7087-4f7c-994d-6b7a83c563d9">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__RegionToCity.owl#MessagePart_9d44c3e1-746c-4d35-8c49-b264ad8491ac">
+                <msm:hasName>city</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://dbpedia.org/ontology/city</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasOutput>
+        <msm:hasInput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__RegionToCity.owl#MessageContent_6298a3e8-5db2-4b6d-8015-d01d902d7d0e">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__RegionToCity.owl#MessagePart_4430a0e4-a721-4942-af2a-332b47249c09">
+                <msm:hasMandatoryPart>
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__RegionToCity.owl#MessagePart_a1d3a313-7a9e-4552-af75-79691f3fdf8e">
+                    <msm:hasName>srsname</msm:hasName>
+                    <msm:isArray>false</msm:isArray>
+                    <msm:hasType>http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#srsname</msm:hasType>
+                  </msm:MessagePart>
+                </msm:hasMandatoryPart>
+                <msm:hasMandatoryPart>
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__RegionToCity.owl#MessagePart_6af87db7-9be5-4c15-b33f-ffc72a4dd975">
+                    <msm:hasMandatoryPart>
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__RegionToCity.owl#MessagePart_df067e1a-8d74-4b61-8129-8768c7623f24">
+                        <msm:hasName>uppery</msm:hasName>
+                        <msm:isArray>false</msm:isArray>
+                        <msm:hasType>https://www.w3.org/2001/XMLSchema#double</msm:hasType>
+                      </msm:MessagePart>
+                    </msm:hasMandatoryPart>
+                    <msm:hasMandatoryPart>
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__RegionToCity.owl#MessagePart_70f053db-8685-4ca7-9fe1-63772ad2e0c3">
+                        <msm:hasName>upperx</msm:hasName>
+                        <msm:isArray>false</msm:isArray>
+                        <msm:hasType>https://www.w3.org/2001/XMLSchema#double</msm:hasType>
+                      </msm:MessagePart>
+                    </msm:hasMandatoryPart>
+                    <msm:hasName>uppercornerpoint</msm:hasName>
+                    <msm:isArray>false</msm:isArray>
+                    <msm:hasType>http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#upperCornerPoint</msm:hasType>
+                  </msm:MessagePart>
+                </msm:hasMandatoryPart>
+                <msm:hasMandatoryPart>
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__RegionToCity.owl#MessagePart_d9eb7898-28c7-43ce-b3c9-3c1d528b4733">
+                    <msm:hasMandatoryPart>
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__RegionToCity.owl#MessagePart_756eaefd-aebd-4cd6-8712-a9aec7052114">
+                        <msm:hasName>lowery</msm:hasName>
+                        <msm:isArray>false</msm:isArray>
+                        <msm:hasType>https://www.w3.org/2001/XMLSchema#double</msm:hasType>
+                      </msm:MessagePart>
+                    </msm:hasMandatoryPart>
+                    <msm:hasMandatoryPart>
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__RegionToCity.owl#MessagePart_cd530655-4402-4ebb-b8c5-0da7bd309be7">
+                        <msm:hasName>lowerx</msm:hasName>
+                        <msm:isArray>false</msm:isArray>
+                        <msm:hasType>https://www.w3.org/2001/XMLSchema#double</msm:hasType>
+                      </msm:MessagePart>
+                    </msm:hasMandatoryPart>
+                    <msm:hasName>lowercornerpoint</msm:hasName>
+                    <msm:isArray>false</msm:isArray>
+                    <msm:hasType>http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#lowerCornerPoint</msm:hasType>
+                  </msm:MessagePart>
+                </msm:hasMandatoryPart>
+                <msm:hasName>region</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasInput>
+        <msm:hasHttpUrl>http://www.theworldavatar.com/JPS/RegionToCity</msm:hasHttpUrl>
+      </msm:Operation>
+    </msm:hasOperation>
+  </msm:Service>
+</rdf:RDF>
