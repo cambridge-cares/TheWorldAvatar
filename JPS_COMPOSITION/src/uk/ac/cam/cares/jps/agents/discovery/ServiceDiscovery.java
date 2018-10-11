@@ -5,25 +5,42 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import uk.ac.cam.cares.jps.agents.ontology.ServiceReader;
+import uk.ac.cam.cares.jps.base.config.KeyValueServer;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 public class ServiceDiscovery {
 
+	public static final String KEY_DIR_KB_AGENTS = "absdir.jpsdata.knowledgebase.agents";
+	private static ServiceDiscovery instance = null;
+	
 	public ArrayList<Service> services;
 	public Map<String,Service> httpToServiceMap;
 	
-	public ServiceDiscovery() throws Exception {
-		
+	public static synchronized ServiceDiscovery getInstance() {
+		if (instance == null) {
+			instance = new ServiceDiscovery();
+		}
+		return instance;
+	}
+	
+	private ServiceDiscovery() {
+		init();
+	}
+	
+	private synchronized void init() {	
 		this.services = new ArrayList<Service>();
 		this.httpToServiceMap = new HashMap<String,Service>();
-		this.loadServices();
+		String directory = KeyValueServer.get(KEY_DIR_KB_AGENTS);
+		this.loadServices(directory);
 		this.generateHttpToServiceMap();
 	}	
 	
@@ -51,9 +68,8 @@ public class ServiceDiscovery {
 		return result;
 	}
 	
-	public void loadServices() throws Exception {
-		 this.services = readTheServicePool();
- 		 
+	private void loadServices(String directory) {
+		 this.services = readTheServicePool(directory);
 	}
 	
 	public void generateHttpToServiceMap() {
@@ -64,10 +80,9 @@ public class ServiceDiscovery {
 		return this.httpToServiceMap.get(url);
 	}
 	
-	public static ArrayList<Service> readTheServicePool() throws Exception {
+	private ArrayList<Service> readTheServicePool(String directory) {
 
 		ServiceReader reader = new ServiceReader();
- 		String directory = "C:\\Users\\nasac\\Documents\\TMP\\newAgentsMSM";
  		ArrayList<Service> servicesLoaded = new ArrayList<Service>();
  		File[] files = new File(directory).listFiles();
  		
@@ -83,12 +98,16 @@ public class ServiceDiscovery {
  	 			} catch (IOException e) {
  	 				e.printStackTrace();
  	 			}
- 	 			List<Service> services = reader.parse(wholeContent, "http://www.theworldavatar.com");
+ 	 			List<Service> services;
+				try {
+					services = reader.parse(wholeContent, "http://www.theworldavatar.com");
+				} catch (URISyntaxException e) {
+					throw new JPSRuntimeException(e.getMessage(), e);
+				}
  	 			servicesLoaded.addAll(services);
  			}
  		}
-		return servicesLoaded;
- 		 
+		return servicesLoaded;	 
 	}
 	
 }

@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agents.ontology;
+package uk.ac.cam.cares.jps.agents.test;
 
 import java.io.FileNotFoundException;
 import java.net.URI;
@@ -8,6 +8,9 @@ import java.util.List;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
+import uk.ac.cam.cares.jps.agents.ontology.ServiceBuilder;
+import uk.ac.cam.cares.jps.agents.ontology.ServiceReader;
+import uk.ac.cam.cares.jps.agents.ontology.ServiceWriter;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
 import uk.ac.cam.cares.jps.composition.servicemodel.Operation;
@@ -295,7 +298,7 @@ public class TestAgentOntology extends TestCase {
 	public void testServiceDiscovery() throws Exception {
 		
 		String fileDirectory = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres/serviceowlfiles";
-		ServiceDiscovery discovery = new ServiceDiscovery();
+		ServiceDiscovery discovery = ServiceDiscovery.getInstance();
 		List<MessagePart> inputs = createMessageParts("op2inputrefuri1");
 		List<Service> result = discovery.getAllServiceCandidates(inputs, new ArrayList<Service>());
 		

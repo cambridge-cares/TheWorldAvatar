@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agents.ontology;
+package uk.ac.cam.cares.jps.agents.test;
 
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
@@ -6,6 +6,9 @@ import java.net.URISyntaxException;
 import com.google.gson.Gson;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.agents.ontology.ServiceBuilder;
+import uk.ac.cam.cares.jps.agents.ontology.ServiceReader;
+import uk.ac.cam.cares.jps.agents.ontology.ServiceWriter;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 public class TestAgentDescriptions extends TestCase {
@@ -44,8 +47,8 @@ public class TestAgentDescriptions extends TestCase {
 	
 	private void backAndforthAndWrite(Service service, String name) throws URISyntaxException, FileNotFoundException {
 		
-		new ServiceWriter().writeAsOwlFile(service, name, "C:\\Users\\nasac\\Documents\\TMP\\newAgentsMSM");
-		//new ServiceWriter().writeAsOwlFile(service, name, "C:\\Users\\Andreas\\TMP\\newAgentsMSM");
+		//new ServiceWriter().writeAsOwlFile(service, name, "C:\\Users\\nasac\\Documents\\TMP\\newAgentsMSM");
+		new ServiceWriter().writeAsOwlFile(service, name, "C:\\Users\\Andreas\\TMP\\newAgentsMSM");
 		
 		
 		service.setUri(null);

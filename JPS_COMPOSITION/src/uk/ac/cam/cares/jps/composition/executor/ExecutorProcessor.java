@@ -31,7 +31,7 @@ public class ExecutorProcessor {
 		this.map = new JSONObject();
 	
 		// Initiate a new ServiceDiscoveryPool
-		this.discovery = new ServiceDiscovery();
+		this.discovery = ServiceDiscovery.getInstance();
 	}
 	
 	public ExecutorProcessor(JSONObject compositionResult) throws Exception {
@@ -47,7 +47,7 @@ public class ExecutorProcessor {
 		
 		this.resultPool = new HashMap<String, ArrayList<String>>();
 		this.map = new JSONObject();
-		this.discovery = new ServiceDiscovery();
+		this.discovery = ServiceDiscovery.getInstance();
 
 	}
 	
