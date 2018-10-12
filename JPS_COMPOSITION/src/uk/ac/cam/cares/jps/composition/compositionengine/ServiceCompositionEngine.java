@@ -16,9 +16,7 @@ import uk.ac.cam.cares.jps.composition.util.OptimalPathSearcher;
 public class ServiceCompositionEngine {
 
 	public String fullHostName = "";
-	public String fileDirectory = null;
 	public Graph newGraph;
-	private ServiceDiscovery serviceDiscovery;
 	private ArrayList<MessagePart> inputsToAppend;
 	private ArrayList<URI> outputsRequired;
 
@@ -26,15 +24,9 @@ public class ServiceCompositionEngine {
 	public boolean OutputRequirementMet = false;
 	
 	public ServiceCompositionEngine(Service compositeAgent, String host) throws Exception {
-		this(compositeAgent, host, "C:/Users/nasac/Documents/GIT/JPS_COMPOSITION"  + "/testres/serviceowlfiles");
-	}
-	
-	public ServiceCompositionEngine(Service compositeAgent, String host, String fileDirectory) throws Exception {
 		this.newGraph = new Graph(new URI("Something"));
 		this.fullHostName = host;
-		this.fileDirectory = fileDirectory;
 		this.newGraph.initialInputs = (ArrayList<MessagePart>) compositeAgent.getAllInputs();
-		this.serviceDiscovery = new ServiceDiscovery();
 		this.inputsToAppend = new ArrayList<MessagePart>();
 		this.outputsRequired = new ArrayList<URI>();
 
@@ -61,7 +53,7 @@ public class ServiceCompositionEngine {
 		
 		this.newGraph.inputPool.addAll(this.inputsToAppend); // the input come from the result from last iteration
 		inputsToAppend = new ArrayList<MessagePart>();
-		ArrayList<Service> servicesToAppend = this.serviceDiscovery.getAllServiceCandidates(this.newGraph.inputPool,
+		ArrayList<Service> servicesToAppend = ServiceDiscovery.getInstance().getAllServiceCandidates(this.newGraph.inputPool,
 				this.newGraph.servicePool);
 		 
 		

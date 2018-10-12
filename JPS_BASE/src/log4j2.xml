@@ -9,10 +9,16 @@
 			</Policies>
 			<DefaultRolloverStrategy max="10"/>
 		</RollingFile>
+		
+		<Console name="STDOUT">
+			<PatternLayout pattern="%m%n"/>
+		</Console>
+		
 	</Appenders>
 	
 	<Loggers>
 		<Root level="info">
+			<AppenderRef ref="STDOUT"/>
 			<AppenderRef ref="JPSROLLING"/>
 		</Root>
 	</Loggers>
