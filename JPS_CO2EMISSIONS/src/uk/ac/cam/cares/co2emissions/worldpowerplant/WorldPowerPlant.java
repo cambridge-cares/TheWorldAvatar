@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.worldpowerplant;
+package uk.ac.cam.cares.co2emissions.worldpowerplant;
 
 import java.io.IOException;
 import java.util.HashMap;

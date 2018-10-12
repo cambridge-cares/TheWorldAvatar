@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.surrogatemodel;
+package uk.ac.cam.cares.co2emissions.surrogatemodel;
 
 import java.io.IOException;
 import java.util.HashMap;
