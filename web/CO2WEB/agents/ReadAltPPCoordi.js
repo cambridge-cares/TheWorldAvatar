@@ -6,36 +6,36 @@ var log4js = require('log4js');
 var logger = log4js.getLogger();
 logger.level = 'debug';
 
-const xmlParser = require('./fileConnection'),
+const xmlParser = require('./fileConnection2Way'),
     rdfParser = require('./rdfParser'),
     config = require('../config'),
     async = require('async'),
     path = require('path'),
     fs = require('graceful-fs'),
-    altfolder  = path.join(config.root , "ppAl"),
-    faketop = path.join(altfolder , "FakeParent.owl");
+    url = require('url'),
+    URL = url.URL,
+    altfolder  = new URL(  "/ppAl", config.baseUri),
+    faketop = altfolder+"/FakeParent.owl",
+    processor = Object.create(xmlParser);
+
 
 function readAltPPCoordi(callback) {
     //readPPChildren
     //request on each to get geo info
     logger.debug("faketop "+faketop)
-    fs.readFile(faketop, function (err, file) {
-        if(err){
-            callback(err);
-            logger.debug("ERr alt pp: " + err)
-            throw err;
-            return;
-        };
-        try{
-            let root = xmlParser.parseXMLFile(file);
-            let PPchildren = xmlParser.getPPChildren(root);
+    processor.init({});
+    processor.doConnect(faketop,0).then((PPchildren)=>{
+
+
             logger.debug("alt pp children:")
             logger.debug(PPchildren)
-            //now, read each file, parse as rdf, query its geographic information
+        PPchildren = PPchildren.map((item)=>item['target'])
+    
+        //now, read each file, parse as rdf, query its geographic information
             let listUrinLoc = xmlParser.uriList2DiskLoc(PPchildren,config.root);
 
-            logger.debug("!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            logger.debug(listUrinLoc)
+           // logger.debug("!!!!!!!!!!!!!!!!!!!!!!!!!!")
+          //  logger.debug(listUrinLoc)
 
             async.concat(listUrinLoc, queryCoord , function (err, dataset) {
                 if(err){
@@ -62,9 +62,6 @@ function readAltPPCoordi(callback) {
             });
 
 
-        }catch(err){
-            callback(err)
-        }
 
     });
 
@@ -91,5 +88,10 @@ function readAltPPCoordi(callback) {
 
 }
 
-
+readAltPPCoordi((err, result)=>{
+    "use strict";
+    if(err) console.log(err)
+    console.log(result)
+    
+})
 module.exports = readAltPPCoordi;

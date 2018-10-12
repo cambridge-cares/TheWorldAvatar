@@ -42,9 +42,3 @@ function  getCoordi(topnode, callback) {
 
 
 module.exports = getCoordi
-
-getCoordi(config.b2Node, function (err, result) {
-
-    console.log(err)
-    console.log(result)
-})

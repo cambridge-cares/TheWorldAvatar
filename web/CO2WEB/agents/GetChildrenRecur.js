@@ -20,7 +20,6 @@ var config = require('../config.js');
 const parser = require('../agents/rdfParser');
 
 //var folderLocation = config.root;
-let request = require('request');
 
 
 /*constructor*/

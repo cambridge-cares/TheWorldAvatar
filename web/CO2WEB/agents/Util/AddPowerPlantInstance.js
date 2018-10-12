@@ -54,22 +54,22 @@ function addPowerPlantInstance() {
 
 
 
-    function getPPInstance(ppName) {
-         ppName = ppName.replace(/&/g, "&amp;")
-        ppName = ppName.replace(/.owl$/g, "" )
-        var ppTemp = `   <system:hasSubsystem>
-      <PowerPlant rdf:ID="Swanbank_B_Coal_Power_Plant_Australia">
+
+}
+
+function getPPInstance(ppName) {
+    ppName = ppName.replace(/&/g, "&amp;")
+    ppName = ppName.replace(/.owl$/g, "" )
+    var ppTemp = `   <system:hasSubsystem>
+      <owl:NamedIndividual rdf:ID="Swanbank_B_Coal_Power_Plant_Australia">
         <system:hasConceptualRepresentation>
           <system:ConceptualModel rdf:ID="Swanbank_B_Coal_Power_Plant_Australia">
             <system:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ppAl/Swanbank_B_Coal_Power_Plant_Australia.owl</system:hasIRI>
           </system:ConceptualModel>
         </system:hasConceptualRepresentation>
-      </PowerPlant>
+      </owl:NamedIndividual>
     </system:hasSubsystem>`;
-
-        return ppTemp.replace(/Swanbank_B_Coal_Power_Plant_Australia/g, ppName);
-    }
-
+    
+    return ppTemp.replace(/Swanbank_B_Coal_Power_Plant_Australia/g, ppName);
 }
-
-addPowerPlantInstance();
+//addPowerPlantInstance();

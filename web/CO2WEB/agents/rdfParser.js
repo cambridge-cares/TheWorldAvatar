@@ -136,7 +136,7 @@ RdfParser.RdfParser.prototype =  {
                 callback(err);
                 return;
             }
-            //logger.debug(data)
+            console.log(data)
             data.forEach(function (item) {
                 let value = item['?value']['value'];
                 let name = item['?cName']['value']
@@ -193,5 +193,29 @@ RdfParser.RdfParser.prototype =  {
 };
 
 
-
+RdfParser.unwrapResult = function (result, varNames) {
+    if(!('head' in result) || !('results' in result) || !('bindings' in result['results']) || result['results']['bindings'].length === 0){
+        return null
+    }
+    let unwrapped = {}
+    
+    for(let varname of varNames){
+        console.log(result['head']['vars'])
+        console.log(varname)
+        if(!(result['head']['vars'].includes(varname))){
+            return null
+        }
+    unwrapped[varname] = []
+    }
+    //unwrap
+    console.log('upwrap')
+    console.log(unwrapped)
+    for(let line of result['results']['bindings']){
+        for(let varname of varNames){
+         unwrapped[varname].push(line[varname]['value']);
+        }
+    }
+    
+    return unwrapped;//return unwrapped result
+}
 module.exports = RdfParser;
