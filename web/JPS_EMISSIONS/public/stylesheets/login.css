@@ -1,0 +1,139 @@
+main {
+    /*position: relative;*/
+    height: 100%;
+    min-height: 30rem;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    position: relative;
+}
+
+#login-container {
+    position: absolute;
+    min-width: 500px;
+    width: 20%;
+    top: 10rem;
+
+    padding: 20px;
+    resize: both;
+    /*overflow: auto;*/
+}
+
+#login-header {
+    font-size: 4rem;
+    font-weight: bold;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid #ddd;
+}
+
+.entry {
+    margin: 2rem 0 0.5rem 0;
+    min-height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.entry:nth-child(3) {
+    margin-top: 10px;
+}
+
+label {
+    color: grey;
+    margin: 0;
+}
+
+input {
+    min-width: 25rem;
+    line-height: 2.2rem;
+
+    -webkit-transition: all 0.30s ease-in-out;
+    -moz-transition: all 0.30s ease-in-out;
+    -o-transition: all 0.30s ease-in-out;
+    outline: none;
+    padding: 3px 0px 3px 3px;
+    margin: 5px 1px 3px 0px;
+    border: 1px solid #DDDDDD;
+
+    border-radius: 2px;
+}
+
+input:focus {
+    box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+    padding: 3px 0px 3px 3px;
+    margin: 5px 1px 3px 0px;
+    border: 1px solid rgba(81, 203, 238, 1);
+}
+
+.input-empty {
+    box-shadow: 0 0 5px rgba(238, 26, 16, 1);
+    padding: 3px 0px 3px 3px;
+    margin: 5px 1px 3px 0px;
+    border: 1px solid rgba(238, 26, 16, 1);
+}
+
+.after-entry {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.error-message {
+    min-width: 25rem;
+    color: rgba(238, 26, 16, 1);
+    opacity: 0;
+}
+
+.error-message-show {
+    opacity: 1;
+}
+
+button {
+    margin-top: 2rem;
+    width: 100px;
+    background-color: #10616C;
+    color: white;
+    padding: 7px 0;
+    border: none;
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.5s;
+
+}
+    button span {
+        cursor: pointer;
+        display: inline-block;
+        position: relative;
+        transition: 0.5s;
+    }
+
+    button span:after {
+        content: '\00bb';
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        right: -20px;
+        transition: 0.5s;
+    }
+
+    button:not(:focus):hover span {
+        padding-right: 25px;
+    }
+
+    button:not(:focus):hover span:after {
+        opacity: 1;
+        right: 0;
+    }
+
+    button:active span:after{
+        right: -10px;
+        opacity: 0;
+        transition: 0.2s;
+    }
+    button:active span{
+        padding-right: 0;
+    }
+
