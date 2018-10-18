@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JPS Power Plant Emissions</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./stylesheets/styles.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="./javascripts/index.js"></script>
+</head>
+<body>
+    <div class="jumbotron text-center" id="top-banner">
+        <div class="row">
+            <a href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
+                <img src="./images/cam_lang_negativ1%20NEW_0.png"/>
+            </a>
+        </div>
+        <div class="row">
+            <h1 id="title">Emissions</h1>
+            <span id="readme-button">?</span>
+            <span id="readme-text">Select one of the carbon prices and one of the
+                technology learning rate before clicking on the 'Start Simulation'
+                button to run the analysis.
+            </span>
+        </div>
+        <p id="description"></p>
+    </div>
+
+    <div class="row">
+        <form>
+            <label for="carbon-price">Carbon Price:</label>
+            <select id="carbon-price" name="carbon-price">
+                <option value="0">0</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+            </select>
+
+            <label for="technology-learning-rate">Technology Learning Rate:</label>
+            <select id="technology-learning-rate" name="technology-learning-rate">
+                <option value="low">low</option>
+                <option value="middle">middle</option>
+                <option value="high">high</option>
+            </select>
+
+            <button id="start">Start simulation</button>
+        </form>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-3 col-lg-offset-5">
+            <img src="" id="annual-baseline">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 col-md-12">
+            <div class="row main">
+                <div class="col-lg-6 col-md-6 col-sm-6 emission-fig">
+                    <img class="emission-fig" id="top-left" src="/images/1_top_ten_emission_countries_fossil_ele_cap.png">
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 emission-fig">
+                    <img class="emission-fig" id="top-right" src="/images/1_top_ten_emission_countries_fossil_ele_cap_per.png">
+                </div>
+            </div>
+            <div class="row main">
+                <div class="col-lg-6 col-md-6 col-sm-6 emission-fig">
+                    <img class="emission-fig" id="bottom-left" src="/images/1_top_ten_emission_countries_fossil_ele_gen.png">
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 emission-fig">
+                    <img class="emission-fig" id="bottom-right" src="/images/1_top_ten_emission_countries_fossil_ele_gen_per.png">
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-12">
+            <div class="row main">
+                <div class="col-lg-6 col-md-6 col-sm-6 carbon">
+                    <img class="carbon" id="annual" src="">
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 carbon">
+                    <img class="carbon" id="avoidance_cost" src="">
+                </div>
+            </div>
+            <div class="row main">
+                <div class="col-lg-6 col-md-6 col-sm-6 carbon">
+                    <img class="carbon" id="lock" src="">
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 carbon">
+                    <img class="carbon" id="price" src="">
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

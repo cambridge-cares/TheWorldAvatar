@@ -12,9 +12,9 @@ var config = {};
 
 config.baseUri = "http://www.theworldavatar.com"
 
-configDevelop();
-//configDeploy();
-config.worldNode = path.join(config.root, "TheWorld.owl");
+//configDevelop();
+configDeploy();
+config.worldNode = path.join(config.root , "kb/TheWorld.owl");
 config.ppNode = path.join(config.root , "kb/powerplants/WorldPowerPlants.owl");
 config.jurongNode = path.join(config.root ,"kb/sgp/jurongisland/JurongIsland.owl");
 config.b3Node = path.join(config.root , "kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl");
@@ -58,7 +58,7 @@ function configDeploy() {
     config.port = 82;//port for deploy
     config.registerUrl = "http://10.25.188.104";
     config.changeUrl = "http://www.theworldavatar.com:82";
-    config.ppFolder = config.root
+    config.ppFolder = path.join(config.root , "kb/powerplants");
 	//config.ppFolder = path.normalize("C:/TOMCAT/webapps/ROOT/kb/powerplants");
 
 }

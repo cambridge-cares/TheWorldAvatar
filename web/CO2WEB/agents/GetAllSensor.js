@@ -24,7 +24,7 @@ const SPA = `
     select distinct  ?child
     where {
     ?x rdf:type owl:NamedIndividual;
-    industrialPark:hasIRI ?child.    
+    ?x industrialPark:hasIRI ?child.    
     }
 `;
 /***********************************/
@@ -34,12 +34,11 @@ function getAllSensors(callback) {
     //readPPChildren
     //request on each to get geo info
     
-    processor.init({})
     
-    processor.doConnect(bmsNode,0).then((children)=>{
+    processor.process({topnode:bmsNode, unpack:true}).then((children)=>{
 
-            logger.debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            logger.debug(children);
+            console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+             console.log(children);
 
             children = children.map((conn)=>{return conn.target});
             let sschildren = children.filter((uri)=>{return uri.toLowerCase().includes("sensor")});

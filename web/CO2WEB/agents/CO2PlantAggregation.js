@@ -8,7 +8,7 @@ var logger = log4js.getLogger();
 logger.level = 'debug';
 
 const config =  require('../config');
-const worldNode = config.worldNode;
+const worldNode = config.ppNode;
 const xmlParser = require("./fileConnection2Way");
 const parser = require('./rdfParser');
 const async = require('async');
@@ -16,26 +16,24 @@ const fs =require('graceful-fs')
 const util = require('util');
 const path = require('path')
 const processor = Object.create(xmlParser);
-
+const pprefix = "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#";
 
 var qsTypeCountry = `
-    PREFIX system_realization: <http://www.theworldavatar.com/OntoEIP/system_aspects/system_realization.owl#>
-        PREFIX system_v1: <http://www.theworldavatar.com/OntoEIP/upper_level/system_v1.owl#>
-     PREFIX j.0: <http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/technical_system.owl#>
-     PREFIX p14: <http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#>
-          PREFIX p9: <http://www.theworldavatar.com/OntoEIP/supporting_concepts/space_and_time_v1.owl#>
+        PREFIX system_v1: <http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#>
+     PREFIX j.0: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+     PREFIX p14: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
+          PREFIX p9: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
 
         select distinct ?Power_Plant_Name ?Fuel_Type ?Country
         where {
-        ?Power_Plant_Name a p14:PowerGenerator;
+        ?Power_Plant_Name a p14:PowerPlant ;
     j.0:realizes ?Fuel_Type.
 
-        ?Power_Plant_Name a p14:PowerGenerator;
-    p9:hasAddress ?x.
-        ?x system_v1:hasName ?Country.
+        ?Power_Plant_Name a p14:PowerPlant ;
+    p9:hasAddress ?Country.
 }`;
-var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/OntoEIP/system_aspects/system_realization.owl#>         
-         PREFIX j.2: <http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#>         
+         PREFIX j.2: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
 
      select distinct ?Power_Plant ?Capacity
        where {                         
@@ -48,7 +46,7 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
 
     function getPlantAggregation(callback) {
         var result = {};
-        const ppRoot =config.ppFolder;
+        const ppRoot =config.root;
         getWorldPPChild(function (err, ppraw) {
             if (err) {
                 callback(err);
@@ -69,8 +67,11 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
                 plantDataO.forEach((item)=>{if(item){plantData.push(item)}})
                 
                 plantData.forEach(function (plantDatum) {
-                    plantDatum.emission = calculateEmission(plantDatum.type, plantDatum.capacity);
+					if(plantDatum){
+                    plantDatum.emission = calculateEmission(plantDatum.type, parseFloat(plantDatum.capacity));
+					//console.log(plantDatum.emission);
                  sum+=plantDatum.emission;
+					}
                 });
                 //Calculate Sum
                 //Group by countrie
@@ -121,21 +122,21 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
                     //cal new ns cap
                     //cal new ns emission
                     //sum up
-                    if(!this.capBycountrySum[country] || !this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration"]){
+                    if(!this.capBycountrySum[country] || !this.capBycountrySum[country][pprefix+"CoalGeneration"]){
                          return 0;
                     }
 
-                    let oldCalCap = this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration"];
-                    let newCalCap = this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration"] * (1-percentage/100) || 0;
-                    let oldNSCap = this.capBycountrySum[country]["http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#NaturalGasGeneration"];
-                    let oldEmission = calculateEmission("http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration", oldCalCap)+calculateEmission("http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#NaturalGasGeneration", oldNSCap);
+                    let oldCalCap = this.capBycountrySum[country][pprefix+"CoalGeneration"];
+                    let newCalCap = this.capBycountrySum[country][pprefix+"CoalGeneration"] * (1-percentage/100) || 0;
+                    let oldNSCap = this.capBycountrySum[country][pprefix+"NaturalGasGeneration"];
+                    let oldEmission = calculateEmission(pprefix+"CoalGeneration", oldCalCap)+calculateEmission(pprefix+"NaturalGasGeneration", oldNSCap);
 
-                    let newCalEmi = calculateEmission("http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration", newCalCap);
+                    let newCalEmi = calculateEmission(pprefix+"CoalGeneration", newCalCap);
                     logger.debug(newCalEmi);
 
                     let newNSCap = oldNSCap+ newCalCap - oldCalCap;
                     logger.debug(newNSCap);
-                    let newNSEmi = calculateEmission("http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#NaturalGasGeneration", newNSCap);
+                    let newNSEmi = calculateEmission(pprefix+"NaturalGasGeneration", newNSCap);
                     logger.debug(newNSEmi);
 
                     return oldEmission - newCalEmi - newNSEmi ;
@@ -158,16 +159,24 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
             processor.init({});
     
             processor.doConnect(worldNode,0).then((PPchildren)=>{
-                var PP =  PPchildren.map((item)=>item['target'])
+			
+                var PP =  PPchildren.map((item)=> normURI(item['target']));
+				//console.log('CO2PlantAggregation: found plant')
+				//console.log(PP)
                 callback(null, PP);
             })
         }
 
 
-
+        function normURI(uri){
+			let sec = uri.split('#');
+			return sec[0];
+		}
         function query(item, callback) {
+			///console.log('read: '+item.diskLoc);
             fs.readFile(item.diskLoc, function (err, file) {
                 if(err){
+					console.log(err);
                     callback(null,null);
                 return;
                 }
@@ -179,6 +188,7 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
                         return;
                     }
                     //logger.debug(result);
+                      //  console.log('query result:' + result);
 
                     if(result.length ===2 && result[0][0] &&result[0][0]['?Fuel_Type'] &&result[0][0]['?Country'] && result[1][0]['?Capacity']){
                         //logger.debug("Extract: " +  result[0][0]['?Fuel_Type'])
@@ -186,7 +196,6 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
 
                     } else {
                         // logger.debug("!!!!!!!!!!!!!!!!!!!!!!query: "+uri)
-                        // logger.debug(result);
                         callback(null,null)
                     }
                 });
@@ -197,12 +206,15 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
 
         function calculateEmission(type, capacity) {
             switch (type) {
-                case "http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#CoalGeneration":
+                case "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#CoalGeneration":
                     return capacity * 1000 * 0.8 * 0.001;
-                case "http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#NaturalGasGeneration":
+                case "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGasGeneration":
+                    return capacity * 750 * 0.5 * 0.001;
+					                case "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#OilGeneration":
                     return capacity * 750 * 0.5 * 0.001;
                 default:
-                    logger.debug("no such type")
+                    logger.debug("no such type");
+					return 0;
 
             }
         }

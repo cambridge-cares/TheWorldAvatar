@@ -18,7 +18,7 @@ const xmlParser = require('./fileConnection2Way'),
 function readPPCoordi(callback) {
     //readPPChildren
     //request on each to get geo info
-    processor.init({extraQuery:' ?a a system:ConceptualModel.', outer:'PowerPlant'});
+    processor.init({});
 
     processor.doConnect(worldNode,0).then((PPchildren)=>{
  
@@ -26,7 +26,7 @@ function readPPCoordi(callback) {
             PPchildren = PPchildren.map((item)=>item['target'])
 			//console.log("ppcildren= "+PPchildren);
             //now, read each file, parse as rdf, query its geographic information
-            let listUrinLoc = xmlParser.uriList2DiskLoc(PPchildren,config.ppFolder);
+            let listUrinLoc = xmlParser.uriList2DiskLoc(PPchildren,config.root);
 
 
             async.concat(listUrinLoc, queryCoord , function (err, dataset) {
