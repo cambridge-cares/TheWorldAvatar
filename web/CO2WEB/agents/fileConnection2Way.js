@@ -36,13 +36,14 @@ const { Readable,PassThrough } = require('stream');
 var owlProcessor = {
 PREDICATE:['Eco-industrialPark:hasIRI','system:hasIRI','system:hasSubsystem'],
 queryStr:`
-PREFIX Eco-industrialPark: <http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#>
-PREFIX system: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+PREFIX Eco-industrialPark: <http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#>
+PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
     select distinct ?uri
     where {
-    {?a Eco-industrialPark:hasIRI ?uri;}
+	{?a system:hasSubsystem ?uri;}    
     UNION {?a system:hasIRI ?uri;}
+	UNION {?a Eco-industrialPark:hasIRI ?uri;}
      @placeholder@
      }
 `,
@@ -324,6 +325,7 @@ owlProcessor.queryPromise = function (loc, type, level) {
             console.log('query for end point')
             return new Promise((resolve, reject)=>{
                 //run query against endpoint
+				console.log(loc);
                 request.get(loc, {qs:{'query':self.queryStr,'output':'json'},timeout: 1500, agent: false}, function (err, res, body) {
                     console.log('endpoint resquest result')
                     if (err||!body||body===undefined||body.includes('<!doctype html>')) {
