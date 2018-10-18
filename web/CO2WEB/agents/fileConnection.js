@@ -396,8 +396,8 @@ owlProcessor.getChildren = function(root) {
         // logger.debug(curi.name());
         if(curi.text().trim()!==""){
             children.push(curi.text().trim());//push to targets list
-        } else if(curi.attr("resource").value()){
-            children.push(curi.attr("resource").value());//push to targets list
+        } else if(curi.attr("rdf:resource").value()){
+            children.push(curi.attr("rdf:resource").value());//push to targets list
         }
 
 
