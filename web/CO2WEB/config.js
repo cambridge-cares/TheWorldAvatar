@@ -58,7 +58,7 @@ function configDeploy() {
     config.port = 82;//port for deploy
     config.registerUrl = "http://10.25.188.104";
     config.changeUrl = "http://www.theworldavatar.com:82";
-    config.ppFolder = config.root
+    config.ppFolder = path.join(config.root , "kb/powerplants");
 	//config.ppFolder = path.normalize("C:/TOMCAT/webapps/ROOT/kb/powerplants");
 
 }

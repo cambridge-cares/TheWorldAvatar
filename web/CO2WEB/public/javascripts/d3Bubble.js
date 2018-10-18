@@ -22,13 +22,13 @@ function getIdFromNameInResults(name) {
 var FileLinkMap = function (options) {
     var width = $(document).width(),
         height = $(document).height() > 2000 ? $(document).height() : 2000,
-        charge = options.charge || -300,
-        distance = options.distance || 30,
+        charge = options.charge || -500,
+        distance = options.distance || 50,
         nodeR = options.nodeR || 15,
         textSize = options.textSize || 5;
     
     
-    var colorList = ["#FFFF00", "#1CE6FF", "#FF34FF", "#FF4A46", "#008941", "#006FA6", "#A30059",
+    var colorList = [ "#1CE6FF", "#FF34FF", "#FF4A46", "#008941", "#006FA6", "#A30059",
         "#FFDBE5", "#7A4900", "#0000A6", "#63FFAC", "#B79762", "#004D43", "#8FB0FF", "#997D87",
         "#5A0007", "#809693", "#FEFFE6", "#1B4400", "#4FC601", "#3B5DFF", "#4A3B53", "#FF2F80",
         "#61615A", "#BA0900", "#6B7900", "#00C2A0", "#FFAA92", "#FF90C9", "#B903AA", "#D16100",
@@ -43,7 +43,7 @@ var FileLinkMap = function (options) {
     var colorList2 = [
         
         
-        "#5B4534", "#FDE8DC", "#404E55", "#0089A3", "#CB7E98", "#A4E804", "#324E72", "#6A3A4C", "#000000"];
+        "#5B4534", "#FDE8DC", "#404E55", "#0089A3", "#CB7E98", "#A4E804", "#324E72", "#6A3A4C","#922329" ];
     var colorMap = {};
     var mapSize = 0;
     
@@ -61,7 +61,7 @@ var FileLinkMap = function (options) {
             }
             
             str = str.replace("theworldavatar", "jparksimulator");
-            str = str.replace("file:/C:/", "http://www.jparksimulator.com/");
+            str = str.replace("C:\\TOMCAT\\webapps\\ROOT\\", "http://www.jparksimulator.com/");
             var arr = str.split("/");
             
             
@@ -228,7 +228,7 @@ var FileLinkMap = function (options) {
         
         if (d.level !== undefined && d.level !== null && !isNaN(d.level)) {
             
-            return colorList2[d.level];
+            return colorList2[d.level+1];
         }
         
         
@@ -239,7 +239,7 @@ var FileLinkMap = function (options) {
             console.log("WARNING: DOMAIN NUMBER EXISTS COLOR MAP NUMBER!");
         }
         
-        return colorMap[0];
+        return colorList2[0];
     }
     
     function sortOrder(d, i) {
@@ -299,7 +299,7 @@ var FileLinkMap = function (options) {
              console.log("not retaining previous sim")
          
              simulation = d3.forceSimulation()
-             .force("link", d3.forceLink().distance(setD).id(function (d) {
+             .force("link", d3.forceLink().strength(setD).id(function (d) {
                     return d.id;
                 }))
              .force("charge", d3.forceManyBody().strength(setBodyS))

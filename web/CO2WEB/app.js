@@ -27,7 +27,7 @@ var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
 var visualizeOntoChem = require("./routes/visualizeOntoChem.js");
 
 
- var showCO2 = require("./routes/showCO2Cached");
+ var showCO2 = require("./routes/showCO2");
 var bmsplot= require("./routes/plotBMSCached.js");
 var getAttrList =require("./routes/getAttrList");
 var getSpecAttr =require("./routes/getSpecificLiteralAttrCached");
@@ -45,6 +45,7 @@ var ppalt = require("./routes/mapPPAlt")
 
 var literalData = require('./agents/GetLiteralData');
 var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
+var getChildrenSingle = require('./routes/GetChildrenSingle');
 
 var BMSWatcher = require('./agents/setBMSWatcher');
 
@@ -59,6 +60,8 @@ app.use(httplogger('dev'));
 function setHeader(res, mpath){
   logger.debug("path"+ mpath);
   res.setHeader("Content-Type","text/xml");
+  //res.setHeader('Access-Control-Allow-Origin', 'http://www.theworldavatar.com:80');
+
   res.setHeader("Content-Disposition","inline");
     logger.debug("SEtting headers");
 }
@@ -69,6 +72,10 @@ app.use(bodyParser.text({ type: 'application/json' }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
 
+function acHeader(res){
+	  res.setHeader('Access-Control-Allow-Origin', 'http://www.theworldavatar.com:80');
+
+}
 
  app.use('/visualizeWorld', visualizeWorld);
 app.use('/visualizeBMS', visualizeBMS);
@@ -77,10 +84,11 @@ app.use('/visualizeJurong', visualizeJurong);
 app.use('/PowerPlantCO2',  PPCO2);
 app.use('/semakaumap', semakauMap);
 app.use('/ppalt', ppalt);
-app.use('/JuronMAgIsland.owl/showCO2', showCO2);
+app.use('/JurongIsland.owl/showCO2', showCO2);
 app.use('/visualizeOntoEN',visualizeOntoEN);
 app.use('/visualizeOntoChem',visualizeOntoChem);
 
+app.use('/getChildrenSingle',getChildrenSingle);
 
 app.use("/bmsplot", bmsplot);
 

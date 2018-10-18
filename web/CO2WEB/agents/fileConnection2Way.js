@@ -34,7 +34,7 @@ const { Readable,PassThrough } = require('stream');
     //todo: add cluster logic
     
 var owlProcessor = {
-PREDICATE:['Eco-industrialPark:hasIRI','system:hasIRI' ],
+PREDICATE:['Eco-industrialPark:hasIRI','system:hasIRI','system:hasSubsystem'],
 queryStr:`
 PREFIX Eco-industrialPark: <http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#>
 PREFIX system: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
@@ -60,36 +60,56 @@ UnionImport:`
 owlProcessor.doConnect = function(address, level) {
     const me = this
     me.linkCounter++;
-    
     return new Promise((resolve, reject)=>{
         this.connectPromise(address, level).then(result=>{
+			
             me.linkCounter--;
             console.log('linkcounter');
             console.log(me.linkCounter);
-        
+        	console.log('try connecting: '+address)
+
             if(result&&result.length>0){
+				let iset = new Set();
+				
                 result.forEach(item=>{
+					if(!iset.has(item)){
+						iset.add(item);
+						address = me.diskLoc2Uri(address);
                     if(level>=2) {
                         this.parentMap[item] = address in this.parentMap ? this.parentMap[address] : address;
                     }
                     me.result.push({'source':address, 'target':item, 'level':level})
+					}
                     //todo: cluster result on the fly
                 })
-                console.log(me.result.length)
             }
-            if( me.linkCounter === 0){//end condition, return
+            if( me.linkCounter <= 0){//end condition, return
                 console.log('all end, print result')
+				
                 //end buffer
                 if(me.buffer) {
                     me.buffer.push(null);
+					me.buffer.pause();
                 } else {//directly resolve
+				console.log(me.result);
                     resolve(me.result)
                 }
                 }
         
-        })
-            .catch(err=>{
-                reject(err)
+        }).catch(err=>{
+				me.linkCounter--;
+                console.log('err: '+err)
+				            if( me.linkCounter <= 0){//end condition, return
+                console.log('all end, print result')
+                //end buffer
+                if(me.buffer) {
+                    me.buffer.push(null);
+					me.buffer.pause();
+                } else {//directly resolve
+                    resolve(me.result)
+                }
+                }
+                //reject(err)
             })
     })
     
@@ -115,6 +135,7 @@ owlProcessor.connectPromise = function (address, level) {
         }
         let fileP = null;
         if (fs.existsSync(address)){//is local
+		    console.log('read local')
             address = path.resolve(address);
             fileP = this.fileStreamPromise(address);
         } else{ //remote url
@@ -122,30 +143,38 @@ owlProcessor.connectPromise = function (address, level) {
         }
         //stream parse fileP
         fileP.then(function (instream) {
-            if(!instream){//test endpoint
+            if(!instream){//query endpoint
                 //todo: run endpoint
                 console.log('check endpoint')
                 me.queryPromise(address, 'endpoint',level).then(result =>{
                     console.log('ep result:');
                     console.log(result)
                    resolve(result)
-                });
-                
-                
-                
-                
-            } else {
+                }).catch((err)=>{
+					reject(err)
+				});
+
+            } else {//query the file
                 me.xmlstreamParser(instream, level).then(result => {
                   resolve(result)
-                });
+                }).catch((err)=>{
+					reject(err)
+				});
             }
         }).catch(function (err) {
+			console.log(err)
             reject(err)
         });
         
     })
 }
 
+
+owlProcessor.normalAddr = function(loc){
+	
+	let locs = loc.split('#');
+	return locs&&locs.length>0? locs[0] : loc;
+}
 /***
  * test if a url contains a file
  * @param loc
@@ -169,6 +198,7 @@ owlProcessor.urlPromise = function (loc) {
              }).catch(err=>{
                  //todo: handle possible request error
                  console.log('err connect: '+loc);
+				 reject(err)
                  
              })
 
@@ -182,25 +212,36 @@ owlProcessor.urlPromise = function (loc) {
  * @returns {Promise for an array of raw links}
  */
 owlProcessor.xmlstreamParser = function (instream, level) {
+	
     const me = this;
     return new Promise((resolve, reject) => {
+		console.log('start stream parser');
         const PREDICATE = this.PREDICATE;
         let parser = new Parser();
         let flagOuter =false, flag = false, result = [];
-        parser.on('opentag', (name) => {
+        parser.on('opentag', (name, attrs) => {
             if(me.OUTER && name === me.OUTER){
                 flagOuter = true;
             }
             if((!me.OUTER || flagOuter) && PREDICATE.includes(name)){
                 flag = true;
+				if(name === 'system:hasSubsystem'){//get rdf:resource//todo:hard code for now
+					let text = attrs['rdf:resource'];
+					if(text){
+					result.push(text);
+					if(me.buffer &&!me.buffer.isPaused()) {me.buffer.push(text+'@'+(level))};
+					flag = false;
+					}
+				}
             }
         });
         parser.on('text', (text) => {
             if(flag){
+				if(text){
                 result.push(text);
-                console.log(text)
-                
-                if(me.buffer) {me.buffer.push(text+'@'+(level))};
+                //console.log(text)
+                if(me.buffer &&!me.buffer.isPaused()) {me.buffer.push(text+'@'+(level))};
+				}
                 flag = false
             }
         
@@ -240,7 +281,7 @@ owlProcessor.checkFile = function (loc) {
     
         parser.on('opentag', (name, attrs) => {
         if(name === 'owl:Ontology'){
-            console.log(loc+' pass validation');
+           // console.log(loc+' pass validation');
             resolve(clone)
             parser.end()
         }
@@ -285,13 +326,17 @@ owlProcessor.queryPromise = function (loc, type, level) {
                 //run query against endpoint
                 request.get(loc, {qs:{'query':self.queryStr,'output':'json'},timeout: 1500, agent: false}, function (err, res, body) {
                     console.log('endpoint resquest result')
-                    if (err) reject(err);//don't throw
+                    if (err||!body||body===undefined||body.includes('<!doctype html>')) {
+						console.log('no result from endpoint, reject')
+						reject(err);
+						return;
+						};//don't throw
                     //unwrap query
-                    console.log(body)
+                    console.log("body:"+body)
     
                     body = JSON.parse(body)
                     let {uri} = RdfParser.unwrapResult(body, ['uri']);
-                    console.log(uri)
+                    //console.log(uri)
                     let tobuffer = uri.map((text)=> {return text+'@'+(level+1)}).join(';')
                     self.buffer.push(tobuffer);
                          resolve(uri)
@@ -347,6 +392,7 @@ owlProcessor.fileStreamPromise = function (loc) {
 
     owlProcessor.init = function (options) {
         this.loc = options.topnode;
+		this.unpack = options.unpack?options.unpack:false;
         //modify query
         let extraQ = options.extraQuery?options.extraQuery:'';
         let extraP = options.extraPredicate?options.extraPredicate:'';
@@ -371,7 +417,9 @@ owlProcessor.packIntoClusterData = function (rawconn) {
     //get level 1 connections
     let self = this
     let firstl = [], subconnections = {};
+	//console.log(self.parentMap)
     rawconn.forEach((link)=>{
+		console.log(link)
         if(link.level === 1){
             firstl.push(link)
         } else{
@@ -380,6 +428,8 @@ owlProcessor.packIntoClusterData = function (rawconn) {
                 subconnections[parent].connections.push(link)
             } else {
                 subconnections[parent] = {connections:[]}
+			subconnections[parent].connections.push(link)
+
             }
         }
     })
@@ -403,16 +453,19 @@ owlProcessor.process = function (options) {
           /*buffer logic**/
           this.buffer.on('data', (chunk) => {//receive new data:string of uris
               //process to get links
-              console.log(chunk.toString())
+              //console.log(chunk.toString())
               let uris = chunk.toString().split(';');
               for (let item of uris){
                   if(item){
                       let uri = item.split('@');
                       let level = uri[1];
                       uri = uri[0];
-                      if(!self.processed.has(uri)){
-                          self.processed.add(uri);
-                          self.doConnect(uri, parseInt(level)+1);//if find new uri, do connect
+					  console.log('after split:'+uri);
+					  let auri = self.normalAddr(uri);
+					 // console.log('normailized: '+auri);
+                      if(auri&&!self.processed.has(auri)){
+                          self.processed.add(auri);
+                          self.doConnect(auri, parseInt(level)+1);//if find new uri, do connect
                       }
                   }
               }
@@ -423,21 +476,28 @@ owlProcessor.process = function (options) {
               console.log('end of search');
               /*END OF ALL RETRIEVING************/
               //console.log(this.parentMap)
-              self.buffer = new Readable({read() {}});
-              resolve(self.packIntoClusterData(self.result))
+			  self.buffer.destroy();
+			  
+              this.unpack?resolve(self.result):resolve(self.packIntoClusterData(self.result));
+			              //  self.buffer = new Readable({read() {}});
+
           });
           this.buffer.on('close', () => {
               console.log('end of search. should return');
           });
           
-      })
+      }).catch(err=>{
+		  console.log(err)
+	  })
     
 
         
       
     };
 
-
+owlProcessor.diskLoc2Uri = function(disk){
+	return disk.replace('C:\\TOMCAT\\webapps\\ROOT\\', 'http://www.jparksimulator.com/').replace(new RegExp( '\\\\','g'), '/');
+}
 
 owlProcessor.uriList2DiskLoc = function (uriArr, diskroot) {
     diskroot = diskroot || config.root;
