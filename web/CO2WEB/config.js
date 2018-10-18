@@ -34,12 +34,6 @@ config.heatWasteScript = path.join(__dirname, "agents/WHR_network_optimization_t
 config.heatWasteNode = path.join(config.root, "wasteheatnetwork.owl")
 
 
-config.registerPath = "dataObserve";
-config.changePath = "change";
-config.viewRoot = path.join(__dirname , "views");
-
-config.bmsUrlPath =  config.registerUrl+"/" +config.registerPath;          //testing
-config.myUrlPath = config.changeUrl+"/" +config.changePath;
 
 
 
@@ -49,6 +43,8 @@ function configDevelop() {
     config.registerUrl = "http://localhost:2000";
     config.changeUrl = "http://localhost:3000";
     config.ppFolder = path.join(config.root, "powerplants")
+    config.jurongNode = path.join(config.root ,"JurongIsland.owl");
+    
     //"http://www.thewordavatar.com:82/change";
 }
 

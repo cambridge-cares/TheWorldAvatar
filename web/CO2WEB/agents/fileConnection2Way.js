@@ -72,6 +72,7 @@ owlProcessor.doConnect = function(address, level) {
 				let iset = new Set();
 				
                 result.forEach(item=>{
+                    item = this.normalAddr(item);
 					if(!iset.has(item)){
 						iset.add(item);
 						address = me.diskLoc2Uri(address);
@@ -462,7 +463,7 @@ owlProcessor.process = function (options) {
                       uri = uri[0];
 					  console.log('after split:'+uri);
 					  let auri = self.normalAddr(uri);
-					 // console.log('normailized: '+auri);
+					  console.log('normailized: '+auri);
                       if(auri&&!self.processed.has(auri)){
                           self.processed.add(auri);
                           self.doConnect(auri, parseInt(level)+1);//if find new uri, do connect
@@ -476,9 +477,9 @@ owlProcessor.process = function (options) {
               console.log('end of search');
               /*END OF ALL RETRIEVING************/
               //console.log(this.parentMap)
-			  self.buffer.destroy();
+			  //self.destroy();
 			  
-              this.unpack?resolve(self.result):resolve(self.packIntoClusterData(self.result));
+              self.unpack?resolve(self.result):resolve(self.packIntoClusterData(self.result));
 			              //  self.buffer = new Readable({read() {}});
 
           });
