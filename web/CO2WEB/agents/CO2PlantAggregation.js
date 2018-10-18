@@ -63,6 +63,7 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
                     throw err;
                 }
 
+                
                 var sum = 0;
                 let plantData = []
                 plantDataO.forEach((item)=>{if(item){plantData.push(item)}})
