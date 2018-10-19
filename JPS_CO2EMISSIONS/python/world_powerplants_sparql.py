@@ -1,6 +1,9 @@
 import rdflib
 import json
 
+from caresjpsutil import returnExceptionToJava, returnResultsToJava
+from caresjpsutil import PythonLogger
+
 class WorldPowerPlantsSPARQL:
 
     def __init__(self):
@@ -32,6 +35,14 @@ class WorldPowerPlantsSPARQL:
         return powerplants
     
 if __name__ == "__main__":
-    wPSPARQL = WorldPowerPlantsSPARQL()
-    powerplants = wPSPARQL.getPowerplants()
-    print(json.dumps(powerplants))
+    pythonLogger = PythonLogger('world_powerplants_sparql.py')
+    pythonLogger.postInfoToLogServer('start of world_powerplants_sparql.py')
+    
+    try:
+        wPSPARQL = WorldPowerPlantsSPARQL()
+        powerplants = wPSPARQL.getPowerplants()
+        returnResultsToJava(json.dumps(powerplants))
+        pythonLogger.postInfoToLogServer('end of world_powerplants_sparql.py')
+    except Exception as e:
+        returnExceptionToJava(e)
+        pythonLogger.postInfoToLogServer('end of world_powerplants_sparql.py')

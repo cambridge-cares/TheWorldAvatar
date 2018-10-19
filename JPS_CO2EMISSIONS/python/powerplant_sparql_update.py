@@ -4,6 +4,9 @@ import sys
 import json
 from rdflib.plugins.sparql.processor import processUpdate
 
+from caresjpsutil import returnExceptionToJava, returnResultsToJava
+from caresjpsutil import PythonLogger
+
 class PowerplantSPARQLSync:
 
     def __init__(self, powerplant):
@@ -47,8 +50,16 @@ class PowerplantSPARQLSync:
 
     
 if __name__ == "__main__":
-    plantIRI = sys.argv[1]
-    latestEmission = sys.argv[2]
-    pSPARQL = PowerplantSPARQLSync(plantIRI)
-    pSPARQL.updatePowerplantEmission(latestEmission)
-    print(json.dumps("COMPLETE"))
+    pythonLogger = PythonLogger('powerplant_sparql_update.py')
+    pythonLogger.postInfoToLogServer('start of powerplant_sparql_update.py')
+    
+    try:
+        plantIRI = sys.argv[1]
+        latestEmission = sys.argv[2]
+        pSPARQL = PowerplantSPARQLSync(plantIRI)
+        pSPARQL.updatePowerplantEmission(latestEmission)
+        returnResultsToJava(json.dumps("COMPLETE"))
+        pythonLogger.postInfoToLogServer('end of powerplant_sparql_update.py')
+    except Exception as e:
+        returnExceptionToJava(e)
+        pythonLogger.postInfoToLogServer('end of powerplant_sparql_update.py')
