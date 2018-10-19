@@ -7,13 +7,9 @@ class PowerplantSPARQLSync:
 
     def __init__(self, powerplant):
         self.powerplantIRI = powerplant
+        self.powerplantName = powerplant[powerplant.rfind('#') + 1:]
         self.graph = rdflib.Graph()
-        self.graph.parse(self.powerplantIRI)
-
-#         self.powerplantIRI = powerplant
-#         self.powerplantName = powerplant[powerplant.rfind('#') + 1:]
-#         self.graph = rdflib.Graph()
-#         self.graph.parse("C:/TOMCAT/webapps/ROOT/kb/powerplants/{}.owl".format(self.powerplantName))
+        self.graph.parse("C:/TOMCAT/webapps/ROOT/kb/powerplants/{}.owl".format(self.powerplantName))
 
         self.generationTechnologyMap = {
             'Cogeneration': 'cogeneration',
