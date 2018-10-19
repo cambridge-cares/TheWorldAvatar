@@ -34,7 +34,7 @@ const { Readable,PassThrough } = require('stream');
     //todo: add cluster logic
     
 var owlProcessor = {
-PREDICATE:['Eco-industrialPark:hasIRI','system:hasIRI','system:hasSubsystem'],
+PREDICATE:['Eco-industrialPark:hasIRI','system:hasIRI','system:hasSubsystem','j.0:hasSubsystem'],
 queryStr:`
 PREFIX Eco-industrialPark: <http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#>
 PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
@@ -73,12 +73,12 @@ owlProcessor.doConnect = function(address, level) {
 				let iset = new Set();
 				
                 result.forEach(item=>{
-                    item = this.normalAddr(item);
+                    item = me.normalAddr(item);
 					if(!iset.has(item)){
 						iset.add(item);
 						address = me.diskLoc2Uri(address);
                     if(level>=2) {
-                        this.parentMap[item] = address in this.parentMap ? this.parentMap[address] : address;
+                        me.parentMap[item] = address in me.parentMap ? me.parentMap[address] : address;
                     }
                     me.result.push({'source':address, 'target':item, 'level':level})
 					}
@@ -227,7 +227,7 @@ owlProcessor.xmlstreamParser = function (instream, level) {
             }
             if((!me.OUTER || flagOuter) && PREDICATE.includes(name)){
                 flag = true;
-				if(name === 'system:hasSubsystem'){//get rdf:resource//todo:hard code for now
+				if(name.includes('hasSubsystem')){//get rdf:resource//todo:hard code for now
 					let text = attrs['rdf:resource'];
 					if(text){
 					result.push(text);
@@ -283,7 +283,7 @@ owlProcessor.checkFile = function (loc) {
     
         parser.on('opentag', (name, attrs) => {
         if(name === 'owl:Ontology'){
-           // console.log(loc+' pass validation');
+            //console.log(loc+' pass validation');
             resolve(clone)
             parser.end()
         }

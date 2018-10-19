@@ -391,13 +391,16 @@ owlProcessor.getChildren = function(root) {
 
     //find all node with hasIRI property
     var uris = root.find("//Eco-industrialPark:hasIRI", namespaceOb);
-    //  logger.debug("found node Eco-industrialPark:hasIRI:" + uris.length);
+    console.log("found node Eco-industrialPark:hasIRI:" + uris.length);
     for (let curi of uris) {
         // logger.debug(curi.name());
+		console.log('attr')
+		console.log(curi.attrs())
         if(curi.text().trim()!==""){
             children.push(curi.text().trim());//push to targets list
-        } else if(curi.attr("rdf:resource").value()){
-            children.push(curi.attr("rdf:resource").value());//push to targets list
+		
+        } else if(curi.attr("resource")&&curi.attr("resource").value()){
+            children.push(curi.attr("resource").value());//push to targets list
         }
 
 

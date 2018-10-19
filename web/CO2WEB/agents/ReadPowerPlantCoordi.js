@@ -21,10 +21,10 @@ function readPPCoordi(callback) {
     processor.init({});
 
     processor.doConnect(worldNode,0).then((PPchildren)=>{
- 
- 
+
+
             PPchildren = PPchildren.map((item)=>item['target'])
-			//console.log("ppcildren= "+PPchildren);
+			console.log("ppcildren= "+PPchildren);
             //now, read each file, parse as rdf, query its geographic information
             let listUrinLoc = xmlParser.uriList2DiskLoc(PPchildren,config.root);
 
@@ -40,7 +40,7 @@ function readPPCoordi(callback) {
                 let datasetF = []
                 dataset.forEach(item=>{ if(item){datasetF.push(item)}})
 
-                
+
                 let formatted = datasetF.map(function (item) {
                     for(let uri in item){
                         if(item.hasOwnProperty(uri)){
@@ -57,7 +57,7 @@ function readPPCoordi(callback) {
             });
 
 
-   
+
 
     });
 
@@ -92,11 +92,3 @@ readPPCoordi((err, result)=>{
 })
  ***/
 module.exports = readPPCoordi;
-
-
-
-
-
-
-
-
