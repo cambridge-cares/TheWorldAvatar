@@ -31,7 +31,7 @@ var visualizeOntoChem = require("./routes/visualizeOntoChem.js");
 var bmsplot= require("./routes/plotBMSCached.js");
 var getAttrList =require("./routes/getAttrList");
 var getSpecAttr =require("./routes/getSpecificLiteralAttrCached");
-//var MAU = require("./routes/runMAU")
+var MAU = require("./routes/runMAU")
 var MAUPlot = require("./routes/plotMAU")
 var HW =require("./routes/runHeatWasteNetworkMap")
 var PPCO2 = require("./routes/powerplantCO2Cached");
@@ -77,7 +77,7 @@ function acHeader(res){
 
 }
 
- app.use('/visualizeWorld', visualizeWorld);
+app.use('/visualizeWorld', visualizeWorld);
 app.use('/visualizeBMS', visualizeBMS);
 app.use('/visualizeSemakau', visualizeSemakau);
 app.use('/visualizeJurong', visualizeJurong);
@@ -101,7 +101,7 @@ app.use('/b2map', b2Map)
 app.use("/mauplot", MAUPlot);
 app.use("/getAttrList", getAttrList);
 app.use("/getSpecAttr", getSpecAttr);
-//app.use("/MAU", MAU);
+app.use("/MAU", MAU);
 
 
 
@@ -150,7 +150,7 @@ io.on('connection', function(socket){
 socket.on('join', function (uriSubscribeList) {
     //May be do some authorization
 
-
+    console.log('client join')
     let sl = JSON.parse(uriSubscribeList);
     logger.debug(sl)
     sl.forEach(function (uri2Sub) {
@@ -160,10 +160,10 @@ socket.on('join', function (uriSubscribeList) {
 
         let affix = uri2Sub.withData? "_data" :"_nodata";
         diskLoc = path.normalize(diskLoc)
-
-
         socket.join(diskLoc+affix);
-        logger.debug(socket.id, "joined", diskLoc+affix);
+		       console.log(socket.id, "joined", diskLoc+affix);
+
+		
 
         //TODO:check client legnth first, if 0 ,first join, ask to register for data
 
