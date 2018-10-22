@@ -3,11 +3,14 @@ package uk.ac.cam.cares.jps.base.discovery;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
@@ -21,10 +24,22 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.KeyValueServer;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 
 public class AgentCaller {
+	
+	public enum MediaType {
+		TEXT_CSV("text/csv"),
+		APPLICATION_JSON("application/json"),
+		APLICATION_SPARQL("application/sparql-results+json");
+		
+		String type = null;
+		private MediaType(String type) {
+			this.type = type;
+		}
+	}
 	
 	private static final String JSON_PARAMETER_KEY = "query";
 	private static Logger logger = LoggerFactory.getLogger(AgentCaller.class);
@@ -49,25 +64,72 @@ public class AgentCaller {
 		} 
 	}
 	
-	public static String executeGet(String path, String... keyOrvalue) {
+	public static String executeGet(String path, String... keyOrValue) {
 		// TODO-AE maybe use directly class java.net.URI
 		// TODO-AE refactor get hostname
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(getHostPort())
 				.setPath(path);
 		
-		for (int i=0; i<keyOrvalue.length; i=i+2) {
-			String key = keyOrvalue[i];
-			String value = keyOrvalue[i+1];
+		for (int i=0; i<keyOrValue.length; i=i+2) {
+			String key = keyOrValue[i];
+			String value = keyOrValue[i+1];
 			builder.setParameter(key, value);
 		}
 				
 		try {
+			
 			HttpGet request = new HttpGet(builder.build());
 			return executeGet(request);
 		} catch (Exception e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		} 
 	}	
+	
+	public static URI createURI(String url, String... keyOrValue) {
+		
+		int j = url.indexOf(':');
+		String scheme = url.substring(0, j);
+		URIBuilder builder = new URIBuilder().setScheme(scheme);
+		
+		url = url.substring(j+3);
+		j = url.indexOf('/');
+		String path = url.substring(j);
+		builder.setPath(path);
+		
+		String host = url.substring(0, j);
+		j = host.indexOf(':');
+		if (j == -1) {
+			builder.setHost(host);
+		} else {
+			String[] split = host.split(":");
+			builder.setHost(split[0]);
+			int port = Integer.valueOf(split[1]);
+			builder.setPort(port);
+		}
+		
+		for (int i=0; i<keyOrValue.length; i=i+2) {
+			String key = keyOrValue[i];
+			String value = keyOrValue[i+1];
+			builder.setParameter(key, value);
+		}
+	
+		try {
+			return builder.build();
+		} catch (URISyntaxException e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		}
+	}
+	
+	public static String executeGetWithURLKey(String urlKey, MediaType type, String... keyOrValue) {
+
+		String url = KeyValueServer.get(urlKey);
+		URI uri = createURI(url, keyOrValue);
+		HttpGet request = new HttpGet(uri);
+		if (type != null) {
+			request.setHeader(HttpHeaders.ACCEPT, type.type);
+		}
+		return executeGet(request);
+	}
 	
 	/**
 	 * Executes GET request <host>/path?query=<json> 
@@ -134,7 +196,7 @@ public class AgentCaller {
 	
 	private static String executeGet(HttpGet request) {
 		try {
-			logger.debug(request.toString());
+			logger.info(request.toString());
 			HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 			
 			if (httpResponse.getStatusLine().getStatusCode() != 200) {

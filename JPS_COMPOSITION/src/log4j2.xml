@@ -4,12 +4,6 @@
 	<Appenders>
 		<Http name="JPSHTTPLOGSERVER" url="www.theworldavatar.com/JPS_BASE/LogServer"  method="POST">
 			<PatternLayout pattern="%d %p [%t] %C{1} %m%n"/>
-			<!--Property name="X-Java-Runtime" value="$${java:runtime}" /--> 
-			<!--JsonLayout properties="true"/-->	
-			<!--SSL>
-				<KeyStore location="log4j2-keystore.jks" passwordEnvironmentVariable="KEYSTORE_PASSWORD"/>				
-				<TrustStore location="truststore.jks" passwordFile="${sys:user.home}/truststore.pwd"/>
-			</SSL--> 
 		</Http>
 		
 	</Appenders>

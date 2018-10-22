@@ -3,6 +3,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -12,19 +13,22 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class ExecutorNew {
+	
+	Logger logger = LoggerFactory.getLogger(ExecutorNew.class);
 
 	public ArrayList<ExecutionLayer> executionChain;
 	public Map<String,ExecutionPackage> executionPackageMap = new HashMap<String,ExecutionPackage>();  // The key is the http url
 	public String myHost = "localhost";
 	public int myPort = 8080;
-	public JSONArray finalResult = new JSONArray();
+	public JSONObject finalResult = new JSONObject();
 	public JSONObject initialInput;
 	
 	public ExecutorNew() {
@@ -67,7 +71,10 @@ public class ExecutorNew {
 								if(executionPackage.targetHttpUrl.equalsIgnoreCase(task.httpUrl)) {
 									for(String key: executionPackage.keys) {
 										Map<String, String> nameMapping = executionPackage.nameMappingList.get(key);
+										logger.debug("nameMapping: " +  nameMapping);
 										executionPackage.result = replaceKeysInJSON(executionPackage.result,nameMapping);
+										logger.debug("executionPackage: " +  executionPackage.result.toString());
+
 									}
 									URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 											.setPath(path)
@@ -94,7 +101,8 @@ public class ExecutorNew {
 								.setPath(path)
 								.setParameter("value", initialInput.toString());
 						JSONObject result = new JSONObject(executeGet(builder));
-						this.finalResult.put(result);
+						appendNewResult(result);
+						//this.finalResult.put(result);
 					}
 				}
 				break;
@@ -135,7 +143,9 @@ public class ExecutorNew {
 	public void executeSingleTask(Task task, JSONObject result, ArrayList<String> targetHttpUrlList, ArrayList<ArrayList<String>> keysArray) throws JSONException {
 		if(task.targetHttpUrl.size() == 0) {
 			// The result is one of the final results ; 
-			this.finalResult.put(result);
+			//this.finalResult.put(result);
+			appendNewResult(result);
+			
 		}
 		
 		Map<String,Map<String, Map<String, String>>> NameMappingMap = task.httpToNameMapping;
@@ -184,6 +194,10 @@ public class ExecutorNew {
 			URI uri = builder.build();
 			HttpGet request = new HttpGet(uri);
 			request.setHeader(HttpHeaders.ACCEPT, "application/json");
+			
+			String s = uri.toString();
+			String path = s.substring(0, s.indexOf('?'));
+			logger.info("requesting " + path + "?" + uri.getQuery());
 			HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 			if (httpResponse.getStatusLine().getStatusCode() != 200) {
 				throw new JPSRuntimeException("HTTP response with error = " + httpResponse.getStatusLine());
@@ -192,5 +206,17 @@ public class ExecutorNew {
 		} catch (Exception e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		} 
+	}
+	
+	public void appendNewResult(JSONObject newResult) throws JSONException {
+
+		 
+		Iterator<String> keys = newResult.keys();
+		while(keys.hasNext()) {
+			String key = (String) keys.next();
+			this.finalResult.put(key, newResult.get(key));
+		}
+		
+
 	}
 }

@@ -11,23 +11,22 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.log.LogServer;
 
 @WebServlet(urlPatterns = {"/keys/get", "/keys/set"})
 public class KeyValueServer extends HttpServlet {
 
 	private static final long serialVersionUID = -7979108458102577070L;
-	Logger logger = LoggerFactory.getLogger(KeyValueServer.class);
 	
 	public static void set(String... keyOrvalue) {
 		AgentCaller.executeGet("/JPS_BASE/keys/set", keyOrvalue);
 	}
 	
 	public static String get(String key) {
+		//TODO-AE URGENT every call to host, port etc. results into a HTTP Get --> caching solution, or redis, ...
 		String result = AgentCaller.executeGet("/JPS_BASE/keys/get", "key", key);
 		try {
 			JSONObject jo = new JSONObject(result);
@@ -35,7 +34,7 @@ public class KeyValueServer extends HttpServlet {
 		} catch (JSONException e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		}
-	}	
+	}
 	
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		
@@ -48,17 +47,13 @@ public class KeyValueServer extends HttpServlet {
 				String value = KeyValueMap.getInstance().get(key);
 				JSONObject result = new JSONObject().put(key, value);	
 				AgentCaller.writeJsonParameter(resp, result);
-				logger.debug("get key-value-pair: " + key + "=" + value);
-				//System.out.println("Get key-value-pair with key=" + key + ", value=" + value);
 			} else if ("/keys/set".equals(path)) {
-	
 				Iterator<String> it = jo.keys();
 				while (it.hasNext()) {
 					String key = it.next();
 					String value = jo.getString(key);
 					String replacedValue = KeyValueMap.getInstance().put(key, value);
-					logger.info("set key-value-pair: " + key + "=" + value + " (replaced=" + replacedValue + ")");
-					//System.out.println("Set key-value-pair with key=" + key + ", value=" + value + ", replaced value=" + replacedValue);		
+					LogServer.info(this, "set key-value-pair: " + key + " = " + value + " (replaced = " + replacedValue + ")");
 				}
 			}
 		} catch (JSONException e) {

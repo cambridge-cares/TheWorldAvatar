@@ -3,7 +3,8 @@
 
 	<Appenders>		
 		<RollingFile name="JPSROLLING" fileName="C:/jps/temp/logs/jps.log" filePattern="C:/jps/temp/logs/rolling/jps-%i.log">
-			<PatternLayout pattern="%d %p [%t] %C{1} %m%n"/>
+			<!--  PatternLayout pattern="%d %p [%t] %C{1} %m%n"/-->
+			<PatternLayout pattern="%m%n"/>
 			<Policies>
 				<SizeBasedTriggeringPolicy size="10MB"/>
 			</Policies>
