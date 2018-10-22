@@ -25,13 +25,6 @@ public class ServiceDiscoveryTest {
 		messagePartCoor.setType(new URI(
 				"http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#Coordinate"));
 		inputs.add(messagePartCoor);
-
-		// ArrayList<Service> services =
-		// serviceDiscovery.getAllServiceCandidates(0,inputs);
-		// System.out.println(services);
-		// for (Service service : services) {
-		// System.out.println(service.getUri());
-		// }
-
+ 
 	}
 }
