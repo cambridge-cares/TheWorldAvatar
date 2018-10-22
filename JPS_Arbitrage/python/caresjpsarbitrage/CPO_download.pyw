@@ -82,6 +82,7 @@ if __name__ == "__main__":
 	pythonLogger.postInfoToLogServer('start of CPO_download.pyw')
 
 	urlAddress = str(sys.argv[1])
+	# urlAddress = "http://www.cmegroup.com/trading/agricultural/grain-and-oilseed/usd-malaysian-crude-palm-oil-calendar.html?optionProductId=8075"
 	driver = webdriver.PhantomJS()
 
 	try:

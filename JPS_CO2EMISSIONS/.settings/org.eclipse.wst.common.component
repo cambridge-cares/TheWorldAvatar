@@ -3,6 +3,7 @@
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
         <wb-resource deploy-path="/python" source-path="/python"/>
+        <wb-resource deploy-path="/workingdir" source-path="/workingdir"/>
         <property name="java-output-path" value="/JPS_CO2EMISSIONS/build/classes"/>
         <property name="context-root" value="JPS_CO2EMISSIONS"/>
     </wb-module>

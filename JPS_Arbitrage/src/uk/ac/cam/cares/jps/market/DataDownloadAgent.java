@@ -119,7 +119,6 @@ public class DataDownloadAgent extends HttpServlet {
 			String jsonString = request.getParameter("individuals");
 
 			try {
-				
 				String result = g.toJson(DataDownload.retrievePrices(jsonString.split(",")));
 				response.setContentType("application/json");
 				response.getWriter().write(result);

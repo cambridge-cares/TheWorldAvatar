@@ -1,11 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
+    <meta charset="UTF-8">
+    <title>JPS Power Plant Emissions</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/index.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
-<p>TEST</p>
+    <div class="jumbotron text-center" id="top-banner">
+        <div class="row">
+            <a href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
+                <img src="./images/cam_lang_negativ1%20NEW_0.png"/>
+            </a>
+        </div>
+        <div class="row">
+            <h1 id="title">Emissions</h1>
+            <span id="readme-button">?</span>
+            <span id="readme-text">
+            </span>
+        </div>
+        <p id="description"></p>
+    </div>
 
+    <div class="row main">
+        <form>
+            <label for="model">Model:</label>
+            <select id="model" name="model">
+                <option value="surrogate">Surrogate</option>
+                <option value="factor">Factor</option>
+            </select>
+
+            <button id="start">Start simulation</button>
+        </form>
+    </div>
+	<script src="./script/index.js"></script>
 </body>
 </html>

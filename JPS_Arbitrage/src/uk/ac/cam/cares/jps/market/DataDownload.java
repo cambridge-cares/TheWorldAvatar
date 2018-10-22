@@ -46,10 +46,12 @@ public class DataDownload {
 	// URIs of ontologies used to define KBs in which market data will be stored
 	public static final String ONTO_PATH_ELEC_MARKETS = "http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl";	
 	public static final String ONTO_PATH_KB_MARKETS = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-13";
+//	public static final String ONTO_PATH_KB_MARKETS = "http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_Market_KB.owl";
 	
 	// URIs of ontologies used to defined KBs in which utilities and exchange rates will be stored
 	public static final String ONTO_PATH_ONTOCAPE = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl";
 	public static final String ONTO_PATH_KB_UTIL_EXRATES = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15";
+//	public static final String ONTO_PATH_KB_UTIL_EXRATES = "http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl";
 	
 	public static String downloadMarketData(String script, String source) throws Exception {
 		String result = "";
@@ -94,7 +96,7 @@ public class DataDownload {
 		
 		String[] results = new String[2];
 		String[][] addresses = null;
-				
+		
 		if (choicePlant.equals("Biodiesel")) {
 			results[0] = downloadCPOMarketData();
 			logger.info(results[0]);
@@ -129,6 +131,7 @@ public class DataDownload {
 		 * files with the market data are stored in KB one
 		 * by one
 		 */
+		
 		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload()) + "/OntoArbitrage_Market_KB.owl";
 		FileInputStream inFile = new FileInputStream(filePath);
 		Reader in = new InputStreamReader(inFile, "UTF-8");
@@ -140,9 +143,10 @@ public class DataDownload {
 			}
 			RDFProperty property = jenaOwlModel.getRDFProperty(addresses[i][0]);
 			RDFIndividual individual = jenaOwlModel.getRDFIndividual(addresses[i][1]);
+			
 			individual.setPropertyValue(property, results[i]);
 		}
-
+		
 		/**
 		 * save the updated model file; also, any error
 		 * messages are collected and printed
@@ -153,7 +157,7 @@ public class DataDownload {
 				errors,
 				jenaOwlModel.getOntModel());
 		logger.info("File saved with " + errors.size() + " errors.");
-
+		
 //		return results[0];		
 		Gson g = new Gson();
 		return g.toJson(results);
@@ -313,6 +317,7 @@ public class DataDownload {
 		 * URIs of relevant individuals and their properties
 		 * are defined
 		 */
+
 		String[][] addresses = new String[headers.length][];
 		for (int i = 0; i < addresses.length; i++) {
 			addresses[i] = new String[] {
@@ -324,7 +329,6 @@ public class DataDownload {
 		/** get model from an owl file */
 		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload()) + "/OntoArbitrage_PlantInfo_KB.owl";
 		OWLModel owlModel = null;
-
 		try {
 			owlModel = ProtegeOWL.createJenaOWLModelFromURI(
 					"file:/" + filePath);
@@ -332,17 +336,18 @@ public class DataDownload {
 			logger.warn(e1.getMessage());
 		}
 		
+		
 		Gson objGson = new GsonBuilder().create();
 		Map<String, String> mapHeaderName = new HashMap<>();
 		
 		for (int i = 0; i < addresses.length; i++) {
 			RDFIndividual individual = owlModel
 					.getRDFIndividual(addresses[i][1]);
-			
+
 			String name = individual
 					.getPropertyValueLiteral(owlModel.getRDFProperty(addresses[i][0]))
 					.getString();
-			
+
 			mapHeaderName.put(headers[i], name);
 		}
 		
