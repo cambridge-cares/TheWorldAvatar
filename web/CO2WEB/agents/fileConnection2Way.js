@@ -329,7 +329,7 @@ owlProcessor.queryPromise = function (loc, type, level) {
 				console.log(loc);
                 request.get(loc, {qs:{'query':self.queryStr,'output':'json'},timeout: 1500, agent: false}, function (err, res, body) {
                     console.log('endpoint resquest result')
-                    if (err||!body||body===undefined||body.includes('<!doctype html>')) {
+                    if (err||!body||body===undefined||body.includes('<!doctype html>')||body.includes('<?xml version="1.0" encoding="utf-8"?>')) {
 						console.log('no result from endpoint, reject')
 						reject(err);
 						return;
