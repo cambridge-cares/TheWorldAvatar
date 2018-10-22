@@ -1,785 +1,147 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#"
-     xml:base="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl"
-     xmlns:owl="http://www.w3.org/2002/07/owl#"
-     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
-     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
-     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
-     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:chemical_process_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#"
-     xmlns:j.1="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#"
-     xmlns:j.0="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#"
-     xmlns:j.2="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#"
-     xmlns:j.4="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#"
-     xmlns:system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
-     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
-     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:terms="http://purl.org/dc/terms/"
-     xmlns:xml="http://www.w3.org/XML/1998/namespace">
-    <owl:Ontology rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl">
-        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl"/>
-        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl"/>
-    </owl:Ontology>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Annotation properties
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#refersToGeneralizedAmount -->
-
-    <owl:AnnotationProperty rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#refersToGeneralizedAmount"/>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Individuals
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#BiodieselOutput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#BiodieselOutput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#CoreProduct"/>
-        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_BiodieselOutput_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#CoolingWater_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#CoolingWater_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
-        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_CoolingWater_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_CoolingWater_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_CoolingWater_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#CoolingWaterCost"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_CoolingWater_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_CrudePalmOilInput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_CrudePalmOilInput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#RawMaterialCosts"/>
-        <j.4:isCostOfProcessState rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#CrudePalmOilInput_001"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_CrudePalmOilInput_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_Electricity_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_Electricity_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#ElectricityCost"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Electricity_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_FuelGas_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_FuelGas_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#FuelGasCost"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_FuelGas_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_HighPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_HighPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#HighPressureSteamCost"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_HighPressureSteam_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_LowPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_LowPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#LowPressureSteamCost"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_LowPressureSteam_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_MediumPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_MediumPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#MediumPressureSteamCost"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_MediumPressureSteam_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_NaturalGasInput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_NaturalGasInput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#RawMaterialCosts"/>
-        <j.4:isCostOfProcessState rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#NaturalGasInput_001"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_NaturalGasInput_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_ProcessWater_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_ProcessWater_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#ProcessWaterCost"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_ProcessWater_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_Storage_Biodiesel_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_Storage_Biodiesel_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#StorageCosts"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Storage_Biodiesel_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_Storage_CrudePalmOil_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_Storage_CrudePalmOil_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#StorageCosts"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Storage_CrudePalmOil_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_Storage_Methanol_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_Storage_Methanol_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#StorageCosts"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Storage_Methanol_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_Storage_NaturalGas_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_Storage_NaturalGas_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#StorageCosts"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Storage_NaturalGas_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_Transport_Malaysia-SG_CrudePalmOil_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_Transport_Malaysia-SG_CrudePalmOil_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#TransportCosts"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Transport_Malaysia-SG_CrudePalmOil_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_Transport_SEA-SC_Biodiesel_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_Transport_SEA-SC_Biodiesel_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#TransportCosts"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Transport_SEA-SC_Biodiesel_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_Transport_SG-SC_Methanol_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_Transport_SG-SC_Methanol_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#TransportCosts"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Transport_SG-SC_Methanol_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_Transport_USGC-NEA_NaturalGas_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_Transport_USGC-NEA_NaturalGas_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#TransportCosts"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Transport_USGC-NEA_NaturalGas_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#CrudePalmOilInput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#CrudePalmOilInput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#RawMaterial"/>
-        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_CrudePalmOilInput_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Earnings_BiodieselOutput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Earnings_BiodieselOutput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#ProductEarnings"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Earnings_BiodieselOutput_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Earnings_MethanolOutput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Earnings_MethanolOutput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#ProductEarnings"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Earnings_MethanolOutput_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Electricity_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Electricity_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
-        <j.4:hasUtilityCost rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_Electricity_001"/>
-        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_Electricity_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#FuelGas_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#FuelGas_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
-        <j.4:hasCost rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#FuelGas_001"/>
-        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_FuelGas_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_BiodieselOutput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_BiodieselOutput_001">
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:j.0="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+    xmlns:terms="http://purl.org/dc/terms/"
+    xmlns:j.1="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#"
+    xmlns:chemical_process_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+    xmlns:j.2="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:j.3="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#"
+    xmlns:j.4="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14"/>
+  </owl:Ontology>
+  <owl:NamedIndividual rdf:ID="BiodieselOutput_001">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#CoreProduct"/>
+    <chemical_process_system:refersToGeneralizedAmount>
+      <owl:NamedIndividual rdf:ID="GeneralizedAmount_BiodieselOutput_001">
+        <system:hasSubsystem>
+          <owl:NamedIndividual rdf:ID="MaterialAmount_BiodieselOutput_001">
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+            <system:hasProperty>
+              <owl:NamedIndividual rdf:ID="massF_BiodieselOutput_001">
+                <system:hasValue>
+                  <owl:NamedIndividual rdf:ID="V_massF_BiodieselOutput_001">
+                    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >24334.4343</system:numericalValue>
+                    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+                  </owl:NamedIndividual>
+                </system:hasValue>
+                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+              </owl:NamedIndividual>
+            </system:hasProperty>
+          </owl:NamedIndividual>
+        </system:hasSubsystem>
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
-        <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_BiodieselOutput_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_CoolingWater_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_CoolingWater_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
-        <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_CoolingWater_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_CrudePalmOilInput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_CrudePalmOilInput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
-        <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_CrudePalmOilInput_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_Electricity_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_Electricity_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
-        <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#energyF_Electricity_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_FuelGas_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_FuelGas_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
-        <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_FuelGas_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_HighPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_HighPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
-        <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_HighPressureSteam_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_LowPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_LowPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
-        <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_LowPressureSteam_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_MediumPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_MediumPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
-        <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_MediumPressureSteam_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_MethanolOutput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_MethanolOutput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
-        <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_MethanolOutput_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_NaturalGasInput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_NaturalGasInput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
-        <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_NaturalGasInput_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_ProcessWater_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_ProcessWater_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
-        <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_ProcessWater_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#HighPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#HighPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
-        <j.4:hasCost rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#HighPressureSteam_001"/>
-        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_HighPressureSteam_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#LowPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#LowPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
-        <j.4:hasCost rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#LowPressureSteam_001"/>
-        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_LowPressureSteam_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_BiodieselOutput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_BiodieselOutput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
-        <system:hasProperty rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_BiodieselOutput_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_CoolingWater_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_CoolingWater_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
-        <system:hasProperty rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_CoolingWater_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_CrudePalmOilInput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_CrudePalmOilInput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
-        <system:hasProperty rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_CrudePalmOilInput_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_FuelGas_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_FuelGas_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
-        <system:hasProperty rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#moleF_FuelGas_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_HighPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_HighPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
-        <system:hasProperty rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_HighPressureSteam_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_LowPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_LowPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
-        <system:hasProperty rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_LowPressureSteam_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_MediumPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_MediumPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
-        <system:hasProperty rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_MediumPressureSteam_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_MethanolOutput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_MethanolOutput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
-        <system:hasProperty rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_MethanolOutput_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_NaturalGasInput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_NaturalGasInput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
-        <system:hasProperty rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_NaturalGasInput_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_ProcessWater_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MaterialAmount_ProcessWater_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
-        <system:hasProperty rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_ProcessWater_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MediumPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MediumPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
-        <j.4:hasCost rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Costs_MediumPressureSteam_001"/>
-        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_MediumPressureSteam_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MethanolOutput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#MethanolOutput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#CoreProduct"/>
-        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_MethanolOutput_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#NaturalGasInput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#NaturalGasInput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#RawMaterial"/>
-        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_NaturalGasInput_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_CoolingWater_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_CoolingWater_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#UtilityPrice"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_CoolingWater_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_CrudePalmOilInput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_CrudePalmOilInput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#RawMaterialPrice"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_CrudePalmOilInput_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_Electricity_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_Electricity_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#UtilityPrice"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Electricity_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_FuelGas_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_FuelGas_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#UtilityPrice"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_FuelGas_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_HighPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_HighPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#UtilityPrice"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_HighPressureSteam_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_LowPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_LowPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#UtilityPrice"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_LowPressureSteam_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_MediumPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_MediumPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#UtilityPrice"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_MediumPressureSteam_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_NaturalGasInput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_NaturalGasInput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#RawMaterialPrice"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_NaturalGasInput_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_ProcessWater_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_ProcessWater_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#UtilityPrice"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_ProcessWater_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_Storage_Biodiesel_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_Storage_Biodiesel_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#StoragePrice"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Storage_Biodiesel_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_Storage_CrudePalmOil_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_Storage_CrudePalmOil_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#StoragePrice"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Storage_CrudePalmOil_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_Storage_Methanol_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_Storage_Methanol_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#StoragePrice"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Storage_Methanol_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_Storage_NaturalGas_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_Storage_NaturalGas_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#StoragePrice"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Storage_NaturalGas_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_Transport_Malaysia-SG_CrudePalmOil_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_Transport_Malaysia-SG_CrudePalmOil_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#TransportPrice"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Transport_Malaysia-SG_CrudePalmOil_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_Transport_SEA-SC_Biodiesel_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_Transport_SEA-SC_Biodiesel_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#TransportPrice"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Transport_SEA-SC_Biodiesel_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_Transport_SG-SC_Methanol_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_Transport_SG-SC_Methanol_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#TransportPrice"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Transport_SG-SC_Methanol_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_Transport_USGC-NEA_NaturalGas_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#Price_Transport_USGC-NEA_NaturalGas_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#TransportPrice"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Transport_USGC-NEA_NaturalGas_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#ProcessWater_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#ProcessWater_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
-        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#GeneralizedAmount_ProcessWater_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#SGD -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#SGD">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD_to_CNY -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD_to_CNY">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#ExchangeRate"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_USD_to_CNY"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD_to_SGD -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD_to_SGD">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#ExchangeRate"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_USD_to_SGD"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_CoolingWater_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_CoolingWater_001">
+      </owl:NamedIndividual>
+    </chemical_process_system:refersToGeneralizedAmount>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="Costs_NaturalGasInput_001">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Costs_NaturalGasInput_001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#RawMaterialCosts"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="Costs_FuelGas_001">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Costs_FuelGas_001">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#UtilityCosts"/>
+  </owl:NamedIndividual>
+  <j.3:UtilityCosts rdf:ID="Costs_ProcessWater_001">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Costs_ProcessWater_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.3:UtilityCosts>
+  <owl:NamedIndividual rdf:ID="Earnings_BiodieselOutput_001">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#ProductEarnings"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Earnings_BiodieselOutput_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_CrudePalmOilInput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_CrudePalmOilInput_001">
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="Price_Transport_SEA-SC_Biodiesel_001">
+    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#TransportPrice"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Price_Transport_SEA-SC_Biodiesel_001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+        >40.0</system:numericalValue>
+        <system:hasUnitOfMeasure>
+          <owl:NamedIndividual rdf:about="#USD/ton">
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+          </owl:NamedIndividual>
+        </system:hasUnitOfMeasure>
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="#ton/s">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="Price_NaturalGasInput_001">
+    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#RawMaterialPrice"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="Costs_Transport_SG-SC_Methanol_001">
+    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#TransportCosts"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Costs_Transport_SG-SC_Methanol_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="Costs_Storage_NaturalGas_001">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Costs_Storage_NaturalGas_001">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Electricity_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Electricity_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_FuelGas_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_FuelGas_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_HighPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_HighPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_LowPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_LowPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_MediumPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_MediumPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_NaturalGasInput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_NaturalGasInput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_ProcessWater_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_ProcessWater_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#StorageCosts"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="Price_Storage_Biodiesel_001">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Price_Storage_Biodiesel_001">
+        <system:hasUnitOfMeasure>
+          <owl:NamedIndividual rdf:about="#USD/ton/month">
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+          </owl:NamedIndividual>
+        </system:hasUnitOfMeasure>
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
         >0.2075</system:numericalValue>
@@ -799,233 +161,417 @@
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
         >6.571428571_1.142857143</system:numericalValue>
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Storage_CrudePalmOil_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Storage_CrudePalmOil_001">
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </owl:NamedIndividual>
+  <j.3:UtilityCosts rdf:ID="Costs_CoolingWater_001">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Costs_CoolingWater_001">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Storage_Methanol_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Storage_Methanol_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </j.3:UtilityCosts>
+  <owl:NamedIndividual rdf:ID="Price_Transport_Malaysia-SG_CrudePalmOil_001">
+    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#TransportPrice"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Price_Transport_Malaysia-SG_CrudePalmOil_001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="#USD/ton"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+        >5.0</system:numericalValue>
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="Price_Electricity_001">
+    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#UtilityPrice"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Price_Electricity_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >0.0000385833</system:numericalValue>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure>
+          <owl:NamedIndividual rdf:about="#SGD/kJ">
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+          </owl:NamedIndividual>
+        </system:hasUnitOfMeasure>
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="Price_Storage_NaturalGas_001">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Price_Storage_NaturalGas_001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+        >0.11104</system:numericalValue>
+        <system:hasUnitOfMeasure>
+          <owl:NamedIndividual rdf:about="#USD/mmBTU/month">
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+          </owl:NamedIndividual>
+        </system:hasUnitOfMeasure>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#StoragePrice"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="Electricity_001">
+    <chemical_process_system:refersToGeneralizedAmount>
+      <owl:NamedIndividual rdf:ID="GeneralizedAmount_Electricity_001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem>
+          <owl:NamedIndividual rdf:ID="energyF_Electricity_001">
+            <system:hasValue>
+              <owl:NamedIndividual rdf:ID="V_energyF_Electricity_001">
+                <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >4.45842243</system:numericalValue>
+                <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kW"/>
+                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+              </owl:NamedIndividual>
+            </system:hasValue>
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveEnergyFlowrate"/>
+          </owl:NamedIndividual>
+        </system:hasSubsystem>
+      </owl:NamedIndividual>
+    </chemical_process_system:refersToGeneralizedAmount>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="Price_Storage_CrudePalmOil_001">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Price_Storage_CrudePalmOil_001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+        >0.2075</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="#USD/ton/month"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#StoragePrice"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="#cbm/s">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="Price_FuelGas_001">
+    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#UtilityPrice"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Price_FuelGas_001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="#USD/mmBTU"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >9.8</system:numericalValue>
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="USD_to_CNY">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_USD_to_CNY">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >6.931199</system:numericalValue>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure>
+          <owl:NamedIndividual rdf:about="#USD/CNY">
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+          </owl:NamedIndividual>
+        </system:hasUnitOfMeasure>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#ExchangeRate"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="CoolingWater_001">
+    <chemical_process_system:refersToGeneralizedAmount>
+      <owl:NamedIndividual rdf:ID="GeneralizedAmount_CoolingWater_001">
+        <system:hasSubsystem>
+          <j.0:ContinuousMaterialAmount rdf:ID="MaterialAmount_CoolingWater_001">
+            <system:hasProperty>
+              <owl:NamedIndividual rdf:ID="massF_CoolingWater_001">
+                <system:hasValue>
+                  <owl:NamedIndividual rdf:ID="V_massF_CoolingWater_001">
+                    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+                    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >29191.6114</system:numericalValue>
+                  </owl:NamedIndividual>
+                </system:hasValue>
+                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+              </owl:NamedIndividual>
+            </system:hasProperty>
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+          </j.0:ContinuousMaterialAmount>
+        </system:hasSubsystem>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+      </owl:NamedIndividual>
+    </chemical_process_system:refersToGeneralizedAmount>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
+  </owl:NamedIndividual>
+  <j.3:UtilityCosts rdf:ID="Costs_MediumPressureSteam_001">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Costs_MediumPressureSteam_001">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Storage_NaturalGas_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Storage_NaturalGas_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </j.3:UtilityCosts>
+  <j.4:UtilityPrice rdf:ID="Price_HighPressureSteam_001">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Price_HighPressureSteam_001">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Transport_Malaysia-SG_CrudePalmOil_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Transport_Malaysia-SG_CrudePalmOil_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Transport_SEA-SC_Biodiesel_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Transport_SEA-SC_Biodiesel_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Transport_SG-SC_Methanol_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Transport_SG-SC_Methanol_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Transport_USGC-NEA_NaturalGas_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Costs_Transport_USGC-NEA_NaturalGas_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Earnings_BiodieselOutput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Earnings_BiodieselOutput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Earnings_MethanolOutput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Earnings_MethanolOutput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_CoolingWater_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_CoolingWater_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+        >0.00349</system:numericalValue>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_kg"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.00174</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_CrudePalmOilInput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_CrudePalmOilInput_001">
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.4:UtilityPrice>
+  <owl:NamedIndividual rdf:ID="SGD">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="Price_Transport_SG-SC_Methanol_001">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Price_Transport_SG-SC_Methanol_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+        >22.9</system:numericalValue>
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Electricity_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Electricity_001">
+        <system:hasUnitOfMeasure rdf:resource="#USD/ton"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#TransportPrice"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="MediumPressureSteam_001">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
+    <chemical_process_system:refersToGeneralizedAmount>
+      <owl:NamedIndividual rdf:ID="GeneralizedAmount_MediumPressureSteam_001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem>
+          <j.0:ContinuousMaterialAmount rdf:ID="MaterialAmount_MediumPressureSteam_001">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+            <system:hasProperty>
+              <owl:NamedIndividual rdf:ID="massF_MediumPressureSteam_001">
+                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+                <system:hasValue>
+                  <owl:NamedIndividual rdf:ID="V_massF_MediumPressureSteam_001">
+                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+                    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >10034.3268</system:numericalValue>
+                    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+                  </owl:NamedIndividual>
+                </system:hasValue>
+              </owl:NamedIndividual>
+            </system:hasProperty>
+          </j.0:ContinuousMaterialAmount>
+        </system:hasSubsystem>
+      </owl:NamedIndividual>
+    </chemical_process_system:refersToGeneralizedAmount>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="#kJ/hr">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+  </owl:NamedIndividual>
+  <owl:AnnotationProperty rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#refersToGeneralizedAmount"/>
+  <owl:AnnotationProperty rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasValue"/>
+  <owl:NamedIndividual rdf:ID="USD_to_SGD">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_USD_to_SGD">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#SGD/kJ"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.0000385833</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_FuelGas_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_FuelGas_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >1.378201</system:numericalValue>
+        <system:hasUnitOfMeasure>
+          <owl:NamedIndividual rdf:about="#USD/SGD">
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+          </owl:NamedIndividual>
+        </system:hasUnitOfMeasure>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#ExchangeRate"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="Costs_Transport_Malaysia-SG_CrudePalmOil_001">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Costs_Transport_Malaysia-SG_CrudePalmOil_001">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/mmBTU"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">9.8</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_HighPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_HighPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#TransportCosts"/>
+  </owl:NamedIndividual>
+  <j.4:UtilityPrice rdf:ID="Price_LowPressureSteam_001">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Price_LowPressureSteam_001">
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_kg"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.00349</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_LowPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_LowPressureSteam_001">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+        >0.002</system:numericalValue>
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </j.4:UtilityPrice>
+  <owl:NamedIndividual rdf:ID="Costs_CrudePalmOilInput_001">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Costs_CrudePalmOilInput_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#RawMaterialCosts"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="LowPressureSteam_001">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
+    <chemical_process_system:refersToGeneralizedAmount>
+      <owl:NamedIndividual rdf:ID="GeneralizedAmount_LowPressureSteam_001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem>
+          <j.0:ContinuousMaterialAmount rdf:ID="MaterialAmount_LowPressureSteam_001">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+            <system:hasProperty>
+              <owl:NamedIndividual rdf:ID="massF_LowPressureSteam_001">
+                <system:hasValue>
+                  <owl:NamedIndividual rdf:ID="V_massF_LowPressureSteam_001">
+                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+                    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >0</system:numericalValue>
+                    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+                  </owl:NamedIndividual>
+                </system:hasValue>
+                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+              </owl:NamedIndividual>
+            </system:hasProperty>
+          </j.0:ContinuousMaterialAmount>
+        </system:hasSubsystem>
+      </owl:NamedIndividual>
+    </chemical_process_system:refersToGeneralizedAmount>
+  </owl:NamedIndividual>
+  <owl:AnnotationProperty rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasSubsystem"/>
+  <owl:NamedIndividual rdf:ID="Costs_HighPressureSteam_001">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Costs_HighPressureSteam_001">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#UtilityCosts"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="FuelGas_001">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
+    <chemical_process_system:refersToGeneralizedAmount>
+      <owl:NamedIndividual rdf:ID="GeneralizedAmount_FuelGas_001">
+        <system:hasSubsystem>
+          <owl:NamedIndividual rdf:ID="MaterialAmount_FuelGas_001">
+            <system:hasProperty>
+              <owl:NamedIndividual rdf:ID="moleF_FuelGas_001">
+                <system:hasValue>
+                  <owl:NamedIndividual rdf:ID="V_moleF_FuelGas_001">
+                    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >22.2967893</system:numericalValue>
+                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
+                    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+                  </owl:NamedIndividual>
+                </system:hasValue>
+                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
+              </owl:NamedIndividual>
+            </system:hasProperty>
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+          </owl:NamedIndividual>
+        </system:hasSubsystem>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+      </owl:NamedIndividual>
+    </chemical_process_system:refersToGeneralizedAmount>
+  </owl:NamedIndividual>
+  <j.3:UtilityCosts rdf:ID="Costs_LowPressureSteam_001">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Costs_LowPressureSteam_001">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.3:UtilityCosts>
+  <owl:NamedIndividual rdf:ID="MethanolOutput_001">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#CoreProduct"/>
+    <chemical_process_system:refersToGeneralizedAmount>
+      <owl:NamedIndividual rdf:ID="GeneralizedAmount_MethanolOutput_001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem>
+          <j.0:ContinuousMaterialAmount rdf:ID="MaterialAmount_MethanolOutput_001">
+            <system:hasProperty>
+              <j.0:ConvectiveMassFlowrate rdf:ID="massF_MethanolOutput_001">
+                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                <system:hasValue>
+                  <owl:NamedIndividual rdf:ID="V_massF_MethanolOutput_001">
+                    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+                    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >2</system:numericalValue>
+                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/s"/>
+                  </owl:NamedIndividual>
+                </system:hasValue>
+              </j.0:ConvectiveMassFlowrate>
+            </system:hasProperty>
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+          </j.0:ContinuousMaterialAmount>
+        </system:hasSubsystem>
+      </owl:NamedIndividual>
+    </chemical_process_system:refersToGeneralizedAmount>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="Price_CrudePalmOilInput_001">
+    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#RawMaterialPrice"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="Price_ProcessWater_001">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Price_ProcessWater_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+        >0.00033</system:numericalValue>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_kg"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.002</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_MediumPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_MediumPressureSteam_001">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_kg"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.01264</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_NaturalGasInput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_NaturalGasInput_001">
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#UtilityPrice"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="Price_Storage_Methanol_001">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Price_Storage_Methanol_001">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_ProcessWater_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_ProcessWater_001">
+        <system:hasUnitOfMeasure rdf:resource="#USD/ton/month"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+        >0.2075</system:numericalValue>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#StoragePrice"/>
+  </owl:NamedIndividual>
+  <j.4:StorageCosts rdf:ID="Costs_Storage_CrudePalmOil_001">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Costs_Storage_CrudePalmOil_001">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_kg"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.00033</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Storage_Biodiesel_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Storage_Biodiesel_001">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </j.4:StorageCosts>
+  <owl:NamedIndividual rdf:ID="Costs_Electricity_001">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Costs_Electricity_001">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/ton/month"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.2075</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Storage_CrudePalmOil_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Storage_CrudePalmOil_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/ton/month"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.2075</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Storage_Methanol_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Storage_Methanol_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/ton/month"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.2075</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Storage_NaturalGas_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Storage_NaturalGas_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/mmBTU/month"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.11104</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Transport_Malaysia-SG_CrudePalmOil_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Transport_Malaysia-SG_CrudePalmOil_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#UtilityCosts"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="Costs_Transport_SEA-SC_Biodiesel_001">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Costs_Transport_SEA-SC_Biodiesel_001">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
       </owl:NamedIndividual>
     </system:hasValue>
@@ -1066,350 +612,145 @@
     <system:hasValue>
       <owl:NamedIndividual rdf:ID="V_Costs_Transport_USGC-NEA_NaturalGas_001">
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/ton"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">40.0</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Transport_SG-SC_Methanol_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Transport_SG-SC_Methanol_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="V_Price_CoolingWater_001">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_kg"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >0.00174</system:numericalValue>
+  </owl:NamedIndividual>
+  <j.2:Utility rdf:ID="HighPressureSteam_001">
+    <chemical_process_system:refersToGeneralizedAmount>
+      <owl:NamedIndividual rdf:ID="GeneralizedAmount_HighPressureSteam_001">
+        <system:hasSubsystem>
+          <j.0:ContinuousMaterialAmount rdf:ID="MaterialAmount_HighPressureSteam_001">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+            <system:hasProperty>
+              <owl:NamedIndividual rdf:ID="massF_HighPressureSteam_001">
+                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+                <system:hasValue>
+                  <owl:NamedIndividual rdf:ID="V_massF_HighPressureSteam_001">
+                    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >0</system:numericalValue>
+                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+                    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+                  </owl:NamedIndividual>
+                </system:hasValue>
+              </owl:NamedIndividual>
+            </system:hasProperty>
+          </j.0:ContinuousMaterialAmount>
+        </system:hasSubsystem>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+      </owl:NamedIndividual>
+    </chemical_process_system:refersToGeneralizedAmount>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.2:Utility>
+  <owl:NamedIndividual rdf:ID="ProcessWater_001">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
+    <chemical_process_system:refersToGeneralizedAmount>
+      <owl:NamedIndividual rdf:ID="GeneralizedAmount_ProcessWater_001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem>
+          <j.0:ContinuousMaterialAmount rdf:ID="MaterialAmount_ProcessWater_001">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+            <system:hasProperty>
+              <owl:NamedIndividual rdf:ID="massF_ProcessWater_001">
+                <system:hasValue>
+                  <owl:NamedIndividual rdf:ID="V_massF_ProcessWater_001">
+                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+                    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >3062.5976</system:numericalValue>
+                    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+                  </owl:NamedIndividual>
+                </system:hasValue>
+                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+              </owl:NamedIndividual>
+            </system:hasProperty>
+          </j.0:ContinuousMaterialAmount>
+        </system:hasSubsystem>
+      </owl:NamedIndividual>
+    </chemical_process_system:refersToGeneralizedAmount>
+  </owl:NamedIndividual>
+  <j.4:UtilityPrice rdf:ID="Price_MediumPressureSteam_001">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Price_MediumPressureSteam_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+        >0.01264</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_kg"/>
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/ton"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">22.9</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Transport_USGC-NEA_NaturalGas_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_Price_Transport_USGC-NEA_NaturalGas_001">
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.4:UtilityPrice>
+  <owl:NamedIndividual rdf:ID="Earnings_MethanolOutput_001">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Earnings_MethanolOutput_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/mmBTU"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.142857143</system:numericalValue>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">6.571428571</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_USD_to_CNY -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_USD_to_CNY">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#ProductEarnings"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="Costs_Storage_Biodiesel_001">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Costs_Storage_Biodiesel_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/CNY"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">0.157024743871</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_USD_to_SGD -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_USD_to_SGD">
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#StorageCosts"/>
+  </owl:NamedIndividual>
+  <j.4:StorageCosts rdf:ID="Costs_Storage_Methanol_001">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="V_Costs_Storage_Methanol_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
         <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/SGD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">0.74480515100122</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_energyF_Electricity_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_energyF_Electricity_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kW"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">4.45842243</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_BiodieselOutput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_BiodieselOutput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">24334.4343</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_CoolingWater_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_CoolingWater_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">29191.6114</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_CrudePalmOilInput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_CrudePalmOilInput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/s"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">24220.0656</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_HighPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_HighPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">0</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_LowPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_LowPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">0</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_MediumPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_MediumPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">10034.3268</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_MethanolOutput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_MethanolOutput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/s"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_NaturalGasInput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_NaturalGasInput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#mmBTU/s"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_ProcessWater_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_ProcessWater_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">3062.5976</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_moleF_FuelGas_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_moleF_FuelGas_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">22.2967893</system:numericalValue>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#energyF_Electricity_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#energyF_Electricity_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveEnergyFlowrate"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_energyF_Electricity_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_BiodieselOutput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_BiodieselOutput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_BiodieselOutput_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_CoolingWater_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_CoolingWater_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_CoolingWater_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_CrudePalmOilInput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_CrudePalmOilInput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_CrudePalmOilInput_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_HighPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_HighPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_HighPressureSteam_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_LowPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_LowPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_LowPressureSteam_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_MediumPressureSteam_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_MediumPressureSteam_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_MediumPressureSteam_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_MethanolOutput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_MethanolOutput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_MethanolOutput_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_NaturalGasInput_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_NaturalGasInput_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_NaturalGasInput_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_ProcessWater_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#massF_ProcessWater_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_massF_ProcessWater_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#moleF_FuelGas_001 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#moleF_FuelGas_001">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#V_moleF_FuelGas_001"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#SGD/kJ -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#SGD/kJ">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/CNY -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/CNY">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/SGD -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/SGD">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/mmBTU -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/mmBTU">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/ton -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/ton">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/mmBTU/month -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/mmBTU/month">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/ton/month -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#USD/ton/month">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#cbm/s -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#cbm/s">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#kJ/hr -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#kJ/hr">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#mmBTU/s -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#mmBTU/s">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#ton/s -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl#ton/s">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-    </owl:NamedIndividual>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </j.4:StorageCosts>
+  <owl:AnnotationProperty rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasProperty"/>
+  <owl:NamedIndividual rdf:ID="CrudePalmOilInput_001">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#RawMaterial"/>
+    <chemical_process_system:refersToGeneralizedAmount>
+      <owl:NamedIndividual rdf:ID="GeneralizedAmount_CrudePalmOilInput_001">
+        <system:hasSubsystem>
+          <j.0:ContinuousMaterialAmount rdf:ID="MaterialAmount_CrudePalmOilInput_001">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+            <system:hasProperty>
+              <owl:NamedIndividual rdf:ID="massF_CrudePalmOilInput_001">
+                <system:hasValue>
+                  <owl:NamedIndividual rdf:ID="V_massF_CrudePalmOilInput_001">
+                    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+                    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >24220.0656</system:numericalValue>
+                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/s"/>
+                  </owl:NamedIndividual>
+                </system:hasValue>
+                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+              </owl:NamedIndividual>
+            </system:hasProperty>
+          </j.0:ContinuousMaterialAmount>
+        </system:hasSubsystem>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+      </owl:NamedIndividual>
+    </chemical_process_system:refersToGeneralizedAmount>
+  </owl:NamedIndividual>
+  <j.4:UtilityPrice rdf:ID="Price_CoolingWater_001">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasValue rdf:resource="#Price_CoolingWater_001"/>
+  </j.4:UtilityPrice>
 </rdf:RDF>
 
-
-
-<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
-
+<!-- Created with Protege (with OWL Plugin 3.4.8, Build 629)  http://protege.stanford.edu -->

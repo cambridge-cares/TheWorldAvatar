@@ -71,13 +71,15 @@ public class SurrogateModel extends HttpServlet {
 //			System.out.println(co2EmissionRate);
 			
 			// Store new emission
-			PythonHelper.callPython("powerplant_sparql_update.py", plantIRI, co2EmissionRate, this);
+			String result = PythonHelper.callPython("powerplant_sparql_update.py", plantIRI, co2EmissionRate, this);
+//			System.out.println(result);
 			
 			String plantInfoAfter = PythonHelper.callPython("powerplant_sparql_read_local.py", plantIRI, this);
-			System.out.println(plantInfoAfter);
-			System.out.println("\n");
+//			System.out.println(plantInfoAfter);
+//			System.out.println("");
 		} catch (PythonException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
+			System.out.println(plantIRI);
 		}
 	}
 }

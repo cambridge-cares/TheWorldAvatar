@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.base.discovery.test;
 
+import java.net.URI;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,5 +30,11 @@ public class TestAgentCaller extends TestCase {
 		
 		assertEquals("value1", json.get("key1"));
 		assertEquals("value2", json.get("key2"));
+	}
+	
+	public void testCreateURI() {
+		
+		URI uri = AgentCaller.createURI("http://www.theworldavatar.com:80/damecoolquestion/berlinbuildings/query", "query", "this is a query with & sign");	
+		assertEquals("http://www.theworldavatar.com:80/damecoolquestion/berlinbuildings/query?query=this+is+a+query+with+%26+sign", uri.toString());	
 	}
 }

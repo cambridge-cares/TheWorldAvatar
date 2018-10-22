@@ -21,20 +21,15 @@ import org.slf4j.LoggerFactory;
 @WebServlet("/LogServer")
 public class LogServer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private static Logger logger = LoggerFactory.getLogger(LogServer.class);
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
 	public LogServer() {
-		super();
+		info(this, "started");
 	}
-
-	private Logger logger = LoggerFactory.getLogger(LogServer.class);
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		response.getWriter().append("Served at: ").append(request.getContextPath());
-
+		
 		try {
 			// Read from request
 			StringBuilder buffer = new StringBuilder();
@@ -48,11 +43,13 @@ public class LogServer extends HttpServlet {
 //			file.getParentFile().mkdirs();
 //			PrintWriter writer = new PrintWriter(file, "UTF-8");
 //			writer.println(buffer.toString());
-//			writer.close();
-	
+//			writer.close();	
+			
+			//response.getWriter().append("Served at: ").append(request.getContextPath()).append(" message: ").append(buffer.toString());
 			logger.info(buffer.toString());
+			
 		} catch (Exception e) {
-			logger.error("Failed to read the request body from the request.");
+			error(this, "failed to read the request body from the request.");
 		}
 	}
 	
@@ -60,5 +57,16 @@ public class LogServer extends HttpServlet {
 			throws ServletException, IOException {
 		doGet(request, response);
 	}
-
+	
+	public static void info(Object sender, String message) {
+		logger.info(sender.getClass().getSimpleName() + " " + message);
+	}
+	
+	public static void error(Object sender, String message) {
+		logger.error(sender.getClass().getSimpleName() + " " + message);
+	}
+	
+	public static void error(Object sender, Exception exc) {
+		logger.error(sender.getClass().getSimpleName() + " " + exc.getMessage() + "\n" + exc.getStackTrace());
+	}
 }

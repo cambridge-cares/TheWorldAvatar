@@ -7,6 +7,7 @@
 from lxml import html
 import requests, sys
 import json
+import urllib
 
 from caresjpsutil import returnExceptionToJava, returnResultsToJava
 from caresjpsutil import PythonLogger
@@ -17,33 +18,18 @@ def exchange_rates():
 	# The first entry in the array with codenames corresponds to the present currency, while the second to the target currency. 
 	
 	currency_pairs = [['CNY', 'USD'], ['SGD', 'USD']]
-	rates = []
-	headers = []
-	string1 = ""
-	string2=""
 	dictHeaderValue = {}
 
+	url = 'http://apilayer.net/api/live?access_key=402d77f0850c35adfa5a797e325262dd&currencies=CNY,SGD&source=USD&format=1'
+	f = urllib.request.urlopen(url)
+	dict = json.loads(f.read().decode('utf-8'))
+
+	dictQuotes = dict['quotes']
+
+	i = 1
 	for currencies in currency_pairs:
-		# Url is being formulated
-		url_address = 'http://www.xe.com/currencyconverter/convert/?Amount=1&From='+currencies[1]+'&To='+currencies[0]
-		
-		# requests library is used to download the source code of the page with exchange rates. The code is then parsed as html.
-		page = requests.get(url_address)
-		tree = html.fromstring(page.content)
-		page.close()
-		
-		# lxml library is used to search through the html file using its structure and attributes
-		exchange_rate = float(tree.xpath('//span[@class="uccResultUnit"]')[0].attrib['data-amount'])
-		# rates.append(str(exchange_rate))
-		# headers.append(currencies[1]+'_to_'+currencies[0])
-        #
-		# string1 = string1 + currencies[1] + '_to_' + currencies[0]+ ","
-		# string2 = string2 + str(exchange_rate)+ ","
+		dictHeaderValue['{}_to_{}'.format(currencies[1], currencies[0])] = dictQuotes['{}{}'.format(currencies[1], currencies[0])]
 
-		dictHeaderValue['{}_to_{}'.format(currencies[1], currencies[0])] = str(exchange_rate)
-
-	# string2 = string2[:-1]
-	# print(string1 + string2)
 	return json.dumps(dictHeaderValue)
 
 

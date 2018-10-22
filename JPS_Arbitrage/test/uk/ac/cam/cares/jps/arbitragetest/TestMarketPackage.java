@@ -1,11 +1,19 @@
 package uk.ac.cam.cares.jps.arbitragetest;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +43,35 @@ public class TestMarketPackage extends TestCase {
 			ClientProtocolException, IOException {
 
 		String path = "/JPS_ARBITRAGE/downloadingAndSavingMarketDataInTheKnowledgeBase";
+		System.out.println(path);
 		String actual = AgentCaller.executeGet(path, "choicePlant", "Biodiesel");
 		logger.info(actual);
+		System.out.println(actual);
+		
+		// Send HTTP get request to endpoint
+//		URIBuilder builder = new URIBuilder().setScheme("http").setHost("localhost:8080")
+//				.setPath("/JPS_ARBITRAGE/downloadingAndSavingMarketDataInTheKnowledgeBase")
+//				.setParameter("choicePlant", "Biodiesel");
+//		
+//		URI uri = builder.build();
+//		HttpGet getRequest = new HttpGet(uri);
+//		HttpClient httpClient = HttpClientBuilder.create().build();
+//		HttpResponse httpResponse = httpClient.execute(getRequest);
+//		
+//		// Parse response into string
+//		BufferedReader rd = new BufferedReader(new InputStreamReader(
+//			    httpResponse.getEntity().getContent()));
+//		
+//		StringBuilder total = new StringBuilder();
+//		String line = null;
+//
+//		while ((line = rd.readLine()) != null) {
+//			total.append(line);
+//		}
+//		rd.close();
+//		String actual = total.toString();	
+//		
+//		System.out.println(actual);
 		
 		Gson g = new Gson();
 		

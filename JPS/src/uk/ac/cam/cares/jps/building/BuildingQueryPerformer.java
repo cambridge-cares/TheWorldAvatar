@@ -20,6 +20,8 @@ import org.openimaj.math.geometry.shape.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.building.SimpleShapeConverter.SimpleShape;
@@ -35,32 +37,40 @@ public class BuildingQueryPerformer implements SparqlConstants {
 	
 	public String performQuery(String cityIRI, String query) {
 		
-		logger.debug("city = " + cityIRI);
-		logger.debug("query = \n" + query);
-		
-		String host = Configuration.getHost();
-		int port = Configuration.getPort();
-		
-		String path = null;
+		String urlKey = IKeys.URL_BUILDINGSQUERY_THEHAGUE;
 		if (cityIRI.equalsIgnoreCase(BERLIN_IRI)) {
-			path = "/damecoolquestion/berlinbuildings/query";
-		} else if (cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
-			path = "/damecoolquestion/thehaguebuildings/query";
+			urlKey = IKeys.URL_BUILDINGSQUERY_BERLIN;
 		}
 		
-		URIBuilder builder = new URIBuilder().setScheme("http").setHost(host).setPort(port)
-				.setPath(path)
-				.setParameter("query", query);
-	
-		String result = executeGet(builder);
-		return result;
+		return AgentCaller.executeGetWithURLKey(urlKey, AgentCaller.MediaType.TEXT_CSV ,"query", query);
+//		
+//		
+//		logger.debug("city = " + cityIRI);
+//		logger.debug("query = \n" + query);
+//		
+//		String host = KeyValueServer.get("host");
+//		int port = Integer.valueOf(KeyValueServer.get("port"));
+//		
+//		String path = null;
+//		if (cityIRI.equalsIgnoreCase(BERLIN_IRI)) {
+//			path = "/damecoolquestion/berlinbuildings/query";
+//		} else if (cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
+//			path = "/damecoolquestion/thehaguebuildings/query";
+//		}
+//		
+//		URIBuilder builder = new URIBuilder().setScheme("http").setHost(host).setPort(port)
+//				.setPath(path)
+//				.setParameter("query", query);
+//	
+//		String result = executeGet(builder);
+//		return result;
 	}
 	
 	// TODO-AE: move method to JPS BASE (AgentCaller)
 	public String executeGet(URIBuilder builder) {
 		try {
 			URI uri = builder.build();
-			logger.debug(uri.toString());
+			logger.info(uri.toString());
 			HttpGet request = new HttpGet(uri);
 			request.setHeader(HttpHeaders.ACCEPT, "text/csv");
 			//request.setHeader(HttpHeaders.ACCEPT, "application/json");

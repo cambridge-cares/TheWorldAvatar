@@ -3,20 +3,17 @@ package uk.ac.cam.cares.jps.adms;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
-import uk.ac.cam.cares.jps.base.util.PythonHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Servlet implementation class ADMSOutput
@@ -71,7 +68,7 @@ public class ADMSOutputAll extends HttpServlet {
 //		
 //		String targetFolder = "C:/TOMCAT/webapps/JPS/python/caresjpsadmsinputs";
 //		String result = CommandHelper.executeCommands(targetFolder, args);
-		logger.info("=== Result === :" + result);
+		logger.debug("=== Result === :" + result);
 		response.setContentType("application/json");
 		response.getWriter().write(result);
 	}

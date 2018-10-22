@@ -2,6 +2,10 @@ import rdflib
 import re
 import sys
 import json
+from datetime import datetime
+
+from caresjpsutil import returnExceptionToJava, returnResultsToJava
+from caresjpsutil import PythonLogger
 
 class PowerplantSPARQLSync:
 
@@ -47,7 +51,7 @@ class PowerplantSPARQLSync:
             PREFIX j5: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
             PREFIX j7: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#>
 
-            SELECT ?country ?capacityValue ?ageValue ?primaryFuel ?genTech ?annualGenValue ?genCostValue ?emissionRateValue
+            SELECT ?country ?capacityValue ?year ?primaryFuel ?genTech ?annualGenValue ?genCostValue ?emissionRateValue
             WHERE
             {{
                 <{0}> j1:hasAddress ?country .
@@ -56,9 +60,9 @@ class PowerplantSPARQLSync:
                     ?capacityIRI j1:hasValue ?capacity.
                         ?capacity j1:numericalValue ?capacityValue.
 
-                <{0}> j8:hasAge ?ageIRI.
-                    ?ageIRI j1:hasValue ?age.
-                        ?age j1:numericalValue ?ageValue.
+                <{0}> j8:hasYearOfBuilt ?yearOfBuilt.
+                    ?yearOfBuilt j1:hasValue ?yearValue.
+                        ?yearValue j1:numericalValue ?year.
 
                 <{0}> j5:realizes ?generation.
                     ?generation j8:consumesPrimaryFuel ?primaryFuel.
@@ -83,8 +87,8 @@ class PowerplantSPARQLSync:
         # get capacity value
         capacityValue = int(queryResults[0]['capacityValue'].toPython())
 
-        # get age
-        age = int(queryResults[0]['ageValue'].toPython())
+        # get year
+        year = int(queryResults[0]['year'].toPython())
 
         # get primary fuel
         primaryFuel = re.search(r'#([a-zA-Z]+)$', str(queryResults[0]['primaryFuel'])).group(1).lower()
@@ -111,7 +115,7 @@ class PowerplantSPARQLSync:
         dict['capacity_MW'] = capacityValue
         dict['primary_fuel'] = primaryFuel
         dict['generation_technology'] = genTech
-        dict['age'] = age
+        dict['age'] = datetime.now().year - year
         dict['output_MWh'] = annualGenValue
         dict['fuel_used'] = fuelUsed
         dict['emission_rate'] = emissionRate
@@ -119,7 +123,15 @@ class PowerplantSPARQLSync:
         return dict
     
 if __name__ == "__main__":
-    plantIRI = sys.argv[1]
-    pSPARQL = PowerplantSPARQLSync(plantIRI)
-    powerplantInfo = pSPARQL.getPowerplantInfo()
-    print(json.dumps(powerplantInfo))
+    pythonLogger = PythonLogger('powerplant_sparql_read.py')
+    pythonLogger.postInfoToLogServer('start of powerplant_sparql_read.py')
+    
+    try:
+        plantIRI = sys.argv[1]
+        pSPARQL = PowerplantSPARQLSync(plantIRI)
+        powerplantInfo = pSPARQL.getPowerplantInfo()
+        returnResultsToJava(json.dumps(powerplantInfo))
+        pythonLogger.postInfoToLogServer('end of powerplant_sparql_read.py')
+    except Exception as e:
+        returnExceptionToJava(e)
+        pythonLogger.postInfoToLogServer('end of powerplant_sparql_read.py')

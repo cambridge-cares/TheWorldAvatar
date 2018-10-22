@@ -5,6 +5,9 @@ import pandas as pd
 from scipy import interpolate
 from scipy.interpolate import LinearNDInterpolator
 
+from caresjpsutil import returnExceptionToJava, returnResultsToJava
+from caresjpsutil import PythonLogger
+
 # define a function that can interpolate the emission and cost surface, and calculate the corresponding powerplant emission
 
 def cost_emission_calculation (m, n):
@@ -71,45 +74,53 @@ def cost_emission_calculation (m, n):
         return k
 
 if __name__ == "__main__":
-    plantInfoDict = json.loads(sys.argv[1])
-    workingDir = str(sys.argv[2]) + '/'
-    generation_technology = plantInfoDict['generation_technology']
-    primary_fuel = plantInfoDict['primary_fuel']
-    plant_df = pd.DataFrame(plantInfoDict, index=[0])
-    plant_df.drop(['emission_rate'], axis=1, inplace=True)
-      
-    if generation_technology == 'ultrasupercritical':
-        emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_ultrasupercritical_PC_coal.csv', header='infer', sep=',')
+    pythonLogger = PythonLogger('surrogate_model.py')
+    pythonLogger.postInfoToLogServer('start of surrogate_model.py')
+    
+    try:
+        plantInfoDict = json.loads(sys.argv[1])
+        workingDir = str(sys.argv[2]) + '/'
+        generation_technology = plantInfoDict['generation_technology']
+        primary_fuel = plantInfoDict['primary_fuel']
+        plant_df = pd.DataFrame(plantInfoDict, index=[0])
+        plant_df.drop(['emission_rate'], axis=1, inplace=True)
           
-    if generation_technology == 'supercritical':
-        if primary_fuel == 'anthracite':
-            emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_supercritical_PC_anthracite.csv', header='infer', sep=',')
-        elif primary_fuel == 'subbituminous':
-            emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_supercritical_PC_subbituminous.csv', header='infer', sep=',')
-        elif primary_fuel == 'lignite':
-            emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_supercritical_PC_lignite.csv', header='infer', sep=',')
-        elif primary_fuel == 'bituminous' or primary_fuel == 'coal':
-            emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_supercritical_PC_subbituminous.csv', header='infer', sep=',')
-      
-    if generation_technology == 'subcritical' or generation_technology == 'cogeneration':
-        if primary_fuel == 'anthracite':
-            emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_subcritical_PC_anthracite.csv', header='infer', sep=',')
-        elif primary_fuel == 'subbituminous':
-            emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_subcritical_PC_subbituminous.csv', header='infer', sep=',')
-        elif primary_fuel == 'lignite':
-            emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_subcritical_PC_lignite.csv', header='infer', sep=',')
-        elif primary_fuel == 'coal_biomass':
-            emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_subcritical_PC_coal_biomass.csv', header='infer', sep=',')     
-        elif primary_fuel == 'bituminous' or primary_fuel == 'coal':
-            emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_subcritical_PC_subbituminous.csv', header='infer', sep=',')
-      
-    if primary_fuel == 'natural_gas':
-        emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_NGCC.csv', header='infer', sep=',')
-        emission_df = emission_df.sort_values(by=['age','capacity_MW'], ascending=[True,True])
+        if generation_technology == 'ultrasupercritical':
+            emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_ultrasupercritical_PC_coal.csv', header='infer', sep=',')
+              
+        if generation_technology == 'supercritical':
+            if primary_fuel == 'anthracite':
+                emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_supercritical_PC_anthracite.csv', header='infer', sep=',')
+            elif primary_fuel == 'subbituminous':
+                emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_supercritical_PC_subbituminous.csv', header='infer', sep=',')
+            elif primary_fuel == 'lignite':
+                emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_supercritical_PC_lignite.csv', header='infer', sep=',')
+            elif primary_fuel == 'bituminous' or primary_fuel == 'coal':
+                emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_supercritical_PC_subbituminous.csv', header='infer', sep=',')
           
-    if primary_fuel == 'oil':
-        emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_NGCC_oil.csv', header='infer', sep=',')
-        emission_df = emission_df.sort_values(by=['age','capacity_MW'], ascending=[True,True])
+        if generation_technology == 'subcritical' or generation_technology == 'cogeneration':
+            if primary_fuel == 'anthracite':
+                emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_subcritical_PC_anthracite.csv', header='infer', sep=',')
+            elif primary_fuel == 'subbituminous':
+                emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_subcritical_PC_subbituminous.csv', header='infer', sep=',')
+            elif primary_fuel == 'lignite':
+                emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_subcritical_PC_lignite.csv', header='infer', sep=',')
+            elif primary_fuel == 'coal_biomass':
+                emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_subcritical_PC_coal_biomass.csv', header='infer', sep=',')     
+            elif primary_fuel == 'bituminous' or primary_fuel == 'coal':
+                emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_subcritical_PC_subbituminous.csv', header='infer', sep=',')
           
-    result_dict = cost_emission_calculation(plant_df, emission_df).iloc[0].to_dict()
-    print(result_dict['annual_emission_ton'])
+        if primary_fuel == 'natural_gas':
+            emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_NGCC.csv', header='infer', sep=',')
+            emission_df = emission_df.sort_values(by=['age','capacity_MW'], ascending=[True,True])
+              
+        if primary_fuel == 'oil':
+            emission_df = pd.read_csv(workingDir + 'data/input/baseplant/base_NGCC_oil.csv', header='infer', sep=',')
+            emission_df = emission_df.sort_values(by=['age','capacity_MW'], ascending=[True,True])
+              
+        result_dict = cost_emission_calculation(plant_df, emission_df).iloc[0].to_dict()
+        returnResultsToJava(result_dict['annual_emission_ton'])
+        pythonLogger.postInfoToLogServer('end of surrogate_model.py')
+    except Exception as e:
+        returnExceptionToJava(e)
+        pythonLogger.postInfoToLogServer('end of surrogate_model.py')
