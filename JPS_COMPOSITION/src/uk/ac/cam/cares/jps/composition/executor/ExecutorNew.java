@@ -3,6 +3,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -12,7 +13,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,7 +24,7 @@ public class ExecutorNew {
 	public Map<String,ExecutionPackage> executionPackageMap = new HashMap<String,ExecutionPackage>();  // The key is the http url
 	public String myHost = "localhost";
 	public int myPort = 8080;
-	public JSONArray finalResult = new JSONArray();
+	public JSONObject finalResult = new JSONObject();
 	public JSONObject initialInput;
 	
 	public ExecutorNew() {
@@ -109,7 +109,7 @@ public class ExecutorNew {
 								.setPath(path)
 								.setParameter("value", initialInput.toString());
 						JSONObject result = new JSONObject(executeGet(builder));
-						this.finalResult.put(result);
+						appendNewResult(result);
 					}
 				}
 				break;
@@ -150,12 +150,12 @@ public class ExecutorNew {
 	public void executeSingleTask(Task task, JSONObject result, ArrayList<String> targetHttpUrlList, ArrayList<ArrayList<String>> keysArray) throws JSONException {
 		
 		if(task.targetHttpUrl == null) {
-			this.finalResult.put(result);
+			appendNewResult(result);
 		}
 		else {
 			if(task.targetHttpUrl.size() == 0) {
 				// The result is one of the final results ; 
-				this.finalResult.put(result);
+				appendNewResult(result);
 			}
 		
 		
@@ -200,6 +200,17 @@ public class ExecutorNew {
 		else {
 			return(-1);
 		}
+	}
+	
+	public void appendNewResult(JSONObject newResult) throws JSONException {
+
+		Iterator<String> keys = newResult.keys();
+		while(keys.hasNext()) {
+			String key = (String) keys.next();
+			this.finalResult.put(key, newResult.get(key));
+		}
+
+
 	}
 	
 	public String executeGet(URIBuilder builder) {

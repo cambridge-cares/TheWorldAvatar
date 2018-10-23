@@ -80,8 +80,12 @@
             });
 
             request.done(function (data) {
-                	
-               	let theUrl = "http://" + hostname + "/JPS/?value=" +  encodeURIComponent(data) + "lat=52.076146&lon=4.309961&zoom=14.5&tilt=0.0&rotation=0.6";
+                
+            	console.log("------------- The data received -------------")
+            	console.log(data)
+            	console.log("---------------------------------------------")
+            	
+               	let theUrl = "http://" + hostname + "/JPS/index2.html?value=" +  encodeURIComponent(data) + "lat=52.076146&lon=4.309961&zoom=14.5&tilt=0.0&rotation=0.6";
                 document.getElementById('frame').src = theUrl;
                 var win = window.open(theUrl, '_blank');
                 win.focus();

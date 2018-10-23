@@ -266,5 +266,9 @@ function getParameter() {
     console.log(url_string);
     var url = new URL(url_string.replace(/#/g, '@'));
     var value = url.searchParams.get("value").split("lat=")[0];
+    console.log("---------------- from get Parameter ----------------")
+    console.log(value)
+    console.log("----------------------------------------------------")
+    
     return value.replace(/@/g,'#')
 }

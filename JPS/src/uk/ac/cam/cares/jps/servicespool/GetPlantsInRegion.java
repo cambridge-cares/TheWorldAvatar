@@ -48,6 +48,10 @@ public class GetPlantsInRegion extends HttpServlet {
  			e2.printStackTrace();
 		}
  
+		
+		System.out.println("================ output from plants ================");
+		System.out.println(output.toString());
+		System.out.println("====================================================");
  		
 		String PlantSelectionQuery = 
 				"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" + 
