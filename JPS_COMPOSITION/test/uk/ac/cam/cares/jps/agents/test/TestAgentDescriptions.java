@@ -112,7 +112,7 @@ public class TestAgentDescriptions extends TestCase {
 		return addInputRegion(new ServiceBuilder().operation(null, JPS + "/ADMSAgent"))
 			.input("http://dbpedia.org/ontology/city", "city")
 			.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
-			//.input("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
+			//.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
 			.input(WEATHER + "#WeatherState", "weatherstate").down()
 			.input(WEATHER + "#hasHumidity", "humidity").down()
 				.input(WEATHER + "#hasValue", "value").up()

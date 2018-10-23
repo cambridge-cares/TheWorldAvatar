@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.client.utils.URIBuilder;
 import org.openimaj.math.geometry.shape.Polygon;
 
 import com.google.gson.Gson;
@@ -31,13 +30,6 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 	
 	public static BuildingQueryPerformer createQueryPerformerForTheHague() {
 		return new BuildingQueryPerformer();
-	}
-	
-	public String performQueryOnLocalHost(String dataset, String query) {
-		URIBuilder builder = new URIBuilder().setScheme("http").setHost("localhost").setPort(3030)
-				.setPath("/" + dataset + "/query")
-				.setParameter("query", query);
-		return createQueryPerformerForTheHague().executeGet(builder);
 	}
 	
 	public void testTheHagueTenBuildings() {
@@ -157,6 +149,8 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		
 		List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryClosestBuildingsFromRegion( 
 				BuildingQueryPerformer.THE_HAGUE_IRI, plantx, planty, 25, lowerx, lowery, upperx, uppery);
+		
+		System.out.println(new Gson().toJson(buildingIRIs));
 				
 		assertEquals(25, buildingIRIs.size());
 	}

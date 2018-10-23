@@ -7,16 +7,13 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.log.LogServer;
 
 public class KeyValueMap {
 
 	private static KeyValueMap instance = null;
 	private static Map<String, String> map = new ConcurrentHashMap<String, String>();
-	Logger logger = LoggerFactory.getLogger(KeyValueMap.class);
 	
 	public static synchronized KeyValueMap getInstance() {
 		if (instance == null) {
@@ -47,40 +44,32 @@ public class KeyValueMap {
 		boolean isJpsBaseDir = path.endsWith("/JPS_BASE") || path.endsWith("\\JPS_BASE");
 		if (! isJpsBaseDir) {
 			String message = "The current path is not withing JPS_BASE directory, path=" + path;
-			logger.error(message);
+			LogServer.error(this, message);
 			throw new JPSRuntimeException(message);
 		}
 				
 		try {
 			loadProperties(path);
-			logProperties();
 		} catch (IOException exc) {
-			logger.error(exc.getMessage(), exc);
+			LogServer.error(this, exc);
 			throw new JPSRuntimeException(exc.getMessage(), exc);
 		}
 	}
 	
 	private void loadProperties(String jpsBaseDirectory) throws IOException {
-	      
+	    
 		String configPath = jpsBaseDirectory + "/conf/jps.properties";
-		logger.info("loading key-value pairs from " + configPath);
+		LogServer.info(this, "loading key-value pairs from " + configPath);
 		
 		FileInputStream inputStream = new FileInputStream(configPath);
 		Properties props = new Properties();
-		props.load(inputStream);
-		
+		props.load(inputStream);	
 		
 		Set<String> keys = props.stringPropertyNames();
 		for (String key : keys) {
 			String value = props.getProperty(key);
 			put(key, value);
-		}
-	}
-	
-	private void logProperties() {
-		Set<String> keys = map.keySet();
-		for (String key : keys) {
-			logger.info(key + "=" + map.get(key));
+			LogServer.info(this, key + " = " + value);
 		}
 	}
 }
