@@ -729,11 +729,10 @@ var FileLinkMap = function (options) {
         let subscribeList = bubbleMap.nodesArr.map(function (node) {
             return {uri: node.url, withData: false};
         });
-        
+    
+    
         socket.emit("join", JSON.stringify(subscribeList));
-        /******************/
-        
-        
+    
         //set force simulationf
 
         
@@ -742,6 +741,7 @@ var FileLinkMap = function (options) {
     }
     
     //update and expand cluster
+    /******************/
     bubbleMap.findLinks2Node = function (url) {
         
         /**
@@ -888,8 +888,9 @@ var FileLinkMap = function (options) {
     
         bubbleMap.expandCluster = function (url) {
         console.log(bubbleMap.subconMap[url].connections)
-        console.log(bubbleMap.initLinks)
-        return bubbleMap.initLinks.concat(bubbleMap.subconMap[url].connections)
+        console.log(bubbleMap.initLinks);
+            bubbleMap.initLinks =  bubbleMap.initLinks.concat(bubbleMap.subconMap[url].connections)
+        return bubbleMap.initLinks
     
     };
     bubbleMap.noClusterExpand= function(){
