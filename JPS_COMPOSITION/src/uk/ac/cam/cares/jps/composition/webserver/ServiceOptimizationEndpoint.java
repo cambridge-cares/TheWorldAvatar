@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.HTTP;
 import org.json.JSONArray;
 import org.json.JSONObject;
- 
+
 import uk.ac.cam.cares.jps.composition.enginemodel.Graph;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 import uk.ac.cam.cares.jps.composition.util.FormatTranslator;
@@ -45,12 +45,14 @@ public class ServiceOptimizationEndpoint extends HttpServlet {
 			JSONObject jsonObject = HTTP.toJSONObject(sb.toString());
 			String GraphInString = jsonObject.getString("Method").toString();
 			JSONObject GraphInJSON = new JSONObject(GraphInString);
+			
 			Graph graph = FormatTranslator.convertGraphJSONTOJavaClass(GraphInJSON.toString());
 			ArrayList<Service> servicesToBeDeleted = OptimalPathSearcher.getAllServicesToBeDeleted(graph);
 			JSONArray servicesToBeDeletedInJSON = new JSONArray();
 			for (Service service : servicesToBeDeleted) {
 				servicesToBeDeletedInJSON.put(service.getUri().toASCIIString());
 			}
+		 
 			response.getWriter().write(servicesToBeDeletedInJSON.toString());
 		} catch (Exception ex) {
 

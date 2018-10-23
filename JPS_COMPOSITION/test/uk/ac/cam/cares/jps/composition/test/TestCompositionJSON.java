@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.composition.test;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -39,7 +37,7 @@ public class TestCompositionJSON {
 		
 		String compositionDir = AgentLocator.getCurrentJpsAppDirectory(this);
 		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservices");
-		
+		// The code above would set the discovery folder to be composition.. / testres/admsservices
 		
 		
 		ServiceCompositionEngine engine = new ServiceCompositionEngine(getDebugCase(), "http://localhost:8080");
@@ -51,9 +49,13 @@ public class TestCompositionJSON {
 			eliminationList.add(service.getUri().toASCIIString());
 		}
 		
+		System.out.println(eliminationList);
 		
 		ExecutorProcessor processor = new ExecutorProcessor(FormatTranslator.convertGraphJavaClassTOJSON(graph), eliminationList);
 		ArrayList<ExecutionLayer> executionChain = processor.generateExecutionChain();
+		
+		//			ExecutorNew executor = FormatTranslator.convertJSONTOExecutor(executorInJSON.toString());
+
 		ExecutorNew executor = new ExecutorNew(executionChain); 
 
 
@@ -82,8 +84,16 @@ public class TestCompositionJSON {
 				.endObject()
 				.endObject().toString(); 
 		
-		String result = executor.execute(new JSONObject(input));
-		assertEquals(new JSONObject(result).getJSONArray("buildings").length(),25);
+		
+		input = "{\"region\":{\"lowercorner\":{\"lowerx\":\"4.283710282240122\",\"lowery\":\"52.07126465153749\"},\"uppercorner\":{\"upperx\":\"4.2946107796766455\",\"uppery\":\"52.07983708183632\"},\"srsname\":\"EPSG:4326\"}}";
+		
+		
+ 		String result = executor.execute(new JSONObject(input));
+ 		System.out.println("============== result ==============");
+ 		System.out.println(result);
+ 		System.out.println("====================================");
+		
+//		assertEquals(new JSONObject(result).getJSONArray("buildings").length(),25);
 		 
 		
 	}
@@ -107,4 +117,9 @@ public class TestCompositionJSON {
 		JSONObject compositeAgentInJSON = new JSONObject("{\"operations\":[{\"outputs\":[{\"optionalParts\":[],\"mandatoryParts\":[{\"type\":\"https://www.w3.org/ns/csvw#Table\",\"uri\":\"http://www.theworldavatar.com/Mandatory_MessagePart_15wGxcwo\",\"value\":\"\",\"datatypeValue\":\"\"}],\"uri\":\"http://www.theworldavatar.com/MessageContent_Output_18YRk5SC\"},{\"optionalParts\":[],\"mandatoryParts\":[{\"type\":\"http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType\",\"uri\":\"http://www.theworldavatar.com/Mandatory_MessagePart_1515cwo\",\"value\":\"\",\"datatypeValue\":\"\",\"array\":\"true\"}],\"uri\":\"http://www.theworldavatar.com/MessageContent_Output_18YRk5SC\"}],\"inputs\":[{\"optionalParts\":[],\"mandatoryParts\":[{\"type\":\"http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType\",\"uri\":\"http://www.theworldavatar.com/Mandatory_MessagePart_CghedAK\",\"value\":\"\",\"datatypeValue\":\"\"}],\"uri\":\"http://www.theworldavatar.com/MessageContent_Input_xzbAvBW\"}],\"httpUrl\":\"http://www.theworldavatar.com/JPS_COMPOSITION/RegionToADMS\",\"uri\":\"http://www.theworldavatar.com/Operation_pexDwAC\"}],\"uri\":\"http://www.theworldavatar.com/Composite_Service_ODsMpRv\"}");
 		return FormatTranslator.convertJSONTOJavaClass(compositeAgentInJSON.toString());
 	}
+	
+	
+
+	
+	
 }

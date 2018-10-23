@@ -36,6 +36,9 @@ public class ServiceExecutionEndpoint extends HttpServlet {
 			JSONObject executorInJSON = new JSONObject(request.getParameter("executionChain"));
 			ExecutorNew executor = FormatTranslator.convertJSONTOExecutor(executorInJSON.toString());
 			String value = request.getParameter("value");
+			System.out.println("================ Value ===============");
+			System.out.println(value);
+			System.out.println("======================================");
 			String result = executor.execute(new JSONObject(value));
 			if (result == null) {
 				response.getWriter().write("Error");

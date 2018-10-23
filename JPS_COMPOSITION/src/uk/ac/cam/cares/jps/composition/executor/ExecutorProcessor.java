@@ -40,7 +40,13 @@ public class ExecutorProcessor {
 		this.taskList = new ArrayList<Task>();
 		
 		this.eliminationList = new ArrayList<String>();
-		JSONArray tempList = this.compositeService.getJSONArray("eliminationList");
+		JSONArray tempList;
+		if(!this.compositeService.has("eliminationList")) {
+			tempList = new JSONArray();
+		}
+		else {
+			tempList = this.compositeService.getJSONArray("eliminationList");
+		}
 		for (int idx = 0; idx < tempList.length(); idx++) {
 			this.eliminationList.add(tempList.getString(idx));
 		}

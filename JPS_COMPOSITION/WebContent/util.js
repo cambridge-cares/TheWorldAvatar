@@ -303,11 +303,14 @@ function sendToExecutor(){
     })
         .done(function (msg) {
             executionChain = JSON.parse(msg);
+            
+            console.log("===== execution chain =====")
+            console.log(executionChain)
 
         	console.log("==== Trigger recommendation ====");
+        	console.log("Initial inputs")
+        	console.log(compositeServiceObj['initialInputs']);
         	// Get the inputs ... Make the recommendation
-
-
             let agents = selectInputMap(getInputTypes(compositeServiceObj['initialInputs'])[0]);
             let HTML = generateAgentCardHTML(agents);
             PopulateInputs(HTML);
@@ -326,7 +329,7 @@ function optimizeService() {
         method: "POST",
         url: hostname + "ServiceOptimizationEndpoint",
         data: compositeService,
-        timeout: 5000
+        timeout: 10000
 
     })
         .done(function (msg) {
@@ -440,6 +443,10 @@ function IRIProcessor(IRI) {
 	console.log('======== IRI ==========')
 	console.log(IRI)
 	console.log('=======================')
+	
+	if (IRI === undefined){
+		return null;
+	}
 	
 	if (IRI.endsWith("#Service")){
 		return IRI.split("/").slice(-1)[0].split('#')[0]

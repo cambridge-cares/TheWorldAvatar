@@ -52,8 +52,17 @@ public class ExecutorNew {
 							URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 									.setPath(path)
 									.setParameter("value", initialInput.toString());
+							
+							System.out.println("============== Path =============");
+							System.out.println(path);
+							
+							
 							String resultString = executeGet(builder);
 							JSONObject result = new JSONObject(resultString);
+							System.out.println("--------");
+							System.out.println(result);
+							System.out.println("=================================");
+
 							//System.out.println("\n\tResult: \n" + result);
 							executeSingleTask(task, result, targetHttpUrlList, keysArray);
 						}
@@ -72,8 +81,14 @@ public class ExecutorNew {
 									URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 											.setPath(path)
 											.setParameter("value", executionPackage.result.toString());
+									System.out.println("============== Path =============");
+									System.out.println(path);
 									String resultInString = executeGet(builder);	 
 									JSONObject result = new JSONObject(resultInString);
+									System.out.println("--------");
+									System.out.println(result);
+									System.out.println("=================================");
+
 									executeSingleTask(task, result, targetHttpUrlList, keysArray);
 								}
 							}	
@@ -133,11 +148,18 @@ public class ExecutorNew {
 	}
 	 
 	public void executeSingleTask(Task task, JSONObject result, ArrayList<String> targetHttpUrlList, ArrayList<ArrayList<String>> keysArray) throws JSONException {
-		if(task.targetHttpUrl.size() == 0) {
-			// The result is one of the final results ; 
+		
+		if(task.targetHttpUrl == null) {
 			this.finalResult.put(result);
 		}
+		else {
+			if(task.targetHttpUrl.size() == 0) {
+				// The result is one of the final results ; 
+				this.finalResult.put(result);
+			}
 		
+		
+
 		Map<String,Map<String, Map<String, String>>> NameMappingMap = task.httpToNameMapping;
 		// Get all the name mappings from the http first 
 		
@@ -157,6 +179,7 @@ public class ExecutorNew {
 				ExecutionPackage newExecutionPackage = this.executionPackageMap.get(targetHttpUrl);
 				newExecutionPackage.appendNewResult(result);
 			} 
+		}
 		}
 	}
 	

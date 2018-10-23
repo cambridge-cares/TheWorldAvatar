@@ -68,6 +68,8 @@ const regionTemplate = '{ \n' +
     '  }\n' +
     '}';
 
+const newRegion = '{"region":{"lowercorner":{"lowerx":"{1}","lowery":"{0}"},"uppercorner":{"upperx":"{3}","uppery":"{2}"},"srsname":"EPSG:4326"}}';
+
 
 String.prototype.format = function (args) {
     var str = this;
@@ -89,7 +91,7 @@ String.prototype.format = function (args) {
 String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 
 function generateSemanticRegion(y_min,x_min,y_max,x_max){
-    return regionTemplate.format([y_min, x_min, y_max, x_max]);
+    return newRegion.format([y_min, x_min, y_max, x_max]);
 }
 
 

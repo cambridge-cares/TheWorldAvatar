@@ -82,6 +82,9 @@ public class ServiceDiscovery {
 	
 	private ArrayList<Service> readTheServicePool(String directory) {
 
+		System.out.println("--------------------");
+		System.out.println(directory);
+		System.out.println("--------------------");
 		ServiceReader reader = new ServiceReader();
  		ArrayList<Service> servicesLoaded = new ArrayList<Service>();
  		File[] files = new File(directory).listFiles();

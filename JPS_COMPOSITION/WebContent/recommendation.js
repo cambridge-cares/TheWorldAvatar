@@ -58,7 +58,7 @@ function getInputTypes(initialInputs) {
     var types = [];
     for (var idx in initialInputs) {
         var input = initialInputs[idx];
-        types.push(input['modelReference'])
+        types.push(input['type'])
     }
 
     return types;
