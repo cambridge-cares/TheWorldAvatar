@@ -43,7 +43,7 @@ public class GetPlantsInRegion extends HttpServlet {
 		String value = request.getParameter("value");
 		JSONObject output = null;
 		try {
-			output = JSONFlattenTool.flattenRegion(new JSONObject(value));
+			output = JSONFlattenTool.flattenRegion(new JSONObject(value),true);
 		} catch (JSONException e2) {
  			e2.printStackTrace();
 		}

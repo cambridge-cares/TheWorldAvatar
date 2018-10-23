@@ -44,7 +44,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		String path = null;
 		if (cityIRI.equalsIgnoreCase(BERLIN_IRI)) {
 			path = "/damecoolquestion/berlinbuildings/query";
-		} else if (cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
+		} else if (cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {			
 			path = "/damecoolquestion/thehaguebuildings/query";
 		}
 		
@@ -125,13 +125,14 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		String query = getQueryClosestBuildingsFromRegion(200, lx, ly, ux, uy);		
 		String result = performQuery(cityIRI, query);
 		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
-		
-		return selectClosestBuilding(plx, ply, buildingLimit, map);
+ 		ArrayList<String> closestBuildings = selectClosestBuilding(plx, ply, buildingLimit, map);
+ 		return closestBuildings;
+
 	}
 	
-	public List<String> selectClosestBuilding(double centerx, double centery, int buildingLimit, Map<String, List<String>> map) {
+	public static ArrayList<String> selectClosestBuilding(double centerx, double centery, int buildingLimit, Map<String, List<String>> map) {
 		
-		List<String> result = new ArrayList<String>();
+		ArrayList<String> _result = new ArrayList<String>();
 		
 		class DistanceBuildingPair {
 			double distance;
@@ -171,10 +172,9 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		
 		int min = Math.min(size, buildingLimit);
 		for (int i=0; i<min; i++) {
-			result.add(pairs[i].buildingIRI);
+			_result.add(pairs[i].buildingIRI);
 		}
-		
-		return result;
+		return _result;
 	}
 	
 	public String getQueryClosestBuildingsFromRegion(int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
