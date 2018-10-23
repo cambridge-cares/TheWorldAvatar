@@ -20,29 +20,10 @@ var visualizationRouterFactory = function (topNodeAddress) {
 
     router.get('/', function(req, res, next) {
 
-
-            connectionsReader.process({topnode : topNodeAddress}).then((results)=>{
-
-                /**
-                if(err){
-                    res.status(500).send(err);
-                    console.log(err);
-                    return;
-                }
-                 ***/
-
-                console.log("read connections");
-                
-                //res.setHeader('Content-Type', 'application/json');
-                //res.json(results);//for testing
-                conns = results;
-                results.topnode = topNodeAddress;
-                
-                
+                            
                 res.render('visual'); //render the view with this value, { result: JSON.stringify(results)
 
-            });
-
+    
     });
     
     router.get('/links', function(req, res, next) {

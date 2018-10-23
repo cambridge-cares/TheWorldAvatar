@@ -93,6 +93,7 @@ owlProcessor.doConnect = function(address, level) {
                     me.buffer.push(null);
 					me.buffer.pause();
                 } else {//directly resolve
+				console.log('request for one layer result')
 				console.log(me.result);
                     resolve(me.result)
                 }
@@ -100,7 +101,7 @@ owlProcessor.doConnect = function(address, level) {
         
         }).catch(err=>{
 				me.linkCounter--;
-                console.log('err: '+err)
+                console.log('err connect: '+err)
 				            if( me.linkCounter <= 0){//end condition, return
                 console.log('all end, print result')
                 //end buffer
@@ -108,6 +109,8 @@ owlProcessor.doConnect = function(address, level) {
                     me.buffer.push(null);
 					me.buffer.pause();
                 } else {//directly resolve
+								console.log('request for one layer result')
+
                     resolve(me.result)
                 }
                 }
@@ -420,13 +423,13 @@ owlProcessor.packIntoClusterData = function (rawconn) {
     //get level 1 connections
     let self = this
     let firstl = [], subconnections = {};
-	//console.log(self.parentMap)
+	console.log(self.parentMap);
     rawconn.forEach((link)=>{
 		console.log(link)
         if(link.level === 1){
             firstl.push(link)
         } else{
-            let parent = self.parentMap[link.target]
+            let parent = self.parentMap[link.target];
             if (parent in subconnections){
                 subconnections[parent].connections.push(link)
             } else {
@@ -499,7 +502,7 @@ owlProcessor.process = function (options) {
     };
 
 owlProcessor.diskLoc2Uri = function(disk){
-	return disk.replace('C:\\TOMCAT\\webapps\\ROOT\\', 'http://www.jparksimulator.com/').replace(new RegExp( '\\\\','g'), '/');
+	return disk.replace('C:\\TOMCAT\\webapps\\ROOT\\', 'http://www.theworldavatar.com/').replace(new RegExp( '\\\\','g'), '/');
 }
 
 owlProcessor.uriList2DiskLoc = function (uriArr, diskroot) {
