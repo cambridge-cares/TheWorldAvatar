@@ -64,10 +64,4 @@ function getAllSensors(callback) {
 }
 
 
-getAllSensors((err, result)=>{
-    "use strict";
-    if(err) console.log(err)
-    console.log(result)
-    
-})
 module.exports = getAllSensors;

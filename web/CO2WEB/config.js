@@ -12,8 +12,8 @@ var config = {};
 
 config.baseUri = "http://www.theworldavatar.com"
 
-//configDevelop();
-configDeploy();
+configDevelop();
+//configDeploy();
 config.worldNode = path.join(config.root , "kb/TheWorld.owl");
 config.ppNode = path.join(config.root , "kb/powerplants/WorldPowerPlants.owl");
 config.jurongNode = path.join(config.root ,"kb/sgp/jurongisland/JurongIsland.owl");

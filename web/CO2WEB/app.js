@@ -146,6 +146,7 @@ ev.on('change', function (data) {
 /*socket io***/
 
 io.on('connection', function(socket){
+    
 
 socket.on('join', function (uriSubscribeList) {
     //May be do some authorization
@@ -161,13 +162,11 @@ socket.on('join', function (uriSubscribeList) {
         let affix = uri2Sub.withData? "_data" :"_nodata";
         diskLoc = path.normalize(diskLoc)
 
-
-        socket.join(diskLoc+affix);
-        logger.debug(socket.id, "joined", diskLoc+affix);
-
-        //TODO:check client legnth first, if 0 ,first join, ask to register for data
-
-
+            socket.join(diskLoc + affix);
+            logger.debug(socket.id, "joined", diskLoc + affix);
+        
+        //TODO:leave mechanism
+        
         if(uri2Sub.withData){
             var clients = io.sockets.adapter.rooms[diskLoc+affix].sockets;
 

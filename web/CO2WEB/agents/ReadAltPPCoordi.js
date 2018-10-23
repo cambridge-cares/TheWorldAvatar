@@ -88,10 +88,5 @@ function readAltPPCoordi(callback) {
 
 }
 
-readAltPPCoordi((err, result)=>{
-    "use strict";
-    if(err) console.log(err)
-    console.log(result)
-    
-})
+
 module.exports = readAltPPCoordi;

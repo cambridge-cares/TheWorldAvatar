@@ -1,12 +1,12 @@
 var RabbitMQ = require('rabbitmq-node');
 
-var rabbitmq = new RabbitMQ('http://www.theworldavatar.com:83');
+var rabbitmq = new RabbitMQ({'url':'amqp://guest:guest@www.theworldavatar.com:83'});
 
 var msgWatcher = {};
 
 //msgWatcher.init = function (io) {
     
-    rabbitmq.on('message', function(channel, message) {
+    rabbitmq.on('message', function(message) {
         console.log(message);
         //when get message, send message to browser thru io to all subscribers
         

@@ -75,8 +75,8 @@ owlProcessor.doConnect = function(address, level) {
                     item = this.normalAddr(item);
 					if(!iset.has(item)){
 						iset.add(item);
-						address = me.diskLoc2Uri(address);
-                    if(level>=2) {
+						address = me.root2baseUri(address);
+                    if(level>=2 && ! (item in this.parentMap)) {//
                         this.parentMap[item] = address in this.parentMap ? this.parentMap[address] : address;
                     }
                     me.result.push({'source':address, 'target':item, 'level':level})
@@ -117,10 +117,6 @@ owlProcessor.doConnect = function(address, level) {
 
 }
 
-owlProcessor.doCluster = function (result) {
-    //get all level 0
-    
-};
 
 /***
  * async connect to an address and query it to get inter file links
@@ -447,6 +443,8 @@ owlProcessor.process = function (options) {
     /*init paramters*/
         let self = this
         this.init(options);
+        console.log(self.root2baseUri(this.loc));
+        this.doConnect(this.loc, 1);
         this.doConnect(this.loc, 1);
         this.buffer = new Readable({read() {}});
 
@@ -497,7 +495,13 @@ owlProcessor.process = function (options) {
     };
 
 owlProcessor.diskLoc2Uri = function(disk){
-	return disk.replace('C:\\TOMCAT\\webapps\\ROOT\\', 'http://www.jparksimulator.com/').replace(new RegExp( '\\\\','g'), '/');
+	return disk.replace('C:\\TOMCAT\\webapps\\ROOT\\', 'http://www.theworldavatar.com/').replace(new RegExp( '\\\\','g'), '/');
+}
+
+owlProcessor.root2baseUri = function(disk){
+    console.log(disk);
+    console.log(config.root);
+    return disk.replace(config.root, config.baseUri);
 }
 
 owlProcessor.uriList2DiskLoc = function (uriArr, diskroot) {
@@ -505,14 +509,14 @@ owlProcessor.uriList2DiskLoc = function (uriArr, diskroot) {
     return uriArr.map(function (item) {
         // logger.debug("map:"+item)
         let diskLoc = item.replace("http://www.theworldavatar.com",diskroot);
-        diskLoc = diskLoc.replace("http://www.jparksimulator.com",diskroot);
+        //diskLoc = diskLoc.replace("http://www.jparksimulator.com",diskroot);
         diskLoc = diskLoc.split('#')[0]
         return {uri:item, diskLoc:diskLoc}
     });
 };
-    
 
-    
+
+//C:\Users\Shaocong\WORK\webJPSGit\irp3-WebJPS-git\CO2WEB\testFiles
 //test
 //console.time('conn')
    // owlProcessor.doConnect(loc)
