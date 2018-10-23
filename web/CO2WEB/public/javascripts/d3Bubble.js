@@ -889,7 +889,9 @@ var FileLinkMap = function (options) {
         bubbleMap.expandCluster = function (url) {
         console.log(bubbleMap.subconMap[url].connections)
         console.log(bubbleMap.initLinks)
-        return bubbleMap.initLinks.concat(bubbleMap.subconMap[url].connections)
+		            bubbleMap.initLinks =  bubbleMap.initLinks.concat(bubbleMap.subconMap[url].connections)
+
+        return bubbleMap.initLinks;
     
     };
     bubbleMap.noClusterExpand= function(){

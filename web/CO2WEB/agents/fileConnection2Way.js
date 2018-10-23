@@ -77,7 +77,7 @@ owlProcessor.doConnect = function(address, level) {
 					if(!iset.has(item)){
 						iset.add(item);
 						address = me.diskLoc2Uri(address);
-                    if(level>=2) {
+                    if(level>=2 && ! (item in this.parentMap)) {
                         me.parentMap[item] = address in me.parentMap ? me.parentMap[address] : address;
                     }
                     me.result.push({'source':address, 'target':item, 'level':level})
