@@ -20,6 +20,7 @@ public class Graph {
 	public ArrayList<MessagePart> initialInputs;
 	public ArrayList<Edge> edges;
 	public Map<String, Integer> updatesMap;
+	public ArrayList<String> eliminationList;
 	
 	public Graph() {
 		
@@ -32,6 +33,7 @@ public class Graph {
 		this.servicePool = new ArrayList<Service>();
 		this.edges = new ArrayList<Edge>();
 		this.updatesMap = new HashMap<String, Integer>();
+		this.eliminationList = new ArrayList<String>();
 	}
 
 	public void addLayer(Layer newLayer) {

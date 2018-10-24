@@ -26,7 +26,6 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.building.BuildingQueryPerformer;
 import uk.ac.cam.cares.jps.building.CRSTransformer;
 import uk.ac.cam.cares.jps.building.SimpleBuildingData;
-import uk.ac.cam.cares.jps.semantic.JSONFlattenTool;
 
 
 @WebServlet("/GetBuildingDataForSimulation")
@@ -53,54 +52,17 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 		} catch (JSONException e1) {
 			e1.printStackTrace();
 		}
-		JSONObject region = null;
-		try {
-			region = JSONFlattenTool.flattenRegion(input);
-		} catch (JSONException e1) {
-			e1.printStackTrace();
-		}
-
-		try {
-		 
-			double[] coords;
-			coords = queryPlantXY(input.getString("plant"));//400
+		try {		 
 			String city = input.getString("city");			
+			double[][] result = convertCoordinate(input, city);
+			double plantx = result[2][0];
+			double planty = result[2][1];
+			double lowerx = result[1][0];
+			double lowery = result[1][1];
+			double upperx = result[0][0];
+			double uppery = result[0][1];
 			
-			double upperx = Double.parseDouble(region.getString("upperx"));
-			double uppery = Double.parseDouble(region.getString("uppery"));
-			double lowerx = Double.parseDouble(region.getString("lowerx"));
-			double lowery = Double.parseDouble(region.getString("lowery"));
-			
-			
-			double plantx = 79831;
-			double planty = 454766;
-			
-			String data = "";
-			
-			if(city.equalsIgnoreCase("http://dbpedia.org/resource/The_Hague")) {
-				//response.getWriter().write("This is HAGUE -- " + "|" + city + "|" + String.valueOf(upperx) + "|" +String.valueOf(uppery) + "|" + String.valueOf(lowerx) + "|" + String.valueOf(lowery) + "|" + String.valueOf(plantx) +"|" +  String.valueOf(planty));
-				data = retrieveBuildingDataInJSON(BuildingQueryPerformer.THE_HAGUE_IRI, plantx, planty, 25, lowerx, lowery, upperx, uppery);			
-			}
-			else {
-				String sourceCRS = CRSTransformer.EPSG_25833; // Berlin
-				double[] sourceCenter = new double[]{392825, 5819122};
-				String targetCRS = CRSTransformer.EPSG_28992; // The Hague
-				double[] targetCenter = CRSTransformer.transform(sourceCRS, targetCRS, sourceCenter);
-				plantx = targetCenter[0];
-				planty = targetCenter[1];
-				double[] upperPointOld = new double[] {Double.parseDouble(region.getString("upperx")),Double.parseDouble(region.getString("uppery"))};
-				double[] lowerPointOld = new double[] {Double.parseDouble(region.getString("lowerx")),Double.parseDouble(region.getString("lowery"))};
-				
-				double[] upperPointNew = CRSTransformer.transform(sourceCRS, targetCRS, upperPointOld);
-				double[] lowerPointNew = CRSTransformer.transform(sourceCRS, targetCRS, lowerPointOld);
-				
-				upperx= upperPointNew[0];
-				uppery= upperPointNew[1];
-				lowerx= lowerPointNew[0];
-				lowery= lowerPointNew[1];
-				data = retrieveBuildingDataInJSON(BuildingQueryPerformer.BERLIN_IRI, plantx, planty, 25, lowerx, lowery, upperx, uppery);
-			}
-			
+ 			String data = retrieveBuildingDataInJSON(city, plantx, planty, 25, lowerx, lowery, upperx, uppery);
 			response.getWriter().write(data);
 
 		} catch (JSONException e) {
@@ -184,4 +146,44 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		} 
 	}
+	
+	public double[][] convertCoordinate(JSONObject region, String cityIRI) throws NumberFormatException, JSONException{
+		
+		System.out.println("city: " + cityIRI);
+		double[][] result = new double[3][2];
+		region = region.getJSONObject("region");
+		double upperx = Double.parseDouble(region.getJSONObject("uppercorner").getString("upperx"));
+		double uppery = Double.parseDouble(region.getJSONObject("uppercorner").getString("uppery"));
+		double lowerx = Double.parseDouble(region.getJSONObject("lowercorner").getString("lowerx"));
+		double lowery = Double.parseDouble(region.getJSONObject("lowercorner").getString("lowery"));
+		
+		if(cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Berlin")) {
+			String sourceCRS = CRSTransformer.EPSG_4326; 
+			String targetCRS = CRSTransformer.EPSG_28992; // The Hague
+			double[] upperPointOld = new double[] {upperx,uppery};
+			double[] lowerPointOld = new double[] {lowerx,lowery};
+			double[] upperPointNew = CRSTransformer.transform(sourceCRS, targetCRS, upperPointOld);
+			double[] lowerPointNew = CRSTransformer.transform(sourceCRS, targetCRS, lowerPointOld);
+			result[0] = upperPointNew;
+			result[1] = lowerPointNew;
+			result[2] = new double[] {699583.49, 532938.39};
+		}
+		else if (cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/The_Hague")) {			
+			
+			double plantx = 79831;
+			double planty = 454766;
+			
+			String sourceCRS = CRSTransformer.EPSG_4326; 
+			String targetCRS = CRSTransformer.EPSG_28992; // The Hague
+			double[] upperPointOld = new double[] {upperx,uppery};
+			double[] lowerPointOld = new double[] {lowerx,lowery};
+			double[] upperPointNew = CRSTransformer.transform(sourceCRS, targetCRS, upperPointOld);
+			double[] lowerPointNew = CRSTransformer.transform(sourceCRS, targetCRS, lowerPointOld);
+			result[0] = upperPointNew;
+			result[1] = lowerPointNew;
+			result[2] = new double[]{plantx, planty};
+		}
+		return result;
+	}
+	
 }

@@ -13,6 +13,7 @@ class SPARQLEngine:
         self.sparql = SPARQLWrapper(self.endpoint_base_url)
 
     def fire_mix_query(self, query):
+        print('query: ', query)
         return SPARQLEngine.general_url_request('http://www.theworldavatar.com/damecoolquestion/nlp?&output=json&query=' + quote(query))
 
     def fire_query(self, query):

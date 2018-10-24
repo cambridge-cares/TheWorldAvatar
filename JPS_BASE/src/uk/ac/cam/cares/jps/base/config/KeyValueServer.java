@@ -26,7 +26,7 @@ public class KeyValueServer extends HttpServlet {
 	}
 	
 	public static String get(String key) {
-		//TODO-AE URGENT every call to host, port etc. results into a HTTP Get --> caching solution, or redis, ...
+		//TODO-AE URGENT URGENT every call to host, port etc. results into a HTTP Get --> caching solution, or redis, ...
 		String result = AgentCaller.executeGet("/JPS_BASE/keys/get", "key", key);
 		try {
 			JSONObject jo = new JSONObject(result);

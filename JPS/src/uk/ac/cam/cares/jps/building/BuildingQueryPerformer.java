@@ -43,27 +43,6 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		}
 		
 		return AgentCaller.executeGetWithURLKey(urlKey, AgentCaller.MediaType.TEXT_CSV ,"query", query);
-//		
-//		
-//		logger.debug("city = " + cityIRI);
-//		logger.debug("query = \n" + query);
-//		
-//		String host = KeyValueServer.get("host");
-//		int port = Integer.valueOf(KeyValueServer.get("port"));
-//		
-//		String path = null;
-//		if (cityIRI.equalsIgnoreCase(BERLIN_IRI)) {
-//			path = "/damecoolquestion/berlinbuildings/query";
-//		} else if (cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
-//			path = "/damecoolquestion/thehaguebuildings/query";
-//		}
-//		
-//		URIBuilder builder = new URIBuilder().setScheme("http").setHost(host).setPort(port)
-//				.setPath(path)
-//				.setParameter("query", query);
-//	
-//		String result = executeGet(builder);
-//		return result;
 	}
 	
 	// TODO-AE: move method to JPS BASE (AgentCaller)

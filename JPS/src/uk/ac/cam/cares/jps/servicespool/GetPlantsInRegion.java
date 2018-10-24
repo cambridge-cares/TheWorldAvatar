@@ -43,11 +43,15 @@ public class GetPlantsInRegion extends HttpServlet {
 		String value = request.getParameter("value");
 		JSONObject output = null;
 		try {
-			output = JSONFlattenTool.flattenRegion(new JSONObject(value));
+			output = JSONFlattenTool.flattenRegion(new JSONObject(value),true);
 		} catch (JSONException e2) {
  			e2.printStackTrace();
 		}
  
+		
+		System.out.println("================ output from plants ================");
+		System.out.println(output.toString());
+		System.out.println("====================================================");
  		
 		String PlantSelectionQuery = 
 				"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" + 

@@ -186,6 +186,8 @@ def getGeoJSON(listBuildingCoordinates, listBuildingHeights):
 def return_buildings():
     
     listOfIRIs = sys.argv[1].strip().replace('"','').replace("'",'')[1:-1].split(',')
+    with open('./gson_log.txt','w') as f:
+        f.write(str(listOfIRIs))	
     cityiri = sys.argv[2]
     with open('./log.txt','w') as file:
         file.write(str(listOfIRIs))

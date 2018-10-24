@@ -14,7 +14,6 @@ import com.google.gson.Gson;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.PythonException;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
-import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 /**
  * Servlet implementation class ADMSHelper
@@ -58,7 +57,12 @@ public class ADMSHelper extends HttpServlet {
 			result = CommandHelper.executeCommands(targetFolder, args);
 			 
 			response.setContentType("application/json");
+			System.out.println("============== result ==============");
+			System.out.println(result);
+			System.out.println("====================================");
 			response.getWriter().write(result);
+			
+			
 		} catch (PythonException e) {
 			e.printStackTrace();
 		}	

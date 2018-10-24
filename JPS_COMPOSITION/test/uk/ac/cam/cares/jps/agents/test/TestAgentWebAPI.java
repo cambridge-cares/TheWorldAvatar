@@ -2,10 +2,11 @@ package uk.ac.cam.cares.jps.agents.test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.json.JSONStringer;
+import org.json.JSONWriter;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -17,22 +18,23 @@ import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceBuilder;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.KeyValueServer;
-import uk.ac.cam.cares.jps.composition.enginemodel.Graph;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 public class TestAgentWebAPI extends TestCase {
 	
 	public void testSetLocalProperties() {
 		
-		KeyValueServer.set("host", "localhost");
-		KeyValueServer.set("port", "8080");
+		// TODO-AE URGENT find a better solution for setting test properties,
+		// e.g. is someone wants to test the GUI on his local computer then he should not force to run this test method each time he restarts tomcat
 		
+		KeyValueServer.set("host", "localhost");
+		KeyValueServer.set("port", "8080");	
+		String compositionDir = AgentLocator.getCurrentJpsAppDirectory(this);
+		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithoutWasteProduct");
 	}
 	
-	
-
-	public void testCompositeAndExecuteADMS() throws JsonParseException, JsonMappingException, JSONException, URISyntaxException, IOException, Exception {
-
+	private Service createADMSWithoutWasteProduct() {
 		Service compositeAgent = new ServiceBuilder()
 				.operation(null, "http://www.theworldavatar.com/Composite_Service_ODsMpRv")
 				.input("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType", "region")
@@ -40,55 +42,74 @@ public class TestAgentWebAPI extends TestCase {
 				.output("https://www.w3.org/ns/csvw#Table", "dispersiongrid")
 				.output("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType", true, "buildings", true)
 				.build();
+		return compositeAgent;
+	}
+
+	public void testCompositeAndExecuteForBerlinDirectCallWithoutWasteProduct() throws JsonParseException, JsonMappingException, JSONException, URISyntaxException, IOException, Exception {
+
+		Service compositeAgent = createADMSWithoutWasteProduct();
+		System.out.println("compositeAgent=" + new Gson().toJson(compositeAgent));
 		
-		System.out.println("compositeAgent=\n" + new Gson().toJson(compositeAgent));
-			
-		String host = "http://localhost:8080";
-		
-		
-		
-		String jsonInputValues = new JSONStringer().object().
+		JSONWriter jsonInput = new JSONStringer().object().
 				key("region").object()
-					.key("srsname").value("EPSG:4326")
+					.key("srsname").value("EPSG:28992")
 					.key("lowercorner").object()
-						.key("lowerx").value("13.4074096")
-						.key("lowery").value("52.5177665").endObject()
+						.key("lowerx").value("699182")
+						.key("lowery").value("532537").endObject()
 					.key("uppercorner").object()
-						.key("upperx").value("13.409")
-						.key("uppery").value("52.52").endObject()
+						.key("upperx").value("699983")
+						.key("uppery").value("533338").endObject()
 				.endObject()
 				.key("plant").value("http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002")
-				.endObject().toString(); 
+				.endObject(); 
 		
-		System.out.println("jsonInputValues=\n" + jsonInputValues);
+		System.out.println("jsonInput=\n" + jsonInput);
 		
+		String host = "http://localhost:8080";
 		String compositionDir = AgentLocator.getCurrentJpsAppDirectory(this);
 		
-		// TODO-AE URGENT
-		//KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservices");
-		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, "C:/Users/Andreas/TMP/newAgentsMSM");
+		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithoutWasteProduct");
+		//KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithWasteProduct");
 			
-		Object result = new AgentWebAPI().composeAndExecute(compositeAgent, host, jsonInputValues);
+		String result = new AgentWebAPI().composeAndExecute(compositeAgent, host, jsonInput.toString());
 		System.out.println("result=\n" + result);
 		
-		//Object[] result = new AgentWebAPI().compose(compositeAgent, host);
-		//showComposedAgents(result);
+		JSONObject jsonOutput = new JSONObject(result);
+		assertEquals(25, jsonOutput.getJSONArray("building").length());
 	}
 	
-	private void showComposedAgents(Object[] compositionResult) {
-		
-		Graph graph = (Graph) compositionResult[0];
-		ArrayList<String> eliminationList = (ArrayList<String>) compositionResult[1];
+	public void testCompositeAndExecuteForTheHagueAgentCallWithoutWasteProduct() throws JsonParseException, JsonMappingException, JSONException, URISyntaxException, IOException, Exception {
 
-		System.out.println("service pool:");
-		for (Service current : graph.servicePool) {
-			System.out.println(current.uri);
-		}
+		Service compositeAgent = createADMSWithoutWasteProduct();
+		System.out.println("compositeAgent=" + new Gson().toJson(compositeAgent));
 		
-		System.out.println("\nelimination list:");
-		for (String current : eliminationList) {
-			System.out.println(current);
-		}
+		JSONWriter jsonInput = new JSONStringer().object().
+				key("region").object()
+					.key("srsname").value("EPSG:28992")
+					.key("lowercorner").object()
+						.key("lowerx").value("79480")
+						.key("lowery").value("454670").endObject()
+					.key("uppercorner").object()
+						.key("upperx").value("80000")
+						.key("uppery").value("455190").endObject()
+				.endObject()
+				.key("plant").value("http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl#Plant-001")
+				.endObject();  
+		
+		System.out.println("jsonInput=\n" + jsonInput);
+		
+		String host = "http://localhost:8080";
+		String compositionDir = AgentLocator.getCurrentJpsAppDirectory(this);
+		
+		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithoutWasteProduct");
+		//KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithWasteProduct");
+			
+		String result = AgentCaller.executeGetWithJsonParameter("/JPS_COMPOSITION/execute", jsonInput.toString());
+		
+		//String result = new AgentWebAPI().composeAndExecute(compositeAgent, host, jsonInput.toString());
+		System.out.println("result=\n" + result);
+		
+		JSONObject jsonOutput = new JSONObject(result);
+		assertEquals(25, jsonOutput.getJSONArray("building").length());
 	}
-	
 }

@@ -9,7 +9,7 @@ public class JSONFlattenTool {
 	
 	
 	
-	public static JSONObject flattenRegion (JSONObject input) throws JSONException {	
+	public static JSONObject flattenRegion (JSONObject input, boolean convert) throws JSONException {	
 		
 		JSONObject region = new JSONObject();
 		JSONObject lowercorner = input.getJSONObject("region").getJSONObject("lowercorner");
@@ -26,10 +26,21 @@ public class JSONFlattenTool {
 		double[] oldUpperPoint = new double[] {Double.parseDouble(upperx),Double.parseDouble(uppery)};
 		double[] newUpperPoint = CRSTransformer.transform(srsname, targetCRS, oldUpperPoint);
 		
-		double xlower = newLowerPoint[0];
-		double ylower = newLowerPoint[1];
-		double xupper = newUpperPoint[0];
-		double yupper = newUpperPoint[1];
+		double xlower,ylower,xupper,yupper;
+		
+		if(convert) {
+			 xlower = newLowerPoint[0];
+			 ylower = newLowerPoint[1];
+			 xupper = newUpperPoint[0];
+			 yupper = newUpperPoint[1];
+		}
+		else {
+			 xlower = Double.parseDouble(lowerx);
+			 ylower = Double.parseDouble(lowery);
+			 xupper = Double.parseDouble(upperx);
+			 yupper = Double.parseDouble(uppery);
+		}
+
 		 
 		region.put("lowerx", String.valueOf(xlower));
 		region.put("lowery", String.valueOf(ylower));

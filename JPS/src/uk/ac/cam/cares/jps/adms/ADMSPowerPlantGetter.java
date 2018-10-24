@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.adms;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -40,6 +41,7 @@ public class ADMSPowerPlantGetter extends HttpServlet {
 		String epsg = "";
 		String powerplantKnowledgeBase = "";
 		
+		// TODO-AE URGENT hardcoded city and plant
 		if (location.equals("The Hague")) {
 			powerPlantIRI = "http://www.theworldavatar.com/Plant-001.owl#Plant-001";
 			epsg = "epsg:28992";
@@ -54,6 +56,8 @@ public class ADMSPowerPlantGetter extends HttpServlet {
 		String result;
 		
 		try {
+			System.out.println("Trying to get powerplants data");
+			System.out.println(powerPlantIRI + "|" + epsg + "|" + powerplantKnowledgeBase);
 			result = PythonHelper.callPython("caresjpsadmsinputs/ADMSPowerPlantGetter.py", 
 					powerPlantIRI, epsg, powerplantKnowledgeBase,
 					"",
