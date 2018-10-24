@@ -136,8 +136,6 @@ $(function(){
     $('#start').click(function(){
     	//$('#start').attr("disabled", true);
     	
-    	const BERLIN_IRI = "http://dbpedia.org/resource/Berlin";
-    	const THE_HAGUE_IRI = "http://dbpedia.org/resource/The_Hague";
         
         let xmax = parseInt($('#xupper').val());
         let xmin = parseInt($('#xlower').val());
@@ -160,17 +158,13 @@ $(function(){
         const coordinatesMin = getOSMPoint(lowerx, lowery);
 		const coordinatesMax = getOSMPoint(upperx, uppery);
         
-//		let locationIRI;
-//       if (location === "The Hague") {
-//        	locationIRI = THE_HAGUE_IRI;
-//        } else if (location === "Berlin") {
-//        	locationIRI = BERLIN_IRI;
-//       }
-		
+		let locationIRI;
 		let plant;
-        if (location === "The Hague") {
-        	plant = "http://www.theworldavatar.com/kb/nld/thehague/Plant-001.owl#Plant-001";
+		if (location === "The Hague") {
+        	locationIRI = "http://dbpedia.org/resource/The_Hague";
+        	plant = "http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl#Plant-001";
         } else if (location === "Berlin") {
+        	locationIRI = "http://dbpedia.org/resource/Berlin";
         	plant = "http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002";
         }
 
@@ -192,55 +186,36 @@ $(function(){
         	plant
         }
         
-		query = JSON.stringify(query);
-		
-        console.log("calling agent composition")
-        
-        
-        const getBuildingIRIs = (query) => {
-        	return $.getJSON('/JPS_COMPOSITION/execute',
-	        	{
-	        		query
-	        	});
+		query = JSON.stringify(query);        
+     
+        const getCoordinationResult = (query) => {
+        	
+        	var result = "hello";
+        		
+        	if (document.getElementById("compose").checked) {
+        		result =  $.getJSON('/JPS_COMPOSITION/execute',
+        				{
+	        				query
+        				});
+        	} else {
+        		result =  $.getJSON('/JPS/ADMSCoordinationAgentWithoutComposition',
+        				{
+	        				query
+        				});
+        	}        	
+  	
+        	return result;
         };
         
-        $.when(getBuildingIRIs(query)).done(buildingIRIs => {
-            
-        	
-        	console.log("xxx response"  + buildingIRIs)
-        	
+        console.log(locationIRI);
+        $.when(getCoordinationResult(query)).done(coordResult => {
+            		
+			var buildingIRIs = coordResult.building;
+			console.log("buildingIRIs = " + buildingIRIs);
+			
         	initadms3dmap(buildingIRIs, [xmin, xmax, ymin, ymax], osmb, location, coordinatesMid, locationIRI);
         });
-        
-        
-//        const getBuildingIRIs = (cityIRI, lowerx, lowery, upperx, uppery) => {
-//        	return $.getJSON('/JPS_COMPOSITION/execute',
-//	        	{
-//	        		cityIRI,
-//	        		lowerx,
-//	        		lowery,
-//	        		upperx,
-//	        		uppery,
-//	        		"region": {
-//	        			lowerx,
-//	        			lowery
-//	        		}
-//	        	});
-//        };
-//        
-//        $.when(getBuildingIRIs(locationIRI, lowerx, lowery, upperx, uppery)).done(buildingIRIs => {
-//            
-//        	initadms3dmap(buildingIRIs, [xmin, xmax, ymin, ymax], osmb, location, coordinatesMid, locationIRI);
-//        });
-         
-//        $.ajax('http://www.theworldavatar.com/JPS/ADMSCoordinationAgent?coordinates='+encodeURIComponent(JSON.stringify({'xmin':xmin,'xmax':xmax, 'ymin':ymin, 'ymax':ymax}).replaceAll('"',"'"))).done(function (bdnlist) {
-//            //todo: init building
-//        	console.log(JSON.parse(bdnlist));
-//            initadms3dmap(JSON.parse(bdnlist), [xmin, xmax, ymin, ymax], osmb, location, coordinatesMid);
-//            
-//        }).fail(function (xhr, testStatus, errorThrown) {
-//        	console.log(xhr.responseText);
-//        })
+
     });
     //***************************************************************************
 

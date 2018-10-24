@@ -41,6 +41,7 @@ public class ADMSPowerPlantGetter extends HttpServlet {
 		String epsg = "";
 		String powerplantKnowledgeBase = "";
 		
+		// TODO-AE URGENT hardcoded city and plant
 		if (location.equals("The Hague")) {
 			powerPlantIRI = "http://www.theworldavatar.com/Plant-001.owl#Plant-001";
 			epsg = "epsg:28992";

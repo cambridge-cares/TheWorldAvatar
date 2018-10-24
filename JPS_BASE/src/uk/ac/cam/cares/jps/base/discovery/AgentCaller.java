@@ -128,6 +128,7 @@ public class AgentCaller {
 		if (type != null) {
 			request.setHeader(HttpHeaders.ACCEPT, type.type);
 		}
+	
 		return executeGet(request);
 	}
 	
@@ -196,7 +197,12 @@ public class AgentCaller {
 	
 	private static String executeGet(HttpGet request) {
 		try {
-			logger.info(request.toString());
+			StringBuffer buf = new StringBuffer(request.getMethod()).append(" ").append(request.getURI().getScheme()).append("://")
+					.append(request.getURI().getHost()).append(":").append(request.getURI().getPort())
+					.append(request.getURI().getPath())
+					.append(" DECODED ?").append(request.getURI().getQuery());
+			logger.info(buf.toString());
+			
 			HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 			
 			if (httpResponse.getStatusLine().getStatusCode() != 200) {
@@ -256,7 +262,12 @@ public class AgentCaller {
 	
 	public static void printToResponse(Object object, HttpServletResponse resp) {
 		
-		String message = new Gson().toJson(object);
+		String message = null;
+		if (object instanceof String) {
+			message = (String) object;
+		} else {
+			message = new Gson().toJson(object);
+		}
 		resp.setContentType("text/plain");
 		resp.setCharacterEncoding("UTF-8");
 		try {
