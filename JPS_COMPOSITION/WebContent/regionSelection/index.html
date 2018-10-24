@@ -81,11 +81,20 @@
 
             request.done(function (data) {
                 
+				console.log(data)
+				console.log('----------------------')
+				data = JSON.parse(data);
+            	data['region'] = {'ymin': parseFloat(y_min), 'ymax': parseFloat(y_max), 'xmin': parseFloat(x_min), 'xmax': parseFloat(x_max)};
+            	
+            	let y = (parseFloat(y_min) + parseFloat(y_max)) / 2;
+            	let x = (parseFloat(x_min) + parseFloat(x_max)) / 2;
+            	
+            	console.log(data['region'])
             	console.log("------------- The data received -------------")
             	console.log(data)
             	console.log("---------------------------------------------")
             	
-               	let theUrl = "http://" + hostname + "/JPS/index2.html?value=" +  encodeURIComponent(data) + "lat=52.076146&lon=4.309961&zoom=14.5&tilt=0.0&rotation=0.6";
+               	let theUrl = "http://" + hostname + "/JPS/index2.html?value=" +  encodeURIComponent(JSON.stringify(data)) + "lat="+ y + "&lon="+ x +"&zoom=14.5&tilt=0.0&rotation=0.6";
                 document.getElementById('frame').src = theUrl;
                 var win = window.open(theUrl, '_blank');
                 win.focus();

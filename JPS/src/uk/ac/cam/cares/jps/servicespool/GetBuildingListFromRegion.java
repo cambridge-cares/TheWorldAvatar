@@ -15,6 +15,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -71,12 +72,9 @@ public class GetBuildingListFromRegion extends HttpServlet {
 					.setParameter("upperx", upperx) 
 					.setParameter("uppery", uppery);
 			String buildingList = executeGet(builderBuildingList);
+			JSONArray buildingListInJSON = new JSONArray(buildingList);
 			JSONObject result = new JSONObject();
-			result.put("building", buildingList); // The result is wrapped into an JSONObject with key "building", which is indicated in its description. 
-			System.out.println("============ Building List ============");
-			System.out.println(buildingList);
-			System.out.println("=======================================");
-
+			result.put("building", buildingListInJSON); // The result is wrapped into an JSONObject with key "building", which is indicated in its description. 
 			response.getWriter().write(result.toString());
 		} catch (JSONException e) {
 			e.printStackTrace();

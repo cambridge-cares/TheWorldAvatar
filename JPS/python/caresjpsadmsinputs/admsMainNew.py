@@ -4,6 +4,7 @@ from collections import namedtuple
 import json
 import sys
 import config
+import cobbling
 
 '''
 test = admsInputDataRetriever("http://www.theworldavatar.com/TankID_1574.owl#TankID_1574", config.bldTopnode, {'xmin':84400, 'xmax':84600, 'ymin':451000, 'ymax':451300}, ["http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#CarbonDioxide"], config.bdnLimit = 2, filterSrc = False)
@@ -31,7 +32,7 @@ if __name__ == "__main__":
     print('  building data = ' + sys.argv[4])
     print()
     print('top = ' + config.bldTopnode)
-    
+    cobbling.run()
     coordinates = str(sys.argv[2]).replace("'", "\"").replace('#',',');
     coordinates = json.loads(coordinates)
 

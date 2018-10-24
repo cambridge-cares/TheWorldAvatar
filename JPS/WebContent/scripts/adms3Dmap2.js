@@ -30,17 +30,17 @@ const controlButtonsSetter = osmb => {
 };
 
 
-const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) => {
+const initadms3dmap  = (list, range, osmb, cityiri) => {
+	
+	console.log('list:', list);
 	
 	for(obj of listGeoJsonAddedToOSMB) {
 		obj.destroy();
 	}
 	
-	proj4.defs("EPSG:28992","+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.417,50.3319,465.552,-0.398957,0.343988,-1.8774,4.0725 +units=m +no_defs");
-    proj4.defs('WGS84', "+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees");
-    
-    const parsedLowLeft = proj4("EPSG:28992", "WGS84", [range[0], range[2]]);
-    const parsedTopRight = proj4("EPSG:28992", "WGS84", [range[1], range[3]]);
+	
+    const parsedLowLeft = [range['xmin'],range['ymin']]
+    const parsedTopRight = [range['xmax'],range['ymax']]
     
 
     const position = {};
@@ -52,16 +52,17 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) =>
     // 	position.longitude = 13.23966;
     // }
 
-    position.latitude = coordinatesMid[0];
-    position.longitude = coordinatesMid[1];
+    position.latitude = (range['ymin'] + range['ymax']) / 2 
+    position.longitude = (range['xmin'] + range['xmax']) / 2
 
     osmb.setPosition(position);
     osmb.setZoom(15.7);
 	osmb.setTilt(45.0);
 
+
     $.getJSON('/JPS/ADMSPowerPlantGetter',
     	{
-    		location
+    		'location':cityiri
     	},
     	data => {
     		const geojson = data;
@@ -75,15 +76,27 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) =>
 
     // --- Rendering 3D building models --- //
 
+    console.log('making request to adms helper')
+    let iri = "http://dbpedia.org/resource/The_Hague"
+    	if(cityiri === 'Berlin'){
+    		iri = "http://dbpedia.org/resource/Berlin"
+    	}
+    	else
+    	{
+    		iri = "http://dbpedia.org/resource/The_Hague"
+    	}
     $.getJSON('/JPS/ADMSHelper',
         {
             listOfIRIs: JSON.stringify(list),
-            cityiri
+            'cityiri': iri
         },
         function(data) {
+        	console.log('data:',data)
             var geojson = data;
             var arrayLength = geojson.length;
+            console.log('--------------- data returned from helper -----------------')
             console.log(data);
+            console.log('-----------------------------------------------------------')
             
             for (var i = 0; i < arrayLength; i++) {
 
@@ -187,5 +200,7 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) =>
     //             osmb.highlight('w420847275','#00ff00');
     //         }
     //     });
-    // });
+    // });  
 };
+
+
