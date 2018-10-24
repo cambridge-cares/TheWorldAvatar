@@ -45,13 +45,12 @@ public class ServiceDiscovery {
 		this.services = new ArrayList<Service>();
 		this.httpToServiceMap = new HashMap<String,Service>();
 		String directory = KeyValueServer.get(KEY_DIR_KB_AGENTS);
-		this.loadServices(directory);
+		this.services = readTheServicePool(directory);
 		this.generateHttpToServiceMap();
 	}	
 	
 	public ArrayList<Service> getAllServiceCandidates(List<MessagePart> inputs, ArrayList<Service> servicePool){
 		
-		  
 		ArrayList<Service> result = new ArrayList<Service>();
 		ArrayList<URI> inputTypesList = new ArrayList<URI>();
 		for (MessagePart messagePart_inputs : inputs) {
@@ -59,6 +58,9 @@ public class ServiceDiscovery {
 		}
 
 		for (Service currentService : this.services) {
+			if (currentService.isComposed()) {
+				continue;
+			}
 			boolean flag = true;
 			for (MessagePart messagePart : currentService.getAllInputs()) {
 				URI type = messagePart.getType();
@@ -66,15 +68,22 @@ public class ServiceDiscovery {
 					flag = false;
 				}
 			}
-			if (flag && !(servicePool.contains(currentService))) {
+			if (flag && ((servicePool == null) || !(servicePool.contains(currentService)))) {
 				result.add(currentService);
 			}
 		}
 		return result;
 	}
-	
-	private void loadServices(String directory) {
-		 this.services = readTheServicePool(directory);
+		
+	public Service getServiceByUri(String serviceUri) {
+		
+		for (Service currentService : this.services) {
+			if (serviceUri.equals(currentService.getUri().toString())) {
+				return currentService;
+			}
+		}
+		
+		return null;
 	}
 	
 	public void generateHttpToServiceMap() {

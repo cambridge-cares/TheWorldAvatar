@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
-import uk.ac.cam.cares.jps.agents.ontology.ServiceBuilder;
+import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
 import uk.ac.cam.cares.jps.base.config.KeyValueServer;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -41,20 +41,29 @@ public class AgentWebAPI extends HttpServlet {
 		
 		String path = req.getServletPath();
 		JSONObject jo = AgentCaller.readJsonParameter(req);
-
-		logger.info( "path=" + path + ", query=" + jo);
 		
-		Service compositeAgent = new ServiceBuilder()
-				.operation(null, "http://www.theworldavatar.com/Composite_Service_ODsMpRv")
-				.input("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType", "region")
-				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
-				.output("https://www.w3.org/ns/csvw#Table", "dispersiongrid")
-				.output("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType", true, "buildings", true)
-				.build();
+		try {
+			String iri = (String) jo.remove("agent");
+		
+			logger.info( "path=" + path + ", agent=" + iri + ", query=" + jo);
+		
+			//iri = "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service";
+		
+			Service compositeAgent = ServiceDiscovery.getInstance().getServiceByUri(iri);
+		
+		
+				
+//		Service compositeAgent = new ServiceBuilder()
+//				.operation(null, "http://www.theworldavatar.com/Composite_Service_ODsMpRv")
+//				.input("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType", "region")
+//				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
+//				.output("https://www.w3.org/ns/csvw#Table", "dispersiongrid")
+//				.output("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType", true, "buildings", true)
+//				.build();
 		
 		String hostPort = "http://" + KeyValueServer.get("host") + ":" + KeyValueServer.get("port");
 		
-		try {
+		
 			String result = composeAndExecute(compositeAgent, hostPort, jo.toString());
 			
 			logger.info("result = " + result);

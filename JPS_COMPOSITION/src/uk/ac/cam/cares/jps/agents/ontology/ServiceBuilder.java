@@ -138,4 +138,9 @@ public class ServiceBuilder {
 	public Service build() {
 		return service;
 	}
+	
+	public ServiceBuilder composed() {
+		service.setComposed(true);
+		return this;
+	}
 }

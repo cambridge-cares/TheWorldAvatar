@@ -83,8 +83,9 @@ public class TestAgentWebAPI extends TestCase {
 		Service compositeAgent = createADMSWithoutWasteProduct();
 		System.out.println("compositeAgent=" + new Gson().toJson(compositeAgent));
 		
-		JSONWriter jsonInput = new JSONStringer().object().
-				key("region").object()
+		JSONWriter jsonInput = new JSONStringer().object()
+				.key("agent").value("http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service")
+				.key("region").object()
 					.key("srsname").value("EPSG:28992")
 					.key("lowercorner").object()
 						.key("lowerx").value("79480")

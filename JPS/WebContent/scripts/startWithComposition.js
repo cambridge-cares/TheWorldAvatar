@@ -170,7 +170,10 @@ $(function(){
 
         const coordinatesMid = getMidPoint(coordinatesMin, coordinatesMax);
         
+        let agent = "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service";
+        
         var query = {
+        	agent, 
 			"region": {
 				//"srsname": "EPSG:4326",
 				"srsname": "EPSG:28992",

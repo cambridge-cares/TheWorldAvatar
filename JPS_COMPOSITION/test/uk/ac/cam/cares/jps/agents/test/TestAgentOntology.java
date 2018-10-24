@@ -6,12 +6,15 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.Gson;
+
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceBuilder;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceReader;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceWriter;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.KeyValueServer;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
 import uk.ac.cam.cares.jps.composition.servicemodel.Operation;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
@@ -295,14 +298,52 @@ public class TestAgentOntology extends TestCase {
 		assertEquals("city", part.getName());
 	}
 	
-	public void testServiceDiscovery() throws Exception {
+	public void testOwlSerializationComposedService() throws URISyntaxException {
+		Service service = new ServiceBuilder()
+				.composed()
+				.operation(null, null)
+				.input("inputrefuri1", "inputname1")
+				.output("outputrefuri2", "outputname2")
+				.build();
 		
-		String fileDirectory = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres/serviceowlfiles";
+		
+		String owlService = new ServiceWriter().generateSerializedModel(service, "Test");
+		
+		System.out.println();
+		System.out.println(owlService);
+		System.out.println();
+		
+		List<Service> services = new ServiceReader().parse(owlService, null);
+		Operation op = services.get(0).getOperations().get(0);
+		
+		assertTrue(services.get(0).composed);
+		assertEquals(1, op.getInputs().get(0).getMandatoryParts().size());
+		assertEquals(1, op.getOutputs().get(0).getMandatoryParts().size());
+	}
+	
+	public void testServiceDiscoveryByType() throws Exception {
+		
+		String compositionDir = AgentLocator.getCurrentJpsAppDirectory(this);
+		//KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/serviceowlfiles");
+		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithoutWasteProduct");
+		
 		ServiceDiscovery discovery = ServiceDiscovery.getInstance();
-		List<MessagePart> inputs = createMessageParts("op2inputrefuri1");
-		List<Service> result = discovery.getAllServiceCandidates(inputs, new ArrayList<Service>());
-		
+		//List<MessagePart> inputs = createMessageParts("op2inputrefuri1");
+		List<MessagePart> inputs = createMessageParts("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant");
+		List<Service> result = discovery.getAllServiceCandidates(inputs, null);
+				
 		assertEquals(1, result.size());
+	}
+	
+	public void testServiceDiscoveryByUri() throws Exception {
+		
+		String compositionDir = AgentLocator.getCurrentJpsAppDirectory(this);
+		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithoutWasteProduct");
+		
+		ServiceDiscovery discovery = ServiceDiscovery.getInstance();
+		Service result = discovery.getServiceByUri("http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
+		
+		assertTrue(result.isComposed());
 	}
 		
 	public void testOWLSerializationWriteToFile() throws FileNotFoundException {
@@ -314,5 +355,30 @@ public class TestAgentOntology extends TestCase {
 				.build();
 		
 		//new ServiceWriter().writeAsOwlFile(service, "Op2", "C:\\Users\\Andreas\\TMP\\newAgentsMSM");
+	}
+	
+	public void testJSONSerialization() {
+		
+		Service compositeAgent = new ServiceBuilder()
+				.operation(null, "http://www.theworldavatar.com/Composite_Service_ODsMpRv")
+				.input("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType", "region")
+				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
+				.output("https://www.w3.org/ns/csvw#Table", "dispersiongrid")
+				.output("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType", true, "buildings", true)
+				.build();
+		
+		
+		MessagePart region = compositeAgent.getOperations().get(0).getInputs().get(0).getMandatoryParts().get(0);
+		System.out.println(region.getName());
+		System.out.println(region.getType());
+		
+		String json = new Gson().toJson(compositeAgent);
+		System.out.println(json);
+		
+		
+		MessagePart part = new MessagePart();
+		part.setName("hello");
+		json = new Gson().toJson(part);
+		System.out.println(json);
 	}
 }

@@ -87,6 +87,11 @@ public class ServiceReader {
         if (individual.hasProperty(MSM.hasHttpUrl.Property())) {
             service.setHttpUrl(individual.getProperty(MSM.hasHttpUrl.Property()).getString());
         }
+        
+        if (individual.hasProperty(MSM.isComposed.Property())) {
+        	 String array = individual.getProperty(MSM.isComposed.Property()).getString();
+             service.setComposed(Boolean.valueOf(array));
+        }
 
         return service;
     }

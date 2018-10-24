@@ -19,6 +19,7 @@ public class Service {
 	public URI uri;
 	public String httpUrl;
 	public List<Operation> operations;
+	public boolean composed = false;
 
 	private List<Edge> outputEdges;
 	private List<Edge> inputEdges;
@@ -132,4 +133,11 @@ public class Service {
 		this.inputEdges = inputEdges;
 	}
 
+	public boolean isComposed() {
+		return composed;
+	}
+
+	public void setComposed(boolean composed) {
+		this.composed = composed;
+	}
 }
