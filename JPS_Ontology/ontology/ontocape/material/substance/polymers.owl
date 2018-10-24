@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#" xmlns:molecular_structure="http://www.theworldavatar.com/ontology/ontocape/material/substance/molecular_structure.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:terms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xml:base="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl">
+
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl">
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/molecular_structure.owl"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology module 'polymers' extends the module 'molecular_structure' by concepts for the description of macromolecular structures.    
+The following classes, relations, and individuals from other ontology modules are used within 'polymers':
+
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/molecular_structure.owl#MolecularGroup"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/molecular_structure.owl#Molecule"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalSpecies"/&gt;
+
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#hasMolecularStructure"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#hasMacroscopicAppearance"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#containsDirectly"/&gt;
+</rdfs:comment>
+<terms:license>Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+</terms:license>
+  </owl:Ontology>
+
+  <owl:Class rdf:ID="End-Group">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An End-Group is a ConstitutionalUnit that is an extremity of a Macromolecule or OligomerMolecule (McNaught &amp; Wilkinson, 1997).</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="ConstitutionalUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="RepeatingUnit">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A RepeatingUnit is the shortest ConstitutionalUnit that can be found repeatedly in a Macromolecule.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#ConstitutionalUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#ConstitutionalUnit">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A MolecularGroup comprising a part of the essential structure of a Macromolecule.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/molecular_structure.owl#MolecularGroup"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Oligomer">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Polymer"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Monomer"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#hasMolecularStructure"/>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="OligomerMolecule"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalSpecies"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Substance composed of OligomerMolecules (McNaught &amp; Wilkinson, 1997).</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#Monomer">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="MonomerMolecule"/>
+        </owl:allValuesFrom>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#hasMolecularStructure"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalSpecies"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Substance composed of MonomerMolecules (McNaught &amp; Wilkinson, 1997).</rdfs:comment>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#Polymer"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#Oligomer"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#Polymer">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="Macromolecule"/>
+        </owl:allValuesFrom>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#hasMolecularStructure"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalSpecies"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Substance composed of Macromolecules (McNaught &amp; Wilkinson, 1997).</rdfs:comment>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#Monomer"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#Oligomer"/>
+  </owl:Class>
+  <owl:Class rdf:ID="MonomerUnit">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#ConstitutionalUnit"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A MonomerUnit is the largest ConstitutionalUnit contributed by a single monomer molecule (IUPAC)
+A MonomerUnit is a ConstitutionalUnit resulting from a monomer residue which has been polymerized. 
+In contrast, a RepeatingUnit, is the shortest sequence that can be found repeatedly in a Macromolecule.
+(aka structural unit)</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#OligomerMolecule">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#Oligomer"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#hasMacroscopicAppearance"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/molecular_structure.owl#Molecule"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Molecule of intermediate MolecularWeight, the structure of which essentially comprises a small plurality of units derived, actually or conceptually, from Molecules of lower MolecularWeight. A Molecule is regarded as having an intermediate MolecularWeight if it has properties which do vary significantly with the removal of one or a few of the units. (McNaught &amp; Wilkinson, 1997).</rdfs:comment>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#MonomerMolecule"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#Macromolecule"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#Macromolecule">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Molecule of high MolecularWeight, the structure of which essentially comprises the multiple repetition of units derived, actually or conceptually, from molecules of low MolecularWeight (McNaught &amp; Wilkinson, 1997)</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#hasMacroscopicAppearance"/>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#Polymer"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#containsDirectly"/>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#ConstitutionalUnit"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/molecular_structure.owl#Molecule"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#containsDirectly"/>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#ConstitutionalUnit"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#MonomerMolecule"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#OligomerMolecule"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#MonomerMolecule">
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#OligomerMolecule"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#Macromolecule"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Molecule which can undergo polymerization thereby contributing ConstitutionalUnits to the essential structure of a Macromolecule (McNaught &amp; Wilkinson, 1997).</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#hasMacroscopicAppearance"/>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#Monomer"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/molecular_structure.owl#Molecule"/>
+  </owl:Class>
+</rdf:RDF>

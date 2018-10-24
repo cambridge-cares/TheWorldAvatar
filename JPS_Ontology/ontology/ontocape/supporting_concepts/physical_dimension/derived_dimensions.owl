@@ -1,0 +1,844 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#" xmlns:binary_tree="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#" xmlns:derived_dimensions="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#" xmlns:maths="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#" xmlns:phys_dim="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#" xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:swrl="http://www.w3.org/2003/11/swrl#" xmlns:swrlb="http://www.w3.org/2003/11/swrlb#" xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" xmlns:terms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#" xml:base="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl">
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+        <terms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+</terms:license>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology module 'derived_dimensions' introduces a number of physical dimensions and their mathematical definitions. 
+The following classes, relations, and individuals from other ontology modules are used within 'derived_dimensions':
+
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#BinaryOperator"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/&gt;
+
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasLeftChild"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasNodeValue"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasRightChild"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#isLeftChildOf"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#isRightChildOf"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#rightChildNodeValue"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#isDefinedBy"/&gt;
+
+&lt;maths:BinaryOperator rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/&gt;
+&lt;maths:BinaryOperator rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#power"/&gt;
+&lt;maths:BinaryOperator rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#times"/&gt;
+&lt;maths:Leaf rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#AMOUNT_OF_SUBSTANCE"/&gt;
+&lt;maths:Leaf rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#ELECTRIC_CURRENT"&gt;
+&lt;maths:Leaf rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#LENGTH"/&gt;
+&lt;maths:Leaf rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#MASS"/&gt;
+&lt;maths:Leaf rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#TIME"&gt;</rdfs:comment>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasLeftChild -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasLeftChild"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasNodeValue -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasNodeValue"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasRightChild -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasRightChild"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#isLeftChildOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#isLeftChildOf"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#isRightChildOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#isRightChildOf"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#isDefinedBy -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#isDefinedBy"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#rightChildNodeValue -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#rightChildNodeValue"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#ElectricityAndMagnetism -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#ElectricityAndMagnetism">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Mechanics"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#PeriodicPhenomena"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#SpaceAndTime"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Thermodynamics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The class ElectricityAndMagnetism subsumes DerivedDimensions that are connected with the phenomena of electricity or magnetism.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Mechanics -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Mechanics">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#PeriodicPhenomena"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#SpaceAndTime"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Thermodynamics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The class Mechanics subsumes DerivedDimensions that are of relevance for the field of mechanics.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#PeriodicPhenomena -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#PeriodicPhenomena">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#SpaceAndTime"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Thermodynamics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The class PeriodicPhenomena subsumes DerivedDimensions with a periodic character, such as frequency or period.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#SpaceAndTime -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#SpaceAndTime">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Thermodynamics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The class SpaceAndTime subsumes DerivedDimensions that can be derived from the base dimensions length and time.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Thermodynamics -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Thermodynamics">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The class Thermodynamics subsumes DerivedDimensions that are of relevance in the area of heat transfer and thermodynamics.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#ACCELERATION -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#ACCELERATION">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">velocity/time</rdfs:comment>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#VELOCITY"/>
+        <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#TIME"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#AREA -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#AREA">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <maths:rightChildNodeValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">2</maths:rightChildNodeValue>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">length^2</rdfs:comment>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#power"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#LENGTH"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#ELECTRIC_CHARGE -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#ELECTRIC_CHARGE">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#times"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#ELECTRIC_CURRENT"/>
+        <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#TIME"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#MASS_FLOWRATE -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#MASS_FLOWRATE">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#MASS"/>
+        <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#TIME"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#MOLAR_FLOWRATE -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#MOLAR_FLOWRATE">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#AMOUNT_OF_SUBSTANCE"/>
+        <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#TIME"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#MOLAR_VOLUME -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#MOLAR_VOLUME">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">volume/amount_of_substance</rdfs:comment>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#VOLUME"/>
+        <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#AMOUNT_OF_SUBSTANCE"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#MOLECULAR_MASS -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#MOLECULAR_MASS">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">mass/amount_of_substance</rdfs:comment>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+        <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#AMOUNT_OF_SUBSTANCE"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#MASS"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#RESISTANCE -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#RESISTANCE">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#VELOCITY -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#VELOCITY">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">length/time</rdfs:comment>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#LENGTH"/>
+        <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#TIME"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#VOLTAGE -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#VOLTAGE">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#VOLUME -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#VOLUME">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <maths:rightChildNodeValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">3</maths:rightChildNodeValue>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">length^3</rdfs:comment>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#power"/>
+        <maths:isLeftChildOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#MOLAR_VOLUME"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#LENGTH"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#acceleration -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#acceleration">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#SpaceAndTime"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the first time derivative from velocity [Chertov, 1997]</rdfs:comment>
+        <phys_dim:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#ACCELERATION"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#angular_acceleration -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#angular_acceleration">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#SpaceAndTime"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the first time derivative from the angular velocity [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#angular_velocity -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#angular_velocity">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#SpaceAndTime"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the first time derivative from the deflection angle [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#area -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#area">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#SpaceAndTime"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">characterizes the plane and curved surfaces of a physical body [Chertov, 1997]</rdfs:comment>
+        <phys_dim:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#AREA"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#damping_coefficient -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#damping_coefficient">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#PeriodicPhenomena"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the inverse to the time interval during which the amplitude decrease e times [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#density -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#density">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Mechanics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the ratio of the mass to the volume of a body´s element [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#dynamic_viscosity -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#dynamic_viscosity">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Mechanics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the coefficient of proportinality in the internal friction force formula [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#electric_charge -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#electric_charge">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#ElectricityAndMagnetism"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The measure equal to the product of electic current into time during which the current flows [Chertov]</rdfs:comment>
+        <phys_dim:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#ELECTRIC_CHARGE"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#entropy -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#entropy">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Thermodynamics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the ratio of an infinitely small quantity of heat transmitted to a system to the temperature [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#force -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#force">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Mechanics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the degree of mechanical influence exerted on a body by other bodies [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#frequency -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#frequency">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#PeriodicPhenomena"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the inverse to the period [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#heat_capacity -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#heat_capacity">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Thermodynamics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the ratio of heat required to warm a physical body to the difference in temperature [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#heat_flow_rate -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#heat_flow_rate">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Thermodynamics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the ratio of the quantity of heat which passes a surface to time [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#internal_energy -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#internal_energy">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Thermodynamics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the energy from the random thermal movement of all microparticles in a system [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#kinematic_viscosity -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#kinematic_viscosity">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Mechanics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the ratio of the dynamic viscosity of a medium to its density [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#mass_flowrate -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#mass_flowrate">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension"/>
+        <phys_dim:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#MASS_FLOWRATE"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#mass_fraction -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#mass_fraction">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The mass of some particular substance per total mass</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#molar_flowrate -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#molar_flowrate">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension"/>
+        <phys_dim:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#MOLAR_FLOWRATE"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#molar_fraction -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#molar_fraction">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of some particular substance per total amount of substance</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#molar_volume -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#molar_volume">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the volume of one mole of material</rdfs:comment>
+        <phys_dim:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#MOLAR_VOLUME"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#molecular_mass -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#molecular_mass">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The molecular mass of a substance (less accurately called molecular weight) is the mass of one molecule of that substance, relative to the unified atomic mass unit u (equal to 1/12 the mass of one atom of carbon-12). [Wikipedia]</rdfs:comment>
+        <phys_dim:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#MOLECULAR_MASS"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#moment_of_force -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#moment_of_force">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Mechanics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">in relation to a certain point, the product of the force and the arm, i.e. the distance between the direction of the force and the point [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#moment_of_inertia -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#moment_of_inertia">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Mechanics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the mass of a material point per square distance to the axis of rotation [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#momentum -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#momentum">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Mechanics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the mass of a physical body at its velocity [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#oscillation_phase -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#oscillation_phase">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#PeriodicPhenomena"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">independent variable of a function describing the quantity which changes according the law of harmonic vibrations [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#period -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#period">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#PeriodicPhenomena"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the time interval during which a cycle of periodic process is completed [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#plane_angle -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#plane_angle">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#SpaceAndTime"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">geometric figure formed by two rays (sides of the angle) extending from one point [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#power -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#power">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Mechanics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the ratio of work to time interval during which the work is completed [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#pressure -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#pressure">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Mechanics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the ratio between the perpendicular force acting on a surface element to the area of the element [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#quantity_of_heat -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#quantity_of_heat">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Thermodynamics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the part of internal energy which is transferred spontaneously, with no external influence from more to less heated physical body [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#resistance -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#resistance">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#ElectricityAndMagnetism"/>
+        <phys_dim:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#RESISTANCE"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#rotational_frequency -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#rotational_frequency">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#PeriodicPhenomena"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the number of rotations completed in a second [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#solid_angle -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#solid_angle">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#SpaceAndTime"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the part of space enclosed within one cavity of conical surface with a closed directrix [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#specific_entropy -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#specific_entropy">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Thermodynamics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the ratio of entropy to the mass of a system [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#specific_heat_capacity -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#specific_heat_capacity">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Thermodynamics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the ratio of the heat capacity of a uniform physical body to its mass [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#specific_volume -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#specific_volume">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Mechanics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the ratio of the volume to the mass of a body´s element [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#surface_tension -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#surface_tension">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Mechanics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the ratio of between the force, acting on a segment of the free surface contour perpendicular to the contour and tangentially to the surface, and the length of the segment [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#temperature_coefficient -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#temperature_coefficient">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Thermodynamics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the ratio of the relative change in a physical quantity to the temperature change reckoned from the initial temperature [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#thermal_conductivity -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#thermal_conductivity">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Thermodynamics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the density of heat flux produced by heat conductivity at temperature gradient [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#velocity -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#velocity">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#SpaceAndTime"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the first time derivative from movement [Chertov, 1997]</rdfs:comment>
+        <phys_dim:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#VELOCITY"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#voltage -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#voltage">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#ElectricityAndMagnetism"/>
+        <phys_dim:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#VOLTAGE"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#volume -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#volume">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#SpaceAndTime"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">characterizes physical bodies [Chertov, 1997]</rdfs:comment>
+        <phys_dim:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#VOLUME"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#volume_fraction -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#volume_fraction">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The volume of some particular substance per total volume</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#work -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#work">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Mechanics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the scalar product of force into an elementary displacement [Chertov, 1997]</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#ELECTRIC_CURRENT -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#ELECTRIC_CURRENT">
+        <maths:isLeftChildOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#ELECTRIC_CHARGE"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#TIME -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#TIME">
+        <maths:isRightChildOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#ELECTRIC_CHARGE"/>
+    </rdf:Description>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#entropy"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#heat_capacity"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#heat_flow_rate"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#internal_energy"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#quantity_of_heat"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#specific_entropy"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#specific_heat_capacity"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#temperature_coefficient"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#thermal_conductivity"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#density"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#dynamic_viscosity"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#force"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#kinematic_viscosity"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#moment_of_force"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#moment_of_inertia"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#momentum"/>
+			
+            <!--
+			<rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#power"/>
+			-->
+			
+			
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#pressure"/>
+			
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#specific_volume"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#surface_tension"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#work"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#ACCELERATION"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#AREA"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#MOLAR_VOLUME"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#MOLECULAR_MASS"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#VELOCITY"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#VOLUME"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#acceleration"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#angular_acceleration"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#angular_velocity"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#area"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#plane_angle"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#solid_angle"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#velocity"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#volume"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#mass_fraction"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#molar_flowrate"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#molar_fraction"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#molar_volume"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#molecular_mass"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#volume_fraction"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#mass_fraction"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#molar_fraction"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#molar_volume"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#molecular_mass"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#volume_fraction"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#damping_coefficient"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#frequency"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#oscillation_phase"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#period"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#rotational_frequency"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#mass_flowrate"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#mass_fraction"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#molar_flowrate"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#molar_fraction"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#molar_volume"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#molecular_mass"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#volume_fraction"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+</rdf:RDF><!-- Generated by the OWL API (version 3.4.2) http://owlapi.sourceforge.net -->

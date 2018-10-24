@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:reaction_mechanism="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#" xmlns:substance_class="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#" xmlns:terms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xml:base="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl">
+
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology module 'reaction_type' defines some important types of chemical reactions, such as esterification or hydrohalogenation. 
+The following classes, relations, and individuals from other ontology modules are used within 'reaction_type':
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/&gt;  
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Alcohol"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Aldehyde"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Alkene"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Amine"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#CarbonylCompound"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#CarboxylicAcid"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Cyanohydrin"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Ester"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Haloalkane"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#HydrogenHalide"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Imine"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Ketone"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#PeroxyAcid"/&gt;
+ 
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/&gt;
+    
+&lt;substance:ChemicalSpecies rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Hydrogen__peroxide"/&gt;
+&lt;substance:ChemicalSpecies rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Water"/&gt;</rdfs:comment>
+<terms:license>Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+</terms:license>
+  </owl:Ontology>
+  
+  <owl:Class rdf:ID="Esterification">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct"/>
+            <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Ester"/>
+          </owl:Restriction>
+          <owl:Class rdf:ID="OrganicReaction"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The general name for a chemical reaction in which an ester is formed as the reaction product.
+Esters can be formed in several ways:
+  - by esterfication of carboxylic acid derivatives and alcohols 
+  - by transesterifications between other esters 
+  - by Dieckmann condensation or Claisen condensation of esters carrying acidic α-protons 
+  - by Favorskii rearrangement of α-haloketones in presence of base 
+  - by nucleophilic displacement of alkyl halides with carboxylic acid salts 
+  - by Baeyer-Villiger oxidation of ketones with peroxides 
+  - by Pinner reaction of nitriles with an alcohol 
+[Wikipedia, 2006]</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl#OrganicReaction">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Organic reactions are chemical reactions involving organic compounds [Wikipedia, 2006]</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Alkylimino-de-oxo-bisubstitution">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">"Alkylimino-de-oxo-bisubstitution is the reaction of carbonyl compounds with amines to imines [...] With primary amines water is lost in an elimination reaction to an imine [...] Secondary amines do not loose water because they do not have a proton available and
+instead they often react further to an aminal or when an α-carbonyl proton is present to an enamine." [Wikipedia, 2006]
+
+Primary amine + cabonyl compound  ⇌ imine         + water
+R-NH2     + (C=O)R2                  ⇌ R(C=N)R2 + H2O</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Amine"/>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+            <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#CarbonylCompound"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Imine"/>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="CyanohydrinReaction"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Hydrohalogenation"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="AldolReaction"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</owl:cardinality>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+        <owl:allValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Amine"/>
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#CarbonylCompound"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl#OrganicReaction"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Baeyer-VilligerOxidation">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct"/>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Ester"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#CarboxylicAcid"/>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct"/>
+            <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Water"/>
+          </owl:Restriction>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</owl:cardinality>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Baeyer-Villiger oxidation is an organic reaction in which a ketone is oxidized to an ester by treatment with peroxy acids or hydrogen peroxide. [Wikipedia, 2006]
+
+R'-CO-R'' + R-COOOH ⇌  R'-COO-R'' + R-COOH
+or
+R'-CO-R'' + H2O2            ⇌  R'-COO-R'' + H2O</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+            <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Ketone"/>
+          </owl:Restriction>
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl#Esterification"/>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Restriction>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#PeroxyAcid"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+              </owl:Restriction>
+              <owl:Restriction>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Hydrogen__peroxide"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+              </owl:Restriction>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Transesterification">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Transesterification is the process of exchanging the alkoxy group of an ester compound by another alcohol. These reactions are often catalyzed by the addition of an acid or base. [Wikipedia, 2006]
+
+ester   + alcohol   ⇌ ester   + alcohol
+R'-COO-R''  + R-OH  ⇌ R-COO-R'    + R''-OH</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+            <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Ester"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Alcohol"/>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:allValuesFrom>
+              <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                  <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Alcohol"/>
+                  <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Ester"/>
+                </owl:unionOf>
+              </owl:Class>
+            </owl:allValuesFrom>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</owl:cardinality>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+          </owl:Restriction>
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl#Esterification"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct"/>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Alcohol"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Alcohol"/>
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Ester"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:allValuesFrom>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct"/>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="EsterificationOfCarboxylicAcidAndAlcohol">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct"/>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Alcohol"/>
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#CarboxylicAcid"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:allValuesFrom>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct"/>
+        <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Water"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">alcohol    + carboxylic acid   ⇌ ester   + water
+R-OH    + R'-COOH       ⇌ R-COO-R'    + H2O</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl#Esterification"/>
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Alcohol"/>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+            <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#CarboxylicAcid"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl#AldolReaction">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The aldol reaction is an important carbon-carbon bond forming reaction in organic chemistry [1, 2, 3] involving the addition of an enol or enolate anion to an aldehyde or ketone [4, 5, 6].  
+The enol or enolate is itself generated from a carbonyl compound, often an aldehyde or ketone, using acid or base.
+It is a multi-step reaction that occurs either in enol-mode or enolate-mode. 
+
+Enol mode:
+1. The enol is formed from a carbonyl compound, often an aldehyde or ketone, using acid as a catyst:
+Ketone (or aldehyde)    ⇌ Enol 
+R-(C=O)-CH3 ⇌  R-(C-OH)=CH2
+
+2. In the aldol addition, the reaction results in a β-hydroxy ketone (or aldehyde), also called an "aldol" (aldehyde + alcohol):
+Enol        + Ketone (or Aldehyde)  ⇌ Anol
+R-(C-OH)=CH2    + H-(C=O)-R'    ⇌   R-(C=O)-CH2-(CH-OH)-R’
+
+3.  In the aldol condensation, the initial aldol adduct undergoes dehydration (loss of water) to form an α,β-unsaturated ketone (or aldehyde).
+Anol        ⇌ Ketone (or Aldehyde)    + Water
+R-(C=O)-CH2-(CH-OH)-R’    ⇌ R-(C=O)-CH=CH-R'    + H2O
+
+Enolate mode:
+1. The enolate is formed from a carbonyl compound, often an aldehyde or ketone, using a base as a catyst
+2. The enolate reacts with an further aldehyde or ketone resulting in an aldol.
+3. aldol condensation (as above)
+
+[1]  Wade, L. G. Organic Chemistry, 6th ed., Prentice Hall, Upper Saddle River, New Jersey, 2005; pp 1056-1066. ISBN 013187151 
+[2]  Smith, M. B.; March, J. Advanced Organic Chemistry, 5th ed., Wiley Interscience, New York, 2001; pp 1218-1223. ISBN 0-471-58589-0 
+[3]  Mahrwald, R. (ed.) Modern Aldol Reactions, Volumes 1 and 2, Wiley-VCH Verlag GmbH &amp; Co. KGaA, Weinheim, Germany, 2004. ISBN 3-527-30714-1. 
+[4]  Heathcock, C. H. Comp. Org. Syn. 1991, 2, 133-179. (Review) 
+[5]  Mukaiyama, T. Org. React. 1982, 28, 203-331. (Review) 
+[6]  Paterson, I. Chem. Ind. 1988, 12, 390. (Review)</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct"/>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl#OrganicReaction"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Aldehyde"/>
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Ketone"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl#Hydrohalogenation"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Aldehyde"/>
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Ketone"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:allValuesFrom>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Aldehyde"/>
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Ketone"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct"/>
+        <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Water"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl#CyanohydrinReaction"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</owl:cardinality>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl#Alkylimino-de-oxo-bisubstitution"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl#CyanohydrinReaction">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Cyanohydrin reaction is an organic reaction by an aldehyde or ketone with a cyanide anion or a nitrile to form a cyanohydrin. 
+
+Aldehyde or ketone  + nitrile    + X    ⇌ cyanohydrin + Y
+R'-(C=O)-R''        + R-C≡N    + X    ⇌ R'-(HO-C-C≡N)-R'' + Y</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Cyanohydrin"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl#OrganicReaction"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Aldehyde"/>
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Ketone"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl#AldolReaction"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl#Alkylimino-de-oxo-bisubstitution"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl#Hydrohalogenation"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl#Hydrohalogenation">
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl#Alkylimino-de-oxo-bisubstitution"/>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+            <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#HydrogenHalide"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+            <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Alkene"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+            <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</owl:cardinality>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:allValuesFrom>
+              <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                  <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Alkene"/>
+                  <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#HydrogenHalide"/>
+                </owl:unionOf>
+              </owl:Class>
+            </owl:allValuesFrom>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hydrohalogenation is the electrophilic addition of hydrogen halides (hydrohalic acids)  to alkenes to yield the corresponding haloalkanes.
+
+Alkene  + hydrogen halide   → Haloalkane
+R-CH=CH2    + HX        → R-CHX-CH3</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct"/>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl#OrganicReaction"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl#CyanohydrinReaction"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_type.owl#AldolReaction"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Haloalkane"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Haloalkane"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+</rdf:RDF>

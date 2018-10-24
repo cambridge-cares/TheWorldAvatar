@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:phys_dim="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" xmlns:technical_system="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#" xmlns:terms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xml:base="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl">
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl">
+  <terms:license>Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+  </terms:license>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl"/>
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+  </owl:Ontology>
+  <owl:Class rdf:ID="HardwareRequirements">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="has_hardware_device"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="HardwareDevice"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="InternetConnection"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="has_internet_connection"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="has_single_computer_requirements"/>
+        </owl:onProperty>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#SystemRequirements"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SoftwareRequirements">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#SystemRequirements"/>
+  </owl:Class>
+  <owl:Class rdf:ID="DistributionApproach">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PropertySet"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SoftwareSystem">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="has_description"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="has_size"/>
+        </owl:onProperty>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="supports_interface"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="SoftwareInterface"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="has_title"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="InterfaceStandard"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_compliant_to_standard"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="has_hardware_requirements"/>
+        </owl:onProperty>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="has_system_identification"/>
+        </owl:onProperty>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#HardwareRequirements"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#has_hardware_requirements"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="implements_interface"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareInterface"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_runable_on_operating_system"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="OperatingSystem"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="hasDistributionApproach"/>
+        </owl:onProperty>
+        <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:minCardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="requires_supporting_software_system"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareSystem"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#OperatingSystem"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#is_runable_on_operating_system"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_runable_on_middleware_platform"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="MiddlewarePlatform"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="has_price"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="Price"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="versionNumber"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#InterfaceStandard">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:maxCardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#versionNumber"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/Ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#NonExhaustiveValueSet"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareInterface">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#versionNumber"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_defined_in_standard"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#is_defined_in_standard"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#InterfaceStandard"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#InternetConnection">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">InternetConnection</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="has_connection_means"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="has_connection_speed_lower_limit"/>
+        </owl:onProperty>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SingleComputerRequirements">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="has_hard_disk_capacity_lower_limit"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="has_memory_size_lower_limit"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="has_CPU_speed_lower_limit"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="has_platform_bits"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#SystemRequirements"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SingleComputerRequirements</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#Price">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension"/>
+        <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#amount_of_money"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#MiddlewarePlatform">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="has_middleware_platform_name"/>
+        </owl:onProperty>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="has_middleware_platform_version"/>
+        </owl:onProperty>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MiddlewarePlatform</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#OperatingSystem">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OperatingSystem</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="has_operating_system_name"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="has_operating_system_version"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#has_single_computer_requirements">
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SingleComputerRequirements"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has_single_computer_requirements</rdfs:label>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#HardwareRequirements"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#has_hardware_device">
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#HardwareRequirements"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has_hardware_device</rdfs:label>
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#HardwareDevice"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#requires_supporting_software_system">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">requires_supporting_software_system</rdfs:label>
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareSystem"/>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareSystem"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#supports_interface">
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareInterface"/>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareSystem"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">supports_interface</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#has_middleware_platform_name">
+    <rdfs:range>
+      <owl:Class>
+        <owl:oneOf rdf:parseType="Collection">
+          <owl:Thing rdf:ID="COM"/>
+          <owl:Thing rdf:ID="CORBA"/>
+        </owl:oneOf>
+      </owl:Class>
+    </rdfs:range>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has_middleware_platform_name</rdfs:label>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#MiddlewarePlatform"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#implements_interface">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">implements_interface</rdfs:label>
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareInterface"/>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareSystem"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_middleware_platform">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has_middleware_platform</rdfs:label>
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#MiddlewarePlatform"/>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareSystem"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#has_system_identification">
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareSystem"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Workaround for QCR</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#has_internet_connection">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has_internet_connection</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_associated_to_distribution_approach">
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#Price"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is_associated_to_distribution_approach</rdfs:label>
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#DistributionApproach"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#has_connection_speed_lower_limit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has_connection_speed_lower_limit</rdfs:label>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#InternetConnection"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_price_value">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has_price_value</rdfs:label>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#Price"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#is_runable_on_operating_system">
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#OperatingSystem"/>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareSystem"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is_runable_on_operating_system</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#is_defined_in_standard">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is_defined_in_standard</rdfs:label>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareInterface"/>
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#InterfaceStandard"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#has_operating_system_name">
+    <rdfs:range>
+      <owl:Class>
+        <owl:oneOf rdf:parseType="Collection">
+          <OperatingSystem rdf:ID="UNIX">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+          </OperatingSystem>
+          <owl:Thing rdf:ID="WINDOWS">
+            <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#OperatingSystem"/>
+          </owl:Thing>
+        </owl:oneOf>
+      </owl:Class>
+    </rdfs:range>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#OperatingSystem"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has_operating_system_name</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#has_hardware_requirements">
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#HardwareRequirements"/>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareSystem"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has_hardware_requirements</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#is_runable_on_middleware_platform">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is_runable_on_middleware_platform</rdfs:label>
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#MiddlewarePlatform"/>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareSystem"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#has_CPU_speed_lower_limit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has_CPU_speed_lower_limit</rdfs:label>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SingleComputerRequirements"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#has_price">
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#Price"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has_price</rdfs:label>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareSystem"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#is_compliant_to_standard">
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#InterfaceStandard"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is_compliant_to_standard</rdfs:label>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareSystem"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#has_memory_size_lower_limit">
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SingleComputerRequirements"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has_memory_size_lower_limit</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#has_hard_disk_capacity_lower_limit">
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SingleComputerRequirements"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has_hard_disk_capacity_lower_limit</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:ID="vendorWebsite">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:subPropertyOf>
+      <owl:DatatypeProperty rdf:ID="hasVendorInformation"/>
+    </rdfs:subPropertyOf>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="maximumNumberOfUsers">
+    <rdfs:subPropertyOf>
+      <owl:DatatypeProperty rdf:ID="hasCapacityLimitation"/>
+    </rdfs:subPropertyOf>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#has_description">
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareSystem"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has_description</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="CSLID">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the Global Unique Identifier for COM classes.</rdfs:comment>
+    <rdfs:subPropertyOf>
+      <owl:DatatypeProperty rdf:ID="hasSystemIdentification"/>
+    </rdfs:subPropertyOf>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#has_platform_bits">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has_platform_bits</rdfs:label>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SingleComputerRequirements"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="vendorContact">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:subPropertyOf>
+      <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#hasVendorInformation"/>
+    </rdfs:subPropertyOf>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#has_middleware_platform_version">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#MiddlewarePlatform"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has_middleware_platform_version</rdfs:label>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#has_operating_system_version">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has_operating_system_version</rdfs:label>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#OperatingSystem"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#has_connection_means">
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#InternetConnection"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has_connection_means</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MODEM, LAN, etc.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="distributionMedia">
+    <rdfs:subPropertyOf>
+      <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#hasDistributionApproach"/>
+    </rdfs:subPropertyOf>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="MIME-Type">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:subPropertyOf>
+      <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#hasDistributionApproach"/>
+    </rdfs:subPropertyOf>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#hasCapacityLimitation">
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareSystem"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#hasSystemIdentification">
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareSystem"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#hasVendorInformation">
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareSystem"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="maximumNumberOfVariables">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#hasCapacityLimitation"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#has_size">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has_size</rdfs:label>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareSystem"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#has_title">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has_title</rdfs:label>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareSystem"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#hasDistributionApproach">
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#SoftwareSystem"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="distributionMode">
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#hasDistributionApproach"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#versionNumber">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="vendorElectronicMail">
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#hasVendorInformation"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:FunctionalProperty rdf:ID="vendorName">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#hasVendorInformation"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="vendorDigitalSignature">
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/software_system/software_system.owl#hasVendorInformation"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <InterfaceStandard rdf:ID="CAPE-OPEN"/>
+</rdf:RDF>

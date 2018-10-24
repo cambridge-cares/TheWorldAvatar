@@ -1,0 +1,174 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#discharges -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#discharges">
+        <owl:equivalentProperty rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#hasEmission"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#hasCosts -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#hasCosts">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Costs"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#hasEarnings -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#hasEarnings">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#hasEmission -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#hasEmission">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#CO2_emission"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#hasPrice -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#hasPrice">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Price"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#CO2_emission -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#CO2_emission">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#PollutantEmission"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#CapitalCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#CapitalCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Costs"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Costs -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Costs">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Earnings -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Earnings">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:comment>The class Earnings denotes the net benefits of a corporation&apos;s operation.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#EconomicPerformance -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#EconomicPerformance">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#SystemPerformance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#EnvironmentalPerformance -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#EnvironmentalPerformance">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#SystemPerformance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#GenerationCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#GenerationCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Costs"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#LabourCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#LabourCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Costs"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#OperatingCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#OperatingCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Costs"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#PollutantEmission -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#PollutantEmission">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Price -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Price">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PropertySet"/>
+        <rdfs:comment>Price denotes the currency per unit weight of a product (commodity).</rdfs:comment>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+

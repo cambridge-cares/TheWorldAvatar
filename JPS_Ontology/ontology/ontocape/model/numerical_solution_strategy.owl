@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#" xmlns:equation_system="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:swrl="http://www.w3.org/2003/11/swrl#" xmlns:swrlb="http://www.w3.org/2003/11/swrlb#" xmlns:terms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#" xml:base="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl">
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl"/>
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+    <terms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+</terms:license>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology module 'numerical_solution_strategy' gives a classification of numerical solution strategies and specifies the ability of those strategy to solve a particular type of mathematical model.    
+The follwoing classes and relations from other ontology modules are used within 'numerical_solution_strategy':
+
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#AlgebraicEquationSystem"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#DifferentialAlgebraicEquationSystem"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#LinearAlgebraicSystem"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#NonlinearAlgebraicSystem"/&gt;mathematical_model;#MathematicalModel"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#OrdinaryDifferentialEquationSystem"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#PartialDifferentialAlgebraicSystem"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#FixedValueSet"/&gt;
+
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasODE_explicitness"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#containsDirectly"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isRelatedTo"/&gt;
+
+&lt;equation_system:ODE_Explicitness rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#explicit_formulation"/&gt;
+&lt;equation_system:ODE_Explicitness rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#implicit_formulation"/&gt;
+</rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:ID="LinearAlgebraicModelSolutionStrategy">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="NonlinearAlgebraicModelSolutionStrategy"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="solves"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#LinearAlgebraicSystem"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="AlgebraicModelSolutionStrategy"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A LinearAlgebraicModelSolutionStrategy is ModelSolutionStrategy for solving LinearAlgebraicSystems. An example is Gauss-elimination.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="SolutionStrategyForExplixcitODEs">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="SolutionStrategyForImplicitODEs"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#solves"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#OrdinaryDifferentialEquationSystem"/>
+              <owl:Restriction>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#explicit_formulation"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasODE_explicitness"/>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="ODE_SolutionStrategy"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A SolutionStrategyForExplixcitODEs is used to solve ordinary differential equation systems that are given in an explicit_formulation. Examples are explicit Euler, explicit Runge-Kutta, etc.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#AlgebraicModelSolutionStrategy">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="PartialDifferentialAlgebraicModelSolutionStrategy"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#ODE_SolutionStrategy"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="DAE_SolutionStrategy"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#solves"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#AlgebraicEquationSystem"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="ModelSolutionStrategy"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An AlgebraicModelSolutionStrategy is a ModelSolutionStrategy for solving AlgebraicEquationSystems.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#SolutionStrategyForImplicitODEs">
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#SolutionStrategyForExplixcitODEs"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#ODE_SolutionStrategy"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#solves"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#OrdinaryDifferentialEquationSystem"/>
+              <owl:Restriction>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#implicit_formulation"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasODE_explicitness"/>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A SolutionStrategyForIImplicitODEs is used to solve OrdinaryDifferentialEquationSystems that are given in an implicit_formulation. Examples are implicit Euler, implicit Runge-Kutta, etc.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#ODE_SolutionStrategy">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#ModelSolutionStrategy"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:ID="hasTypeOfInvolvedSteps"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#DAE_SolutionStrategy"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#AlgebraicModelSolutionStrategy"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#PartialDifferentialAlgebraicModelSolutionStrategy"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#hasTypeOfInvolvedSteps"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="TypeOfInvolvedSteps"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#solves"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#OrdinaryDifferentialEquationSystem"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ODE_SolutionStrategy is a ModelSolutionStrategy for solving OrdinaryDifferentialEquationSystems.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#hasTypeOfInvolvedSteps"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#TypeOfInvolvedSteps"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#DAE_SolutionStrategy">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</owl:cardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="applies"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#AlgebraicModelSolutionStrategy"/>
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#ODE_SolutionStrategy"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#applies"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A DAE_SolutionStrategy is a ModelSolutionStrategy for solving DifferentialAlgebraicEquationSystems. Examples are implicit Runge-Kutta, BDF, etc.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="handlesDifferentialIndexUpTo"/>
+        </owl:onProperty>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#ModelSolutionStrategy"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#ODE_SolutionStrategy"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#applies"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#PartialDifferentialAlgebraicModelSolutionStrategy"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#DifferentialAlgebraicEquationSystem"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#solves"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#ODE_SolutionStrategy"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#applies"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#AlgebraicModelSolutionStrategy"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#AlgebraicModelSolutionStrategy"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#PartialDifferentialAlgebraicModelSolutionStrategy">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#solves"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#PartialDifferentialAlgebraicSystem"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#ModelSolutionStrategy"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PartialDifferentialAlgebraicModelSolutionStrategy is a ModelSolutionStrategy for solving PartialDifferentialAlgebraicSystems.</rdfs:comment>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#ODE_SolutionStrategy"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#DAE_SolutionStrategy"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#AlgebraicModelSolutionStrategy"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#NonlinearAlgebraicModelSolutionStrategy">
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#LinearAlgebraicModelSolutionStrategy"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A NonlinearAlgebraicModelSolutionStrategy is a ModelSolutionStrategy for solving NonlinearAlgebraicSystem. An example is the Newton's method.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#NonlinearAlgebraicSystem"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#solves"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#AlgebraicModelSolutionStrategy"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#ModelSolutionStrategy">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ModelSolutionStrategy is a (typcially numerical) algorithm that can be used to solve mathematical models.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#MathematicalModel"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#solves"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#MathematicalModel"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#solves"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#ModelSolutionStrategy"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#applies"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#TypeOfInvolvedSteps">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#FixedValueSet"/>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:oneOf rdf:parseType="Collection">
+          <TypeOfInvolvedSteps rdf:ID="one-step_method">
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A one-step_method characterizes an ODE_SolutionStrategy that uses information of one integration step. Examples are various Runge-Kutta methods.</rdfs:comment>
+          </TypeOfInvolvedSteps>
+          <TypeOfInvolvedSteps rdf:ID="multi-step_method">
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A multi-step_method characterizes an ODE_SolutionStrategy that uses information of multiple integration steps. Examples are Adams, BDF, etc.</rdfs:comment>
+          </TypeOfInvolvedSteps>
+        </owl:oneOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A type of involved step denotes whether an ordinary differential equation solution strategy is of one-step nature or multi-step nature.
+- A one-step_method characterizes an ODESolutionStrategy that uses information of one integration step. Examples are various Runge-Kutta methods.
+- A multi-step_method characterizes an ODESolutionStrategy that uses information of multiple integration steps. Examples are Adams, BDF, etc.</rdfs:comment>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#solves">
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#ModelSolutionStrategy"/>
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#MathematicalModel"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation indicates the type of MathematicalModel, for the solution of which a particular ModelSolutionStrategy is designated</rdfs:comment>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyRelatedTo"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#applies">
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#ModelSolutionStrategy"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#containsDirectly"/>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#ModelSolutionStrategy"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ModelSolutionStrategy may apply some other, specialized ModelSolutionStrategy (e.g., for initialization, solving corrector equation, solution of a subproblem, etc.).</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#handlesDifferentialIndexUpTo">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A DAE_SolutionStrategy can only solve DifferentialAlgebraicEquationSystems up to a certain differentialIndex. This restriction is specified through the attribute handlesDifferentialIndexUpTo.</rdfs:comment>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#DAE_SolutionStrategy"/>
+  </owl:DatatypeProperty>
+  <owl:FunctionalProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#hasTypeOfInvolvedSteps">
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#ODE_SolutionStrategy"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Indicates the TypeOfInvolvedSteps of an ODE_SolutionStrategy.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#TypeOfInvolvedSteps"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/>
+  </owl:FunctionalProperty>
+  <owl:AllDifferent>
+    <owl:distinctMembers rdf:parseType="Collection">
+      <TypeOfInvolvedSteps rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#one-step_method"/>
+      <TypeOfInvolvedSteps rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/numerical_solution_strategy.owl#multi-step_method"/>
+    </owl:distinctMembers>
+  </owl:AllDifferent>
+</rdf:RDF><!-- Created with Protege (with OWL Plugin 3.4.8, Build 629)  http://protege.stanford.edu -->

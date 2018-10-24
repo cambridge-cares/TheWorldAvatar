@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:phase_system="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:substance="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#" xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" xmlns:technical_system="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#" xmlns:terms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xml:base="http://www.theworldavatar.com/ontology/ontocape/material/material.owl">
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/material.owl">
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology module 'material' assembles the top-level classes of the partial model 'material' and defines their mutual relations.
+The following classes and relations from other ontology modules are used within 'material':
+
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#Substance"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#AspectSystem"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Aspect"/&gt;
+
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasAspectSystem"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#representsAspectOf"/&gt;
+</rdfs:comment>
+<terms:license>Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+</terms:license>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Material">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="intrinsicCharacteristics"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#Substance"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#intrinsicCharacteristics"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#Substance"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="thermodynamicBehavior"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#thermodynamicBehavior"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="representsIntrinsicCharacteristicsOf">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#intrinsicCharacteristics"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#representsAspectOf"/>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#AspectSystem"/>
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#Material"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#thermodynamicBehavior">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="representsThermodynamicBehaviorOf"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasAspectSystem"/>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#Material"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#intrinsicCharacteristics">
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#AspectSystem"/>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#Material"/>
+    <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#representsIntrinsicCharacteristicsOf"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasAspectSystem"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#representsThermodynamicBehaviorOf">
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#AspectSystem"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#representsAspectOf"/>
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#Material"/>
+    <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#thermodynamicBehavior"/>
+  </owl:ObjectProperty>
+  <system:Aspect rdf:ID="intrinsic_characteristics"/>
+  <system:Aspect rdf:ID="thermodynamic_behavior"/>
+  <owl:AllDifferent>
+    <owl:distinctMembers rdf:parseType="Collection">
+      <system:Aspect rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#intrinsic_characteristics"/>
+      <system:Aspect rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#thermodynamic_behavior"/>
+    </owl:distinctMembers>
+  </owl:AllDifferent>
+</rdf:RDF>
