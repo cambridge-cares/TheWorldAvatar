@@ -1,0 +1,470 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl"/>
+        <rdfs:comment>based on http://purl.oclc.org/NET/ssnx/ssn</rdfs:comment>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasMeasurementProperty -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasMeasurementProperty">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasOperatingProperty -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasOperatingProperty">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasSurvivalProperty -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasSurvivalProperty">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#isObservedBy -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#isObservedBy">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#observes"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#observes -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#observes">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#MeasuringInstrument"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasuredObjectProperties"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#sendsCommandTo -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#sendsCommandTo">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#ProcessControlSystem"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#sendsSignalTo -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#sendsSignalTo">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#MeasuringInstrument"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#ProcessControlSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relation that indicates the connection between a sensor and the controller where the information is sent to</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#MeasuringInstrument -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#MeasuringInstrument">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#observes"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#Accuracy -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#Accuracy">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasurementProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#AirFlowStatus -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#AirFlowStatus">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#HeaterProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#BatteryLifetime -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#BatteryLifetime">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#SurvivalProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#CanopyHoodProperties -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#CanopyHoodProperties">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasuredObjectProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#CanopySwitchStatus -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#CanopySwitchStatus">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#CanopyHoodProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#Condition -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#Condition">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#ControlState -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#ControlState">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#HeaterProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#Drift -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#Drift">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasurementProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#Frequency -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#Frequency">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasurementProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#FumeHoodProperties -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#FumeHoodProperties">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasuredObjectProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#FumeHoodStatus -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#FumeHoodStatus">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#FumeHoodProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#HeaterProperties -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#HeaterProperties">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasuredObjectProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#Latency -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#Latency">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasurementProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MaintenanceSchedule -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MaintenanceSchedule">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OperatingProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasuredObjectProperties -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasuredObjectProperties">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:comment>condition of the target</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasurementCapabilities -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasurementCapabilities">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:comment>Collects together measurement properties (accuracy, range, precision, etc) and the environmental conditions in which those properties hold, representing a specification of a sensor&apos;s capability in those conditions.
+
+The conditions specified here are those that affect the measurement properties, while those in OperatingRange represent the sensor&apos;s standard operating conditions, including conditions that don&apos;t affect the observations.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasurementProperties -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasurementProperties">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:comment>An identifiable and observable characteristic of a sensor&apos;s observations or ability to make observations.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasurementRange -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasurementRange">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasurementProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OperatingPowerRange -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OperatingPowerRange">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OperatingProperties"/>
+        <rdfs:comment>The environmental conditions and characteristics of a system/sensor&apos;s normal operating environment.  Can be used to specify for example the standard environmental conditions in which the sensor is expected to operate (a Condition with no OperatingProperty), or how the environmental and other operating properties relate: i.e., that the maintenance schedule or power requirements differ according to the conditions.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OperatingProperties -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OperatingProperties">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:comment>An identifiable characteristic of the environmental and other conditions in which the sensor is intended to operate.  May include power ranges, power sources, standard configurations, attachments and the like.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OperatingRange -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OperatingRange">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideAirProperties -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideAirProperties">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasuredObjectProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideAirRelativeHumidity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideAirRelativeHumidity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideAirProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideAirTemperature -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideAirTemperature">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideAirProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#PowerStatus -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#PowerStatus">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#HeaterProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#Precision -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#Precision">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasurementProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#RelativeHumidity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#RelativeHumidity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#RoomProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#Resolution -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#Resolution">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasurementProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#ResponseTime -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#ResponseTime">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasurementProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#RoomDifferentialPressure -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#RoomDifferentialPressure">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#RoomProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#RoomProperties -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#RoomProperties">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasuredObjectProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#RoomTemperature -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#RoomTemperature">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#RoomProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#SashOpening -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#SashOpening">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#FumeHoodProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#Selectivity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#Selectivity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasurementProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#Sensitivity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#Sensitivity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasurementProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#SetPoints -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#SetPoints">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasurementProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#SurvivalProperties -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#SurvivalProperties">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:comment>An identifiable characteristic that represents the extent of the sensors useful life.  Might include for example total battery life or number of recharges, or, for sensors that are used only a fixed number of times, the number of observations that can be made before the sensing capability is depleted.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#SurvivalRange -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#SurvivalRange">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:comment>The conditions a sensor can be exposed to without damage: i.e., the sensor continues to operate as defined using MeasurementCapability.  If, however, the SurvivalRange is exceeded, the sensor is &apos;damaged&apos; and MeasurementCapability specifications may no longer hold.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#SystemLifetime -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#SystemLifetime">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#SurvivalProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#VAVAirFlow -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#VAVAirFlow">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#VAVDuctingProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#VAVDamperState -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#VAVDamperState">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#VAVDuctingProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#VAVDuctingProperties -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#VAVDuctingProperties">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasuredObjectProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#detection_limit -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#detection_limit">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasurementProperties"/>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+

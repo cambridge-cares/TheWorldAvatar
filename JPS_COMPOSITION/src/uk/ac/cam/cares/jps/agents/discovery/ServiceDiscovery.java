@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import uk.ac.cam.cares.jps.agents.ontology.ServiceReader;
 import uk.ac.cam.cares.jps.base.config.KeyValueServer;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -18,9 +21,11 @@ import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 public class ServiceDiscovery {
-
+	
 	public static final String KEY_DIR_KB_AGENTS = "absdir.jpsdata.knowledgebase.agents";
 	private static ServiceDiscovery instance = null;
+	Logger logger = LoggerFactory.getLogger(ServiceDiscovery.class);
+
 	
 	public ArrayList<Service> services;
 	public Map<String,Service> httpToServiceMap;
@@ -81,10 +86,9 @@ public class ServiceDiscovery {
 	}
 	
 	private ArrayList<Service> readTheServicePool(String directory) {
-
-		System.out.println("--------------------");
-		System.out.println(directory);
-		System.out.println("--------------------");
+		
+		logger.info("loading from directory=" + directory);
+		
 		ServiceReader reader = new ServiceReader();
  		ArrayList<Service> servicesLoaded = new ArrayList<Service>();
  		File[] files = new File(directory).listFiles();

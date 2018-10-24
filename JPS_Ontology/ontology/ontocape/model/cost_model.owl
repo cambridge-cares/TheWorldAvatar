@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#" xmlns:econ_perf="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#" xmlns:mathematical_model="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:swrl="http://www.w3.org/2003/11/swrl#" xmlns:swrlb="http://www.w3.org/2003/11/swrlb#" xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" xmlns:terms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#" xml:base="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl">
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology module 'cost_model' establishes some mathematical models for predicting the (investment) costs of chemical plants. 
+The follwoing classes and relations from other ontology modules are used within 'cost_model':
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#EconomicPerformance"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#Costs"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#FixedCapitalInvestment"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#MathematicalModel"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariable"/&gt;
+
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#models"/&gt;
+    </rdfs:comment>
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl"/>
+    <terms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+    </terms:license>
+  </owl:Ontology>
+  <owl:Class rdf:ID="PowerFactorModel">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="StepCountingModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="TurnoverRatioModel"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="CapacityFCIModel"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The PowerFactorModel relates the fixed capital investment of a new chemical process system to the one of similar, previously constructed systems by an exponential power ratio. 
+[Peters, M.S. and Timmerhaus, K.D.: Plant Design and Economics for Chemical Engineers, McGraw-Hill, New York, 1991]</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Detailed-itemFCIModel">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Detailed-itemFCIModel requires careful determination of all individual direct and indirect cost items. For such models, extensive data and large amounts of engineering time are necessary. Therefore, this type of estimate is almost exclusively prepared by contractors bidding on complete and all-inclusive work from finished drawings and specifications.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="FixedCapitalInvestmentModel"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#CapacityFCIModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="FactorialFCIModel"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="DifferentialFactorialModel">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="GlobalFactorialModel"/>
+    </owl:disjointWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Within DifferentialFactorialModels, different factors are used for the costs of the FixedCapitalInvestment. Examples are modular estimate models, where individual modules consisting of a group of similar items are considered separately and their costs are then summarized.
+[Guthrie, K.: Data and techniques for preliminary capital cost estimation, Chemical Engineering 24 (3), pp. 114-142, 1969]</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#FactorialFCIModel"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="CostModel">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A MathematicalModel to estimate the investment costs of a ChemicalProcessSystem.</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
+            <owl:someValuesFrom>
+              <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                  <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariable"/>
+                  <owl:Restriction>
+                    <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#Costs"/>
+                    <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/>
+                  </owl:Restriction>
+                </owl:intersectionOf>
+              </owl:Class>
+            </owl:someValuesFrom>
+          </owl:Restriction>
+          <owl:Class rdf:ID="EconomicPerformanceModel"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#FixedCapitalInvestmentModel">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FixeCapitalInvestmentModels (FCI models) are MathematicalModels that are used to estimate the FixedCapitalInvestment of a ChemicalProcessSystem.</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#CostModel"/>
+          <owl:Restriction>
+            <owl:someValuesFrom>
+              <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                  <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariable"/>
+                  <owl:Restriction>
+                    <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/>
+                    <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#FixedCapitalInvestment"/>
+                  </owl:Restriction>
+                </owl:intersectionOf>
+              </owl:Class>
+            </owl:someValuesFrom>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#StepCountingModel">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Step Counting Model</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">StepCountingModel are based on the assumption that the FixedCapitalInvestment can be estimated from the number of process steps (depending on the specific approach, composite process steps or unit operations and reactions are used) multiplied with the costs per process step and some correcting factors. The costs of the process steps are estimated from their capacity and some other factors.
+[Vogt, M.: Neuere Methoden der Investitionsrechnung in der Chemischen Industrie, Diploma thesis, Technische Universität Berlin, 1996]</rdfs:comment>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#PowerFactorModel"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#TurnoverRatioModel"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#CapacityFCIModel"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#EconomicPerformanceModel">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#models"/>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#EconomicPerformance"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An EconomicPerformanceModel models the EconomicPerformance of a ChemicalProcessSystem.</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#models"/>
+            <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#EconomicPerformance"/>
+          </owl:Restriction>
+          <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#MathematicalModel"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Unit-costEstimateModel">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#DifferentialFactorialModel"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unit-costEstimateModels are based on detailed estimates of the main purchase costs for a CPS_realization (either obtained from quotations or from cost records and published data).</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="SixTenthsRuleModel">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The SixTenthsRuleModel is a PowerFactorModel with x=0.6.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#PowerFactorModel"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#GlobalFactorialModel">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#FactorialFCIModel"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#DifferentialFactorialModel"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A GlobalFactorialModel estimates the FixedCapitalIinvestment by multiplying the basic EquipmentCost by some factor. This factor depends among other things on the type of chemical process involved, required materials of construction, and the location of the ChemicalProcessSystem realization. Examples for global factors are the ones proposed by [Lang47]. This model can be extended to calculate the TotalCapitalInvestment. 
+
+Lang, H.J.: Engineering Approach to Preliminary Cost Estimates, Chemical Engineering, pp. 130-133 (September 1947).</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#CapacityFCIModel">
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#Detailed-itemFCIModel"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#FactorialFCIModel"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#FixedCapitalInvestmentModel"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CapacityFCIModels are based on FixedCapitalInvestments of past design projects that are similar to the current ChemicalProcessSystem. Besides, some relating factors (e.g. turn-over ratio), exponential power ratios or more complex relations are given.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#FactorialFCIModel">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#FixedCapitalInvestmentModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#CapacityFCIModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#Detailed-itemFCIModel"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FactorialFCIModels rely on the fact that the percentages of the different costs within the FixedCapitalInvestment are similar for different ChemicalProcessSystems. Based on one or several known costs (for example the equipment costs), the fixed capital investment is estimated using some factors that are derived from cost records, published data and experience.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#TurnoverRatioModel">
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#PowerFactorModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#StepCountingModel"/>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/cost_model.owl#CapacityFCIModel"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The TurnoverRatioModel is a fast evaluation method for order-of-magnitude estimates. The turnover ratio is defined as the ratio of gross annual sales to FixedCapitalInvestment. Values of turnover ratios for different types of chemical processes are for example given by [Schembra91] and [Vogt96].
+Schembra, M. (1991). Daten und Methoden zur Vorkalkulation des Anlagekapitalbedarfs von Chemieanlagen, PhD thesis Technische Universität Berlin.
+Vogt, M. (1996). Neuere Methoden der Investitionsrechnung in der Chemischen Industrie, Diploma thesis, Technische Universität Berlin.</rdfs:comment>
+  </owl:Class>
+</rdf:RDF><!-- Created with Protege (with OWL Plugin 3.4.8, Build 629)  http://protege.stanford.edu -->

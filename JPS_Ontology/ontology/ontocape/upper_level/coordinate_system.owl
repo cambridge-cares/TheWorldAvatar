@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:swrl="http://www.w3.org/2003/11/swrl#" xmlns:swrlb="http://www.w3.org/2003/11/swrlb#" xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" xmlns:terms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#" xml:base="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl">
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl">
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl"/>
+    <terms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+    </terms:license>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology module 'coordinate_system' complements the 'system' module by introducing the concept of a coordinate system. A coordinate system provides a frame of reference for the observation of properties owned by other systems.
+The following classes and relations from the ontology module 'system' are used within 'coordinate_system':
+
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExtensibleValueSet"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PhysicalConstant"&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PropertySet"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#QuantitativeValue"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/&gt; 
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Value"/&gt;
+
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#comprisesDirectly"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isBackdropOf"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isObservedAgainstBackdrop"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isPropertyOf"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isValueOf"/&gt;
+
+The following classes and relations from the Meta Model are used (i.e., refined) within 'coordinate_system':
+
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#NonExhaustiveValueSet"/&gt;
+
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#object-featureRelation"/&gt;
+    </rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:ID="CoordinateValue">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A CoordinateValue serves as a backdrop for some Values, yet it cannot have a backdrop of its own.</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:someValuesFrom>
+              <owl:Class rdf:ID="Coordinate"/>
+            </owl:someValuesFrom>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isValueOf"/>
+          </owl:Restriction>
+          <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <owl:disjointWith>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Value"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isObservedAgainstBackdrop"/>
+      </owl:Restriction>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#QuantitativeValue"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isBackdropOf"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isObservedAgainstBackdrop"/>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">0</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isValueOf"/>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#Coordinate"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="CoordinateSystemAxis">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#NonExhaustiveValueSet"/>
+  </owl:Class>
+  <owl:Class rdf:ID="CoordinateSet">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isPropertyOf"/>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="CoordinateSystem"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#comprisesDirectly"/>
+        <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</owl:minCardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A CoordinateSet groups some Coordinates which logically belong together.</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#comprisesDirectly"/>
+            <owl:someValuesFrom>
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#Coordinate"/>
+            </owl:someValuesFrom>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#comprisesDirectly"/>
+            <owl:allValuesFrom>
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#Coordinate"/>
+            </owl:allValuesFrom>
+          </owl:Restriction>
+          <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PropertySet"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateSystem">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#Coordinate"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="hasCoordinate"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="hasAxis"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateSystemAxis"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateSystemAxis"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#hasAxis"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A CoordinateSystem constitutes a frame of reference for the observation of Properties owned by other Systems.</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:someValuesFrom>
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#Coordinate"/>
+            </owl:someValuesFrom>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#hasCoordinate"/>
+            </owl:onProperty>
+          </owl:Restriction>
+          <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#Coordinate">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateSystem"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isPropertyOf"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateSystemAxis"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="refersToAxis"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#refersToAxis"/>
+        </owl:onProperty>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateSystemAxis"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#refersToAxis"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Coordinate is a property of a CoordinateSystem. The Values of a Coordinate constitute an "absolute" or "final" backdrop for the observation of some Properties.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue"/>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateSystem"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isPropertyOf"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <owl:disjointWith>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PhysicalConstant">
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#Coordinate"/>
+      </rdf:Description>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#hasCoordinate">
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#Coordinate"/>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateSystem"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasCoordinate indicates the Coordinates of a CoordinateSystem.</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#hasAxis">
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateSystem"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#object-featureRelation"/>
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateSystemAxis"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasAxis identifies the CoordinateSystemAxes that belong to a particular CoordinateSystem.</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#refersToAxis">
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#Coordinate"/>
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateSystemAxis"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">By means of the relation refersToAxis, a Coordinate can be further specified. For example, a spatial coordinate may refer to the x-axis of a spatial coordinate system, thus clarifying its spatial orientation.</rdfs:comment>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#object-featureRelation"/>
+  </owl:ObjectProperty>
+</rdf:RDF><!-- Created with Protege (with OWL Plugin 3.4.8, Build 629)  http://protege.stanford.edu -->

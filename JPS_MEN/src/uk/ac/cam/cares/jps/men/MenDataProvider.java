@@ -83,7 +83,7 @@ public class MenDataProvider {
 	public List<Transportation> getTransportationMeansInfoFromKB(String Transport_OKB) {
 		
 		//Land transportation 1
-		String lt = "PREFIX tp:<http://www.theworldavatar.com/ontology/ontotransport/TransportationSystemOntology.owl#> "
+		String lt = "PREFIX tp:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "SELECT ?lt ?Ctrans ?emission ?Cinst "
 				+ "WHERE { ?entity a tp:Truck ."
@@ -103,7 +103,7 @@ public class MenDataProvider {
 				;
 		
 		//Land transportation 2
-		String lt2 = "PREFIX tp:<http://www.theworldavatar.com/ontology/ontotransport/TransportationSystemOntology.owl#> "
+		String lt2 = "PREFIX tp:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "SELECT ?lt ?Ctrans ?emission ?Cinst "
 				+ "WHERE { ?entity a tp:LandPipelines ."
@@ -165,7 +165,7 @@ public class MenDataProvider {
 	    }
 	    
 	    //Short-sea transportation 1
-		String sst = "PREFIX tp:<http://www.theworldavatar.com/ontology/ontotransport/TransportationSystemOntology.owl#> "
+		String sst = "PREFIX tp:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "SELECT ?sst ?Ctrans ?emission ?Cinst "
 				+ "WHERE { ?entity a tp:Ship ."
@@ -183,7 +183,7 @@ public class MenDataProvider {
 				;
 		
 		//Short-sea transportation 2
-		String sst2 = "PREFIX tp:<http://www.theworldavatar.com/ontology/ontotransport/TransportationSystemOntology.owl#> "
+		String sst2 = "PREFIX tp:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "SELECT ?sst ?Ctrans ?emission ?Cinst "
 				+ "WHERE { ?entity a tp:SeaPipelines ."

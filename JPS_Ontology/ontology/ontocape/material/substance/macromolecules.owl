@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.theworldavatar.com/ontology/ontocape/material/substance/macromolecules.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:polymers="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:substance="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#" xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" xmlns:terms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xml:base="http://www.theworldavatar.com/ontology/ontocape/material/substance/macromolecules.owl">
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/macromolecules.owl">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl"/>
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+    
+ <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology module 'macromolecules' provides a few examples of macromolecules in order to demonstrate the usage of the module 'polymers'.
+The following classes and relations are instantiated within 'macromolecules':  
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#End-Group"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#Macromolecule"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/polymers.owl#RepeatingUnit"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#CAS_RegistryNumber"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#molecularFormula"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#name"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#containsDirectly"/&gt;
+</rdfs:comment>
+<terms:license>Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+</terms:license>
+  </owl:Ontology>
+
+  <polymers:End-Group rdf:ID="End-Group_of_Polyethylene__glycol">
+    <substance:molecularFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">·CH2-OH</substance:molecularFormula>
+  </polymers:End-Group>
+  <polymers:Macromolecule rdf:ID="Polyethylene__glycol">
+    <substance:name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PEO</substance:name>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">44.05          C2H4O</rdfs:comment>
+    <substance:name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PEG</substance:name>
+    <system:containsDirectly rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/macromolecules.owl#End-Group_of_Polyethylene__glycol"/>
+    <substance:name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Polyethylene glycol</substance:name>
+    <substance:molecularFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">HO-(CH2-CH2-O)n-H</substance:molecularFormula>
+    <substance:name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Polyethylene oxide</substance:name>
+    <system:containsDirectly>
+      <polymers:RepeatingUnit rdf:ID="RepeatingUnit_of_Polyethylene__glycol">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"/>
+        <substance:molecularFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">·CH2-O-CH2·</substance:molecularFormula>
+      </polymers:RepeatingUnit>
+    </system:containsDirectly>
+    <substance:CAS_RegistryNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#string">25322-68-3</substance:CAS_RegistryNumber>
+  </polymers:Macromolecule>
+</rdf:RDF>

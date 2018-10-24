@@ -1,0 +1,1443 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:chemical_process_system="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:material="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#"
+     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:mathematical_model="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#"
+     xmlns:behavior="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/tensor_quantity.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontolog module &apos;process_model&apos; supports the definition of specialized mathematical models for the domain of chemical engineering.
+The following classes and relations from other ontology modules are used within &apos;process_model&apos;:
+ 
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#PhysicochemicalPhenomenon&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#ProcessUnit&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/material/material.owl#Material&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#MathematicalModel&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariable&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#FixedValueSet&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PhysicalQuantity&quot;/&gt;
+
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#models&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectSubsystemOf&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isPropertyOf&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isSubsystemOf&quot;/&gt;
+
+The following relation from the Meta Model is refined within &apos;process_model&apos;:
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#object-featureRelation&quot;/&gt;
+   </rdfs:comment>
+        <terms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+   </terms:license>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#hasModelingPrinciple -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#hasModelingPrinciple">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerSystemModel"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ModelingPrinciple"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Indicates the ModelingPrinciple on which an ElectricalNetworkModel is based.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#isAssociatedWith -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#isAssociatedWith">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#object-featureRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ElectricalDomainLaw"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation denotes a correspondence between a law and a PhysicochemicalPhenomenon. The former gives a quantitative, the latter a qualitative description of a certain physical behavior.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#InputVariable -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#InputVariable">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PhysicalQuantity"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>Input variables represent time- or space-dependent inputs, which have to be specified for dynamic and/or spatially distributed systems.</rdfs:comment>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#StateVariable -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#StateVariable">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PhysicalQuantity"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#BusNode -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#BusNode"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ACCableLosses -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ACCableLosses">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#APF -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#APF">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorParameter"/>
+        <rdfs:comment>APF, area participation factor</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#AmbTemp -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#AmbTemp">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorModelInput"/>
+        <rdfs:comment>ambient temperature</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Angle -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Angle">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchParameter"/>
+        <rdfs:comment>For the AngMin and AngMax, it use the relation upper limit and lower limit for the numerical value
+transformer phase shift angle if line is a transformer (set to default value)</rdfs:comment>
+        <rdfs:comment>the value equals to 0</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#AngleMax -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#AngleMax">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#AngleMin -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#AngleMin">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Area -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Area">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusNodeParameter"/>
+        <rdfs:comment>area number of a bus</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#AzAngle -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#AzAngle">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorModelInput"/>
+        <rdfs:comment>azimuth angle</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#B -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#B">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchParameter"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Susceptance"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>susceptance</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BaseIrrTesting -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BaseIrrTesting">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorParameter"/>
+        <rdfs:comment>base irradiation testing</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BaseTempTesting -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BaseTempTesting">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchInputVariable -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchInputVariable">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#InputVariable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchStateVariable -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchStateVariable">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#StateVariable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchStatus -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchStatus">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchParameter"/>
+        <rdfs:comment>branch status, 1 - in service, 0 - out of service</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Bs -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Bs">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusNodeParameter"/>
+        <rdfs:comment>shunt susceptance at a bus</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusFrom -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusFrom">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchParameter"/>
+        <rdfs:comment>Number id of bus that is connected as one end of the branch</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusInputVariable -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusInputVariable">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#InputVariable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusNodeParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusNodeParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusNumber -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusNumber">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusNodeParameter"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorParameter"/>
+        <rdfs:comment>Number Of bus where the equipment is connected</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusStateVariable -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusStateVariable">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#StateVariable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusTo -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusTo">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchParameter"/>
+        <rdfs:comment>Number id of bus that is connected as the other end of the branch</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusType -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusType">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusNodeParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#CostModel -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#CostModel">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorCostParameter"/>
+        <rdfs:comment>Model for cost of generation (1: piecewise linear - 2 : polynomial)
+
+Same as format in the variable itself</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#DCCableLosses -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#DCCableLosses">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#DLosses -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#DLosses">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorParameter"/>
+        <rdfs:comment>dust losses</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#DateTime -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#DateTime">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorModelInput"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#DayNum -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#DayNum">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorModelInput"/>
+        <rdfs:comment>day number in a year</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ElectricalDomainLaw -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ElectricalDomainLaw">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerSystemModel"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectSubsystemOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerSystemModel"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#isAssociatedWith"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PropertyModel"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law constitutes the mathematical representation of a scientific law. It usually forms part of an overall ElectricalNetworkModel.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ElevAngle -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ElevAngle">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorModelInput"/>
+        <rdfs:comment>elevation angle</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ForecastLoad -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ForecastLoad">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerDispatchModelInput"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ForecastLoadModelAgent -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ForecastLoadModelAgent">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerSystemModel"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ForecastLoad"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ForecastPriceModelAgent -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ForecastPriceModelAgent">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerSystemModel"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ForecastPrices"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ForecastPrices -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ForecastPrices">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerDispatchModelInput"/>
+        <rdfs:comment>variable input of electricity price</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ForecastSolarGeneration -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ForecastSolarGeneration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerDispatchModelInput"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GdBus -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GdBus">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusInputVariable"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusStateVariable"/>
+        <rdfs:comment>reactive power</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GdGen -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GdGen">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusStateVariable"/>
+        <rdfs:comment>reactive power</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorCostParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorCostParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorInputVariable -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorInputVariable">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#InputVariable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorStateVariable -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorStateVariable">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#StateVariable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Gs -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Gs">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusNodeParameter"/>
+        <rdfs:comment>shunt conductance at a bus</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#HLosses -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#HLosses">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorParameter"/>
+        <rdfs:comment>humidity losses</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#InvLosses -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#InvLosses">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Latitude -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Latitude">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#LeapYearApplied -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#LeapYearApplied">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ModelingPrinciple -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ModelingPrinciple">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:oneOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#data_driven"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#first-principles"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#hybrid"/>
+                </owl:oneOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#FixedValueSet"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ModelingPrinciple represents the principle following which the ProcessModel is developed.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#NominalOpT -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#NominalOpT">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PAverage -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PAverage">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchStateVariable"/>
+        <rdfs:comment>Average active power of the line ( between 2 buses that is connected one another through the line)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PLoss -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PLoss">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchStateVariable"/>
+        <rdfs:comment>represent the active power loss</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMax -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMax">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMaxBattery -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMaxBattery">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMaxDesigned -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMaxDesigned">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMaxGridMetered -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMaxGridMetered">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMin -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMin">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMinBattery -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMinBattery">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMinGridMetered -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMinGridMetered">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PanelA -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PanelA">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorParameter"/>
+        <rdfs:comment>panel area</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PanelL -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PanelL">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorParameter"/>
+        <rdfs:comment>panel length</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PanelW -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PanelW">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorParameter"/>
+        <rdfs:comment>panel width</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Pc1 -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Pc1">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorParameter"/>
+        <rdfs:comment>lower real power output of PQ capability curve</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Pc2 -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Pc2">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorParameter"/>
+        <rdfs:comment>upper real power output of PQ capability curve</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PdBus -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PdBus">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusInputVariable"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusStateVariable"/>
+        <rdfs:comment>active power</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PdGen -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PdGen">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusStateVariable"/>
+        <rdfs:comment>active power</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Pg -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Pg">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorInputVariable"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorStateVariable"/>
+        <rdfs:comment>model variable represents the active generated power</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerDispatchModelAgent -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerDispatchModelAgent">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerSystemModel"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ForecastLoad"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ForecastPrices"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ForecastSolarGeneration"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMaxBattery"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMaxGridMetered"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMinBattery"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMinGridMetered"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PredictedGeneratedActivePower"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PredictedMeteredPowerFlow"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#RatedEff"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Samplingt"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SoC"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SoCFinal"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SoCMax"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SoCMin"/>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerDispatchModelInput -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerDispatchModelInput">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#InputVariable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerFlowModelAgent -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerFlowModelAgent">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerSystemModel"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchInputVariable"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchParameter"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchStateVariable"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusInputVariable"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusNodeParameter"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusStateVariable"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorInputVariable"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorParameter"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorStateVariable"/>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerSystemModel -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerSystemModel">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#MathematicalModel"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#hasModelingPrinciple"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ModelingPrinciple"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#hasModelingPrinciple"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ModelingPrinciple"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#hasModelingPrinciple"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ProcessModel is a MathematicalModel that models a ProcessUnit or a Material, or subsystems of these.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PredictedGeneratedActivePower -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PredictedGeneratedActivePower">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#StateVariable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PredictedMeteredPowerFlow -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PredictedMeteredPowerFlow">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#StateVariable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PropertyModel -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PropertyModel">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerSystemModel"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectSubsystemOf"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerSystemModel"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectSubsystemOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerSystemModel"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel forms part of an overallElectricalNetworkModel. It represents a mathematical correlation for the computation of one designated ModelVariable, which corresponds to one specific PhysicalQuantity. 
+(NA)Examples are vapor pressure correlations or activity coefficient models.(NA)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QAverage -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QAverage">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchStateVariable"/>
+        <rdfs:comment>Average reactive power of the line ( between 2 buses that is connected one another through the line)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC1 -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC1">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorParameter"/>
+        <rdfs:comment>reactive power output at Pc1 (MVAr)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC1Max -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC1Max">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC1"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC1Min"/>
+        <rdfs:comment>maximum reactive power output at Pc1 (MVAr)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC1Min -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC1Min">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC1"/>
+        <rdfs:comment>minimum reactive power output at Pc1 (MVAr)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC2 -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC2">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorParameter"/>
+        <rdfs:comment>reactive power output at Pc2 (MVAr)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC2Max -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC2Max">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC2"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC2Min"/>
+        <rdfs:comment>maximum reactive power output at Pc2 (MVAr)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC2Min -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC2Min">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC2"/>
+        <rdfs:comment>minimum reactive power output at Pc2 (MVAr)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QLoss -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QLoss">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchStateVariable"/>
+        <rdfs:comment>represents the reactive power loss</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QMax -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QMax">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QMin -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QMin">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Qg -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Qg">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorInputVariable"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorStateVariable"/>
+        <rdfs:comment>model variable represents the reactive generated power</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#R -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#R">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchParameter"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Resistance"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>resistance</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Ramp10 -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Ramp10">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorParameter"/>
+        <rdfs:comment>ramp rate for 10 minute reserves (MW)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Ramp30 -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Ramp30">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorParameter"/>
+        <rdfs:comment>ramp rate for 30 minute reserves (MW)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Rampagc -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Rampagc">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorParameter"/>
+        <rdfs:comment>ramp rate for load following/AGC (MW/min)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Rampq -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Rampq">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorParameter"/>
+        <rdfs:comment>ramp rate for reactive power (2 sec timescale) (MVAr/min)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#RateA -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#RateA">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchParameter"/>
+        <rdfs:comment>Long term rating of a branch</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#RateB -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#RateB">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchParameter"/>
+        <rdfs:comment>Short term rating of a branch</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#RateC -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#RateC">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchParameter"/>
+        <rdfs:comment>Emergency rating of a branch</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#RatedEff -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#RatedEff">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#RatioCoefficient -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#RatioCoefficient">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchParameter"/>
+        <rdfs:comment>transformer off nominal turns ratio ( = 0 for lines )</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#S -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#S">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorModelInput"/>
+        <rdfs:comment>Amount of Solar Irradiation that actually hits the panel</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SAverage -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SAverage">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchStateVariable"/>
+        <rdfs:comment>Average apparent power of the line ( between 2 buses that is connected one another through the line)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SLosses -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SLosses">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorParameter"/>
+        <rdfs:comment>shading losses</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Samplingt -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Samplingt">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+        <rdfs:comment>model of sampling time</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SoC -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SoC">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerDispatchModelInput"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SoCFinal -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SoCFinal">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerDispatchModelInput"/>
+        <rdfs:comment>state of charge in the final time horizon scope</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SoCMax -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SoCMax">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+        <rdfs:comment>maximum state of charge</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SoCMin -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SoCMin">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+        <rdfs:comment>minimum state of charge</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorModelAgent -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorModelAgent">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerSystemModel"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ForecastSolarGeneration"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorModelInput -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorModelInput">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#InputVariable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarIrr -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarIrr">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorModelInput"/>
+        <rdfs:comment>solar Irradiance</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarNoon -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarNoon">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorModelInput"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarYield -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarYield">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorParameter"/>
+        <rdfs:comment>% of energy converted into power by PV panel</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#StartCost -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#StartCost">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorCostParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Status -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Status">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorParameter"/>
+        <rdfs:comment>Status of the generator</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#StopCost -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#StopCost">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorCostParameter"/>
+        <rdfs:comment>related to shut down cost</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#TCoeffPMPP -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#TCoeffPMPP">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#TempLosses -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#TempLosses">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Va -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Va">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusInputVariable"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusStateVariable"/>
+        <rdfs:comment>voltage angle</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Vg -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Vg">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorInputVariable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Vm -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Vm">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusInputVariable"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusStateVariable"/>
+        <rdfs:comment>voltage</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#VmMax -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#VmMax">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusNodeParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#VmMin -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#VmMin">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusNodeParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#WeakIrrLosses -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#WeakIrrLosses">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SolarGeneratorParameter"/>
+        <rdfs:comment>weak irradiation losses</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#X -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#X">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchParameter"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Reactance"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>reactance</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Zone -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Zone">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusNodeParameter"/>
+        <rdfs:comment>zone number of a bus</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#baseKV -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#baseKV">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusNodeParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#genCostc0 -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#genCostc0">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorCostParameter"/>
+        <rdfs:comment>Cost coefficient</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#genCostcn-1 -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#genCostcn-1">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorCostParameter"/>
+        <rdfs:comment>pn,cm points for piecewise linear</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#genCostcn-2 -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#genCostcn-2">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorCostParameter"/>
+        <rdfs:comment>an coefficient for polynomial</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#genCostn -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#genCostn">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorCostParameter"/>
+        <rdfs:comment>degre of polynomial cost or number of blocks for piecewise linear blocks</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#mBase -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#mBase">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorParameter"/>
+        <rdfs:comment>same as baseMVA</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PQBus -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PQBus">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusType"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PVBus -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PVBus">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusType"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SlackBus -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SlackBus">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusType"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#data_driven -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#data_driven">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ModelingPrinciple"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Following the data_driven ModelingPrinciple, a ProcessModel is derived from the Values of the Properties of a ModeledObject. Examples of this type of models are neural network models.</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#first-principles -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#first-principles">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ModelingPrinciple"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Following the first-principles ModelingPrinciple, the ProcessModel is based on established physical laws and mechanisms..</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#hybrid -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#hybrid">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ModelingPrinciple"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A hybrid ModelingPrinciple applies both the first-principles and the data_driven approach</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#data_driven"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#first-principles"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+

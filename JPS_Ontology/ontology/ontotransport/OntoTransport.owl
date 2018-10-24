@@ -1,0 +1,278 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#endsAt -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#endsAt">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportationRoute"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TPoint"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#hasEmission -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#hasEmission">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportationMeans"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#hasInstallationCost -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#hasInstallationCost">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportationMeans"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#hasTransportationCost -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#hasTransportationCost">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportationMeans"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#startsFrom -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#startsFrom">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportationRoute"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TPoint"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#suitFor -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#suitFor">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportationRoute"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportationMeans"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#hasLength -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#hasLength">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportationRoute"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#hasName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#hasName">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#TransportationNetwork -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#TransportationNetwork">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isComposedOfSubsystem"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TPoint"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportationRoute"/>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#Emission -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#Emission">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PhysicalQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#InstallationCost -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#InstallationCost">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PhysicalQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#LandPipelines -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#LandPipelines">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#LandTransportation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#LandTransportation -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#LandTransportation">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportationMeans"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#SeaPipelines -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#SeaPipelines">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#ShortSeaTransportation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#Ship -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#Ship">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#ShortSeaTransportation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#ShortSeaTransportation -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#ShortSeaTransportation">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportationMeans"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TPoint -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TPoint">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportationCost -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportationCost">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PhysicalQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportationMeans -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportationMeans">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#hasInstallationCost"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#InstallationCost"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#hasTransportationCost"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportationCost"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#hasEmission"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#Emission"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportationRoute -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportationRoute">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#endsAt"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TPoint"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#startsFrom"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TPoint"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#suitFor"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportationMeans"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#Truck -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#Truck">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#LandTransportation"/>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+

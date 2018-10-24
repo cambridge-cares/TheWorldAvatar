@@ -1,0 +1,492 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl"
+     xmlns:system_realization="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#"
+     xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:system_v1="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#consumesPrimaryFuel -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#consumesPrimaryFuel">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#consumes"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PrimaryFuel"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#consumesSecondaryFuel -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#consumesSecondaryFuel">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#consumes"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#SecondaryFuel"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#hasAge -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#hasAge">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerPlant"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Age"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#hasAnnualGeneration -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#hasAnnualGeneration">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerGeneration"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#AnnualGeneration"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#hasGenerationCapacity -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#hasGenerationCapacity">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerGeneration"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#GenerationCapacity"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#hasYearOfBuilt -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#hasYearOfBuilt">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#YearOfBuilt"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#usesGenerationTechnology -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#usesGenerationTechnology">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PlantGenerationTechnology"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#consumes -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#consumes"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#isOwnedBy -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#isOwnedBy">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerGenerator"/>
+    </rdf:Description>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Age -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Age">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#AnnualGeneration -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#AnnualGeneration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Anthracite -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Anthracite">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Bituminous -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Bituminous">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PrimaryFuel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#GenerationCapacity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#GenerationCapacity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Lignite -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Lignite">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PrimaryFuel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Oil -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Oil">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PrimaryFuel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PlantGenerationTechnology -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PlantGenerationTechnology">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerGeneration -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerGeneration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#SystemFunction"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerGenerator -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerGenerator">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#SystemRealization"/>
+        <rdfs:comment>power plants,power plant</rdfs:comment>
+        <rdfs:label>power plant</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerPerformance -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerPerformance">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#SystemPerformance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerPlant -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerPlant">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#hasFunctionalAspect"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerGeneration"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#hasPerformanceAspect"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerPerformance"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#hasRealizationAspect"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerGenerator"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PrimaryFuel -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PrimaryFuel">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Fuel"/>
+        <rdfs:comment>primary fuel</rdfs:comment>
+        <rdfs:label>primary fuel</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#SecondaryFuel -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#SecondaryFuel">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Fuel"/>
+        <rdfs:comment>secondary fuel</rdfs:comment>
+        <rdfs:label>secondary fuel</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Subbituminous -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Subbituminous">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#YearOfBuilt -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#YearOfBuilt">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#CoalBiomass -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#CoalBiomass">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Fuel -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Fuel"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#Organization -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#Organization"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Anthracite -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Anthracite">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Anthracite"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Bituminous -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Bituminous">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Bituminous"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#CoalGeneration -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#CoalGeneration">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerGeneration"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Cogeneration -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Cogeneration">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PlantGenerationTechnology"/>
+        <system:enumerationValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cogeneration</system:enumerationValue>
+        <rdfs:label>cogeneration</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#CombinedCycleGasTurbine -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#CombinedCycleGasTurbine">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PlantGenerationTechnology"/>
+        <system:enumerationValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CCGT</system:enumerationValue>
+        <rdfs:label>CCGT</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#GasEngine -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#GasEngine">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PlantGenerationTechnology"/>
+        <system:enumerationValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">engine</system:enumerationValue>
+        <rdfs:label>engine</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Lignite -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Lignite">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Lignite"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGasGeneration -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGasGeneration">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerGeneration"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Nuclear -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Nuclear">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PrimaryFuel"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Oil -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Oil">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Oil"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#OilGeneration -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#OilGeneration">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerGeneration"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#OpenCycleGasTurbine -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#OpenCycleGasTurbine">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PlantGenerationTechnology"/>
+        <system:enumerationValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OCGT</system:enumerationValue>
+        <rdfs:label>OCGT</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#SubCriticalThermal -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#SubCriticalThermal">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PlantGenerationTechnology"/>
+        <system:enumerationValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">subcritical</system:enumerationValue>
+        <rdfs:label>subcritical</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Subbituminous -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Subbituminous">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Subbituminous"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#SuperCriticalThermal -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#SuperCriticalThermal">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PlantGenerationTechnology"/>
+        <system:enumerationValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">supercritical</system:enumerationValue>
+        <rdfs:label>supercritical</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#UltraSuperCriticalThermal -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#UltraSuperCriticalThermal">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PlantGenerationTechnology"/>
+        <system:enumerationValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ultrasupercritical</system:enumerationValue>
+        <rdfs:label>ultrasupercritical</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#CoalBiomass -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#CoalBiomass">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#CoalBiomass"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+
