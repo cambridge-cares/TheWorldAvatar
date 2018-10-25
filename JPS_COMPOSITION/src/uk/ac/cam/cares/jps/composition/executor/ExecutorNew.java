@@ -16,22 +16,26 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueServer;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class ExecutorNew {
 
 	public ArrayList<ExecutionLayer> executionChain;
 	public Map<String,ExecutionPackage> executionPackageMap = new HashMap<String,ExecutionPackage>();  // The key is the http url
-	public String myHost = "localhost";
-	public int myPort = 8080;
+	public String myHost;
+	public int myPort;
 	public JSONObject finalResult = new JSONObject();
 	public JSONObject initialInput;
 	
 	public ExecutorNew() {
-		
+		myHost = KeyValueServer.get(IKeys.HOST);
+		myPort = Integer.valueOf(KeyValueServer.get(IKeys.PORT));
 	}
 	
 	public ExecutorNew(ArrayList<ExecutionLayer> executionChain) {
+		this();
 		this.executionChain = executionChain;
 	}
 

@@ -19,6 +19,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
+import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueServer;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -61,7 +62,7 @@ public class AgentWebAPI extends HttpServlet {
 //				.output("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType", true, "buildings", true)
 //				.build();
 		
-		String hostPort = "http://" + KeyValueServer.get("host") + ":" + KeyValueServer.get("port");
+		String hostPort = "http://" + KeyValueServer.get(IKeys.HOST) + ":" + KeyValueServer.get(IKeys.PORT);
 		
 		
 			String result = composeAndExecute(compositeAgent, hostPort, jo.toString());
