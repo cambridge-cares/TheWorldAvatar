@@ -5,11 +5,11 @@
             <module dictRef="cc:initialization">
                 <molecule>
                     <atomArray>
-                        <atom count="1.0" elementType="Cl"/>
-                        <atom count="1.0" elementType="O"/>
+                        <atom count="2.0" elementType="Cl"/>
+                        <atom count="2.0" elementType="O"/>
                         <atom count="1.0" elementType="Ti"/>
                     </atomArray>
-                    <formula concise="Cl 1 O 1 Ti 1 "/>
+                    <formula concise="Cl 2 O 2 Ti 1 "/>
                 </molecule>
                 <parameterList>
                     <parameter dictRef="cc:method">
@@ -23,23 +23,25 @@
             <module dictRef="cc:finalization">
                 <propertyList>
                     <property dictRef="cc:vibrations">
-                        <array dataType="xsd:double" dictRef="cc:frequencies" size="3" units="nonSi:cm-1">110.4308 388.7549 1043.6705</array>
+                        <array dataType="xsd:double" dictRef="cc:frequencies" size="9" units="nonSi:cm-1">99.7777 112.8967 147.3616 148.3138 183.3233 269.3951 345.7526 391.3515 886.3464</array>
                     </property>
                     <property dictRef="cc:rotational_symmetry">
                         <scalar units="si:none" dataType="xsd:integer">1</scalar>
                     </property>
                     <property dictRef="cc:rotational_constants">
-                        <array size="3" units="nonSi:GHZ">41.67181 2.94693 2.75229</array>
+                        <array size="3" units="nonSi:GHZ">2.57331 1.63883 1.25781</array>
                     </property>
                     <property dictRef="cc:geometry_type">
                         <scalar dataType="xsd:string">nonlinear</scalar>
                     </property>
                 </propertyList>
-                <molecule id="mol-final-2" formalCharge="0" convention="convention:molecular" spinMultiplicity="2">
+                <molecule id="mol-final-2" formalCharge="-2" convention="convention:molecular" spinMultiplicity="3">
                     <atomArray>
-                        <atom atomicMass="47.9479467" z3="0.984725" id="a1" x3="-1.062496" y3="0.004354" elementType="Ti"/>
-                        <atom atomicMass="15.9949146" z3="0.610239" id="a2" x3="-1.864795" y3="1.352996" elementType="O"/>
-                        <atom atomicMass="34.9688527" z3="2.974036" id="a3" x3="-0.81052" y3="-1.14085" elementType="Cl"/>
+                        <atom atomicMass="15.9949146" z3="0.73636" id="a1" x3="-2.52396" y3="0.62224" elementType="O"/>
+                        <atom atomicMass="34.9688527" z3="-2.26658" id="a2" x3="-0.95626" y3="0.96899" elementType="Cl"/>
+                        <atom atomicMass="47.9479467" z3="-0.10094" id="a3" x3="-1.07126" y3="0.11463" elementType="Ti"/>
+                        <atom atomicMass="15.9949146" z3="0.95366" id="a4" x3="-0.00761" y3="0.87164" elementType="O"/>
+                        <atom atomicMass="34.9688527" z3="-0.11919" id="a5" x3="-0.82801" y3="-2.2035" elementType="Cl"/>
                     </atomArray>
                 </molecule>
             </module>
@@ -52,7 +54,7 @@
                         <scalar dataType="xsd:string">09</scalar>
                     </parameter>
                     <parameter dictRef="cc:runDate">
-                        <scalar dataType="xsd:string">Tue Jul 19 06:28:46 2016.</scalar>
+                        <scalar dataType="xsd:string">Fri Feb 20 15:25:59 2015.</scalar>
                     </parameter>
                 </parameterList>
             </module>

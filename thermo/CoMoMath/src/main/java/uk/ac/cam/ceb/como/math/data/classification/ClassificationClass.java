@@ -8,12 +8,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
 import uk.ac.cam.ceb.como.math.data.distance.DistanceMeasure;
 
 /**
  *
  * @author pb556
  */
+
 public abstract class ClassificationClass<T> extends ArrayList {
     
     protected String id = "";

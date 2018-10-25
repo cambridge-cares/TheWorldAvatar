@@ -122,15 +122,10 @@
         </dependency>
     </dependencies>
     <repositories>
-        
-        <!-- 
-        - author: nk510
-        - comment added: 03rd of April, 2018 
-        -->
-        
+    
         <!-- 
         - author: nk510. 
-        - repository comment added: 04th-April-2018.
+        - repository commented: 04th-April-2018.
         --> 
         
         <!--repository>
@@ -150,7 +145,7 @@
                 <repository>
         <!--
         - author: nk510 
-        - glpk repository required. Added 04th-April-2018. author: nk510.
+        - glpk repository required. Added 04th-April-2018. 
         - instructions given at: http://glpk-java.sourceforge.net/
         -->
             <id>XypronRelease</id>

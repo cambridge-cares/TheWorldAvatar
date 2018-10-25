@@ -8,6 +8,7 @@
 		<filter-class>				            
             org.apache.struts2.dispatcher.filter.StrutsPrepareAndExecuteFilter
 		</filter-class>
+		
 	</filter>
 	
 	<filter-mapping>

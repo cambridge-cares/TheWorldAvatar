@@ -25,6 +25,7 @@ import uk.ac.cam.ceb.como.chem.structure.Structure;
  *
  * @author pb556
  */
+
 public class BasicCompoundConverter {
     public static Logger logger = Logger.getLogger(BasicCompoundConverter.class);
 
@@ -33,6 +34,7 @@ public class BasicCompoundConverter {
      * @param structure
      * @return empirical formula
      */
+    
     public static String convertToEmpiricalFormula(Structure structure) {
         List<Atom> atoms = StructureTools.getImplodedAtomListByElement(structure);
         return ModelUtils.convertToEmpiricalFormula(atoms);
@@ -43,6 +45,7 @@ public class BasicCompoundConverter {
      * @param structure
      * @return
      */
+    
     public static CMLMolecule convertToCMLMolecule(Structure structure) {
         CMLMolecule cmlMol = new CMLMolecule();
 

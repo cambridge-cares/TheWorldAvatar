@@ -27,6 +27,7 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.SolverHel
  *
  * @author pb556
  */
+
 public class PoolModificationCalculator extends ObjectPoolCalculator {
 
     protected HashMap<Species, ReactionList> result = null;
@@ -133,8 +134,10 @@ public class PoolModificationCalculator extends ObjectPoolCalculator {
 
     protected void calculate(int depth, Species targetSpecies, ObjectPool<Species> refPool) throws LpSolverException {
         numSearches++;
+        
         Solver enthalpySolver = new Solver(solver, format, new VariableFactory("v"));
         ObjectPool p = SolverHelper.clone(refPool);
+        
         List<Species> species = (List<Species>) p.getValidatedObjects();
         Collections.shuffle(species);
         for (Species s : species) {

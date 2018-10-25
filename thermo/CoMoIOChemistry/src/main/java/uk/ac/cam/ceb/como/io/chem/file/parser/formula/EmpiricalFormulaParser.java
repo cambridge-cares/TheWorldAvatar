@@ -35,8 +35,10 @@ public class EmpiricalFormulaParser {
 
 	List<Atom> listOfAtoms = new ArrayList<Atom>();
 
-	int sum_atom = 0;
+	int sum_atom = 0;	
 	
+	int atomSum = 0;
+
 	String atomName ="";
 
 	String tiSpeciesAtoms  =null;
@@ -303,8 +305,10 @@ public class EmpiricalFormulaParser {
 					if(symbol.equals("Ti")) {tiSpeciesAtoms = atom_count+"";}
 					
 					atomName=symbol;
+					atomSum = atom_count;
 
 				} else if (this_elem.getLocalName().equals("formula")) {
+					
 					emp.add(getEmpiricalFormula(this_elem));
 				}
 			}
@@ -323,8 +327,8 @@ public class EmpiricalFormulaParser {
 	 * @author nk510
 	 * @param formula
 	 * @return This method is light modification of ' public String parse(String
-	 *         formula)' and it returns atom'name for given
-	 *         formula.
+	 *         formula)' and it returns atom's name for given
+	 *         formula. 
 	 */
 	public String getAtomName (String formula) {
 		String emp_form_xml = replaceElementByXMLAtom(formula);
@@ -351,7 +355,40 @@ public class EmpiricalFormulaParser {
 			logger.error("IO exception for formula : " + formula, ex);
 		}
 		return atomName;
-	}
+	}	
 	
+	/**
+	 * @author nk510
+	 * @param formula
+	 * @return This method is light modification of ' public String parse(String
+	 *         formula)' and it returns atom's number for given
+	 *         formula (propositional symbol in every clause). 
+	 */
+	public int getAtomSum (String formula) {
+		String emp_form_xml = replaceElementByXMLAtom(formula);
+		emp_form_xml = replaceStoichiometryByXMLCount(emp_form_xml);
+		emp_form_xml = replaceBracketByXMLGrouping(emp_form_xml);
+		emp_form_xml = "<formula>" + emp_form_xml + "</formula>";
+		StringReader str_reader = new StringReader(emp_form_xml);
+		Document doc = null;
+		Builder parser = new Builder();
+		try {
+			doc = parser.build(str_reader);
+			Element form_elem = doc.getRootElement();
+			System.out.println(form_elem.toXML());
+			tidyStoichiometry(form_elem);
+			System.out.println(form_elem.toXML());
+			expandFormula(form_elem);
+			System.out.println(form_elem.toXML());
+			getEmpiricalFormula(form_elem);
+		} catch (ValidityException ex) {
+			logger.error("Cannot create a valid XML from given formula : " + formula, ex);
+		} catch (ParsingException ex) {
+			logger.error("Cannot parse a valid XML from given formula : " + formula, ex);
+		} catch (IOException ex) {
+			logger.error("IO exception for formula : " + formula, ex);
+		}
+		return atomSum;
+	}	
 	
 }

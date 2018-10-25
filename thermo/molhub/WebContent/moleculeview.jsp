@@ -293,6 +293,23 @@ $(document).ready(function(){
                 </tr>
                 </s:if>
                 
+                <s:if test="%{formalChargeList.size>0}">
+                <tr>
+                    <td>
+                    <b>Formal Charge:</b>
+                    <s:iterator value="formalChargeList" var="resultFormalCharge">
+                    <ul>
+                    <li><b>Formal Charge Value:</b> <s:property value="#resultFormalCharge.formalChargeValue"/></li>
+                    <li><b>Formal Charge Unit:</b> <a href="<s:property value="#resultFormalCharge.formalChargeUnit"/>"><s:property value="#resultFormalCharge.formalChargeUnit"/></a></li>
+                    </ul>
+                    </s:iterator>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                </s:if>
+                
+                
                 <tr>
                     <td>
                     <s:if test="%{atomicMassList.size>0}">

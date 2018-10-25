@@ -17,7 +17,7 @@
      <interceptor-ref name="fileUpload"/>
      <interceptor-ref name="basicStack"/>
      
-     <result name="input">/upload.jsp</result>
+     <result name="success">/upload.jsp</result>
      <result name="error">/upload.jsp</result>
          
     </action>
@@ -29,7 +29,8 @@
 	<result name="error">/search.jsp</result>
 	 
 	
-    <interceptor-ref name="basicStack"/>    
+    <interceptor-ref name="basicStack"/> 
+       
     <interceptor-ref name="scope">
         <param name="type">start</param>
     </interceptor-ref>

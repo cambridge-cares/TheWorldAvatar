@@ -35,9 +35,11 @@ public class Atom {
      * Positions Y in A.
      */
     private double posYInA = 0.0;
+    
     /**
      * Positions Z in A.
      */
+    
     private double posZInA = 0.0;
     private Element element = null;
     private Integer isotope = null;
@@ -275,6 +277,7 @@ public class Atom {
      * @param obj
      * @return
      */
+    
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

@@ -5,7 +5,6 @@ package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter.other;
  * and open the template in the editor.
  */
 
-
 import java.io.File;
 import java.util.HashMap;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.MockSpecies;
@@ -24,6 +23,7 @@ import org.junit.Test;
  *
  * @author pb556
  */
+
 public class ProblematicSpeciesFilterTest {
     
     protected int numResults = 25;
@@ -31,6 +31,7 @@ public class ProblematicSpeciesFilterTest {
     @Test
     @Ignore
     public void filterTest() throws Exception {
+    	
         LPSolver solver = new TerminalGLPKSolver(true, true);
         solver.setDirectory(new File("test_data/"));
 

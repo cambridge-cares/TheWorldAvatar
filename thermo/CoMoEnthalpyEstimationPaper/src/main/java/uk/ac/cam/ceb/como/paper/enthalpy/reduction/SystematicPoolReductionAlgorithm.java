@@ -1,8 +1,10 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package uk.ac.cam.ceb.como.paper.enthalpy.reduction;
 
 import uk.ac.cam.ceb.como.paper.enthalpy.reduction.list_calculator.ListCalculator;
@@ -14,12 +16,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.Reaction;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.ReactionList;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
@@ -31,6 +35,7 @@ import uk.ac.cam.ceb.como.paper.enthalpy.threading.EnthalpyEstimationThread;
  *
  * @author pb556
  */
+
 public class SystematicPoolReductionAlgorithm extends SpeciesPoolReduction {
 
     protected ListCalculator<Double> listCalculator = null;
@@ -42,11 +47,12 @@ public class SystematicPoolReductionAlgorithm extends SpeciesPoolReduction {
    /**
     * @author nk510
     */
+    
    /*
-    * Missing default constructor of upper class SpeciesPoolReduction is constructed 
+    * Missing default constructor of upper class SpeciesPoolReduction is constructed.
     */
    
-     public SystematicPoolReductionAlgorithm() {
+    public SystematicPoolReductionAlgorithm() {
     
      }
    
@@ -92,6 +98,7 @@ public class SystematicPoolReductionAlgorithm extends SpeciesPoolReduction {
      * @see uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.reduction.SpeciesPoolReduction#getReducedObjectPool()
      * Fixed pool.getValidatedObjects() and pool.invalidate(s) by providing declaration of pool in upper class.
      */
+    
     @Override
     public void reduce() throws Exception {
         for (int i = 0; i < maxIteration; i++) {
@@ -111,11 +118,13 @@ public class SystematicPoolReductionAlgorithm extends SpeciesPoolReduction {
             }
         }
     }
+
     /*
      * (non-Javadoc)
      * @see uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.reduction.SpeciesPoolReduction#getReducedObjectPool()
      * Fixed pool.getValidatedObjects() by providing declaration of pool in upper class.
      */
+    
     protected Set<Species> filterForUnusedSpecies(Map<Species, Map<Reaction, Boolean>> results) {
         Set<Species> used = new HashSet<>();
         Set<Species> unused = new HashSet<>();
@@ -248,6 +257,7 @@ public class SystematicPoolReductionAlgorithm extends SpeciesPoolReduction {
      * @see uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.reduction.SpeciesPoolReduction#getReducedObjectPool()
      * Fixed pool.getValidatedObjects() by providing declaration of pool in upper class.
      */
+    
     protected Map<Species, Collection<ReactionList>> leaveOneOutCrossValidation() {
         Map<Species, Collection<ReactionList>> results = new HashMap<>();
         int ctr = 1;
@@ -265,7 +275,9 @@ public class SystematicPoolReductionAlgorithm extends SpeciesPoolReduction {
                             results.put(s, r.get(sR));
                         }
                     } else {
-                        r = (Map<Species, Collection<ReactionList>>) t.getCalculator().get();
+                        
+                    	r = (Map<Species, Collection<ReactionList>>) t.getCalculator().get();
+                        
                         if (r != null) {
                             for (Species sR : r.keySet()) {
                                 results.put(s, r.get(sR));
@@ -289,6 +301,7 @@ public class SystematicPoolReductionAlgorithm extends SpeciesPoolReduction {
      * @see uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.reduction.SpeciesPoolReduction#getReducedObjectPool()
      * Fixed pool.getValidatedObjects() by providing declaration of pool in upper class.
      */
+    
     @Override
     public ObjectPool<Species> getReducedObjectPool() {
         return getPool(pool.getValidatedObjects(), true);

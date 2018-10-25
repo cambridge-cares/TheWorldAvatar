@@ -12,6 +12,7 @@
 <head>
 <!--  after pressing refresh button it clears content of page. -->
 <!-- <meta http-equiv="refresh" content="300;url=upload.action" /> -->
+
 <link rel="icon" href="${pageContext.request.contextPath}/css/static/group/favicon.ico" />
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/CoMoStyle.css"/>
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/CoMoIncludeStyle.css"/>
@@ -112,42 +113,44 @@
 <!--<s:property value="term"/>-->
 
 <s:if test="%{session.size>0}">
-<table style="width:60%;">
+<table style="width:70%;">
 <tbody>
 <tr>
 <td><b>Number of final results:</b></td><td><s:property value="%{session.size}"/></td>
 <td><b>Query completed in :</b> </td> <td><s:property value="runningTime"/></td>
 </tr>
+<tr>
+
+<!-- 
+<td>
+<s:if test="%{queryResultString.size>0}">
+<b>Number of sparql queries generated:</b> <s:property value="%{queryResultString.size}"/> <P/>
+<b>Query result for each atom: </b> <P/> 
+<s:property value="queryResultString"/>
+</s:if>
+</td>
+-->
+
+</tr>
 </tbody>
 </table>
 </s:if>
 
-<!-- 
-<s:if test="%{queryResultString.size>0}">
-<b>Number of queries for each atom name:</b> <s:property value="%{queryResultString.size}"/> <P/>
-<b>Query result for each atom: </b> <P/>
-<s:property value="queryResultString"/>
-</s:if>
- -->
- 
 </div>
 
 <!-- 
-<s:if test="%{session.size>0}">
-Session result: <P/>
-<s:property value="session"/>
-</s:if>
+Session result: <s:property value="session"/> 
  -->
-
+ 
 <div id="tool-container">
 
        <div id="result-container">
        
             <div id="process-box" class="tool-tab">
 
-<!-- A list of search results for given query string-->
+<!--A list of search results for given query string-->
                  
-<s:iterator value="finalSearchResultSet" var="result"> 
+<s:iterator value="finalSearchResultSet" var="result">
       
 <div id="<s:property  value="uuid"/>" class="box">
     
@@ -169,6 +172,7 @@ Session result: <P/>
   
 <s:url action="moleculeview.action" var="moleculeView">
 
+<!--Define parameter for uuid to be used in query all data in RDF4J repository.-->
 <s:param name="uuidName"><s:property  value="uuid"/></s:param>
 
 </s:url>
@@ -214,12 +218,14 @@ Session result: <P/>
 </div>
 <P/>
 </s:iterator>
+
 </div>
 </div>
 </div>
 
 </div>
-    <div id="footer-bar"></div>
+
+<div id="footer-bar"></div>
     <div id="footer">
         <ul>
             <li><a class="date">&copy;2018</a>

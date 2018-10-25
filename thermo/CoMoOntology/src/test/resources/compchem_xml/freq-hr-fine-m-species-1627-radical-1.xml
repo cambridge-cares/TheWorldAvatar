@@ -1,90 +1,83 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module xmlns:cc="http://www.xml-cml.org/dictionary/compchem/" xmlns:conventions="http://www.xml-cml.org/convention/" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi/">
-   <module dictRef="cc:jobList">
-      <module dictRef="cc:job">
-         <module dictRef="cc:initialization">
-            <molecule>
-               <atomArray>
-                  <atom count="6.0" elementType="C"/>
-                  <atom count="13.0" elementType="H"/>
-                  <atom count="4.0" elementType="O"/>
-                  <atom count="1.0" elementType="Ti"/>
-               </atomArray>
-               <formula concise="C 6 H 13 O 4 Ti 1 "/>
-               <atomArray>
-                  <atom count="6.0" elementType="C"/>
-                  <atom count="13.0" elementType="H"/>
-                  <atom count="4.0" elementType="O"/>
-                  <atom count="1.0" elementType="Ti"/>
-               </atomArray>
-               <formula concise="C 6 H 13 O 4 Ti 1 "/>
-            </molecule>
-            <parameterList>
-               <parameter dictRef="cc:method">
-                  <scalar dataType="xsd:string">UB971</scalar>
-               </parameter>
-               <parameter dictRef="cc:basis">
-                  <scalar dataType="xsd:string">6-311+G(d,p)</scalar>
-               </parameter>
-            </parameterList>
-         </module>
-         <module dictRef="cc:finalization">
-            <propertyList>
-               <property dictRef="cc:vibrations">
-                  <array dataType="xsd:double" dictRef="cc:frequencies" size="66" units="nonSi:cm-1">5.8481 12.5752 25.8817 39.5846 46.1401 50.0653 58.1849 79.4735 153.3502 157.2054 167.6688 188.1244 194.9823 200.9569 231.2047 262.0472 287.407 338.4521 359.968 435.4556 454.8107 469.2591 488.3684 505.1712 526.3239 574.3393 674.6057 726.1697 733.6143 796.9595 831.1232 885.3475 925.2278 959.1651 1002.3296 1010.5675 1054.3494 1057.557 1074.8837 1270.0399 1290.1128 1342.407 1390.9425 1395.2736 1400.0186 1414.3086 1457.6248 1465.5833 1469.6752 1471.9995 1481.2685 1487.1881 1669.8188 2964.7227 2970.0983 3018.6652 3047.1869 3054.1637 3074.3768 3106.8358 3115.8868 3118.0539 3150.7326 3244.5423 3923.6694 3939.3796</array>
-               </property>
-               <property dictRef="cc:rotational_symmetry">
-                  <scalar units="si:none" dataType="xsd:integer">1</scalar>
-               </property>
-               <property dictRef="cc:rotational_constants">
-                  <array size="3" units="nonSi:GHZ">1.05194 0.52157 0.44410</array>
-               </property>
-               <property dictRef="cc:geometry_type">
-                  <scalar dataType="xsd:string">nonlinear</scalar>
-               </property>
-            </propertyList>
-            <molecule id="mol-final-2" convention="convention:molecular" spinMultiplicity="2">
-               <atomArray>
-                  <atom atomicMass="15.9949146" z3="-0.80108" id="a1" x3="-2.36581" y3="1.13315" elementType="O"/>
-                  <atom atomicMass="12.0000000" z3="-1.60373" id="a2" x3="-3.44059" y3="1.26692" elementType="C"/>
-                  <atom atomicMass="47.9479467" z3="0.20263" id="a3" x3="-1.05872" y3="0.3444" elementType="Ti"/>
-                  <atom atomicMass="12.0000000" z3="-1.28408" id="a4" x3="-4.45451" y3="2.08703" elementType="C"/>
-                  <atom atomicMass="12.0000000" z3="-2.86372" id="a5" x3="-3.37346" y3="0.44235" elementType="C"/>
-                  <atom atomicMass="15.9949146" z3="-0.82204" id="a6" x3="-0.0848" y3="-0.82347" elementType="O"/>
-                  <atom atomicMass="15.9949146" z3="1.01526" id="a7" x3="0.03173" y3="1.5594" elementType="O"/>
-                  <atom atomicMass="15.9949146" z3="1.51978" id="a8" x3="-1.89273" y3="-0.66787" elementType="O"/>
-                  <atom atomicMass="1.0078250" z3="-0.3634" id="a9" x3="-4.43972" y3="2.65965" elementType="H"/>
-                  <atom atomicMass="1.0078250" z3="-1.94903" id="a10" x3="-5.30267" y3="2.1962" elementType="H"/>
-                  <atom atomicMass="1.0078250" z3="-3.43621" id="a11" x3="-2.47553" y3="0.70138" elementType="H"/>
-                  <atom atomicMass="1.0078250" z3="-3.48927" id="a12" x3="-4.25433" y3="0.60352" elementType="H"/>
-                  <atom atomicMass="1.0078250" z3="-2.61726" id="a13" x3="-3.30428" y3="-0.6241" elementType="H"/>
-                  <atom atomicMass="1.0078250" z3="-0.931" id="a14" x3="-0.09577" y3="-1.77611" elementType="H"/>
-                  <atom atomicMass="1.0078250" z3="1.12302" id="a15" x3="-0.00416" y3="2.51137" elementType="H"/>
-                  <atom atomicMass="12.0000000" z3="2.70517" id="a16" x3="-2.19124" y3="-1.09055" elementType="C"/>
-                  <atom atomicMass="12.0000000" z3="2.85106" id="a17" x3="-3.293" y3="-2.09481" elementType="C"/>
-                  <atom atomicMass="12.0000000" z3="3.89175" id="a18" x3="-1.55046" y3="-0.43865" elementType="C"/>
-                  <atom atomicMass="1.0078250" z3="3.15496" id="a19" x3="-4.23347" y3="-1.6066" elementType="H"/>
-                  <atom atomicMass="1.0078250" z3="3.62376" id="a20" x3="-3.05516" y3="-2.83512" elementType="H"/>
-                  <atom atomicMass="1.0078250" z3="1.9024" id="a21" x3="-3.47258" y3="-2.60635" elementType="H"/>
-                  <atom atomicMass="1.0078250" z3="3.63879" id="a22" x3="-0.54979" y3="-0.07468" elementType="H"/>
-                  <atom atomicMass="1.0078250" z3="4.73813" id="a23" x3="-1.48565" y3="-1.1299" elementType="H"/>
-                  <atom atomicMass="1.0078250" z3="4.22576" id="a24" x3="-2.14038" y3="0.43125" elementType="H"/>
-               </atomArray>
-            </molecule>
-         </module>
-         <module dictRef="cc:environment">
-            <parameterList>
-               <parameter dictRef="cc:program">
-                  <scalar dataType="xsd:string">Gaussian</scalar>
-               </parameter>
-               <parameter dictRef="cc:programVersion">
-                  <scalar dataType="xsd:string">09</scalar>
-               </parameter>
-               <parameter dictRef="cc:runDate">
-                  <scalar dataType="xsd:string">Sat Jul 13 02:47:41 2013.</scalar>
-               </parameter>
-            </parameterList>
-         </module>
-      </module>
-   </module>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<module xmlns:n="http://www.xml-cml.org/dictionary/nwchem/" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:cc="http://www.xml-cml.org/dictionary/compchem" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:si="http://www.xml-cml.org/unit/si" xmlns="http://www.xml-cml.org/schema" xmlns:x="http://www.xml-cml.org/dictionary/cmlx/" xmlns:convention="http://www.xml-cml.org/convention" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi">
+    <module dictRef="cc:jobList">
+        <module dictRef="cc:job">
+            <module dictRef="cc:initialization">
+                <molecule>
+                    <atomArray>
+                        <atom count="6.0" elementType="C"/>
+                        <atom count="13.0" elementType="H"/>
+                        <atom count="4.0" elementType="O"/>
+                        <atom count="1.0" elementType="Ti"/>
+                    </atomArray>
+                    <formula concise="C 6 H 13 O 4 Ti 1 "/>
+                </molecule>
+                <parameterList>
+                    <parameter dictRef="cc:method">
+                        <scalar dataType="xsd:string">UB971</scalar>
+                    </parameter>
+                    <parameter dictRef="cc:basis">
+                        <scalar dataType="xsd:string">6-311+G(d,p)</scalar>
+                    </parameter>
+                </parameterList>
+            </module>
+            <module dictRef="cc:finalization">
+                <propertyList>
+                    <property dictRef="cc:vibrations">
+                        <array dataType="xsd:double" dictRef="cc:frequencies" size="66" units="nonSi:cm-1">5.8481 12.5752 25.8817 39.5846 46.1401 50.0653 58.1849 79.4735 153.3502 157.2054 167.6688 188.1244 194.9823 200.9569 231.2047 262.0472 287.407 338.4521 359.968 435.4556 454.8107 469.2591 488.3684 505.1712 526.3239 574.3393 674.6057 726.1697 733.6143 796.9595 831.1232 885.3475 925.2278 959.1651 1002.3296 1010.5675 1054.3494 1057.557 1074.8837 1270.0399 1290.1128 1342.407 1390.9425 1395.2736 1400.0186 1414.3086 1457.6248 1465.5833 1469.6752 1471.9995 1481.2685 1487.1881 1669.8188 2964.7227 2970.0983 3018.6652 3047.1869 3054.1637 3074.3768 3106.8358 3115.8868 3118.0539 3150.7326 3244.5423 3923.6694 3939.3796</array>
+                    </property>
+                    <property dictRef="cc:rotational_symmetry">
+                        <scalar units="si:none" dataType="xsd:integer">1</scalar>
+                    </property>
+                    <property dictRef="cc:rotational_constants">
+                        <array size="3" units="nonSi:GHZ">1.05194 0.52157 0.44410</array>
+                    </property>
+                    <property dictRef="cc:geometry_type">
+                        <scalar dataType="xsd:string">nonlinear</scalar>
+                    </property>
+                </propertyList>
+                <molecule id="mol-final-2" formalCharge="0" convention="convention:molecular" spinMultiplicity="2">
+                    <atomArray>
+                        <atom atomicMass="15.9949146" z3="-0.80108" id="a1" x3="-2.36581" y3="1.13315" elementType="O"/>
+                        <atom atomicMass="12.0000000" z3="-1.60373" id="a2" x3="-3.44059" y3="1.26692" elementType="C"/>
+                        <atom atomicMass="47.9479467" z3="0.20263" id="a3" x3="-1.05872" y3="0.3444" elementType="Ti"/>
+                        <atom atomicMass="12.0000000" z3="-1.28408" id="a4" x3="-4.45451" y3="2.08703" elementType="C"/>
+                        <atom atomicMass="12.0000000" z3="-2.86372" id="a5" x3="-3.37346" y3="0.44235" elementType="C"/>
+                        <atom atomicMass="15.9949146" z3="-0.82204" id="a6" x3="-0.0848" y3="-0.82347" elementType="O"/>
+                        <atom atomicMass="15.9949146" z3="1.01526" id="a7" x3="0.03173" y3="1.5594" elementType="O"/>
+                        <atom atomicMass="15.9949146" z3="1.51978" id="a8" x3="-1.89273" y3="-0.66787" elementType="O"/>
+                        <atom atomicMass="1.0078250" z3="-0.3634" id="a9" x3="-4.43972" y3="2.65965" elementType="H"/>
+                        <atom atomicMass="1.0078250" z3="-1.94903" id="a10" x3="-5.30267" y3="2.1962" elementType="H"/>
+                        <atom atomicMass="1.0078250" z3="-3.43621" id="a11" x3="-2.47553" y3="0.70138" elementType="H"/>
+                        <atom atomicMass="1.0078250" z3="-3.48927" id="a12" x3="-4.25433" y3="0.60352" elementType="H"/>
+                        <atom atomicMass="1.0078250" z3="-2.61726" id="a13" x3="-3.30428" y3="-0.6241" elementType="H"/>
+                        <atom atomicMass="1.0078250" z3="-0.931" id="a14" x3="-0.09577" y3="-1.77611" elementType="H"/>
+                        <atom atomicMass="1.0078250" z3="1.12302" id="a15" x3="-0.00416" y3="2.51137" elementType="H"/>
+                        <atom atomicMass="12.0000000" z3="2.70517" id="a16" x3="-2.19124" y3="-1.09055" elementType="C"/>
+                        <atom atomicMass="12.0000000" z3="2.85106" id="a17" x3="-3.293" y3="-2.09481" elementType="C"/>
+                        <atom atomicMass="12.0000000" z3="3.89175" id="a18" x3="-1.55046" y3="-0.43865" elementType="C"/>
+                        <atom atomicMass="1.0078250" z3="3.15496" id="a19" x3="-4.23347" y3="-1.6066" elementType="H"/>
+                        <atom atomicMass="1.0078250" z3="3.62376" id="a20" x3="-3.05516" y3="-2.83512" elementType="H"/>
+                        <atom atomicMass="1.0078250" z3="1.9024" id="a21" x3="-3.47258" y3="-2.60635" elementType="H"/>
+                        <atom atomicMass="1.0078250" z3="3.63879" id="a22" x3="-0.54979" y3="-0.07468" elementType="H"/>
+                        <atom atomicMass="1.0078250" z3="4.73813" id="a23" x3="-1.48565" y3="-1.1299" elementType="H"/>
+                        <atom atomicMass="1.0078250" z3="4.22576" id="a24" x3="-2.14038" y3="0.43125" elementType="H"/>
+                    </atomArray>
+                </molecule>
+            </module>
+            <module dictRef="cc:environment">
+                <parameterList>
+                    <parameter dictRef="cc:program">
+                        <scalar dataType="xsd:string">Gaussian</scalar>
+                    </parameter>
+                    <parameter dictRef="cc:programVersion">
+                        <scalar dataType="xsd:string">09</scalar>
+                    </parameter>
+                    <parameter dictRef="cc:runDate">
+                        <scalar dataType="xsd:string">Sat Jul 13 02:47:41 2013.</scalar>
+                    </parameter>
+                </parameterList>
+            </module>
+        </module>
+    </module>
 </module>

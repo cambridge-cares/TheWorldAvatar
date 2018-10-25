@@ -162,6 +162,7 @@ public class CompChemAnnotationProcessor<E> {
      * @param entity
      * @return
      */
+    
     public CompChem getCompChem(E entity) {
         // get prefix namespace map
         prefixNamespaceMap = getPrefixNamespaceMap(entity.getClass());

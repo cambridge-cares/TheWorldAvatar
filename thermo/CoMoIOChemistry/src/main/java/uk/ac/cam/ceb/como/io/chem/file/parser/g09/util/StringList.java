@@ -11,15 +11,16 @@ public class StringList extends ArrayList<String> {
 	 */
 
 	private static final long serialVersionUID = 1L;
-
+		
 	public StringList(List<String> lines) {
 
 		/**
-		 * @author nk510 If one adds Collections.addAll(lines) in order to avoid
+		 * @author nk510 <p>If one adds Collections.addAll(lines) in order to avoid
 		 *         java.lang.NullPointerException at this point, it may cause breaking
 		 *         code in other places.
-		 *         Date: MAY-17th-2018.
+		 *         Date: MAY-17th-2018. </p>
 		 * 
+		 *        
 		 */
 
 		addAll(lines);
@@ -124,4 +125,5 @@ public class StringList extends ArrayList<String> {
 		}
 		return pos;
 	}
+
 }

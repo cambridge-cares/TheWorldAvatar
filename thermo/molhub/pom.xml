@@ -42,7 +42,7 @@
     <version>2.11.0</version>
 </dependency>
   
-  <!-- https://mvnrepository.com/artifact/org.apache.struts/struts2-core -->
+<!-- https://mvnrepository.com/artifact/org.apache.struts/struts2-core -->
 <dependency>
     <groupId>org.apache.struts</groupId>
     <artifactId>struts2-core</artifactId>
@@ -110,7 +110,7 @@
     <scope>provided</scope>
 </dependency>  
 
- <!-- makes problem during Tomcat deployment -->
+ <!-- Makes problem during Tomcat deployment -->
 <!-- https://mvnrepository.com/artifact/ognl/ognl -->
 <!-- 
 <dependency>

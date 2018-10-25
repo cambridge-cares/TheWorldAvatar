@@ -26,14 +26,17 @@ import aima.core.logic.propositional.kb.data.Literal;
 import aima.core.logic.propositional.parsing.ast.Sentence;
 import uk.ac.cam.ceb.como.io.chem.file.parser.formula.EmpiricalFormulaParser;
 import uk.ac.ceb.como.molhub.bean.AtomicMass;
+import uk.ac.ceb.como.molhub.bean.FormalCharge;
 import uk.ac.ceb.como.molhub.bean.Frequency;
 import uk.ac.ceb.como.molhub.bean.MoleculeProperty;
 import uk.ac.ceb.como.molhub.bean.QueryString;
 import uk.ac.ceb.como.molhub.bean.RotationalConstant;
 
 /**
+ * The Class QueryManager.
+ *
  * @author nk510
- * <p>The Class QueryManager. Implements methods for query remote RDF4J repository.</p> 
+ * <p>The Class QueryManager. Implements methods for query remote RDF4J repository.</p>
  */
 
 public class QueryManager {
@@ -115,6 +118,7 @@ public class QueryManager {
 					 *         string that will query those molecule name containing selected atom
 					 *         name and selected number of atoms.</p>
 					 */
+					
 					if (literal.isPositiveLiteral()) {
 
 						queryString = QueryString.getAllTriplesForPositiveLiteral(atomName, numberOfAtoms);
@@ -193,7 +197,6 @@ public class QueryManager {
 			connection.rollback();
 			
 		}finally {
-
 			
 			connection.close();
 			
@@ -292,6 +295,7 @@ public class QueryManager {
 	 *            <p>A list that contains sets of all unions in all clauses.</p>
 	 * @return a Java Set. <p>Intersection of all clauses as sets of strings.</p>
 	 */
+	
 	public static Set<String> intersection(List<Set<String>> listOfSets) {
 
 		Set<String> finalSet = new HashSet<String>(listOfSets.get(0));
@@ -333,6 +337,7 @@ public class QueryManager {
 	 *            unique folder name.
 	 * @return A Java List. <p>A list of all frequencies (size, value, unit) for given uuid.</p>
 	 */
+	
 	public static List<Frequency> getAllFrequencies(String uuid) {
 
 		List<Frequency> frequencyList = new ArrayList<Frequency>();
@@ -403,6 +408,7 @@ public class QueryManager {
 	 *            the uuid is name for unique folder name
 	 * @return A Java List. <p>all non composite molecule properties . Non composite molecule properties includes: molecule name, basis set value, level of theory, and geometry type.</p>
 	 */
+	
 	public static List<MoleculeProperty> getAllNonCompositetMoleculeProperties(String uuid) {
 
 		String queryString = QueryString.geNonCompositetMoleculeProperties(uuid);
@@ -603,6 +609,74 @@ public class QueryManager {
 		return spinMultiplicityValue;
 	}
 
+	
+	/**
+	 * Gets the all formal charge.
+	 *
+	 * @param uuid the uuid is unique folder name 
+	 * @return the all formal charge value
+	 */
+	public static List<FormalCharge> getAllFormalCharge(String uuid) {
+
+		List<FormalCharge> formalChargeList = new ArrayList<FormalCharge>();
+		
+		String queryString = QueryString.getFormalCharge(uuid);		
+		
+		Repository repository =  new HTTPRepository(serverUrl);
+		
+		repository.initialize();
+		
+		RepositoryConnection connection = repository.getConnection();
+		
+
+		try {
+
+			connection.begin(IsolationLevels.SNAPSHOT_READ);
+			
+			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+
+			TupleQueryResult result = tupleQuery.evaluate();
+
+			try {
+
+				while (result.hasNext()) {
+
+					BindingSet bindingSet = result.next();
+
+					FormalCharge formalCharge = new FormalCharge(bindingSet.getValue("formalChargeValue").stringValue(),bindingSet.getValue("formalChargeUnit").stringValue());
+
+					formalChargeList.add(formalCharge);
+				}
+				
+				connection.commit();
+
+			} catch (Exception e) {
+
+				logger.info(e.getMessage());
+
+			} finally {
+
+				result.close();
+			}
+			
+			
+			
+		} catch (RepositoryException e) {
+
+			logger.info(e.getMessage());
+			
+			connection.rollback();
+
+		} finally {
+
+			connection.close();
+			
+			repository.shutDown();
+		}
+
+		return formalChargeList;
+	}
+	
 	/**
 	 * Gets the all atomic mass.
 	 *
@@ -716,7 +790,6 @@ public class QueryManager {
 
 					rotationalConstantList.add(rotationalConstant);
 				}
-
 				
 				connection.commit();
 				

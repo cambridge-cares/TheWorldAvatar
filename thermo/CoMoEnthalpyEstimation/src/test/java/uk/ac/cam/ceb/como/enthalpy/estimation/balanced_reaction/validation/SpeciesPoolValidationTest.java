@@ -27,16 +27,17 @@ import org.junit.Test;
  *
  * @author pb556
  */
+
 public class SpeciesPoolValidationTest {
     
     @Test
     @Ignore
     public void csvTest() throws FileNotFoundException, Exception, Exception {
+    	
         //String path = "W:\\Data\\TTIP\\enthalpy\\poster\\pool_153.csv";
         //String dest = "W:\\Data\\TTIP\\enthalpy\\poster\\pool_153_validated_25_10_radicals1_runs1_res5.csv";
         //String destRList = "W:\\Data\\TTIP\\enthalpy\\poster\\rlist_153_validated_25_10_radicals1_runs1_res5.rct";
-        
-        
+                
         String path = "W:\\Data\\TTIP\\NIST\\isd\\pool_hydrocarbons_m.csv";
         String dest = "W:\\Data\\TTIP\\NIST\\isd\\pool_hydrocarbons_validated_25_10_radicals1_runs1_res10.csv";
         String destRList = "W:\\Data\\TTIP\\NIST\\isd\\rlist_hydrocarbons_validated_25_10_radicals1_runs1_res10.rct";

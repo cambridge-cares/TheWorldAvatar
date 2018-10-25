@@ -9,7 +9,6 @@ import uk.ac.cam.ceb.como.openbabel.cml.OpenBabelException;
 import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-
 /**
  *
  * @author pb556

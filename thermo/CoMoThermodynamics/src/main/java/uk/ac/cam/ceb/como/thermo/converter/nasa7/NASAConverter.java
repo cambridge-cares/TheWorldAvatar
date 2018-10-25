@@ -153,10 +153,10 @@ public class NASAConverter {
                      * @author nk510
                      */
 
-/* comment added 04th-April-2018
+/*                    comment added 04th-April-2018
  *                     if (speciesNameGenerator != null) {
                         sp_str = speciesNameGenerator.build(compound);
-                  }
+                       }
 */
                     if (addedSpStr.contains(sp_str)) {
                         boolean verify = true;

@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
  *
  * @author pb556
  */
+
 public class RadicalsFilter extends SpeciesFilter {
 
     protected int num = -1;

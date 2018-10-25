@@ -8,7 +8,8 @@ public enum Phase {
     Solid("solid"),
     Crystalline("crystalline"),
     Unknown("unknown");
-    private final String phase;
+    
+	private final String phase;
 
     Phase(String phase) {
         this.phase = phase;

@@ -32,13 +32,15 @@ import uk.ac.cam.ceb.como.thermo.partition_function.rotation.internal.hindered.p
  *
  * @author pb556
  */
+
 public class IRCompChemWrapper extends CompChemWrapper {
-    // same job as HinderedRotorCMLParser but no parsing is required
+	
+    //same job as HinderedRotorCMLParser but no parsing is required
 
     private final String AXIS_X = "x3";
     private final String AXIS_Y = "y3";
     private final String AXIS_Z = "z3";
-
+    
     public IRCompChemWrapper(CompChem compchem) {
         super(compchem);
     }

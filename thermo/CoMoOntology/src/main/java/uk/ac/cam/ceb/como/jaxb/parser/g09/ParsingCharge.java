@@ -10,11 +10,12 @@ import java.io.IOException;
  * 
  * @author nk510 The Class ParsingCharge.
  * 
- *         <p>The call has implemented method for extracting formal charge from
+ *         <p>The class has implemented method for extracting formal charge from
  *         Gaussian file. We use this method for parsing Gaussian files (g09)
  *         which contain molecules with one atom.</p>
  *         
  */
+
 public class ParsingCharge {
 
 	/** The buffered reader */
@@ -57,6 +58,7 @@ public class ParsingCharge {
 				 *         information, we take last one.
 				 *         </p>
 				 */
+				
 				if (line.contains("Charge =")) {
 
 					formalCharge = line.substring(line.indexOf("=") + 1, line.lastIndexOf("M")).replace(" ", "");

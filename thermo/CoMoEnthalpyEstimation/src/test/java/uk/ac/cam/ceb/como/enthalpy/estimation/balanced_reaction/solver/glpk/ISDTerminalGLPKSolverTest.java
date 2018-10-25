@@ -23,6 +23,7 @@ import org.junit.Test;
  *
  * @author pb556
  */
+
 public class ISDTerminalGLPKSolverTest {
     
     protected double maxErr = 15;

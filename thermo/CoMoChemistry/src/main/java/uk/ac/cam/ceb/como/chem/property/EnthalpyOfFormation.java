@@ -30,6 +30,7 @@ public class EnthalpyOfFormation {
      *
      * @param delta_Hf in J/mol
      */
+    
     public EnthalpyOfFormation(double delta_Hf) {
         this(PhysicalConstants.T_25C, delta_Hf, 0.0);
     }
@@ -39,6 +40,7 @@ public class EnthalpyOfFormation {
      * @param T in K
      * @param delta_Hf in J/mol
      */
+    
     public EnthalpyOfFormation(double T, double delta_Hf) {
         this(T, delta_Hf, 0.0);
     }
@@ -49,6 +51,7 @@ public class EnthalpyOfFormation {
      * @param delta_Hf in J/mol
      * @param error J/mol
      */
+    
     public EnthalpyOfFormation(double T, double delta_Hf, double error) {
         this.delta_H_f = delta_Hf;
         this.error = error;

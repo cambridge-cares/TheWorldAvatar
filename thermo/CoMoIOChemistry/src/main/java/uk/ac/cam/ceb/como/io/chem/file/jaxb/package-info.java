@@ -9,17 +9,25 @@
  * @author nk510
  * date: MAY-10th-2018.
  * To avoid appearing ns0, ns1, ns2, ns3 etc. In resulting xml file, we define namespace annotation. 
- * We do not need the NamespacePrefixmanager setting to the Marshaller. 
+ * We do not need the NamespacePrefixManager setting to the Marshaller. 
  */
 
 @javax.xml.bind.annotation.XmlSchema(
-		namespace = "",
+		namespace = "http://www.xml-cml.org/schema",
         elementFormDefault = XmlNsForm.QUALIFIED,
 xmlns={
-//		@XmlNs(prefix="", namespaceURI="http://www.xml-cml.org/schema"),
-		@XmlNs(prefix="cc", namespaceURI="http://www.xml-cml.org/dictionary/compchem/"),
-		@XmlNs(prefix="nonSi", namespaceURI="http://www.xml-cml.org/unit/nonSi/"),
-		@XmlNs(prefix="conventions", namespaceURI="http://www.xml-cml.org/convention/")
+//		@XmlNs(prefix="conventions",namespaceURI="http://www.xml-cml.org/convention/"),		
+		@XmlNs(prefix="n", namespaceURI="http://www.xml-cml.org/dictionary/nwchem/"),
+		@XmlNs(prefix="x", namespaceURI="http://www.xml-cml.org/dictionary/cmlx/"),
+		@XmlNs(prefix="h", namespaceURI="http://www.w3.org/1999/xhtml"),
+//		@XmlNs(prefix="cml", namespaceURI="http://www.xml-cml.org/schema"),
+		@XmlNs(prefix="xsd", namespaceURI="http://www.w3.org/2001/XMLSchema"),
+		@XmlNs(prefix="nonSi", namespaceURI="http://www.xml-cml.org/unit/nonSi"),
+		@XmlNs(prefix="convention",namespaceURI="http://www.xml-cml.org/convention"),
+		@XmlNs(prefix="si",namespaceURI="http://www.xml-cml.org/unit/si"),
+//		@XmlNs(prefix="compchem",namespaceURI="http://www.xml-cml.org/dictionary/compchem"),
+		@XmlNs(prefix="cc", namespaceURI="http://www.xml-cml.org/dictionary/compchem"),
+		@XmlNs(prefix="",namespaceURI="http://www.xml-cml.org/schema")
 		
 		}
 )

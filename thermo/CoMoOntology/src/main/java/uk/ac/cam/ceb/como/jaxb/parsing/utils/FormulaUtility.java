@@ -49,6 +49,7 @@ public class FormulaUtility {
 		 */
 
 		BufferedReader br = new BufferedReader(new FileReader(file));
+		
 		for (String line; (line = br.readLine()) != null;) {
 
 			/**
@@ -76,11 +77,14 @@ public class FormulaUtility {
 				 *         including characters such as "-" and "," between brackets . For
 				 *         example, formula name: Ti3H2S4(2-,3)->Ti3H2S4.</p>
 				 */
+				
 				formulaName = formulaName.replaceAll("\\(([0-9])+(\\-\\,)([0-9])+\\)", "");
+				
 				/**
 				 * @author nk510 <p>Removes all appearing substrings which have brackets and number
 				 *         between brackets. For example, formula name: Ti4Cl2O3(2) -> Ti4Cl2O3</p>
 				 */
+				
 				formulaName = formulaName.replaceAll("\\(([0-9])+\\)", "");
 
 				System.out.println("formula name:  " + formulaName);

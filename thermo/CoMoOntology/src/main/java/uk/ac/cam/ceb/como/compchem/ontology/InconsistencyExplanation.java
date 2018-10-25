@@ -42,7 +42,7 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
 public class InconsistencyExplanation {	
 	
 	/** File path to generated ontologies (Abox of Compchem ontology). */
-	static String ontochemFilePath = "src/test/resources/ontology/ontochem_abox/";
+	static String compchemFilePath = "src/test/resources/ontology/compchem_abox/";
 	
 	/**
 	 * The main method.
@@ -61,7 +61,7 @@ public class InconsistencyExplanation {
 		 * 
 		 */
 
-		File[] fileList = utility.getFileList(ontochemFilePath,".owl", ".rdf", ".ttl");
+		File[] fileList = utility.getFileList(compchemFilePath,".owl", ".rdf", ".ttl");
 
 		/**
 		 * 

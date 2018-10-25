@@ -1,6 +1,3 @@
-/*
- * 
- */
 package uk.ac.cam.ceb.como.compchem.xslt;
 
 import java.io.File;
@@ -38,7 +35,7 @@ public class Transformation {
 	 * 
 	 */
 
-	static String xmlFolderPath = "src/test/resources/ontochem_xml/";
+	static String xmlFolderPath = "src/test/resources/compchem_xml/";
 
 	/**
 	 * The xslt path.
@@ -53,7 +50,7 @@ public class Transformation {
 	 *
 	 * @param args the arguments
 	 * @throws TransformerException the transformer exception
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws IOException Signals that an I/O exception has occurred
 	 * 
 	 */
 	
@@ -62,12 +59,14 @@ public class Transformation {
 		Utility utility = new FileUtility();
 		
 		/**
+		 * 
 		 * Gets the file list.
 		 *
 		 * @author nk510
 		 * @param folderPath <p>File list of all ontochem xml files stored in a folder.</p>
 		 * @return the file list. <p>Method reads all ontochem XML files in given folder path and saves it in file list. Supported
 		 *         file extension is '.xml'.</p>
+		 *         
 		 */
 
 		File[] fileList = utility.getFileList(xmlFolderPath,".xml");
@@ -90,7 +89,7 @@ public class Transformation {
 			 * 
 			 */
 
-			String outputPath = "src/test/resources/ontology/ontochem_abox/" + f.getName().replace(".xml", "").toString() + ".rdf";
+			String outputPath = "src/test/resources/ontology/compchem_abox/" + f.getName().replace(".xml", "").toString() + ".rdf";
 
 			FileOutputStream outputStream = new FileOutputStream(new File(outputPath));
 
@@ -104,6 +103,7 @@ public class Transformation {
 			 * @author nk510 <p>Runs XSLT transformation for each ontochem XML file form file
 			 *         list.</p> 
 			 */			
+
 			trasnformation(randomString,xmlSource, outputStream, xsltSource);
 		}
 	}
@@ -136,7 +136,7 @@ public class Transformation {
 		
 		/**
 		 * @author nk510
-		 * <p>Sets parametar that will be used in XSLT code. In this case 'xmlFolderName' will be used as parameter in XSLT code.</p>
+		 * <p>To set parameter that will be used in XSLT code. In this case 'xmlFolderName' (uuid) will be used as parameter in XSLT code.</p>
 		 */
 		transformer.setParameter("xmlFolderName", xmlFolderName);
 		

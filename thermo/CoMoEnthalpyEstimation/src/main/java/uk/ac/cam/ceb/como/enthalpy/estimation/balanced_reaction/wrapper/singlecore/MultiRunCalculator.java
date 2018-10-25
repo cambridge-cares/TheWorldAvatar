@@ -100,13 +100,17 @@ public class MultiRunCalculator extends ObjectPoolCalculator {
 
     @Override
     public Object get() {
-        if (selector == null) {
+        
+    	if (selector == null) {
             return result;
         }
+        
         HashMap<Species, Collection<ReactionList>> sol = new HashMap<Species, Collection<ReactionList>>();
+        
         for (Species s : result.keySet()) {
             sol.put(s, selector.select((List<ReactionList>) result.get(s)));
         }
+        
         return sol;
     }
 

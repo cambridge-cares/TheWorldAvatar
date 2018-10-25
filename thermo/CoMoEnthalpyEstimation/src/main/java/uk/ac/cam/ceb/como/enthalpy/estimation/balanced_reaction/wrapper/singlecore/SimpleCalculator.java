@@ -22,6 +22,7 @@ import java.util.HashSet;
  *
  * @author pb556
  */
+
 public class SimpleCalculator extends ObjectPoolCalculator {
 
     protected HashMap<Species, ReactionList> result = null;

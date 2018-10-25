@@ -92,7 +92,7 @@ public class GenerateXml {
 			 * 
 			 */
 
-			File outputFile = new File("src/test/resources/ontochem_xml/" + fileName + ".xml");
+			File outputFile = new File("src/test/resources/compchem_xml/" + fileName + ".xml");
 
 			generateRootModule(gaussianFile, outputFile, rootModule);
 

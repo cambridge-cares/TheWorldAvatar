@@ -8,6 +8,7 @@ import org.apache.struts2.ServletActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 import uk.ac.ceb.como.molhub.bean.AtomicMass;
+import uk.ac.ceb.como.molhub.bean.FormalCharge;
 import uk.ac.ceb.como.molhub.bean.Frequency;
 import uk.ac.ceb.como.molhub.bean.MoleculeProperty;
 import uk.ac.ceb.como.molhub.bean.RotationalConstant;
@@ -16,6 +17,7 @@ import uk.ac.ceb.como.molhub.model.QueryManager;
 
 import org.apache.log4j.Logger;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class MoleculeViewAction. 
  * Shows all molecules properties stored in RDF4J triple store. 
@@ -36,6 +38,9 @@ public class MoleculeViewAction extends ActionSupport {
 
 	/** The spin multiplicity value. */
 	String spinMultiplicityValue;
+	
+	/** The formal charge. */
+	List<FormalCharge> formalChargeList;
 
 	/** The catalina folder path. */
 	private String catalinaFolderPath = System.getProperty("catalina.home");
@@ -98,7 +103,7 @@ public class MoleculeViewAction extends ActionSupport {
 
 		/**
 		 * @author nk510 <p>SPARQL returns String that remembers spin multiplicity value
-		 *         for gien uuid.</p>
+		 *         for given uuid.</p>
 		 */
 
 		spinMultiplicityValue = QueryManager.getAllSpinMultiplicity(getUuid());
@@ -117,6 +122,14 @@ public class MoleculeViewAction extends ActionSupport {
 
 		rotationalConstantList = QueryManager.getAllRotationalConstant(getUuid());
 
+		/**
+		 * @author nk510 <p>SPARQL returns List<FormalCharge> that remembers formal charge value and formal charge unit
+		 *         for given uuid.</p>
+		 */
+		
+		formalChargeList = QueryManager.getAllFormalCharge(getUuid());
+		
+		
 		return SUCCESS;
 	}
 
@@ -327,5 +340,13 @@ public class MoleculeViewAction extends ActionSupport {
 	 */
 	public void setRotationalConstantList(List<RotationalConstant> rotationalConstantList) {
 		this.rotationalConstantList = rotationalConstantList;
+	}
+
+	public List<FormalCharge> getFormalChargeList() {
+		return formalChargeList;
+	}
+
+	public void setFormalChargeList(List<FormalCharge> formalChargeList) {
+		this.formalChargeList = formalChargeList;
 	}
 }

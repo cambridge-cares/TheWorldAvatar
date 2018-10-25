@@ -6,6 +6,7 @@ import org.xmlcml.cml.base.CMLElement;
  *
  * @author pb556
  */
+
 public class NamespaceUtils {
 
     public static String getPrefixFromQName(final String qname) throws IllegalArgumentException {

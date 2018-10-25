@@ -40,8 +40,8 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
 public class CompChemQuery {
 	
 	/** The Constant TBOX_SOURCE. */
-	public static final String TBOX_SOURCE = "./src/test/resources/ontology/ontochem_ontology/ontochem.spin.rdf";
-	public static final String ABOX_SOURCE="./src/test/resources/ontology/ontochem_abox/";
+	public static final String TBOX_SOURCE = "./src/test/resources/ontology/compchem_ontology/compchem.rdf";
+	public static final String ABOX_SOURCE="./src/test/resources/ontology/compchem_abox/";
 	public static final String TRAGET_FOLDER="./src/test/resources/ontology/sparql_results/";
 	public static final String SPARQL_FOLDER ="./src/test/resources/ontology/sparql_query/";
 	

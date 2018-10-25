@@ -200,6 +200,7 @@ public class ParsingGeometry {
 		FrequencyParser parser = new FrequencyParser();
 
 		parser.set(file);
+		
 		parser.parse();
 
 		CompChem cc = (CompChem) parser.get();

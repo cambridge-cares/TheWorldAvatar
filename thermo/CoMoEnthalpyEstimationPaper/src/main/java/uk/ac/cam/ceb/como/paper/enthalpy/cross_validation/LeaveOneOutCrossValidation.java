@@ -61,15 +61,16 @@ import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
  *   
  * Output of calculations:
  * - Estimates dHf (298.15K) for selected 923 reference species.
- * - Generates complete reaction (rst file) list and species list (csv file) in folders named as same as species id name is. Species's id (reference) is given in first columng of input 'csv' file. 
+ * - Generates complete reaction (rst file) list and species list (csv file) in folders named as same as species id's name. Species's id (CAS Registry Number) is given in first column of input 'csv' file. 
  * - Generates files in '.temp' folder. The folder has more than 66GB of data.  
  * - Based on [1] (page 149), it should return 'a set of consistent (accepted) and a set of inconsistent (rejected) reference data' [1]. 
+ *   Note:  I did not find in this class the implementation of methods for checking automatically the consistency of target species.
  *   
  *   References used in documentation:
  *   
  *   [1] Philipp Buerger, First-Principles Investigation of Titanium Dioxide Gas-Phase Precursor Chemistry, PhD thesis, St Edmund’s College, February 7, 2017.
  *   [2] GNU Linear Programming Kit (GLPK), Version 4.58. URL http://www.gnu.org/software/glpk/glpk.html,  2016.
- *   [3] lp_solve. Version 5.5.2.0. URL http://lpsolve.sourceforge.net/, 2016. 
+ *   [3] lp_solve. Version 5.5.2.0. URL http://lpsolve.sourceforge.net/, 2016.
  * 
  */
 
@@ -84,12 +85,12 @@ public class LeaveOneOutCrossValidation {
     	 */
     	
         /*
+         * (non-Javadoc)
          * Commented Java code from previous version:
          *  
          * String srcRefPool = "C:\\Users\\pb556\\workspace\\methodology\\results\\thermal_scaled_kJperMol.csv";
          * String destRList = "C:\\Users\\pb556\\workspace\\methodology\\results\\leave-one-out-x-validation\\hco\\";
-        */
-         	
+        */         	
     	
     	/**
          * @author nk510
@@ -99,8 +100,7 @@ public class LeaveOneOutCrossValidation {
     	 * srcRefPool: Testing main method by using recovered file: thermal_scaled_kJperMol.csv (date stamp: date stamp 19/03/16. @19.48) and created new file path.   	
     	 * Input file contains information about 923 species
     	 * 
-         */
-    	 
+         */    	 
     	
     	String srcRefPool = "D:\\LeaveOneOutCrossValidation_results\\thermal_scaled_kJperMol.csv";
     	
@@ -114,7 +114,7 @@ public class LeaveOneOutCrossValidation {
     	 * The folder is created ones.
          */
     	
-        String destRList = "D:\\LeaveOneOutCrossValidation_results\\leave-one-out-x-validation\\hco\\";
+        String destRList = "D:\\LeaveOneOutCrossValidation_results\\leave-one-out-x-validation\\hco10\\";
         
         /** 
          * 
@@ -164,6 +164,7 @@ public class LeaveOneOutCrossValidation {
          */
         
         /*
+         * (non-Javadoc)
          * Commented Java code from previous version.
          * solver.setDirectory(new File("C:\\Users\\pb556\\temp2\\")); 
          * 
@@ -183,20 +184,20 @@ public class LeaveOneOutCrossValidation {
          * 
          * */
 
-        solver.setDirectory(new File("D:\\LeaveOneOutCrossValidation_temp2\\"));
+        solver.setDirectory(new File("D:\\LeaveOneOutCrossValidation_temp11\\"));
 
         /**
          * @author nk510
          * @version 1.0
          * @since 2018-04-20
          *          
-         * I can not understand what is the meaning of integer arrays defined below. They are used in calculation loop as a lower/upper bounds like in matrix dimensions [crtRuns,crtRes].
-         * I did not find in PhD thesis [1] term 'radicals' used in pseudo code of Chapter 6 [1]. The terms 'radicals' appears in Chapter 2 [1].
+         * I can not understand what is the meaning of integer arrays defined below, used as a maximum number of loops in calculations. They are used in calculation loop as a lower/upper bounds like in matrix dimensions [crtRuns,crtRes].
+         * I did not find in PhD thesis [1] term 'radicals' used in pseudo code of Chapter 6 [1]. Term 'radicals' appears in Chapter 2 [1].
          */
         
         int[] ctrRuns = new int[]{1};
-        int[] ctrRes = new int[]{25}; // 1, 5, 15, 25
-        int[] ctrRadicals = new int[]{100, 0, 1, 2}; // 0, 1, 2, 3, 4, 5
+        int[] ctrRes = new int[]{5}; // 1, 5, 15, 25  // first version: int[] ctrRes = new int[]{25};
+        int[] ctrRadicals = new int[]{100, 1, 2, 3, 4, 5}; // 0, 1, 2, 3, 4, 5  //first version: int[] ctrRadicals = new int[]{100, 0, 1, 2};
         
         for (int z = 0; z < ctrRadicals.length; z++) {
             
@@ -205,7 +206,6 @@ public class LeaveOneOutCrossValidation {
             int timeout = 600;
             
             RadicalsFilter filter = new RadicalsFilter(0, maxRadical);
-
 
             for (int i = 0; i < ctrRuns.length; i++) {
                 
@@ -237,7 +237,7 @@ public class LeaveOneOutCrossValidation {
                      * @version 1.0
                      * @since 2018-04-20
                      *                      
-                     * Iterates over parsed species reference list (List data structure)  
+                     * Iterates over parsed species reference list (ArrayList data structure)  
                      */
                     
                     for (Species target : refSpecies) {
@@ -251,6 +251,7 @@ public class LeaveOneOutCrossValidation {
                     	 * For Key-Set of this Java Map, Philipp used {@link Species#getRef()} attribute defined in Species class as a 'private String'.  
                     	 * 
                     	 */
+                    	
                         Map<Species, Collection<ReactionList>> results = new HashMap<>();
                         
                         System.out.println("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " / " + refSpecies.size() + ")");
@@ -265,6 +266,7 @@ public class LeaveOneOutCrossValidation {
                          * Skips existing (already created) reaction list files.
                          * 
                          */
+                        
                         if (new File(destRList + "\\" + target.getRef() + "\\" + config + "_reaction-list.rct").exists()) {
                             continue;
                         }
@@ -277,6 +279,7 @@ public class LeaveOneOutCrossValidation {
                          * refPool: Creates reference species pool (see page page 102, 3rd paragraph  [1]) as a Java List data structure. 
                          * 
                          */
+                        
                         List<Species> refPool = new ArrayList<>();
                         
                         refPool.addAll(refSpecies);
@@ -395,6 +398,7 @@ public class LeaveOneOutCrossValidation {
                              *  Calculate the enthalpy of formation of a target species.
                              *                                                     
                              */
+                            
                             Collection<Species> ttipSpecies = new HashSet<>();
                         
                             for (Species s : results.keySet()) {
@@ -418,6 +422,7 @@ public class LeaveOneOutCrossValidation {
                                      *  Set the result of calculation to ({@link Species#getHf()} variable as attribute of Species class.
                                      *                                                     
                                      */
+                                    
                                     s.setHf(r.calculateHf());
                                     
                                     /**
@@ -428,6 +433,7 @@ public class LeaveOneOutCrossValidation {
                                      * Adds data about species into the collection.
                                      *                                                     
                                      */
+                                    
                                     ttipSpecies.add(s);
                                     
                                 } catch (ArrayIndexOutOfBoundsException | NullPointerException aioobe) {
@@ -435,8 +441,6 @@ public class LeaveOneOutCrossValidation {
                                 }
                             }
                             
-                            
-
                             if (!new File(destRList + "\\" + target.getRef() + "\\").exists()) {
                                 new File(destRList + "\\" + target.getRef() + "\\").mkdirs();
                             }
@@ -458,7 +462,7 @@ public class LeaveOneOutCrossValidation {
                              * @version 1.0
                              * @since 2018-04-20
                              *
-                             * Generates (writes) calculated pool median for a species. Species is described by using {@link Species#ref} variable.
+                             * Generates (writes) calculated pool median for a species. Species reference is given by using {@link Species#ref} variable.
                              *                                                     
                              */
                             
