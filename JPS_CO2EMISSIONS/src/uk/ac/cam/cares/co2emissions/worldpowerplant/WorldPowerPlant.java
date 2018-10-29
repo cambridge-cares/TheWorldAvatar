@@ -87,31 +87,31 @@ public class WorldPowerPlant extends HttpServlet {
 			
 			if (i < segmentInitialValue[1]) {
 //				System.out.println(i);
-//				System.out.println(arrayPowerplantIRI[i]);
+				System.out.println(arrayPowerplantIRI[i]);
 				publishMessage(arrayPowerplantIRI[i], SCENARIO_ID_1, channel);
 			}
 			
 			if (segmentInitialValue[1]+i < segmentInitialValue[2]) {
 //				System.out.println(segmentInitialValue[1] + i);
-//				System.out.println(arrayPowerplantIRI[segmentInitialValue[1]+i]);
+				System.out.println(arrayPowerplantIRI[segmentInitialValue[1]+i]);
 				publishMessage(arrayPowerplantIRI[segmentInitialValue[1]+i], SCENARIO_ID_2, channel);
 			}
 			
 			if (segmentInitialValue[2]+i < segmentInitialValue[3]) {
 //				System.out.println(segmentInitialValue[2] + i);
-//				System.out.println(arrayPowerplantIRI[segmentInitialValue[2]+i]);
+				System.out.println(arrayPowerplantIRI[segmentInitialValue[2]+i]);
 				publishMessage(arrayPowerplantIRI[segmentInitialValue[2]+i], SCENARIO_ID_3, channel);
 			}
 			
 			if (segmentInitialValue[3]+i < segmentInitialValue[4]) {
 //				System.out.println(segmentInitialValue[3] + i);
-//				System.out.println(arrayPowerplantIRI[segmentInitialValue[3]+i]);
+				System.out.println(arrayPowerplantIRI[segmentInitialValue[3]+i]);
 				publishMessage(arrayPowerplantIRI[segmentInitialValue[3]+i], SCENARIO_ID_4, channel);
 			}
 			
 			if (segmentInitialValue[4]+i < numPowerplants) {
 //				System.out.println(segmentInitialValue[4] + i);
-//				System.out.println(arrayPowerplantIRI[segmentInitialValue[4]+i]);
+				System.out.println(arrayPowerplantIRI[segmentInitialValue[4]+i]);
 				publishMessage(arrayPowerplantIRI[segmentInitialValue[4]+i], SCENARIO_ID_5, channel);
 			}
 			

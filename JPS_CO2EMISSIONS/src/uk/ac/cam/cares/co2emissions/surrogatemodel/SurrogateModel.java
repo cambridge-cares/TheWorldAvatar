@@ -67,14 +67,17 @@ public class SurrogateModel extends HttpServlet {
 //			System.out.println(plantInfo);
 			
 			// Put plantInfo into surrogate model and get new emission back
-			String co2EmissionRate = PythonHelper.callPython("surrogate_model.py", g.toJson(plantInfo), WORKINGDIR_ADMS_PATH, this);
-//			System.out.println(co2EmissionRate);
+//			String co2EmissionRate = PythonHelper.callPython("surrogate_model.py", g.toJson(plantInfo), WORKINGDIR_ADMS_PATH, this);
+			String co2EmissionRate = "100.0";
+			System.out.println(co2EmissionRate);
 			
 			// Store new emission
 			String result = PythonHelper.callPython("powerplant_sparql_update.py", plantIRI, co2EmissionRate, this);
-//			System.out.println(result);
+			System.out.println(result);
 			
-			String plantInfoAfter = PythonHelper.callPython("powerplant_sparql_read_local.py", plantIRI, this);
+			String plantInfoAfter = PythonHelper.callPython("powerplant_sparql_read.py", plantIRI, this);
+			System.out.println(plantInfoAfter);
+//			String plantInfoAfter = PythonHelper.callPython("powerplant_sparql_read_local.py", plantIRI, this);
 //			System.out.println(plantInfoAfter);
 //			System.out.println("");
 		} catch (PythonException e) {
