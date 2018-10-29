@@ -44,29 +44,9 @@ public class AgentWebAPI extends HttpServlet {
 		JSONObject jo = AgentCaller.readJsonParameter(req);
 		
 		try {
-			String iri = (String) jo.remove("agent");
-		
-			logger.info( "path=" + path + ", agent=" + iri + ", query=" + jo);
-		
-			//iri = "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service";
-		
-			Service compositeAgent = ServiceDiscovery.getInstance().getServiceByUri(iri);
-		
-		
-				
-//		Service compositeAgent = new ServiceBuilder()
-//				.operation(null, "http://www.theworldavatar.com/Composite_Service_ODsMpRv")
-//				.input("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType", "region")
-//				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
-//				.output("https://www.w3.org/ns/csvw#Table", "dispersiongrid")
-//				.output("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType", true, "buildings", true)
-//				.build();
-		
-		String hostPort = "http://" + KeyValueServer.get(IKeys.HOST) + ":" + KeyValueServer.get(IKeys.PORT);
-		
-		
-			String result = composeAndExecute(compositeAgent, hostPort, jo.toString());
-			
+			String composedAgentIRI = (String) jo.remove("agent");
+			logger.info( "path=" + path + ", agent=" + composedAgentIRI + ", query=" + jo);
+			String result = composeAndExecute(composedAgentIRI, jo.toString());
 			logger.info("result = " + result);
 					
 			AgentCaller.printToResponse(result, resp);
@@ -94,9 +74,10 @@ public class AgentWebAPI extends HttpServlet {
 		return new Object[] {graph, eliminationList};
 	}
 	
-	public String composeAndExecute(Service compositeAgent, String hostPort, String jsonInputValues) 
+	public String composeAndExecute(Service compositeAgent, String jsonInputValues) 
 				throws JsonParseException, JsonMappingException, JSONException, URISyntaxException, IOException, Exception {
 	
+		String hostPort = "http://" + KeyValueServer.get(IKeys.HOST) + ":" + KeyValueServer.get(IKeys.PORT);
 		Object[] result = compose(compositeAgent, hostPort);
 		Graph graph = (Graph) result[0];
 		ArrayList<String> eliminationList = (ArrayList<String>) result[1];
@@ -107,6 +88,13 @@ public class AgentWebAPI extends HttpServlet {
 	
 		return executor.execute(new JSONObject(jsonInputValues));
 	}
+	
+	public String composeAndExecute(String composedAgentIRI, String jsonInputValues) 
+			throws JsonParseException, JsonMappingException, JSONException, URISyntaxException, IOException, Exception {
+		
+		Service compositeAgent = ServiceDiscovery.getInstance().getServiceByUri(composedAgentIRI);
+		return composeAndExecute(compositeAgent, jsonInputValues);
+}
 	
 	private void showComposedAgents(Graph graph, ArrayList<String> eliminationList) {
 		
