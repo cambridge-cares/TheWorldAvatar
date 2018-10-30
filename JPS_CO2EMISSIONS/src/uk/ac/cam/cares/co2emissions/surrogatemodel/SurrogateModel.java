@@ -62,24 +62,24 @@ public class SurrogateModel extends HttpServlet {
 //		String plantIRI = "http://www.theworldavatar.com/kb/powerplants/Hamitabat_II_CCGT_Power_Plant_Turkey.owl#Hamitabat_II_CCGT_Power_Plant_Turkey";
 		
 		try {
+			long startTime = System.currentTimeMillis();
+			
+			
 			String plantInfo = PythonHelper.callPython("powerplant_sparql_read.py", plantIRI, this);
-//			System.out.println(plantIRI);
-//			System.out.println(plantInfo);
 			
 			// Put plantInfo into surrogate model and get new emission back
 //			String co2EmissionRate = PythonHelper.callPython("surrogate_model.py", g.toJson(plantInfo), WORKINGDIR_ADMS_PATH, this);
 			String co2EmissionRate = "100.0";
-			System.out.println(co2EmissionRate);
 			
 			// Store new emission
 			String result = PythonHelper.callPython("powerplant_sparql_update.py", plantIRI, co2EmissionRate, this);
-			System.out.println(result);
 			
-			String plantInfoAfter = PythonHelper.callPython("powerplant_sparql_read.py", plantIRI, this);
-			System.out.println(plantInfoAfter);
+			long stopTime = System.currentTimeMillis();
+			long elapsedTime = stopTime - startTime;
+			System.out.println(elapsedTime);
+			
+//			String plantInfoAfter = PythonHelper.callPython("powerplant_sparql_read.py", plantIRI, this);
 //			String plantInfoAfter = PythonHelper.callPython("powerplant_sparql_read_local.py", plantIRI, this);
-//			System.out.println(plantInfoAfter);
-//			System.out.println("");
 		} catch (PythonException e) {
 //			e.printStackTrace();
 			System.out.println(plantIRI);
