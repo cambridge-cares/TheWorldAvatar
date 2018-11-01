@@ -74,9 +74,9 @@ def getGeoJSON(centrePoint, height, epsg):
     return json.dumps(python_data)
 
 
-def returnPowerPlantCentrePoint(powerPlantIRI, epsg, knowledgeBaseFile):
+def returnPowerPlantCentrePoint(powerPlantIRI, epsg):
     graph = rdflib.Graph()
-    graph.parse(knowledgeBaseFile)
+    graph.parse(powerPlantIRI)
 
     try:
 
@@ -91,5 +91,4 @@ def returnPowerPlantCentrePoint(powerPlantIRI, epsg, knowledgeBaseFile):
 if __name__ == "__main__":
     powerPlantIRI = sys.argv[1]
     epsg = sys.argv[2]
-    knowledgeBaseFile = sys.argv[3]
-    print(returnPowerPlantCentrePoint(powerPlantIRI, epsg, knowledgeBaseFile))
+    print(returnPowerPlantCentrePoint(powerPlantIRI, epsg))
