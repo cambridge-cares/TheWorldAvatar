@@ -1,0 +1,610 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:compchem="http://como.cheng.cam.ac.uk/molhub/compchem/"
+    xmlns:unit="http://data.nasa.gov/qudt/owl/unit#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:spin="http://spinrdf.org/spin#"
+    xmlns:arg="http://spinrdf.org/arg#"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:obo="http://purl.obolibrary.org/obo/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:gc="http://purl.org/gc/"
+    xmlns:ontochem="http://ontochem.theworldavatar.com/kb/OntoChem.owl#"
+    xmlns:qudt="http://data.nasa.gov/qudt/owl/qudt#"
+    xmlns:sp="http://spinrdf.org/sp#"
+    xmlns:table="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"
+    xmlns:spl="http://spinrdf.org/spl#"
+    xmlns:schem="http://www.xml-cml.org/schema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://ontochem.theworldavatar.com/kb/OntoChem.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:about="http://purl.org/gc/Atom">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://purl.org/gc/MolecularStructureObject"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/MolecularConcept">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/MultipleDeterminant">
+    <rdfs:label xml:lang="en">Multiple Determinant</rdfs:label>
+    <rdfs:comment xml:lang="en">A class for the methods of quantum chemistry using multiple Slater determinants.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://purl.org/gc/SingleReferenceState"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="RotationalSymmetry">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://purl.org/gc/MolecularComputation"/>
+    </rdfs:subClassOf>
+    <rdfs:comment xml:lang="en">The symmetry number or symmetry order of an object is the number of different but indistinguishable (or equivalent) arrangements (or views) of the object, i.e. the order of its symmetry group. In statistical
+thermodynamics, the symmetry number corrects for any overcounting of equivalent molecular conformations in the partition function and depends on the assumptions made while deriving the partition function. As an example, the Rigid Rotor Harmonic Oscillator (RRHO) approximation treats an object, in this case a molecule, as a rigid body which does not allow certain symmetry operations like reflections or inversion. These forbidden operations need to be subtracted from the point group order in order to obtain a correct symmetry number of an object that is subject to constraints.  Definition given by Dr Daniel Nurkowski &lt;danieln@cmclinnovations.com&gt;.</rdfs:comment>
+    <rdfs:isDefinedBy rdf:resource="https://como.cheng.cam.ac.uk/kb/ontokin/danieln@cmclinnovations.com"/>
+    <rdfs:label xml:lang="en">Rotational Symmetry</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/VibrationalAnalysis">
+    <rdfs:label xml:lang="en">Vibrational Analysis</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="https://cmclinnovations.com"/>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">Cycling movement/oscillation about an equilibrium point. In quantum mechanics, vibrational analysis is used to decompose complex internal motion of groups of atoms in a molecule into patterns of motion (normal modes) where all parts of the system move sinusoidally with the same frequency and with a fixed phase relation. Frequency is defined as the number of occurrences of a repeating event per unit of time. Definition given by Dr Daniel Nurkowski &lt;danieln@cmclinnovations.com&gt;.</rdfs:comment>
+    <rdfs:comment xml:lang="en">A class for the computations of vibrational spectrum of molecules.</rdfs:comment>
+    <rdfs:comment xml:lang="en">A class for VibrationalAnalysis.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://purl.org/gc/MolecularComputation"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeUnit">
+    <rdfs:label xml:lang="en">Space And Time Unit.</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#PhysicalUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#FrequencyUnit">
+    <rdfs:label xml:lang="en">Frequency Unit.</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/AuxiliaryConcept">
+    <rdfs:label xml:lang="en">Auxiliary Concept</rdfs:label>
+    <rdfs:comment xml:lang="en">A generic class representing Auxiliary concepts.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="InitializationModule">
+    <rdfs:label>Initialization module</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="ComputationModule"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/QuantumMechanics">
+    <rdfs:label xml:lang="en">Quantum Mechanics</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A class for QuantumMechanics.</rdfs:comment>
+    <rdfs:comment xml:lang="en">A class for Quantum Mechanical methods.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://purl.org/gc/MolecularMethodology"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/SplitValencePopleBasisSet">
+    <rdfs:label xml:lang="en">Split Valence Basis Set</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A class for the Pople split valence basis sets.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://purl.org/gc/PopleBasisSet"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MassUnit">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+    <rdfs:label>Mass Unit</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/6-311pGS">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://purl.org/gc/DiffusePopleBasisSet"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://purl.org/gc/PolarizedPopleBasisSet"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://purl.org/gc/SplitValencePopleBasisSet"/>
+    <rdfs:comment xml:lang="en">A class for the Pople split valence 6-311+G* basis set.</rdfs:comment>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:label xml:lang="en">6-311+G* Basis Set</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/SourcePackage">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://purl.org/gc/PublicationConcept"/>
+    </rdfs:subClassOf>
+    <rdfs:comment xml:lang="en">A class for SourcePackage.</rdfs:comment>
+    <rdfs:comment xml:lang="en">A class for quantum chemistry packages used to peform computations.</rdfs:comment>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:label xml:lang="en">Source Package</rdfs:label>
+    <rdfs:label xml:lang="en">SourcePackage</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/Frequency">
+    <rdfs:comment xml:lang="en">Frequency is defined as the number of occurrences of a repeating event per unit of time. Definition given by Dr Daniel Nurkowski &lt;danieln@cmclinnovations.com&gt;.</rdfs:comment>
+    <rdfs:isDefinedBy rdf:resource="https://cmclinnovations.com/"/>
+    <rdfs:label xml:lang="en">Frequency</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://purl.org/gc/CalculationResult"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/PublicationConcept">
+    <rdfs:comment xml:lang="en">A generic class representing concepts related to publications.</rdfs:comment>
+    <rdfs:label xml:lang="en">Publication Concept</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/MethodologyFeature">
+    <rdfs:label xml:lang="en">Methodology Feature</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A class for specific features or properties of a given methodology.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://purl.org/gc/CalculationConcept"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/SingleReferenceState">
+    <rdfs:label xml:lang="en">Single Reference State</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A class for Single Reference (SR) coupled-cluster methods.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://purl.org/gc/QuantumMechanics"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/MoleculeProperty">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#PhysicalUnit"/>
+    </rdfs:subClassOf>
+    <rdfs:label>Mechanics Unit</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#ComputationModule">
+    <rdfs:label>Computation module</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/FloatValue">
+    <rdfs:label xml:lang="en">Float Value</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A class for float value, containing value and unit.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://purl.org/gc/Value"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/MolecularComputation">
+    <rdfs:label xml:lang="en">Molecular Computation</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A class for the specific type of calculation (like optimization, single point, etc) conducted by a computational chemistry program.</rdfs:comment>
+    <rdfs:comment xml:lang="en">A class for MolecularComputation.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://purl.org/gc/CalculationConcept"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#Unit">
+    <rdfs:label>Unit</rdfs:label>
+    <rdfs:comment xml:lang="en">A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension). For example, the meter is a quantity of length that has been rigorously defined and standardized by the BIPM (International Board of Weights and Measures). Any measurement of the length can be expressed as a number multiplied by the unit meter. More formally, the value of a physical quantity Q with respect to a unit (U) is expressed as the scalar multiple of a real number (n) and U: Q = nU.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/MolecularMethodology">
+    <rdfs:label xml:lang="en">Molecular Methodology</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A class for general methodologies of computational chemistry.</rdfs:comment>
+    <rdfs:comment xml:lang="en">A class for MolecularMethodology.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://purl.org/gc/CalculationConcept"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#PhysicalUnit">
+    <rdfs:label xml:lang="en">Physical Unit.</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ScienceAndEngineeringUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="G09">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://purl.org/gc/Gaussian-n"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/CalculationResult">
+    <rdfs:label xml:lang="en">Calculation Result</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A class for specific concepts related to the results of computational chemistry procedures.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://purl.org/gc/CalculationConcept"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/GeometryOptimization">
+    <rdfs:label xml:lang="en">Geometry Optimization</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A class for calculations in computational chemistry that aim to find molecular geometry of lowest energy.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://purl.org/gc/MolecularComputation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="LevelOfTheory">
+    <rdfs:subClassOf rdf:resource="http://purl.org/gc/MethodologyFeature"/>
+    <rdfs:label>Level of theory</rdfs:label>
+    <rdfs:comment xml:lang="en">he level of theory is the set of underlying approximations used to describe the chemical system. Higher levels of theory are often more accurate however they come at much greater computational cost. Definition given by Dr Daniel Nurkowski &lt;danieln@cmclinnovations.com&gt;.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/PolarizedPopleBasisSet">
+    <rdfs:label xml:lang="en">Polarized split Valence Basis Set</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A class for the Pople basis sets with polarization functions.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://purl.org/gc/PopleBasisSet"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/Gaussian-n">
+    <rdfs:label xml:lang="en">Gaussian-n</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A collection of composite calculations (mainly quadratic CI plus others) that try to approximate full CI.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://purl.org/gc/MultipleDeterminant"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ScienceAndEngineeringUnit">
+    <rdfs:label>Science And Engineering Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Unit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/PopleBasisSet">
+    <rdfs:label xml:lang="en">Pople Basis Set</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A class for the Pople basis sets.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://purl.org/gc/BasisSet"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/MolecularStructureObject">
+    <rdfs:subClassOf rdf:resource="http://purl.org/gc/MolecularConcept"/>
+  </owl:Class>
+  <owl:Class rdf:ID="GeometryType">
+    <rdfs:subClassOf rdf:resource="http://purl.org/gc/MolecularComputation"/>
+    <rdfs:comment xml:lang="en">The geometry type classifies molecules, depending on their geometries, into three categories: atomic, linear and nonlinear. The geometry type can be inferred from molecules geometry or rather from molecule's rotational constants. For atomic molecules all rotational constants are zero (Gaussian does not event print them), for linear molecules there are two, equal to each other, and one equal to zero rotational constants and for nonlinear molecules there should be three non-zero rotational constants. Definition given by Dr Daniel Nurkowski &lt;danieln@cmclinnovations.com&gt;.</rdfs:comment>
+    <rdfs:isDefinedBy rdf:resource="https://como.cheng.cam.ac.uk/kb/ontokin/danieln@cmclinnovations.com"/>
+    <rdfs:label xml:lang="en">Geometry Type</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/Molecule">
+    <rdfs:subClassOf rdf:resource="http://purl.org/gc/MolecularStructureObject"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/BasisSet">
+    <rdfs:label xml:lang="en">Basis Set</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A class for the basis set. In computational chemistry basis set is a set of functions which are combined to create molecular orbitals.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://purl.org/gc/MethodologyFeature"/>
+    <rdfs:comment xml:lang="en">Basis set is a set of functions that are used to describe electronic wavefunctions. Definition given by Dr Daniel Nurkowski &lt;danieln@cmclinnovations.com&gt;.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/CalculationConcept">
+    <rdfs:label xml:lang="en">Calculation Concept</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A class for generic concepts that describe calculations in computational chemistry.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="RotationalConstants">
+    <rdfs:isDefinedBy rdf:resource="http://ontochem.theworldavatar.com/kb/danieln@cmclinnovations.com"/>
+    <rdfs:comment xml:lang="en">These are inversely proportional to moments of inertia and determine the magnitude of spacing between rotational energy levels. The rotational constants can be calculated from molecule's geometry and atoms it contains as eigenvalues of the moments of inertia tensor. Definition given by Dr Daniel Nurkowski &lt;danieln@cmclinnovations.com&gt;.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://purl.org/gc/MolecularComputation"/>
+    <rdfs:label xml:lang="en">Rotational Constants</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/DiffusePopleBasisSet">
+    <rdfs:subClassOf rdf:resource="http://purl.org/gc/PopleBasisSet"/>
+    <rdfs:comment xml:lang="en">A class for the Pople basis sets with diffuse functions.</rdfs:comment>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:label xml:lang="en">Diffuse Basis Set</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.org/gc/Value">
+    <rdfs:label xml:lang="en">Value</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">This is super class for the expression of various types of values.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://purl.org/gc/AuxiliaryConcept"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="hasSpinMultiplicity">
+    <rdfs:domain rdf:resource="http://purl.org/gc/GeometryOptimization"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>has spin multiplicity</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://purl.org/gc/hasCoordinates">
+    <rdfs:label xml:lang="en">has coordinates</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A property that describes atom coordinates.</rdfs:comment>
+    <rdfs:range rdf:resource="http://purl.org/gc/Value"/>
+    <rdfs:domain rdf:resource="http://purl.org/gc/Atom"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="http://purl.org/gc/hasMolecularProperty"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://purl.org/gc/hasResult">
+    <rdfs:label xml:lang="en">has result</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A property that describes generic results of the computations.</rdfs:comment>
+    <rdfs:range rdf:resource="http://purl.org/gc/CalculationResult"/>
+    <rdfs:domain rdf:resource="http://purl.org/gc/MolecularComputation"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://purl.org/gc/hasMoleculeProperty">
+    <rdfs:label xml:lang="en">Molecule Property</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A property that specifies the Molecule Property.</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://purl.org/gc/hasMolecularFeature">
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:label xml:lang="en">Generic Datatype Property for Molecular Features related to computations</rdfs:label>
+    <rdfs:comment>The upper property for various properties related to Molecular Data</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://purl.org/gc/hasMass">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="http://purl.org/gc/Atom"/>
+          <owl:Class rdf:about="http://purl.org/gc/Molecule"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:comment xml:lang="en">Mass of an element in gaussian is given in unified atomic mass untis. These are usually represented with a symbol "u" or "Da" as another name of that unit is Dalton. Definition given by Dr Daniel Nurkowski &lt;danieln@cmclinnovations.com&gt;.</rdfs:comment>
+    <rdfs:range rdf:resource="http://purl.org/gc/FloatValue"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://purl.org/gc/hasAtomCoordinateX">
+    <rdfs:label xml:lang="en">Atom Coordinate X</rdfs:label>
+    <rdfs:comment xml:lang="en">A property that describes Atom X coordinate</rdfs:comment>
+    <rdfs:range rdf:resource="http://purl.org/gc/FloatValue"/>
+    <rdfs:domain rdf:resource="http://purl.org/gc/Atom"/>
+    <rdfs:subPropertyOf rdf:resource="http://purl.org/gc/hasCoordinates"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="hasInitialization">
+    <rdfs:domain rdf:resource="http://purl.org/gc/MolecularMethodology"/>
+    <rdfs:range rdf:resource="http://purl.org/gc/MethodologyFeature"/>
+    <rdfs:comment xml:lang="en">An initialization module represents the concept of the model parameters and inputs for computational job. The module defines the calculation, so that it should be possible to reproduce the calculation based soley on the data in this module. The initialization module should contain a parameterList with scalar, array and matrix quantities, and the starting molecule, but may also contain more complex objects as cml:lists, such as the basis set.</rdfs:comment>
+    <rdfs:isDefinedBy rdf:resource="http://www.xml-cml.org/dictionary/compchem/#initialization"/>
+    <rdfs:label xml:lang="en">has initialization.</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://purl.org/gc/hasAtomCoordinateZ">
+    <rdfs:label xml:lang="en">Atom Coordinate Z</rdfs:label>
+    <rdfs:comment xml:lang="en">A property that describes Atom Z coordinate</rdfs:comment>
+    <rdfs:range rdf:resource="http://purl.org/gc/FloatValue"/>
+    <rdfs:domain rdf:resource="http://purl.org/gc/Atom"/>
+    <rdfs:subPropertyOf rdf:resource="http://purl.org/gc/hasCoordinates"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://purl.org/gc/hasAtom">
+    <rdfs:label xml:lang="en">has atom</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A property that describes atoms comprised by a molecule or residue</rdfs:comment>
+    <rdfs:range rdf:resource="http://purl.org/gc/Atom"/>
+    <rdfs:domain rdf:resource="http://purl.org/gc/Molecule"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://purl.org/gc/hasAtomCoordinateY">
+    <rdfs:label xml:lang="en">Atom Coordinate Y</rdfs:label>
+    <rdfs:comment xml:lang="en">A property that describes Atom Y coordinate</rdfs:comment>
+    <rdfs:range rdf:resource="http://purl.org/gc/FloatValue"/>
+    <rdfs:domain rdf:resource="http://purl.org/gc/Atom"/>
+    <rdfs:subPropertyOf rdf:resource="http://purl.org/gc/hasCoordinates"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://purl.org/gc/hasMolecule">
+    <rdfs:label xml:lang="en">Molecule</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A property that specifies a molecule.</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="hasEnvironment">
+    <rdfs:domain rdf:resource="http://purl.org/gc/MolecularMethodology"/>
+    <rdfs:label>has environment</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://purl.org/gc/isCalculationOn">
+    <rdfs:label xml:lang="en">Calculation</rdfs:label>
+    <rdfs:comment xml:lang="en">A property that specifies the calculation.</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://purl.org/gc/hasMolecularProperty">
+    <rdfs:label xml:lang="en">Generic Molecular Property</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">The upper property for various properties related to molecular systems.</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://purl.org/gc/isElement">
+    <rdfs:range>
+      <rdf:Description rdf:about="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Element">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A property that describes what element the given atom is.</rdfs:comment>
+    <rdfs:label xml:lang="en">is element</rdfs:label>
+    <rdfs:domain rdf:resource="http://purl.org/gc/Atom"/>
+    <rdfs:subPropertyOf rdf:resource="http://purl.org/gc/hasMolecularProperty"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://purl.org/gc/hasParameter">
+    <rdfs:label xml:lang="en">Parameter</rdfs:label>
+    <rdfs:comment xml:lang="en">A property that specifies a parameter.</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:about="http://purl.org/gc/hasMolecularData">
+    <rdfs:label xml:lang="en">Generic Datatype Property for Molecular Data</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment>The upper property for various properties related to Molecular Data</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="hasFrequenciesValue">
+    <rdfs:domain rdf:resource="http://purl.org/gc/Frequency"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="hasRunDate">
+    <rdfs:label>has run date</rdfs:label>
+    <rdfs:subPropertyOf>
+      <owl:DatatypeProperty rdf:about="http://purl.org/dc/elements/1.1/date"/>
+    </rdfs:subPropertyOf>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://purl.org/gc/hasFile">
+    <rdfs:domain rdf:resource="http://purl.org/gc/MolecularMethodology"/>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A property that describes the attachment file.</rdfs:comment>
+    <rdfs:label xml:lang="en">has file</rdfs:label>
+    <rdfs:comment xml:lang="en">A property that describes the reference to the attachment file.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="hasSpinMultiplicityValue">
+    <rdfs:domain rdf:resource="http://purl.org/gc/Molecule"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:comment xml:lang="en">The spin multiplicity is equal to the number of alpha electrons, minus beta electrons, plus 1.</rdfs:comment>
+    <rdfs:isDefinedBy rdf:resource="http://www.xml-cml.org/dictionary/compchem/#spinMultiplicity"/>
+    <rdfs:label xml:lang="en">hasspin multiplicity value</rdfs:label>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="hasProgram">
+    <rdfs:isDefinedBy rdf:resource="http://www.xml-cml.org/dictionary/compchem/#program"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>has source package name</rdfs:label>
+    <rdfs:domain rdf:resource="http://purl.org/gc/SourcePackage"/>
+    <rdfs:comment xml:lang="en">This is the name of the computational chemistry program being run.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#abbreviation">
+    <rdfs:label>abbreviation</rdfs:label>
+    <rdfs:comment>An abbreviation for a unit is a short (usually 5 characters or less) string that is used in place of the full name for the unit in contexts where space is limited, or where using the abbreviation will enhance readability.</rdfs:comment>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://purl.org/dc/elements/1.1/date">
+    <rdfs:label xml:lang="en">Date</rdfs:label>
+    <dcterms:description xml:lang="en">Date may be used to express temporal information at any level of granularity.  Recommended best practice is to use an encoding scheme, such as the W3CDTF profile of ISO 8601 [W3CDTF].</dcterms:description>
+    <rdfs:comment xml:lang="en">A point or period of time associated with an event in the lifecycle of the resource.</rdfs:comment>
+    <dcterms:hasVersion rdf:resource="http://dublincore.org/usage/terms/history/#date-006"/>
+    <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/elements/1.1/"/>
+    <dcterms:issued rdf:datatype="http://www.w3.org/2001/XMLSchema#date"
+    >1999-07-02</dcterms:issued>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="hasProgramVersion">
+    <rdfs:domain rdf:resource="http://purl.org/gc/SourcePackage"/>
+    <rdfs:isDefinedBy rdf:resource="http://www.xml-cml.org/dictionary/compchem/#programVersion"/>
+    <rdfs:comment xml:lang="en">This specifies the version of the code that was used to run the calculation. Ideally it should specify a version in a version control system, although the version number (e.g. 6.1, Development) of the code is acceptable.</rdfs:comment>
+    <rdfs:label>has source package version</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="hasRotationalConstantsCount">
+    <rdfs:subPropertyOf>
+      <owl:DatatypeProperty rdf:ID="hasCount"/>
+    </rdfs:subPropertyOf>
+    <rdfs:label xml:lang="en">has cotational constants count</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:comment xml:lang="en">A property that describes total number of rotational constants value.</rdfs:comment>
+    <rdfs:domain rdf:resource="#RotationalConstants"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#literal">
+    <rdfs:label>literal</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="hasGeometryTypeValue">
+    <rdfs:domain rdf:resource="#GeometryType"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="hasRotationalSymmetryNumber">
+    <rdfs:label xml:lang="en">has rotational symmetry number</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#RotationalSymmetry"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://purl.org/gc/hasNumberOfAtoms">
+    <rdfs:label xml:lang="en">Number of Atoms</rdfs:label>
+    <rdfs:label xml:lang="en">A property that determines the number of atoms in a given collection</rdfs:label>
+    <rdfs:comment xml:lang="en">A property that determines the number of atoms in a given collection</rdfs:comment>
+    <rdfs:subPropertyOf rdf:resource="http://purl.org/gc/hasMolecularData"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#symbol">
+    <rdfs:label>symbol</rdfs:label>
+    <rdfs:comment>The symbol for a unit is a glyph that is used to represent the unit in a compact form. For example, the symbol for the US Dollar is $. This contrasts with unit:abbreviation, which gives a short alphanumeric abbreviation for the unit. (I.e. USD for US Dollar).</rdfs:comment>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:subPropertyOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#literal"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="hasLevelOfTheoryValue">
+    <rdfs:label>has level of theory value</rdfs:label>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="#hasCount">
+    <rdfs:label>has count</rdfs:label>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://purl.org/gc/hasName">
+    <rdfs:label xml:lang="en">has name</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment>The name of an entity.</rdfs:comment>
+    <rdfs:comment xml:lang="en">A property that defines the name of molecular system elements, i.e. atom or residue.</rdfs:comment>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    <rdfs:subPropertyOf rdf:resource="http://purl.org/gc/hasMolecularData"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#code">
+    <rdfs:label>code</rdfs:label>
+    <rdfs:comment>A unit code is a numeric string that uniquely identifies a unit </rdfs:comment>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="hasRotationalConstantsValue">
+    <rdfs:domain rdf:resource="#RotationalConstants"/>
+    <rdfs:label xml:lang="en">has cotational constants value</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#conversionMultiplier">
+    <rdfs:label>conversion multiplier</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:about="http://purl.org/gc/hasBasisSet">
+    <rdfs:domain rdf:resource="http://purl.org/gc/BasisSet"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:about="http://purl.org/gc/hasUnit">
+    <rdfs:label xml:lang="en">has unit</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A property that describes a unit of the value.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:about="http://purl.org/gc/hasValue">
+    <rdfs:label xml:lang="en">has value</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A Superproperty of typed numerical values.</rdfs:comment>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    <rdfs:domain rdf:resource="http://purl.org/gc/Value"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#conversionOffset">
+    <rdfs:label>conversion offset</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:about="http://purl.org/gc/hasVibrationCount">
+    <rdfs:subPropertyOf rdf:resource="#hasCount"/>
+    <rdfs:label xml:lang="en">has vibration count</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A property that describes the number of vibrational frequencies.</rdfs:comment>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="http://purl.org/gc/Frequency"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <rdf:Description rdf:about="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#StandardState">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Period">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Block">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </rdf:Description>
+  <qudt:FrequencyUnit rdf:about="http://purl.org/gc/cm-1">
+    <rdfs:label xml:lang="en">cm-1</rdfs:label>
+    <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
+    <rdfs:comment xml:lang="en">A wavenumber - the unit of frequency.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </qudt:FrequencyUnit>
+  <qudt:MassUnit rdf:about="http://data.nasa.gov/qudt/owl/unit#Dalton">
+    <qudt:symbol>Da</qudt:symbol>
+    <qudt:conversionOffset rdf:datatype="http://www.w3.org/2001/XMLSchema#double"
+    >0.0</qudt:conversionOffset>
+    <qudt:conversionMultiplier rdf:datatype="http://www.w3.org/2001/XMLSchema#double"
+    >1.66090210E-27</qudt:conversionMultiplier>
+    <qudt:code>0485</qudt:code>
+    <qudt:abbreviation>Da</qudt:abbreviation>
+    <rdfs:label>Dalton</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </qudt:MassUnit>
+  <rdf:Description rdf:about="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Classification">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </rdf:Description>
+  <qudt:FrequencyUnit rdf:about="http://data.nasa.gov/qudt/owl/unit#GigaHertz">
+    <rdfs:label>Gigahertz</rdfs:label>
+    <qudt:symbol>GHz</qudt:symbol>
+    <qudt:conversionOffset rdf:datatype="http://www.w3.org/2001/XMLSchema#double"
+    >0.0</qudt:conversionOffset>
+    <qudt:conversionMultiplier rdf:datatype="http://www.w3.org/2001/XMLSchema#double"
+    >1.0E9</qudt:conversionMultiplier>
+    <qudt:code>3035</qudt:code>
+    <qudt:abbreviation>GHz</qudt:abbreviation>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </qudt:FrequencyUnit>
+  <rdf:Description rdf:about="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Group">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </rdf:Description>
+</rdf:RDF>
+
+<!-- Created with TopBraid -->
