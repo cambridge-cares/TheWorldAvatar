@@ -212,7 +212,7 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 			 * @author nk510
 			 *         <p>
 			 * 		Checks whether input propositional sentence (query string) is
-			 *         satisfiable. It is checked by using Davis–Putnam–Logemann–Loveland
+			 *         satisfiable. It is checked by using Davis-Putnam-Logemann-Loveland
 			 *         (DPLL) procedure.
 			 *         </p>
 			 * 
@@ -295,7 +295,7 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 
 			} else {
 
-				addFieldError("term.name", "Query string is not Davis–Putnam–Logemann–Loveland (DPLL) satisfiable.");
+				addFieldError("term.name", "Query string is not Davis-Putnam-Logemann-Loveland (DPLL) satisfiable.");
 
 				return ERROR;
 			}
