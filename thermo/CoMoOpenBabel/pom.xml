@@ -18,26 +18,17 @@
             <version>1.2.17</version>
         </dependency>        
         
-        <!-- old dependency :
+        <!--
+        Version updated from 2.3.1 to 2.4.1 by nk510 on 04 Apr 2018.
+        Commented out by sm453 on 31 Oct 2018.
+        -->
+        <!--
         <dependency>
             <groupId>JOpenBabel</groupId>
-            <artifactId>JOpenBabel</artifactId>            
-            <version>2.3.1</version>            
-                        
+            <artifactId>JOpenBabel</artifactId>
+            <version>2.4.1</version>
         </dependency>
-        -->        
-        
-        
-        <!--
-         - author: nk510
-         - dependency added 03rd-April, 2018. 
         -->
-        
-        <dependency>
-        <groupId>JOpenBabel</groupId>
-        <artifactId>JOpenBabel</artifactId>
-        <version>2.4.1</version>
-        </dependency>        
         
         <dependency>
             <groupId>${project.groupId}</groupId>
