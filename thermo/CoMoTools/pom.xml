@@ -17,12 +17,17 @@
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
         </dependency>
+        <!--
+        Version updated from 2.3.1 to 2.4.1 by nk510 on 04 Apr 2018.
+        Commented out by sm453 on 31 Oct 2018.
+        -->
+        <!--
         <dependency>
             <groupId>JOpenBabel</groupId>
             <artifactId>JOpenBabel</artifactId>
-            <!-- new version added: 04th-April-2018. from v. 2.3.1 to v. 2.4.1 -->
             <version>2.4.1</version>
         </dependency>
+        -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>CoMoChemistry</artifactId>
