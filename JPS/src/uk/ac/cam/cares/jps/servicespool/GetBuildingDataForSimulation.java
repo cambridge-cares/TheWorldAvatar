@@ -97,8 +97,8 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 		
 		String plantXYQuery =
 					"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
-				+   "PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>\n"
-				+ 	"PREFIX system: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>" + 
+				+   "PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>\n"
+				+ 	"PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>" + 
 				"SELECT ?plantX ?plantY WHERE \n"
 				+ "{"
 				+ "		<%s>      space_and_time_extended:hasGISCoordinateSystem  ?coor . \n"

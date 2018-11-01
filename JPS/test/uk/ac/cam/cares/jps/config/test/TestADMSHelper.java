@@ -3,9 +3,10 @@ package uk.ac.cam.cares.jps.config.test;
 import java.io.IOException;
 
 import com.google.gson.Gson;
+
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.util.PythonHelper;
 import uk.ac.cam.cares.jps.base.exception.PythonException;
+import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 public class TestADMSHelper extends TestCase {
 	
@@ -19,6 +20,7 @@ public class TestADMSHelper extends TestCase {
 		boolean pythonExcWasCaught = false;
 		try {
 			String result = PythonHelper.callPython("caresjpsadmsinputs/ADMSGeoJsonGetter.py", g.toJson(jsonString), this);
+			System.out.println("result="+result);
 //			assertEquals("INVALID QUERY", result);
 		} catch (PythonException e) {
 			e.printStackTrace();

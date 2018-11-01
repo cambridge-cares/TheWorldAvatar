@@ -71,9 +71,9 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		// the following query will return for the hague: urn:ogc:def:crs:EPSG::28992
 		// therefore, we will not use the query at the moment
 		String query = 
-				"PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>\r\n" + 
-				"PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>\r\n" + 
-				"PREFIX citygml:<http://www.theworldavatar.com/CityGMLOntology.owl#>\r\n" + 
+				"PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>\r\n" + 
+				"PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>\r\n" + 
+				"PREFIX citygml:<http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>\r\n" + 
 				"SELECT ?type\r\n" + 
 				"WHERE {\r\n" + 
 				"?srs citygml:srsname ?type\r\n" + 
