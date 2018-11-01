@@ -7,7 +7,7 @@ import config
 import cobbling
 
 '''
-test = admsInputDataRetriever("http://www.theworldavatar.com/TankID_1574.owl#TankID_1574", config.bldTopnode, {'xmin':84400, 'xmax':84600, 'ymin':451000, 'ymax':451300}, ["http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#CarbonDioxide"], config.bdnLimit = 2, filterSrc = False)
+test = admsInputDataRetriever("http://www.theworldavatar.com/TankID_1574.owl#TankID_1574", config.bldTopnode, {'xmin':84400, 'xmax':84600, 'ymin':451000, 'ymax':451300}, ["http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#CarbonDioxide"], config.bdnLimit = 2, filterSrc = False)
 
 
 result = test.get()
