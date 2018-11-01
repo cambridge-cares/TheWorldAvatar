@@ -61,7 +61,8 @@
     </dependencies>
     <repositories>
     
-        
+        <!-- This repository does not exist any more. -->
+        <!--
         <repository>
             <id>maven.ch</id>
             <name>ch.cam.ac.uk Maven2</name>
@@ -70,7 +71,7 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-        
+        -->
         <repository>
             <id>com.hp.hpl.jena</id>
             <url>http://openjena.org/repo</url>
