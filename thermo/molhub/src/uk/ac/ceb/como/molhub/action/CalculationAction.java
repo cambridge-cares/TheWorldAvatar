@@ -104,7 +104,8 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 				 * @author nk510 <p>Runs Python script for thermodynamic calculations. Python script implemented by {@author danieln@cmclinnovations.com} 
 				 */
 
-				String[] cmd = { "python", "C:/Users/nk510/git/c4e-dln22-TDC/Source/thermoDriver.py", "-j",
+				String pyscript = catalinaFolderPath + "/conf/Catalina/c4e-dln22-TDC/Source/thermoDriver.py";
+                String[] cmd = { "python", pyscript, "-j",
 						jsonFiles.get(i).getAbsolutePath(), };
 
 				Runtime.getRuntime().exec(cmd);
