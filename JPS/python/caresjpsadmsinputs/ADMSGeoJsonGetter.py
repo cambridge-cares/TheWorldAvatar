@@ -21,9 +21,9 @@ def sparqlBuildingCoordinates(building, sparqlEndPoint):
     
     queryString = '''
 
-            PREFIX p3: <http://www.theworldavatar.com/CityGMLOntology.owl#>
-            PREFIX j1: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-            PREFIX j2: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+            PREFIX p3: <http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>
+            PREFIX j1: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+            PREFIX j2: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
 
             SELECT ?polygon ?coordinates ?xval ?yval ?zval
             WHERE
@@ -80,8 +80,8 @@ def sparqlBuildingCoordinates(building, sparqlEndPoint):
 def sparqlBuildingHeights(building, sparqlEndPoint):
     
     queryString = """
-        PREFIX p3: <http://www.theworldavatar.com/CityGMLOntology.owl#>
-        PREFIX j2: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+        PREFIX p3: <http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>
+        PREFIX j2: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
 
         SELECT ?numericalValue
         WHERE

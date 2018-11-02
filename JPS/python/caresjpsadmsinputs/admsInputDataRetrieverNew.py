@@ -53,9 +53,9 @@ class admsInputDataRetriever(object):
         self.connectDB(self.topnode)#connect to db       
         qx = self.query(
             """
-            PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+            PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
             PREFIX owl: <http://www.w3.org/2002/07/owl#>
-            PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+            PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
             
             SELECT ?value
             WHERE {
@@ -66,9 +66,9 @@ class admsInputDataRetriever(object):
             """)
         qy = self.query(
             """
-            PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+            PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
             PREFIX owl: <http://www.w3.org/2002/07/owl#>
-            PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+            PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
             SELECT ?value
             WHERE {
             ?co  space_and_time_extended:hasProjectedCoordinate_y ?upper.
@@ -109,7 +109,7 @@ class admsInputDataRetriever(object):
         #todo: future kb: type check :emission type
         qChildren = self.query(
             """
-            PREFIX Eco-industrialPark: <http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#> 
+            PREFIX Eco-industrialPark: <http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#> 
             SELECT ?child
             WHERE {{
             ?o  Eco-industrialPark:hasIRI ?child . 
@@ -130,10 +130,10 @@ class admsInputDataRetriever(object):
 
             self.connectDB(uri)
             qstr ='''
-            PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+            PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
             PREFIX owl: <http://www.w3.org/2002/07/owl#>
-            PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-            PREFIX material: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/material.owl#>
+            PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+            PREFIX material: <http://www.theworldavatar.com/ontology/ontocape/material/material.owl#>
 
             SELECT DISTINCT ?x ?y ?content
             WHERE {{
@@ -187,15 +187,15 @@ class admsInputDataRetriever(object):
             self.connectDB(uri, connectType = 'parse')
             qdata = self.query(
                 """
-                PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
-                PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-                PREFIX plant:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#>
-                PREFIX topology:<http://www.theworldavatar.com/OntoCAPE/meta_model/topology/topology.owl#>
-                PREFIX behavior: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#>
-                PREFIX chemical_process_system:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#>
-                PREFIX phase_system:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#>
-                PREFIX material: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/material.owl#>
-                PREFIX substance:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#>
+                PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+                PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+                PREFIX plant:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#>
+                PREFIX topology:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
+                PREFIX behavior: <http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#>
+                PREFIX chemical_process_system:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#>
+                PREFIX phase_system:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#>
+                PREFIX material: <http://www.theworldavatar.com/ontology/ontocape/material/material.owl#>
+                PREFIX substance:<http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#>
 
                 SELECT ?o ?height ?diameter ?content ?x ?y ?velocity ?massflow ?temp ?moleweight ?heatcapa ?density
                 WHERE {{
@@ -259,8 +259,8 @@ class admsInputDataRetriever(object):
 
             
             qdataC = self.query("""
-                    PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
-			PREFIX substance:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#>
+                    PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+			PREFIX substance:<http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#>
 
             SELECT DISTINCT  ?content
             WHERE {{
@@ -276,9 +276,9 @@ class admsInputDataRetriever(object):
             
 
             qdataERate = self.query("""
-                    PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
-           PREFIX substance:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#>
-           PREFIX behavior:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#>
+                    PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+           PREFIX substance:<http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#>
+           PREFIX behavior:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#>
 
             SELECT DISTINCT  ?er ?v
             WHERE {{
@@ -325,14 +325,14 @@ class admsInputDataRetriever(object):
 
         
         #hard coding for now before I get a better solusion
-        self.connectDB("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl", connectType = 'parse')
+        self.connectDB("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl", connectType = 'parse')
 
         template = """
-            PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
-            PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-            PREFIX sub:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#>
-            PREFIX behavior: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#>
-            PREFIX phase_system:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#>
+            PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+            PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+            PREFIX sub:<http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#>
+            PREFIX behavior: <http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#>
+            PREFIX phase_system:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#>
             SELECT DISTINCT  ?o ?hc ?d ?mw
             WHERE {{
             <{0}> behavior:hasHeatCapacityRatio  ?hce.   #heatcapacity ratio
@@ -417,9 +417,9 @@ class admsInputDataRetriever(object):
         '''  
         xRange, yRange = self.range
         qb =self.query('''
-            PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
-            PREFIX citygml: <http://www.theworldavatar.com/CityGMLOntology.owl#>
-            PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+            PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+            PREFIX citygml: <http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>
+            PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
             PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
               SELECT distinct ?bdn 
@@ -462,9 +462,9 @@ class admsInputDataRetriever(object):
         xRange, yRange = self.range
        
         qstr = '''
-            PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
-            PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-            PREFIX citygml:<http://www.theworldavatar.com/CityGMLOntology.owl#>
+            PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+            PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+            PREFIX citygml:<http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>
             #PREFIX citygml:<file:/D:/citygmllearn/citygmlhandmade.owl#>
 
             PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -523,9 +523,9 @@ class admsInputDataRetriever(object):
         '''
         #todo: modify query to get raw data,then pass to converter
         qData= self.query('''
-            PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
-            PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-            PREFIX citygml:<http://www.theworldavatar.com/CityGMLOntology.owl#>
+            PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+            PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+            PREFIX citygml:<http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>
 
             SELECT   ?x ?y ?z
             WHERE {{
@@ -552,9 +552,9 @@ class admsInputDataRetriever(object):
         #query for roof max and ground min
 
         qHeight = self.query("""
-            PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
-            PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-            PREFIX citygml:<http://www.theworldavatar.com/CityGMLOntology.owl#>
+            PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+            PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+            PREFIX citygml:<http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>
 
              SELECT (MIN(?z) AS ?min) (MAX(?zr) AS ?max)                                       #select min of ground z values,   max  of   roof z values
             WHERE {{
@@ -598,7 +598,7 @@ class admsInputDataRetriever(object):
             print('{0} has building part'.format(nodeuri))
             #get list of building part
             bparts = list(row['p'] for row in self.query(
-            ''' PREFIX citygml:<http://www.theworldavatar.com/CityGMLOntology.owl#>
+            ''' PREFIX citygml:<http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>
             SELECT  ?p 
             WHERE
              {
@@ -638,7 +638,7 @@ class admsInputDataRetriever(object):
         #self.connectDB(nodeuri)
         print('checking if building part for :{0}'.format(nodeuri))
         qData = self.query('''
-            PREFIX citygml:<http://www.theworldavatar.com/CityGMLOntology.owl#>
+            PREFIX citygml:<http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>
             ASK       
              {{
              <{0}> citygml:consistsOfBuildingPart ?p
@@ -686,12 +686,12 @@ class admsInputDataRetriever(object):
 
     def polIRI2Name(self, polIRI):
         substances = {
-		#'http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#chlorine':'Cl2',
-        'http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/chemical_species.owl#Nitrogen__dioxide':'NO2',
-        'http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/chemical_species.owl#Carbon__monoxide':'CO',
-        'http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/chemical_species.owl#Carbon__dioxide':'CO2',
-		'http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/pseudocomponent.owl#Unburned_Hydrocarbon':'HC',
-        'http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/pseudocomponent.owl#Nitrogen__oxides':'NOx'
+		#'http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#chlorine':'Cl2',
+        'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Nitrogen__dioxide':'NO2',
+        'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Carbon__monoxide':'CO',
+        'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Carbon__dioxide':'CO2',
+		'http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Unburned_Hydrocarbon':'HC',
+        'http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Nitrogen__oxides':'NOx'
 
         }
 

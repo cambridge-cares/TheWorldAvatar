@@ -79,7 +79,7 @@ public class CoordinatesAndCityToADMSOutput extends HttpServlet {
 		else
 		{
 			String city = BuildingQueryPerformer.THE_HAGUE_IRI;
-			String plant = "http://www.theworldavatar.com/Plant-001.owl";
+			String plant = "http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl";
 			double plantx = 79831;
 			double planty = 454766;
 			System.out.println("==================== THE HAGUE ====================");
@@ -118,6 +118,9 @@ public class CoordinatesAndCityToADMSOutput extends HttpServlet {
 		args.add(buildingData);
 		String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
 		String result = CommandHelper.executeCommands(targetFolder, args);
+		System.out.println("fullpath= "+fullPath);
+		System.out.println("cityiri= "+cityIRI);
+		System.out.println("plantiri= "+plantIRI);
 		return fullPath;
 		
 	}

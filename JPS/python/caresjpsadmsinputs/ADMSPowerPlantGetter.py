@@ -6,9 +6,9 @@ import sys
 
 def sparqlCentrePointAndHeight(graph, powerPlantIRI):
     queryString = """
-        PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-        PREFIX system: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
-        PREFIX plant: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#>
+        PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+        PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+        PREFIX plant: <http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#>
 
         SELECT ?projectedCoordinateSystem ?value_x ?value_y ?height
         WHERE
@@ -74,9 +74,9 @@ def getGeoJSON(centrePoint, height, epsg):
     return json.dumps(python_data)
 
 
-def returnPowerPlantCentrePoint(powerPlantIRI, epsg, knowledgeBaseFile):
+def returnPowerPlantCentrePoint(powerPlantIRI, epsg):
     graph = rdflib.Graph()
-    graph.parse(knowledgeBaseFile)
+    graph.parse(powerPlantIRI)
 
     try:
 
@@ -91,5 +91,4 @@ def returnPowerPlantCentrePoint(powerPlantIRI, epsg, knowledgeBaseFile):
 if __name__ == "__main__":
     powerPlantIRI = sys.argv[1]
     epsg = sys.argv[2]
-    knowledgeBaseFile = sys.argv[3]
-    print(returnPowerPlantCentrePoint(powerPlantIRI, epsg, knowledgeBaseFile))
+    print(returnPowerPlantCentrePoint(powerPlantIRI, epsg))

@@ -45,7 +45,7 @@ public class TestBuildingQueryAgent extends TestCase {
 	public void testTheHagueIntegrationWithPython() throws InterruptedException {
 		
 		String city = BuildingQueryPerformer.THE_HAGUE_IRI;
-		String plant = "http://www.theworldavatar.com/Plant-001.owl";
+		String plant = "http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl";
 		int buildingLimit = 25;
 		
 		double plantx = 79831;
