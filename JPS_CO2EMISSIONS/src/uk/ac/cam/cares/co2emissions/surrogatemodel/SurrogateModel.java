@@ -69,10 +69,10 @@ public class SurrogateModel extends HttpServlet {
 			
 			// Put plantInfo into surrogate model and get new emission back
 //			String co2EmissionRate = PythonHelper.callPython("surrogate_model.py", g.toJson(plantInfo), WORKINGDIR_ADMS_PATH, this);
-			String co2EmissionRate = "100.0";
+//			String co2EmissionRate = "100.0";
 			
 			// Store new emission
-			String result = PythonHelper.callPython("powerplant_sparql_update.py", plantIRI, co2EmissionRate, this);
+//			String result = PythonHelper.callPython("powerplant_sparql_update.py", plantIRI, co2EmissionRate, this);
 			
 			long stopTime = System.currentTimeMillis();
 			long elapsedTime = stopTime - startTime;

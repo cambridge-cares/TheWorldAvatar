@@ -1,7 +1,11 @@
 package uk.ac.cam.cares.co2emissions.worldpowerplant;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +19,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.HttpClientBuilder;
+
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.PythonException;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
@@ -42,12 +53,13 @@ public class WorldPowerPlant extends HttpServlet {
 	private static final String PATH = "/JPS_CO2EMISSIONS/SurrogateModel";
 	private static final String KEY = "query";
 	private static final Gson g = new Gson();
+	private final String WORKINGDIR_ADMS_PATH = AgentLocator.getPathToWorkingDir(this);
        
     public WorldPowerPlant() {
         super();
     }
     
-    protected void publishMessage(String powerplantIRI, String idScenario, Channel channel) throws UnsupportedEncodingException, IOException {
+    protected void publishMessage(String powerplantIRI, String idScenario, Channel channel) throws UnsupportedEncodingException, IOException, URISyntaxException {
 		Map<String, String> queryParamsJsonObj = new HashMap<String, String>();
 		queryParamsJsonObj.put("plant", powerplantIRI);
 		String queryParamPowerplantIRIString = g.toJson(queryParamsJsonObj);
@@ -58,11 +70,39 @@ public class WorldPowerPlant extends HttpServlet {
 		
 		channel.basicPublish(EXCHANGE_NAME, "", null, queryParamsString.getBytes("UTF-8"));
 		
-		AgentCaller.executeGet(PATH, KEY, queryParamPowerplantIRIString);
+//		AgentCaller.executeGet(PATH, KEY, queryParamPowerplantIRIString);
+		
+		//
+		URIBuilder builder = new URIBuilder().setScheme("http").setHost("localhost:5000")
+				.setPath("/run-surrogate-model")
+				.setParameter("workingdir", WORKINGDIR_ADMS_PATH)
+				.setParameter("powerplantIRI", powerplantIRI);
+		
+		URI uri = builder.build();
+		HttpGet getRequest = new HttpGet(uri);
+		HttpClient httpClient = HttpClientBuilder.create().build();
+		HttpResponse httpResponse = httpClient.execute(getRequest);
+		
+		// Parse response into string
+		BufferedReader rd = new BufferedReader(new InputStreamReader(
+			    httpResponse.getEntity().getContent()));
+		
+		StringBuilder total = new StringBuilder();
+		String line = null;
+		
+		while ((line = rd.readLine()) != null) {
+			total.append(line);
+		}
+		rd.close();
+		String body = total.toString();	
+		
+		System.out.println(body);
+		
+		//
 		
     }
     
-    protected void publishMessages(String[] arrayPowerplantIRI, int numPowerplants, int numSegments, Channel channel) throws UnsupportedEncodingException, IOException {
+    protected void publishMessages(String[] arrayPowerplantIRI, int numPowerplants, int numSegments, Channel channel) throws UnsupportedEncodingException, IOException, URISyntaxException {
     	int sizeSegment = numPowerplants / numSegments;
     	int remainder = numPowerplants % numSegments;
     	int[] segmentInitialValue = new int[numSegments];
@@ -138,13 +178,25 @@ public class WorldPowerPlant extends HttpServlet {
 			
 			request.setCharacterEncoding("UTF-8");
 			
+			System.out.println("START OF TEST");
+//			String timeTaken = PythonHelper.callPython("test/test_fuseki.py", 
+//					WORKINGDIR_ADMS_PATH, this);
+			
+			long startTime = System.currentTimeMillis();
+			
+//			System.out.println("Time Taken: " + timeTaken);
+			
 			String stringArrayOfPowerplantIRI = PythonHelper.callPython("world_powerplants_sparql.py", 
 					"", this);
 			
 			Gson g = new Gson();
 			String[] arrayOfPowerplantIRI = g.fromJson(stringArrayOfPowerplantIRI, String[].class);
-			
+//			
 			publishMessages(arrayOfPowerplantIRI, arrayOfPowerplantIRI.length, 5, channel);
+			
+			long stopTime = System.currentTimeMillis();
+			long elapsedTime = stopTime - startTime;
+			System.out.println(elapsedTime);
 			
 //			for(int i = 0; i < arrayOfPowerplantIRI.length; i++) {
 //				
@@ -169,6 +221,10 @@ public class WorldPowerPlant extends HttpServlet {
 //		catch (InterruptedException e) {
 //			e.printStackTrace();
 //		}
+ catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 				
 	}
 
