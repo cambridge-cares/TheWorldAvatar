@@ -42,7 +42,7 @@ public class ServiceCompositionEngineTest {
 
 		assertEquals(counter,2);
 		
-		int size = 1;
+		int size = 1; // 
 //		while (size != 0) {
 //			size = engine.eliminateRedundantAgent();
 //		}

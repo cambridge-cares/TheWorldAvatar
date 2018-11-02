@@ -142,10 +142,10 @@ public class ServiceCompositionEngine {
 
 	}
 	
-	public void start() { // Now appending Layers and Connection builders are merged in this start function
+	public boolean start() { // Now appending Layers and Connection builders are merged in this start function
 		boolean met = false;
 		int index = 0;
-		while (!met) {
+		while (!met && index <= 50) {
 			index++;
 			System.out.println(index);
 			met = this.appendLayerToGraph(index);
@@ -154,12 +154,14 @@ public class ServiceCompositionEngine {
 		while (size != 0) {
 			size = this.eliminateRedundantAgent();
 		}
-		
+		 
 		ConnectionBuilder connectionBuilder = new ConnectionBuilder();
 		connectionBuilder.buildEdge(this.getGraph()); // build the connection between services
 		connectionBuilder.connectEdges(this.getGraph());
 		connectionBuilder.rearrangeEdges(this.getGraph());
 
+		return (index < 50);
+		
 	}
 
 }

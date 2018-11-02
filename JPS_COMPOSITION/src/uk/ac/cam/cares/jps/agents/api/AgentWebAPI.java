@@ -61,11 +61,18 @@ public class AgentWebAPI extends HttpServlet {
 			throws JsonParseException, JsonMappingException, JSONException, URISyntaxException, IOException, Exception {
 
 		ServiceCompositionEngine engine = new ServiceCompositionEngine(compositeAgent, hostPort);
-		engine.start();
+		
+		if(!engine.start()) {
+			return null;
+		}
+		 
+		
+		
+		
 		Graph graph = engine.getGraph();
 		ArrayList<Service> serviceEliminationList = OptimalPathSearcher.getAllServicesToBeDeleted(graph);
 		ArrayList<String> eliminationList = new ArrayList<String>();
-		for (Service service : serviceEliminationList) {
+		for (Service service : serviceEliminationList) { 
 			eliminationList.add(service.getUri().toASCIIString());
 		}
 		
@@ -79,6 +86,10 @@ public class AgentWebAPI extends HttpServlet {
 	
 		String hostPort = "http://" + KeyValueServer.get(IKeys.HOST) + ":" + KeyValueServer.get(IKeys.PORT);
 		Object[] result = compose(compositeAgent, hostPort);
+		
+		if(result == null) {
+			return "Unsolvable"; 
+		}
 		Graph graph = (Graph) result[0];
 		ArrayList<String> eliminationList = (ArrayList<String>) result[1];
 		

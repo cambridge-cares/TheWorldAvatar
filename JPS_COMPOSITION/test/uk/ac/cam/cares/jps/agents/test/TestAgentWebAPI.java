@@ -132,10 +132,10 @@ public class TestAgentWebAPI extends TestCase {
 		//KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithWasteProduct");
 			
 		String result = AgentCaller.executeGetWithJsonParameter("/JPS_COMPOSITION/execute", jsonInput.toString());
+		// TODO: The result returned from this test is not in the form of a JSON Object 
 		
 		//String result = new AgentWebAPI().composeAndExecute(compositeAgent, host, jsonInput.toString());
 		System.out.println("result=\n" + result);
-		
 		JSONObject jsonOutput = new JSONObject(result);
 		assertEquals(25, jsonOutput.getJSONArray("building").length());
 	}

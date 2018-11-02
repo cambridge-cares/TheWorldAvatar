@@ -55,11 +55,15 @@ public class ServiceCompositionEndpoint extends HttpServlet {
 			Service agent = FormatTranslator.convertJSONTOJavaClass(AgentInString);
  
 			ServiceCompositionEngine engine = new ServiceCompositionEngine(agent, "http://localhost:8080");
-			engine.start();
-			Graph graph = engine.getGraph();
-			
-			JSONObject graphInJSON = FormatTranslator.convertGraphJavaClassTOJSON(graph);
-			response.getWriter().write(graphInJSON.toString());
+			if(engine.start()) {
+				Graph graph = engine.getGraph();
+				JSONObject graphInJSON = FormatTranslator.convertGraphJavaClassTOJSON(graph);
+				response.getWriter().write(graphInJSON.toString());
+			}
+			else {
+				response.getWriter().write("Unsolvable");
+			}
+
 
 		} catch (Exception ex) {
 
