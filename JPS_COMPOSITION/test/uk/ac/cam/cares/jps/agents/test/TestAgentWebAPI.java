@@ -48,7 +48,7 @@ public class TestAgentWebAPI extends TestCase {
 	private JSONObject composeAndExecuteForBerlinDirectCall() throws Exception {
 
 		Service composedAgent = createADMSWithoutWasteProduct();
-		System.out.println("compositeAgent=" + new Gson().toJson(composedAgent));
+		//System.out.println("compositeAgent=" + new Gson().toJson(composedAgent));
 		
 		JSONWriter jsonInput = new JSONStringer().object().
 				key("region").object()

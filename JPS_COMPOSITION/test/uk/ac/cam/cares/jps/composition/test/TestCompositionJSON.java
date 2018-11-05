@@ -35,9 +35,10 @@ public class TestCompositionJSON {
 	public void test() throws JsonParseException, JsonMappingException, JSONException, URISyntaxException, IOException, Exception {
 		// Load semantic description of CityToWeather .. and another one ..
 		
+		KeyValueServer.set("host", "localhost");
+		KeyValueServer.set("port", "8080");	
 		String compositionDir = AgentLocator.getCurrentJpsAppDirectory(this);
-		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservices");
-		// The code above would set the discovery folder to be composition.. / testres/admsservices
+		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithoutWasteProduct");
 		
 		
 		ServiceCompositionEngine engine = new ServiceCompositionEngine(getDebugCase(), "http://localhost:8080");
