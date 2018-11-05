@@ -40,7 +40,7 @@ public class ServiceCompositionEngineTest {
 			counter++;
 		}
 
-		assertEquals(counter,2);
+		assertEquals(counter,3);
 		
 		int size = 1; // 
 //		while (size != 0) {
