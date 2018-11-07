@@ -1,0 +1,7 @@
+dash
+dash-core-components
+dash-html-components
+dash-renderer
+gunicorn>=19.7.1
+urllib3==1.24
+Flask==1.0.2
