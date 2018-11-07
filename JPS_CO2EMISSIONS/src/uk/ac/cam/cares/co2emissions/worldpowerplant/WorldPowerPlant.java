@@ -96,10 +96,7 @@ public class WorldPowerPlant extends HttpServlet {
 		rd.close();
 		String body = total.toString();	
 		
-		System.out.println(body);
-		
-		//
-		
+		System.out.println(body);		
     }
     
     protected void publishMessages(String[] arrayPowerplantIRI, int numPowerplants, int numSegments, Channel channel) throws UnsupportedEncodingException, IOException, URISyntaxException {
@@ -172,26 +169,20 @@ public class WorldPowerPlant extends HttpServlet {
 		
 		try {
 			Connection connection = factory.newConnection();
-			Channel channel = connection.createChannel();
-			
+			Channel channel = connection.createChannel();			
 			channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.FANOUT);
 			
 			request.setCharacterEncoding("UTF-8");
 			
-			System.out.println("START OF TEST");
-//			String timeTaken = PythonHelper.callPython("test/test_fuseki.py", 
-//					WORKINGDIR_ADMS_PATH, this);
-			
+			System.out.println("START OF TEST");			
 			long startTime = System.currentTimeMillis();
-			
-//			System.out.println("Time Taken: " + timeTaken);
-			
+						
 			String stringArrayOfPowerplantIRI = PythonHelper.callPython("world_powerplants_sparql.py", 
 					"", this);
 			
 			Gson g = new Gson();
 			String[] arrayOfPowerplantIRI = g.fromJson(stringArrayOfPowerplantIRI, String[].class);
-//			
+			
 			publishMessages(arrayOfPowerplantIRI, arrayOfPowerplantIRI.length, 5, channel);
 			
 			long stopTime = System.currentTimeMillis();
@@ -222,7 +213,6 @@ public class WorldPowerPlant extends HttpServlet {
 //			e.printStackTrace();
 //		}
  catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 				
