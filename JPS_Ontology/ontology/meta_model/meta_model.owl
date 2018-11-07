@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns="http://www.theworldavatar.com/ontology/meta_model/meta_model.owl#"
+    xmlns:loop="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#"
+    xmlns:mereology="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:multiset="http://www.theworldavatar.com/ontology/meta_model/data_structures/multiset.owl#"
+    xmlns:topology="http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#"
+    xmlns:array="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#"
+    xmlns:terms="http://purl.org/dc/terms/"
+    xmlns:fc="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+    xmlns:binary_tree="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:linked_list="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://www.theworldavatar.com/ontology/meta_model/meta_model.owl">
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/meta_model/meta_model.owl">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/multiset.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl"/>
+    <terms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+    </terms:license>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The ontology module 'meta_model' assembles all the ontological concept defintions and axioms of the Meta Model.</rdfs:comment>
+  </owl:Ontology>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.4.8, Build 629)  http://protege.stanford.edu -->

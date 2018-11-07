@@ -8,9 +8,9 @@ var defaultRealService = {"class": "go.GraphLinksModel",
         {"key":1, "text":"Composite_Service_11Yju7k1", "category":"Service", "fullIRI":"http://www.theworldavatar.com/Composite_Service_11Yju7k1"},
         {"text":"Operation_pexDwAC", "category":"Operation", "fullIRI":"http://www.theworldavatar.com/Operation_pexDwAC", "httpUrl":"http://www.theworldavatar.com/JPS_COMPOSITION/CoordinateToWeather", "key":-2},
         {"text":"MessageContent_Input_xzbAvBW", "category":"MessageContent_Input", "fullIRI":"http://www.theworldavatar.com/MessageContent_Input_xzbAvBW", "key":-3},
-        {"text":"Mandatory_MessagePart_CghedAK", "category":"Mandatory_MessagePart", "fullIRI":"http://www.theworldavatar.com/Mandatory_MessagePart_CghedAK", "key":-4, "params":{"hasValue":"", "hasDatatype":"", "modelReference":"http://test.com/ontology/Region"}},
+        {"text":"Mandatory_MessagePart_CghedAK", "category":"Mandatory_MessagePart", "fullIRI":"http://www.theworldavatar.com/Mandatory_MessagePart_CghedAK", "key":-4, "params":{"hasValue":"", "hasDatatype":"", "type":"http://test.com/ontology/Region"}},
         {"text":"MessageContent_Output_18YRk5SC", "category":"MessageContent_Output", "fullIRI":"http://www.theworldavatar.com/MessageContent_Output_18YRk5SC", "key":-5},
-        {"text":"Mandatory_MessagePart_15wGxcwo", "category":"Mandatory_MessagePart", "fullIRI":"http://www.theworldavatar.com/Mandatory_MessagePart_15wGxcwo", "key":-6, "params":{"hasValue":"", "hasDatatype":"", "modelReference":"http://test.com/ontology/ADMSSimulation"}}
+        {"text":"Mandatory_MessagePart_15wGxcwo", "category":"Mandatory_MessagePart", "fullIRI":"http://www.theworldavatar.com/Mandatory_MessagePart_15wGxcwo", "key":-6, "params":{"hasValue":"", "hasDatatype":"", "type":"http://test.com/ontology/ADMSSimulation"}}
     ],
     "linkDataArray": [
         {"from":1, "to":-2},
@@ -88,19 +88,19 @@ function convertNodeObjToMSMObj(testObj) {
             locateAllChildren(element);
         }
         if (currentElement.category.includes('MessagePart')) {
-            // create object of a parameter {'uri': 'http://...', 'value': 'xxx', 'datatypeValue': 'xxx', 'modelReference': 'xxx'}
+            // create object of a parameter {'uri': 'http://...', 'value': 'xxx', 'datatypeValue': 'xxx', 'type': 'xxx'}
 
             var uri = currentElement.fullIRI;
             var params = currentElement.params;
             var hasValue = params.hasValue;
             var hasDatatype = params.hasDatatype;
-            var modelReference = params.modelReference;
+            var type = params.type;
 
             var newParameter = {
                 'uri': uri,
                 'value': hasValue,
                 'datatypeValue': hasDatatype,
-                'modelReference': modelReference
+                'type': type
             };
 
 
@@ -206,6 +206,10 @@ function sendRequest(agentInJSON, RequestUrl) {
 
 // Add a newly defined service to the pool of candidate services
 function addToServicePool() {
+	
+	
+
+	
     $.ajax({
         method: "POST",
         url: hostname + "AddToServicePool",
@@ -244,6 +248,7 @@ function composeService() {
     $("#myDiagramDiv").width("0%");
     $("#myDiagramDiv2").height("700px");
 
+    console.log('original', JSON.stringify(myDiagram.model))
 	console.log('model', convertNodeObjToMSMObj(myDiagram.model));
 	
     $.ajax({
@@ -254,10 +259,12 @@ function composeService() {
 
     })
         .done(function (msg) {
-
-
+        	
+        	console.log('----- original msg -----')
+        	console.log(msg)
             compositeService = msg;
             visualizeComposition(convertComposition(JSON.parse(msg)));
+            console.log('-------------- convert ----------------')
             console.log(convertComposition(JSON.parse(msg)));
 
         })
@@ -269,7 +276,7 @@ function composeService() {
 function loadRealComposite() {
 
     console.log("new .... ");
-    console.log(myDiagram.model);
+    console.log(JSON.stringify(myDiagram.model));
 
 	//document.getElementById("mySavedModel").value =  JSON.stringify(defaultRealService);
     //refresh(defaultRealService);
@@ -296,11 +303,14 @@ function sendToExecutor(){
     })
         .done(function (msg) {
             executionChain = JSON.parse(msg);
+            
+            console.log("===== execution chain =====")
+            console.log(executionChain)
 
         	console.log("==== Trigger recommendation ====");
+        	console.log("Initial inputs")
+        	console.log(compositeServiceObj['initialInputs']);
         	// Get the inputs ... Make the recommendation
-
-
             let agents = selectInputMap(getInputTypes(compositeServiceObj['initialInputs'])[0]);
             let HTML = generateAgentCardHTML(agents);
             PopulateInputs(HTML);
@@ -319,7 +329,7 @@ function optimizeService() {
         method: "POST",
         url: hostname + "ServiceOptimizationEndpoint",
         data: compositeService,
-        timeout: 5000
+        timeout: 10000
 
     })
         .done(function (msg) {
@@ -362,7 +372,7 @@ function convertComposition(result) {
 
     var initOutputs = [];
     result.initialInputs.forEach(function (initInput) {
-        initOutputs.push({name: IRIProcessor(initInput.modelReference)});
+        initOutputs.push({name: IRIProcessor(initInput.type)});
     });
 
     var initObject = {key: "Inputs", inputs: [], outputs: initOutputs.sort(dynamicSort("name")), loc: "200 0"};
@@ -389,12 +399,14 @@ function convertComposition(result) {
                         previousLayer.services.forEach(function (previousService) {
                             previousService.operations[0].outputs.forEach(function (previousOutput) {
                                 previousOutput.mandatoryParts.forEach(function (previousOutputPart) {
-                                    if (previousOutputPart.modelReference === model.modelReference) {
+                                    if (previousOutputPart.type === model.type) {
+                                    	console.log("------- After processor ------- ")
+                                    	console.log(IRIProcessor(previousService.uri))
                                         var newConnection = {
                                             from: IRIProcessor(previousService.uri),
                                             to: IRIProcessor(service.uri),
-                                            fromPort: IRIProcessor(previousOutputPart.modelReference),
-                                            toPort: IRIProcessor(model.modelReference)
+                                            fromPort: IRIProcessor(previousOutputPart.type),
+                                            toPort: IRIProcessor(model.type)
                                         };
                                         visualizationObject.linkDataArray.push(newConnection);
                                         if (layerIndex === previousLayerIndex) {
@@ -406,12 +418,12 @@ function convertComposition(result) {
                             })
                         });
                     });
-                    inputs.push({name: IRIProcessor(model.modelReference)})
+                    inputs.push({name: IRIProcessor(model.type)})
                 });
             });
             service.operations[0].outputs.forEach(function (output) {
                 output.mandatoryParts.forEach(function (model) {
-                    outputs.push({name: IRIProcessor(model.modelReference)})
+                    outputs.push({name: IRIProcessor(model.type)})
                 })
             });
             serviceObject.inputs = inputs.sort(dynamicSort("name"));
@@ -426,6 +438,20 @@ function convertComposition(result) {
 }
 
 function IRIProcessor(IRI) {
+	
+	
+	console.log('======== IRI ==========')
+	console.log(IRI)
+	console.log('=======================')
+	
+	if (IRI === undefined){
+		return null;
+	}
+	
+	if (IRI.endsWith("#Service")){
+		return IRI.split("/").slice(-1)[0].split('#')[0]
+	}
+	
     if (IRI.includes("#")) {
         return IRI.split("#").slice(-1)[0]
     }

@@ -29,7 +29,7 @@ public class TestAgentDescriptions extends TestCase {
 				.input("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#srsname", "srsname").up();
 	}
 	
-	public void testcreateDescription() throws URISyntaxException, FileNotFoundException {
+	public void testCreateDescription() throws URISyntaxException, FileNotFoundException {
 		
 		Service service = createDescrForAgentRegionToCity();
 		backAndforthAndWrite(service, "_RegionToCity");
@@ -43,6 +43,8 @@ public class TestAgentDescriptions extends TestCase {
 		backAndforthAndWrite(service, "_BuildingQuery");
 		service = createDescrForAgentADMS();
 		backAndforthAndWrite(service, "_ADMS");
+		service = createDescrForComposedAgentADMS();
+		backAndforthAndWrite(service, "_ComposedADMS");
 	}
 	
 	private void backAndforthAndWrite(Service service, String name) throws URISyntaxException, FileNotFoundException {
@@ -112,7 +114,7 @@ public class TestAgentDescriptions extends TestCase {
 		return addInputRegion(new ServiceBuilder().operation(null, JPS + "/ADMSAgent"))
 			.input("http://dbpedia.org/ontology/city", "city")
 			.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
-			//.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
+			.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
 			.input(WEATHER + "#WeatherState", "weatherstate").down()
 			.input(WEATHER + "#hasHumidity", "humidity").down()
 				.input(WEATHER + "#hasValue", "value").up()
@@ -129,6 +131,17 @@ public class TestAgentDescriptions extends TestCase {
 			.up()
 			.output("https://www.w3.org/ns/csvw#Table", "dispersiongrid")
 			.build();
+	}
+	
+	private Service createDescrForComposedAgentADMS() {
+		return new ServiceBuilder()
+				.composed()
+				.operation(null, null)
+				.input("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType", "region")
+				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
+				.output("https://www.w3.org/ns/csvw#Table", "dispersiongrid")
+				.output("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType", true, "buildings", true)
+				.build();
 	}
 	
 	public void testDescription() throws URISyntaxException, FileNotFoundException {

@@ -1,0 +1,33 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:msm="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#">
+  <msm:Service rdf:about="http://www.theworldavatar.com/kb/agents/Service__SRMEmissions.owl#Service">
+    <msm:hasOperation>
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__SRMEmissions.owl#Operation_81562059-d352-4b31-afec-fa1e5289f742">
+        <msm:hasOutput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__SRMEmissions.owl#MessageContent_a7da4d0f-44e5-42bb-83a4-7800fd0b8306">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__SRMEmissions.owl#MessagePart_cb0dce66-48d2-41f4-8f34-3a3e6c4b825e">
+                <msm:hasName>waste</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasOutput>
+        <msm:hasInput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__SRMEmissions.owl#MessageContent_1b78cb72-ac20-4cdd-be6e-c4a76863504a">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__SRMEmissions.owl#MessagePart_75fd60c4-58b1-45e4-9f9d-e3623ed91f37">
+                <msm:hasName>plant</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasInput>
+        <msm:hasHttpUrl>http://www.theworldavatar.com/JPS/calculateEmissionStream</msm:hasHttpUrl>
+      </msm:Operation>
+    </msm:hasOperation>
+  </msm:Service>
+</rdf:RDF>

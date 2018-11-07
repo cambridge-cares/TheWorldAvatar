@@ -63,6 +63,7 @@ public class ServiceWriter {
 		// create the instance of service in ontology
 		Resource current = model.createResource(service.getUri().toASCIIString());
 		current.addProperty(RDF.type, MSM.Service.Node());
+		current.addProperty(MSM.isComposed.Property(), new Boolean(service.isComposed()).toString());
 
 		for (Operation op : service.getOperations()) {
 			op.setUri(getOrCreateUri(op, op.getUri()));
@@ -78,7 +79,9 @@ public class ServiceWriter {
 		operation.setUri(getOrCreateUri(operation, operation.getUri()));
 		Resource current = model.createResource(operation.getUri().toASCIIString());
 		current.addProperty(RDF.type, MSM.Operation.Node());
-		current.addProperty(MSM.hasHttpUrl.Property(), operation.getHttpUrl());
+		if (operation.getHttpUrl() != null) {
+			current.addProperty(MSM.hasHttpUrl.Property(), operation.getHttpUrl());
+		}
 		for (MessageContent input : operation.getInputs()) {
 			input.setUri(getOrCreateUri(input, input.getUri()));
 			current.addProperty(MSM.hasInput.Property(), model.createResource(input.getUri().toASCIIString()));

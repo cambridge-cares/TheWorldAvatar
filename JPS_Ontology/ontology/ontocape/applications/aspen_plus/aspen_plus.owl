@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.theworldavatar.com/ontology/ontocape/applications/aspen_plus/aspen_plus.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:substance="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#" xmlns:terms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xml:base="http://www.theworldavatar.com/ontology/ontocape/applications/aspen_plus/aspen_plus.owl">
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/applications/aspen_plus/aspen_plus.owl">
+  <terms:license>Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+  </terms:license>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl"/>
+  </owl:Ontology>
+  <owl:FunctionalProperty rdf:ID="formula">
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#substance_identifier"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Component formula used in the property database of the process simulator Aspen Plus. For reference, see Aspen Physical Property System 12.1 manual.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="name">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#substance_identifier"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Component name used in the property database of the process simulator Aspen Plus. For reference, see Aspen Physical Property System 12.1 manual.
+</rdfs:comment>
+  </owl:FunctionalProperty>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#MolecularSpecies">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/applications/aspen_plus/aspen_plus.owl#name"/>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:cardinality>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/applications/aspen_plus/aspen_plus.owl#formula"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </rdf:Description>
+</rdf:RDF>

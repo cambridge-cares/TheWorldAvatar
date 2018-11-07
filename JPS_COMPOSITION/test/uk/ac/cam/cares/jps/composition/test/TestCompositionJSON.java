@@ -35,12 +35,13 @@ public class TestCompositionJSON {
 	public void test() throws JsonParseException, JsonMappingException, JSONException, URISyntaxException, IOException, Exception {
 		// Load semantic description of CityToWeather .. and another one ..
 		
+		KeyValueServer.set("host", "localhost");
+		KeyValueServer.set("port", "8080");	
 		String compositionDir = AgentLocator.getCurrentJpsAppDirectory(this);
-		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservices");
+		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithoutWasteProduct");
 		
 		
-		
-		ServiceCompositionEngine engine = new ServiceCompositionEngine(getTestCompositeAgentRegionToADMS(), "http://localhost:8080");
+		ServiceCompositionEngine engine = new ServiceCompositionEngine(getDebugCase(), "http://localhost:8080");
 		engine.start();
 		Graph graph = engine.getGraph();
 		ArrayList<Service> serviceEliminationList = OptimalPathSearcher.getAllServicesToBeDeleted(graph);
@@ -49,9 +50,13 @@ public class TestCompositionJSON {
 			eliminationList.add(service.getUri().toASCIIString());
 		}
 		
+		System.out.println(eliminationList);
 		
 		ExecutorProcessor processor = new ExecutorProcessor(FormatTranslator.convertGraphJavaClassTOJSON(graph), eliminationList);
 		ArrayList<ExecutionLayer> executionChain = processor.generateExecutionChain();
+		
+		//			ExecutorNew executor = FormatTranslator.convertJSONTOExecutor(executorInJSON.toString());
+
 		ExecutorNew executor = new ExecutorNew(executionChain); 
 
 
@@ -80,9 +85,17 @@ public class TestCompositionJSON {
 				.endObject()
 				.endObject().toString(); 
 		
-		String result = executor.execute(new JSONObject(input));
-		System.out.println("Final Result ! \n"  + result);
-
+		
+		input = "{\"region\":{\"lowercorner\":{\"lowerx\":\"4.283710282240122\",\"lowery\":\"52.07126465153749\"},\"uppercorner\":{\"upperx\":\"4.2946107796766455\",\"uppery\":\"52.07983708183632\"},\"srsname\":\"EPSG:4326\"}}";
+		
+		
+ 		String result = executor.execute(new JSONObject(input));
+ 		System.out.println("============== result ==============");
+ 		System.out.println(result);
+ 		System.out.println("====================================");
+		
+//		assertEquals(new JSONObject(result).getJSONArray("buildings").length(),25);
+		 
 		
 	}
 
@@ -92,9 +105,22 @@ public class TestCompositionJSON {
 	}
 	
 	
+	
+	public Service getDebugCase() throws JSONException, JsonParseException, JsonMappingException, URISyntaxException, IOException{
+		JSONObject agentInJSON = new JSONObject("{\"uri\":\"http://www.theworldavatar.com/Composite_Service_8PPv74p\",\"operations\":[{\"uri\":\"http://www.theworldavatar.com/Operation_pexDwAC\",\"inputs\":[{\"uri\":\"http://www.theworldavatar.com/MessageContent_Input_xzbAvBW\",\"mandatoryParts\":[{\"uri\":\"http://www.theworldavatar.com/Mandatory_MessagePart_CghedAK\",\"value\":\"\",\"datatypeValue\":\"\",\"type\":\"http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType\"}],\"optionalParts\":[]}],\"outputs\":[{\"uri\":\"http://www.theworldavatar.com/MessageContent_Output_18YRk5SC\",\"mandatoryParts\":[{\"uri\":\"http://www.theworldavatar.com/Mandatory_MessagePart_15wGxcwo\",\"value\":\"\",\"datatypeValue\":\"\",\"type\":\"https://www.w3.org/ns/csvw#Table\"}],\"optionalParts\":[]},{\"uri\":\"http://www.theworldavatar.com/MessageContent_Output_1gpms0DA\",\"mandatoryParts\":[{\"uri\":\"http://www.theworldavatar.com/Mandatory_MessagePart_guVoBmm\",\"value\":\"\",\"datatypeValue\":\"\",\"type\":\"http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType\"}],\"optionalParts\":[]}],\"httpUrl\":\"http://www.theworldavatar.com/JPS_COMPOSITION/CoordinateToWeather\"}]}\r\n");
+				return FormatTranslator.convertJSONTOJavaClass(agentInJSON.toString());
+
+	}
+	
+	
 	//https://www.w3.org/ns/csvw#Table
 	public Service getTestCompositeAgentRegionToADMS() throws JSONException, JsonParseException, JsonMappingException, URISyntaxException, IOException {
 		JSONObject compositeAgentInJSON = new JSONObject("{\"operations\":[{\"outputs\":[{\"optionalParts\":[],\"mandatoryParts\":[{\"type\":\"https://www.w3.org/ns/csvw#Table\",\"uri\":\"http://www.theworldavatar.com/Mandatory_MessagePart_15wGxcwo\",\"value\":\"\",\"datatypeValue\":\"\"}],\"uri\":\"http://www.theworldavatar.com/MessageContent_Output_18YRk5SC\"},{\"optionalParts\":[],\"mandatoryParts\":[{\"type\":\"http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType\",\"uri\":\"http://www.theworldavatar.com/Mandatory_MessagePart_1515cwo\",\"value\":\"\",\"datatypeValue\":\"\",\"array\":\"true\"}],\"uri\":\"http://www.theworldavatar.com/MessageContent_Output_18YRk5SC\"}],\"inputs\":[{\"optionalParts\":[],\"mandatoryParts\":[{\"type\":\"http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType\",\"uri\":\"http://www.theworldavatar.com/Mandatory_MessagePart_CghedAK\",\"value\":\"\",\"datatypeValue\":\"\"}],\"uri\":\"http://www.theworldavatar.com/MessageContent_Input_xzbAvBW\"}],\"httpUrl\":\"http://www.theworldavatar.com/JPS_COMPOSITION/RegionToADMS\",\"uri\":\"http://www.theworldavatar.com/Operation_pexDwAC\"}],\"uri\":\"http://www.theworldavatar.com/Composite_Service_ODsMpRv\"}");
 		return FormatTranslator.convertJSONTOJavaClass(compositeAgentInJSON.toString());
 	}
+	
+	
+
+	
+	
 }

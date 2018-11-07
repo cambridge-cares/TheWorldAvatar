@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.config.test;
 import java.io.IOException;
 
 import com.google.gson.Gson;
+
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
@@ -17,7 +18,7 @@ public class TestADMSOutput extends TestCase {
 		
 		Gson g = new Gson();
 		
-		String outputFile = AgentLocator.getPathToWorkingDir(this) + "/" + "ADMS/caresjpsadmsinputs/test.levels.gst";
+		String outputFile = AgentLocator.getPathToWorkingDir(this) + "/" + "ADMS/test.levels.gst";
 		
 		try {
 		

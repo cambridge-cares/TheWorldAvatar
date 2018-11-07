@@ -15,9 +15,9 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 class TestSPARQLQuery {
 
-	public String query = "PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>\r\n" + 
-			"PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>\r\n" + 
-			"PREFIX citygml:<http://www.theworldavatar.com/CityGMLOntology.owl#>\r\n" + 
+	public String query = "PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>\r\n" + 
+			"PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>\r\n" + 
+			"PREFIX citygml:<http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>\r\n" + 
 			"PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\r\n" + 
 			"SELECT  distinct ?bdn\r\n" + 
 			"WHERE {\r\n" + 

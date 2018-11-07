@@ -125,7 +125,7 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) =>
                 },
                 geometry: {
                     type: 'Polygon',
-                    coordinates: [//TODO:　LINK THIS TO USER INPUT
+                    coordinates: [//TODO:ã€€LINK THIS TO USER INPUT
                         [
                             [parsedLowLeft[0],parsedTopRight[1]],
                             [parsedTopRight[0],parsedTopRight[1]],

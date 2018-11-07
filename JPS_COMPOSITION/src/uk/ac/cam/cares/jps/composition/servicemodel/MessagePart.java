@@ -10,12 +10,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uk.ac.cam.cares.jps.composition.enginemodel.Edge;
-
+@JsonIgnoreProperties(value = {"typeNamesUnderThisMessagePart"})
 public class MessagePart{
 
 	public  URI uri;

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/example_mathematical_relation.owl#" xmlns:maths="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:terms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xml:base="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/example_mathematical_relation.owl">
+
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/example_mathematical_relation.owl">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl"/>
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+    <rdfs:comment>This file provides some application examples that illustrate the usage of the ontology module 'mathematical_relation'.</rdfs:comment>
+    <terms:license>Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+    </terms:license>    
+ </owl:Ontology>
+
+  <owl:Class rdf:ID="Query_ParentOf_a">
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasChild"/>
+        <owl:hasValue>
+          <maths:Leaf rdf:ID="a">
+            <maths:isLeftChildOf>
+              <maths:Node rdf:ID="a_plus_b">
+                <maths:hasRightChild>
+                  <maths:Leaf rdf:ID="b">
+                    <maths:isRightChildOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/example_mathematical_relation.owl#a_plus_b"/>
+                    <maths:isRightChildOf>
+                      <maths:Node rdf:ID="a_minus_b">
+                        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a - b</rdfs:comment>
+                        <maths:isLeftChildOf>
+                          <maths:Node rdf:ID="Equation_2">
+                            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a - b = 0</rdfs:comment>
+                            <maths:rightChildNodeValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</maths:rightChildNodeValue>
+                            <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#eq"/>
+                            <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/example_mathematical_relation.owl#a_minus_b"/>
+                          </maths:Node>
+                        </maths:isLeftChildOf>
+                        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#minus"/>
+                        <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/example_mathematical_relation.owl#b"/>
+                        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/example_mathematical_relation.owl#a"/>
+                      </maths:Node>
+                    </maths:isRightChildOf>
+                  </maths:Leaf>
+                </maths:hasRightChild>
+                <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/example_mathematical_relation.owl#a"/>
+                <maths:isLeftChildOf>
+                  <maths:Node rdf:ID="Equation_1">
+                    <maths:rightChildNodeValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">2.0</maths:rightChildNodeValue>
+                    <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#eq"/>
+                    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a + b = 2</rdfs:comment>
+                    <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/example_mathematical_relation.owl#a_plus_b"/>
+                  </maths:Node>
+                </maths:isLeftChildOf>
+                <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a + b</rdfs:comment>
+                <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#plus"/>
+              </maths:Node>
+            </maths:isLeftChildOf>
+            <maths:isLeftChildOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/example_mathematical_relation.owl#a_minus_b"/>
+          </maths:Leaf>
+        </owl:hasValue>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:AllDifferent>
+    <owl:distinctMembers rdf:parseType="Collection">
+      <maths:Node rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/example_mathematical_relation.owl#Equation_1"/>
+      <maths:Node rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/example_mathematical_relation.owl#Equation_2"/>
+      <maths:Node rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/example_mathematical_relation.owl#a_plus_b"/>
+      <maths:Node rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/example_mathematical_relation.owl#a_minus_b"/>
+    </owl:distinctMembers>
+  </owl:AllDifferent>
+  <owl:AllDifferent>
+    <owl:distinctMembers rdf:parseType="Collection">
+      <maths:Leaf rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/example_mathematical_relation.owl#a"/>
+      <maths:Leaf rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/example_mathematical_relation.owl#b"/>
+    </owl:distinctMembers>
+  </owl:AllDifferent>
+</rdf:RDF>

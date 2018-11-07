@@ -21,6 +21,7 @@ public class ExecutorProcessor {
 	public ArrayList<String> eliminationList;
 	public JSONObject map;
  	public ServiceDiscovery discovery;
+ 	public int theOffset = 0;
 	
 	public ExecutorProcessor(JSONObject compositionResult, ArrayList<String> eliminationList) throws Exception {
 		this.compositeService = compositionResult;
@@ -40,7 +41,13 @@ public class ExecutorProcessor {
 		this.taskList = new ArrayList<Task>();
 		
 		this.eliminationList = new ArrayList<String>();
-		JSONArray tempList = this.compositeService.getJSONArray("eliminationList");
+		JSONArray tempList;
+		if(!this.compositeService.has("eliminationList")) {
+			tempList = new JSONArray();
+		}
+		else {
+			tempList = this.compositeService.getJSONArray("eliminationList");
+		}
 		for (int idx = 0; idx < tempList.length(); idx++) {
 			this.eliminationList.add(tempList.getString(idx));
 		}
@@ -83,14 +90,25 @@ public class ExecutorProcessor {
 				if (this.map.has(array[0] + "_" + array[1])) {
 					int newLayerIdx = this.map.getInt(array[0] + "_" + array[1]);
 					int newServiceIdx = 0;
-					array = new int[] { newLayerIdx, newServiceIdx };
+					array = new int[] { newLayerIdx + this.theOffset, newServiceIdx };
+					System.out.println("========= for task 1===========");
+					System.out.println("http url:" + httpUrl);
 					nextHttpUrlList.add(getHttpUrl(array));
+					System.out.println("==============================");
+					this.theOffset++;
 					layerOffSet++;
 				} else {
-					int newLayerIdx = array[0];
-					int newServiceIdx = array[1] - layerOffSet;
+					int newLayerIdx = array[0] + this.theOffset;
+//					int newLayerIdx = array[0];
+					int newServiceIdx = array[1];
+					//int newServiceIdx = array[1];
 					array = new int[] { newLayerIdx, newServiceIdx };
+					System.out.println("========= for task 2===========");
+					System.out.println("http url:" + httpUrl);
 					nextHttpUrlList.add(getHttpUrl(array));
+					System.out.println("==============================");
+
+					
 				}
 			}
 			task.targetHttpUrl = nextHttpUrlList;
@@ -291,8 +309,23 @@ public class ExecutorProcessor {
 	
 	
 	public String getHttpUrl(int[] index) throws JSONException {
+		
+		
 		JSONObject layer = this.layers.getJSONObject(index[0]);
-		JSONObject service = layer.getJSONArray("services").getJSONObject(index[1]);
+		// Let's print out the layer object
+		System.out.println("---- layer ----");
+		System.out.println(new JSONArray(index));
+		System.out.println("---------------");
+		int serviceIdx = 0;
+		if(index[1] >= 0) {
+			serviceIdx = index[1];
+		}
+		else {
+			serviceIdx = 0;
+		}
+		
+		
+		JSONObject service = layer.getJSONArray("services").getJSONObject(serviceIdx);
 		JSONArray operation = service.getJSONArray("operations");
 		return operation.getJSONObject(0).getString("httpUrl");
 	}

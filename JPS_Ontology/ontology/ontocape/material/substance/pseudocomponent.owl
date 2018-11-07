@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl"
+     xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:substance="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#MolecularWeight_of_Nitrogen__oxides -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#MolecularWeight_of_Nitrogen__oxides">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#MolecularWeight"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Value_of_MolecularWeight_of_Nitrogen__oxides"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#MolecularWeight_of_Unburned_Hydrocarbon -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#MolecularWeight_of_Unburned_Hydrocarbon">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#MolecularWeight"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Value_of_MolecularWeight_of_Unburned_Hydrocarbon"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Nitrogen__oxides -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Nitrogen__oxides">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#PseudoComponent"/>
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#MolecularWeight_of_Nitrogen__oxides"/>
+        <substance:molecularFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NOx</substance:molecularFormula>
+        <substance:name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nitrogen Oxides</substance:name>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Unburned_Hydrocarbon -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Unburned_Hydrocarbon">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#PseudoComponent"/>
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#MolecularWeight_of_Unburned_Hydrocarbon"/>
+        <substance:name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">HC</substance:name>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Value_of_MolecularWeight_of_Nitrogen__oxides -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Value_of_MolecularWeight_of_Nitrogen__oxides">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_kmol"/>
+        <system:isValueOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#MolecularWeight_of_Nitrogen__oxides"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">38.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Value_of_MolecularWeight_of_Unburned_Hydrocarbon -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Value_of_MolecularWeight_of_Unburned_Hydrocarbon">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_kmol"/>
+        <system:isValueOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#MolecularWeight_of_Unburned_Hydrocarbon"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">30.0</system:numericalValue>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+

@@ -252,6 +252,27 @@ public enum MSM {
 
 	},
 	
+	isComposed() {
+
+		@Override
+		public String IRI() {
+			return MSM + this.name();
+		}
+
+		@Override
+		public Resource Node() {
+			Model model = ModelFactory.createDefaultModel();
+			return model.createResource(MSM + this.name());
+		}
+
+		@Override
+		public Property Property() {
+			Model model = ModelFactory.createDefaultModel();
+			return model.createProperty(MSM + this.name());
+		}
+
+	},
+	
 	hasName() {
 
 		@Override

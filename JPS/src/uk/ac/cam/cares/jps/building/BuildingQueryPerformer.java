@@ -43,27 +43,6 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		}
 		
 		return AgentCaller.executeGetWithURLKey(urlKey, AgentCaller.MediaType.TEXT_CSV ,"query", query);
-//		
-//		
-//		logger.debug("city = " + cityIRI);
-//		logger.debug("query = \n" + query);
-//		
-//		String host = KeyValueServer.get("host");
-//		int port = Integer.valueOf(KeyValueServer.get("port"));
-//		
-//		String path = null;
-//		if (cityIRI.equalsIgnoreCase(BERLIN_IRI)) {
-//			path = "/damecoolquestion/berlinbuildings/query";
-//		} else if (cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
-//			path = "/damecoolquestion/thehaguebuildings/query";
-//		}
-//		
-//		URIBuilder builder = new URIBuilder().setScheme("http").setHost(host).setPort(port)
-//				.setPath(path)
-//				.setParameter("query", query);
-//	
-//		String result = executeGet(builder);
-//		return result;
 	}
 	
 	// TODO-AE: move method to JPS BASE (AgentCaller)
@@ -92,9 +71,9 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		// the following query will return for the hague: urn:ogc:def:crs:EPSG::28992
 		// therefore, we will not use the query at the moment
 		String query = 
-				"PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>\r\n" + 
-				"PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>\r\n" + 
-				"PREFIX citygml:<http://www.theworldavatar.com/CityGMLOntology.owl#>\r\n" + 
+				"PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>\r\n" + 
+				"PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>\r\n" + 
+				"PREFIX citygml:<http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>\r\n" + 
 				"SELECT ?type\r\n" + 
 				"WHERE {\r\n" + 
 				"?srs citygml:srsname ?type\r\n" + 
@@ -134,6 +113,10 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		
 		String query = getQueryClosestBuildingsFromRegion(200, lx, ly, ux, uy);		
 		String result = performQuery(cityIRI, query);
+		System.out.println("=============== query result ===============");
+		System.out.println("With query:\n" + query);
+		System.out.println(result);
+		System.out.println("============================================");
 		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		
 		return selectClosestBuilding(plx, ply, buildingLimit, map);
@@ -243,7 +226,9 @@ public class BuildingQueryPerformer implements SparqlConstants {
 	}
 	
 	public SimpleBuildingData performQuerySimpleBuildingData(String cityIRI, List<String> buildingIRIs) {
-		
+		System.out.println("=========================== buildingIRIs ===========================");
+		System.out.println(buildingIRIs);
+		System.out.println("=============================================================");
 		SimpleBuildingData result = new SimpleBuildingData();
 		
 		for (String currentIRI : buildingIRIs) {

@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.theworldavatar.com/ontology/ontocape/model/process_unit_model.owl#" xmlns:behavior="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#" xmlns:chemical_process_system="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#" xmlns:chemical_reactor="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/process_units/chemical_reactor.owl#" xmlns:distillation_system="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/process_units/distillation_system.owl#" xmlns:flash_unit="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/process_units/flash_unit.owl#" xmlns:heat_transfer_unit="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/process_units/heat_transfer_unit.owl#" xmlns:laws="http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#" xmlns:mathematical_model="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:phase_system="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#" xmlns:plant="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#" xmlns:process="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#" xmlns:process_model="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:splitting_unit="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/process_units/splitting_unit.owl#" xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" xmlns:technical_system="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#" xmlns:terms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xml:base="http://www.theworldavatar.com/ontology/ontocape/model/process_unit_model.owl">
+ 
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/process_unit_model.owl">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/laws.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/process_units/distillation_system.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/process_units/chemical_reactor.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/process_units/flash_unit.owl"/>
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology module 'process_unit_models' provides a collection of mathematical models that model the behavioral aspect of ProcessUnits.
+The following classes, relations, and individuals from other ontology modules are used within 'process_unit_model':
+
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Submodel"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/process_units/distillation_system.owl#DistillationSystemBehavior"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#ProcessModel"/&gt;
+
+process_model;#hasModelingPrinciple"/&gt;
+
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/process_units/chemical_reactor.owl#ChemicalReactorBehavior"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/process_units/flash_unit.owl#FlashUnitBehavior"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/process_units/heat_transfer_unit.owl#HeatTransferUnitBehavior"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#EnergyConservationLaw"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#NonEquilibriumLaw"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#MassConservationLaw"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#ReactionKineticsLaw"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#PhaseEquilibriumLaw"/&gt;
+
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#hasModelingPrinciple"&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDirectSubsystem"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#models"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#hasPhenomenon"/&gt;
+
+&lt;behavior:FlowPattern rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ideal_mixing"/&gt;
+&lt;behavior:FlowPattern rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#turbulent_flow"/&gt;
+&lt;process_model:ModelingPrinciple rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#first-principles"/&gt;
+</rdfs:comment>
+<terms:license>Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+</terms:license>
+  </owl:Ontology>
+ 
+  <owl:Class rdf:ID="TrayModel">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Submodel"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="FlashUnitModel"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+ 
+  <owl:Class rdf:ID="TrayByTrayDistillationColumnModel">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#models"/>
+            <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/process_units/distillation_system.owl#DistillationSystemBehavior"/>
+          </owl:Restriction>
+          <owl:Class rdf:ID="ProcessUnitModel"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#first-principles"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#hasModelingPrinciple"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#MassConservationLaw"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDirectSubsystem"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#EnergyConservationLaw"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDirectSubsystem"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/process_unit_model.owl#ProcessUnitModel">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#models"/>
+          </owl:Restriction>
+          <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#ProcessModel"/>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#models"/>
+            <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="CSTRModel">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#MassConservationLaw"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDirectSubsystem"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#hasModelingPrinciple"/>
+        </owl:onProperty>
+        <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#first-principles"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#ReactionKineticsLaw"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDirectSubsystem"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDirectSubsystem"/>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#EnergyConservationLaw"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#models"/>
+            <owl:allValuesFrom>
+              <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                  <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/process_units/chemical_reactor.owl#ChemicalReactorBehavior"/>
+                  <owl:Restriction>
+                    <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#hasPhenomenon"/>
+                    <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ideal_mixing"/>
+                  </owl:Restriction>
+                </owl:intersectionOf>
+              </owl:Class>
+            </owl:allValuesFrom>
+          </owl:Restriction>
+          <owl:Class rdf:ID="ChemicalReactorModel"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/process_unit_model.owl#ChemicalReactorModel">
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/process_units/chemical_reactor.owl#ChemicalReactorBehavior"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#models"/>
+      </owl:Restriction>
+    </owl:equivalentClass>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_unit_model.owl#ProcessUnitModel"/>
+  </owl:Class>
+  
+  <owl:Class rdf:ID="HeatTransferUnitModel">
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/process_units/heat_transfer_unit.owl#HeatTransferUnitBehavior"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#models"/>
+      </owl:Restriction>
+    </owl:equivalentClass>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_unit_model.owl#ProcessUnitModel"/>
+  </owl:Class>
+  
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/process_unit_model.owl#FlashUnitModel">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDirectSubsystem"/>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#MassConservationLaw"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#first-principles"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#hasModelingPrinciple"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#PhaseEquilibriumLaw"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDirectSubsystem"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#EnergyConservationLaw"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDirectSubsystem"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#models"/>
+            <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/process_units/flash_unit.owl#FlashUnitBehavior"/>
+          </owl:Restriction>
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/process_unit_model.owl#ProcessUnitModel"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <owl:disjointWith>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#NonEquilibriumLaw"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDirectSubsystem"/>
+      </owl:Restriction>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="PFRModel">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Model of an ideal Plug Flow Reactor</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:allValuesFrom>
+              <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                  <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/process_units/chemical_reactor.owl#ChemicalReactorBehavior"/>
+                  <owl:Restriction>
+                    <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#hasPhenomenon"/>
+                    <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#turbulent_flow"/>
+                  </owl:Restriction>
+                </owl:intersectionOf>
+              </owl:Class>
+            </owl:allValuesFrom>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#models"/>
+          </owl:Restriction>
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/process_unit_model.owl#ChemicalReactorModel"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#EnergyConservationLaw"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDirectSubsystem"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDirectSubsystem"/>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#ReactionKineticsLaw"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#MassConservationLaw"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDirectSubsystem"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#hasModelingPrinciple"/>
+        </owl:onProperty>
+        <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#first-principles"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:FunctionalProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#hasModelingPrinciple">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+</rdf:RDF>

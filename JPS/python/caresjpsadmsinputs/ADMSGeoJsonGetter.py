@@ -21,9 +21,9 @@ def sparqlBuildingCoordinates(building, sparqlEndPoint):
     
     queryString = '''
 
-            PREFIX p3: <http://www.theworldavatar.com/CityGMLOntology.owl#>
-            PREFIX j1: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-            PREFIX j2: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+            PREFIX p3: <http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>
+            PREFIX j1: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+            PREFIX j2: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
 
             SELECT ?polygon ?coordinates ?xval ?yval ?zval
             WHERE
@@ -80,8 +80,8 @@ def sparqlBuildingCoordinates(building, sparqlEndPoint):
 def sparqlBuildingHeights(building, sparqlEndPoint):
     
     queryString = """
-        PREFIX p3: <http://www.theworldavatar.com/CityGMLOntology.owl#>
-        PREFIX j2: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+        PREFIX p3: <http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>
+        PREFIX j2: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
 
         SELECT ?numericalValue
         WHERE
@@ -186,6 +186,8 @@ def getGeoJSON(listBuildingCoordinates, listBuildingHeights):
 def return_buildings():
     
     listOfIRIs = sys.argv[1].strip().replace('"','').replace("'",'')[1:-1].split(',')
+    with open('./gson_log.txt','w') as f:
+        f.write(str(listOfIRIs))	
     cityiri = sys.argv[2]
     with open('./log.txt','w') as file:
         file.write(str(listOfIRIs))

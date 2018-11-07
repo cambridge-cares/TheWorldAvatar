@@ -43,19 +43,23 @@ public class GetPlantsInRegion extends HttpServlet {
 		String value = request.getParameter("value");
 		JSONObject output = null;
 		try {
-			output = JSONFlattenTool.flattenRegion(new JSONObject(value));
+			output = JSONFlattenTool.flattenRegion(new JSONObject(value),true);
 		} catch (JSONException e2) {
  			e2.printStackTrace();
 		}
  
+		
+		System.out.println("================ output from plants ================");
+		System.out.println(output.toString());
+		System.out.println("====================================================");
  		
 		String PlantSelectionQuery = 
 				"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" + 
-				"PREFIX space_and_time_extended:<http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>" + 
-				"PREFIX system: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>" + 
+				"PREFIX space_and_time_extended:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>" + 
+				"PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>" + 
 				"SELECT ?plant \n" + 
 				"WHERE {" + 
-				"  ?plant rdf:type <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Plant> ." + 
+				"  ?plant rdf:type <http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant> ." + 
 				"  ?plant space_and_time_extended:hasGISCoordinateSystem ?coor ." + 
 				"  ?coor space_and_time_extended:hasProjectedCoordinate_x ?x ." + 
 				"  ?x system:hasValue ?tvx ." + 
@@ -104,7 +108,7 @@ public class GetPlantsInRegion extends HttpServlet {
 				}
 				else {
 					// This is Den Hague 
-					plants.add("http://www.theworldavatar.com/Plant-001.owl#Plant-001");
+					plants.add("http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl#Plant-001");
 				}
 			}
  

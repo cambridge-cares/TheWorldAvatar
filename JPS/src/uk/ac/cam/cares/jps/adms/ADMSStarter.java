@@ -25,6 +25,7 @@ public class ADMSStarter extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		System.out.println("ADMS Starter is called");
 		String targetFolder = request.getParameter("targetFolder");
 		JSONObject result = new JSONObject();
 		try {
@@ -34,6 +35,8 @@ public class ADMSStarter extends HttpServlet {
 			e.printStackTrace();
 		}
 		if(request.getServerName().contains("localhost")) {
+			//below line is applicable only for Kevin so that the local adms could run and show the local output file
+			//String res = startADMS(targetFolder);
 			response.getWriter().write(result.toString());
 		}
 		else {

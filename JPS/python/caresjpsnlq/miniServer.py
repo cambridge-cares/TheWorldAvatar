@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, current_app
 import time
 import json
 
@@ -21,4 +21,6 @@ def query_a_sentence(sentence='The answer is 42'):
 
 @app.route('/main-query/')
 def show():
-    return render_template('index.html')
+    return current_app.send_static_file('index.html')
+
+

@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.powerplant;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -29,7 +30,7 @@ public class PowerPlantWrapper extends HttpServlet {
   
 
 		try {
-			response.getWriter().append("http://www.theworldavatar.com/Plant-001.owl") ;
+			response.getWriter().append("http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl") ;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

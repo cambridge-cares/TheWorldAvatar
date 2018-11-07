@@ -1,0 +1,188 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#hasAsset -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#hasAsset">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#BlockchainAssets"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#hasEmission -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#hasEmission">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#EmissionProduction"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#hasPlanCost -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#hasPlanCost">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#Costs"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#hasNodeAddress -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#hasNodeAddress">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Specify node&apos;s public address in a blockchain environment</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#Costs -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#Costs">
+        <rdfs:comment>Costs also describes cost approximation of any proposal made to alter plant production process</rdfs:comment>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#BlockchainAssets -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#BlockchainAssets">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+        <rdfs:comment>Describes assets owned by the plant in a blockchain environment</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#BlockchainTradingSystem -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#BlockchainTradingSystem">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#hasAsset"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#BlockchainAssets"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#hasEmission"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#EmissionProduction"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#TimePeriod"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#EmissionProduction -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#EmissionProduction">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+        <rdfs:comment>Describes total (regulated) emission produce by the plant</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#EmissionReduction -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#EmissionReduction">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#EmissionProduction"/>
+        <rdfs:comment>Describes approximation of emission reduced as a result of alteration proposal</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#EmissionReductionPlan -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#EmissionReductionPlan">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#hasEmission"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#EmissionReduction"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#hasPlanCost"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#Costs"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#EmissionTradingScheme -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#EmissionTradingScheme">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#BlockchainTradingSystem"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#EmissionReductionPlan"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
+

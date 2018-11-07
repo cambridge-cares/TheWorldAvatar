@@ -1,9 +1,13 @@
 package uk.ac.cam.cares.jps.composition.test;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -19,7 +23,7 @@ public class ServiceModelTest {
 	public Service testService;
 
 	@Test
-	public void test() throws URISyntaxException, IOException {
+	public void test() throws URISyntaxException, IOException, JSONException {
 		// Use Jackson library to serialize the Java object messageContent to JSON
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializationInclusion(Include.NON_NULL);
@@ -38,13 +42,9 @@ public class ServiceModelTest {
 		// =======================================================================================
 
 		String MessagePartInJSON = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(messagePartDate);
-		System.out.println("\n================================================\n");
-		System.out.println("MessagePartInJSON: ");
-		System.out.println(MessagePartInJSON);
+		assertEquals(new JSONObject(MessagePartInJSON).getString("type"), "http://www.theworldavatar.com/Date.owl#Date");
 
 		mapper.readValue(MessagePartInJSON, MessagePart.class);
-		System.out.println("MessagePartConvertedBack");
-
 		MessageContent messageContent_input = new MessageContent(
 				new URI("http://www.theworldavatar.com/weatherInXYZ123"));
 		messageContent_input.addMandatoryPart(messagePartCity);
@@ -63,9 +63,7 @@ public class ServiceModelTest {
 		messageContent_output.addMandatoryPart(messagePartWinddirection);
 
 		String MessageContentInJSON = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(messageContent_output);
-		System.out.println("\n================================================\n");
-		System.out.println("MessageContentInJSON: ");
-		System.out.println(MessageContentInJSON);
+		assertEquals(new JSONObject(MessageContentInJSON).getBoolean("array"),false);
 		mapper.readValue(MessageContentInJSON, MessageContent.class);
 
 		URI uri_operation = new URI("http://www.theworldavatar.com/someRandomOperation");
@@ -74,11 +72,10 @@ public class ServiceModelTest {
 		operation.addOutput(messageContent_output);
 
 		String OperationInJSON = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(operation);
-		System.out.println("\n================================================\n");
-		System.out.println("OperationInJSON: ");
-		System.out.println(OperationInJSON);
+		assertEquals(new JSONObject(OperationInJSON).getJSONArray("inputs").length(),1);
 		Operation OperationConvertedBack = mapper.readValue(OperationInJSON, Operation.class);
-		System.out.println(OperationConvertedBack.getHttpUrl());
+		assertEquals(OperationConvertedBack.getHttpUrl(),"http://www.theworldavatar.com/ADMS/someRandomOperation");  
+
 
 		Service service = new Service(new URI("http://www.theworldavatar.com/weatherServiceXYZ123"));
 		service.addOperation(operation);
@@ -95,13 +92,10 @@ public class ServiceModelTest {
 		service.addOperation(operation2);
 
 		String ServiceInJSON = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(service);
-		System.out.println("\n================================================\n");
-		System.out.println("ServiceInJSON: ");
-		System.out.println(ServiceInJSON);
+		assertEquals(new JSONObject(ServiceInJSON).getJSONArray("operations").length(),2);
 		Service ServiceConvertedBack = mapper.readValue(ServiceInJSON, Service.class);
-		System.out.println("\n================================================\n");
-		System.out.println("All Outputs of Service Converted Back: ");
-		System.out.println(ServiceConvertedBack.getAllOutputs());
+		assertEquals(ServiceConvertedBack.getAllOutputs().get(0).getType().toASCIIString(),
+				"http://www.theworldavatar.com/Weather.owl#Temperature");
 
 	}
 

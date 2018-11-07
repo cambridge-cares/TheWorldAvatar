@@ -1,0 +1,993 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#handling_unit -->
+
+    <owl:AnnotationProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#handling_unit">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#comment"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Connects_floors -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Connects_floors">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Stairwell"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Floor"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Connects_rooms -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Connects_rooms">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Stairwell"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Room"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Exits_to -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Exits_to">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Door"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Environment"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#containsBuilding -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#containsBuilding">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Campus"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Building"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#hasCeiling -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#hasCeiling">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Room"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Ceiling"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#hasExits -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#hasExits">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Room"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Door"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#hasFixtures -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#hasFixtures">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Room"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Fixture"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#hasInteriorWalls -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#hasInteriorWalls">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Floor"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#InteriorWall"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#hasRoofFixtures -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#hasRoofFixtures">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Roof"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#RoofFixture"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#hasRooms -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#hasRooms">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Floor"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Room"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#hasSignificance -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#hasSignificance">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Parameter"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ParameterSignificance"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#hasType -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#hasType">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#isBuildingElementOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#isBuildingElementOf">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingElement"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Building"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#isEquipmentOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#isEquipmentOf">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Equipment"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Building"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Campus"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#isParameterOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#isParameterOf">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Parameter"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Building"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Equipment"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#AbstractBuildingType -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#AbstractBuildingType">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingSystem"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#AHU -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#AHU">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#HVAC"/>
+        <rdfs:comment>Air handling unit</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#AestheticMaterial -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#AestheticMaterial">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#MaterialParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#AirFlow -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#AirFlow">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#InteriorEnvironmentalParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#AnalysisMethodParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#AnalysisMethodParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Parameter"/>
+        <rdfs:comment>Parameters specific to certain design methods described in the building information model</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#AnalysisPhaseParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#AnalysisPhaseParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Parameter"/>
+        <rdfs:comment>Parameters that are of importance at building design time</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#AnalysisSignificance -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#AnalysisSignificance">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ParameterSignificance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Building -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Building">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingSystem"/>
+        <rdfs:comment>Building concept as defined in gbXML</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingElement -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingElement">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingSystem"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#isBuildingElementOf"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Building"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>Describes general concepts to model a building</rdfs:comment>
+        <rdfs:comment>this class was known as &quot;BuildingPart&quot; in prior versions of the ontology</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingGroupEquipment -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingGroupEquipment">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Equipment"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Parameter"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#isParameterOf"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Building"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>Parameters describing the state and properties of a building</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingPieceEquipment -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingPieceEquipment">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Equipment"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingSystem -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingSystem">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#CalculationParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#CalculationParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Parameter"/>
+        <rdfs:comment>Contains parameters from the model used to calculate performance, demand or cost of equipment</rdfs:comment>
+        <rdfs:comment>this class was known as &quot;AlgebraricParameter&quot; in prior versions of the ontology</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Campus -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Campus">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingSystem"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#containsBuilding"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Building"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>Campus concept as defined in gbXML</rdfs:comment>
+        <rdfs:comment>The Campus element should be used as the base for all physical objects. On a campus, place one or more buildings.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Ceiling -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Ceiling">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#InteriorSurface"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ComplexStructure -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ComplexStructure">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#MaterialParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ConceptualBuildingElement -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ConceptualBuildingElement">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingElement"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ConstructionMaterial -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ConstructionMaterial">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#MaterialParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ConstructionPhaseParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ConstructionPhaseParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Parameter"/>
+        <rdfs:comment>Parameters that are of importance at building construction time</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ConstructionSignificance -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ConstructionSignificance">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ParameterSignificance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Dome -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Dome">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#SlopedRoof"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Door -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Door">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Opening"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Driveway -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Driveway">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Paved"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#EAF -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#EAF">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#HVAC"/>
+        <rdfs:comment>Exhaust Air Fan</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ERS -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ERS">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#HVAC"/>
+        <rdfs:comment>Other name of High Plume Fan(HPF), a device consisting of fan and bypass damper to remove hazardous fumes from laboratory</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#EntryPathway -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#EntryPathway">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Environment"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Environment -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Environment">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingSystem"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#EnvironmentalParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#EnvironmentalParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingParameter"/>
+        <rdfs:comment>Parameters that describe the state of the environment at design as well as operation time.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Equipment -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Equipment">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingSystem"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#isEquipmentOf"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Building"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Campus"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>Contains equipment that is specified in the model such as HVAC or Lighting equipment.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#EquipmentParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#EquipmentParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Parameter"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#isParameterOf"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Equipment"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>Parameters concerning equipment design and simulation as well as operation</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ExteriorEnvironmentalParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ExteriorEnvironmentalParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#EnvironmentalParameter"/>
+        <rdfs:comment>Parameters that describe the state of the outdoor environment. Outdoor environmental parameters are mainly used at design-time, while some of them may also be used at operation time.</rdfs:comment>
+        <rdfs:comment>this class was known as &quot;ExteriorParameter&quot; in prior versions of the ontology</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ExteriorSurface -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ExteriorSurface">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Surface"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ExteriorWall -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ExteriorWall">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ExteriorSurface"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#FCU -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#FCU">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#HVAC"/>
+        <rdfs:comment>fan coil unit</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Fence -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Fence">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#PhysicalBuildingElement"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#FileParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#FileParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Parameter"/>
+        <rdfs:comment>Auxiliary parameters giving information about the transformed document itself (e.g. creator, used program, etc.)</rdfs:comment>
+        <rdfs:comment>similar as metadata</rdfs:comment>
+        <rdfs:comment>this class was known as &quot;AuxiliaryParameter&quot; in prior versions of the ontology</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Fixture -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Fixture">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#PhysicalBuildingElement"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#FlatRoof -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#FlatRoof">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Roof"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Floor -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Floor">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#InteriorSurface"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Gable -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Gable">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ExteriorWall"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Garage -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Garage">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Room"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Generator -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Generator">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#RoofFixture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#GeometricParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#GeometricParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingParameter"/>
+        <rdfs:comment>Parameter describing the geometry of elements described in the building information model</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#GlassWall -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#GlassWall">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ExteriorWall"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#HVAC -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#HVAC">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingGroupEquipment"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#HVACSystemParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#HVACSystemParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#EquipmentParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#IdentifierElement -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#IdentifierElement">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingSystem"/>
+        <rdfs:comment>Groups identifier elements</rdfs:comment>
+        <rdfs:comment>this class was known as &quot;gbXMLId&quot; in prior versions of the ontology</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#InteriorEnvironmentalParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#InteriorEnvironmentalParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#EnvironmentalParameter"/>
+        <rdfs:comment>Parameters that describe the state of the indoor environment</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#InteriorSurface -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#InteriorSurface">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Surface"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#InteriorWall -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#InteriorWall">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#InteriorSurface"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Lighting -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Lighting">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingGroupEquipment"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#LoadingZone -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#LoadingZone">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Paved"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#MAU -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#MAU">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#HVAC"/>
+        <rdfs:comment>Makeup Air Unit</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#MaterialParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#MaterialParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#StructureParameter"/>
+        <rdfs:comment>Parameters describing the material of a building</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#NaturalMaterial -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#NaturalMaterial">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#MaterialParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Opening -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Opening">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#PhysicalBuildingElement"/>
+        <rdfs:comment>Opening concept retrieved from gbXML</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#OperationPhaseParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#OperationPhaseParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Parameter"/>
+        <rdfs:comment>Parameters that are of importance at building operation time</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#OperationSignificance -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#OperationSignificance">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ParameterSignificance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Parameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Parameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#hasSignificance"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ParameterSignificance"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ParameterSignificance -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ParameterSignificance">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:comment>Describes different stages of a building lifecycle for which a parameter is significant</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ParkingGarage -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ParkingGarage">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Paved"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ParkingLot -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ParkingLot">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Paved"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Paved -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Paved">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Environment"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#PeopleNumber -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#PeopleNumber">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#InteriorEnvironmentalParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#PhysicalBuildingElement -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#PhysicalBuildingElement">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingElement"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#PitchedRoof -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#PitchedRoof">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Roof"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#PlayingField -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#PlayingField">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Environment"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#PositionParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#PositionParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingParameter"/>
+        <rdfs:comment>Parameter describing the global position of a building or building compound</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#RelativeHumidity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#RelativeHumidity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#InteriorEnvironmentalParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Road -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Road">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Paved"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Roof -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Roof">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ExteriorSurface"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#RoofFixture -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#RoofFixture">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#PhysicalBuildingElement"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Room -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Room">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ConceptualBuildingElement"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#RoomDifferentialPressure -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#RoomDifferentialPressure">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#InteriorEnvironmentalParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#RoomTemperature -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#RoomTemperature">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#InteriorEnvironmentalParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ShadeControlSimulationParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ShadeControlSimulationParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#EquipmentParameter"/>
+        <rdfs:comment>equipment parameters specific for shade control simulation</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#SlopedRoof -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#SlopedRoof">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Roof"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Spire -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Spire">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#RoofFixture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Stairwell -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Stairwell">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#PhysicalBuildingElement"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Connects_floors"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Connects_rooms"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Room"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#StructureParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#StructureParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingParameter"/>
+        <rdfs:comment>Parameters concerning the structure of a building</rdfs:comment>
+        <rdfs:comment>this class was known as &quot;ConstructionParameter&quot; in prior versions of the ontology</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Surface -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Surface">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#PhysicalBuildingElement"/>
+        <rdfs:comment>Surface concept as defined in gbXML</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#TemporalParameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#TemporalParameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Parameter"/>
+        <rdfs:comment>Parameters of the temporal class are just used at the design time of a building as in operation time the time-ont ontology is used.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Tower -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Tower">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#RoofFixture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Window -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Window">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Opening"/>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+

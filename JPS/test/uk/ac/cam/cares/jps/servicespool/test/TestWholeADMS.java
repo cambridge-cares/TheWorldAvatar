@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.servicespool.test;
 
-import static org.junit.Assert.*;
-
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -18,11 +16,10 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.riot.Lang;
-
 import org.junit.Test;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -65,7 +62,7 @@ public class TestWholeADMS {
 
 		Model cityIRI = ModelFactory.createDefaultModel();
 		Resource myCity = cityIRI.createResource("http://dbpedia.org/resource/The_Hague");
-		Resource city = cityIRI.createResource("http://www.theworldavatar.com/OntoEIP/supporting_concepts/space_and_time_v1.owl#City");
+		Resource city = cityIRI.createResource("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time_v1.owl#City");
 		myCity.addProperty(RDF.type,city);
 	
 		//================================================================================================
