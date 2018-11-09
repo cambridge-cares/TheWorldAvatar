@@ -6,18 +6,13 @@ from datetime import datetime
 
 from caresjpsutil import returnExceptionToJava, returnResultsToJava
 from caresjpsutil import PythonLogger
+from sparql_wrapper import sparqlQueryRead
 
 class PowerplantSPARQLSync:
 
     def __init__(self, powerplant):
         self.powerplantIRI = powerplant
-        self.graph = rdflib.Graph()
-        self.graph.parse(self.powerplantIRI)
-
-#         self.powerplantIRI = powerplant
-#         self.powerplantName = powerplant[powerplant.rfind('#') + 1:]
-#         self.graph = rdflib.Graph()
-#         self.graph.parse("C:/TOMCAT/webapps/ROOT/kb/powerplants/{}.owl".format(self.powerplantName))
+        self.graph = powerplant
 
         self.generationTechnologyMap = {
             'Cogeneration': 'cogeneration',
@@ -50,20 +45,22 @@ class PowerplantSPARQLSync:
             PREFIX j8: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
             PREFIX j5: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
             PREFIX j7: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#>
-
-            SELECT ?country ?capacityValue ?year ?primaryFuel ?genTech ?annualGenValue ?genCostValue ?emissionRateValue
+    
+            SELECT ?country ?capacityValue ?year ?primaryFuel ?genTech ?annualGenValue ?genCostValue ?emissionRateValue ?emissionRateValIRI
             WHERE
+            {{ 
+                GRAPH <{1}>
             {{
                 <{0}> j1:hasAddress ?country .
-
+    
                 <{0}> j6:designCapacity ?capacityIRI.
                     ?capacityIRI j1:hasValue ?capacity.
                         ?capacity j1:numericalValue ?capacityValue.
-
+    
                 <{0}> j8:hasYearOfBuilt ?yearOfBuilt.
-                    ?yearOfBuilt j1:hasValue ?yearValue.
-                        ?yearValue j1:numericalValue ?year.
-
+                            ?yearOfBuilt j1:hasValue ?yearValue.
+                                ?yearValue j1:numericalValue ?year.
+    
                 <{0}> j5:realizes ?generation.
                     ?generation j8:consumesPrimaryFuel ?primaryFuel.
                     ?generation j8:usesGenerationTechnology ?genTech.
@@ -77,39 +74,40 @@ class PowerplantSPARQLSync:
                         ?emissionRateIRI j1:hasValue ?emissionRateValIRI.
                             ?emissionRateValIRI j1:numericalValue ?emissionRateValue
             }}
-        """.format(self.powerplantIRI)
-
-        queryResults = self.graph.query(queryString).bindings
-
+            }}
+        """.format(self.powerplantIRI, self.graph)
+    
+        queryResults = sparqlQueryRead(queryString)['results']['bindings']
+    
         # get country
-        country = re.search(r'/([a-zA-Z_]+)$', str(queryResults[0]['country'])).group(1)
-
+        country = re.search(r'/([a-zA-Z_]+)$', str(queryResults[0]['country']['value'])).group(1)
+    
         # get capacity value
-        capacityValue = int(queryResults[0]['capacityValue'].toPython())
-
+        capacityValue = int(queryResults[0]['capacityValue']['value'])
+    
         # get year
-        year = int(queryResults[0]['year'].toPython())
-
+        year = int(queryResults[0]['year']['value'])
+    
         # get primary fuel
-        primaryFuel = re.search(r'#([a-zA-Z]+)$', str(queryResults[0]['primaryFuel'])).group(1).lower()
+        primaryFuel = re.search(r'#([a-zA-Z]+)$', str(queryResults[0]['primaryFuel']['value'])).group(1).lower()
         if primaryFuel == "naturalgas":
             primaryFuel = "natural_gas"
         elif primaryFuel == "coalbiomass":
             primaryFuel = "coal_biomass"
-
+    
         # get generation
-        genTechRegexResult = re.search(r'#([a-zA-Z]+)$', str(queryResults[0]['genTech'])).group(1)
+        genTechRegexResult = re.search(r'#([a-zA-Z]+)$', str(queryResults[0]['genTech']['value'])).group(1)
         genTech = self.generationTechnologyMap[genTechRegexResult]
-
+    
         # get output_MWh (a.k.a. annual generation in knowledge base)
-        annualGenValue = float(queryResults[0]['annualGenValue'].toPython())
-
+        annualGenValue = float(queryResults[0]['annualGenValue']['value'])
+    
         # fuel_used
         fuelUsed = self.primaryFuelToFuelUsedMap[primaryFuel]
-        
+    
         # emission_rate
-        emissionRate = float(queryResults[0]['emissionRateValue'].toPython())
-
+        emissionRate = float(queryResults[0]['emissionRateValue']['value'])
+    
         dict = {}
         dict['country'] = country
         dict['capacity_MW'] = capacityValue
@@ -119,7 +117,7 @@ class PowerplantSPARQLSync:
         dict['output_MWh'] = annualGenValue
         dict['fuel_used'] = fuelUsed
         dict['emission_rate'] = emissionRate
-
+        
         return dict
     
 if __name__ == "__main__":
@@ -127,11 +125,15 @@ if __name__ == "__main__":
     pythonLogger.postInfoToLogServer('start of powerplant_sparql_read.py')
     
     try:
+#         start_time = time.time()
+#         plantIRI = "http://www.theworldavatar.com/kb/powerplants/Norocholai_Laskvijaya_Coal_Power_Plant_Sri_Lanka.owl#Norocholai_Laskvijaya_Coal_Power_Plant_Sri_Lanka"
         plantIRI = sys.argv[1]
         pSPARQL = PowerplantSPARQLSync(plantIRI)
         powerplantInfo = pSPARQL.getPowerplantInfo()
         returnResultsToJava(json.dumps(powerplantInfo))
+#         print('T')
         pythonLogger.postInfoToLogServer('end of powerplant_sparql_read.py')
+#         print("{} seconds".format(time.time() - start_time))
     except Exception as e:
         returnExceptionToJava(e)
         pythonLogger.postInfoToLogServer('end of powerplant_sparql_read.py')

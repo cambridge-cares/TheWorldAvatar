@@ -25,9 +25,6 @@ public class ExecutorProcessor {
 	
 	public ExecutorProcessor(JSONObject compositionResult, ArrayList<String> eliminationList) throws Exception {
 		this.compositeService = compositionResult;
-		System.out.println("================== composition ===================");
-		System.out.println(compositionResult);
-		System.out.println("==================================================");
 		this.layers = this.compositeService.getJSONArray("layers");
 		this.taskList = new ArrayList<Task>();
 		this.eliminationList = eliminationList;

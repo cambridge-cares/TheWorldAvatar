@@ -62,12 +62,10 @@ public class AgentWebAPI extends HttpServlet {
 
 		ServiceCompositionEngine engine = new ServiceCompositionEngine(compositeAgent, hostPort);
 		
-		if(!engine.start()) {
+		if(!engine.start()) { // If the composite service is unsolvable, the start() function would return false. 
 			return null;
 		}
 		 
-		
-		
 		
 		Graph graph = engine.getGraph();
 		ArrayList<Service> serviceEliminationList = OptimalPathSearcher.getAllServicesToBeDeleted(graph);

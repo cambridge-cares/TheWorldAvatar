@@ -66,6 +66,10 @@ public class ADMSAgent extends HttpServlet {
 					.setPath("/JPS/GetBuildingDataForSimulation")
 					.setParameter("value", bundle.toString());
 			String buildingsInString = executeGet(builder);	 	
+			System.out.println("=========================== buildingsInString ===========================");
+			System.out.println(buildingsInString);
+			System.out.println("=============================================================");
+			
 			//==============================================================================
 			
 			writeAPLFile(buildingsInString,plantIRI, region);

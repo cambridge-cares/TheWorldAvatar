@@ -113,6 +113,10 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		
 		String query = getQueryClosestBuildingsFromRegion(200, lx, ly, ux, uy);		
 		String result = performQuery(cityIRI, query);
+		System.out.println("=============== query result ===============");
+		System.out.println("With query:\n" + query);
+		System.out.println(result);
+		System.out.println("============================================");
 		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		
 		return selectClosestBuilding(plx, ply, buildingLimit, map);
@@ -222,7 +226,9 @@ public class BuildingQueryPerformer implements SparqlConstants {
 	}
 	
 	public SimpleBuildingData performQuerySimpleBuildingData(String cityIRI, List<String> buildingIRIs) {
-		
+		System.out.println("=========================== buildingIRIs ===========================");
+		System.out.println(buildingIRIs);
+		System.out.println("=============================================================");
 		SimpleBuildingData result = new SimpleBuildingData();
 		
 		for (String currentIRI : buildingIRIs) {
