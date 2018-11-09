@@ -40,28 +40,33 @@ public class KeyValueMap {
 	 */
 	private void init() {
 		
-		String path = AgentLocator.getCurrentJpsAppDirectory(this);
-		boolean isJpsBaseDir = path.endsWith("/JPS_BASE") || path.endsWith("\\JPS_BASE");
-		if (! isJpsBaseDir) {
-			String message = "The current path is not withing JPS_BASE directory, path=" + path;
-			LogServer.error(this, message);
-			throw new JPSRuntimeException(message);
-		}
-				
+//		String path = AgentLocator.getCurrentJpsAppDirectory(this);
+//		boolean isJpsBaseDir = path.endsWith("/JPS_BASE") || path.endsWith("\\JPS_BASE");
+//		if (! isJpsBaseDir) {
+//			String message = "The current path is not within JPS_BASE directory, path=" + path;
+//			LogServer.error(this, message);
+//			throw new JPSRuntimeException(message);
+//		}
+		
+		String path = AgentLocator.getJPSBaseDirectory();
+		
 		try {
-			loadProperties(path);
+			loadProperties(path + "/conf/jps.properties");
+			if (! (path.startsWith("C:/TOMCAT/webapps/JPS_BASE") || path.startsWith("C:\\TOMCAT\\webapps\\JPS_BASE")))  {
+				// if started on local server then overwrite values from jps.properties
+				loadProperties(path + "/conf/jpstest.properties");
+			}
 		} catch (IOException exc) {
 			LogServer.error(this, exc);
 			throw new JPSRuntimeException(exc.getMessage(), exc);
 		}
 	}
 	
-	private void loadProperties(String jpsBaseDirectory) throws IOException {
+	private void loadProperties(String propertyFile) throws IOException {
 	    
-		String configPath = jpsBaseDirectory + "/conf/jps.properties";
-		LogServer.info(this, "loading key-value pairs from " + configPath);
+		LogServer.info(this, "loading key-value pairs from " + propertyFile);
 		
-		FileInputStream inputStream = new FileInputStream(configPath);
+		FileInputStream inputStream = new FileInputStream(propertyFile);
 		Properties props = new Properties();
 		props.load(inputStream);	
 		

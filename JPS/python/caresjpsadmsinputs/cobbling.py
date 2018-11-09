@@ -13,7 +13,8 @@ def ACSV(address, output, headers):
             writer.writerow({headers[x]: output[x] for x in range(len(headers))})
 
 			
-def run(weather_data = r"weather_data.csv",meteo_data = r"test.met"):
+#def run(weather_data = r"weather_data.csv",meteo_data = r"test.met"):
+def run(weather_data = r"weather_data.csv",meteo_data = "C://JPS_DATA/workingdir/JPS/ADMS/test.met"):
 	# working_dir = os.getcwd()
 	# move to working directory
 	# os.chdir(working_dir)

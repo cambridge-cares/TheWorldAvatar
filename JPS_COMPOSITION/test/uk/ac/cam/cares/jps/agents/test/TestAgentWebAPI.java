@@ -19,6 +19,7 @@ import uk.ac.cam.cares.jps.agents.ontology.ServiceBuilder;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.KeyValueServer;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 public class TestAgentWebAPI extends TestCase {
@@ -101,8 +102,13 @@ public class TestAgentWebAPI extends TestCase {
 		
 		System.out.println("jsonInput=\n" + jsonInput);
 		
-		String result = new AgentWebAPI().composeAndExecute(composedAgent, jsonInput.toString());
-		System.out.println("result=\n" + result);
+		try {
+			String result = new AgentWebAPI().composeAndExecute(composedAgent, jsonInput.toString());
+			System.out.println("result=\n" + result);
+			throw new RuntimeException("expected an error");
+		} catch (JPSRuntimeException exc) {
+			assertTrue(exc.getMessage().startsWith("no composition result"));
+		}
 	}
 	
 	public void testComposeAndExecuteForTheHagueAgentCallWithoutWasteProduct() throws JsonParseException, JsonMappingException, JSONException, URISyntaxException, IOException, Exception {

@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.log.LogServer;
 
 public class AgentLocator {
 
@@ -27,8 +28,8 @@ public class AgentLocator {
 			"/WEB-INF/classes/", "\\WEB-INF/classes/", "/bin/", "\\bin\\", "/build/classes/", "\\build\\classes\\"
 	};
 	private String jpsBaseDirectory = null;
-	private Properties jpsProps = null;
-	private Properties jpsTestProps = null;
+//	private Properties jpsProps = null;
+//	private Properties jpsTestProps = null;
 	private String url = null;
 
 	private AgentLocator() {
@@ -63,43 +64,67 @@ public class AgentLocator {
 		
 		jpsBaseDirectory = path;
 		logger.info("JPS_BASE directory = " + jpsBaseDirectory);
+			
+//		if (isJpsBaseDir) {
+//			try {
+//				if (path.startsWith("C:/TOMCAT/webapps/JPS_BASE") || path.startsWith("C:\\TOMCAT\\webapps\\JPS_BASE"))  {
+//					loadProperties(path + "/conf/jps.properties");
+//				} else {
+//					loadProperties(path + "/conf/jpstest.properties");
+//				}
+//			} catch (IOException exc) {
+//				LogServer.error(this, exc);
+//				throw new JPSRuntimeException(exc.getMessage(), exc);
+//			}
+//		}
 		
-		try {
-			jpsProps = loadProperties("jps.properties");
-			if (isJpsBaseDir) {
-				logProperties(jpsProps);
-			}
-			// else no need to log again
-		} catch (IOException exc) {
-			logger.error(exc.getMessage(), exc);
-		}
-		
-		try {
-			jpsTestProps = loadProperties("jpstest.properties");
-			if (isJpsBaseDir) {
-				logProperties(jpsTestProps);
-			}
-			// else no need to log again
-		} catch (IOException exc) {
-			// this is no error. jpstest.properties should not be available on production system.
-			logger.info("jpstest.properties not found");
-		}
+//		try {
+//			jpsProps = loadProperties("jps.properties");
+//			if (isJpsBaseDir) {
+//				logProperties(jpsProps);
+//			}
+//			// else no need to log again
+//		} catch (IOException exc) {
+//			logger.error(exc.getMessage(), exc);
+//		}
+//		
+//		try {
+//			jpsTestProps = loadProperties("jpstest.properties");
+//			if (isJpsBaseDir) {
+//				logProperties(jpsTestProps);
+//			}
+//			// else no need to log again
+//		} catch (IOException exc) {
+//			// this is no error. jpstest.properties should not be available on production system.
+//			logger.info("jpstest.properties not found");
+//		}
 
 		url = "http://" + getProperty("host") + ":" + getProperty("port");
 		logger.info("created url from properties: " + url);
 	}
 	
-	private Properties loadProperties(String fileName) throws IOException {
-	      
-		String configPath = getJPSBaseDirectory() + "/conf/" + fileName;
-		logger.info("loading " + configPath);
+	private void loadProperties(String propertyFile) throws IOException {
+	    
+		LogServer.info(this, "loading key-value pairs from " + propertyFile);
 		
-		FileInputStream inputStream = new FileInputStream(configPath);
+		FileInputStream inputStream = new FileInputStream(propertyFile);
 		Properties props = new Properties();
-		props.load(inputStream);
+		props.load(inputStream);	
 		
-		return props;
+		logProperties(props);
 	}
+	
+//	private Properties loadProperties(String fileName) throws IOException {
+//	      
+//		String configPath = getJPSBaseDirectory() + "/conf/" + fileName;
+//		logger.info("loading " + configPath);
+//		
+//		FileInputStream inputStream = new FileInputStream(configPath);
+//		Properties props = new Properties();
+//		props.load(inputStream);
+//		
+//		return props;
+//	}
 	
 	private void logProperties(Properties properties) {
 		for (Entry<Object, Object> current : properties.entrySet()) {
@@ -139,7 +164,7 @@ public class AgentLocator {
 		return path;
 	}
 	
-	private static String getJPSBaseDirectory() {
+	public static String getJPSBaseDirectory() {
 		return getSingleton().jpsBaseDirectory;
 	}
 	
@@ -184,17 +209,19 @@ public class AgentLocator {
 	 * @return
 	 */
 	public static String getProperty(String key) {
-		String result = null;
-
-		Properties testProps = getSingleton().jpsTestProps;
-		if (testProps != null) {
-			result = (String) testProps.get(key);
-		}
-		if ((testProps == null) || (result == null)) {
-			result = (String) getSingleton().jpsProps.getProperty(key);
-		}
-
-		return result;
+//		String result = null;
+//
+//		Properties testProps = getSingleton().jpsTestProps;
+//		if (testProps != null) {
+//			result = (String) testProps.get(key);
+//		}
+//		if ((testProps == null) || (result == null)) {
+//			result = (String) getSingleton().jpsProps.getProperty(key);
+//		}
+//
+//		return result;
+		
+		return KeyValueMap.getInstance().get(key);
 	}
 
 	public static String callAgent(String agentKey) throws ClientProtocolException, IOException {
