@@ -1,7 +1,11 @@
 package uk.ac.cam.cares.co2emissions.worldpowerplant;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +19,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.HttpClientBuilder;
+
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.PythonException;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
@@ -42,26 +53,53 @@ public class WorldPowerPlant extends HttpServlet {
 	private static final String PATH = "/JPS_CO2EMISSIONS/SurrogateModel";
 	private static final String KEY = "query";
 	private static final Gson g = new Gson();
+	private final String WORKINGDIR_ADMS_PATH = AgentLocator.getPathToWorkingDir(this);
        
     public WorldPowerPlant() {
         super();
     }
     
-    protected void publishMessage(String powerplantIRI, String idScenario, Channel channel) throws UnsupportedEncodingException, IOException {
+    protected void publishMessage(String powerplantIRI, String idScenario, Channel channel) throws UnsupportedEncodingException, IOException, URISyntaxException {
 		Map<String, String> queryParamsJsonObj = new HashMap<String, String>();
 		queryParamsJsonObj.put("plant", powerplantIRI);
 		String queryParamPowerplantIRIString = g.toJson(queryParamsJsonObj);
-//		System.out.println(queryParamPowerplantIRIString);
 		
 		queryParamsJsonObj.put("agent iri", AGENT_IRI);
 		queryParamsJsonObj.put("scenario id", idScenario);
 		String queryParamsString = g.toJson(queryParamsJsonObj);
 		
 		channel.basicPublish(EXCHANGE_NAME, "", null, queryParamsString.getBytes("UTF-8"));
-		AgentCaller.executeGet(PATH, KEY, queryParamPowerplantIRIString);			
+		
+//		AgentCaller.executeGet(PATH, KEY, queryParamPowerplantIRIString);
+		
+		//
+		URIBuilder builder = new URIBuilder().setScheme("http").setHost("localhost:8000")
+				.setPath("/run-surrogate-model")
+				.setParameter("powerplantIRI", powerplantIRI);
+//				.setParameter("workingdir", WORKINGDIR_ADMS_PATH)
+		
+		URI uri = builder.build();
+		HttpGet getRequest = new HttpGet(uri);
+		HttpClient httpClient = HttpClientBuilder.create().build();
+		HttpResponse httpResponse = httpClient.execute(getRequest);
+		
+		// Parse response into string
+		BufferedReader rd = new BufferedReader(new InputStreamReader(
+			    httpResponse.getEntity().getContent()));
+		
+		StringBuilder total = new StringBuilder();
+		String line = null;
+		
+		while ((line = rd.readLine()) != null) {
+			total.append(line);
+		}
+		rd.close();
+		String body = total.toString();	
+		
+		System.out.println(body);		
     }
     
-    protected void publishMessages(String[] arrayPowerplantIRI, int numPowerplants, int numSegments, Channel channel) throws UnsupportedEncodingException, IOException {
+    protected void publishMessages(String[] arrayPowerplantIRI, int numPowerplants, int numSegments, Channel channel) throws UnsupportedEncodingException, IOException, URISyntaxException {
     	int sizeSegment = numPowerplants / numSegments;
     	int remainder = numPowerplants % numSegments;
     	int[] segmentInitialValue = new int[numSegments];
@@ -86,32 +124,32 @@ public class WorldPowerPlant extends HttpServlet {
 		for (int i = 0; i < maxLoop; i++) {
 			
 			if (i < segmentInitialValue[1]) {
-//				System.out.println(i);
-				System.out.println(arrayPowerplantIRI[i]);
+				System.out.println("idx: " + i);
+//				System.out.println(arrayPowerplantIRI[i]);
 				publishMessage(arrayPowerplantIRI[i], SCENARIO_ID_1, channel);
 			}
 			
 			if (segmentInitialValue[1]+i < segmentInitialValue[2]) {
-//				System.out.println(segmentInitialValue[1] + i);
-				System.out.println(arrayPowerplantIRI[segmentInitialValue[1]+i]);
+				System.out.println(String.format("idx: %d", segmentInitialValue[1]+i));
+//				System.out.println(arrayPowerplantIRI[segmentInitialValue[1]+i]);
 				publishMessage(arrayPowerplantIRI[segmentInitialValue[1]+i], SCENARIO_ID_2, channel);
 			}
 			
 			if (segmentInitialValue[2]+i < segmentInitialValue[3]) {
-//				System.out.println(segmentInitialValue[2] + i);
-				System.out.println(arrayPowerplantIRI[segmentInitialValue[2]+i]);
+				System.out.println(String.format("idx: %d", segmentInitialValue[2]+i));
+//				System.out.println(arrayPowerplantIRI[segmentInitialValue[2]+i]);
 				publishMessage(arrayPowerplantIRI[segmentInitialValue[2]+i], SCENARIO_ID_3, channel);
 			}
 			
 			if (segmentInitialValue[3]+i < segmentInitialValue[4]) {
-//				System.out.println(segmentInitialValue[3] + i);
-				System.out.println(arrayPowerplantIRI[segmentInitialValue[3]+i]);
+				System.out.println(String.format("idx: %d", segmentInitialValue[3]+i));
+//				System.out.println(arrayPowerplantIRI[segmentInitialValue[3]+i]);
 				publishMessage(arrayPowerplantIRI[segmentInitialValue[3]+i], SCENARIO_ID_4, channel);
 			}
 			
 			if (segmentInitialValue[4]+i < numPowerplants) {
-//				System.out.println(segmentInitialValue[4] + i);
-				System.out.println(arrayPowerplantIRI[segmentInitialValue[4]+i]);
+				System.out.println(String.format("idx: %d", segmentInitialValue[4]+i));
+//				System.out.println(arrayPowerplantIRI[segmentInitialValue[4]+i]);
 				publishMessage(arrayPowerplantIRI[segmentInitialValue[4]+i], SCENARIO_ID_5, channel);
 			}
 			
@@ -131,12 +169,14 @@ public class WorldPowerPlant extends HttpServlet {
 		
 		try {
 			Connection connection = factory.newConnection();
-			Channel channel = connection.createChannel();
-			
+			Channel channel = connection.createChannel();			
 			channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.FANOUT);
 			
 			request.setCharacterEncoding("UTF-8");
 			
+			System.out.println("START OF TEST");			
+			long startTime = System.currentTimeMillis();
+						
 			String stringArrayOfPowerplantIRI = PythonHelper.callPython("world_powerplants_sparql.py", 
 					"", this);
 			
@@ -144,6 +184,10 @@ public class WorldPowerPlant extends HttpServlet {
 			String[] arrayOfPowerplantIRI = g.fromJson(stringArrayOfPowerplantIRI, String[].class);
 			
 			publishMessages(arrayOfPowerplantIRI, arrayOfPowerplantIRI.length, 5, channel);
+			
+			long stopTime = System.currentTimeMillis();
+			long elapsedTime = stopTime - startTime;
+			System.out.println(elapsedTime);
 			
 //			for(int i = 0; i < arrayOfPowerplantIRI.length; i++) {
 //				
@@ -168,6 +212,9 @@ public class WorldPowerPlant extends HttpServlet {
 //		catch (InterruptedException e) {
 //			e.printStackTrace();
 //		}
+ catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
 				
 	}
 

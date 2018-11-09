@@ -5,7 +5,7 @@ import json
 from rdflib.plugins.sparql.processor import processUpdate
 
 from caresjpsutil import returnExceptionToJava, returnResultsToJava
-from caresjpsutil import PythonLogger
+# from caresjpsutil import PythonLogger
 from sparql_wrapper import sparqlQueryWrite
 
 class PowerplantSPARQLSync:
@@ -85,8 +85,8 @@ class PowerplantSPARQLSync:
         return
     
 if __name__ == "__main__":
-    pythonLogger = PythonLogger('powerplant_sparql_update.py')
-    pythonLogger.postInfoToLogServer('start of powerplant_sparql_update.py')
+#     pythonLogger = PythonLogger('powerplant_sparql_update.py')
+#     pythonLogger.postInfoToLogServer('start of powerplant_sparql_update.py')
     
     try:
 #         plantIRI = "http://www.theworldavatar.com/kb/powerplants/Norocholai_Laskvijaya_Coal_Power_Plant_Sri_Lanka.owl#Norocholai_Laskvijaya_Coal_Power_Plant_Sri_Lanka"
@@ -96,7 +96,7 @@ if __name__ == "__main__":
         pSPARQL = PowerplantSPARQLSync(plantIRI)
         pSPARQL.updatePowerplantEmission(latestEmission)
         returnResultsToJava(json.dumps("COMPLETE"))
-        pythonLogger.postInfoToLogServer('end of powerplant_sparql_update.py')
+#         pythonLogger.postInfoToLogServer('end of powerplant_sparql_update.py')
     except Exception as e:
         returnExceptionToJava(e)
-        pythonLogger.postInfoToLogServer('end of powerplant_sparql_update.py')
+#         pythonLogger.postInfoToLogServer('end of powerplant_sparql_update.py')

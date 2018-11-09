@@ -131,6 +131,7 @@ if __name__ == "__main__":
         pSPARQL = PowerplantSPARQLSync(plantIRI)
         powerplantInfo = pSPARQL.getPowerplantInfo()
         returnResultsToJava(json.dumps(powerplantInfo))
+#         print('T')
         pythonLogger.postInfoToLogServer('end of powerplant_sparql_read.py')
 #         print("{} seconds".format(time.time() - start_time))
     except Exception as e:

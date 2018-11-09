@@ -2,7 +2,7 @@
 import json
 
 from caresjpsutil import returnExceptionToJava, returnResultsToJava
-from caresjpsutil import PythonLogger
+# from caresjpsutil import PythonLogger
 from sparql_wrapper import sparqlQueryRead
 
 class WorldPowerPlantsSPARQL:
@@ -33,14 +33,14 @@ class WorldPowerPlantsSPARQL:
         return powerplants
 
 if __name__ == "__main__":
-    pythonLogger = PythonLogger('world_powerplants_sparql.py')
-    pythonLogger.postInfoToLogServer('start of world_powerplants_sparql.py')
+#     pythonLogger = PythonLogger('world_powerplants_sparql.py')
+#     pythonLogger.postInfoToLogServer('start of world_powerplants_sparql.py')
     
     try:
         wPSPARQL = WorldPowerPlantsSPARQL()
         powerplants = wPSPARQL.getPowerplants()
         returnResultsToJava(json.dumps(powerplants))
-        pythonLogger.postInfoToLogServer('end of world_powerplants_sparql.py')
+#         pythonLogger.postInfoToLogServer('end of world_powerplants_sparql.py')
     except Exception as e:
         returnExceptionToJava(e)
-        pythonLogger.postInfoToLogServer('end of world_powerplants_sparql.py')
+#         pythonLogger.postInfoToLogServer('end of world_powerplants_sparql.py')
