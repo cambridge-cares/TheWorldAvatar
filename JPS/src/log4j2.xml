@@ -2,15 +2,16 @@
 <Configuration monitorInterval="60" status="WARN">
 
 	<Appenders>
-		<!--  Http name="JPSHTTPLOGSERVER" url="www.theworldavatar.com/JPS_BASE/LogServer"  method="POST">
-			<PatternLayout pattern="%d %p [%t] %C{1} %m%n"/-->
+		<!--  Http name="JPSHTTPLOGSERVER" url="http://127.0.0.1:8080/JPS_BASE/LogServer"  method="GET"-->
+		<Http name="JPSHTTPLOGSERVER" url="http://www.theworldavatar.com/JPS_BASE/LogServer"  method="GET">
+			<PatternLayout pattern="%d %p [%t] %C{1} %m%n"/>
 			<!--Property name="X-Java-Runtime" value="$${java:runtime}" /--> 
 			<!--JsonLayout properties="true"/-->	
 			<!--SSL>
 				<KeyStore location="log4j2-keystore.jks" passwordEnvironmentVariable="KEYSTORE_PASSWORD"/>				
 				<TrustStore location="truststore.jks" passwordFile="${sys:user.home}/truststore.pwd"/>
 			</SSL--> 
-		<!--  /Http -->
+		</Http>
 		
 		
 		<Console name="STDOUT">
@@ -21,7 +22,7 @@
 	
 	<Loggers>
 		<Root level="info">
-			<!--  AppenderRef ref="JPSHTTPLOGSERVER"/-->
+			<AppenderRef ref="JPSHTTPLOGSERVER"/>
 			<AppenderRef ref="STDOUT"/>
 		</Root>
 	</Loggers>

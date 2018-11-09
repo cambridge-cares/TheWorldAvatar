@@ -43,7 +43,8 @@ public class ADMSOutputAll extends HttpServlet {
 		
 		
 		String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
-		String outputFile = AgentLocator.getPathToWorkingDir(this) + "/ADMS/test.levels.gst";
+		//String outputFile = AgentLocator.getPathToWorkingDir(this) + "/ADMS/test.levels.gst";
+		String outputFile = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS/test.levels.gst";
 
 		
 		System.out.println(outputFile);

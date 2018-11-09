@@ -21,12 +21,22 @@ public class KeyValueServer extends HttpServlet {
 
 	private static final long serialVersionUID = -7979108458102577070L;
 	
-	public static void set(String... keyOrvalue) {
-		AgentCaller.executeGet("/JPS_BASE/keys/set", keyOrvalue);
+	public static void set(String... keyOrValue) {
+		
+		for (int i=0; i<keyOrValue.length; i=i+2) {
+			KeyValueMap.getInstance().put(keyOrValue[i], keyOrValue[i+1]);
+		}
+		
+		AgentCaller.executeGet("/JPS_BASE/keys/set", keyOrValue);
 	}
 	
 	public static String get(String key) {
 		//TODO-AE URGENT URGENT every call to host, port etc. results into a HTTP Get --> caching solution, or redis, ...
+		
+		if (IKeys.HOST.equals(key) || IKeys.PORT.equals(key)) {
+			return KeyValueMap.getInstance().get(key);
+		}
+		
 		String result = AgentCaller.executeGet("/JPS_BASE/keys/get", "key", key);
 		try {
 			JSONObject jo = new JSONObject(result);

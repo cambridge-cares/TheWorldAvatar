@@ -85,9 +85,10 @@ public class AgentWebAPI extends HttpServlet {
 		String hostPort = "http://" + KeyValueServer.get(IKeys.HOST) + ":" + KeyValueServer.get(IKeys.PORT);
 		Object[] result = compose(compositeAgent, hostPort);
 		
-		if(result == null) {
-			return "Unsolvable"; 
+		if (result == null) {
+			throw new JPSRuntimeException("no composition result for host=" + hostPort + ", " + "compositeAgent=" + compositeAgent.httpUrl);
 		}
+
 		Graph graph = (Graph) result[0];
 		ArrayList<String> eliminationList = (ArrayList<String>) result[1];
 		

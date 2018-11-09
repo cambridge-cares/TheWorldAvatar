@@ -12,6 +12,7 @@ import rdflib.plugins.sparql.results.jsonresults as jsresult
 from collections import namedtuple
 from admsSrc import admsSrc
 from admsPolygon import Polygon
+from caresjpsutil import PythonLogger
 import cobbling
 
 
@@ -37,148 +38,26 @@ class admsInputDataRetriever(object):
         self.bdnnode = bdnnode
         self.srcLimit = srcLimit
         self.bdnLimit = bdnLimit
+        # TODO-AE remove filterSrc and topnode
         self.filterSrc = False
         self.rawBdn = rawBdn
 
         self.range = self.getRange(range)
         print(self.range)
+        
+        self.pythonLogger = PythonLogger('admsInputDataRetrieverNew.py')
 
     def getRange(self, userrange):
-        '''
-        Define range from topnode info and user give parameters
-        returns (xRange, yRange)
-        '''
-        if not self.filterSrc:
-            return ((userrange['xmin'], userrange['xmax']), (userrange['ymin'],userrange['ymax']))
-        self.connectDB(self.topnode)#connect to db       
-        qx = self.query(
-            """
-            PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-            PREFIX owl: <http://www.w3.org/2002/07/owl#>
-            PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-            
-            SELECT ?value
-            WHERE {
-            ?co  space_and_time_extended:hasProjectedCoordinate_x ?upper.
-            ?upper sys:hasValue ?v.
-            ?v sys:numericalValue ?value .
-            }
-            """)
-        qy = self.query(
-            """
-            PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-            PREFIX owl: <http://www.w3.org/2002/07/owl#>
-            PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-            SELECT ?value
-            WHERE {
-            ?co  space_and_time_extended:hasProjectedCoordinate_y ?upper.
-            ?upper sys:hasValue ?v.
-            ?v sys:numericalValue ?value .
-            }
-            """)
-
-        #extract bounds data
-        xs = tuple(row['value'] for row in qx)
-        ys = tuple(row['value'] for row in qy)
+        return ((userrange['xmin'], userrange['xmax']), (userrange['ymin'],userrange['ymax']))
 
 
-        xRange =  (xs[0].toPython(),xs[1].toPython()) if xs[0]<xs[1] else (xs[1].toPython(),xs[0].toPython())            
-        yRange =  (ys[0].toPython(),ys[1].toPython()) if ys[0]<ys[1] else (ys[1].toPython(),ys[0].toPython())
-
-
-        #todo: provide gis speci number in future and do conversion if needed
-        #if user specified range, compare
-        if userrange is not None:
-            xRange = (max(xRange[0], userrange['xmin']), min(xRange[1], userrange['xmax']))
-            yRange = (max(yRange[0], userrange['ymin']), min(yRange[1], userrange['ymax']))
-
-        print('xrange: {} - {}', *xRange)
-        print('yrange: {} - {}', *yRange)
-
-        return(xRange, yRange)
-
-    def filterSource(self):
-        '''filter the source from tree starting from topnode, within the range and with user set content
-        returns: list of source uris
-        '''
-        xRange, yRange = self.range
- 
-        self.connectDB(self.topnode)#connect to db
-
-        #query for children uris from topnode
-        #todo: future kb: type check :emission type
-        qChildren = self.query(
-            """
-            PREFIX Eco-industrialPark: <http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#> 
-            SELECT ?child
-            WHERE {{
-            ?o  Eco-industrialPark:hasIRI ?child . 
-            }}
-            LIMIT {0}
-            """.format(self.srcLimit)
-            )
-
-        ###query each children to get coordinates
-        uris = list(row["child"].strip() for row in qChildren)
-        ###todo: add this test file, delete in future
-        #uris.append("http://www.theworldavatar.com/TankID_1574.owl#TankID_1574")
-        filtered = []
-
-        print(uris)
-        for uri in uris:
-            print("connecting: {:s}".format(uri))
-
-            self.connectDB(uri)
-            qstr ='''
-            PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-            PREFIX owl: <http://www.w3.org/2002/07/owl#>
-            PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-            PREFIX material: <http://www.theworldavatar.com/ontology/ontocape/material/material.owl#>
-
-            SELECT DISTINCT ?x ?y ?content
-            WHERE {{
-            <{0!s}> space_and_time_extended:hasGISCoordinateSystem ?o.
-            ?o  space_and_time_extended:hasProjectedCoordinate_x ?xe.
-            ?xe sys:hasValue ?vx.
-            ?vx sys:numericalValue ?x .
-            <{0!s}> sys:hasContent ?contentE .
-            ?contentE material:intrinsicCharacteristics ?chemsp.
-            ?chemsp sys:containsDirectly ?content.
-
-
-            OPTIONAL{{
-            ?o  space_and_time_extended:hasProjectedCoordinate_y ?ye.
-            ?ye sys:hasValue ?vy.
-            ?vy sys:numericalValue ?y .
-            }}
-            }}
-            '''.format(uri)
-            #print (qstr)
-            coordQresults = self.query(qstr)
-
-  
-
-            ##filter children within range
-            for row in coordQresults:
-                x,y,content = float(row['x'].toPython()), float(row['y'].toPython()), row['content'].toPython()
-                #print("{},{},{}".format(x, y, content))
-                if  x - xRange[0]>0 and x - xRange[1] < 0 and y - yRange[0] > 0 and y - yRange[1]<0 and content  in self.pollutants:
-                    filtered.append(uri)
-                    print('add to filtered {}'.format(uri))
-                break
-    
-        return filtered
-    
     def getSrcData(self):
         '''get all sourced data : 
         returns: data object 
         '''        
-        filtered = None
-        if self.filterSrc:
-            filtered =  self.filterSource() 
-
-        else: 
-            filtered = (self.topnode,)
+        self.pythonLogger.postInfoToLogServer('start getSrcData(), topnode='+self.topnode)
+        
+        filtered = (self.topnode,)
         
         s = set()#make a set of substance to query later
         result = []
@@ -390,25 +269,6 @@ class admsInputDataRetriever(object):
 
         return packed
 
-    def getBdnData(self):
-        self.connectDB(self.bdnnode, connectType = 'endpoint')
-        bdns = []#self.filterBdnEnvelope()
-        
-        if len(bdns) is 0: #range is smaller than any envelope, 
-        #then we have to filter indi buildings
-            #todo: in this case, should we filter by calculated cnetroid, or a crude one with ground x,y? i'd go with x, y first。。。
-            bdns = self.filterBdns()
-            if len(bdns) is 0:    
-                raise Exception('no bdn within range')
-
-        print ('Found {0} bdn within range , they are '.format(len(bdns)))
-        result = list((zip(*[self.getMetrics(bld) for bld in bdns])))
-        print (result)
-
-
-        newBdn = self.BDN(len(bdns), *result)
-        return newBdn
-
     
     def filterBdnEnvelope(self):
         '''
@@ -452,201 +312,6 @@ class admsInputDataRetriever(object):
         ########todo: in future delete stud data
         return tuple(row['bdn'] for row in qb)
 
-    #todo
-    def filterBdns(self, topython = False):
-        '''
-        filter individual building to see if they are within range
-        get all uris where every x and y in its ground is within range(maybe count ?)
-
-        ''' 
-        xRange, yRange = self.range
-       
-        qstr = '''
-            PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-            PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-            PREFIX citygml:<http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>
-            #PREFIX citygml:<file:/D:/citygmllearn/citygmlhandmade.owl#>
-
-            PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-
-            SELECT  distinct ?bdn 
-            WHERE {{
-            {{                                                             #case1:building has no parts
-            ?bdn a citygml:BuildingType.                              
-            ?bdn citygml:boundedBy ?g.                                     #building  boundBy      surface
-            ?g a citygml:GroundSurfaceType.                                 # surface            is a         ground 
-            ?g citygml:lod2MultiSurface ?ms.                                #ground              has lod2multisurface  ms
-            ?ms citygml:surfaceMember ?pol.                                 #ms        has member   polygon
-            ?pol citygml:exterior ?lring.                                   # polygon            exterior is  linear ring
-            ?lring sys:contains ?po.                                        # linear ring        consists of  points
-            ?po space_and_time_extended:hasGISCoordinateSystem ?co.         #point               has coordinate system   cs     
-            ?co   space_and_time_extended:hasProjectedCoordinate_x ?xe.     #[extract cs to get x,y,z value] 
-            ?xe sys:hasValue ?xv.
-            ?xv sys:numericalValue ?x.
-            ?co   space_and_time_extended:hasProjectedCoordinate_y ?ye.
-            ?ye sys:hasValue ?yv.
-            ?yv sys:numericalValue ?y.
-            }} UNION {{                                                     #case 2: 
-                ?bdn a citygml:BuildingType.                                #bdns that consists of part 
-                ?bdn citygml:consistsOfBuildingPart ?part.
-                ?part a citygml:BuildingPartType.
-                ?part citygml:boundedBy ?g.  
-                ?g a citygml:GroundSurfaceType.                                 
-            ?g citygml:lod2MultiSurface ?ms.                                
-            ?ms citygml:surfaceMember ?pol.                                 
-            ?pol citygml:exterior ?lring.                                   
-            ?lring sys:contains ?po.                                        
-            ?po space_and_time_extended:hasGISCoordinateSystem ?co.            
-            ?co   space_and_time_extended:hasProjectedCoordinate_x ?xe.    
-            ?xe sys:hasValue ?xv.
-            ?xv sys:numericalValue ?x.
-            ?co   space_and_time_extended:hasProjectedCoordinate_y ?ye.
-            ?ye sys:hasValue ?yv.
-            ?yv sys:numericalValue ?y.
-            }}
-
-               filter(xsd:double(?y) > "{1}"^^xsd:double  && xsd:double(?y) < "{2}"^^xsd:double && xsd:double(?x) > "{3}"^^xsd:double && xsd:double(?x) < "{4}"^^xsd:double)
-            }} 
-            LIMIT {0}   #limit of building num
-        '''.format(self.bdnLimit, *yRange, *xRange)
-
-        qre = self.query(qstr)
-
-        bdnlist = list(row['bdn'].toPython() for row in qre)
-
-        return bdnlist
-
-
-    def getBdnVertices(self, nodeuri):
-        '''get all buildings data
-        returns: data object
-        '''
-        #todo: modify query to get raw data,then pass to converter
-        qData= self.query('''
-            PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-            PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-            PREFIX citygml:<http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>
-
-            SELECT   ?x ?y ?z
-            WHERE {{
-            <{0}> citygml:boundedBy ?g.                                     #building/part IRI   boundBy      surface
-            ?g a citygml:GroundSurfaceType.                                 # surface            is a         ground 
-            ?g citygml:lod2MultiSurface ?ms.                                #ground              has lod2multisurface  ms
-            ?ms citygml:surfaceMember ?pol.                                 #ms        has member   polygon
-            ?pol citygml:exterior ?lring.                                   # polygon            exterior is  linear ring
-            ?lring sys:contains ?po.                                        # linear ring        consists of  points
-            ?po space_and_time_extended:hasGISCoordinateSystem ?co.         #point               has coordinate system   cs     
-            ?co   space_and_time_extended:hasProjectedCoordinate_x ?xe.     #[extract cs to get x,y,z value] 
-            ?xe sys:hasValue ?xv.
-            ?xv sys:numericalValue ?x.
-            ?co   space_and_time_extended:hasProjectedCoordinate_y ?ye.
-            ?ye sys:hasValue ?yv.
-            ?yv sys:numericalValue ?y.
-            ?co   space_and_time_extended:hasProjectedCoordinate_z ?ze.
-            ?ze sys:hasValue ?zv.
-            ?zv sys:numericalValue ?z.
-            }}
-            '''.format(nodeuri)) 
-            
-
-        #query for roof max and ground min
-
-        qHeight = self.query("""
-            PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-            PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-            PREFIX citygml:<http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>
-
-             SELECT (MIN(?z) AS ?min) (MAX(?zr) AS ?max)                                       #select min of ground z values,   max  of   roof z values
-            WHERE {{
-              <{0}> citygml:boundedBy ?g.                                                      #building/part IRI   boundBy      surface
-                ?g a citygml:GroundSurfaceType.                                                # surface            is a         GROUND 
-              ?g citygml:lod2MultiSurface ?ms.                                                  #[select all coordi z value for ground surface]
-               ?ms citygml:surfaceMember ?pol.                                                
-               ?pol citygml:exterior ?lring.                                                   
-                ?lring sys:contains ?po.
-                 ?po space_and_time_extended:hasGISCoordinateSystem ?co.
-                    ?co   space_and_time_extended:hasProjectedCoordinate_z ?ze.
-                   ?ze sys:hasValue ?zv.
-                  ?zv sys:numericalValue ?z.
-             <{0}> citygml:boundedBy ?gr.                                                    #building/part IRI   boundBy      surface
-                  ?gr a citygml:RoofSurfaceType.                                              # surface            is a         ROOF  
-              ?gr citygml:lod2MultiSurface ?msr.                                             #[select all coordi z value for roof surface]
-               ?msr citygml:surfaceMember ?polr.
-               ?polr citygml:exterior ?lringr.
-                ?lringr sys:contains ?por.
-                 ?por space_and_time_extended:hasGISCoordinateSystem ?cor.
-                    ?cor   space_and_time_extended:hasProjectedCoordinate_z ?zer.
-                   ?zer sys:hasValue ?zvr.
-                  ?zvr sys:numericalValue ?zr.
-  
-  
-            }} GROUP BY ?g                                                                  # group by  each ground IRI
-        """.format(nodeuri))
-
-        # define coordi convert function :  building kb   --->   adms
-        #Bdn2ADMSCoordC = defineCoordConvert('epsg:28992','epsg:32648')
-        #float(row['min'].toPython()), float(row['max'].toPython())
-
-
-        zlimit = tuple( (float(row['min'].toPython()), float(row['max'].toPython()))   for row in qHeight  )[0]
-
-        return (   list( (float(row['x'].toPython()), float(row['y'].toPython())) for row in qData),        zlimit)
-
-    def getMetrics(self, nodeuri):
-        base = None
-        if self.hasBuildingPart(nodeuri):
-            print('{0} has building part'.format(nodeuri))
-            #get list of building part
-            bparts = list(row['p'] for row in self.query(
-            ''' PREFIX citygml:<http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>
-            SELECT  ?p 
-            WHERE
-             {
-             ?b citygml:consistsOfBuildingPart ?p.
-            }'''))
-
-            #get metrics for each part
-            polygons = tuple( Polygon(*self.getBdnVertices(uri))    for uri in bparts)
-            #get centroid for pols
-            base = Polygon.combineBaseMulti(polygons)
-
-
-        else: # no building part
-            print('{0} NOT has building part'.format(nodeuri))
-            verticesNHeight = self.getBdnVertices(nodeuri)
-            #print(verticesHeight)
-            base = Polygon(*verticesNHeight)
-
-            #todo pack return result
-            #('BldName','BldType','BldX','BldY','BldHeight', 'BldLength', 'BldWidth', 'BldAngle')
-
-        print ((nodeuri, base.type, base.centroid[0], base.centroid[1], base.height, base.length, base.width, base.angle)   )
-        #todo: coordinate coversion for centroid!!!
-        return (uri2name(nodeuri), base.type, base.centroid[0], base.centroid[1], base.height, base.length, base.width, base.angle)    
-
-
-
-
-
-
-        #calulate centro
-        #choose shape
-        #calculate angle
-        #probably for the best if we construct a type of polygon instead?
-
-    def hasBuildingPart(self, nodeuri):
-        #self.connectDB(nodeuri)
-        print('checking if building part for :{0}'.format(nodeuri))
-        qData = self.query('''
-            PREFIX citygml:<http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>
-            ASK       
-             {{
-             <{0}> citygml:consistsOfBuildingPart ?p
-            }}
-            '''.format(nodeuri))
-
-        qData, = tuple(qData)
-        return qData
 
     def coreBdn2Src(self):
         '''calculate main building for each src
@@ -712,8 +377,10 @@ class admsInputDataRetriever(object):
         metLoc= r"test.met"
         #cobbling.run(meteo_data = metLoc)
         #pointing to met in apl
-        return os.path.realpath(metLoc)
-
+        #metpath =  os.path.realpath(metLoc)
+        metpath = "C://JPS_DATA/workingdir/JPS/ADMS/test.met"
+        self.pythonLogger.postInfoToLogServer('path for adms met file='+metpath)
+        return metpath
 
 
 
@@ -729,8 +396,7 @@ class admsInputDataRetriever(object):
         if self.rawSrc is None:
             raise Exception("No src in found to requiries")
 
-        #get all building data
-        #self.rawBdn = self.getBdnData()
+
         print('raw building: ')
         print(self.rawBdn)
         rawOpt = self.getOpt(self.pollutants, [s.SrcName for s in self.rawSrc])
