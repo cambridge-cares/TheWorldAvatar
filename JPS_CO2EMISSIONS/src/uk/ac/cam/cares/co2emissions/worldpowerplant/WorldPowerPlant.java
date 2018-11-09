@@ -73,10 +73,10 @@ public class WorldPowerPlant extends HttpServlet {
 //		AgentCaller.executeGet(PATH, KEY, queryParamPowerplantIRIString);
 		
 		//
-		URIBuilder builder = new URIBuilder().setScheme("http").setHost("localhost:5000")
+		URIBuilder builder = new URIBuilder().setScheme("http").setHost("localhost:8000")
 				.setPath("/run-surrogate-model")
-				.setParameter("workingdir", WORKINGDIR_ADMS_PATH)
 				.setParameter("powerplantIRI", powerplantIRI);
+//				.setParameter("workingdir", WORKINGDIR_ADMS_PATH)
 		
 		URI uri = builder.build();
 		HttpGet getRequest = new HttpGet(uri);
