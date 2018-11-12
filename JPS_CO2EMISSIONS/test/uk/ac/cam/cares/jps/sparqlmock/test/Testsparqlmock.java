@@ -9,7 +9,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.co2emissions.sparqlmock.QueryPowerPlants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 
 public class Testsparqlmock extends TestCase {
@@ -48,15 +47,7 @@ public class Testsparqlmock extends TestCase {
 	
 
 	public void testCallAgent() throws IOException, URISyntaxException, JSONException {
-
-
-		//JSONObject dataSet = new JSONObject();
-		
-	 //iri					
-					
-
-			
-		
+	
 		String resultjson = AgentCaller.executeGet(getContextPathForJPSplantquery(), "query", sparqlstring);
 
 		
@@ -70,37 +61,8 @@ public class Testsparqlmock extends TestCase {
 		System.out.println("result of plant0 picked= "+plant1.getString("plant"));
 		System.out.println("result of capacity of plant0 picked= "+plant1.getString("capacity"));
 		
-
-
-
-
-		//assertEquals(0, emission, 1000.);
-		//assertEquals(5000.0, capacity, 1000.);
-
-
 	}
 	
 	
-	public void testqueryPowerplantProperty() {
-		
-		QueryPowerPlants a= new QueryPowerPlants();
-		ArrayList <String> Def= a.queryPowerplantProperty(sparqlstring);
-		//System.out.println("query= "+sparqlstring);
-		
-
-		System.out.println("size= "+Def.size());
-	}
-	
-	
-	
-	
-//	public static void main(String[] args) {
-//		
-//		Testsparqlmock abc = new Testsparqlmock();
-//		ArrayList <String> Def= abc.queryPowerplantProperty(sparqlstring);
-//		
-//		System.out.println("size= "+Def.size());
-//	
-//	}
 }
 

@@ -29,22 +29,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//import com.hpl.jena.ontology.DatatypeProperty;
-//import com.hp.hpl.jena.ontology.Individual;
-//import com.hp.hpl.jena.ontology.OntModel;
-//import com.hp.hpl.jena.query.Query;
-//import com.hp.hpl.jena.query.QueryExecution;
-//import com.hp.hpl.jena.query.QueryExecutionFactory;
-//import com.hp.hpl.jena.query.QueryFactory;
-//import com.hp.hpl.jena.query.QuerySolution;
-//import com.hp.hpl.jena.query.ResultSet;
-//import com.hp.hpl.jena.query.ResultSetFactory;
-//import com.hp.hpl.jena.query.ResultSetFormatter;
-//import com.hp.hpl.jena.query.ResultSetRewindable;
-//import com.hp.hpl.jena.rdf.model.Literal;
-//import com.hp.hpl.jena.rdf.model.ModelFactory;
-//import com.hp.hpl.jena.rdf.model.Resource;
-
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -180,7 +164,7 @@ public class FactorModel extends HttpServlet {
 		}
 		else if (value1.contentEquals("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#OilGeneration"))
 		{
-			outputvalue=Double.valueOf(capacity)*750*0.5*0.001;
+			outputvalue=Double.valueOf(capacity)*1000*0.5*0.001;
 		}
 		else if (value1.contentEquals("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGasGeneration"))
 		{
