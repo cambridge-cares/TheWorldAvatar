@@ -9,7 +9,7 @@ import org.json.JSONWriter;
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 
-public class CoordinationTest extends TestCase {
+public class TestCoordinationAgent extends TestCase {
 
 	public void testCoordinationAgentWithoutCompositionForBerlinWithWSG94Coordinates() throws JSONException {
 						

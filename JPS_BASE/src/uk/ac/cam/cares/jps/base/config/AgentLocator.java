@@ -188,14 +188,6 @@ public class AgentLocator {
 		return getCurrentJpsAppDirectory(thisObject) + "/" + relativePath;
 	}
 	
-	public static String getPathToJpsDataKnowledgeDir() {
-		return getProperty("absdir.jpsdata.knowledgebase");
-	}
-	
-	public static String getPathToJpsDataOntologyDir() {
-		return getProperty("absdir.jpsdata.ontology");
-	}
-	
 	public static String getPathToJpsWorkingDir() {
 		return getProperty("absdir.jpsdata.workingdir");
 	}

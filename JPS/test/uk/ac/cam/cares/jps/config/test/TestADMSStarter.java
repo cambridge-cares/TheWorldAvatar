@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
-class TestADMSStarter {
+public class TestADMSStarter {
 
 	@Test
 	void test() {

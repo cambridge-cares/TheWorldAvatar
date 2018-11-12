@@ -22,7 +22,7 @@ import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 public class ServiceDiscovery {
 	
-	public static final String KEY_DIR_KB_AGENTS = "absdir.jpsdata.knowledgebase.agents";
+	public static final String KEY_DIR_KB_AGENTS = "absdir.knowledgebase.agents";
 	private static ServiceDiscovery instance = null;
 	Logger logger = LoggerFactory.getLogger(ServiceDiscovery.class);
 

@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.servicespool.test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.io.StringWriter;
 
 import org.apache.jena.rdf.model.Model;
@@ -15,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import uk.ac.cam.cares.jps.building.CRSTransformer;
 
-class TestRegionModel {
+public class TestRegionModel {
 
 	@Test
 	void test() {
