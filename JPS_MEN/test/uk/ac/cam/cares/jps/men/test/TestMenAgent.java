@@ -62,13 +62,13 @@ public class TestMenAgent extends TestCase {
 		return "1"; // location of the owl file that contains information for the transportation system
 	}
 		private String getAnnualCostFactor() {
-			return "1."; // location of the owl file that contains information for the transportation system
+			return "0.02"; // location of the owl file that contains information for the transportation system
 		}
 			private String getInternationalMarketPriceFactor() {
 				return "1.05"; // location of the owl file that contains information for the transportation system
 			}
 				private String getInternationalMarketLowestPrice() {
-					return "false"; // location of the owl file that contains information for the transportation system		
+					return "true"; // location of the owl file that contains information for the transportation system		
 					}
 
 	
@@ -114,10 +114,10 @@ public class TestMenAgent extends TestCase {
 		Double ans1 = Double.valueOf((String) resp.getOutputParameters().get(0).getValue());
 		Double ans2 = Double.valueOf((String) resp.getOutputParameters().get(1).getValue());
 		Double ans3 = Double.valueOf((String) resp.getOutputParameters().get(2).getValue());
-		Double ans4 = Double.valueOf((String) resp.getOutputParameters().get(3).getValue());
-		Double ans5 = Double.valueOf((String) resp.getOutputParameters().get(4).getValue());
-		Double ans6 = Double.valueOf((String) resp.getOutputParameters().get(5).getValue());
-		Double ans7 = Double.valueOf((String) resp.getOutputParameters().get(6).getValue());
+		Double ans4 = Double.valueOf((String) resp.getOutputParameters().get(3).getValue());//totalTransportationCost
+		Double ans5 = Double.valueOf((String) resp.getOutputParameters().get(4).getValue());//totalCO2Emission
+		Double ans6 = Double.valueOf((String) resp.getOutputParameters().get(5).getValue());//totalCO2EmissionCost
+		Double ans7 = Double.valueOf((String) resp.getOutputParameters().get(6).getValue());//totalInstallationCost
 	
 
 		//assertEquals(6.636958433E9, ans1, 1000.);
