@@ -8,17 +8,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.jena.ontology.DatatypeProperty;
-import org.apache.jena.ontology.OntModel;
-import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.query.ResultSetFactory;
-import org.apache.jena.query.ResultSetFormatter;
-import org.apache.jena.query.ResultSetRewindable;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.update.UpdateExecutionFactory;
@@ -37,26 +30,8 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 public class FactorModel extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
-    
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	
-	private DatatypeProperty numval = null;
 
 	Logger logger = LoggerFactory.getLogger(FactorModel.class);
-	
-
-	public static synchronized ResultSet query(String sparql, OntModel model) {
-		Query query = QueryFactory.create(sparql);
-		QueryExecution queryExec = QueryExecutionFactory.create(query, model);
-		ResultSet rs = queryExec.execSelect();   
-		//reset the cursor, so that the ResultSet can be repeatedly used
-		ResultSetRewindable results = ResultSetFactory.copyResults(rs);    
-		ResultSetFormatter.out(System.out, results, query);
-		return results;
-	}
 	
 	public static synchronized ResultSet queryFromFusekiServer(String serviceURI, String query) {
 		
@@ -66,6 +41,9 @@ public class FactorModel extends HttpServlet {
 		return results;
 	}
 	
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 				
 		// -- Get String formatted in Array of Strings -- //
@@ -85,7 +63,7 @@ public class FactorModel extends HttpServlet {
 		Double outputvalue = queryPowerplantProperty(iri);
 		
 		
-//update to fuseki in java
+		//update to fuseki in java
 		
 		String plantupdate = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> " 
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -105,10 +83,7 @@ public class FactorModel extends HttpServlet {
         upp.execute();
 		
 		
-		
-		
-		
-//**************************************************************************************************		
+        //**************************************************************************************************		
 		JSONObject dataSet = new JSONObject();
 		try {
 			dataSet.put("emission", outputvalue) ;
@@ -152,10 +127,7 @@ public class FactorModel extends HttpServlet {
 			Literal cap = qs_p.getLiteral("vcapa"); // extract the name of the source
 			capacity = cap.getString();
 			System.out.println ("value1= "+value1);
-			System.out.println ("capacity= "+capacity);
-			
-
-			
+			System.out.println ("capacity= "+capacity);	
 		}
 		
 		if (value1.contentEquals("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#CoalGeneration"))
@@ -172,9 +144,7 @@ public class FactorModel extends HttpServlet {
 		}
 		else
 		{
-			outputvalue=0.0;
-			System.out.println("error");
-	
+			throw new JPSRuntimeException("unknown generation type: " + value1);
 		}
 		return outputvalue;
 	}
