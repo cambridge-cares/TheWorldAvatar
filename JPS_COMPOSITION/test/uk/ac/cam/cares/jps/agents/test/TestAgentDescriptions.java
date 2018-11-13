@@ -14,6 +14,7 @@ import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 public class TestAgentDescriptions extends TestCase {
 
 	private static final String JPS = "http://www.theworldavatar.com/JPS";
+	private static final String JPS_CO2EMISSIONS = "http://www.theworldavatar.com/JPS_CO2EMISSIONS";
 	private static final String JPS_COMPOSITION = "http://www.theworldavatar.com/JPS_COMPOSITION";
 	
 	private static final String WEATHER = "https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl";
@@ -45,12 +46,15 @@ public class TestAgentDescriptions extends TestCase {
 		backAndforthAndWrite(service, "_ADMS");
 		service = createDescrForComposedAgentADMS();
 		backAndforthAndWrite(service, "_ComposedADMS");
+		service = createDescrForFactorModel();
+		backAndforthAndWrite(service, "_FactorModel");
 	}
 	
 	private void backAndforthAndWrite(Service service, String name) throws URISyntaxException, FileNotFoundException {
 		
 		//new ServiceWriter().writeAsOwlFile(service, name, "C:\\Users\\nasac\\Documents\\TMP\\newAgentsMSM");
-		new ServiceWriter().writeAsOwlFile(service, name, "C:\\Users\\Andreas\\TMP\\newAgentsMSM");
+		//new ServiceWriter().writeAsOwlFile(service, name, "C:\\Users\\Andreas\\TMP\\newAgentsMSM");
+		new ServiceWriter().writeAsOwlFile(service, name, "D:\\tmp\\newAgentsMSM");
 		
 		
 		service.setUri(null);
@@ -130,6 +134,16 @@ public class TestAgentDescriptions extends TestCase {
 				.input(WEATHER + "#hasIntensity", "intensity").up()	
 			.up()
 			.output("https://www.w3.org/ns/csvw#Table", "dispersiongrid")
+			.build();
+	}
+	
+	private Service createDescrForFactorModel() {
+		return new ServiceBuilder().operation(null, JPS_CO2EMISSIONS + "/FactorModel")
+			.input("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl", "plant")
+			.output("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#hasEmission", "hasEmission").down()
+				.output("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue", "hasValue").down()
+					.output("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue", "numericalValue").up()
+				.up()
 			.build();
 	}
 	

@@ -32,8 +32,8 @@ public class Testfactormodel extends TestCase {
 		String json = dataSet.toString();
 		String resultjson = AgentCaller.executeGet(getContextPathForJPSco2emissionefactor(), "query", json);
 		
-		double emission = new JSONObject(resultjson).getDouble("emission");
-
+		//double emission = new JSONObject(resultjson).getDouble("emission");
+		double emission = new JSONObject(resultjson).getJSONObject("hasEmission").getJSONObject("hasValue").getDouble("numericalValue");
 		assertEquals(1142.4, emission, 1000.);
 
 

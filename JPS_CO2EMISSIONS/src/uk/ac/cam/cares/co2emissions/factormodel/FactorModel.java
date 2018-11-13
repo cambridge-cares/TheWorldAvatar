@@ -19,6 +19,8 @@ import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateProcessor;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONStringer;
+import org.json.JSONWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +35,8 @@ public class FactorModel extends HttpServlet {
 
 	Logger logger = LoggerFactory.getLogger(FactorModel.class);
 	
+	
+	
 	public static synchronized ResultSet queryFromFusekiServer(String serviceURI, String query) {
 		
 		QueryExecution q = QueryExecutionFactory.sparqlService(serviceURI,query);
@@ -44,58 +48,86 @@ public class FactorModel extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-				
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
 		// -- Get String formatted in Array of Strings -- //
 		request.setCharacterEncoding("UTF-8");
-		
+
 		JSONObject jo = AgentCaller.readJsonParameter(request);
 
-		String iri=null;
+		String iri = null;
 		try {
-			 iri = jo.getString("plant");
+			iri = jo.getString("plant");
 		} catch (JSONException e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		}
-		
-		//we get the iri plant
-		
+
+		// we get the iri plant
+
 		Double outputvalue = queryPowerplantProperty(iri);
-		
-		
-		//update to fuseki in java
-		
-		String plantupdate = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> " 
+
+		// update to fuseki in java
+
+		String plantupdate = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#> "
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
-				+ "WITH <"+iri+">"
-                +"DELETE { ?valueemission j2:numericalValue ?vemission .} " 
-                +"INSERT { ?valueemission j2:numericalValue "+outputvalue+" .} " 
-                +"WHERE { ?generation   j5:hasEmission ?emission ."  
-                +"?emission   j2:hasValue ?valueemission . "
-                + "?valueemission   j2:numericalValue ?vemission ."
-                + "}" ;
-		
+				+ "WITH <" + iri + ">" + "DELETE { ?valueemission j2:numericalValue ?vemission .} "
+				+ "INSERT { ?valueemission j2:numericalValue " + outputvalue + " .} "
+				+ "WHERE { ?generation   j5:hasEmission ?emission ." + "?emission   j2:hasValue ?valueemission . "
+				+ "?valueemission   j2:numericalValue ?vemission ." + "}";
 
-        UpdateProcessor upp = UpdateExecutionFactory.createRemote(UpdateFactory.create(plantupdate),"http://www.theworldavatar.com:80/damecoolquestion/worldpowerplantsng/update");
-        upp.execute();
-		
-		
-        //**************************************************************************************************		
+		UpdateProcessor upp = UpdateExecutionFactory.createRemote(UpdateFactory.create(plantupdate),
+				"http://www.theworldavatar.com:80/damecoolquestion/worldpowerplantsng/update");
+		upp.execute();
+
+		// **************************************************************************************************
 		JSONObject dataSet = new JSONObject();
-		try {
-			dataSet.put("emission", outputvalue) ;
-		} catch (JSONException e) {
-			throw new JPSRuntimeException(e.getMessage(), e);
-		}
 		
+		JSONWriter jsonOutput = null;
+		try {
+			jsonOutput = new JSONStringer().object().
+						key("hasEmission").object()
+							.key("hasValue").object()
+								.key("numericalValue").value(outputvalue).endObject()
+							.endObject()
+						.endObject();
+
+			
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} 
+		
+		System.out.println("jsonOutput=\n" + jsonOutput);
+		
+//		try {
+//			dataSet.put("emission", outputvalue);
+//		} catch (JSONException e) {
+//			throw new JPSRuntimeException(e.getMessage(), e);
+//		}
+
+
+
+		//AgentCaller.writeJsonParameter(response, dataSet);
+		String jsonobject=jsonOutput.toString();
+		try {
+			dataSet=convertstringtojsonobject(jsonobject);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		String message = dataSet.toString();
-		System.out.println ("message= "+message);
+		System.out.println("message= " + message);
 		
 		AgentCaller.writeJsonParameter(response, dataSet);
+	}
+
+	private JSONObject convertstringtojsonobject(String a) throws Exception {
 		
+		return new JSONObject(a);	
 	}
 
 	public Double queryPowerplantProperty(String iri) {
@@ -126,24 +158,19 @@ public class FactorModel extends HttpServlet {
 			value1 = cpiri.toString();
 			Literal cap = qs_p.getLiteral("vcapa"); // extract the name of the source
 			capacity = cap.getString();
-			System.out.println ("value1= "+value1);
-			System.out.println ("capacity= "+capacity);	
+	
 		}
-		
-		if (value1.contentEquals("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#CoalGeneration"))
-		{
-			outputvalue=Double.valueOf(capacity)*1000*0.8*0.001;
-		}
-		else if (value1.contentEquals("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#OilGeneration"))
-		{
-			outputvalue=Double.valueOf(capacity)*1000*0.5*0.001;
-		}
-		else if (value1.contentEquals("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGasGeneration"))
-		{
-			outputvalue=Double.valueOf(capacity)*750*0.5*0.001;
-		}
-		else
-		{
+
+		if (value1.contentEquals(
+				"http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#CoalGeneration")) {
+			outputvalue = Double.valueOf(capacity) * 1000 * 0.8 * 0.001;
+		} else if (value1.contentEquals(
+				"http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#OilGeneration")) {
+			outputvalue = Double.valueOf(capacity) * 1000 * 0.5 * 0.001;
+		} else if (value1.contentEquals(
+				"http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGasGeneration")) {
+			outputvalue = Double.valueOf(capacity) * 750 * 0.5 * 0.001;
+		} else {
 			throw new JPSRuntimeException("unknown generation type: " + value1);
 		}
 		return outputvalue;

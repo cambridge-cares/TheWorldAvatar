@@ -52,100 +52,90 @@ public class QueryPowerPlants extends HttpServlet {
 		QueryExecution q = QueryExecutionFactory.sparqlService(serviceURI,query);
 		ResultSet results = q.execSelect();	
 
-
-
 		return results;
 	}
 		
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
 		// -- Get String formatted in Array of Strings -- //
 		request.setCharacterEncoding("UTF-8");
 
 		String sparqlstring = request.getParameter("query");
-			
-	System.out.println("sparql= "+sparqlstring);
-	
-ArrayList <String> outputvalue = queryPowerplantProperty(sparqlstring);	
+
+		System.out.println("sparql= " + sparqlstring);
+
+		ArrayList<String> outputvalue = queryPowerplantProperty(sparqlstring);
 
 		JSONObject dataSet = new JSONObject();
-		
+
 		try {
 			JSONArray array = new JSONArray();
-			
-			for (int w=0;w<outputvalue.size();w+=7)
-			{
-			JSONObject item = new JSONObject();
-			item.put("plant", outputvalue.get(w+0));
-			item.put("generation", outputvalue.get(w+1));
-			item.put("capacity", outputvalue.get(w+2));
-			item.put("emission", outputvalue.get(w+3));
-			item.put("year", outputvalue.get(w+4));
-			item.put("technology", outputvalue.get(w+5));
-			item.put("fuel", outputvalue.get(w+6));
 
-			array.put(item);
+			for (int w = 0; w < outputvalue.size(); w += 7) {
+				JSONObject item = new JSONObject();
+				item.put("plant", outputvalue.get(w + 0));
+				item.put("generation", outputvalue.get(w + 1));
+				item.put("capacity", outputvalue.get(w + 2));
+				item.put("emission", outputvalue.get(w + 3));
+				item.put("year", outputvalue.get(w + 4));
+				item.put("technology", outputvalue.get(w + 5));
+				item.put("fuel", outputvalue.get(w + 6));
+
+				array.put(item);
 			}
-			
+
 			dataSet.put("results", array);
-			//outputvalue.clear();
 
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
-		
-		
+		}
+
 		String message = dataSet.toString();
 
-		System.out.println ("message= "+message);
-		
+		System.out.println("message= " + message);
+
 		AgentCaller.writeJsonParameter(response, dataSet);
-		
+
 		outputvalue.clear();
 
-		}
+	}
 			
 	
 	
 	
-	public ArrayList <String> queryPowerplantProperty(String sparqlstring) {
+	public ArrayList<String> queryPowerplantProperty(String sparqlstring) {
 
-		ResultSet rs_plant = QueryPowerPlants.queryFromFusekiServer("http://www.theworldavatar.com:80/damecoolquestion/worldpowerplantsng/query",sparqlstring); 
+		ResultSet rs_plant = QueryPowerPlants.queryFromFusekiServer(
+				"http://www.theworldavatar.com:80/damecoolquestion/worldpowerplantsng/query", sparqlstring);
 
-		
-		
 		while (rs_plant.hasNext()) {
 			QuerySolution soln = rs_plant.nextSolution();
 			// assumes that you have an "?g" in your query
 			System.out.println("-----------------------------------------------------");
-			
-			Iterator <String> varNames = soln.varNames();
-			 for (int i = 0; varNames.hasNext(); i++) {
 
-	                    String varName = varNames.next();
-	                    
-	                    System.out.println("hello result= "+varName);
-	        			
+			Iterator<String> varNames = soln.varNames();
+			for (int i = 0; varNames.hasNext(); i++) {
 
-	                    
-	                    
-	                    try {
-	                    	
-		                    String entity = soln.getResource(varName).toString();
-		                   	System.out.println(entity);
-		        			datalist.add(entity);	
-	                    	
-	                    }
-	                    catch (Exception e)
-	                    {
-	                    	 String entity = soln.getLiteral(varName).getString();
-		                	   System.out.println(entity);
-		                		datalist.add(entity);
-	                    }
-			 }
+				String varName = varNames.next();
+
+				System.out.println("hello result= " + varName);
+
+				try {
+
+					String entity = soln.getResource(varName).toString();
+					System.out.println(entity);
+					datalist.add(entity);
+					
+				} catch (Exception e) {
+					String entity = soln.getLiteral(varName).getString();
+					System.out.println(entity);
+					datalist.add(entity);
+				}
+			}
 		}
-		
+
 		return datalist;
 	}
 	
