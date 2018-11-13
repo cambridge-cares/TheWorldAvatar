@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.sparqlmock.test;
+package uk.ac.cam.cares.jps.querypowerplants.test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -11,7 +11,7 @@ import org.json.JSONObject;
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 
-public class Testsparqlmock extends TestCase {
+public class TestQueryPowerPlants extends TestCase {
 	
 	private String getContextPathForJPSplantquery() {
 		return "/JPS_CO2EMISSIONS/QueryPowerPlants";
