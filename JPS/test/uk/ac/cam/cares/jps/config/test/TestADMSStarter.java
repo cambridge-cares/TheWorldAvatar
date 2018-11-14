@@ -8,13 +8,13 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.junit.jupiter.api.Test;
+import org.junit.Ignore;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class TestADMSStarter {
 
-	@Test
+	@Ignore
 	void test() {
 		
 		String myHost = "www.theworldavatar.com";

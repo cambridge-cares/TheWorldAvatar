@@ -38,8 +38,8 @@ public class TestAgentDescriptions extends TestCase {
 		backAndforthAndWrite(service, "_GetPlantsInRegion");
 		service = createDescrForAgentWeather();
 		backAndforthAndWrite(service, "_OpenWeatherMap");
-		service = createDescrForAgentSRMEmissions();
-		backAndforthAndWrite(service, "_SRMEmissions");
+		service = createDescrForAgentPowerPlant();
+		backAndforthAndWrite(service, "_PowerPlant");
 		service = createDescrForAgentBuildingQuery();
 		backAndforthAndWrite(service, "_BuildingQuery");
 		service = createDescrForAgentADMS();
@@ -52,10 +52,7 @@ public class TestAgentDescriptions extends TestCase {
 	
 	private void backAndforthAndWrite(Service service, String name) throws URISyntaxException, FileNotFoundException {
 		
-		//new ServiceWriter().writeAsOwlFile(service, name, "C:\\Users\\nasac\\Documents\\TMP\\newAgentsMSM");
-		//new ServiceWriter().writeAsOwlFile(service, name, "C:\\Users\\Andreas\\TMP\\newAgentsMSM");
-		new ServiceWriter().writeAsOwlFile(service, name, "D:\\tmp\\newAgentsMSM");
-		
+		new ServiceWriter().writeAsOwlFile(service, name, "C://JPS_DATA/workingdir/JPS_COMPOSITION/testagents");
 		
 		service.setUri(null);
 		String owlService = new ServiceWriter().generateSerializedModel(service, name);
@@ -100,8 +97,8 @@ public class TestAgentDescriptions extends TestCase {
 		return builder.build();
 	}
 	
-	private Service createDescrForAgentSRMEmissions() {
-		return new ServiceBuilder().operation(null, JPS + "/calculateEmissionStream")
+	private Service createDescrForAgentPowerPlant() {
+		return new ServiceBuilder().operation(null, JPS + "/powerplant/calculateemission")
 			.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
 			.output("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
 			.build();

@@ -3,11 +3,11 @@
     xmlns:msm="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#">
   <msm:Service rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#Service">
     <msm:hasOperation>
-      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#Operation_e0dfc42a-8efc-4bcc-bde2-3b7d92722770">
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#Operation_264ebad1-9c8e-4aea-bd20-0fb724158631">
         <msm:hasOutput>
-          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#MessageContent_b1b52edd-90df-4b03-8b4a-4c1644018094">
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#MessageContent_8457ac87-dd84-4911-b382-a71b6090990b">
             <msm:hasMandatoryPart>
-              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#MessagePart_c99b34f3-8ca9-4f32-8146-911e279f4742">
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#MessagePart_ebcfb8b9-eb8f-4a99-bbc7-f2eb744562d3">
                 <msm:hasName>plant</msm:hasName>
                 <msm:isArray>true</msm:isArray>
                 <msm:hasType>http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant</msm:hasType>
@@ -16,27 +16,27 @@
           </msm:MessageContent>
         </msm:hasOutput>
         <msm:hasInput>
-          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#MessageContent_b36e7fcf-67df-49e2-8d53-f847ac89977f">
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#MessageContent_385ee0a9-a086-478d-9d74-b15295b501c5">
             <msm:hasMandatoryPart>
-              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#MessagePart_b316afa6-4211-47a4-9eb8-9e880d650d76">
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#MessagePart_d242506a-250b-48b2-8bd1-630a671b4d07">
                 <msm:hasMandatoryPart>
-                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#MessagePart_8e97fed1-0941-4986-b93d-644eee9d6e3b">
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#MessagePart_12f0a734-e2a7-47bb-b9e2-f683a981b1f2">
                     <msm:hasName>srsname</msm:hasName>
                     <msm:isArray>false</msm:isArray>
                     <msm:hasType>http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#srsname</msm:hasType>
                   </msm:MessagePart>
                 </msm:hasMandatoryPart>
                 <msm:hasMandatoryPart>
-                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#MessagePart_6f746161-30dc-4fba-aa36-dd0a8bbaf77b">
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#MessagePart_7f155b7f-8d4e-444e-8565-b212e73eb754">
                     <msm:hasMandatoryPart>
-                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#MessagePart_de00165f-d684-4a35-91fe-f7be6b5d34aa">
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#MessagePart_f8bb824f-4833-470f-9f86-c40e062509e4">
                         <msm:hasName>uppery</msm:hasName>
                         <msm:isArray>false</msm:isArray>
                         <msm:hasType>https://www.w3.org/2001/XMLSchema#double</msm:hasType>
                       </msm:MessagePart>
                     </msm:hasMandatoryPart>
                     <msm:hasMandatoryPart>
-                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#MessagePart_496f391b-8b8e-4ec7-adc0-7361148e46d5">
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#MessagePart_b7dd5e9a-a77b-45f3-95c5-8aed9ff3dbdd">
                         <msm:hasName>upperx</msm:hasName>
                         <msm:isArray>false</msm:isArray>
                         <msm:hasType>https://www.w3.org/2001/XMLSchema#double</msm:hasType>
@@ -48,16 +48,16 @@
                   </msm:MessagePart>
                 </msm:hasMandatoryPart>
                 <msm:hasMandatoryPart>
-                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#MessagePart_aecd8c9d-a782-44bd-b214-dcbf1b071d2b">
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#MessagePart_e969fa57-74e7-4685-9d51-9119b96d726b">
                     <msm:hasMandatoryPart>
-                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#MessagePart_809288bb-c40b-45f9-bac9-c48157cd6e94">
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#MessagePart_4f34951c-a7e2-4835-8834-f0ce598f88b2">
                         <msm:hasName>lowery</msm:hasName>
                         <msm:isArray>false</msm:isArray>
                         <msm:hasType>https://www.w3.org/2001/XMLSchema#double</msm:hasType>
                       </msm:MessagePart>
                     </msm:hasMandatoryPart>
                     <msm:hasMandatoryPart>
-                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#MessagePart_a697223b-96e0-431f-b2f0-164a286d139c">
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#MessagePart_753746ba-31bf-4deb-94a3-08241820d5b4">
                         <msm:hasName>lowerx</msm:hasName>
                         <msm:isArray>false</msm:isArray>
                         <msm:hasType>https://www.w3.org/2001/XMLSchema#double</msm:hasType>
@@ -78,5 +78,6 @@
         <msm:hasHttpUrl>http://www.theworldavatar.com/JPS/GetPlantsInRegion</msm:hasHttpUrl>
       </msm:Operation>
     </msm:hasOperation>
+    <msm:isComposed>false</msm:isComposed>
   </msm:Service>
 </rdf:RDF>

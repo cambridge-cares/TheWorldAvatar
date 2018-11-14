@@ -85,6 +85,7 @@ public class BuildingQueryAgent extends HttpServlet {
 	}
 	
 	private void print(HttpServletResponse resp, String message) throws IOException {
+		//TODO-AE just AgentCaller.printToResponse
 		resp.setContentType("text/plain");
 		resp.setCharacterEncoding("UTF-8");
 		logger.debug(message);

@@ -1,13 +1,13 @@
 <rdf:RDF
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:msm="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#">
-  <msm:Service rdf:about="http://www.theworldavatar.com/kb/agents/Service__SRMEmissions.owl#Service">
+  <msm:Service rdf:about="http://www.theworldavatar.com/kb/agents/Service__PowerPlant.owl#Service">
     <msm:hasOperation>
-      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__SRMEmissions.owl#Operation_19af5650-4a6b-40e6-aef7-1a00239e9b84">
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__PowerPlant.owl#Operation_4234eb02-fa31-4cec-bc96-5734daea54f3">
         <msm:hasOutput>
-          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__SRMEmissions.owl#MessageContent_58dfc990-36d9-4054-aadb-23859e37debb">
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__PowerPlant.owl#MessageContent_bf01d5bc-864b-47e2-b95d-a601d4b846d3">
             <msm:hasMandatoryPart>
-              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__SRMEmissions.owl#MessagePart_e85e48cb-68a9-4260-9cf7-ccd2bc4f868a">
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__PowerPlant.owl#MessagePart_4ce20d49-47e4-4bf8-8eca-7b49af7eced0">
                 <msm:hasName>waste</msm:hasName>
                 <msm:isArray>false</msm:isArray>
                 <msm:hasType>http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct</msm:hasType>
@@ -16,9 +16,9 @@
           </msm:MessageContent>
         </msm:hasOutput>
         <msm:hasInput>
-          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__SRMEmissions.owl#MessageContent_15e29d30-ce1a-4006-bc0b-2ecc8899326e">
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__PowerPlant.owl#MessageContent_c78a9622-e962-4b2c-996f-a692767a970f">
             <msm:hasMandatoryPart>
-              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__SRMEmissions.owl#MessagePart_a7a95d15-e79f-4ad5-8e01-32ac7c764f05">
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__PowerPlant.owl#MessagePart_63e624e5-5182-4ca2-af47-14463813b243">
                 <msm:hasName>plant</msm:hasName>
                 <msm:isArray>false</msm:isArray>
                 <msm:hasType>http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant</msm:hasType>
@@ -26,8 +26,9 @@
             </msm:hasMandatoryPart>
           </msm:MessageContent>
         </msm:hasInput>
-        <msm:hasHttpUrl>http://www.theworldavatar.com/JPS/calculateEmissionStream</msm:hasHttpUrl>
+        <msm:hasHttpUrl>http://www.theworldavatar.com/JPS/powerplant/calculateemission</msm:hasHttpUrl>
       </msm:Operation>
     </msm:hasOperation>
+    <msm:isComposed>false</msm:isComposed>
   </msm:Service>
 </rdf:RDF>
