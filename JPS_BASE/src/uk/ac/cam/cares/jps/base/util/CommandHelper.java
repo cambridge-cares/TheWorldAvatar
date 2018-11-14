@@ -5,37 +5,67 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+
 
 
 public class CommandHelper {
 	/* Author ZHOU XIAOCHI 2018.5.17*/
 	
-	private static Logger logger = LoggerFactory.getLogger(CommandHelper.class);
-
-	public static String executeSingleCommand(String targetFolder , String command) {  
-		List<String> commands = new ArrayList<String>();
-		commands.add(command);
-		return executeCommands(targetFolder, commands);
-	}
-	
+ 	
 	/**
 	 * @param targetFolder target folder path you want to apply the commands upon
 	 * @param args An array of commands you want to execute  
 	 */
-	public static String executeCommands(String targetFolder , List<String> commands) {  
+	private static Logger logger = LoggerFactory.getLogger(CommandHelper.class);
+
+	
+	public static String executeSingleCommand(String targetFolder , String command) 
+	{  
 	 
-		logger.info(commands + ", executed in folder: " + targetFolder);
+		logger.info("In folder: " + targetFolder + " Excuted: " + command);
+		Runtime rt = Runtime.getRuntime();
+		Process pr = null;
+		try {
+
+			pr = rt.exec(command, null, new File(targetFolder)); // IMPORTANT: By specifying targetFolder, all the cmds will be executed within such folder.
+		} catch (IOException e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		}
+		
+				 
+		BufferedReader bfr = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+		String line = "";
+		String resultString = "";
+		try {
+			while((line = bfr.readLine()) != null) {
+				resultString += line;
+			}
+		} catch (IOException e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		}
+		
+		return resultString; 
+	}
+	
+	
+	
+	
+	public static String executeCommands(String targetFolder , ArrayList<String> commands) {  
+	 
+		logger.info("In folder: " + targetFolder + " Excuted: " + commands);
 		Runtime rt = Runtime.getRuntime();
 		Process pr = null;
 		
 		try {
-			pr = rt.exec(commands.toArray(new String[0]), null, new File(targetFolder)); // IMPORTANT: By specifying targetFolder, all the cmds will be executed within such folder.
+			String[] command = commands.toArray(new String[0]);
+			pr = rt.exec(command, null, new File(targetFolder)); // IMPORTANT: By specifying targetFolder, all the cmds will be executed within such folder.
 		} catch (IOException e) {
-			logger.error(e.getMessage(), e);
+			throw new JPSRuntimeException(e.getMessage(), e);
 		}
 		
 		BufferedReader bfr = new BufferedReader(new InputStreamReader(pr.getInputStream()));
@@ -43,12 +73,17 @@ public class CommandHelper {
 		String resultString = "";
 		try {
 			while((line = bfr.readLine()) != null) {
-			resultString += line;
+				resultString += line;
 			}
 		} catch (IOException e) {
-			logger.error(e.getMessage(), e);
+			throw new JPSRuntimeException(e.getMessage(), e);
 		}
 		
 		return resultString; 
 	}
+	
+	
+	
+	
+	
 }

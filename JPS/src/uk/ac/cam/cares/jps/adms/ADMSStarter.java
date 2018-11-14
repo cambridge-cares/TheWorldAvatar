@@ -53,7 +53,7 @@ public class ADMSStarter extends HttpServlet {
 	}
 
 	public String startADMS(String targetFolder) {
-		String startADMSCommand = "\"C:\\Program Files (x86)\\CERC\\ADMS 5\\ADMSModel.exe\" /e2 /ADMS \"test.apl\"";
+		String startADMSCommand = "\"C:\\\\Program Files (x86)\\CERC\\ADMS 5\\ADMSModel.exe\" /e2 /ADMS \"test.apl\"";
 		CommandHelper.executeSingleCommand(targetFolder, startADMSCommand);
 		return targetFolder;
 	}
