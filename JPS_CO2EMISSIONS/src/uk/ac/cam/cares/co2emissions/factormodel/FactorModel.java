@@ -34,9 +34,7 @@ public class FactorModel extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	Logger logger = LoggerFactory.getLogger(FactorModel.class);
-	
-	
-	
+
 	public static synchronized ResultSet queryFromFusekiServer(String serviceURI, String query) {
 		
 		QueryExecution q = QueryExecutionFactory.sparqlService(serviceURI,query);
@@ -60,7 +58,9 @@ public class FactorModel extends HttpServlet {
 		try {
 			iri = jo.getString("plant");
 		} catch (JSONException e) {
+			logger.error(e.getMessage(), e);
 			throw new JPSRuntimeException(e.getMessage(), e);
+			
 		}
 
 		// we get the iri plant
@@ -94,33 +94,22 @@ public class FactorModel extends HttpServlet {
 								.key("numericalValue").value(outputvalue).endObject()
 							.endObject()
 						.endObject();
-
 			
 		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.error(e1.getMessage(), e1);
 		} 
 		
-		System.out.println("jsonOutput=\n" + jsonOutput);
-		
-//		try {
-//			dataSet.put("emission", outputvalue);
-//		} catch (JSONException e) {
-//			throw new JPSRuntimeException(e.getMessage(), e);
-//		}
+		logger.info("jsonOutput=\n" + jsonOutput);
 
-
-
-		//AgentCaller.writeJsonParameter(response, dataSet);
 		String jsonobject=jsonOutput.toString();
 		try {
 			dataSet=convertstringtojsonobject(jsonobject);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		logger.error(e.getMessage(), e);
+					
 		}
 		String message = dataSet.toString();
-		System.out.println("message= " + message);
+		logger.info("message= " + message);
 		
 		AgentCaller.writeJsonParameter(response, dataSet);
 	}
