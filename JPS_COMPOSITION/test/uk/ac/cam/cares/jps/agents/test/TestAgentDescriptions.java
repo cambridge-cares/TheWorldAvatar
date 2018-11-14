@@ -48,6 +48,8 @@ public class TestAgentDescriptions extends TestCase {
 		backAndforthAndWrite(service, "_ComposedADMS");
 		service = createDescrForFactorModel();
 		backAndforthAndWrite(service, "_FactorModel");
+		service = createDescrForSurrogateModel();
+		backAndforthAndWrite(service, "_SurrogateModel");
 	}
 	
 	private void backAndforthAndWrite(Service service, String name) throws URISyntaxException, FileNotFoundException {
@@ -139,6 +141,16 @@ public class TestAgentDescriptions extends TestCase {
 	
 	private Service createDescrForFactorModel() {
 		return new ServiceBuilder().operation(null, JPS_CO2EMISSIONS + "/FactorModel")
+			.input("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl", "plant")
+			.output("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#hasEmission", "hasEmission").down()
+				.output("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue", "hasValue").down()
+					.output("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue", "numericalValue").up()
+				.up()
+			.build();
+	}
+	
+	private Service createDescrForSurrogateModel() {
+		return new ServiceBuilder().operation(null, JPS_CO2EMISSIONS + "/SurrogateModel")
 			.input("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl", "plant")
 			.output("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#hasEmission", "hasEmission").down()
 				.output("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue", "hasValue").down()
