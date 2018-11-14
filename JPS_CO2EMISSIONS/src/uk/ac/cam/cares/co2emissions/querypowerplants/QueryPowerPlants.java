@@ -10,20 +10,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.jena.ontology.OntModel;
-import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.query.ResultSetFactory;
-import org.apache.jena.query.ResultSetFormatter;
-import org.apache.jena.query.ResultSetRewindable;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 
@@ -31,26 +26,13 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 public class QueryPowerPlants extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
-
-	ArrayList <String> datalist = new ArrayList <String>();
-	OntModel jenaOwlModel = ModelFactory.createOntologyModel();
-	
-	public static synchronized ResultSet query(String sparql, OntModel model) {
-		Query query = QueryFactory.create(sparql);
-		QueryExecution queryExec = QueryExecutionFactory.create(query, model);
-		System.out.println("get the result?== "+queryExec);
-		ResultSet rs = queryExec.execSelect();  
-		System.out.println("get the result== "+rs);
-		ResultSetRewindable results = ResultSetFactory.copyResults(rs);    
-		ResultSetFormatter.out(System.out, results, query);
-		return results;
-	}
-	
+	Logger logger = LoggerFactory.getLogger(QueryPowerPlants.class);
+	ArrayList <String> datalist = new ArrayList <String>();	
 	
 	public static synchronized ResultSet queryFromFusekiServer(String serviceURI, String query) {
-		
-		QueryExecution q = QueryExecutionFactory.sparqlService(serviceURI,query);
-		ResultSet results = q.execSelect();	
+
+		QueryExecution q = QueryExecutionFactory.sparqlService(serviceURI, query);
+		ResultSet results = q.execSelect();
 
 		return results;
 	}
@@ -63,89 +45,61 @@ public class QueryPowerPlants extends HttpServlet {
 
 		String sparqlstring = request.getParameter("query");
 
-		System.out.println("sparql= " + sparqlstring);
-
-		ArrayList<String> outputvalue = queryPowerplantProperty(sparqlstring);
-
-		JSONObject dataSet = new JSONObject();
-
-		try {
-			JSONArray array = new JSONArray();
-
-			for (int w = 0; w < outputvalue.size(); w += 7) {
-				JSONObject item = new JSONObject();
-				item.put("plant", outputvalue.get(w + 0));
-				item.put("generation", outputvalue.get(w + 1));
-				item.put("capacity", outputvalue.get(w + 2));
-				item.put("emission", outputvalue.get(w + 3));
-				item.put("year", outputvalue.get(w + 4));
-				item.put("technology", outputvalue.get(w + 5));
-				item.put("fuel", outputvalue.get(w + 6));
-
-				array.put(item);
-			}
-
-			dataSet.put("results", array);
-
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		String message = dataSet.toString();
-
-		System.out.println("message= " + message);
-
-		AgentCaller.writeJsonParameter(response, dataSet);
-
-		outputvalue.clear();
-
-	}
-			
-	
-	
-	
-	public ArrayList<String> queryPowerplantProperty(String sparqlstring) {
+		logger.info("sparql= " + sparqlstring);
 
 		ResultSet rs_plant = QueryPowerPlants.queryFromFusekiServer(
 				"http://www.theworldavatar.com:80/damecoolquestion/worldpowerplantsng/query", sparqlstring);
 
+		JSONObject dataSet = new JSONObject();
+		JSONArray array = new JSONArray();
+
 		while (rs_plant.hasNext()) {
+
 			QuerySolution soln = rs_plant.nextSolution();
-			// assumes that you have an "?g" in your query
-			System.out.println("-----------------------------------------------------");
 
 			Iterator<String> varNames = soln.varNames();
-			for (int i = 0; varNames.hasNext(); i++) {
+
+			JSONObject item = new JSONObject();
+			for (; varNames.hasNext();) {
 
 				String varName = varNames.next();
-
-				System.out.println("hello result= " + varName);
 
 				try {
 
 					String entity = soln.getResource(varName).toString();
-					System.out.println(entity);
+					logger.debug(entity);
 					datalist.add(entity);
-					
+					item.put(varName, entity);
+
 				} catch (Exception e) {
 					String entity = soln.getLiteral(varName).getString();
-					System.out.println(entity);
+					logger.debug(entity);
 					datalist.add(entity);
-				}
-			}
-		}
+					try {
+						item.put(varName, entity);
+					} catch (JSONException e1) {
+						logger.error(e1.getMessage(), e1);
+					}
 
-		return datalist;
+				}
+
+			}
+			array.put(item);
+		}
+		try {
+			dataSet.put("results", array);
+		} catch (JSONException e) {
+
+			logger.error(e.getMessage(), e);
+		}
+		String message = dataSet.toString();
+
+		logger.info("message= " + message);
+
+		AgentCaller.writeJsonParameter(response, dataSet);
+
+		datalist.clear();
+
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 }
