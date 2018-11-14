@@ -34,6 +34,7 @@ import com.rabbitmq.client.ConnectionFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.exception.PythonException;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 /**
@@ -43,7 +44,6 @@ import uk.ac.cam.cares.jps.base.util.PythonHelper;
 public class WorldPowerPlant extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final String EXCHANGE_NAME = "jps.agents";
-	private static final String AGENT_IRI = "agent_iri";
 	private static final String SCENARIO_ID_1 = "1";
 	private static final String SCENARIO_ID_2 = "2";
 	private static final String SCENARIO_ID_3 = "3";
@@ -62,66 +62,59 @@ public class WorldPowerPlant extends HttpServlet {
     protected void publishMessage(String powerplantIRI, String idScenario, Channel channel, String chosenModel) throws UnsupportedEncodingException, IOException, URISyntaxException {
 		Map<String, String> queryParamsJsonObj = new HashMap<String, String>();
 		queryParamsJsonObj.put("plant", powerplantIRI);
-		String queryParamPowerplantIRIString = g.toJson(queryParamsJsonObj);
 		
-		queryParamsJsonObj.put("agent iri", AGENT_IRI);
-		queryParamsJsonObj.put("scenario id", idScenario);
-		String queryParamsString = g.toJson(queryParamsJsonObj);
+		// String queryParamPowerplantIRIString = g.toJson(queryParamsJsonObj);		
+		// AgentCaller.executeGet(PATH, KEY, queryParamPowerplantIRIString);
 		
-		channel.basicPublish(EXCHANGE_NAME, "", null, queryParamsString.getBytes("UTF-8"));
-		
-//		AgentCaller.executeGet(PATH, KEY, queryParamPowerplantIRIString);
-		
-		//
+		String agentIRI = null;
 		
 		if (chosenModel.equals("factor")) {
 			// EIP --> one parameter
 			JSONObject dataSet = new JSONObject();
 			try {
-				dataSet.put("plant", powerplantIRI) ;
+				dataSet.put("plant", powerplantIRI);
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				throw new JPSRuntimeException(e.getMessage(), e);
 			}
-			
 
 			String json = dataSet.toString();
 			String resultjson = AgentCaller.executeGet("/JPS_CO2EMISSIONS/FactorModel", "query", json);
 			System.out.println(resultjson);
-		} 
-		
-		
-		
-		
-		
-		
-		
-		else {
+
+			agentIRI = "http://www.theworldavatar.com/kb/agents/Service__FactorModel.owl#Service";
+
+		} else {
 			URIBuilder builder = new URIBuilder().setScheme("http").setHost("localhost:8000")
-					.setPath("/run-surrogate-model")
-					.setParameter("powerplantIRI", powerplantIRI);
-	//				.setParameter("workingdir", WORKINGDIR_ADMS_PATH)
-			
+					.setPath("/run-surrogate-model").setParameter("powerplantIRI", powerplantIRI);
+			// .setParameter("workingdir", WORKINGDIR_ADMS_PATH)
+
 			URI uri = builder.build();
 			HttpGet getRequest = new HttpGet(uri);
 			HttpClient httpClient = HttpClientBuilder.create().build();
 			HttpResponse httpResponse = httpClient.execute(getRequest);
-			
+
 			// Parse response into string
-			BufferedReader rd = new BufferedReader(new InputStreamReader(
-				    httpResponse.getEntity().getContent()));
-			
+			BufferedReader rd = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
+
 			StringBuilder total = new StringBuilder();
 			String line = null;
-			
+
 			while ((line = rd.readLine()) != null) {
 				total.append(line);
 			}
 			rd.close();
-			String body = total.toString();	
-			
+			String body = total.toString();
+
 			System.out.println(body);
+
+			agentIRI = "http://www.theworldavatar.com/kb/agents/Service__SurrogateModel.owl#Service";
 		}
+		
+		queryParamsJsonObj.put("agent iri", agentIRI);
+		queryParamsJsonObj.put("scenario id", idScenario);
+		String queryParamsString = g.toJson(queryParamsJsonObj);
+		channel.basicPublish(EXCHANGE_NAME, "", null, queryParamsString.getBytes("UTF-8"));
     }
     
     protected void publishMessages(String[] arrayPowerplantIRI, int numPowerplants, int numSegments, Channel channel, String chosenModel) throws UnsupportedEncodingException, IOException, URISyntaxException {
