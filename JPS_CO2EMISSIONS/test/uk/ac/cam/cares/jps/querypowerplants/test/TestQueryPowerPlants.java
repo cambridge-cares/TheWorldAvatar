@@ -17,7 +17,7 @@ public class TestQueryPowerPlants extends TestCase {
 		return "/JPS_CO2EMISSIONS/QueryPowerPlants";
 	}
 	
-	static String country="Zimbabwe";
+	static String country="Japan";
 	static String sparqlstring = "PREFIX cp:<http://dbpedia.org/resource/> " 
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
@@ -53,13 +53,18 @@ public class TestQueryPowerPlants extends TestCase {
 		
 		JSONArray queryresult = new JSONObject(resultjson).getJSONArray("results");
 		
-		JSONObject plant1=queryresult.getJSONObject(0);
+		JSONObject plant1info=queryresult.getJSONObject(0);
+		JSONObject plant3info=queryresult.getJSONObject(2);
+		
+
 		
 		System.out.println(resultjson);
-		System.out.println ("result of plant 1= "+plant1);
+		System.out.println ("result of plant 1= "+plant1info);
 		
-		System.out.println("result of plant0 picked= "+plant1.getString("plant"));
-		System.out.println("result of capacity of plant0 picked= "+plant1.getString("capacity"));
+		assertEquals("http://www.theworldavatar.com/kb/powerplants/Aioi_Thermal_Power_Plant_Japan_01.owl#Aioi_Thermal_Power_Plant_Japan_01", plant1info.getString("entity"));
+		assertEquals("1125", plant1info.getString("vcapa"));
+		assertEquals("http://www.theworldavatar.com/kb/powerplants/Aioi_Thermal_Power_Plant_Japan_03.owl#Aioi_Thermal_Power_Plant_Japan_03", plant3info.getString("entity"));
+		assertEquals("1983", plant3info.getString("vyear"));
 		
 	}
 	
