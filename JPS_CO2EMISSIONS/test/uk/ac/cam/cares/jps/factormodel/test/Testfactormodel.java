@@ -22,7 +22,7 @@ public class Testfactormodel extends TestCase {
 		// EIP --> one parameter
 		JSONObject dataSet = new JSONObject();
 		try {
-			dataSet.put("plant", "http://www.theworldavatar.com/kb/powerplants/Uskmouth_B_Coal_Power_Station__UK.owl#Uskmouth_B_Coal_Power_Station__UK") ;
+			dataSet.put("plant", "http://www.theworldavatar.com/kb/powerplants/Langerlo_Thermal_Power_Plant_Belgium.owl#Langerlo_Thermal_Power_Plant_Belgium") ;
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -32,9 +32,9 @@ public class Testfactormodel extends TestCase {
 		String json = dataSet.toString();
 		String resultjson = AgentCaller.executeGet(getContextPathForJPSco2emissionefactor(), "query", json);
 		
-		//double emission = new JSONObject(resultjson).getDouble("emission");
+
 		double emission = new JSONObject(resultjson).getJSONObject("hasEmission").getJSONObject("hasValue").getDouble("numericalValue");
-		assertEquals(1142.4, emission, 1000.);
+		assertEquals(444.8, emission, 1.);
 
 
 	}
