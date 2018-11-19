@@ -19,12 +19,7 @@ class PythonLogger(object):
         self.logging.basicConfig(stream=self.log_stream,
                                  level=logging.INFO,
                                  format='%(asctime)s %(levelname)s [Python] {} %(message)s'.format(pythonScript))
-        
-        #if (cwd.startswith("C:/Users/Andreas") or cwd.startswith("C:\\Users\\Andreas")):
-        #    self.logging.info("PythonLogger startswith True")
-        #else:
-        #     self.logging.info("PythonLogger startswith False")
-        
+               
         cwd = os.getcwd() # current working directory
         self.logServerURL = 'http://localhost:8080/JPS_BASE/LogServer'
         if (cwd.startswith("C:\\TOMCAT\\webapps") or cwd.startswith("C:/TOMCAT/webapps")):
