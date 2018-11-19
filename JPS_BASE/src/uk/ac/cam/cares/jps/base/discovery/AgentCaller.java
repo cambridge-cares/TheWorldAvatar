@@ -47,8 +47,7 @@ public class AgentCaller {
 	
 	private static synchronized String getHostPort() {
 		if (hostPort == null) {
-//			hostPort = AgentLocator.getProperty("host") + ":" + AgentLocator.getProperty("port");
-			hostPort = AgentLocator.getProperty("host");
+			hostPort = AgentLocator.getProperty("host") + ":" + AgentLocator.getProperty("port");
 		}
 		return hostPort;
 	}

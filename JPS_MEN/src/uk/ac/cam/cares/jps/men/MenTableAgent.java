@@ -66,33 +66,55 @@ public class MenTableAgent extends HttpServlet {
 		logger.info("MEN_Table Agent start");
 		request.setCharacterEncoding("UTF-8");
 		
-		String jsonString = request.getParameter("listOfInputs");
+		String jsonString = request.getParameter("agentrequest");
 		
 		logger.info("jsonstring= "+jsonString);
 		
 		
 		
 		// read form fields	
-		String[]parameterfromjson =jsonString.replaceAll("[()\\[\\]]", "").split(",");
-		int sizeofparameterjson= parameterfromjson.length;
-		
-		String carbontax = parameterfromjson[0];
-		//String interestfactor = parameterfromjson[1];
+		JSONArray queryresult = null;
+		String carbontax="0.0";
 		String interestfactor = "1.0";
-		String intmarketpricefactor =parameterfromjson[2];
-		String intmarketlowestprice = parameterfromjson[3];
-		
-		String[] annualcostfactor= new String[sizeofparameterjson-4];
-		for (int timefactor=0;timefactor<sizeofparameterjson-4;timefactor++)
-		{
-			annualcostfactor[timefactor]=parameterfromjson[timefactor+4].replaceAll("\"", "");
+		String intmarketpricefactor="0.0";
+		String intmarketlowestprice="0.0";
+		String annualfactor="0.0";
+		JSONObject carbontaxobj;
+		try {
+			queryresult = new JSONObject(jsonString).getJSONArray("inputParameters");
+			carbontaxobj = queryresult.getJSONObject(0);
+			String valueofcarbontax=carbontaxobj.getString("value");
+			logger.info("carbontaxobj= "+carbontaxobj);
+			logger.info("value= "+valueofcarbontax);
+			carbontax =queryresult.getJSONObject(0).getString("value");
+			intmarketpricefactor= queryresult.getJSONObject(2).getString("value");
+			intmarketlowestprice = queryresult.getJSONObject(3).getString("value");
+			annualfactor=queryresult.getJSONObject(4).getString("value");
+			
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
+
+		int sizeofparameterjson= queryresult.length();
+		logger.info("valueof parameter size= "+sizeofparameterjson);
+
+		String[] annualcostfactor= new String[annualfactor.split(",").length];
+		
+		
+		for (int timefactor=0;timefactor<annualcostfactor.length;timefactor++)
+		{
+
+			annualcostfactor[timefactor]=annualfactor.replaceAll("[\\[\\]\\(\\)]", "").replaceAll("\"", "").split(",")[timefactor];
+		}
+		
+		
 	
 		String resultjson;
 		JSONObject json = new JSONObject();
 
 		Double[][] totaltransportcost= new Double[annualcostfactor.length][annualcostfactor.length];
-		
+
 		JSONArray tmpc = new JSONArray();
 		JSONArray ttc = new JSONArray();
 		JSONArray tic = new JSONArray();

@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.building;
+package uk.ac.cam.cares.jps.adms.old;
 
 import java.io.IOException;
 import java.util.List;
@@ -13,6 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+
+import uk.ac.cam.cares.jps.building.BuildingQueryPerformer;
+import uk.ac.cam.cares.jps.building.CRSTransformer;
+import uk.ac.cam.cares.jps.building.SimpleBuildingData;
 
 @WebServlet(urlPatterns = {"/buildings/fromregion", "/buildings/simpleshape"})
 public class BuildingQueryAgent extends HttpServlet {
@@ -85,6 +89,7 @@ public class BuildingQueryAgent extends HttpServlet {
 	}
 	
 	private void print(HttpServletResponse resp, String message) throws IOException {
+		//TODO-AE just AgentCaller.printToResponse
 		resp.setContentType("text/plain");
 		resp.setCharacterEncoding("UTF-8");
 		logger.debug(message);

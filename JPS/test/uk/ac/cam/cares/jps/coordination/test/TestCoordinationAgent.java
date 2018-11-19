@@ -9,8 +9,28 @@ import org.json.JSONWriter;
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 
-public class CoordinationTest extends TestCase {
+public class TestCoordinationAgent extends TestCase {
 
+	/**
+	 *This test does not write a new apl file because an exception occurs in admsInputDataRetrieverNew.py
+	 *	 *
+	 *INFO [Python] admsTest.py find closed bdn for src: http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002 with x: 699583.49 y: 532938.392018-11-19 12:46:14,719 
+	 *ERROR [Python] admsTest.py Dear lord, no closed buildinf found for ...
+	 *
+	 *Compare this with the log result of testCoordinationAgentWithoutCompositionForBerlinWithEPSG28992Coordinates 
+	 *INFO [Python] admsTest.py find closed bdn for src: http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002 with x: 699583.49 y: 532938.392018-11-19 
+	 *INFO [Python] admsTest.py path for adms met file=C://JPS_DATA/workingdir/JPS/ADMS/test.met2018-11-19 12:45:19,270 
+	 *INFO [Python] admsTest.py calling admsAplWirter ...
+	 * 
+	 * 
+	 * Cause: The region coordinates (in WSG94) are not adapted to the power plant coordinates:
+	 * 
+	 * INFO [http-nio-8080-exec-6] ADMSAgent retrieveBuildingDataInJSON, city=http://dbpedia.org/resource/Berlin, plantx=699582.7165141392, planty=532937.7313147049, lowerx=13.414204, lowery=52.508493, upperx=13.427214, uppery=52.514838
+	 * 
+	 * 
+	 * 
+	 * @throws JSONException
+	 */
 	public void testCoordinationAgentWithoutCompositionForBerlinWithWSG94Coordinates() throws JSONException {
 						
 		JSONWriter jsonInput = new JSONStringer().object().
@@ -60,9 +80,7 @@ public class CoordinationTest extends TestCase {
 				.endObject(); 
 				
 		String result = AgentCaller.executeGetWithJsonParameter("/JPS/ADMSCoordinationAgentWithoutComposition", jsonInput.toString());
-		
-		System.out.println(result);
-		
+				
 		JSONObject jo = new JSONObject(result);
 		String city = jo.getString("city");
 		assertEquals("http://dbpedia.org/resource/Berlin", city);

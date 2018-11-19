@@ -18,7 +18,9 @@ public class TestADMSOutput extends TestCase {
 		
 		Gson g = new Gson();
 		
-		String outputFile = AgentLocator.getPathToWorkingDir(this) + "/" + "ADMS/test.levels.gst";
+		//String outputFile = AgentLocator.getPathToWorkingDir(this) + "/" + "ADMS/test.levels.gst";
+		String outputFile = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
+		
 		
 		try {
 		

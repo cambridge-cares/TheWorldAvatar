@@ -1,17 +1,11 @@
 package uk.ac.cam.cares.jps.men.test;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.google.gson.Gson;
 
 //import org.apache.http.ParseException;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
@@ -68,10 +62,10 @@ public class TestMenTableAgent extends TestCase {
 	private String getInterestFactor() {
 		return "1";// put hardcoded interest
 	}
-		/*private String getAnnualCostFactor() {
-			return "0.02"; // location of the owl file that contains information for the transportation system
+		private String getAnnualCostFactor() {
+			return "[1,10,50,100]"; // location of the owl file that contains information for the transportation system
 		}
-		*/
+		
 		private String getInternationalMarketPriceFactor() {
 				return "1.05"; // location of the owl file that contains international market price system
 			}
@@ -105,14 +99,16 @@ public class TestMenTableAgent extends TestCase {
 		Parameter param4 = new Parameter("InterestFactor", getInterestFactor());
 		request.getInputParameters().add(param4);
 
-		//Parameter param5 = new Parameter("AnnualCostFactor", getAnnualCostFactor());
-		//request.getInputParameters().add(param5);
+		
 
 		Parameter param6 = new Parameter("InternationalMarketPriceFactor", getInternationalMarketPriceFactor());
 		request.getInputParameters().add(param6);
 
 		Parameter param7 = new Parameter("InternationalMarketLowestPriceApplied", getInternationalMarketLowestPrice());
 		request.getInputParameters().add(param7);
+		
+		Parameter param5 = new Parameter("AnnualCostFactor", getAnnualCostFactor());
+		request.getInputParameters().add(param5);
 		
 
 		System.out.println("request content in test agent= "+request);
@@ -122,14 +118,19 @@ public class TestMenTableAgent extends TestCase {
 
 		System.out.println("here is the reaching back of final result");
 		// search for outputparameter with key = test
-		Double ans1 = Double.valueOf((String) resp.getOutputParameters().get(0).getValue());
-		System.out.println("result 1= "+ans1);
-		Double ans2 = Double.valueOf((String) resp.getOutputParameters().get(1).getValue());
-		Double ans3 = Double.valueOf((String) resp.getOutputParameters().get(2).getValue());
-		Double ans4 = Double.valueOf((String) resp.getOutputParameters().get(3).getValue());
-		Double ans5 = Double.valueOf((String) resp.getOutputParameters().get(4).getValue());
-		Double ans6 = Double.valueOf((String) resp.getOutputParameters().get(5).getValue());
-		Double ans7 = Double.valueOf((String) resp.getOutputParameters().get(6).getValue());
+		
+		
+
+		System.out.println("it is connected");
+		
+//		Double ans1 = Double.valueOf((String) resp.getOutputParameters().get(0).getValue());
+//		System.out.println("result 1= "+ans1);
+//		Double ans2 = Double.valueOf((String) resp.getOutputParameters().get(1).getValue());
+//		Double ans3 = Double.valueOf((String) resp.getOutputParameters().get(2).getValue());
+//		Double ans4 = Double.valueOf((String) resp.getOutputParameters().get(3).getValue());
+//		Double ans5 = Double.valueOf((String) resp.getOutputParameters().get(4).getValue());
+//		Double ans6 = Double.valueOf((String) resp.getOutputParameters().get(5).getValue());
+//		Double ans7 = Double.valueOf((String) resp.getOutputParameters().get(6).getValue());
 	
 
 		/*assertEquals(6.636958433E9, ans1, 1000.);

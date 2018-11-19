@@ -19,7 +19,6 @@ import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AbstractAgentServiceDescription;
 import uk.ac.cam.cares.jps.base.discovery.Agent;
 import uk.ac.cam.cares.jps.base.discovery.AgentServiceDescription;
@@ -191,7 +190,7 @@ public class OWLSerializer {
 		UUID uuid = createUUID();
 		ByteArrayOutputStream bytestream = convertToString(agent, uuid);
 		
-		String path = AgentLocator.getPathToJpsDataKnowledgeDir() + "/OntoAgent/Agent" + uuid + ".owl";
+		String path = null; //AgentLocator.getPathToJpsDataKnowledgeDir() + "/OntoAgent/Agent" + uuid + ".owl";
 		File file = new File(path);
 		if (!file.exists()) {
 			file.createNewFile();

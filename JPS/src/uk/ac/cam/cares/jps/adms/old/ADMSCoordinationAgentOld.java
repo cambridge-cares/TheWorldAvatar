@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.coordination;
+package uk.ac.cam.cares.jps.adms.old;
 
 import java.io.IOException;
 import java.net.URI;
@@ -17,19 +17,20 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
- * Servlet implementation class ADMSCoordinationAgentNew
+ * Servlet implementation class ADMSCoordinationAgentOld
  */
-@WebServlet("/ADMSCoordinationAgentNew")
-public class ADMSCoordinationAgentNew extends HttpServlet {
+@WebServlet("/ADMSCoordinationAgentOld")
+public class ADMSCoordinationAgentOld extends HttpServlet {
 	private static final long serialVersionUID = 1L;
       
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ADMSCoordinationAgentNew() { 
+    public ADMSCoordinationAgentOld() { 
         super();
      }
 
@@ -57,13 +58,13 @@ public class ADMSCoordinationAgentNew extends HttpServlet {
 				.setParameter("upperx", upperx)
 				.setParameter("uppery", uppery);
 		
-		String result1  = executeGet(builderGenerateInput);
-		
+		String targetFolder = executeGet(builderGenerateInput);
+		targetFolder = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
 
 		String myPathADMSStarter = "/JPS/ADMSStarter";
 		URIBuilder buildermyPathADMSStarter = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath(myPathADMSStarter)
-				.setParameter("targetFolder", result1);
+				.setParameter("targetFolder", targetFolder);
 	
 		JSONObject result = new JSONObject();
 		String ADMSOutput = executeGet(buildermyPathADMSStarter);

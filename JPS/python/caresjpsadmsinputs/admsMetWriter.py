@@ -40,11 +40,8 @@ except:
 	print("ERROR: Invalid Input")
 
 try:
-	with open('./test.met', 'w') as file:
-		result =  template%(temperature,windSpeed,windDirection,precitipation,cloudCover)
-		file.write(result)
-		file.close()
-	with open('../../workingdir/ADMS/test.met', 'w') as file:
+	metpath = "C://JPS_DATA/workingdir/JPS/ADMS/test.met"
+	with open(metpath, 'w') as file:
 		result =  template%(temperature,windSpeed,windDirection,precitipation,cloudCover)
 		file.write(result)
 		file.close()
