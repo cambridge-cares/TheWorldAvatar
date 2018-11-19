@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.coordination;
+package uk.ac.cam.cares.jps.adms.old;
 
 import java.io.IOException;
 import java.net.URI;
@@ -21,16 +21,16 @@ import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
- * Servlet implementation class ADMSCoordinationAgentNew
+ * Servlet implementation class ADMSCoordinationAgentOld
  */
-@WebServlet("/ADMSCoordinationAgentNew")
-public class ADMSCoordinationAgentNew extends HttpServlet {
+@WebServlet("/ADMSCoordinationAgentOld")
+public class ADMSCoordinationAgentOld extends HttpServlet {
 	private static final long serialVersionUID = 1L;
       
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ADMSCoordinationAgentNew() { 
+    public ADMSCoordinationAgentOld() { 
         super();
      }
 

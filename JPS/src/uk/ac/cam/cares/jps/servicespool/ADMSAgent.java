@@ -38,11 +38,6 @@ public class ADMSAgent extends HttpServlet {
 	
 	private Logger logger = LoggerFactory.getLogger(ADMSAgent.class);
 
-    public ADMSAgent() {
-        super();
-    }
-
-
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		/*
@@ -96,7 +91,7 @@ public class ADMSAgent extends HttpServlet {
 			newBuildingData = newBuildingData.replace('\"', '\'');
 			
 			
-			System.out.println("MY NEW BUILDING DATA = " + newBuildingData);
+			System.out.println("building data = " + newBuildingData);
 			writeAPLFile(newBuildingData,plantIRI, region);
 			
 			
@@ -105,22 +100,21 @@ public class ADMSAgent extends HttpServlet {
 			writeMetFile(weather);
 			
 			// =================== Start ADMS when input files are written =======================
-			String path = "/JPS/ADMSStarter";
 			
-			//String targetFolder =  AgentLocator.getPathToWorkingDir(this) + "/" + "ADMS";
 			String targetFolder = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
-			
-			URIBuilder builder2 = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
-					.setPath(path)
-					.setParameter("targetFolder", targetFolder);
-			String finalResult = executeGet(builder2);
-			response.getWriter().write(finalResult.toString()); // TODO: ZXC Read the output file and then return JSON
+			if(request.getServerName().contains("localhost")) {
+				//startADMS(targetFolder);
+			} else {
+				startADMS(targetFolder);
+			}
+			JSONObject result = new JSONObject();
+			result.put("folder", targetFolder);
+			response.getWriter().write(result.toString()); // TODO: ZXC Read the output file and then return JSON
 			// ====================================================================================
 			
 		} catch (JSONException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
-
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -130,7 +124,6 @@ public class ADMSAgent extends HttpServlet {
 
 	public void writeMetFile(JSONObject weatherInJSON) {
 		
-			//String fullPath = AgentLocator.getPathToWorkingDir(this) + "/" + "ADMS";
 			String fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
 			String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
 			
@@ -141,12 +134,10 @@ public class ADMSAgent extends HttpServlet {
 			// TODO-AE replacing " by $, maybe better by ' as is done in method writeAPLFile
 			args.add(weatherInJSON.toString().replace("\"", "$"));
 			
-			// TODO-AE URGENT URGENT
-			//String result = CommandHelper.executeCommands(targetFolder, args);
+			CommandHelper.executeCommands(targetFolder, args);
 	}
 	
 	public String writeAPLFile(String buildingInString, String plantIRI, JSONObject regionInJSON) {
-		//String fullPath = AgentLocator.getPathToWorkingDir(this) + "/" + "ADMS";
 		String fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
 		String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
 		ArrayList<String> args = new ArrayList<String>();
@@ -157,7 +148,7 @@ public class ADMSAgent extends HttpServlet {
  		args.add(plantIRI.replace("\"", "'"));
  		args.add(fullPath);
  		// TODO-AE use PythonHelper instead of CommandHelper
-  		String result = CommandHelper.executeCommands(targetFolder, args);
+  		String result = CommandHelper.executeCommands(targetFolder, args);		
 		return result;		
 	}
 
@@ -212,4 +203,10 @@ public class ADMSAgent extends HttpServlet {
 		
 		return new double[] {plantx, planty};
 	}
+	
+	private void startADMS(String targetFolder) {
+		String startADMSCommand = "\"C:\\\\Program Files (x86)\\CERC\\ADMS 5\\ADMSModel.exe\" /e2 /ADMS \"test.apl\"";
+		CommandHelper.executeSingleCommand(targetFolder, startADMSCommand);
+	}
+
 }

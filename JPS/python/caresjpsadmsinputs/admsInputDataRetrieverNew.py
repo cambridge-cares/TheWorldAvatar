@@ -314,12 +314,12 @@ class admsInputDataRetriever(object):
 
 
     def coreBdn2Src(self):
-        '''calculate main building for each src
-        '''
+        self.pythonLogger.postInfoToLogServer('calculate main building for each src')
         #compare src coords to each bdn
         for src in self.rawSrc:
             closed, dClosed, first = None, sys.maxsize, True
-            print('find closed bdn for src: '+src.SrcName+" with x: "+str(src.SrcX1) +" y: "+str(src.SrcY1))
+            #print('find closed bdn for src: '+src.SrcName+" with x: "+str(src.SrcX1) +" y: "+str(src.SrcY1))
+            self.pythonLogger.postInfoToLogServer('find closed bdn for src: '+src.SrcName+" with x: "+str(src.SrcX1) +" y: "+str(src.SrcY1) + ", no of buildings=" + str(len(self.rawBdn.BldX)))
             for i in range(len(self.rawBdn.BldX)):
                 
 
@@ -374,10 +374,6 @@ class admsInputDataRetriever(object):
         for now we trigger a python script to write the .met file directly
         '''
         #finish writing met
-        metLoc= r"test.met"
-        #cobbling.run(meteo_data = metLoc)
-        #pointing to met in apl
-        #metpath =  os.path.realpath(metLoc)
         metpath = "C://JPS_DATA/workingdir/JPS/ADMS/test.met"
         self.pythonLogger.postInfoToLogServer('path for adms met file='+metpath)
         return metpath

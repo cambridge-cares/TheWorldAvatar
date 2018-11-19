@@ -97,14 +97,6 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) =>
             }
         });
     
-//    $.getJSON('/JPS/buildings/simpleshape', 
-//    	{
-//    		cityiri,
-//    		buildingiris: JSON.stringify(list)
-//    	},
-//    	buildingData => {
-//    		console.log(buildingData);
-//    	})
     
     // --- Rendering 3D layer --- //
     let optionWrapperNode = document.getElementById("optionwrapper");

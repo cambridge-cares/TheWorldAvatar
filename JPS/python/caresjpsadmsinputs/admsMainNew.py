@@ -44,7 +44,7 @@ if __name__ == "__main__":
         test = admsInputDataRetriever(plant,config.bldTopnode, coordinates,  ["CO2"   ,"CO" ,  "NO2" ,  "HC" ,  "NOx"], 2, config.bdnLimit,False, BDN)
         result = test.get()
         
-        pythonLogger.postInfoToLogServer('calling admsAplWirter ...')
+        pythonLogger.postInfoToLogServer('calling admsAplWriter ...')
         result['Bdn'] = BDN
         writer = admsAplWriter(result, workingDir + '/test.apl')
         writer.write()

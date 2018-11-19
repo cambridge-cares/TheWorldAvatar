@@ -45,10 +45,6 @@ try:
 		result =  template%(temperature,windSpeed,windDirection,precitipation,cloudCover)
 		file.write(result)
 		file.close()
-#	with open('../../workingdir/ADMS/test.met', 'w') as file:
-#		result =  template%(temperature,windSpeed,windDirection,precitipation,cloudCover)
-#		file.write(result)
-#		file.close()
 	print("SUCCESS: MET File is Created")
 	
 except:
