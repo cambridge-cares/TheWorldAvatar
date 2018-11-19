@@ -68,11 +68,15 @@ public class WorldPowerPlant extends HttpServlet {
 		queryParamsJsonObj.put("scenario id", idScenario);
 		String queryParamsString = g.toJson(queryParamsJsonObj);
 		
+		//
+		System.out.println("Before publishing key");
 		channel.basicPublish(EXCHANGE_NAME, "", null, queryParamsString.getBytes("UTF-8"));
 		
 //		AgentCaller.executeGet(PATH, KEY, queryParamPowerplantIRIString);
 		
+		
 		//
+//		URIBuilder builder = new URIBuilder().setScheme("http").setHost("localhost:5000")
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost("localhost:8000")
 				.setPath("/run-surrogate-model")
 				.setParameter("powerplantIRI", powerplantIRI);
@@ -81,6 +85,8 @@ public class WorldPowerPlant extends HttpServlet {
 		URI uri = builder.build();
 		HttpGet getRequest = new HttpGet(uri);
 		HttpClient httpClient = HttpClientBuilder.create().build();
+		//
+		System.out.println("Before executing request");
 		HttpResponse httpResponse = httpClient.execute(getRequest);
 		
 		// Parse response into string
@@ -183,7 +189,11 @@ public class WorldPowerPlant extends HttpServlet {
 			Gson g = new Gson();
 			String[] arrayOfPowerplantIRI = g.fromJson(stringArrayOfPowerplantIRI, String[].class);
 			
-			publishMessages(arrayOfPowerplantIRI, arrayOfPowerplantIRI.length, 5, channel);
+			if (chosenModel.equals("surrogate")) {
+				publishMessages(arrayOfPowerplantIRI, arrayOfPowerplantIRI.length, 5, channel);
+			} else if (chosenModel.equals("factor")) {
+				System.out.println("factor");
+			}
 			
 			long stopTime = System.currentTimeMillis();
 			long elapsedTime = stopTime - startTime;

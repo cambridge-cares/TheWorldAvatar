@@ -119,7 +119,7 @@ if __name__ == "__main__":
             emission_df = emission_df.sort_values(by=['age','capacity_MW'], ascending=[True,True])
               
         result_dict = cost_emission_calculation(plant_df, emission_df).iloc[0].to_dict()
-        returnResultsToJava(result_dict['annual_emission_ton'])
+        returnResultsToJava(result_dict['annual_emission_ton'] / (365 * 24))
         pythonLogger.postInfoToLogServer('end of surrogate_model.py')
     except Exception as e:
         returnExceptionToJava(e)
