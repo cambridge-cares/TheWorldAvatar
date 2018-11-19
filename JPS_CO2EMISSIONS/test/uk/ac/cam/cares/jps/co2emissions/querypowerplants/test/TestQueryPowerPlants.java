@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.querypowerplants.test;
+package uk.ac.cam.cares.jps.co2emissions.querypowerplants.test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

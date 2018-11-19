@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.factormodel.test;
+package uk.ac.cam.cares.jps.co2emissions.factormodel.test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
