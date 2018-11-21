@@ -37,6 +37,14 @@ public class TestAgentDescriptions extends TestCase {
 		backAndforthAndWrite(service, "_GetPlantsInRegion");
 		service = createDescrForAgentWeather();
 		backAndforthAndWrite(service, "_OpenWeatherMap");
+		
+		service = createDescrForAgentAccuWeather();
+		backAndforthAndWrite(service, "_AccuWeather");
+		
+		service = createDescrForAgentYahooWeather();
+		backAndforthAndWrite(service, "_YahooWeather");
+		
+		
 		service = createDescrForAgentSRMEmissions();
 		backAndforthAndWrite(service, "_SRMEmissions");
 		service = createDescrForAgentBuildingQuery();
@@ -49,8 +57,8 @@ public class TestAgentDescriptions extends TestCase {
 	
 	private void backAndforthAndWrite(Service service, String name) throws URISyntaxException, FileNotFoundException {
 		
-		//new ServiceWriter().writeAsOwlFile(service, name, "C:\\Users\\nasac\\Documents\\TMP\\newAgentsMSM");
-		new ServiceWriter().writeAsOwlFile(service, name, "C:\\Users\\Andreas\\TMP\\newAgentsMSM");
+		new ServiceWriter().writeAsOwlFile(service, name, "C:\\Users\\nasac\\Documents\\TMP\\newAgentsMSM");
+		//new ServiceWriter().writeAsOwlFile(service, name, "C:\\Users\\Andreas\\TMP\\newAgentsMSM");
 		
 		
 		service.setUri(null);
@@ -94,6 +102,49 @@ public class TestAgentDescriptions extends TestCase {
 				.up();
 		
 		return builder.build();
+	}
+	
+	
+	private Service createDescrForAgentYahooWeather() {
+		ServiceBuilder builder = new ServiceBuilder().operation(null, JPS_COMPOSITION + "/MockCityToWeather_Yahoo")
+				.input("http://dbpedia.org/ontology/city", "city")
+				.output(WEATHER + "#WeatherState", "weatherstate").down()
+					.output(WEATHER + "#hasHumidity", "hashumidity").down()
+						.output(WEATHER + "#hasValue", "hasvalue").up()
+					.output(WEATHER + "#hasExteriorTemperature", "hasexteriortemperature").down()
+						.output(WEATHER + "#hasValue", "hasvalue").up()
+					.output(WEATHER + "#hasWind", "haswind").down()
+						.output(WEATHER + "#hasSpeed", "hasspeed")
+						.output(WEATHER + "#hasDirection", "hasdirection").up()
+					.output(WEATHER + "#hasWeatherCondition", "hasweathercondition") // not required for ADMS
+					.output(WEATHER + "#hasCloudCover", "hascloudcover").down()
+						.output(WEATHER + "#hasCloudCoverValue", "hascloudcovervalue").up()
+					.output(WEATHER + "#hasPrecipitation", "hasprecipation").down()
+						.output(WEATHER + "#hasIntensity", "hasintensity").up()
+					.up();
+			
+			return builder.build();
+	}
+	
+	private Service createDescrForAgentAccuWeather() {
+		ServiceBuilder builder = new ServiceBuilder().operation(null, JPS_COMPOSITION + "/MockCityToWeather_Accu")
+				.input("http://dbpedia.org/ontology/city", "city")
+				.output(WEATHER + "#WeatherState", "weatherstate").down()
+					.output(WEATHER + "#hasHumidity", "hashumidity").down()
+						.output(WEATHER + "#hasValue", "hasvalue").up()
+					.output(WEATHER + "#hasExteriorTemperature", "hasexteriortemperature").down()
+						.output(WEATHER + "#hasValue", "hasvalue").up()
+					.output(WEATHER + "#hasWind", "haswind").down()
+						.output(WEATHER + "#hasSpeed", "hasspeed")
+						.output(WEATHER + "#hasDirection", "hasdirection").up()
+					.output(WEATHER + "#hasWeatherCondition", "hasweathercondition") // not required for ADMS
+					.output(WEATHER + "#hasCloudCover", "hascloudcover").down()
+						.output(WEATHER + "#hasCloudCoverValue", "hascloudcovervalue").up()
+					.output(WEATHER + "#hasPrecipitation", "hasprecipation").down()
+						.output(WEATHER + "#hasIntensity", "hasintensity").up()
+					.up();
+			
+			return builder.build();
 	}
 	
 	private Service createDescrForAgentSRMEmissions() {

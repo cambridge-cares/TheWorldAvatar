@@ -1,0 +1,118 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:msm="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#">
+  <msm:Service rdf:about="http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#Service">
+    <msm:hasOperation>
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#Operation_1e6e2682-e8bf-40fa-ab5c-3dacfbbf87d6">
+        <msm:hasOutput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#MessageContent_e2ba82eb-128f-429d-81f9-20435f59f382">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#MessagePart_843f83b9-50a4-4abe-84e5-c7df632d554b">
+                <msm:hasMandatoryPart>
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#MessagePart_f9345f51-d842-4a6c-9bb0-81d29172e0f1">
+                    <msm:hasMandatoryPart>
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#MessagePart_4aa2bf30-03f8-4336-8aa3-39586fe5a703">
+                        <msm:hasName>hasintensity</msm:hasName>
+                        <msm:isArray>false</msm:isArray>
+                        <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasIntensity</msm:hasType>
+                      </msm:MessagePart>
+                    </msm:hasMandatoryPart>
+                    <msm:hasName>hasprecipation</msm:hasName>
+                    <msm:isArray>false</msm:isArray>
+                    <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasPrecipitation</msm:hasType>
+                  </msm:MessagePart>
+                </msm:hasMandatoryPart>
+                <msm:hasMandatoryPart>
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#MessagePart_9a0da75d-f629-459f-b3ef-690556c5c63a">
+                    <msm:hasMandatoryPart>
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#MessagePart_01391983-e1b5-4997-bdcb-712dd3383aa6">
+                        <msm:hasName>hasvalue</msm:hasName>
+                        <msm:isArray>false</msm:isArray>
+                        <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasValue</msm:hasType>
+                      </msm:MessagePart>
+                    </msm:hasMandatoryPart>
+                    <msm:hasName>hasexteriortemperature</msm:hasName>
+                    <msm:isArray>false</msm:isArray>
+                    <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasExteriorTemperature</msm:hasType>
+                  </msm:MessagePart>
+                </msm:hasMandatoryPart>
+                <msm:hasMandatoryPart>
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#MessagePart_d4a3fdc8-bb29-4da1-82a5-ee235efbbf9a">
+                    <msm:hasName>hasweathercondition</msm:hasName>
+                    <msm:isArray>false</msm:isArray>
+                    <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasWeatherCondition</msm:hasType>
+                  </msm:MessagePart>
+                </msm:hasMandatoryPart>
+                <msm:hasName>weatherstate</msm:hasName>
+                <msm:hasMandatoryPart>
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#MessagePart_4a8c85de-f6c3-46d4-8791-45e6504f38de">
+                    <msm:hasMandatoryPart>
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#MessagePart_b9cde245-c5cc-435d-85a5-e264e33f819d">
+                        <msm:hasName>hasdirection</msm:hasName>
+                        <msm:isArray>false</msm:isArray>
+                        <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasDirection</msm:hasType>
+                      </msm:MessagePart>
+                    </msm:hasMandatoryPart>
+                    <msm:hasMandatoryPart>
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#MessagePart_03c4dd02-a280-4305-9b25-49f85d8af4f1">
+                        <msm:hasName>hasspeed</msm:hasName>
+                        <msm:isArray>false</msm:isArray>
+                        <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasSpeed</msm:hasType>
+                      </msm:MessagePart>
+                    </msm:hasMandatoryPart>
+                    <msm:hasName>haswind</msm:hasName>
+                    <msm:isArray>false</msm:isArray>
+                    <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasWind</msm:hasType>
+                  </msm:MessagePart>
+                </msm:hasMandatoryPart>
+                <msm:hasMandatoryPart>
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#MessagePart_2234fa5e-71c1-43f4-bb11-9b492d8d8e7f">
+                    <msm:hasMandatoryPart>
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#MessagePart_9afa2b15-6854-4f67-9579-4022649a88a4">
+                        <msm:hasName>hasvalue</msm:hasName>
+                        <msm:isArray>false</msm:isArray>
+                        <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasValue</msm:hasType>
+                      </msm:MessagePart>
+                    </msm:hasMandatoryPart>
+                    <msm:hasName>hashumidity</msm:hasName>
+                    <msm:isArray>false</msm:isArray>
+                    <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasHumidity</msm:hasType>
+                  </msm:MessagePart>
+                </msm:hasMandatoryPart>
+                <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#WeatherState</msm:hasType>
+                <msm:hasMandatoryPart>
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#MessagePart_86eddfda-3cef-4dd5-a639-ae5669dac367">
+                    <msm:hasMandatoryPart>
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#MessagePart_3fda4534-86da-4a7b-ad51-a2deced1f4bc">
+                        <msm:hasName>hascloudcovervalue</msm:hasName>
+                        <msm:isArray>false</msm:isArray>
+                        <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasCloudCoverValue</msm:hasType>
+                      </msm:MessagePart>
+                    </msm:hasMandatoryPart>
+                    <msm:hasName>hascloudcover</msm:hasName>
+                    <msm:isArray>false</msm:isArray>
+                    <msm:hasType>https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#hasCloudCover</msm:hasType>
+                  </msm:MessagePart>
+                </msm:hasMandatoryPart>
+                <msm:isArray>false</msm:isArray>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasOutput>
+        <msm:hasInput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#MessageContent_96ed08aa-0abb-45c0-b3e7-bd10b746f689">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#MessagePart_8962c0ef-2963-4656-be6d-a4ca0c6d7912">
+                <msm:hasName>city</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://dbpedia.org/ontology/city</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasInput>
+        <msm:hasHttpUrl>http://www.theworldavatar.com/JPS_COMPOSITION/MockCityToWeather_Yahoo</msm:hasHttpUrl>
+      </msm:Operation>
+    </msm:hasOperation>
+    <msm:isComposed>false</msm:isComposed>
+  </msm:Service>
+</rdf:RDF>

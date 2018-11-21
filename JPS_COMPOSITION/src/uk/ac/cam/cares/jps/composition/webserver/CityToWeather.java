@@ -84,17 +84,17 @@ public class CityToWeather extends HttpServlet {
 		doGet(request, response);
 	}
 
-	public String queryCityNameLabel(String cityIRI) {
+	public static String queryCityNameLabel(String cityIRI) {
 		ArrayList<String> parameters = new ArrayList<String>();
 		parameters.add(cityIRI);
 		return sendDBpediaQuery(generateQuery(queryIRILabel, parameters));
 	}
 
-	public String generateQuery(String template, ArrayList<String> parameters) {
+	public static String generateQuery(String template, ArrayList<String> parameters) {
 		return String.format(template, parameters.get(0));
 	}
 
-	public String sendDBpediaQuery(String query) {
+	public static String sendDBpediaQuery(String query) {
 		QueryExecution exec = QueryExecutionFactory.sparqlService("http://dbpedia.org/sparql", query);
 		ResultSet results = exec.execSelect();
 		String label = null;
