@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:SensorOntology="http://www.theworldavatar.com/SensorOntology.owl#"
+  xmlns:system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+  xmlns:Eco-industrialPark="http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#"
+  xmlns:space_and_time_extended="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:ns1="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#"
+  xmlns:coordinate_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#"
+  xmlns:ns3="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_system.owl#"
+  xmlns:ns2="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <ns1:Q-Sensor rdf:about="http://www.theworldavatar.com/RAHU-HE-7-1_2_Control_sensor1.owl#RAHU-HE-7-1_2_Control_sensor1">
+    <SensorOntology:sendsSignalTo>
+      <ns3:ProcessControlSystem rdf:about="http://www.theworldavatar.com/RAHU-HE-7-1_2_Control_sensor1.owl#DDC_7_2_1">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/DDC_7_2_1.owl"/>
+      </ns3:ProcessControlSystem>
+    </SensorOntology:sendsSignalTo>
+    <space_and_time_extended:hasGISCoordinateSystem>
+      <space_and_time_extended:GISCoordinateSystem rdf:about="http://www.theworldavatar.com/RAHU-HE-7-1_2_Control_sensor1.owl#RAHU-HE-7-1_2_Control_sensor1_CoordinateSystem">
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/RAHU-HE-7-1_2_Control_sensor1.owl#y_RAHU-HE-7-1_2_Control_sensor1"/>
+        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/RAHU-HE-7-1_2_Control_sensor1.owl#x_RAHU-HE-7-1_2_Control_sensor1"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </space_and_time_extended:GISCoordinateSystem>
+    </space_and_time_extended:hasGISCoordinateSystem>
+    <SensorOntology:observes>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-HE-7-1_2_Control_sensor1.owl#ControlOfRAHU-HE-7-1_2">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-HE-7-1_2_Control_sensor1.owl#V_ControlOfRAHU-HE-7-1_2"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/SensorOntology.owl#MeasuredObjectProperties"/>
+      </owl:NamedIndividual>
+    </SensorOntology:observes>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </ns1:Q-Sensor>
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/RAHU-HE-7-1_2_Control_sensor1.owl">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/SensorOntology.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
+  </owl:Ontology>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-HE-7-1_2_Control_sensor1.owl#V_x_RAHU-HE-7-1_2_Control_sensor1">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+  </owl:NamedIndividual>
+  <coordinate_system:CoordinateValue rdf:about="http://www.theworldavatar.com/RAHU-HE-7-1_2_Control_sensor1.owl#V_y_RAHU-HE-7-1_2_Control_sensor1">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </coordinate_system:CoordinateValue>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-HE-7-1_2_Control_sensor1.owl#x_RAHU-HE-7-1_2_Control_sensor1">
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-HE-7-1_2_Control_sensor1.owl#V_x_RAHU-HE-7-1_2_Control_sensor1"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-HE-7-1_2_Control_sensor1.owl#y_RAHU-HE-7-1_2_Control_sensor1">
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-HE-7-1_2_Control_sensor1.owl#V_y_RAHU-HE-7-1_2_Control_sensor1"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+  </owl:NamedIndividual>
+  <system:QualitativeValue rdf:about="http://www.theworldavatar.com/RAHU-HE-7-1_2_Control_sensor1.owl#V_ControlOfRAHU-HE-7-1_2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:QualitativeValue>
+</rdf:RDF>
