@@ -1,0 +1,9 @@
+{
+  "TEMPLATE_DIR": "workingdir/rdf-xml-templates/",
+  "TEST": {
+    "OUTPUT_DIR": "workingdir/rdf-xml-output/"
+  },
+  "PROD": {
+    "OUTPUT_DIR": "C:/TOMCAT/webapps/ROOT/BMS/"
+  }
+}
