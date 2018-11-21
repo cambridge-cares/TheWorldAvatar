@@ -103,6 +103,7 @@ public class ADMSAgent extends HttpServlet {
 			
 			String targetFolder = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
 			if(request.getServerName().contains("localhost")) {
+				//uncomment if tested in kevin's computer
 				//startADMS(targetFolder);
 			} else {
 				startADMS(targetFolder);
