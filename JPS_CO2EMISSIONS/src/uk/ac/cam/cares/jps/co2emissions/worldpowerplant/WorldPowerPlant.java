@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.co2emissions.worldpowerplant;
+package uk.ac.cam.cares.jps.co2emissions.worldpowerplant;
 
 import java.io.BufferedReader;
 import java.io.IOException;

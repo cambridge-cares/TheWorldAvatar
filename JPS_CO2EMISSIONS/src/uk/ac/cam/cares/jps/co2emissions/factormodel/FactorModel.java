@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.co2emissions.factormodel;
+package uk.ac.cam.cares.jps.co2emissions.factormodel;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.co2emissions.rabbitmq;
+package uk.ac.cam.cares.jps.co2emissions.rabbitmq;
 import java.io.IOException;
 
 import com.rabbitmq.client.AMQP;

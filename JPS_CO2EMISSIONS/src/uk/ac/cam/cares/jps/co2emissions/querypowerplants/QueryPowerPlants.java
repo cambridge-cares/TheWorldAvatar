@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.co2emissions.querypowerplants;
+package uk.ac.cam.cares.jps.co2emissions.querypowerplants;
 
 import java.io.IOException;
 import java.util.ArrayList;
