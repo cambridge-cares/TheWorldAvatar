@@ -28,7 +28,7 @@ public class TestPowerPlantAgent extends TestCase {
 	
 	String json = dataSet.toString();
 	String resultjson = AgentCaller.executeGet(getContextPathForJPSco2emissionefactor(), "query", json);
-
+System.out.println ("resultjson= "+resultjson);
 
 	
 	//double emission = new JSONObject(resultjson).getJSONObject("hasEmission").getJSONObject("hasValue").getDouble("numericalValue"); //changed later
