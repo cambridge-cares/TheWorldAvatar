@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:SensorOntology="http://www.theworldavatar.com/SensorOntology.owl#"
+  xmlns:system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+  xmlns:Eco-industrialPark="http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#"
+  xmlns:space_and_time_extended="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:coordinate_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#"
+  xmlns:ns1="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_system.owl#"
+  xmlns:ns2="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <ns1:ProcessControlSystem rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#DDC_7_2_4">
+    <SensorOntology:sendsSignalTo rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#VAV-E/7-22"/>
+    <system:hasProperty>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_7_2_4.owl#AFMRR_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_AFMRR_DiffPressure_SP"/>
+      </rdf:Description>
+    </system:hasProperty>
+    <system:hasProperty>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_7_2_4.owl#RMR_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_RMR_DiffPressure_SP"/>
+      </rdf:Description>
+    </system:hasProperty>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasProperty>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_7_2_4.owl#BCA_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_BCA_DiffPressure_SP"/>
+      </rdf:Description>
+    </system:hasProperty>
+    <system:hasProperty>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_7_2_4.owl#CRR_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_CRR_DiffPressure_SP"/>
+      </rdf:Description>
+    </system:hasProperty>
+    <SensorOntology:sendsSignalTo rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#VAV-S/7-22"/>
+    <SensorOntology:sendsSignalTo rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#VAV-E/7-04"/>
+    <SensorOntology:sendsSignalTo rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#VAV-E/7-03"/>
+    <space_and_time_extended:hasGISCoordinateSystem>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_7_2_4.owl#DDC_7_2_4_CoordinateSystem">
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#y_DDC_7_2_4"/>
+        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#x_DDC_7_2_4"/>
+      </rdf:Description>
+    </space_and_time_extended:hasGISCoordinateSystem>
+    <SensorOntology:sendsSignalTo rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#VAV-E/7-05"/>
+    <system:hasProperty>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_7_2_4.owl#GM-1_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_GM-1_DiffPressure_SP"/>
+      </rdf:Description>
+    </system:hasProperty>
+    <system:hasProperty>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_7_2_4.owl#TGAR_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_TGAR_DiffPressure_SP"/>
+      </rdf:Description>
+    </system:hasProperty>
+    <system:hasProperty>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_7_2_4.owl#EAA_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_EAA_DiffPressure_SP"/>
+      </rdf:Description>
+    </system:hasProperty>
+    <SensorOntology:sendsSignalTo rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#VAV-S/7-01"/>
+    <SensorOntology:sendsSignalTo rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#VAV-S/7-03"/>
+    <SensorOntology:sendsSignalTo rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#VAV-S/7-02"/>
+    <system:hasProperty>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_7_2_4.owl#ODR_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_ODR_DiffPressure_SP"/>
+      </rdf:Description>
+    </system:hasProperty>
+    <SensorOntology:sendsSignalTo rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#VAV-E/7-06"/>
+    <SensorOntology:sendsSignalTo rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#VAV-S/7-21"/>
+    <SensorOntology:sendsSignalTo rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#VAV-S/7-15"/>
+    <SensorOntology:sendsSignalTo rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#VAV-S/7-23"/>
+    <system:hasProperty>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_7_2_4.owl#DLA_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_DLA_DiffPressure_SP"/>
+      </rdf:Description>
+    </system:hasProperty>
+    <system:hasProperty>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_7_2_4.owl#OLA_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_OLA_DiffPressure_SP"/>
+      </rdf:Description>
+    </system:hasProperty>
+    <SensorOntology:sendsSignalTo rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#VAV-S/7-05"/>
+    <system:hasProperty>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_7_2_4.owl#PPR_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_PPR_DiffPressure_SP"/>
+      </rdf:Description>
+    </system:hasProperty>
+    <SensorOntology:sendsSignalTo rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#VAV-E/7-18A"/>
+    <SensorOntology:sendsSignalTo rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#VAV-S/7-04"/>
+    <SensorOntology:sendsSignalTo rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#VAV-S/7-18"/>
+    <SensorOntology:sendsSignalTo rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#VAV-E/7-33"/>
+    <SensorOntology:sendsSignalTo rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#VAV-S/7-17"/>
+    <system:hasProperty>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_7_2_4.owl#FR_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_FR_DiffPressure_SP"/>
+      </rdf:Description>
+    </system:hasProperty>
+    <system:hasProperty>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_7_2_4.owl#GM-2_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_GM-2_DiffPressure_SP"/>
+      </rdf:Description>
+    </system:hasProperty>
+    <system:hasProperty>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_7_2_4.owl#PR_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_PR_DiffPressure_SP"/>
+      </rdf:Description>
+    </system:hasProperty>
+    <system:hasProperty>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_7_2_4.owl#CR_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_CR_DiffPressure_SP"/>
+      </rdf:Description>
+    </system:hasProperty>
+    <SensorOntology:sendsSignalTo rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#VAV-S/7-16"/>
+  </ns1:ProcessControlSystem>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_7_2_4.owl#DDC_7_2_4">
+    <system:hasProperty>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#PPR_DiffPressure_SP">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/SensorOntology.owl#SetPoints"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#V_PPR_DiffPressure_SP"/>
+      </owl:NamedIndividual>
+    </system:hasProperty>
+    <SensorOntology:sendsSignalTo>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#VAV-S/7-02">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/VAV-S7-02.owl"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_system.owl#ProcessControlSystem"/>
+      </owl:NamedIndividual>
+    </SensorOntology:sendsSignalTo>
+    <SensorOntology:sendsSignalTo>
+      <ns1:ProcessControlSystem rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#VAV-E/7-18A">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/VAV-E7-18A.owl"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns1:ProcessControlSystem>
+    </SensorOntology:sendsSignalTo>
+    <SensorOntology:sendsSignalTo>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#VAV-S/7-22">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/VAV-S7-22.owl"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_system.owl#ProcessControlSystem"/>
+      </owl:NamedIndividual>
+    </SensorOntology:sendsSignalTo>
+    <SensorOntology:sendsSignalTo>
+      <ns1:ProcessControlSystem rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#VAV-S/7-01">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/VAV-S7-01.owl"/>
+      </ns1:ProcessControlSystem>
+    </SensorOntology:sendsSignalTo>
+    <SensorOntology:sendsSignalTo>
+      <ns1:ProcessControlSystem rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#VAV-S/7-15">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/VAV-S7-15.owl"/>
+      </ns1:ProcessControlSystem>
+    </SensorOntology:sendsSignalTo>
+    <system:hasProperty>
+      <SensorOntology:SetPoints rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#FR_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#V_FR_DiffPressure_SP"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </SensorOntology:SetPoints>
+    </system:hasProperty>
+    <SensorOntology:sendsSignalTo>
+      <ns1:ProcessControlSystem rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#VAV-E/7-33">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/VAV-E7-33.owl"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns1:ProcessControlSystem>
+    </SensorOntology:sendsSignalTo>
+    <SensorOntology:sendsSignalTo>
+      <ns1:ProcessControlSystem rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#VAV-E/7-03">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/VAV-E7-03.owl"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns1:ProcessControlSystem>
+    </SensorOntology:sendsSignalTo>
+    <system:hasProperty>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#OLA_DiffPressure_SP">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/SensorOntology.owl#SetPoints"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#V_OLA_DiffPressure_SP"/>
+      </owl:NamedIndividual>
+    </system:hasProperty>
+    <system:hasProperty>
+      <SensorOntology:SetPoints rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#AFMRR_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#V_AFMRR_DiffPressure_SP"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </SensorOntology:SetPoints>
+    </system:hasProperty>
+    <system:hasProperty>
+      <SensorOntology:SetPoints rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#ODR_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#V_ODR_DiffPressure_SP"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </SensorOntology:SetPoints>
+    </system:hasProperty>
+    <SensorOntology:sendsSignalTo>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#VAV-S/7-17">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/VAV-S7-17.owl"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_system.owl#ProcessControlSystem"/>
+      </owl:NamedIndividual>
+    </SensorOntology:sendsSignalTo>
+    <SensorOntology:sendsSignalTo>
+      <ns1:ProcessControlSystem rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#VAV-S/7-03">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/VAV-S7-03.owl"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns1:ProcessControlSystem>
+    </SensorOntology:sendsSignalTo>
+    <space_and_time_extended:hasGISCoordinateSystem>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#DDC_7_2_4_CoordinateSystem">
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#y_DDC_7_2_4"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#x_DDC_7_2_4"/>
+      </owl:NamedIndividual>
+    </space_and_time_extended:hasGISCoordinateSystem>
+    <system:hasProperty>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#BCA_DiffPressure_SP">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/SensorOntology.owl#SetPoints"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#V_BCA_DiffPressure_SP"/>
+      </owl:NamedIndividual>
+    </system:hasProperty>
+    <system:hasProperty>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#GM-2_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#V_GM-2_DiffPressure_SP"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/SensorOntology.owl#SetPoints"/>
+      </owl:NamedIndividual>
+    </system:hasProperty>
+    <system:hasProperty>
+      <SensorOntology:SetPoints rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#RMR_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#V_RMR_DiffPressure_SP"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </SensorOntology:SetPoints>
+    </system:hasProperty>
+    <system:hasProperty>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#CRR_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#V_CRR_DiffPressure_SP"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/SensorOntology.owl#SetPoints"/>
+      </owl:NamedIndividual>
+    </system:hasProperty>
+    <system:hasProperty>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#GM-1_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#V_GM-1_DiffPressure_SP"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/SensorOntology.owl#SetPoints"/>
+      </owl:NamedIndividual>
+    </system:hasProperty>
+    <system:hasProperty>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#EAA_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#V_EAA_DiffPressure_SP"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/SensorOntology.owl#SetPoints"/>
+      </owl:NamedIndividual>
+    </system:hasProperty>
+    <SensorOntology:sendsSignalTo>
+      <ns1:ProcessControlSystem rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#VAV-E/7-22">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/VAV-E7-22.owl"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns1:ProcessControlSystem>
+    </SensorOntology:sendsSignalTo>
+    <SensorOntology:sendsSignalTo>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#VAV-S/7-04">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_system.owl#ProcessControlSystem"/>
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/VAV-S7-04.owl"/>
+      </owl:NamedIndividual>
+    </SensorOntology:sendsSignalTo>
+    <system:hasProperty>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#PR_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#V_PR_DiffPressure_SP"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/SensorOntology.owl#SetPoints"/>
+      </owl:NamedIndividual>
+    </system:hasProperty>
+    <SensorOntology:sendsSignalTo>
+      <ns1:ProcessControlSystem rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#VAV-S/7-18">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/VAV-S7-18.owl"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns1:ProcessControlSystem>
+    </SensorOntology:sendsSignalTo>
+    <SensorOntology:sendsSignalTo>
+      <ns1:ProcessControlSystem rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#VAV-E/7-04">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/VAV-E7-04.owl"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns1:ProcessControlSystem>
+    </SensorOntology:sendsSignalTo>
+    <SensorOntology:sendsSignalTo>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#VAV-E/7-05">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/VAV-E7-05.owl"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_system.owl#ProcessControlSystem"/>
+      </owl:NamedIndividual>
+    </SensorOntology:sendsSignalTo>
+    <SensorOntology:sendsSignalTo>
+      <ns1:ProcessControlSystem rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#VAV-S/7-16">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/VAV-S7-16.owl"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns1:ProcessControlSystem>
+    </SensorOntology:sendsSignalTo>
+    <SensorOntology:sendsSignalTo>
+      <ns1:ProcessControlSystem rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#VAV-S/7-23">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/VAV-S7-23.owl"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns1:ProcessControlSystem>
+    </SensorOntology:sendsSignalTo>
+    <SensorOntology:sendsSignalTo>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#VAV-S/7-21">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/VAV-S7-21.owl"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_system.owl#ProcessControlSystem"/>
+      </owl:NamedIndividual>
+    </SensorOntology:sendsSignalTo>
+    <SensorOntology:sendsSignalTo>
+      <ns1:ProcessControlSystem rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#VAV-E/7-06">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/VAV-E7-06.owl"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns1:ProcessControlSystem>
+    </SensorOntology:sendsSignalTo>
+    <system:hasProperty>
+      <SensorOntology:SetPoints rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#CR_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#V_CR_DiffPressure_SP"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </SensorOntology:SetPoints>
+    </system:hasProperty>
+    <SensorOntology:sendsSignalTo>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#VAV-S/7-05">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/VAV-S7-05.owl"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_system.owl#ProcessControlSystem"/>
+      </owl:NamedIndividual>
+    </SensorOntology:sendsSignalTo>
+    <system:hasProperty>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#DLA_DiffPressure_SP">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/SensorOntology.owl#SetPoints"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#V_DLA_DiffPressure_SP"/>
+      </owl:NamedIndividual>
+    </system:hasProperty>
+    <system:hasProperty>
+      <SensorOntology:SetPoints rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#TGAR_DiffPressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#V_TGAR_DiffPressure_SP"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </SensorOntology:SetPoints>
+    </system:hasProperty>
+  </rdf:Description>
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/SensorOntology.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
+  </owl:Ontology>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_PR_DiffPressure_SP">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_EAA_DiffPressure_SP">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_CRR_DiffPressure_SP">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_AFMRR_DiffPressure_SP">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+  </owl:NamedIndividual>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_CR_DiffPressure_SP">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <coordinate_system:CoordinateValue rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_y_DDC_7_2_4">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </coordinate_system:CoordinateValue>
+  <ns2:StraightCoordinate rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#x_DDC_7_2_4">
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#V_x_DDC_7_2_4"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+  </ns2:StraightCoordinate>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_RMR_DiffPressure_SP">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_TGAR_DiffPressure_SP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+  </system:ScalarValue>
+  <ns2:StraightCoordinate rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#y_DDC_7_2_4">
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/DDC_7_2_4.owl#V_y_DDC_7_2_4"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+  </ns2:StraightCoordinate>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_GM-2_DiffPressure_SP">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_BCA_DiffPressure_SP">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_DLA_DiffPressure_SP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+  </system:ScalarValue>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_x_DDC_7_2_4">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_OLA_DiffPressure_SP">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+  </owl:NamedIndividual>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_GM-1_DiffPressure_SP">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_PPR_DiffPressure_SP">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_FR_DiffPressure_SP">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_ODR_DiffPressure_SP">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+  </owl:NamedIndividual>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_7_2_4.owl#y_DDC_7_2_4">
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_y_DDC_7_2_4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_7_2_4.owl#x_DDC_7_2_4">
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/DDC_7_2_4.owl#V_x_DDC_7_2_4"/>
+  </rdf:Description>
+</rdf:RDF>
