@@ -1,3 +1,5 @@
+from caresjpsutil import PythonLogger
+
 #This is the module that writes output file from a template
 ##thoughts: write copied part first, then write changeble part
 HEADER = '''
@@ -729,8 +731,12 @@ class admsAplWriter(object):
     def __init__(self, data, address):
         self.data = data
         self.address = address
+        
     #main function
     def write(self):
+        pythonLogger = PythonLogger('admsAplWriter.py')
+        pythonLogger.postInfoToLogServer('writing to ' + self.address)
+        
         #if contains this data, execute the corresponding writing function
         with open(self.address, 'w') as file:
             self.writeStr(file, HEADER)
@@ -758,6 +764,8 @@ class admsAplWriter(object):
           #  for category,value in self.data.items():  
            #     self.__getattribute__('write'+category)(file, value)
             #to be canceled in future, no copy all     
+            
+        pythonLogger.postInfoToLogServer('finished writing to ' + self.address)
 
     def writeAttr(self, file, obj):
         for attr in [a for a in dir(obj) if not a.startswith('_') and a not in ['index', 'count'] ] :

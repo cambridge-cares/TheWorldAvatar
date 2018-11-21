@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:SensorOntology="http://www.theworldavatar.com/SensorOntology.owl#"
+  xmlns:system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+  xmlns:space_and_time_extended="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:ns1="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#"
+  xmlns:coordinate_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#"
+  xmlns:ns3="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_system.owl#"
+  xmlns:ns2="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/FR_RH_sensor2.owl#FR_RH_sensor2">
+    <SensorOntology:sendsSignalTo rdf:resource="http://www.theworldavatar.com/FR_RH_sensor2.owl#VAV-E/7-33"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#Q-Sensor"/>
+    <SensorOntology:observes>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/FR_RH_sensor2.owl#FR_RelativeHumidity">
+        <system:isPropertyOf rdf:resource="http://www.theworldavatar.com/BMS/FR_RH_sensor2.owl#FaradayRoom"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/FR_RH_sensor2.owl#V_FR_RelativeHumidity"/>
+      </rdf:Description>
+    </SensorOntology:observes>
+    <space_and_time_extended:hasGISCoordinateSystem>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/FR_RH_sensor2.owl#FR_RH_sensor2_CoordinateSystem">
+        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/BMS/FR_RH_sensor2.owl#x_FR_RH_sensor2"/>
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/BMS/FR_RH_sensor2.owl#y_FR_RH_sensor2"/>
+      </rdf:Description>
+    </space_and_time_extended:hasGISCoordinateSystem>
+  </owl:NamedIndividual>
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/BMS/FR_RH_sensor2.owl">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/SensorOntology.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl"/>
+  </owl:Ontology>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/FR_RH_sensor2.owl#FR_RH_sensor2">
+    <SensorOntology:sendsSignalTo>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/FR_RH_sensor2.owl#VAV-E/7-33">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_system.owl#ProcessControlSystem"/>
+      </owl:NamedIndividual>
+    </SensorOntology:sendsSignalTo>
+    <space_and_time_extended:hasGISCoordinateSystem>
+      <space_and_time_extended:GISCoordinateSystem rdf:about="http://www.theworldavatar.com/BMS/FR_RH_sensor2.owl#FR_RH_sensor2_CoordinateSystem">
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/FR_RH_sensor2.owl#y_FR_RH_sensor2"/>
+        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/FR_RH_sensor2.owl#x_FR_RH_sensor2"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </space_and_time_extended:GISCoordinateSystem>
+    </space_and_time_extended:hasGISCoordinateSystem>
+    <SensorOntology:observes>
+      <SensorOntology:RelativeHumidity rdf:about="http://www.theworldavatar.com/BMS/FR_RH_sensor2.owl#FR_RelativeHumidity">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:isPropertyOf rdf:resource="http://www.theworldavatar.com/FR_RH_sensor2.owl#FaradayRoom"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/FR_RH_sensor2.owl#V_FR_RelativeHumidity"/>
+      </SensorOntology:RelativeHumidity>
+    </SensorOntology:observes>
+  </rdf:Description>
+  <ns2:StraightCoordinate rdf:about="http://www.theworldavatar.com/BMS/FR_RH_sensor2.owl#y_FR_RH_sensor2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/FR_RH_sensor2.owl#V_y_FR_RH_sensor2"/>
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+  </ns2:StraightCoordinate>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/BMS/FR_RH_sensor2.owl#V_FR_RelativeHumidity">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/FR_RH_sensor2.owl#V_x_FR_RH_sensor2">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/FR_RH_sensor2.owl#V_y_FR_RH_sensor2">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+  </owl:NamedIndividual>
+  <ns2:StraightCoordinate rdf:about="http://www.theworldavatar.com/BMS/FR_RH_sensor2.owl#x_FR_RH_sensor2">
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/FR_RH_sensor2.owl#V_x_FR_RH_sensor2"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+  </ns2:StraightCoordinate>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/FR_RH_sensor2.owl#y_FR_RH_sensor2">
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/FR_RH_sensor2.owl#V_y_FR_RH_sensor2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/FR_RH_sensor2.owl#x_FR_RH_sensor2">
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/FR_RH_sensor2.owl#V_x_FR_RH_sensor2"/>
+  </rdf:Description>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/FR_RH_sensor2.owl#FaradayRoom"/>
+</rdf:RDF>

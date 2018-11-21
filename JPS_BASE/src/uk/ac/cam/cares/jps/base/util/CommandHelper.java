@@ -6,11 +6,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 
 
@@ -31,11 +30,11 @@ public class CommandHelper {
 		logger.info("In folder: " + targetFolder + " Excuted: " + command);
 		Runtime rt = Runtime.getRuntime();
 		Process pr = null;
-				try {
+		try {
+
 			pr = rt.exec(command, null, new File(targetFolder)); // IMPORTANT: By specifying targetFolder, all the cmds will be executed within such folder.
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new JPSRuntimeException(e.getMessage(), e);
 		}
 		
 				 
@@ -44,11 +43,10 @@ public class CommandHelper {
 		String resultString = "";
 		try {
 			while((line = bfr.readLine()) != null) {
-			resultString += line;
+				resultString += line;
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new JPSRuntimeException(e.getMessage(), e);
 		}
 		
 		return resultString; 
@@ -57,18 +55,17 @@ public class CommandHelper {
 	
 	
 	
-	public static String executeCommands(String targetFolder , ArrayList<String> commands) 
-	{  
+	public static String executeCommands(String targetFolder , ArrayList<String> commands) {  
 	 
 		logger.info("In folder: " + targetFolder + " Excuted: " + commands);
 		Runtime rt = Runtime.getRuntime();
 		Process pr = null;
 		
 		try {
-			pr = rt.exec(commands.toArray(new String[0]), null, new File(targetFolder)); // IMPORTANT: By specifying targetFolder, all the cmds will be executed within such folder.
+			String[] command = commands.toArray(new String[0]);
+			pr = rt.exec(command, null, new File(targetFolder)); // IMPORTANT: By specifying targetFolder, all the cmds will be executed within such folder.
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new JPSRuntimeException(e.getMessage(), e);
 		}
 		
 		BufferedReader bfr = new BufferedReader(new InputStreamReader(pr.getInputStream()));
@@ -76,11 +73,10 @@ public class CommandHelper {
 		String resultString = "";
 		try {
 			while((line = bfr.readLine()) != null) {
-			resultString += line;
+				resultString += line;
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new JPSRuntimeException(e.getMessage(), e);
 		}
 		
 		return resultString; 

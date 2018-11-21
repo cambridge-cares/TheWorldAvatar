@@ -170,7 +170,7 @@ $(function(){
         const coordinatesMid = getMidPoint(coordinatesMin, coordinatesMax);
         
         const getBuildingIRIs = (cityIRI, lowerx, lowery, upperx, uppery) => {
-        	return $.getJSON('/JPS/ADMSCoordinationAgentNew',
+        	return $.getJSON('/JPS/ADMSCoordinationAgentOld',
 	        	{
 	        		cityIRI,
 	        		lowerx,

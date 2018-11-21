@@ -94,7 +94,7 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 	 * @param plantIRI The IRI of the plant 
 	 * @return double[] x and y of the plant in doubl
 	 */
-	public double[] queryPlantXY(String plantIRI) throws JSONException {
+	public static double[] queryPlantXY(String plantIRI) throws JSONException {
 
 		String myHost = "www.theworldavatar.com" ;
 		int myPort = 80;
@@ -138,7 +138,7 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 	}
 
 	
-	public String executeGet(URIBuilder builder) {
+	public static String executeGet(URIBuilder builder) {
 		try {
 			URI uri = builder.build();
 			HttpGet request = new HttpGet(uri);

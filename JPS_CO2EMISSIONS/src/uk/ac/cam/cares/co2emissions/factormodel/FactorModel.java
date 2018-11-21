@@ -1,11 +1,6 @@
 package uk.ac.cam.cares.co2emissions.factormodel;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,26 +8,21 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.update.UpdateExecutionFactory;
+import org.apache.jena.update.UpdateFactory;
+import org.apache.jena.update.UpdateProcessor;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONStringer;
+import org.json.JSONWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.hp.hpl.jena.ontology.DatatypeProperty;
-import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFactory;
-import com.hp.hpl.jena.query.ResultSetFormatter;
-import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -42,96 +32,94 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 public class FactorModel extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
-    
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	
-	private DatatypeProperty numval = null;
 
 	Logger logger = LoggerFactory.getLogger(FactorModel.class);
-	
-	public void savefile(OntModel jenaOwlModel, String filePath2) throws URISyntaxException, FileNotFoundException {
 
-		FileOutputStream out = new FileOutputStream(filePath2);
+	public static synchronized ResultSet queryFromFusekiServer(String serviceURI, String query) {
 		
-		Collection errors = new ArrayList();
-		jenaOwlModel.write(out, "RDF/XML-ABBREV");
-	
+		QueryExecution q = QueryExecutionFactory.sparqlService(serviceURI,query);
+		ResultSet results = q.execSelect();	
 
-		
-		System.out.println("File saved with " + errors.size() + " errors.");
-	}
-	
-	public static synchronized ResultSet query(String sparql, OntModel model) {
-		Query query = QueryFactory.create(sparql);
-		QueryExecution queryExec = QueryExecutionFactory.create(query, model);
-		ResultSet rs = queryExec.execSelect();   
-		//reset the cursor, so that the ResultSet can be repeatedly used
-		ResultSetRewindable results = ResultSetFactory.copyResults(rs);    
-		ResultSetFormatter.out(System.out, results, query);
 		return results;
 	}
 	
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-				
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
 		// -- Get String formatted in Array of Strings -- //
 		request.setCharacterEncoding("UTF-8");
-		
+
 		JSONObject jo = AgentCaller.readJsonParameter(request);
 
-		String iri=null;
+		String iri = null;
 		try {
-			 iri = jo.getString("plant");
+			iri = jo.getString("plant");
 		} catch (JSONException e) {
+			logger.error(e.getMessage(), e);
 			throw new JPSRuntimeException(e.getMessage(), e);
+			
 		}
-		
-		
-		String filePath1 = iri; // the result of written owl file
-		String filePath2=filePath1.replaceAll("http://www.theworldavatar.com/kb","C:/TOMCAT/webapps/ROOT/kb").split("#")[0];
-		
-		System.out.println("newfile path= "+filePath2);
-		System.out.println("iri= "+iri);
-	    			
-		OntModel jenaOwlModel = ModelFactory.createOntologyModel();
-		jenaOwlModel.read(iri,null);
-		
-		Double outputvalue = queryPowerplantProperty(jenaOwlModel);
-		numval = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");	    			
-		
-		String plantname=iri.split("#")[1];
-		System.out.println("plantname= "+plantname);
-		Individual emission = jenaOwlModel.getIndividual("http://www.theworldavatar.com/kb/powerplants/" + plantname + ".owl#v_CO2Emission_of_"+plantname);
-		
-		emission.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(outputvalue));
-		
-		
-		/** save the updated model file */
-		try {
-		savefile(jenaOwlModel, filePath2);
-		} catch (URISyntaxException e1) {
-			e1.printStackTrace();
-		}
-		
-		
-		
+
+		// we get the iri plant
+
+		Double outputvalue = queryPowerplantProperty(iri);
+
+		// update to fuseki in java
+
+		String plantupdate = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
+				+ "WITH <" + iri + ">" + "DELETE { ?valueemission j2:numericalValue ?vemission .} "
+				+ "INSERT { ?valueemission j2:numericalValue " + outputvalue + " .} "
+				+ "WHERE { ?generation   j5:hasEmission ?emission ." + "?emission   j2:hasValue ?valueemission . "
+				+ "?valueemission   j2:numericalValue ?vemission ." + "}";
+
+		UpdateProcessor upp = UpdateExecutionFactory.createRemote(UpdateFactory.create(plantupdate),
+				"http://www.theworldavatar.com:80/damecoolquestion/worldpowerplantsng/update");
+		upp.execute();
+
+		// **************************************************************************************************
 		JSONObject dataSet = new JSONObject();
-		try {
-			dataSet.put("emission", outputvalue) ;
-		} catch (JSONException e) {
-			throw new JPSRuntimeException(e.getMessage(), e);
-		}
 		
+		JSONWriter jsonOutput = null;
+		try {
+			jsonOutput = new JSONStringer().object().
+						key("hasEmission").object()
+							.key("hasValue").object()
+								.key("numericalValue").value(outputvalue).endObject()
+							.endObject()
+						.endObject();
+			
+		} catch (JSONException e1) {
+			logger.error(e1.getMessage(), e1);
+		} 
+		
+		logger.info("jsonOutput=\n" + jsonOutput);
+
+		String jsonobject=jsonOutput.toString();
+		try {
+			dataSet=convertstringtojsonobject(jsonobject);
+		} catch (Exception e) {
+		logger.error(e.getMessage(), e);
+					
+		}
 		String message = dataSet.toString();
-		System.out.println ("message= "+message);
+		logger.info("message= " + message);
 		
 		AgentCaller.writeJsonParameter(response, dataSet);
-		
 	}
 
-	public Double queryPowerplantProperty(OntModel jenaOwlModel) {
+	private JSONObject convertstringtojsonobject(String a) throws Exception {
+		
+		return new JSONObject(a);	
+	}
+
+	public Double queryPowerplantProperty(String iri) {
 		
 		String value1 = null;
 		String capacity = null;
@@ -141,15 +129,16 @@ public class FactorModel extends HttpServlet {
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#> "
 				+ "SELECT ?generation ?vcapa "
-				+ "WHERE {?entity  a  cp:PowerPlant  ." 
+				+ "{graph "+"<"+iri+">"
+				+ "{?entity  a  cp:PowerPlant  ." 
 				+ "?entity   j3:realizes ?generation ."
 				+ "?entity   j4:designCapacity ?capa  ."
 				+ "?capa   j2:hasValue ?valuecapa ."
 				+ "?valuecapa   j2:numericalValue ?vcapa ." 
 				+ "}"
-				+ "ORDER BY ?product DESC(?added)";
+				+ "}";
 
-		ResultSet rs_plant = FactorModel.query(plantInfo,jenaOwlModel); 
+		ResultSet rs_plant = FactorModel.queryFromFusekiServer("http://www.theworldavatar.com:80/damecoolquestion/worldpowerplantsng/query",plantInfo); 
 		
 		for (; rs_plant.hasNext();) {			
 			QuerySolution qs_p = rs_plant.nextSolution();
@@ -158,30 +147,20 @@ public class FactorModel extends HttpServlet {
 			value1 = cpiri.toString();
 			Literal cap = qs_p.getLiteral("vcapa"); // extract the name of the source
 			capacity = cap.getString();
-			System.out.println ("value1= "+value1);
-			System.out.println ("capacity= "+capacity);
-			
-
-			
-		}
-		
-		if (value1.contentEquals("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#CoalGeneration"))
-		{
-			outputvalue=Double.valueOf(capacity)*1000*0.8*0.001;
-		}
-		else if (value1.contentEquals("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#OilGeneration"))
-		{
-			outputvalue=Double.valueOf(capacity)*750*0.5*0.001;
-		}
-		else if (value1.contentEquals("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGasGeneration"))
-		{
-			outputvalue=Double.valueOf(capacity)*750*0.5*0.001;
-		}
-		else
-		{
-			outputvalue=0.0;
-			System.out.println("error");
 	
+		}
+
+		if (value1.contentEquals(
+				"http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#CoalGeneration")) {
+			outputvalue = Double.valueOf(capacity) * 1000 * 0.8 * 0.001;
+		} else if (value1.contentEquals(
+				"http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#OilGeneration")) {
+			outputvalue = Double.valueOf(capacity) * 1000 * 0.5 * 0.001;
+		} else if (value1.contentEquals(
+				"http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGasGeneration")) {
+			outputvalue = Double.valueOf(capacity) * 750 * 0.5 * 0.001;
+		} else {
+			throw new JPSRuntimeException("unknown generation type: " + value1);
 		}
 		return outputvalue;
 	}

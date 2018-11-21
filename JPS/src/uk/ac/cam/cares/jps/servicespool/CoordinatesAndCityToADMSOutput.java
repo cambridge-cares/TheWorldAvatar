@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.Gson;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
@@ -25,6 +28,8 @@ import uk.ac.cam.cares.jps.building.SimpleBuildingData;
 public class CoordinatesAndCityToADMSOutput extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private Logger logger = LoggerFactory.getLogger(CoordinatesAndCityToADMSOutput.class);
+	
 	
     /**
      * @see HttpServlet#HttpServlet()
@@ -57,7 +62,7 @@ public class CoordinatesAndCityToADMSOutput extends HttpServlet {
 		double[] sourceCenter = new double[2];
 		double[] targetCenter = new double[2];
  
-		int buildingLimit = 25;
+
 		if(cityIRI.contentEquals(BuildingQueryPerformer.BERLIN_IRI)) {			
 			plantIRI = "http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002";
 			sourceCRS = CRSTransformer.EPSG_25833; // Berlin
@@ -68,10 +73,10 @@ public class CoordinatesAndCityToADMSOutput extends HttpServlet {
 			double planty = targetCenter[1];
 			
 			System.out.println("==================== Berlin ====================");
-			System.out.println(cityIRI + "|" +  plantIRI + "|" + plantx + "|" + planty + "|" + buildingLimit + "|" + lowerx + "|" + lowery + "|" + upperx + "|" + uppery);
+			System.out.println(cityIRI + "|" +  plantIRI + "|" + plantx + "|" + planty + "|" + lowerx + "|" + lowery + "|" + upperx + "|" + uppery);
 			
 			try {
-				response.getWriter().write(startIntegrationWithPython(cityIRI, plantIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery));
+				response.getWriter().write(startIntegrationWithPython(cityIRI, plantIRI, plantx, planty, lowerx, lowery, upperx, uppery));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -83,11 +88,11 @@ public class CoordinatesAndCityToADMSOutput extends HttpServlet {
 			double plantx = 79831;
 			double planty = 454766;
 			System.out.println("==================== THE HAGUE ====================");
-			System.out.println(cityIRI + "|" +  plantIRI + "|" + plantx + "|" + planty + "|" + buildingLimit + "|" + lowerx + "|" + lowery + "|" + upperx + "|" + uppery);
+			System.out.println(cityIRI + "|" +  plantIRI + "|" + plantx + "|" + planty + "|" + lowerx + "|" + lowery + "|" + upperx + "|" + uppery);
 
 			
 			try {
-				response.getWriter().write(startIntegrationWithPython(city, plant, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery));
+				response.getWriter().write(startIntegrationWithPython(city, plant, plantx, planty, lowerx, lowery, upperx, uppery));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -103,7 +108,7 @@ public class CoordinatesAndCityToADMSOutput extends HttpServlet {
 	}
 	
 	
-	private String startIntegrationWithPython(String cityIRI, String plantIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) throws InterruptedException {
+	private String startIntegrationWithPython(String cityIRI, String plantIRI, double plantx, double planty, double lowerx, double lowery, double upperx, double uppery) throws InterruptedException {
 		
 		ArrayList<String> args = new ArrayList<String>();
 		args.add("python");
@@ -111,9 +116,10 @@ public class CoordinatesAndCityToADMSOutput extends HttpServlet {
 		args.add(plantIRI);
 		String coordintates = getCoordinatesForPython(lowerx, lowery, upperx, uppery);
 		args.add(coordintates);
-		String fullPath = AgentLocator.getPathToWorkingDir(this) + "/" + "ADMS";
+		//String fullPath = AgentLocator.getPathToWorkingDir(this) + "/" + "ADMS";
+		String fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
 		args.add(fullPath); // this extra parameter tells the python script where to put the input files
-		String buildingData = retrieveBuildingDataInJSON(cityIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
+		String buildingData = retrieveBuildingDataInJSON(cityIRI, plantx, planty, lowerx, lowery, upperx, uppery);
 		buildingData = buildingData.replace('\"', '\'');
 		args.add(buildingData);
 		String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
@@ -130,9 +136,13 @@ public class CoordinatesAndCityToADMSOutput extends HttpServlet {
 		return String.format(template, lowerx, upperx, lowery, uppery);
 	}
 	
-	private String retrieveBuildingDataInJSON(String cityIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
-		List<String> buildingIRIs = new BuildingQueryPerformer().performQueryClosestBuildingsFromRegion(cityIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
-		SimpleBuildingData result = new BuildingQueryPerformer().performQuerySimpleBuildingData(cityIRI, buildingIRIs);
+	private String retrieveBuildingDataInJSON(String city, double plantx, double planty, double lowerx, double lowery, double upperx, double uppery) {
+		
+		logger.info("retrieveBuildingDataInJSON, city=" + city + ", plantx=" + plantx + ", planty=" + planty
+				+ ", lowerx=" + lowerx + ", lowery=" + lowery + ", upperx=" + upperx + ", uppery=" + uppery);
+		
+		List<String> buildingIRIs = new BuildingQueryPerformer().performQueryClosestBuildingsFromRegion(city, plantx, planty, 25, lowerx, lowery, upperx, uppery);
+		SimpleBuildingData result = new BuildingQueryPerformer().performQuerySimpleBuildingData(city, buildingIRIs);
 		String argument = new Gson().toJson(result);
 		return argument;
 	}

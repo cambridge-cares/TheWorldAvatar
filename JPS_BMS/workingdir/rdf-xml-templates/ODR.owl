@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:Eco-industrialPark="http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#"
+  xmlns:SensorOntology="http://www.theworldavatar.com/SensorOntology.owl#"
+  xmlns:ns1="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#"
+  xmlns:ns2="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_system.owl#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:BuildingsLayer="http://www.jparksimulator.com/BuildingsLayer.owl#"
+>
+  <BuildingsLayer:Room rdf:about="http://www.theworldavatar.com/BMS/ODR.owl#OpticalDiagnosticRoom">
+    <system:hasSubsystem>
+      <ns2:ProcessControlSystem rdf:about="http://www.theworldavatar.com/BMS/ODR.owl#VAV-E/7-19">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/VAV-E7-19.owl</Eco-industrialPark:hasIRI>
+      </ns2:ProcessControlSystem>
+    </system:hasSubsystem>
+    <system:hasDirectSubsystem>
+      <ns1:T-Sensor rdf:about="http://www.theworldavatar.com/BMS/ODR.owl#ODR_RT_sensor1">
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/ODR_RT_sensor1.owl</Eco-industrialPark:hasIRI>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns1:T-Sensor>
+    </system:hasDirectSubsystem>
+    <system:hasDirectSubsystem>
+      <ns1:Q-Sensor rdf:about="http://www.theworldavatar.com/BMS/ODR.owl#ODR_RH_sensor1">
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/ODR_RH_sensor1.owl</Eco-industrialPark:hasIRI>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns1:Q-Sensor>
+    </system:hasDirectSubsystem>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasSubsystem>
+      <ns2:ProcessControlSystem rdf:about="http://www.theworldavatar.com/BMS/ODR.owl#VAV-E/7-20">
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/VAV-E7-20.owl</Eco-industrialPark:hasIRI>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns2:ProcessControlSystem>
+    </system:hasSubsystem>
+    <system:hasSubsystem>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/ODR.owl#HVAV-S/7-16">
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/HVAV-S7-16.owl</Eco-industrialPark:hasIRI>
+      </owl:NamedIndividual>
+    </system:hasSubsystem>
+    <system:hasSubsystem>
+      <ns2:ProcessControlSystem rdf:about="http://www.theworldavatar.com/BMS/ODR.owl#VAV-S/7-16">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/VAV-S7-16.owl</Eco-industrialPark:hasIRI>
+      </ns2:ProcessControlSystem>
+    </system:hasSubsystem>
+    <system:hasDirectSubsystem>
+      <ns1:P-Sensor rdf:about="http://www.theworldavatar.com/BMS/ODR.owl#ODR_RDP_sensor1">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/ODR_RDP_sensor1.owl</Eco-industrialPark:hasIRI>
+      </ns1:P-Sensor>
+    </system:hasDirectSubsystem>
+    <system:hasProperty>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/ODR.owl#ODR_Temperature">
+        <SensorOntology:isObservedBy rdf:resource="http://www.theworldavatar.com/BMS/ODR.owl#ODR_RT_sensor1"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/SensorOntology.owl#RoomTemperature"/>
+      </owl:NamedIndividual>
+    </system:hasProperty>
+    <system:hasProperty>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/ODR.owl#ODR_DiffPressure">
+        <SensorOntology:isObservedBy rdf:resource="http://www.theworldavatar.com/BMS/ODR.owl#ODR_RDP_sensor1"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/SensorOntology.owl#RoomDifferentialPressure"/>
+      </owl:NamedIndividual>
+    </system:hasProperty>
+    <system:hasProperty>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/ODR.owl#ODR_RelativeHumidity">
+        <SensorOntology:isObservedBy rdf:resource="http://www.theworldavatar.com/BMS/ODR.owl#ODR_RH_sensor1"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/SensorOntology.owl#RelativeHumidity"/>
+      </owl:NamedIndividual>
+    </system:hasProperty>
+    <system:hasSubsystem>
+      <ns2:ProcessControlSystem rdf:about="http://www.theworldavatar.com/BMS/ODR.owl#VAV-E/7-21">
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/VAV-E7-21.owl</Eco-industrialPark:hasIRI>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns2:ProcessControlSystem>
+    </system:hasSubsystem>
+  </BuildingsLayer:Room>
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/BMS/ODR.owl">
+    <owl:imports rdf:resource="http://www.jparksimulator.com/BuildingsLayer.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/SensorOntology.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl"/>
+  </owl:Ontology>
+</rdf:RDF>

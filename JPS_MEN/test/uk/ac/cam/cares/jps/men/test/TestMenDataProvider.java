@@ -32,8 +32,8 @@ public class TestMenDataProvider extends TestCase {
 	public static Map<String, String> NametoCode2 = new HashMap<>();
 	
 	private String getTransportationFile() {
-		return ".\\testres\\transportation\\Jr_Transportation_simplified.owl"; // location of the owl file that contains information for the transportation system
-		
+		//return ".\\testres\\transportation\\Jr_Transportation_simplified.owl"; // location of the owl file that contains information for the transportation system
+		return	"http://www.jparksimulator.com/kb/sgp/jurongisland/MaterialTransportMode.owl";
 	}
 	
 	public List<String> getsourcedirectory() {
