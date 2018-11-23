@@ -44,6 +44,7 @@ public class TestCoordinationAgent extends TestCase {
 						.key("uppery").value("52.514838").endObject()
 				.endObject()
 				.key("plant").value("http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002")
+				.key("reactionmechanism").value("marinov")
 				.endObject(); 
 		
 		// direct call without AgentCaller
@@ -77,6 +78,7 @@ public class TestCoordinationAgent extends TestCase {
 						.key("uppery").value("533338").endObject()
 				.endObject()
 				.key("plant").value("http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002")
+				.key("reactionmechanism").value("marinov")
 				.endObject(); 
 				
 		String result = AgentCaller.executeGetWithJsonParameter("/JPS/ADMSCoordinationAgentWithoutComposition", jsonInput.toString());
@@ -104,6 +106,7 @@ public class TestCoordinationAgent extends TestCase {
 						.key("uppery").value("455190").endObject()
 				.endObject()
 				.key("plant").value("http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl#Plant-001")
+				.key("reactionmechanism").value("marinov")
 				.endObject(); 
 				
 		String result = AgentCaller.executeGetWithJsonParameter("/JPS/ADMSCoordinationAgentWithoutComposition", jsonInput.toString());

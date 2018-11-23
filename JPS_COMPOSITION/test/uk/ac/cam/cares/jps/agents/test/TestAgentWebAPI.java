@@ -62,6 +62,7 @@ public class TestAgentWebAPI extends TestCase {
 						.key("uppery").value("533338").endObject()
 				.endObject()
 				.key("plant").value("http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002")
+				.key("reactionmechanism").value("marinov")
 				.endObject(); 
 		
 		System.out.println("jsonInput=\n" + jsonInput);
