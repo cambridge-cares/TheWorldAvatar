@@ -33,9 +33,16 @@ public class ADMSCoordinationAgentWithoutComposition extends HttpServlet {
 	public JSONObject executeWithoutComposition(String jsonInput) {
 		
 		try {
-			String waste = execute("/JPS/powerplant/calculateemission", jsonInput);
+			String wasteresult = AgentCaller.executeGet("/JPS/powerplant/calculateemission", "query", jsonInput);
 			JSONObject jo = new JSONObject(jsonInput);
+			String waste=new JSONObject(wasteresult).getString("waste");
 			jo.put("waste", waste);
+			
+			//String waste = execute("/JPS/powerplant/calculateemission", jsonInput);
+//			String waste = AgentCaller.executeGet("/JPS/powerplant/calculateemission", "query", jsonInput);
+//			JSONObject jo = new JSONObject(jsonInput);
+//			jo.put("waste", waste);
+//			
 			
 			String regionToCityResult = execute("/JPS/RegionToCity", jsonInput);
 			String city = new JSONObject(regionToCityResult).getString("city");
