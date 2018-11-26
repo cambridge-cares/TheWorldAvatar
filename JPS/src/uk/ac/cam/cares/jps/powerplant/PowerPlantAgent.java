@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.powerplant;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,7 +9,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Scanner;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -37,9 +35,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.util.CommandHelper;
 
 
 /**
@@ -78,76 +74,11 @@ public class PowerPlantAgent extends HttpServlet {
 		
 	}
 	
-	private String readFile(String pathname) throws IOException {
 
-	    File file = new File(pathname);
-	    StringBuilder fileContents = new StringBuilder((int)file.length());        
-
-	    try (Scanner scanner = new Scanner(file)) {
-	        while(scanner.hasNextLine()) {
-	            fileContents.append(scanner.nextLine() + System.lineSeparator());
-	        }
-	        return fileContents.toString();
-	    }
-	}
 	
-	//to convert the file of adms output in srm to the string of corrected json format
-	public String dojsonmodif(String outputfiledir) throws IOException
-	{	
-		//the flow is fixed and cannot be changed
-	    
-		ArrayList <String> newstring = new ArrayList <String> ();
-	    String newjsonfile = readFile(outputfiledir);
-	    newjsonfile=newjsonfile.replace("/*","_");
-	    newjsonfile=newjsonfile.replace("*/","_");
-	    
-	    //remove the "mixture" part error except the last part
-	    newjsonfile=newjsonfile.replace("\",\r\n" + 
-	    		"        }","\"\r\n" + 
-	    				"        },");
-	  //remove the "pollutant" part error except the last part
-	    newjsonfile =newjsonfile.replaceAll("\",\r\n" + 
-	    		"            }","\"\r\n" + 
-	    	    		"            },");
-	     
-	    //move the comma to the last } for pollutant
-	      newjsonfile=newjsonfile.replace("},\r\n" + 
-	    		"        }\r\n" + 
-	    		"        {","}\r\n" + 
-	    				"        },\r\n" + 
-	    				"        {");
-	    
-	    //move the comma to the last } for mixture
-	    newjsonfile=newjsonfile.replace("},\r\n" + 
-	    		"    }","}\r\n" + 
-	    				"    },");
-	    
-	    //delete the comma for the last } in json
-	    newjsonfile=newjsonfile.replace("},\r\n" + 
-	    		"        }\r\n" + 
-	    		"    ]","}\r\n" + 
-	    				"        }\r\n" + 
-	    				"    ]");
-
-	    int x=newjsonfile.split("_").length;
-	    System.out.println("size of the array= "+x);
-	    for(int a=0;a<x;a+=2)
-	    {
-	    	newstring.add(newjsonfile.split("_")[a]);
-	    }
-	    
-	    StringBuilder sb = new StringBuilder();
-	    for (String s : newstring)
-	    {
-	        sb.append(s);
-	    }
-
-	    System.out.println(sb.toString());
-		
-		return sb.toString().trim();
-	}
 	
-	public void doConversion(OntModel jenaOwlModel,String iri,String outputfiledir) throws JSONException, IOException
+	
+	public void doConversion(OntModel jenaOwlModel,String iri,String jsonresultstring) throws JSONException, IOException
 	{
 	    /*Adding elements to HashMap*/
 	    hmap.put("CO", "ChemSpecies_Carbon__monoxide");
@@ -156,7 +87,9 @@ public class PowerPlantAgent extends HttpServlet {
 	    hmap.put("HC", "PseudoComponent_Unburned_Hydrocarbon");
 	    hmap.put("NOx", "PseudoComponent_Nitrogen__oxides");
 	    
-	    JSONObject jsonObject=new JSONObject(dojsonmodif(outputfiledir));
+	    
+
+	    JSONObject jsonObject=new JSONObject(jsonresultstring);
 		
 		//JSONObject jsonObject = parseJSONFile(outputfiledir); (used after the format of json file is fixed )
 		Double molecularvalue = jsonObject.getJSONObject("mixture").getJSONObject("molmass").getDouble("value")*1000;
@@ -192,18 +125,14 @@ public class PowerPlantAgent extends HttpServlet {
 	}
 		
 	
-    public static JSONObject parseJSONFile(String filename) throws JSONException, IOException {
+    //temporarily unused
+	public static JSONObject parseJSONFile(String filename) throws JSONException, IOException {
         String content = new String(Files.readAllBytes(Paths.get(filename)));
         JSONObject content2 = new JSONObject(content.trim());
         return content2;
     }
 	
-	public void startConversion(String iriOfPlant) throws Exception {
-
-	    
-
-		String jsonFiledir =AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/WrongOutputCase00001Cyc0001ADMS.json";
-		
+	public void startConversion(String iriOfPlant,String jsonresultstring) throws Exception {
 				
 		jenaOwlModel = ModelFactory.createOntologyModel();	
 		jenaOwlModel.read(iriOfPlant, null);
@@ -211,7 +140,7 @@ public class PowerPlantAgent extends HttpServlet {
 
 				initOWLClasses(jenaOwlModel);
 
-				doConversion(jenaOwlModel,iriOfPlant,jsonFiledir); // plant,country,owner,fuel,tech,x,y,emission,cost,anngen,capa,age
+				doConversion(jenaOwlModel,iriOfPlant,jsonresultstring);
 
 				
 				String filePath2= iriOfPlant.replaceAll("http://www.theworldavatar.com/kb", "C:/TOMCAT/webapps/ROOT/kb").split("#")[0]; //update the file locally
@@ -254,16 +183,21 @@ public class PowerPlantAgent extends HttpServlet {
 		System.out.println("data got= "+iri+" and "+iri2);
 		
 		
-		
-		/**This part put run to the SRM Engine simulation and take the output*/
-		//startSRM("C:/Program Files/Kinetics and SRM Engine Suite"); not yet implemented until the srm formatting is fixed
-		
+	    String resultjson = AgentCaller.executeGet("JPS/SRMAgent", "query", joforrec.toString());
+	    
+	    String jsonsrmresult = null;
+	    try {
+			jsonsrmresult = new JSONObject(resultjson).getString("file");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 		
 		
 		try {
 	
 			//update the emission and other information into the plant owl file
-			startConversion(iri2); //convert to update value
+			startConversion(iri2,jsonsrmresult); //convert to update value
 			
 			//try to query the owl file to get the waste stream inside it 
 			String wastestreamInfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> " 
@@ -292,9 +226,7 @@ public class PowerPlantAgent extends HttpServlet {
 			
 			JSONObject jo=null;
 			if(cpirilist.size()==1)
-			{
-			//JSONObject jo = new JSONObject().put("waste", "todo - add here the IRI of the waste emission stream of the given plant");
-			
+			{			
 				 jo = new JSONObject().put("waste", cpirilist.get(0));
 				
 			}	
@@ -309,9 +241,5 @@ public class PowerPlantAgent extends HttpServlet {
 		
 	}
 	
-	private void startSRM(String SRMFolderlocation) {
-		String startSRMCommand = "x64_SRMDriver.exe -w \"C:\\\\JPS_DATA\\workingdir\\SRM\\\"";
-		CommandHelper.executeSingleCommand(SRMFolderlocation, startSRMCommand);
-	}
 	
 }
