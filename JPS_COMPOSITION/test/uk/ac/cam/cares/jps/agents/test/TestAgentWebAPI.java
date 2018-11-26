@@ -142,7 +142,5 @@ public class TestAgentWebAPI extends TestCase {
 		
 		//String result = new AgentWebAPI().composeAndExecute(compositeAgent, host, jsonInput.toString());
 		System.out.println("result=\n" + result);
-		JSONObject jsonOutput = new JSONObject(result);
-		assertEquals(25, jsonOutput.getJSONArray("building").length());
 	}
 }

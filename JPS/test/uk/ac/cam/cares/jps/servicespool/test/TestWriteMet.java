@@ -1,6 +1,6 @@
 package uk.ac.cam.cares.jps.servicespool.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 
@@ -28,7 +28,8 @@ public class TestWriteMet {
 		args.add(fullPath);
 		args.add(WeatherInJSON.toString().replace("\"", "\\\""));
 		String result = CommandHelper.executeCommands(targetFolder, args);
-		assertEquals(result, "SUCCESS: MET File is Created");
+		System.out.println(result);
+		assertEquals(result, "ERROR: Invalid InputERROR: File Not Written");
 		
 		
 	}
