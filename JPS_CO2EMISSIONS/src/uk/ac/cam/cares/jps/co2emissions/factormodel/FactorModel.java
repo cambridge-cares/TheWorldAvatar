@@ -99,7 +99,7 @@ public class FactorModel extends HttpServlet {
 			logger.error(e1.getMessage(), e1);
 		} 
 		
-		logger.info("jsonOutput=\n" + jsonOutput);
+		logger.debug("jsonOutput=\n" + jsonOutput);
 
 		String jsonobject=jsonOutput.toString();
 		try {
