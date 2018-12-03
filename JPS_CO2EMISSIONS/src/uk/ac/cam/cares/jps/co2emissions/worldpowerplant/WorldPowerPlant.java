@@ -203,7 +203,7 @@ public class WorldPowerPlant extends HttpServlet {
 			
 			
 			publishMessages(arrayOfPowerplantIRI, arrayOfPowerplantIRI.length, 5, channel, chosenModel);
-			//publishMessages(arrayOfPowerplantIRI, 5, 5, channel, chosenModel);
+			//publishMessages(arrayOfPowerplantIRI, 10, 5, channel, chosenModel);
 			
 			long stopTime = System.currentTimeMillis();
 			long elapsedTime = stopTime - startTime;
