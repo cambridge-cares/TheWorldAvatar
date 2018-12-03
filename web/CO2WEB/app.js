@@ -34,7 +34,8 @@ var getSpecAttr =require("./routes/getSpecificLiteralAttrCached");
 var MAU = require("./routes/runMAU")
 var MAUPlot = require("./routes/plotMAU")
 var HW =require("./routes/runHeatWasteNetworkMap")
-var PPCO2 = require("./routes/powerplantCO2Cached");
+//var PPCO2 = require("./routes/powerplantCO2Cached");
+var PPCO2 = require("./routes/powerplantCO2");
 
 var ppMap = require('./routes/mapPowerPlant');
 

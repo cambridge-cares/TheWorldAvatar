@@ -47,6 +47,16 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
      @placeholder@
      }
 `,
+queryStr2:`
+             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+             PREFIX ontochem: 
+<https://como.cheng.cam.ac.uk/kb/ontochem.owl#>
+             SELECT ?uri
+             WHERE {
+                     ?uri rdf:type ontochem:ReactionMechanism .
+             }
+
+`,
 UnionImport:`
   UNION{?a system:hasIRI ?uri;}
 `
@@ -77,7 +87,9 @@ owlProcessor.doConnect = function(address, level) {
 					if(!iset.has(item)){
 						iset.add(item);
 						address = me.diskLoc2Uri(address);
-                    if(level>=2 && ! (item in this.parentMap)) {
+						address = me.equalHost(address);
+						item = me.equalHost(item);
+                    if(level>=2 && !(item in me.parentMap) && (address!==item)) {
                         me.parentMap[item] = address in me.parentMap ? me.parentMap[address] : address;
                     }
                     me.result.push({'source':address, 'target':item, 'level':level})
@@ -321,7 +333,7 @@ owlProcessor.checkFile = function (loc) {
  * @returns {promise for query result}
  */
 owlProcessor.queryPromise = function (loc, type, level) {
-    console.log('query lvel: '+level)
+    //console.log('query lvel: '+level)
     const self = this;
     switch(type){
         case 'endpoint':
@@ -330,21 +342,25 @@ owlProcessor.queryPromise = function (loc, type, level) {
             return new Promise((resolve, reject)=>{
                 //run query against endpoint
 				console.log(loc);
-                request.get(loc, {qs:{'query':self.queryStr,'output':'json'},timeout: 1500, agent: false}, function (err, res, body) {
-                    console.log('endpoint resquest result')
-                    if (err||!body||body===undefined||body.includes('<!doctype html>')||body.includes('<?xml version="1.0" encoding="utf-8"?>')) {
+                //toodo: this is blasphemy, fix the endpoibt then delete this
+                request.get(loc, {qs:{'query':self.queryStr2,'output':'json'},timeout: 150000, agent: false}, function (err, res, body) {
+                    console.log('endpoint resquest result');
+                                        console.log("body:"+body);
+
+                    if (err||!body||body===undefined||body.toLowerCase().includes('<!doctype html')||body.includes('<?xml version="1.0" encoding="utf-8"?>')) {
 						console.log('no result from endpoint, reject')
 						reject(err);
 						return;
 						};//don't throw
                     //unwrap query
-                    console.log("body:"+body)
-    
-                    body = JSON.parse(body)
-                    let {uri} = RdfParser.unwrapResult(body, ['uri']);
-                    //console.log(uri)
+                   
+                    
+                    body = self.parsePseudoJson(body);
+                    //let {uri} = RdfParser.unwrapResult(body, ['uri']);
+                    let uri = body.map(item=>item.uri);
+					//console.log(uri)
                     let tobuffer = uri.map((text)=> {return text+'@'+(level+1)}).join(';')
-                    self.buffer.push(tobuffer);
+                    //self.buffer.push(tobuffer);
                          resolve(uri)
                 })
             });
@@ -362,6 +378,32 @@ owlProcessor.queryPromise = function (loc, type, level) {
     
 
 }
+
+owlProcessor.checkJson = function(body){
+    try{
+    JSON.parse(body)
+    return body
+} catch(e){
+    console.log(e)
+    if(e){
+    var re = /^(\{.*\})(.?)$/, re2=  /^(\[.*\])(.?)$/;
+let formated = body.match(re)?body.match(re):body.match(re2);
+return formated[1]
+    }
+}
+}
+
+owlProcessor.parsePseudoJson = function(body){
+    let strs = body.split('\n');
+    console.log(strs.length);
+    strs =strs.filter((item)=>{return !(item.includes('[') || item.includes(']')||item.includes('{')||item.includes('}')) })
+    .map(item=> '{'+item+'}');
+    return JSON.parse('['+strs.join(',')+']');
+
+
+
+}
+
 
 
 /**
@@ -454,6 +496,8 @@ owlProcessor.process = function (options) {
         this.init(options);
         this.doConnect(this.loc, 1);
         this.buffer = new Readable({read() {}});
+	
+		self.processed.add(self.diskLoc2Uri(this.loc));
 
       return new Promise((resolve, reject)=>{
           /*buffer logic**/
@@ -469,7 +513,7 @@ owlProcessor.process = function (options) {
 					  console.log('after split:'+uri);
 					  let auri = self.normalAddr(uri);
 					  console.log('normailized: '+auri);
-                      if(auri&&!self.processed.has(auri)){
+                      if(auri&&!self.processed.has(auri) ){
                           self.processed.add(auri);
                           self.doConnect(auri, parseInt(level)+1);//if find new uri, do connect
                       }
@@ -503,6 +547,9 @@ owlProcessor.process = function (options) {
 
 owlProcessor.diskLoc2Uri = function(disk){
 	return disk.replace('C:\\TOMCAT\\webapps\\ROOT\\', 'http://www.theworldavatar.com/').replace(new RegExp( '\\\\','g'), '/');
+}
+owlProcessor.equalHost = function(url){
+	return url.replace('http://www.jparksimulator.com/', 'http://www.theworldavatar.com/');
 }
 
 owlProcessor.uriList2DiskLoc = function (uriArr, diskroot) {

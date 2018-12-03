@@ -59,7 +59,7 @@ function groupwatcher(dir, informIndi){
         register: function (newObserver, receiveData) {//register this observer
            // logger.debug("dog for " + this.uri+" registers " + newObserver)
             this.observers.set(newObserver, {name: newObserver, receiveData: receiveData});
-            logger.debug("register for "+this.uri);
+           // logger.debug("register for "+this.uri);
 
             this.observers.forEach(function (item) {
                // logger.debug(item)
