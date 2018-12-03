@@ -3,18 +3,18 @@
     xmlns:msm="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#">
   <msm:Service rdf:about="http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service">
     <msm:hasOperation>
-      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Operation_8b6b5148-b0d2-4199-af6d-e76b3d04f30d">
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Operation_05fe1279-929e-43a3-b93e-509a8ea2c646">
         <msm:hasOutput>
-          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#MessageContent_c64641c7-bc8a-47ae-9147-ba4b63362052">
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#MessageContent_5297c40b-a9d0-4bea-859d-486e707e79dc">
             <msm:hasMandatoryPart>
-              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#MessagePart_9fbb45fc-82f5-4a6a-bba5-be5c60bce2a9">
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#MessagePart_d9c9856d-f770-4be2-b4b0-4f0aa28eaad3">
                 <msm:hasName>buildings</msm:hasName>
                 <msm:isArray>true</msm:isArray>
                 <msm:hasType>http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType</msm:hasType>
               </msm:MessagePart>
             </msm:hasMandatoryPart>
             <msm:hasMandatoryPart>
-              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#MessagePart_d37d69cf-61bf-4dd2-8b70-e66e9770f785">
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#MessagePart_a3035ed1-36dc-489a-b013-603d7e7dcbc4">
                 <msm:hasName>dispersiongrid</msm:hasName>
                 <msm:isArray>false</msm:isArray>
                 <msm:hasType>https://www.w3.org/ns/csvw#Table</msm:hasType>
@@ -23,16 +23,23 @@
           </msm:MessageContent>
         </msm:hasOutput>
         <msm:hasInput>
-          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#MessageContent_b8f0fd99-f364-4460-812e-92f1d092c9bd">
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#MessageContent_49bbd1f8-4cd6-4248-bc5d-efacf6e83549">
             <msm:hasMandatoryPart>
-              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#MessagePart_eb2b6957-9d49-41f6-950b-5b0cedca99bd">
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#MessagePart_a129bfe9-7d33-40be-aa7f-f4952134d89a">
+                <msm:hasName>reactionmechanism</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#MessagePart_3ed8aa3b-2383-457b-88dc-972b782e1f73">
                 <msm:hasName>plant</msm:hasName>
                 <msm:isArray>false</msm:isArray>
                 <msm:hasType>http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant</msm:hasType>
               </msm:MessagePart>
             </msm:hasMandatoryPart>
             <msm:hasMandatoryPart>
-              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#MessagePart_f6adf213-6238-46cf-bf98-e6e623cb10ed">
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#MessagePart_b06cab5b-1ee4-461e-8763-a5d7d8573b0d">
                 <msm:hasName>region</msm:hasName>
                 <msm:isArray>false</msm:isArray>
                 <msm:hasType>http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType</msm:hasType>
