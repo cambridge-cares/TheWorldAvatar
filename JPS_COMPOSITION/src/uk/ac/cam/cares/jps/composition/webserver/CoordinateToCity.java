@@ -21,7 +21,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
 import uk.ac.cam.cares.jps.composition.util.SendRequest;
 
 /**
@@ -41,7 +40,7 @@ public class CoordinateToCity extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-			JSONObject value = new JSONObject(request.getParameter("value").replace("@", "#").replace("$", "#"));
+			JSONObject value = new JSONObject(request.getParameter("query").replace("@", "#").replace("$", "#"));
 			JSONObject coordinate = value.getJSONObject(
 					"http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#Coordinate");
 			JSONArray lat = coordinate.getJSONArray(

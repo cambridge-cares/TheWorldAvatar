@@ -22,6 +22,7 @@ public class TraceParent {
 
 		if (aEdge.fromOutput[0] != -1) {
 			Service previousService = graph.layers.get(aEdge.fromOutput[0]).getServices().get(aEdge.fromOutput[1]);
+			Service thisService = graph.layers.get(aEdge.toInput[0]).getServices().get(aEdge.toInput[1]);
 			for (MessagePart part : previousService.getAllInputs()) {
 				if (part.inputEdges != null) {
 					for (Edge inputEdge : part.inputEdges) {
@@ -30,6 +31,7 @@ public class TraceParent {
 							if (inputEdge.fromOutput[0] == -1) {
 								subtracks.add(newSubTrack);
 								newSubTrack = new SubTrack();
+								newSubTrack.servicesInvolved.add(thisService);
 								break;
 							}
 							else {

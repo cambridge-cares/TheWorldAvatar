@@ -23,7 +23,7 @@ public class WeatherToWindDirection extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		try {
-			JSONObject input = new JSONObject(request.getParameter("value"));			
+			JSONObject input = new JSONObject(request.getParameter("query"));			
 			System.out.println("Input : " + input);
 			JSONObject currentWeatherState = input.getJSONObject("currentweatherstate");
 			JSONObject wind = currentWeatherState.getJSONObject("haswind");

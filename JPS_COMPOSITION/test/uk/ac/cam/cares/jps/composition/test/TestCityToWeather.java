@@ -45,7 +45,7 @@ public class TestCityToWeather {
 
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath("/JPS_COMPOSITION/CityToWeather")
-				.setParameter("value",input.toString());
+				.setParameter("query",input.toString());
 		String result = executeGet(builder);
 		System.out.println("Result:" + result);
 	

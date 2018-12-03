@@ -263,6 +263,8 @@ function composeService() {
         	console.log('----- original msg -----')
         	console.log(msg)
             compositeService = msg;
+        	
+        	
             visualizeComposition(convertComposition(JSON.parse(msg)));
             console.log('-------------- convert ----------------')
             console.log(convertComposition(JSON.parse(msg)));
@@ -434,6 +436,33 @@ function convertComposition(result) {
 
     });
 
+    let nodeDataArray = visualizationObject.nodeDataArray;
+    let scoreMap = result['scoreMap'];
+    
+    console.log('score map', scoreMap);
+    for(let idx in nodeDataArray){
+    	let nodeData = nodeDataArray[idx];
+    	let nodeKey = nodeData['key'];
+    	for(let key in scoreMap){
+    		if(key.includes(nodeKey)){
+    			let scoreArray = scoreMap[key];
+    			let sum = 		 parseInt(scoreArray[0]);
+    			let number = 	 parseInt(scoreArray[1]);
+    			console.log('sum', sum);
+    			console.log('num', number);
+    			let score = (((sum/ number) / 2132611) * 5).toFixed(2);
+    			console.log('score', score);
+    			nodeData['score'] = 'Score: ' + score;
+    		}
+    	}
+    	
+    	
+    }
+    
+    console.log('visualization object', nodeDataArray);
+    
+    
+    
     return visualizationObject;
 }
 

@@ -45,7 +45,7 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
  
  
-		String value = request.getParameter("value");	
+		String value = request.getParameter("query");	
 		
 
 		JSONObject input = null;

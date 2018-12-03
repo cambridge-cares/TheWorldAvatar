@@ -69,7 +69,7 @@
 
             var executionChain = window.location.href.split("data=")[1];
 
-            var myUrl = 'http://' + hostname + '/JPS_COMPOSITION/ServiceExecutionEndpoint?executionChain=' + executionChain + '&value=' + encodeURIComponent(regionInSemanticJSON);
+            var myUrl = 'http://' + hostname + '/JPS_COMPOSITION/ServiceExecutionEndpoint?executionChain=' + executionChain + '&query=' + encodeURIComponent(regionInSemanticJSON);
             //var myUrl = 'http://' + 'localhost:8080' + '/JPS/GetBuildingListFromRegion?&value=' + encodeURIComponent(regionInSemanticJSON);
 
             console.log(myUrl);
@@ -80,7 +80,7 @@
             });
 
             request.done(function (data) {
-                
+                 
 				console.log(data)
 				console.log('----------------------')
 				data = JSON.parse(data);

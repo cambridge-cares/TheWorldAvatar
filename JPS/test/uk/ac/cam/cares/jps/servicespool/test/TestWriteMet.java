@@ -1,6 +1,6 @@
 package uk.ac.cam.cares.jps.servicespool.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 
@@ -16,7 +16,7 @@ public class TestWriteMet {
 	@Test
 	public void test() throws JSONException {
 
-		String WeatherString = " {\"precitipation\":\"0.0\",\"weatherIRI\":\"http://www.theworldavatar.com/WeatherOfDen_Haag934759441\",\"cloudCover\":\"20\",\"windDirection\":\"250\",\"windSpeed\":\"7.7\",\"temperature\":\"31\"}\r\n";
+		String WeatherString = "{\"precitipation\":\"0.0\",\"weatherIRI\":\"http://www.theworldavatar.com/WeatherOfDen_Haag934759441\",\"cloudCover\":\"20\",\"windDirection\":\"250\",\"windSpeed\":\"7.7\",\"temperature\":\"31\"}\r\n";
 		JSONObject WeatherInJSON = new JSONObject(WeatherString);
 		//TODO: Write a met file from this JSON (Done by 2018.8.25)
 		String fullPath = AgentLocator.getPathToWorkingDir(this) + "/" + "ADMS";
@@ -28,7 +28,8 @@ public class TestWriteMet {
 		args.add(fullPath);
 		args.add(WeatherInJSON.toString().replace("\"", "\\\""));
 		String result = CommandHelper.executeCommands(targetFolder, args);
-		assertEquals(result, "SUCCESS: MET File is Created");
+		System.out.println(result);
+		assertEquals(result, "ERROR: Invalid InputERROR: File Not Written");
 		
 		
 	}

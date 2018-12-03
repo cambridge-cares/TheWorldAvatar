@@ -52,7 +52,7 @@ public class RegionToCity extends HttpServlet {
 		JSONObject input = null;
 		JSONObject region = new JSONObject();
 		try {
-			input = new JSONObject(request.getParameter("value"));
+			input = new JSONObject(request.getParameter("query"));
   
 			region.put("srsname", input.getJSONObject("region").get("srsname"));
 			region.put("uppery", input.getJSONObject("region").getJSONObject("uppercorner").get("uppery"));

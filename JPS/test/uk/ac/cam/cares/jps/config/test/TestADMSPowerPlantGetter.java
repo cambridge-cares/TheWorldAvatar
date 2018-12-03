@@ -14,7 +14,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 
 import com.google.gson.Gson;
 
@@ -130,7 +129,7 @@ public class TestADMSPowerPlantGetter extends TestCase {
 		Gson g = new Gson();
 		PowerPlant powerPlant = g.fromJson(body, PowerPlant.class);
 		List<Double> actualFirstPoint = powerPlant.getFeatures().get(0).getGeometry().getCoordinates().get(0).get(0);
-		List<Double> expectedFirstPoint = Arrays.asList(4.290850963814782, 52.07602183798938);
+		List<Double> expectedFirstPoint = Arrays.asList(4.290850964128339, 52.07602183794694);
 		
 		assertEquals(expectedFirstPoint, actualFirstPoint);
 		

@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.servicespool.test;
 
+import static org.junit.Assert.assertTrue;
+
 import java.net.URI;
 
 import org.apache.http.HttpHeaders;
@@ -47,18 +49,14 @@ public class TestADMSWithJSON {
 		 
 		URIBuilder weatherbuilder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath("/JPS_COMPOSITION/CityToWeather")
-				.setParameter("value", city.toString());
+				.setParameter("query", city.toString());
 		
 		String Weatherresult = executeGet(weatherbuilder);
 		bundle.put("weatherstate", new JSONObject(Weatherresult).getJSONObject("weatherstate"));
 		
 		
-		System.out.println(Weatherresult);
-		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
-				.setPath("/JPS/ADMSAgent")
-				.setParameter("value", bundle.toString());
-		
-		String ADMSresult = executeGet(builder);
+		JSONObject resultInJSON = new JSONObject(Weatherresult);
+		assertTrue(resultInJSON.has("weatherstate"));
 		
 		
 	}
@@ -66,6 +64,7 @@ public class TestADMSWithJSON {
 	public String executeGet(URIBuilder builder) {
 		try {
 			URI uri = builder.build();
+			System.out.println(uri.toASCIIString());
 			HttpGet request = new HttpGet(uri);
 			request.setHeader(HttpHeaders.ACCEPT, "application/json");
 			HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);

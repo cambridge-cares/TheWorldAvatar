@@ -28,7 +28,7 @@ public class ExecutorNew {
 	public int myPort;
 	public JSONObject finalResult = new JSONObject();
 	public JSONObject initialInput;
-	
+	public JSONObject o;
 	public ExecutorNew() {
 		myHost = KeyValueServer.get(IKeys.HOST);
 		myPort = Integer.valueOf(KeyValueServer.get(IKeys.PORT));
@@ -37,6 +37,7 @@ public class ExecutorNew {
 	public ExecutorNew(ArrayList<ExecutionLayer> executionChain) {
 		this();
 		this.executionChain = executionChain;
+		this.o = new JSONObject();
 	}
 
 	public String execute(JSONObject initialInput) throws JSONException {
@@ -55,11 +56,10 @@ public class ExecutorNew {
 						if(layerCounter == 0) {
 							URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 									.setPath(path)
-									.setParameter("value", initialInput.toString());
+									.setParameter("query", initialInput.toString());
 							
 							System.out.println("============== Path =============");
 							System.out.println(path);
-							
 							
 							String resultString = executeGet(builder);
 							JSONObject result = new JSONObject(resultString);
@@ -84,14 +84,33 @@ public class ExecutorNew {
 									}
 									URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 											.setPath(path)
-											.setParameter("value", executionPackage.result.toString());
+											.setParameter("query", executionPackage.result.toString());
+									
+								 
+									
 									System.out.println("============== Path =============");
 									System.out.println(path);
+									long startTime = System.currentTimeMillis();
 									String resultInString = executeGet(builder);	 
 									JSONObject result = new JSONObject(resultInString);
 									System.out.println("--------");
 									System.out.println(result);
 									System.out.println("=================================");
+									long endTime = System.currentTimeMillis();
+//									
+//									if(path.equalsIgnoreCase("/JPS_COMPOSITION/CityToWeather")) {
+//										System.out.println("================ 1 Hit City To Weather ===============");
+//										this.o = new JSONObject();
+//										this.o.put("time", 900);
+//										this.o.put("time_stamp", startTime);
+//										if(resultInString.equalsIgnoreCase("")) {
+//											this.o.put("code", 404);
+//										}
+//										else {
+//											this.o.put("code", 200);
+//										}
+//										this.o.put("result", result);
+//									}
 
 									executeSingleTask(task, result, targetHttpUrlList, keysArray);
 								}
@@ -111,7 +130,7 @@ public class ExecutorNew {
 						String path = executionHttpUrl.replace("http://www.theworldavatar.com","");
 						URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 								.setPath(path)
-								.setParameter("value", initialInput.toString());
+								.setParameter("query", initialInput.toString());
 						JSONObject result = new JSONObject(executeGet(builder));
 						appendNewResult(result);
 					}
@@ -124,6 +143,12 @@ public class ExecutorNew {
 				break;
 			}
 		}
+		
+			// 1. You need to evaluate the result... 
+
+	
+		
+		//this.finalResult.put("score", this.o);
 		return this.finalResult.toString();
 	}
 	
@@ -162,7 +187,7 @@ public class ExecutorNew {
 				appendNewResult(result);
 			}
 		
-		
+		// TODO: Highest Priority. Integrate the 
 
 		Map<String,Map<String, Map<String, String>>> NameMappingMap = task.httpToNameMapping;
 		// Get all the name mappings from the http first 
@@ -213,11 +238,10 @@ public class ExecutorNew {
 			String key = (String) keys.next();
 			this.finalResult.put(key, newResult.get(key));
 		}
-
-
 	}
 	
 	public String executeGet(URIBuilder builder) {
+		
 		try {
 			URI uri = builder.build();
 			HttpGet request = new HttpGet(uri);
@@ -231,4 +255,7 @@ public class ExecutorNew {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		} 
 	}
+	
+	
+	
 }

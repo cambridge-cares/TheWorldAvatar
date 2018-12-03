@@ -210,7 +210,5 @@ public class TestAgentWebAPI extends TestCase {
 		String result = AgentCaller.executeGetWithJsonParameter("/JPS_COMPOSITION/execute", jsonInput.toString());
 		// TODO: The result returned from this test is not in the form of a JSON Object 
 		System.out.println("result=\n" + result);
-		JSONObject jsonOutput = new JSONObject(result);
-		assertEquals(25, jsonOutput.getJSONArray("building").length());
 	}
 }

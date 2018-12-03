@@ -34,7 +34,7 @@ public class TestJSONFlattenTool {
 		
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath("/JPS/RegionToCity")
-				.setParameter("value", input);
+				.setParameter("query", input);
 		String plants  = executeGet(builder);
 		System.out.println(plants);
 	}
