@@ -49,7 +49,7 @@ public class TestADMSWithJSON {
 		 
 		URIBuilder weatherbuilder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath("/JPS_COMPOSITION/CityToWeather")
-				.setParameter("value", city.toString());
+				.setParameter("query", city.toString());
 		
 		String Weatherresult = executeGet(weatherbuilder);
 		bundle.put("weatherstate", new JSONObject(Weatherresult).getJSONObject("weatherstate"));

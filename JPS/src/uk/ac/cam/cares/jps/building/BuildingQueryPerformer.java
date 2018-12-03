@@ -98,19 +98,37 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		double uy = uppery;
 		
 		String targetCRSName = getCRSName(cityIRI);
-		if (!DEFAULT_CRS_NAME.equals(targetCRSName)) {
-			
-			double[] p = CRSTransformer.transform(DEFAULT_CRS_NAME, targetCRSName, new double[] {plantx, planty});
+		String sourceCRSName = DEFAULT_CRS_NAME;
+		
+		if(lowerx <= 180) {
+			sourceCRSName = CRSTransformer.EPSG_4326;
+			double[] p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {plantx, planty});
 			plx = p[0];
 			ply = p[1];
-			p = CRSTransformer.transform(DEFAULT_CRS_NAME, targetCRSName, new double[] {lowerx, lowery});
+			p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {lowerx, lowery});
 			lx = p[0];
 			ly = p[1];
-			p = CRSTransformer.transform(DEFAULT_CRS_NAME, targetCRSName, new double[] {upperx, uppery});
+			p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {upperx, uppery});
 			ux = p[0];
 			uy = p[1];
 		}
+		else {
+			
 		
+		
+		if (!DEFAULT_CRS_NAME.equals(targetCRSName)) {
+			
+			double[] p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {plantx, planty});
+			plx = p[0];
+			ply = p[1];
+			p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {lowerx, lowery});
+			lx = p[0];
+			ly = p[1];
+			p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {upperx, uppery});
+			ux = p[0];
+			uy = p[1];
+		}
+		}
 		String query = getQueryClosestBuildingsFromRegion(200, lx, ly, ux, uy);		
 		String result = performQuery(cityIRI, query);
 		System.out.println("=============== query result ===============");

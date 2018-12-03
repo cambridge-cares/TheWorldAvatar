@@ -65,7 +65,7 @@ public class ADMSCoordinationAgentWithoutComposition extends HttpServlet {
 
 		logger.info("execute for path=" + path + ", json=" + jsonInput);
 		// TODO-AE URGENT change value to query --> executeGetWithJSON parameter
-		String result = AgentCaller.executeGet(path, "value", jsonInput);
+		String result = AgentCaller.executeGet(path, "query", jsonInput);
 		logger.info("execution result=" + result);
 		return result;
 	}
