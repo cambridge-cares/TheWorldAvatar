@@ -17,8 +17,8 @@ import sys
 #function :	momick the structure of exsiting instance
 #			append timeStamp to add new instance storing datatype
 
-templateDir = "C:/Users/WE/Desktop/BMS/workingdir/rdf-xml-templates/"
-owlFileDir = "C:/Users/WE/Desktop/BMS/workingdir/rdf-xml-output/"
+templateDir = "C:/Users/nasac/Documents/GIT/JPS_BMS/workingdir/rdf-xml-templates/"
+owlFileDir = "C:/Users/nasac/Documents/GIT/JPS_BMS/workingdir/rdf-xml-output/"
 
 def replaceFile(filename):
 	# shutil.copyfile('../DES/' + filename, './' + filename)
