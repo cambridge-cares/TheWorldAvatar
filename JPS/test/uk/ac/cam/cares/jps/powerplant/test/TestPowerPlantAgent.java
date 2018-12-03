@@ -10,7 +10,7 @@ public class TestPowerPlantAgent extends TestCase {
 	
 	
 	private String getContextPathForJPSco2emissionefactor() {
-		return "/JPS/powerplant/calculateemission";
+		return "/JPS/PowerPlant";
 	}
 	
 	public void testCallAgent () throws JSONException {
