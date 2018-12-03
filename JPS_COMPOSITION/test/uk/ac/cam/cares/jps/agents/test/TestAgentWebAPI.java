@@ -10,7 +10,6 @@ import org.json.JSONWriter;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.google.gson.Gson;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.agents.api.AgentWebAPI;
@@ -45,10 +44,49 @@ public class TestAgentWebAPI extends TestCase {
 				.build();
 		return composedAgent;
 	}
+	
+	private Service createADMSWithWasteProduct() {
+		Service composedAgent = new ServiceBuilder()
+				.operation(null, "http://www.theworldavatar.com/Composite_Service_ODsMpRv")
+				.input("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType", "region")
+				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
+				.input("http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction", "reactionmechanism")
+				.output("https://www.w3.org/ns/csvw#Table", "dispersiongrid")
+				.output("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType", true, "buildings", true)
+				.build();
+		return composedAgent;
+	}
+	
 
-	private JSONObject composeAndExecuteForBerlinDirectCall() throws Exception {
+	private JSONObject composeAndExecuteForBerlinDirectCall(Service composedAgent) throws Exception {
 
-		Service composedAgent = createADMSWithoutWasteProduct();
+		
+		//System.out.println("compositeAgent=" + new Gson().toJson(composedAgent));
+		
+		JSONWriter jsonInput = new JSONStringer().object().
+				key("region").object()
+					.key("srsname").value("EPSG:28992")
+					.key("lowercorner").object()
+						.key("lowerx").value("699182")
+						.key("lowery").value("532537").endObject()
+					.key("uppercorner").object()
+						.key("upperx").value("699983")
+						.key("uppery").value("533338").endObject()
+				.endObject()
+				.key("plant").value("http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002")
+				.endObject(); 
+		
+		System.out.println("jsonInput=\n" + jsonInput);
+		
+		String result = new AgentWebAPI().composeAndExecute(composedAgent, jsonInput.toString());
+		System.out.println("result=\n" + result);
+		
+		return new JSONObject(result);	
+	}
+	
+	private JSONObject composeAndExecuteForBerlinDirectCallWithWaste(Service composedAgent) throws Exception {
+
+		
 		//System.out.println("compositeAgent=" + new Gson().toJson(composedAgent));
 		
 		JSONWriter jsonInput = new JSONStringer().object().
@@ -75,15 +113,18 @@ public class TestAgentWebAPI extends TestCase {
 	
 	public void testComposeAndExecuteForBerlinDirectCallWithoutWasteProduct() throws Exception {
 		String compositionDir = AgentLocator.getCurrentJpsAppDirectory(this);
+		Service composedAgent = createADMSWithoutWasteProduct();
 		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithoutWasteProduct");
-		JSONObject result = composeAndExecuteForBerlinDirectCall();
+		JSONObject result = composeAndExecuteForBerlinDirectCall(composedAgent);
 		assertEquals(25, result.getJSONArray("building").length());
 	}
 	
 	public void testComposeAndExecuteForBerlinDirectCallWithWasteProduct() throws Exception {
 		String compositionDir = AgentLocator.getCurrentJpsAppDirectory(this);
+		
 		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithWasteProduct");
-		JSONObject result = composeAndExecuteForBerlinDirectCall();
+		Service composedAgent = createADMSWithWasteProduct();
+		JSONObject result = composeAndExecuteForBerlinDirectCallWithWaste(composedAgent);
 		assertEquals(25, result.getJSONArray("building").length());
 	}
 	
@@ -113,9 +154,6 @@ public class TestAgentWebAPI extends TestCase {
 	}
 	
 	public void testComposeAndExecuteForTheHagueAgentCallWithoutWasteProduct() throws JsonParseException, JsonMappingException, JSONException, URISyntaxException, IOException, Exception {
-
-		Service compositeAgent = createADMSWithoutWasteProduct();
-		System.out.println("compositeAgent=" + new Gson().toJson(compositeAgent));
 		
 		JSONWriter jsonInput = new JSONStringer().object()
 				.key("agent").value("http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service")
@@ -140,8 +178,37 @@ public class TestAgentWebAPI extends TestCase {
 			
 		String result = AgentCaller.executeGetWithJsonParameter("/JPS_COMPOSITION/execute", jsonInput.toString());
 		// TODO: The result returned from this test is not in the form of a JSON Object 
+		System.out.println("result=\n" + result);
+		JSONObject jsonOutput = new JSONObject(result);
+		assertEquals(25, jsonOutput.getJSONArray("building").length());
+	}
+	
+	//testing same as with composition
+	public void testComposeAndExecuteForTheHagueAgentCallWithWasteProduct() throws JsonParseException, JsonMappingException, JSONException, URISyntaxException, IOException, Exception {
 		
-		//String result = new AgentWebAPI().composeAndExecute(compositeAgent, host, jsonInput.toString());
+		JSONWriter jsonInput = new JSONStringer().object()
+				.key("agent").value("http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service")
+				.key("region").object()
+					.key("srsname").value("EPSG:28992")
+					.key("lowercorner").object()
+						.key("lowerx").value("79480")
+						.key("lowery").value("454670").endObject()
+					.key("uppercorner").object()
+						.key("upperx").value("80000")
+						.key("uppery").value("455190").endObject()
+				.endObject()
+				.key("plant").value("http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl#Plant-001")
+				.key("reactionmechanism").value("marinov")
+				.endObject();  
+		
+		System.out.println("jsonInput=\n" + jsonInput);
+		
+		String compositionDir = AgentLocator.getCurrentJpsAppDirectory(this);
+		
+		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithWasteProduct");
+			
+		String result = AgentCaller.executeGetWithJsonParameter("/JPS_COMPOSITION/execute", jsonInput.toString());
+		// TODO: The result returned from this test is not in the form of a JSON Object 
 		System.out.println("result=\n" + result);
 		JSONObject jsonOutput = new JSONObject(result);
 		assertEquals(25, jsonOutput.getJSONArray("building").length());
