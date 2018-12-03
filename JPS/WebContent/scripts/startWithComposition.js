@@ -73,21 +73,25 @@ $(function(){
 
     
     //***************************************************************************
-    $("#reaction-select").on('change',function () {
-        //show a map of reactions
-        console.log("select changed");
-        $.ajax('/JSON/chemsrm.json').done(function (reactionlist) {
-            //todo: init building
-            console.log(reactionlist.length);
-            var parent  = $('#reaction-list');
-            console.log(parent);
-            for(let reaction of reactionlist){
-                parent.append('<li>'+reaction+'</li>')
-            }
-        }).fail(function () {
-            console.log("error")
-        })
-    })
+   
+   
+//    $("#reaction-select").on('change',function () {
+//        //show a map of reactions
+//        console.log("select changed");
+//        $.ajax('/JSON/chemsrm.json').done(function (reactionlist) {
+//            //todo: init building
+//            console.log(reactionlist.length);
+//            var parent  = $('#reaction-list');
+//            console.log(parent);
+//            for(let reaction of reactionlist){
+//                parent.append('<li>'+reaction+'</li>')
+//            }
+//        }).fail(function () {
+//            console.log("error")
+//        })
+//    })
+       
+    
     //***************************************************************************
 
     osmb.on('pointerdown', function(e) {
@@ -132,6 +136,7 @@ $(function(){
         const longitude = (coordinatesMax[0] + coordinatesMin[0])/2;
         return [latitude, longitude];
     };
+    
 
     $('#start').click(function(){
     	//$('#start').attr("disabled", true);
@@ -141,6 +146,10 @@ $(function(){
         let xmin = parseInt($('#xlower').val());
         let ymax = parseInt($('#yupper').val());
         let ymin = parseInt($('#ylower').val());
+        
+        const reactionmechanism = $("#reaction-select option:selected").text();
+  
+        console.log(reactionmechanism);
         
         const lowerx = xmin;
         const lowery = ymin;
@@ -186,7 +195,8 @@ $(function(){
 					uppery
 				}
 			},
-        	plant
+        	plant,
+        	reactionmechanism
         }
         
 		query = JSON.stringify(query);        
