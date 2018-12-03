@@ -197,7 +197,7 @@ public class PerformanceMonitor {
 		int myPort = 8080;
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath(path)
-				.setParameter("value", input.toString());				;
+				.setParameter("query", input.toString());				;
 		String result = executeGet(builder);	 
 		return result;
 	}

@@ -46,7 +46,7 @@ public class TestGetBuildingDataForSimulation {
 
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath("/JPS/GetBuildingDataForSimulation")
-				.setParameter("value", bundle.toString());
+				.setParameter("query", bundle.toString());
 		
 		String result = executeGet(builder);
 		writeAPLFile(result, bundle.getString("plant"), regionJSON.getJSONObject("region"));	

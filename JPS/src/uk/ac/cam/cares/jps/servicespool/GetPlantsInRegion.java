@@ -40,7 +40,7 @@ public class GetPlantsInRegion extends HttpServlet {
 			 // The agent that select out plant from given region
 			
 		
-		String value = request.getParameter("value");
+		String value = request.getParameter("query");
 		JSONObject output = null;
 		try {
 			output = JSONFlattenTool.flattenRegion(new JSONObject(value),true);

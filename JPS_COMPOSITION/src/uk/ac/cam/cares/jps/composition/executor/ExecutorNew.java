@@ -56,7 +56,7 @@ public class ExecutorNew {
 						if(layerCounter == 0) {
 							URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 									.setPath(path)
-									.setParameter("value", initialInput.toString());
+									.setParameter("query", initialInput.toString());
 							
 							System.out.println("============== Path =============");
 							System.out.println(path);
@@ -84,7 +84,7 @@ public class ExecutorNew {
 									}
 									URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 											.setPath(path)
-											.setParameter("value", executionPackage.result.toString());
+											.setParameter("query", executionPackage.result.toString());
 									
 								 
 									
@@ -130,7 +130,7 @@ public class ExecutorNew {
 						String path = executionHttpUrl.replace("http://www.theworldavatar.com","");
 						URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 								.setPath(path)
-								.setParameter("value", initialInput.toString());
+								.setParameter("query", initialInput.toString());
 						JSONObject result = new JSONObject(executeGet(builder));
 						appendNewResult(result);
 					}

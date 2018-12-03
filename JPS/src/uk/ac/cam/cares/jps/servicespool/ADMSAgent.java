@@ -51,7 +51,7 @@ public class ADMSAgent extends HttpServlet {
 		String myHost = request.getServerName();
 		int myPort = request.getServerPort(); // Define the server name and port number without any hardcoding
 		
- 		String value = request.getParameter("value");
+ 		String value = request.getParameter("query");
 		try {
 			JSONObject input = new JSONObject(value);
 			input = new JSONObject(value);
@@ -69,7 +69,7 @@ public class ADMSAgent extends HttpServlet {
 
 			URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 					.setPath("/JPS/GetBuildingDataForSimulation")
-					.setParameter("value", bundle.toString());
+					.setParameter("query", bundle.toString());
 			String buildingsInString = executeGet(builder);	 	
 			System.out.println("=========================== buildingsInString ===========================");
 			System.out.println(buildingsInString);
@@ -139,6 +139,9 @@ public class ADMSAgent extends HttpServlet {
 	
 	public String writeAPLFile(String buildingInString, String plantIRI, JSONObject regionInJSON) {
 		String fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
+		System.out.println("==================== full path ====================");
+		System.out.println(fullPath);
+		System.out.println("===================================================");
 		String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
 		ArrayList<String> args = new ArrayList<String>();
 		args.add("python");

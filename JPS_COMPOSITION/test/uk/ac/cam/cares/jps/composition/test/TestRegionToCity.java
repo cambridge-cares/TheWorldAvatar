@@ -34,7 +34,7 @@ public class TestRegionToCity {
 		
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath("/JPS/RegionToCity")
-				.setParameter("value",input);
+				.setParameter("query",input);
 		
 		String result = executeGet(builder);
 		System.out.println("Result:" + result);

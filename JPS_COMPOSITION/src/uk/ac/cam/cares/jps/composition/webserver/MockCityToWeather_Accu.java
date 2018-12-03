@@ -34,7 +34,7 @@ public class MockCityToWeather_Accu extends HttpServlet {
 		
 		String cityIRI = null;
 		try {
-			cityIRI = new JSONObject(request.getParameter("value")).getString("city");
+			cityIRI = new JSONObject(request.getParameter("query")).getString("city");
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

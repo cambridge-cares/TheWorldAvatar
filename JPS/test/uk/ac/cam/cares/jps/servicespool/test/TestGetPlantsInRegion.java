@@ -28,7 +28,7 @@ public class TestGetPlantsInRegion {
 		// 52.512977, 13.423577 uppper
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath(ADMSAgentPath)
-				.setParameter("value", region);
+				.setParameter("query", region);
 		String result = executeGet(builder);
 		System.out.println(result);
 		

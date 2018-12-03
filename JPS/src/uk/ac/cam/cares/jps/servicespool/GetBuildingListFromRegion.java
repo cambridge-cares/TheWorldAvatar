@@ -33,7 +33,7 @@ public class GetBuildingListFromRegion extends HttpServlet {
 		/*
 		 * This agent takes region and city and returns a list of building IRIs
 		 */
-		String value = request.getParameter("value");
+		String value = request.getParameter("query");
 		
 		try {
 			JSONObject input = new JSONObject(value);
