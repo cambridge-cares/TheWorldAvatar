@@ -41,7 +41,7 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 /**
  * Servlet implementation class PowerPlantWrapperAgent
  */
-@WebServlet("/powerplant/calculateemission")
+@WebServlet("/PowerPlant")
 public class PowerPlantAgent extends HttpServlet {
 
 	private static final long serialVersionUID = 2796334308068192311L;
@@ -167,18 +167,36 @@ public class PowerPlantAgent extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	    
+	    logger.info("plant agent is called");
 	    
 		JSONObject joforrec = AgentCaller.readJsonParameter(request);
+		System.out.println("json accepted= "+joforrec.toString());
 		String iri = null;
 		String iri2 = null;
 		try {
-			iri = joforrec.getString("reactionmechanism");
-			iri2 = joforrec.getString("plant");
+			//iri = joforrec.getString("reactionmechanism");
+			//iri2 = joforrec.getString("plant");
+			//meanwhile changed until zxc change value to query
+			String temp= joforrec.getString("value");
+			System.out.println("json accepted2= "+temp.toString());
+			
+			 JSONObject content2 = new JSONObject(temp);
+		        
+			iri = content2.getString("reactionmechanism");
+			iri2 = content2.getString("plant");
 
 		} catch (JSONException e1) {
-			logger.error(e1.getMessage(), e1);
-			e1.printStackTrace();
+			//logger.error(e1.getMessage(), e1);
+			//e1.printStackTrace();
+			
+			//meanwhile changed until zxc change value to query
+			try {
+				iri = joforrec.getString("reactionmechanism");
+				iri2 = joforrec.getString("plant");
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} 
 		System.out.println("data got= "+iri+" and "+iri2);
 		
