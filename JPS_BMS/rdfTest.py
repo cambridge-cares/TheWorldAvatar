@@ -8,6 +8,8 @@ import os
 
 import sys
 
+import json
+
 #inputs	:	destination owlfile namespace
 #			IRI to be modified  
 #			value to be appended {'value': 10.01, 'type': float, 'unit': {'isSI': true, 'unit': CM}}
@@ -17,12 +19,15 @@ import sys
 #function :	momick the structure of exsiting instance
 #			append timeStamp to add new instance storing datatype
 
-templateDir = "C:/Users/nasac/Documents/GIT/JPS_BMS/workingdir/rdf-xml-templates/"
-owlFileDir = "C:/Users/nasac/Documents/GIT/JPS_BMS/workingdir/rdf-xml-output/"
+with open('config/config.json', 'r') as f:
+	config = json.load(f)
+
+templateDir = config['TEMPLATE_DIR']
+outputDir = config['TEST']['OUTPUT_DIR']
 
 def replaceFile(filename):
 	# shutil.copyfile('../DES/' + filename, './' + filename)
-	shutil.copyfile(templateDir + filename, owlFileDir + filename)
+	shutil.copyfile(templateDir + filename, outputDir + filename)
 
 def appendOwlFile(filename,targetIRI,value,isBinary):
 
@@ -62,15 +67,15 @@ def appendOwlFile(filename,targetIRI,value,isBinary):
 		
 	datatypes = {'int': XSD.int, 'float': XSD.float, 'string': XSD.string}
 	if(value['value']):
-		try:
+		# try:
 			g.add((URIRef(subject),
 				   system.numericalValue,
 				   Literal(value['value'],
 				   datatype= datatypes[value['type']]))) # adding data to the newly
-		except:
-			print("ERROR")
+		# except:
+			# print("ERROR")
 	# g.serialize(destination='%s' %filename, format='pretty-xml')					   # serialize and save the file
-	g.serialize(destination=owlFileDir + filename, format='pretty-xml')					   # serialize and save the file
+	g.serialize(destination=outputDir + filename, format='pretty-xml')					   # serialize and save the file
 
 #def appendOwlFile(filename,targetIRI,value):
 	
