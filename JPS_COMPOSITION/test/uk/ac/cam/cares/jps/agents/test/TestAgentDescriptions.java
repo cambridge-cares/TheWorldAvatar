@@ -100,8 +100,9 @@ public class TestAgentDescriptions extends TestCase {
 	}
 	
 	private Service createDescrForAgentPowerPlant() {
-		return new ServiceBuilder().operation(null, JPS + "/powerplant/calculateemission")
+		return new ServiceBuilder().operation(null, JPS + "/PowerPlant")
 			.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
+			.input("http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction", "reactionmechanism")
 			.output("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
 			.build();
 	}
@@ -162,6 +163,7 @@ public class TestAgentDescriptions extends TestCase {
 				.operation(null, null)
 				.input("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType", "region")
 				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
+				.input("http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction", "reactionmechanism")
 				.output("https://www.w3.org/ns/csvw#Table", "dispersiongrid")
 				.output("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType", true, "buildings", true)
 				.build();
