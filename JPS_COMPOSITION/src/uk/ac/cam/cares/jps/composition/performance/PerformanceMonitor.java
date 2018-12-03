@@ -28,8 +28,8 @@ public class PerformanceMonitor {
 	
 	public static long day = 80640000;
 
-	public static String myHost = "localhost";
-	public static int myPort = 88;
+	public static String myHost = "www.theworldavatar.com";
+	public static int myPort = 85;
 	public static void main(String [] args) throws JSONException, InterruptedException
 	{
 		

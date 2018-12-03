@@ -17,8 +17,8 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class SmartContractDataConnector {
 
-	public static String myHost = "localhost";
-	public static int myPort = 88;
+	public static String myHost = "www.theworldavatar.com";
+	public static int myPort = 85;
 	
 	public static Map<String, Long[]> findScoresForAgents() throws JSONException {
 		// 1. get all agents
