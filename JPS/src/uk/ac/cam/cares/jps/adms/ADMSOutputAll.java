@@ -34,6 +34,9 @@ public class ADMSOutputAll extends HttpServlet {
 		String outputFile = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS/test.levels.gst";
 				
 		ArrayList<String> args = new ArrayList<String>();
+		System.out.println("================ output file ===============");
+		System.out.println(outputFile);
+		System.out.println("============================================");
 		args.add("python");
 		args.add("gstReader.py"); 
 		args.add(outputFile);

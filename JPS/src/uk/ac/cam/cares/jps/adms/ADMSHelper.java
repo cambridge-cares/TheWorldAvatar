@@ -40,8 +40,8 @@ public class ADMSHelper extends HttpServlet {
 		String cityiri = request.getParameter("cityiri");
 
 		Gson g = new Gson();
-		System.out.println(listOfIRIs);
-		System.out.println(cityiri);
+//		System.out.println(listOfIRIs);
+//		System.out.println(cityiri);
 		String result;
 		try {
 			
@@ -57,9 +57,6 @@ public class ADMSHelper extends HttpServlet {
 			result = CommandHelper.executeCommands(targetFolder, args);
 			 
 			response.setContentType("application/json");
-			System.out.println("============== result ==============");
-			System.out.println(result);
-			System.out.println("====================================");
 			response.getWriter().write(result);
 			
 			

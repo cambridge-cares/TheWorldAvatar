@@ -28,7 +28,8 @@ public class PerformanceMonitor {
 	
 	public static long day = 80640000;
 
-
+	public static String myHost = "www.theworldavatar.com";
+	public static int myPort = 85;
 	public static void main(String [] args) throws JSONException, InterruptedException
 	{
 		
@@ -65,8 +66,7 @@ public class PerformanceMonitor {
 
 	
 	public static void register_agents(String agent_id,String agent_iri) {
-		String myHost = "localhost";
-		int myPort = 88;
+
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath("/register_agent")
 				.setParameter("agent_id", agent_id)
@@ -80,8 +80,6 @@ public class PerformanceMonitor {
 	}
 	
 	public static String get_token_for_agent(String agent_id) {
-		String myHost = "localhost";
-		int myPort = 88;
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath("/get_token_for_agent")
 				.setParameter("agent_id", agent_id)
@@ -94,8 +92,7 @@ public class PerformanceMonitor {
 	
 	
 	public static String verify_token_for_agent(String agent_id, String time_stamp,String private_key) {
-		String myHost = "localhost";
-		int myPort = 88;
+
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath("/verify_token_for_agent")
 				.setParameter("client_address", "0xbaD9E32129bBC6025D50E433D2d45167B9f4774e")
@@ -109,8 +106,7 @@ public class PerformanceMonitor {
 	}
 	
 	public static String pay_deposit() {
-		String myHost = "localhost";
-		int myPort = 88;
+
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath("/pay_deposit")
 				.setParameter("client_private_key", "85564251");
@@ -119,8 +115,7 @@ public class PerformanceMonitor {
 	
 	public static void start() {
 		
-		String myHost = "localhost";
-		int myPort = 88;
+
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath("/start");
 		String result = executeGet(builder);
@@ -141,8 +136,7 @@ public class PerformanceMonitor {
 	
 	public static void Make_Payment() {
 		String agent_id = "0x0B9056fcbf59D283F7c6B909Ea729182Bd69D36E";
-		String myHost = "localhost";
-		int myPort = 88;
+	
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath("/make_payment")
 				.setParameter("agent_id", agent_id);
@@ -179,8 +173,9 @@ public class PerformanceMonitor {
 		scoreMatrix.put(coverage);
 		scoreMatrix.put(timeStamp);
 		
-		String myHost = "localhost";
-		int myPort = 88;
+
+		System.out.println(scoreMatrix.toString());
+		
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath("/update_score")
 				.setParameter("score_matrix", scoreMatrix.toString())
@@ -193,9 +188,8 @@ public class PerformanceMonitor {
 	
 		JSONObject input = new JSONObject();
 		input.put("city", cityIRI);
-		String myHost = "localhost";
-		int myPort = 8080;
-		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
+
+		URIBuilder builder = new URIBuilder().setScheme("http").setHost("localhost").setPort(8080)
 				.setPath(path)
 				.setParameter("query", input.toString());				;
 		String result = executeGet(builder);	 
