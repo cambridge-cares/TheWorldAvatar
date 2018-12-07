@@ -50,7 +50,7 @@ public class TestAgentWebAPI extends TestCase {
 				.operation(null, "http://www.theworldavatar.com/Composite_Service_ODsMpRv")
 				.input("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType", "region")
 				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
-				.input("http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction", "reactionmechanism")
+				.input("https://como.cheng.cam.ac.uk/kb/ontochem.owl#ReactionMechanism", "reactionmechanism")
 				.output("https://www.w3.org/ns/csvw#Table", "dispersiongrid")
 				.output("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType", true, "buildings", true)
 				.build();
@@ -100,7 +100,7 @@ public class TestAgentWebAPI extends TestCase {
 						.key("uppery").value("533338").endObject()
 				.endObject()
 				.key("plant").value("http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002")
-				.key("reactionmechanism").value("marinov")
+				.key("reactionmechanism").value("https://como.cheng.cam.ac.uk/kb/MD.owl#ReactionMechanism_141528749904597")
 				.endObject(); 
 		
 		System.out.println("jsonInput=\n" + jsonInput);
@@ -198,7 +198,7 @@ public class TestAgentWebAPI extends TestCase {
 						.key("uppery").value("455190").endObject()
 				.endObject()
 				.key("plant").value("http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl#Plant-001")
-				.key("reactionmechanism").value("marinov")
+				.key("reactionmechanism").value("https://como.cheng.cam.ac.uk/kb/MD.owl#ReactionMechanism_141528749904597")
 				.endObject();  
 		
 		System.out.println("jsonInput=\n" + jsonInput);
