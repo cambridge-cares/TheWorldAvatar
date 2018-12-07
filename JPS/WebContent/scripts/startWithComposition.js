@@ -147,7 +147,7 @@ $(function(){
         let ymax = parseInt($('#yupper').val());
         let ymin = parseInt($('#ylower').val());
         
-        const reactionmechanism = $("#reaction-select option:selected").text();
+        const reactionmechanism = $("#reaction-select option:selected").val();
   
         console.log(reactionmechanism);
         
