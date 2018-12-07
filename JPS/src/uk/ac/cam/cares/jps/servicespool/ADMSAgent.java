@@ -91,8 +91,47 @@ public class ADMSAgent extends HttpServlet {
 			newBuildingData = newBuildingData.replace('\"', '\'');
 			
 			
+			 
+				String targetCRSName = CRSTransformer.EPSG_25833;
+				if (cityIRI.equalsIgnoreCase(BuildingQueryPerformer.BERLIN_IRI)) {
+					targetCRSName =  CRSTransformer.EPSG_28992;
+				} else if (cityIRI.equalsIgnoreCase(BuildingQueryPerformer.THE_HAGUE_IRI)) {
+					targetCRSName = CRSTransformer.EPSG_28992;
+				} 
+
+				String sourceCRSName = CRSTransformer.EPSG_4326;
+				double[] p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {lowerx, lowery});
+				String lx = String.valueOf(p[0]);
+				String ly = String.valueOf(p[1]);
+				p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {upperx, uppery});
+				String ux = String.valueOf(p[0]);
+				String uy = String.valueOf(p[1]);
+			 
+				String regionTemplate = "{\r\n" + 
+						"	\"uppercorner\":\r\n" + 
+						"    	{\r\n" + 
+						"        	\"upperx\" : \"%s\",\r\n" + 
+						"            \"uppery\" : \"%s\"      	\r\n" + 
+						"        },\r\n" + 
+						"          \r\n" + 
+						"     \"lowercorner\":\r\n" + 
+						"     {\r\n" + 
+						"       \"lowerx\" : \"%s\",\r\n" + 
+						"       \"lowery\" : \"%s\"\r\n" + 
+						"     }\r\n" + 
+						"}";
+				
+	
+				
+			JSONObject newRegion  = new JSONObject(String.format(regionTemplate, ux,uy,lx,ly));
+			
+			System.out.println("================ region =================");
+			System.out.println("city iri " + cityIRI);
+			System.out.println(newRegion);
+			System.out.println("=========================================");
+				
 			System.out.println("building data = " + newBuildingData);
-			writeAPLFile(newBuildingData,plantIRI, region);
+			writeAPLFile(newBuildingData,plantIRI, newRegion);
 			
 			
 			//writeAPLFile(buildingsInString,plantIRI, region);
@@ -147,6 +186,7 @@ public class ADMSAgent extends HttpServlet {
 		args.add("python");
 		args.add("admsTest.py"); 
   		args.add(buildingInString.replace("\"", "'"));
+  		
  		args.add(regionInJSON.toString().replace("\"", "'")); //TODO ZXC: We should solve the encoding problem once for all 
  		args.add(plantIRI.replace("\"", "'"));
  		args.add(fullPath);

@@ -174,6 +174,8 @@ public class PerformanceMonitor {
 		scoreMatrix.put(timeStamp);
 		
 
+		System.out.println(scoreMatrix.toString());
+		
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath("/update_score")
 				.setParameter("score_matrix", scoreMatrix.toString())
@@ -187,7 +189,7 @@ public class PerformanceMonitor {
 		JSONObject input = new JSONObject();
 		input.put("city", cityIRI);
 
-		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
+		URIBuilder builder = new URIBuilder().setScheme("http").setHost("localhost").setPort(8080)
 				.setPath(path)
 				.setParameter("query", input.toString());				;
 		String result = executeGet(builder);	 
