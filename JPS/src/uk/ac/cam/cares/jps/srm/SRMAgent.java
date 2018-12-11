@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import javax.servlet.ServletException;
@@ -27,6 +28,17 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.ResultSetFactory;
+import org.apache.jena.query.ResultSetRewindable;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,6 +62,9 @@ public class SRMAgent extends HttpServlet  {
 	private Logger logger = LoggerFactory.getLogger(SRMAgent.class);
 	ArrayList<String> cpirilist = new ArrayList<String>();
 	String rs_mechanism;
+	OntModel jenaOwlModel = null;
+	
+	HashMap<String, String> hmap = new HashMap<String, String>();
 	
 	private void startSRM(String SRMFolderlocation) {
 		String startSRMCommand = "C:/Program Files/Kinetics and SRM Engine Suite/x64_SRMDriver.exe -w \"C:\\JPS_DATA\\workingdir\\JPS\\SRM\\\"";
@@ -57,7 +72,9 @@ public class SRMAgent extends HttpServlet  {
 	}
 	
 	private void startbinaryconverter(String batchFolderlocation,String iri) {
-		String startSRMCommand = "C:/Program Files/JPSDeliverables/BatchFiles/ontochemConvertOwlToBin.bat "+iri;
+		//String startSRMCommand = "C:/Program Files/JPSDeliverables/BatchFiles/ontochemConvertOwlToBin.bat "+iri;
+		System.out.println("starting the binary converter");
+		String startSRMCommand = "C:/JPS_DATA/workingdir/JPS/SRM/ontochemConvertOwlToBin.bat "+iri;
 		CommandHelper.executeSingleCommand(batchFolderlocation, startSRMCommand);
 	}
 	
@@ -78,7 +95,7 @@ public class SRMAgent extends HttpServlet  {
 	}
 	
 	
-	public static String queryFromRDF4JServer(String mechanismquery) throws JSONException {
+	public static String queryFromRDF4JServer(String mechanismquery,String iriresult) throws JSONException {
 
 		String myHost = "www.theworldavatar.com" ;
 		int myPort = 80;
@@ -114,12 +131,35 @@ public class SRMAgent extends HttpServlet  {
 		for(int i = 0; i < bindings.length();i++) {
 			
 			urimech.add(bindings.getString(i));
+
 		}
-			X=urimech.get(9); //(assume it is queried the specific mechanism)
-		return X;	
+		
+		int sizeofar= urimech.size();
+		for(int index=0;index<sizeofar;index++) {
+		System.out.println(urimech.get(index));
+		System.out.println("iriresult= "+iriresult);
+		
+			if (urimech.get(index).contains(iriresult))
+		{
+			System.out.println("it goes to query the ontokin");
+			X=iriresult;
+		}
+
+		}
+		urimech.clear();
+		return X;
+		
 	}
 	
-	
+	public static synchronized ResultSet queryFromOWLFile(String sparql, OntModel model) {
+		Query query = QueryFactory.create(sparql);
+		QueryExecution queryExec = QueryExecutionFactory.create(query, model);
+		ResultSet rs = queryExec.execSelect();   
+		//reset the cursor, so that the ResultSet can be repeatedly used
+		ResultSetRewindable results = ResultSetFactory.copyResults(rs);    
+		//ResultSetFormatter.out(System.out, results, query); ?? don't know why this is needed to be commented
+		return results;
+	}
 	
 
 	
@@ -130,6 +170,7 @@ public class SRMAgent extends HttpServlet  {
 		JSONObject joforrec = AgentCaller.readJsonParameter(request);
 		
 		String iri = null;
+		String iriofengine = null;
 
 		try {
 			//iri = joforrec.getString("reactionmechanism");
@@ -141,6 +182,7 @@ public class SRMAgent extends HttpServlet  {
 			 JSONObject content2 = new JSONObject(temp);
 		        
 			iri = content2.getString("reactionmechanism");
+			iriofengine = content2.getString("engine");
 
 		} catch (JSONException e1) {
 			//logger.error(e1.getMessage(), e1);
@@ -149,46 +191,35 @@ public class SRMAgent extends HttpServlet  {
 			//meanwhile changed until zxc change value to query
 			try {
 				iri = joforrec.getString("reactionmechanism");
+				iriofengine = joforrec.getString("engine");
 			} catch (JSONException e) {
 
 				logger.error(e.getMessage());
 			}
 		}
 		System.out.println("data got for reaction mechanism= " + iri);
+		System.out.println("data got for engine iri= " + iriofengine);
 
 		/** PREPARE ALL THE INPUT FILE*/
 
+		cleanDirectory();
+		
 
-		//query from the ontokin based on "iri" to convert the mechanism for creating the binary file
-		//-------------------------------------------------------------------------------
-		String mechanismfile=null;
-		String filename=null;
-		if (iri.contains("marinov")) {
-			 mechanismfile= "C:/Program Files/Kinetics and SRM Engine Suite/mechanisms/Ethanol Mechanism.xml";
-			 filename="chemical_mechanism.bin";
-		System.out.println ("SRM is called and mechanism= "+mechanismfile);
-		}
-		else
-		{
-			filename="chemical_mechanism2.bin";
-		}
 		
 		//--------------------------------------------------------------------------------
 		
 		
 	    //First, query from ontokin to get the specific reaction mechanism in the format of owl file iri  
 		
-		//http://www.theworldavatar.com/sparqlendpoint/query?query=PREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E+%0APREFIX+ontochem%3A+%3Chttps%3A%2F%2Fcomo.cheng.cam.ac.uk%2Fkb%2Fontochem.owl%23%3E+%0ASELECT+%3Fx+%0AWHERE+%7B+%0A++++%3Fx+rdf%3Atype+ontochem%3AReactionMechanism+.+%0A%09%7D
 		String mechanismquery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " 
 				+ "PREFIX ontochem: <https://como.cheng.cam.ac.uk/kb/ontochem.owl#> "
 				+ "SELECT ?x "
 				+ "WHERE {?x  rdf:type  ontochem:ReactionMechanism ." 
 				+ "}";
 		
-		//ResultSet rs_mechanism = SRMAgent.queryFromRDF4JServer("http://www.theworldavatar.com:80/sparqlendpoint/query", mechanismquery); 
 	
 		try {
-			rs_mechanism = SRMAgent.queryFromRDF4JServer(mechanismquery);
+			rs_mechanism = SRMAgent.queryFromRDF4JServer(mechanismquery,iri);
 			System.out.println("result of the total query= "+rs_mechanism);
 		} catch (JSONException e1) {
 
@@ -199,18 +230,187 @@ public class SRMAgent extends HttpServlet  {
 		
 		
 		//second, run using command prompt the owl file iri using the batch file to produce new bin
-		
-		//startbinaryconverter("C:/Program Files/JPSDeliverables/BatchFiles",rs_mechanism);
+		startbinaryconverter(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM",rs_mechanism);
 		
 		
 		//-------------------------------------------------------------------------------
 		
 		
-		// edit the input file
-		editXML(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputEngineML.xml",AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputEngineML.xml",null);
-		//editXML("D:/JPS/JParkSimulator-git/JPS/workingdir/SRM/InputParams.xml",AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputParams.xml");
+		//prepare the input engine file from the kb data
+		
+		String engineInfo = "PREFIX eng:<http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#> " 
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+				+ "SELECT ?No_cyl ?No_exh_val ?No_int_val ?Strokes ?Bore ?CR ?Wrist_pin_offset ?Eng_displ_vol ?Con_rod ?extEGR ?Stroke ?intEGR ?C_to_H ?RON ?RPM ?Int_dia ?Exh_dia ?Int_event_height ?Exh_event_height ?EVO ?EVC ?IVO ?IVC ?AFRstoich ?IniFuelAirEquivRatio ?AFR ?Tman ?Pman ?amfr ?Tex ?Pex "
+				+ "WHERE {?entity  a  eng:CompressionIgnitionEngine  ." 
+				//+ "WHERE {?entity   eng:numberOfCylinder ?No_cyl ."
+				+ "?entity   eng:numberOfCylinder ?No_cyl ."
+				+ "?entity   eng:numberOfExhaustValve ?No_exh_val ."
+				+ "?entity   eng:numberOfStroke ?Strokes ."
+				+ "?entity   eng:numberOfIntakeValve ?No_int_val ."
+				+ "?entity   eng:hasEngineSpeed ?ES ."
+				+ "?ES   j2:hasValue ?vES ."
+				+ "?vES   j2:numericalValue ?RPM ."
+				//+ "?entity  a ?OpMode ."
+				
+				+ "?entity   eng:hasFuel ?fuel ."
+				+ "?fuel   eng:hasCtoHRatio ?CHRat ."
+				+ "?CHRat   j2:hasValue ?vCHRat ."
+				+ "?vCHRat   j2:numericalValue ?C_to_H ."
+				+ "?fuel   eng:hasRON ?fuRON ."
+				+ "?fuRON   j2:hasValue ?vfuRON ."
+				+ "?vfuRON   j2:numericalValue ?RON ."
+				
+				+ "?entity   j3:realizes ?comb ."
+				+ "?comb   eng:hasStoichiometricAirFuelRatio ?SAFR ."
+				+ "?SAFR   j2:hasValue ?vSAFR ."
+				+ "?vSAFR   j2:numericalValue ?AFRstoich ."
+				+ "?comb   eng:hasInitialFuelAirRatio ?IFAR ."
+				+ "?IFAR   j2:hasValue ?vIFAR ."
+				+ "?vIFAR   j2:numericalValue ?IniFuelAirEquivRatio ."
+				+ "?comb   eng:hasAirFuelRatio ?OvAFR ."
+				+ "?OvAFR   j2:hasValue ?vOvAFR ."
+				+ "?vOvAFR   j2:numericalValue ?AFR ."
+				
+				+ "?comb   j4:hasInput ?airstream ."
+				+ "?airstream   j5:refersToGeneralizedAmount ?genamountairstream ."
+				+ "?genamountairstream   j2:hasSubsystem ?matamountairstream ."
+				+ "?matamountairstream   j6:refersToMaterial ?matairstream ."
+				+ "?matairstream   j7:thermodynamicBehavior ?phaseairstream ."
+				+ "?phaseairstream   j8:has_pressure ?pressureairstream ."
+				+ "?pressureairstream   j2:hasValue ?vpressureairstream ."
+				+ "?vpressureairstream   j2:numericalValue ?Pman ."
+				+ "?phaseairstream   j8:has_temperature ?temperatureairstream ."
+				+ "?temperatureairstream   j2:hasValue ?vtemperatureairstream ."
+				+ "?vtemperatureairstream   j2:numericalValue ?Tman ."
+				+ "?matamountairstream   j2:hasProperty ?amfrairstream ."
+				+ "?amfrairstream  j2:hasValue ?vamfrairstream ."
+				+ "?vamfrairstream   j2:numericalValue ?amfr ."
+				
+				+ "?comb   j4:hasOutput ?wastestream ."
+				+ "?wastestream   j5:refersToGeneralizedAmount ?genamountwastestream ."
+				+ "?genamountwastestream   j2:hasSubsystem ?matamountwastestream ."
+				+ "?matamountwastestream   j6:refersToMaterial ?matwastestream ."
+				+ "?matwastestream   j7:thermodynamicBehavior ?phasewastestream ."
+				+ "?phasewastestream   j8:has_pressure ?pressurewastestream ."
+				+ "?pressurewastestream   j2:hasValue ?vpressurewastestream ."
+				+ "?vpressurewastestream   j2:numericalValue ?Pex ."
+				+ "?phasewastestream   j8:has_temperature ?temperaturewastestream ."
+				+ "?temperaturewastestream   j2:hasValue ?vtemperaturewastestream ."
+				+ "?vtemperaturewastestream   j2:numericalValue ?Tex ."
+				
+				+ "?entity   j2:hasSubsystem ?cyl ."
+				+ "?cyl   eng:hasWristPinOffset ?WPoff ."
+				+ "?WPoff   j2:hasValue ?vWPoff ."
+				+ "?vWPoff   j2:numericalValue ?Wrist_pin_offset ."
+				+ "?cyl   eng:hasBore ?borecyl ."
+				+ "?borecyl   j2:hasValue ?vborecyl ."
+				+ "?vborecyl   j2:numericalValue ?Bore ."
+				+ "?cyl   eng:hasInternalEGR ?interegr ."
+				+ "?interegr   j2:hasValue ?vinteregr ."
+				+ "?vinteregr   j2:numericalValue ?intEGR ."
+				+ "?cyl   eng:hasExternalEGR ?exteregr ."
+				+ "?exteregr   j2:hasValue ?vexteregr ."
+				+ "?vexteregr   j2:numericalValue ?extEGR ."
+				+ "?cyl   eng:hasDisplacementVolume ?dispvolume ."
+				+ "?dispvolume   j2:hasValue ?vdispvolume ."
+				+ "?vdispvolume   j2:numericalValue ?Eng_displ_vol ."
+				+ "?cyl   eng:hasConnectingRodLength ?crlength ."
+				+ "?crlength   j2:hasValue ?vcrlength ."
+				+ "?vcrlength   j2:numericalValue ?Con_rod ."
+				+ "?cyl   eng:hasStrokeDistance ?SD ."
+				+ "?SD   j2:hasValue ?vSD ."
+				+ "?vSD   j2:numericalValue ?Stroke ."
+				+ "?cyl   eng:hasCompressionRatio ?CompR ."
+				+ "?CompR   j2:hasValue ?vCompR ."
+				+ "?vCompR   j2:numericalValue ?CR ."
 
-		editXML(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputParams.xml",AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputParams.xml",filename);
+				
+				+ "?entity   j2:hasSubsystem ?exv ."
+				+ "?exv   eng:hasOpeningConditionAngle ?opexv ."
+				+ "?opexv   j2:hasValue ?vopexv ."
+				+ "?vopexv   j2:numericalValue ?EVO ."
+				+ "?exv   eng:hasClosingConditionAngle ?clexv ."
+				+ "?clexv   j2:hasValue ?vclexv ."
+				+ "?vclexv   j2:numericalValue ?EVC ."
+				+ "?exv   eng:hasExhaustValveDiameter ?Dexv ."
+				+ "?Dexv   j2:hasValue ?vDexv ."
+				+ "?vDexv   j2:numericalValue ?Exh_dia ."
+				+ "?exv   eng:hasExhaustEventHeight ?Hexv ."
+				+ "?Hexv   j2:hasValue ?vHexv ."
+				+ "?vHexv   j2:numericalValue ?Exh_event_height ."
+				
+				+ "?entity   j2:hasSubsystem ?inv ."
+				+ "?inv   eng:hasOpeningConditionAngle ?opinv ."
+				+ "?opinv   j2:hasValue ?vopinv ."
+				+ "?vopinv   j2:numericalValue ?IVO ."
+				+ "?inv   eng:hasClosingConditionAngle ?clinv ."
+				+ "?clinv   j2:hasValue ?vclinv ."
+				+ "?vclinv   j2:numericalValue ?IVC ."
+				+ "?inv   eng:hasIntakeValveDiameter ?Dinv ."
+				+ "?Dinv   j2:hasValue ?vDinv ."
+				+ "?vDinv   j2:numericalValue ?Int_dia ."
+				+ "?inv   eng:hasIntakeEventHeight ?Hinv ."
+				+ "?Hinv   j2:hasValue ?vHinv ."
+				+ "?vHinv   j2:numericalValue ?Int_event_height ."
+				
+				
+				+ "}";
+		
+		jenaOwlModel = ModelFactory.createOntologyModel();	
+		jenaOwlModel.read(iriofengine, null);
+		
+	ResultSet rs_engine = SRMAgent.queryFromOWLFile(engineInfo,jenaOwlModel); 
+
+	String []a= {"No_cyl","No_exh_val","No_int_val","Strokes","C_to_H","RON","RPM","Int_dia","Exh_dia","Int_event_height","Exh_event_height","EVO","EVC","IVO","IVC","AFRstoich","IniFuelAirEquivRatio","AFR","Tman","Pman","Tex","Pex","Wrist_pin_offset","Bore","intEGR","extEGR","Eng_displ_vol","Con_rod","Stroke","CR","amfr"};
+	int sizea=a.length;
+	System.out.println("size of a= "+sizea);
+	String valueiri=null;
+	SRMAgent xmlreader = new SRMAgent();
+	for (; rs_engine.hasNext();) {			
+		QuerySolution qs_p = rs_engine.nextSolution();
+		for (int b=0;b<sizea;b++)
+		{
+//			if(b==0)
+//			{
+//			Resource cpiri = qs_p.getResource(a[b]); // extract the name of the source
+//			valueiri = cpiri.toString();
+//			System.out.println("valueiri for type= "+valueiri);
+//			if(valueiri.contains("CompresssionIgnitionEngine"))
+//			{
+//				valueiri.equals("CI");
+//			}
+//			}
+//			else{
+				Literal cpiri = qs_p.getLiteral(a[b]); // extract the name of the source
+				 valueiri = cpiri.toString();
+//				}
+		
+		//String valueiri = cpiri.toString();
+		System.out.println(a[b]+" = "+valueiri);
+		try {
+
+			xmlreader.editXMLForengine(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputEngineML.xml",AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputEngineML.xml",a[b],valueiri);
+		} catch (TransformerFactoryConfigurationError | TransformerException e) {
+						
+			logger.error(e.getMessage());
+		}
+		//read the xml and store to hashma
+		logger.info("query result1= "+valueiri);
+
+		//cpirilist.add(valueiri);
+		}
+	}
+				
+		
+		// edit the input file
+
+		editinputparamXML(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputParams.xml",AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputParams.xml","mechanism.bin");
 		
 		
 		
@@ -232,12 +432,23 @@ public class SRMAgent extends HttpServlet  {
 		}
 	}
 
-	public void editXML(String filepath1, String filepath2, String valueofmech) throws TransformerFactoryConfigurationError {
+	private void cleanDirectory() {
+		//	clear the folder SRM first
+		File folder = new File("C:/JPS_DATA/workingdir/JPS/SRM");
+				
+		File[] listOfFiles = folder.listFiles();
+		
+		for (int i = 0; i < listOfFiles.length; i++) {
+			  if (listOfFiles[i].isFile() && !listOfFiles[i].getName().equals("ontochem.jar")&& !listOfFiles[i].getName().equals("InputParams.xml")&& !listOfFiles[i].getName().equals("InputEngineML.xml")&& !listOfFiles[i].getName().equals("convert.exe")&& !listOfFiles[i].getName().equals("ontochemConvertOwlToBin.bat")) {
+			
+			   listOfFiles[i].delete();
+			  }
+			}
+	}
+
+	public void editinputparamXML(String filepath1, String filepath2, String valueofmech) throws TransformerFactoryConfigurationError {
 		try {
 
-			// String filepath = "/JPS/workingdir/ADMS/InputParams.xml";
-			// String filepath2 = AgentLocator.getPathToJpsWorkingDir() +
-			// "/JPS/SRM/InputParams.xml";
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 			Document doc = docBuilder.parse(filepath1);
@@ -263,12 +474,12 @@ public class SRMAgent extends HttpServlet  {
 					}
 					if (a.equals("fuel")) {
 
-						updateFuelBlock(doc, b,"FuelSpeciesIndices","NC7H16","IC8H18");
+						//updateFuelBlock(doc, b,"FuelSpeciesIndices","NC7H16","IC8H18");
 						
 					}
 					if (a.equals("InjectionFuel")) {
 
-						updateFuelBlock(doc, b,"InjSpeciesIndices","NC7H16","IC8H18");
+						//updateFuelBlock(doc, b,"InjSpeciesIndices","NC7H16","IC8H18");
 						
 					}
 				}
@@ -316,27 +527,52 @@ public class SRMAgent extends HttpServlet  {
 	}
 
 	
-	public void updateFuelBlock(Document doc, int b, String nameofparameter, String valueofparameter,String valueofparameter2) {
-		NodeList list = doc.getElementsByTagName("property_group").item(b).getChildNodes(); // for
-																							// general
+	public void editXMLForengine(String filepath1,String filepath2,String propname ,String datavalue) throws TransformerFactoryConfigurationError, TransformerException {
+		try {
 
-		for (int i = 0; i < list.getLength(); i++) {
-			if (list.item(i).getNodeType() == Node.ELEMENT_NODE) {
+			// String filepath = "/JPS/workingdir/ADMS/InputParams.xml";
+			// String filepath2 = AgentLocator.getPathToJpsWorkingDir() +
+			// "/JPS/SRM/InputParams.xml";
+			
 
-				Node node2 = list.item(i);
-				Element eElement2 = (Element) node2;
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			Document doc = docBuilder.parse(filepath1);
+			
+			NodeList propgroup=doc.getElementsByTagName("property");
+						
+			for (int b = 0; b < propgroup.getLength(); b++) {
+				if (propgroup.item(b).getNodeType() == Node.ELEMENT_NODE) {
+					Node node = propgroup.item(b);
+					Element eElement = (Element) node;
 
-				String a2 = eElement2.getAttribute("ref");
+					String a = eElement.getAttribute("xsi:type");
 
-				if (a2.equals(nameofparameter)) {
+					//System.out.println("a= "+a);
 
-					Node value = eElement2.getChildNodes().item(1);
-					value.setTextContent(valueofparameter);
-					Node value2 = eElement2.getChildNodes().item(2);
-					value2.setTextContent(valueofparameter2);
+						Node value = eElement.getChildNodes().item(1);
+						if (a.contentEquals(propname))
+						{
+							System.out.println(a+" is updated!!!!");
+						value.setTextContent(datavalue);
+						}
 				}
 			}
+			
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(new File(filepath2));
+			transformer.transform(source, result);
+
+		} catch (ParserConfigurationException pce) {
+			pce.printStackTrace();
+		}  catch (IOException ioe) {
+			ioe.printStackTrace();
+		} catch (SAXException sae) {
+			sae.printStackTrace();
 		}
+
 	}
 	
 	
@@ -393,7 +629,6 @@ public class SRMAgent extends HttpServlet  {
 		    				"    ]");
 
 		    int x=newjsonfile.split("_").length;
-		    System.out.println("size of the array= "+x);
 		    for(int a=0;a<x;a+=2)
 		    {
 		    	newstring.add(newjsonfile.split("_")[a]);
