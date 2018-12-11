@@ -274,7 +274,7 @@ public class PowerPlantAgent extends HttpServlet {
 			
 			JSONObject dataSet = new JSONObject();
 			try {
-				dataSet.put("reactionmechanism",  cpirilist.get(0)) ;
+				dataSet.put("reactionmechanism",  iri) ;
 				dataSet.put("engine",  cpirilist2.get(0)) ;
 			}
 			catch (JSONException e) {
