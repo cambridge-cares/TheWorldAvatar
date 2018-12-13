@@ -29,7 +29,7 @@
     <script src="scripts/svg2img.js"></script>
     <script src="scripts/mContour.js"></script>
 	<script src="scripts/adms3Dmap.js"></script>
-	<script src="scripts/start.js"></script>
+	<script src="scripts/startWithComposition.js"></script>
 
 </head>
 <body>
@@ -64,11 +64,8 @@
 <div id="inputFields">
 
     <select id="reaction-select">
-        <option value="">
-        </option>
-        <option value="https://como.cheng.cam.ac.uk/kb/MD.owl#ReactionMechanism_141528749904597">
-            marinov
-        </option>
+        <option value="https://como.cheng.cam.ac.uk/kb/Reduced_PRF_ERC.owl#ReactionMechanism_4909454516579602">Reduced_PRF_ERC-mechanism</option>
+        <option value="https://como.cheng.cam.ac.uk/kb/Toluene.owl#ReactionMechanism_4631074216281807">Toluene-mechanism</option>
     </select>
 
     <h1 id="head1"></h1>
@@ -82,17 +79,28 @@
 
 
     <label for="xlower">X lower:</label>
-    <input id="xlower" type="text" value='79480'/>
+    <input id="xlower" type="text" value='79173' readonly/>
 
     <label for="xupper">X upper:</label>
-    <input id="xupper" type="text" value='80000'/>
+    <input id="xupper" type="text" value='80199' readonly/>
 
     <label for="ylower">Y lower:</label>
-    <input id="ylower" type="text" value='454670'/>
+    <input id="ylower" type="text" value='454193' readonly/>
 
     <label for="yupper">Y upper:</label>
-    <input id="yupper" type="text" value='455190'/>
+    <input id="yupper" type="text" value='455030' readonly/>
 
+
+    <!--  select id="compose">
+        <option value="no">
+        	no
+        </option>
+        <option value="yes">
+            yes
+        </option>
+    </select -->
+    
+    <!-- input type="checkbox" id="compose" value="compose">use composition<br> temporarily disabled-->
 
     <button id="start">Start simulation</button>
     <ul id="reaction-list">
