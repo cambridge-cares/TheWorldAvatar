@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Scanner;
 
 import javax.servlet.ServletException;
@@ -65,7 +64,6 @@ public class SRMAgent extends HttpServlet  {
 	String rs_mechanism;
 	OntModel jenaOwlModel = null;
 	
-	HashMap<String, String> hmap = new HashMap<String, String>();
 	
 	private void startSRM(String SRMFolderlocation) {
 		String startSRMCommand = "C:/Program Files/Kinetics and SRM Engine Suite/x64_SRMDriver.exe -w \"C:\\JPS_DATA\\workingdir\\JPS\\SRM\\\"";
@@ -73,7 +71,6 @@ public class SRMAgent extends HttpServlet  {
 	}
 	
 	private void startbinaryconverter(String batchFolderlocation,String iri) {
-		//String startSRMCommand = "C:/Program Files/JPSDeliverables/BatchFiles/ontochemConvertOwlToBin.bat "+iri;
 		System.out.println("starting the binary converter");
 		String startSRMCommand = "C:/JPS_DATA/workingdir/JPS/SRM/ontochemConvertOwlToBin.bat "+iri;
 		CommandHelper.executeSingleCommand(batchFolderlocation, startSRMCommand);
@@ -156,9 +153,8 @@ public class SRMAgent extends HttpServlet  {
 		Query query = QueryFactory.create(sparql);
 		QueryExecution queryExec = QueryExecutionFactory.create(query, model);
 		ResultSet rs = queryExec.execSelect();   
-		//reset the cursor, so that the ResultSet can be repeatedly used
 		ResultSetRewindable results = ResultSetFactory.copyResults(rs);    
-		//ResultSetFormatter.out(System.out, results, query); ?? don't know why this is needed to be commented
+
 		return results;
 	}
 	
@@ -167,36 +163,21 @@ public class SRMAgent extends HttpServlet  {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		//System.out.println("joforrec= "+AgentCaller.readJsonParameter(request));
 		JSONObject joforrec = AgentCaller.readJsonParameter(request);
 		
 		String iri = null;
 		String iriofengine = null;
 
 		try {
-			//iri = joforrec.getString("reactionmechanism");
-			
-			//meanwhile changed until zxc change value to query
-			String temp= joforrec.getString("value");
-			System.out.println("json accepted2= "+temp.toString());
-			
-			 JSONObject content2 = new JSONObject(temp);
-		        
-			iri = content2.getString("reactionmechanism");
-			iriofengine = content2.getString("engine");
+			iri = joforrec.getString("reactionmechanism");
+			iriofengine = joforrec.getString("engine");
+
 
 		} catch (JSONException e1) {
-			//logger.error(e1.getMessage(), e1);
-			//e1.printStackTrace();
+			logger.error(e1.getMessage(), e1);
+			e1.printStackTrace();
 			
-			//meanwhile changed until zxc change value to query
-			try {
-				iri = joforrec.getString("reactionmechanism");
-				iriofengine = joforrec.getString("engine");
-			} catch (JSONException e) {
-
-				logger.error(e.getMessage());
-			}
+			
 		}
 		System.out.println("data got for reaction mechanism= " + iri);
 		System.out.println("data got for engine iri= " + iriofengine);
@@ -238,7 +219,6 @@ public class SRMAgent extends HttpServlet  {
 		
 		
 		//prepare the input engine file from the kb data
-		
 		String engineInfo = "PREFIX eng:<http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#> " 
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
@@ -249,7 +229,6 @@ public class SRMAgent extends HttpServlet  {
 				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
 				+ "SELECT ?No_cyl ?No_exh_val ?No_int_val ?Strokes ?Bore ?CR ?Wrist_pin_offset ?Eng_displ_vol ?Con_rod ?extEGR ?Stroke ?intEGR ?C_to_H ?RON ?RPM ?Int_dia ?Exh_dia ?Int_event_height ?Exh_event_height ?EVO ?EVC ?IVO ?IVC ?AFRstoich ?IniFuelAirEquivRatio ?AFR ?Tman ?Pman ?amfr ?Tex ?Pex "
 				+ "WHERE {?entity  a  eng:CompressionIgnitionEngine  ." 
-				//+ "WHERE {?entity   eng:numberOfCylinder ?No_cyl ."
 				+ "?entity   eng:numberOfCylinder ?No_cyl ."
 				+ "?entity   eng:numberOfExhaustValve ?No_exh_val ."
 				+ "?entity   eng:numberOfStroke ?Strokes ."
@@ -257,7 +236,6 @@ public class SRMAgent extends HttpServlet  {
 				+ "?entity   eng:hasEngineSpeed ?ES ."
 				+ "?ES   j2:hasValue ?vES ."
 				+ "?vES   j2:numericalValue ?RPM ."
-				//+ "?entity  a ?OpMode ."
 				
 				+ "?entity   eng:hasFuel ?fuel ."
 				+ "?fuel   eng:hasCtoHRatio ?CHRat ."
@@ -397,8 +375,6 @@ public class SRMAgent extends HttpServlet  {
 				Literal cpiri = qs_p.getLiteral(a[b]); // extract the name of the source
 				 valueiri = cpiri.toString();
 
-		
-		//String valueiri = cpiri.toString();
 		System.out.println(a[b]+" = "+valueiri);
 		try {
 
@@ -407,10 +383,9 @@ public class SRMAgent extends HttpServlet  {
 						
 			logger.error(e.getMessage());
 		}
-		//read the xml and store to hashma
+
 		logger.info("query result1= "+valueiri);
 
-		//cpirilist.add(valueiri);
 		}
 	}
 	
@@ -430,8 +405,7 @@ public class SRMAgent extends HttpServlet  {
 				try {
 					xmlreader.editXMLForengine(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputEngineML.xml",AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputEngineML.xml","OpMode",valuetype2);
 				} catch (TransformerFactoryConfigurationError | TransformerException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error(e.getMessage());
 				}
 			}
 	}
@@ -439,11 +413,9 @@ public class SRMAgent extends HttpServlet  {
 			
 				
 		
-		// edit the input file
+		// edit the input params file
 
 		editinputparamXML(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputParams.xml",AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputParams.xml","mechanism.bin");
-		
-		
 		
 		
 		/** This part put run to the SRM Engine simulation and take the output */

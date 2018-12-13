@@ -38,13 +38,7 @@ public class ADMSCoordinationAgentWithoutComposition extends HttpServlet {
 			String wasteresult = AgentCaller.executeGet("/JPS/PowerPlant", "query", jsonInput);
 			String waste=new JSONObject(wasteresult).getString("waste");
 			jo.put("waste", waste);
-			
-			//String waste = execute("/JPS/PowerPlant", jsonInput);
-//			String waste = AgentCaller.executeGet("/JPS/PowerPlant", "query", jsonInput);
-//			JSONObject jo = new JSONObject(jsonInput);
-//			jo.put("waste", waste);
-//			
-			
+						
 			String regionToCityResult = execute("/JPS/RegionToCity", jsonInput);
 			String city = new JSONObject(regionToCityResult).getString("city");
 			jo.put("city", city);
@@ -72,7 +66,6 @@ public class ADMSCoordinationAgentWithoutComposition extends HttpServlet {
 	private String execute(String path, String jsonInput) {
 
 		logger.info("execute for path=" + path + ", json=" + jsonInput);
-		// TODO-AE URGENT change value to query --> executeGetWithJSON parameter
 		String result = AgentCaller.executeGet(path, "query", jsonInput);
 		logger.info("execution result=" + result);
 		return result;

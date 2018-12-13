@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
-import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
@@ -49,7 +48,6 @@ public class PowerPlantAgent extends HttpServlet {
 	
 	OntModel jenaOwlModel = null;
 	private DatatypeProperty numval = null;
-	private OntClass scalarvalueclass = null;
 	public static String baseURL = null;
 	ArrayList<String> cpirilist = new ArrayList<String>();
 	ArrayList<String> cpirilist2 = new ArrayList<String>();
@@ -70,14 +68,10 @@ public class PowerPlantAgent extends HttpServlet {
 	}
 	
 	public void initOWLClasses(OntModel jenaOwlModel) {
-		numval = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
-		scalarvalueclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue");	
+		numval = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");	
 		
 	}
-	
-
-	
-	
+		
 	
 	public void doConversion(OntModel jenaOwlModel,String iri,String jsonresultstring) throws JSONException, IOException
 	{
@@ -174,29 +168,12 @@ public class PowerPlantAgent extends HttpServlet {
 		String iri = null;
 		String iri2 = null;
 		try {
-			//iri = joforrec.getString("reactionmechanism");
-			//iri2 = joforrec.getString("plant");
-			//meanwhile changed until zxc change value to query
-			String temp= joforrec.getString("value");
-			System.out.println("json accepted2= "+temp.toString());
-			
-			 JSONObject content2 = new JSONObject(temp);
-		        
-			iri = content2.getString("reactionmechanism");
-			iri2 = content2.getString("plant");
+			iri = joforrec.getString("reactionmechanism");
+			iri2 = joforrec.getString("plant");
 
 		} catch (JSONException e1) {
-			//logger.error(e1.getMessage(), e1);
-			//e1.printStackTrace();
-			
-			//meanwhile changed until zxc change value to query
-			try {
-				iri = joforrec.getString("reactionmechanism");
-				iri2 = joforrec.getString("plant");
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			logger.error(e1.getMessage(), e1);
+			e1.printStackTrace();
 		} 
 		System.out.println("data got= "+iri+" and "+iri2);
 		
@@ -225,8 +202,6 @@ public class PowerPlantAgent extends HttpServlet {
 						+ "?releaseprocess   j4:hasOutput ?wastestream ."
 						+ "}";
 					
-
-			//System.out.println("iri2= "+iri2);
 				jenaOwlModel = ModelFactory.createOntologyModel();	
 				jenaOwlModel.read(iri2, null);
 				
