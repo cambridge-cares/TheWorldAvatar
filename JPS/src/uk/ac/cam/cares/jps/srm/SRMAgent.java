@@ -39,6 +39,7 @@ import org.apache.jena.query.ResultSetFactory;
 import org.apache.jena.query.ResultSetRewindable;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -362,6 +363,22 @@ public class SRMAgent extends HttpServlet  {
 				
 				+ "}";
 		
+		
+		
+		String engineInfoclass = "PREFIX eng:<http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#> " 
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+				+ "SELECT ?OpMode "
+				+ "WHERE {?entity   eng:numberOfCylinder ?No_cyl ."
+				+ "?entity  a ?OpMode ."
+				+"FILTER regex(STRBEFORE(STR(?OpMode),\"#\"), \"http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl\") ."
+				+ "}";
+		
 		jenaOwlModel = ModelFactory.createOntologyModel();	
 		jenaOwlModel.read(iriofengine, null);
 		
@@ -376,20 +393,10 @@ public class SRMAgent extends HttpServlet  {
 		QuerySolution qs_p = rs_engine.nextSolution();
 		for (int b=0;b<sizea;b++)
 		{
-//			if(b==0)
-//			{
-//			Resource cpiri = qs_p.getResource(a[b]); // extract the name of the source
-//			valueiri = cpiri.toString();
-//			System.out.println("valueiri for type= "+valueiri);
-//			if(valueiri.contains("CompresssionIgnitionEngine"))
-//			{
-//				valueiri.equals("CI");
-//			}
-//			}
-//			else{
+
 				Literal cpiri = qs_p.getLiteral(a[b]); // extract the name of the source
 				 valueiri = cpiri.toString();
-//				}
+
 		
 		//String valueiri = cpiri.toString();
 		System.out.println(a[b]+" = "+valueiri);
@@ -406,6 +413,30 @@ public class SRMAgent extends HttpServlet  {
 		//cpirilist.add(valueiri);
 		}
 	}
+	
+	ResultSet rs_engineclass = SRMAgent.queryFromOWLFile(engineInfoclass,jenaOwlModel); 
+	String valueiri2=null;
+	String valuetype2=null;
+	for (; rs_engineclass.hasNext();) {			
+		QuerySolution qs_p = rs_engineclass.nextSolution();
+
+		
+			Resource cpiri = qs_p.getResource("OpMode"); // extract the name of the source
+			valueiri2 = cpiri.toString();
+			if(valueiri2.contains("http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#")&&!valueiri2.contains("#Engine"))
+			{
+				valuetype2=("CI");
+				System.out.println("query result1= "+valuetype2);
+				try {
+					xmlreader.editXMLForengine(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputEngineML.xml",AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputEngineML.xml","OpMode",valuetype2);
+				} catch (TransformerFactoryConfigurationError | TransformerException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+	}
+			
+			
 				
 		
 		// edit the input file
