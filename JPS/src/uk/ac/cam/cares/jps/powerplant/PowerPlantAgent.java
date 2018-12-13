@@ -96,7 +96,7 @@ public class PowerPlantAgent extends HttpServlet {
 		Double molecularvalue = jsonObject.getJSONObject("mixture").getJSONObject("molmass").getDouble("value")*1000;
 		Double Cpvalue = jsonObject.getJSONObject("mixture").getJSONObject("cp").getDouble("value");
 		Double temperaturevalue = jsonObject.getJSONObject("mixture").getJSONObject("temperature").getDouble("value")-273.15;
-		Double massfluxvalue = jsonObject.getJSONObject("mixture").getJSONObject("massflux").getDouble("value");
+		Double massfluxvalue = jsonObject.getJSONObject("mixture").getJSONObject("massflux").getDouble("value")*100; //(multiplied by 100 temporarily to make it visible)
 		Double densityvalue = jsonObject.getJSONObject("mixture").getJSONObject("density").getDouble("value");
 		
 		int valueoftotalpollutant = jsonObject.getJSONArray("pollutants").length();
@@ -118,7 +118,7 @@ public class PowerPlantAgent extends HttpServlet {
 		
 		for (int b = 0; b < valueoftotalpollutant; b++) {
 			String parametername = jsonObject.getJSONArray("pollutants").getJSONObject(b).getString("name");
-			Double parametervalue = jsonObject.getJSONArray("pollutants").getJSONObject(b).getDouble("value")*1000;
+			Double parametervalue = jsonObject.getJSONArray("pollutants").getJSONObject(b).getDouble("value")*1000*100; //(multiplied by 100 temporarily to make it visible)
 
 			Individual valueofspeciesemissionrate = jenaOwlModel.getIndividual(iri.split("#")[0] + "#V_" + hmap.get(parametername) + "_EmissionRate");
 			valueofspeciesemissionrate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(parametervalue));
@@ -137,10 +137,10 @@ public class PowerPlantAgent extends HttpServlet {
 				
 
 
-//
-//				initOWLClasses(jenaOwlModel);
-//
-//				doConversion(jenaOwlModel,iriOfPlant,jsonresultstring);
+
+				initOWLClasses(jenaOwlModel);
+
+				doConversion(jenaOwlModel,iriOfPlant,jsonresultstring);
 
 				
 				String filePath2= iriOfPlant.replaceAll("http://www.theworldavatar.com/kb", "C:/TOMCAT/webapps/ROOT/kb").split("#")[0]; //update the file locally
