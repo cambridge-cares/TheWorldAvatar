@@ -73,23 +73,6 @@ $(function(){
 
     
     //***************************************************************************
-   
-   
-//    $("#reaction-select").on('change',function () {
-//        //show a map of reactions
-//        console.log("select changed");
-//        $.ajax('/JSON/chemsrm.json').done(function (reactionlist) {
-//            //todo: init building
-//            console.log(reactionlist.length);
-//            var parent  = $('#reaction-list');
-//            console.log(parent);
-//            for(let reaction of reactionlist){
-//                parent.append('<li>'+reaction+'</li>')
-//            }
-//        }).fail(function () {
-//            console.log("error")
-//        })
-//    })
        
     
     //***************************************************************************
@@ -205,17 +188,17 @@ $(function(){
         	
         	var result = "hello";
         		
-        	if (document.getElementById("compose").checked) {
-        		result =  $.getJSON('/JPS_COMPOSITION/execute',
-        				{
-	        				query
-        				});
-        	} else {
+//        	if (document.getElementById("compose").checked) {
+//        		result =  $.getJSON('/JPS_COMPOSITION/execute',
+//        				{
+//	        				query
+//        				});
+//        	} else {
         		result =  $.getJSON('/JPS/ADMSCoordinationAgentWithoutComposition',
         				{
 	        				query
         				});
-        	}        	
+//        	}        	
   	
         	return result;
         };
@@ -252,10 +235,10 @@ $(function(){
                 latitude: 52.076146,
                 longitude: 4.309961
             });
-            $("#xlower").val("79480");
-            $("#xupper").val("80000");
-            $("#ylower").val("454670");
-            $("#yupper").val("455190");
+            $("#xlower").val("79173");
+            $("#xupper").val("80199");
+            $("#ylower").val("454193");
+            $("#yupper").val("455030");
         }
         osmb.setZoom(10);
         osmb.setTilt(0);
