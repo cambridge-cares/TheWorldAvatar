@@ -90,6 +90,10 @@ public class ADMSAgent extends HttpServlet {
 			String newBuildingData = retrieveBuildingDataInJSON(cityIRI, plantXY[0], plantXY[1], lowerx, lowery, upperx, uppery);
 			newBuildingData = newBuildingData.replace('\"', '\'');
 			
+			String srsname = region.getString("srsname");
+			
+ 
+			
 			
 			 
 				String targetCRSName = CRSTransformer.EPSG_25833;
@@ -100,38 +104,43 @@ public class ADMSAgent extends HttpServlet {
 				} 
 
 				String sourceCRSName = CRSTransformer.EPSG_4326;
-				double[] p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {lowerx, lowery});
-				String lx = String.valueOf(p[0]);
-				String ly = String.valueOf(p[1]);
-				p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {upperx, uppery});
-				String ux = String.valueOf(p[0]);
-				String uy = String.valueOf(p[1]);
-			 
-				String regionTemplate = "{\r\n" + 
-						"	\"uppercorner\":\r\n" + 
-						"    	{\r\n" + 
-						"        	\"upperx\" : \"%s\",\r\n" + 
-						"            \"uppery\" : \"%s\"      	\r\n" + 
-						"        },\r\n" + 
-						"          \r\n" + 
-						"     \"lowercorner\":\r\n" + 
-						"     {\r\n" + 
-						"       \"lowerx\" : \"%s\",\r\n" + 
-						"       \"lowery\" : \"%s\"\r\n" + 
-						"     }\r\n" + 
-						"}";
+
+				System.out.println("============= src name ==============");
+				System.out.println(srsname);
+				if(srsname.equalsIgnoreCase("EPSG:28992")) {
+					sourceCRSName = CRSTransformer.EPSG_28992;
+					writeAPLFile(buildingsInString,plantIRI, region);
+				}
+				else {
+					double[] p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {lowerx, lowery});
+					String lx = String.valueOf(p[0]);
+					String ly = String.valueOf(p[1]);
+					p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {upperx, uppery});
+					String ux = String.valueOf(p[0]);
+					String uy = String.valueOf(p[1]);
+				 
+					String regionTemplate = "{\r\n" + 
+							"	\"uppercorner\":\r\n" + 
+							"    	{\r\n" + 
+							"        	\"upperx\" : \"%s\",\r\n" + 
+							"            \"uppery\" : \"%s\"      	\r\n" + 
+							"        },\r\n" + 
+							"          \r\n" + 
+							"     \"lowercorner\":\r\n" + 
+							"     {\r\n" + 
+							"       \"lowerx\" : \"%s\",\r\n" + 
+							"       \"lowery\" : \"%s\"\r\n" + 
+							"     }\r\n" + 
+							"}";
+					
+
+				JSONObject newRegion  = new JSONObject(String.format(regionTemplate, ux,uy,lx,ly));
+				writeAPLFile(newBuildingData,plantIRI, newRegion);
+				}
+
+ 
 				
-	
-				
-			JSONObject newRegion  = new JSONObject(String.format(regionTemplate, ux,uy,lx,ly));
-			
-			System.out.println("================ region =================");
-			System.out.println("city iri " + cityIRI);
-			System.out.println(newRegion);
-			System.out.println("=========================================");
-				
-			System.out.println("building data = " + newBuildingData);
-			writeAPLFile(newBuildingData,plantIRI, newRegion);
+ 			//writeAPLFile(newBuildingData,plantIRI, newRegion);
 			
 			
 			//writeAPLFile(buildingsInString,plantIRI, region);
