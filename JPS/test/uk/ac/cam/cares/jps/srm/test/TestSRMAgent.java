@@ -89,13 +89,10 @@ public class TestSRMAgent extends TestCase {
 			{
 				valuetype=("CI");
 				System.out.println("query result1= "+valuetype);
-			}
-
-	
-			
-
+			}		
 
 		}
+	assertEquals("CI", valuetype);
 	}
 	
 }
