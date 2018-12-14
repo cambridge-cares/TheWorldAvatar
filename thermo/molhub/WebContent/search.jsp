@@ -32,15 +32,33 @@
 <div id="border">
     <div id="skiplinks">
         <ul>
-            <li><a href="/" accesskey="h">Jump to Home [Accesskey 'h']</a></li>
-            <li><a href="/people/" accesskey="m">Jump to People [Accesskey 'm']</a></li>
-            <li><a href="/research/" accesskey="r">Jump to Research [Accesskey 'r']</a></li>
-            <li><a href="/resources/" accesskey="s">Jump to Resources [Accesskey 's']</a></li>
-            <li><a href="/preprints/" accesskey="p">Jump to Preprints [Accesskey 'p']</a></li>
-            <li><a href="/publications/" accesskey="b">Jump to Publications [Accesskey 'b']</a></li>
-            <li><a href="/conferences/" accesskey="c">Jump to Conferences [Accesskey 'c']</a></li>
-            <li><a href="/seminars/" accesskey="s">Jump to Seminars [Accesskey 's']</a></li>
-            <li><a href="/admin/" accesskey="l">Jump to Login Page [Accesskey 'l']</a></li>
+             <!--<li><a href="/" accesskey="h">Jump to Home [Accesskey 'h']</a></li>-->
+             <li><a href="http://como.cheng.cam.ac.uk/index.php?Page=Home" accesskey="h">Jump to Home [Accesskey 'h']</a></li>
+            
+            <!--<li><a href="/people/" accesskey="m">Jump to People [Accesskey 'm']</a></li>-->
+            <li><a href="http://como.cheng.cam.ac.uk/index.php?Page=People" accesskey="m">Jump to People [Accesskey 'm']</a></li>
+            
+            <!--<li><a href="/research/" accesskey="r">Jump to Research [Accesskey 'r']</a></li>-->
+            <li><a href="http://como.cheng.cam.ac.uk/index.php?Page=Research" accesskey="r">Jump to Research [Accesskey 'r']</a></li>
+            
+            <!--<li><a href="/resources/" accesskey="s">Jump to Resources [Accesskey 's']</a></li>-->     
+            <li><a accesskey="s">Jump to Resources [Accesskey 's']</a></li>
+            
+            <!--<li><a href="/preprints/" accesskey="p">Jump to Preprints [Accesskey 'p']</a></li>-->
+            <li><a href="http://como.cheng.cam.ac.uk/index.php?Page=Preprints" accesskey="p">Jump to Preprints [Accesskey 'p']</a></li>
+            
+            <!--<li><a href="/publications/" accesskey="b">Jump to Publications [Accesskey 'b']</a></li>-->
+            <li><a href="http://como.cheng.cam.ac.uk/index.php?Page=Publications" accesskey="b">Jump to Publications [Accesskey 'b']</a></li>
+            
+            <!--<li><a href="/conferences/" accesskey="c">Jump to Conferences [Accesskey 'c']</a></li>-->
+            <li><a href="http://como.cheng.cam.ac.uk/index.php?Page=Conferences" accesskey="c">Jump to Conferences [Accesskey 'c']</a></li>
+            
+            <!--<li><a href="/seminars/" accesskey="s">Jump to Seminars [Accesskey 's']</a></li>-->
+            <li><a href="http://como.cheng.cam.ac.uk/index.php?Page=Seminars" accesskey="s">Jump to Seminars [Accesskey 's']</a></li>
+            
+            <!--<li><a href="/admin/" accesskey="l">Jump to Login Page [Accesskey 'l']</a></li>-->
+            <li><a href="http://como.cheng.cam.ac.uk/index.php?Page=Login" accesskey="l">Jump to Login Page [Accesskey 'l']</a></li>
+        
         </ul>
     </div>
 
@@ -65,20 +83,35 @@
 
 <div id="primary-navigation" class="clearfix">
     <ul class="clearfix">
-        <li class="clearfix"><a href='/'>Home</a></li>
-        <li class="clearfix"><a href='/people/'>People</a></li>
-        <li class="clearfix"><a href='/research/'>Research</a></li>
-        <li class="clearfix"><a class='selected-menu-item' href='/resources/'>Resources</a></li>
-        <li class="clearfix"><a href='/preprints/'>Preprints</a></li>
-        <li class="clearfix"><a href='/publications/'>Publications</a></li>
-        <li class="clearfix"><a href='/conferences/'>Conferences</a></li>
-        <li class="clearfix"><a href='/seminars/'>Seminars</a></li>
-        <li class="clearfix"><a href='/admin/'>Login</a></li>
+        <!--<li class="clearfix"><a href='/'>Home</a></li>-->
+        <li class="clearfix"><a href='http://como.cheng.cam.ac.uk/index.php?Page=Home'>Home</a></li>
+        
+        <!--<li class="clearfix"><a href='/people/'>People</a></li>-->
+        <li class="clearfix"><a href='http://como.cheng.cam.ac.uk/index.php?Page=People'>People</a></li>
+        
+        <!--<li class="clearfix"><a href='/research/'>Research</a></li>-->
+        <li class="clearfix"><a href='http://como.cheng.cam.ac.uk/index.php?Page=Research'>Research</a></li>
+        
+        <!--<li class="clearfix"><a class='selected-menu-item' href='/resources/'>Resources</a></li>-->
+        <!--<li class="clearfix"><a class='selected-menu-item' href='http://como.cheng.cam.ac.uk/index.php?Page=Resources'>Resources</a></li>-->
+        <li class="clearfix"><a class='selected-menu-item'>Resources</a></li>
+        
+        <!--<li class="clearfix"><a href='/preprints/'>Preprints</a></li>-->
+        <li class="clearfix"><a href='http://como.cheng.cam.ac.uk/index.php?Page=Preprints'>Preprints</a></li>
+        <!--<li class="clearfix"><a href='/publications/'>Publications</a></li>-->
+        <li class="clearfix"><a href='http://como.cheng.cam.ac.uk/index.php?Page=Publications'>Publications</a></li>
+        <!--<li class="clearfix"><a href='/conferences/'>Conferences</a></li>-->
+        <li class="clearfix"><a href='http://como.cheng.cam.ac.uk/index.php?Page=Conferences'>Conferences</a></li>        
+        <!--<li class="clearfix"><a href='/seminars/'>Seminars</a></li>-->
+        <li class="clearfix"><a href='http://como.cheng.cam.ac.uk/index.php?Page=Seminars'>Seminars</a></li>
+        <!--<li class="clearfix"><a href='/admin/'>Login</a></li>-->
+        <li class="clearfix"><a href='http://como.cheng.cam.ac.uk/index.php?Page=Login'>Login</a></li>
     </ul>
 </div>
 
 <div id="leftnav" class="clearfix">
-    <ul><li class="sel last"><a href="/preprints/">Introduction</a></li></ul>
+    <!--<ul><li class="sel last"><a href="/preprints/">Introduction</a></li></ul>-->
+    <ul><li class="sel last"><a href="http://como.cheng.cam.ac.uk/index.php?Page=Resources">Introduction</a></li></ul>
     <ul><li class="selcsm">MolHub</li></ul>
 </div>
 
