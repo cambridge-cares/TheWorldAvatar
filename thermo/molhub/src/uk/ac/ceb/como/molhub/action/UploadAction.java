@@ -99,10 +99,10 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	private String uri = "http://como.cheng.cam.ac.uk/molhub/compchem/";
 
 
-	// private String serverUrl = "http://localhost:8080/rdf4j-server/repositories/compchemkb";
+	 private String serverUrl = "http://localhost:8080/rdf4j-server/repositories/compchemkb";
 
 	/** Remote rdf4j server url. */
-	private String serverUrl = "http://172.24.155.69:8080/rdf4j-server/repositories/compchemkb";
+//	private String serverUrl = "http://172.24.155.69:8080/rdf4j-server/repositories/compchemkb";
 
 	/* (non-Javadoc)
 	 * @see com.opensymphony.xwork2.ActionSupport#execute()
@@ -165,7 +165,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 			String outputOwlPath = folderName + "/" + uploadFileName[fileNumber].replaceAll(".g09", "").toString()
 					+ ".owl";
 
-			File owlFile = new File(outputOwlPath);
+			final File owlFile = new File(outputOwlPath);
 
 			/**
 			 * @author nk510
