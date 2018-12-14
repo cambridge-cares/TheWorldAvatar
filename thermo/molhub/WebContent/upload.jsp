@@ -9,14 +9,19 @@
 <!--  after pressing refresh button it clears content of page. -->
 <head>
 
+
 <link rel="icon"
 	href="${pageContext.request.contextPath}/css/static/group/favicon.ico" />
+
 <link rel="stylesheet" type="text/css"
 	href="${pageContext.request.contextPath}/css/static/group/CoMoStyle.css">
+
 <link rel="stylesheet" type="text/css"
 	href="${pageContext.request.contextPath}/css/static/group/CoMoIncludeStyle.css">
+
 <link rel="stylesheet" type="text/css"
 	href="${pageContext.request.contextPath}/css/static/group/CoMoThemesStyle.css">
+
 <title>Computational Modelling Group</title>
 
 </head>
@@ -79,22 +84,41 @@
 
 				<div id="primary-navigation" class="clearfix">
 					<ul class="clearfix">
-						<li class="clearfix"><a href='/'>Home</a></li>
-						<li class="clearfix"><a href='/people/'>People</a></li>
-						<li class="clearfix"><a href='/research/'>Research</a></li>
-						<li class="clearfix"><a class='selected-menu-item'
-							href='/resources/'>Resources</a></li>
-						<li class="clearfix"><a href='/preprints/'>Preprints</a></li>
-						<li class="clearfix"><a href='/publications/'>Publications</a></li>
-						<li class="clearfix"><a href='/conferences/'>Conferences</a></li>
-						<li class="clearfix"><a href='/seminars/'>Seminars</a></li>
-						<li class="clearfix"><a href='/admin/'>Login</a></li>
+					    
+					    <!--<li class="clearfix"><a href='/'>Home</a></li> -->
+						<li class="clearfix"><a href='http://como.cheng.cam.ac.uk/index.php?Page=Home'>Home</a></li>
+						
+						<!-- <li class="clearfix"><a href='/people/'>People</a></li>-->
+						<li class="clearfix"><a href='http://como.cheng.cam.ac.uk/index.php?Page=People'>People</a></li>	
+											
+						<!-- <li class="clearfix"><a href='/research/'>Research</a></li>-->
+						 <li class="clearfix"><a href='http://como.cheng.cam.ac.uk/index.php?Page=Research'>Research</a></li>
+						 
+						<!--<li class="clearfix"><a class='selected-menu-item' href='/resources/'>Resources</a></li>-->
+						<li class="clearfix"><a class='selected-menu-item'>Resources</a></li>
+						
+						<!-- <li class="clearfix"><a href='/preprints/'>Preprints</a></li> -->
+						<li class="clearfix"><a href='http://como.cheng.cam.ac.uk/index.php?Page=Preprints'>Preprints</a></li>
+						
+						<!-- <li class="clearfix"><a href='/publications/'>Publications</a></li>-->
+						<li class="clearfix"><a href='http://como.cheng.cam.ac.uk/index.php?Page=Publications'>Publications</a></li>
+						
+						<!-- <li class="clearfix"><a href='/conferences/'>Conferences</a></li>-->
+						<li class="clearfix"><a href='http://como.cheng.cam.ac.uk/index.php?Page=Conferences'>Conferences</a>
+						
+						<!--<li class="clearfix"><a href='/seminars/'>Seminars</a></li>-->
+						<li class="clearfix"><a href='http://como.cheng.cam.ac.uk/index.php?Page=Seminars'>Seminars</a></li>
+						
+						<!--<li class="clearfix"><a href='/admin/'>Login</a></li>-->
+						<li class="clearfix"><a href='http://como.cheng.cam.ac.uk/index.php?Page=Login'>Login</a></li>
+					
 					</ul>
 				</div>
 
 				<div id="leftnav" class="clearfix">
 					<ul>
-						<li class="sel last"><a href="/preprints/">Introduction</a></li>
+						<!-- <li class="sel last"><a href="/preprints/">Introduction</a></li>-->
+						<li class="sel last"><a href="http://como.cheng.cam.ac.uk/index.php?Page=Resources">Introduction</a></li>
 					</ul>
 					<ul>
 						<li class="selcsm">MolHub</li>
