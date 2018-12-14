@@ -42,8 +42,8 @@ import uk.ac.ceb.como.molhub.bean.RotationalConstant;
 public class QueryManager {
 
 	/** The server url. */
-//	static String serverUrl = "http://localhost:8080/rdf4j-server/repositories/compchemkb";
-	static String serverUrl =    "http://172.24.155.69:8080/rdf4j-server/repositories/compchemkb";
+	static String serverUrl = "http://localhost:8080/rdf4j-server/repositories/compchemkb";
+//	static String serverUrl =    "http://172.24.155.69:8080/rdf4j-server/repositories/compchemkb";
 
 	/** The Constant logger. */
 	final static Logger logger = Logger.getLogger(QueryManager.class.getName());
