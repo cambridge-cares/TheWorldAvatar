@@ -109,7 +109,7 @@ public class ADMSAgent extends HttpServlet {
 				System.out.println(srsname);
 				if(srsname.equalsIgnoreCase("EPSG:28992")) {
 					sourceCRSName = CRSTransformer.EPSG_28992;
-					writeAPLFile(buildingsInString,plantIRI, region);
+					writeAPLFile(newBuildingData,plantIRI, region);
 				}
 				else {
 					double[] p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {lowerx, lowery});
