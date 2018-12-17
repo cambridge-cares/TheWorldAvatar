@@ -53,12 +53,13 @@ queryStr2:`
 <https://como.cheng.cam.ac.uk/kb/ontochem.owl#>
              SELECT ?uri
              WHERE {
-                     ?uri rdf:type ontochem:ReactionMechanism .
+                    { ?uri rdf:type ontochem:ReactionMechanism .}
+                         @placeholder@
              }
 
 `,
 UnionImport:`
-  UNION{?a system:hasIRI ?uri;}
+  UNION{?a owl:imports ?uri;}
 `
 };
 
@@ -188,7 +189,9 @@ owlProcessor.connectPromise = function (address, level) {
 
 
 owlProcessor.normalAddr = function(loc){
-	
+	if(loc.charAt(loc.length-1)==='\/'){
+        loc = loc.slice(0,loc.length-1);
+    }
 	let locs = loc.split('#');
 	return locs&&locs.length>0? locs[0] : loc;
 }
@@ -231,20 +234,22 @@ owlProcessor.urlPromise = function (loc) {
 owlProcessor.xmlstreamParser = function (instream, level) {
 	
     const me = this;
+     console.log(me.mPredicate);
     return new Promise((resolve, reject) => {
 		console.log('start stream parser');
-        const PREDICATE = this.PREDICATE;
         let parser = new Parser();
         let flagOuter =false, flag = false, result = [];
         parser.on('opentag', (name, attrs) => {
             if(me.OUTER && name === me.OUTER){
                 flagOuter = true;
             }
-            if((!me.OUTER || flagOuter) && PREDICATE.includes(name)){
+            if((!me.OUTER || flagOuter) && me.mPredicate.includes(name)){
+                console.log(name)
                 flag = true;
-				if(name.includes('hasSubsystem')){//get rdf:resource//todo:hard code for now
+				if(name.includes('hasSubsystem') ||name.includes('owl:imports') ){//get rdf:resource//todo:hard code for now
 					let text = attrs['rdf:resource'];
 					if(text){
+                        console.log(text);
 					result.push(text);
 					if(me.buffer &&!me.buffer.isPaused()) {me.buffer.push(text+'@'+(level))};
 					flag = false;
@@ -316,7 +321,7 @@ owlProcessor.checkFile = function (loc) {
         resolve(null)
     });
     
-        let res = request.get(loc, {timeout: 10000, agent: false}).on('error', function (err) {
+        let res = request.get(loc, {timeout: 30000, agent: false}).on('error', function (err) {
             reject(err)//don't throw
         });
         res.pipe(parser)
@@ -343,11 +348,11 @@ owlProcessor.queryPromise = function (loc, type, level) {
                 //run query against endpoint
 				console.log(loc);
                 //toodo: this is blasphemy, fix the endpoibt then delete this
-                request.get(loc, {qs:{'query':self.queryStr2,'output':'json'},timeout: 150000, agent: false}, function (err, res, body) {
+                request.get(loc, {qs:{'query':self.queryStr2C,'output':'json'},timeout: 150000, agent: false}, function (err, res, body) {
                     console.log('endpoint resquest result');
                                         console.log("body:"+body);
 
-                    if (err||!body||body===undefined||body.toLowerCase().includes('<!doctype html')||body.includes('<?xml version="1.0" encoding="utf-8"?>')) {
+                    if (err||!body||body===undefined||body.toLowerCase().includes('doctype')||body.includes('<?xml version="1.0" encoding="utf-8"?>')) {
 						console.log('no result from endpoint, reject')
 						reject(err);
 						return;
@@ -445,14 +450,21 @@ owlProcessor.fileStreamPromise = function (loc) {
         let extraQ = options.extraQuery?options.extraQuery:'';
         let extraP = options.extraPredicate?options.extraPredicate:'';
         let showImport = options.showImport || false; // if showServiceOnly is chosen, will not show Import
+        this.mPredicate =  owlProcessor.PREDICATE.slice();
         if(showImport){
-            owlProcessor.PREDICATE.push("owl:imports");
-            extraQ = extraQ.query + self.UnionImport;
+            console.log('show import')
+            this.mPredicate.push("owl:imports");
+            console.log(this.mPredicate);
+            extraQ = extraQ + this.UnionImport;
         }
-        this.queryStr = this.queryStr.replace('@placeholder@', extraQ);
-        if(extraP){owlProcessor.PREDICATE.push(extraP);}
+        console.log(extraQ)
+
+        this.queryStrC = this.queryStr.replace('@placeholder@', extraQ);
+                this.queryStr2C = this.queryStr2.replace('@placeholder@', extraQ);
+
+        if(extraP){this.mPredicate.push(extraP);}
         this.OUTER = options.outer?options.outer:null;
-        console.log(this.queryStr)
+        console.log(this.queryStr2C);
     
         //process variable init
         this.processed = new Set();
@@ -466,21 +478,34 @@ owlProcessor.packIntoClusterData = function (rawconn) {
     let self = this
     let firstl = [], subconnections = {};
 	console.log(self.parentMap);
+                let orphan = [];
+                let foster= null;
+
     rawconn.forEach((link)=>{
 		console.log(link)
         if(link.level === 1){
             firstl.push(link)
         } else{
-            let parent = self.parentMap[link.target];
-            if (parent in subconnections){
+            if(!(link.target in self.parentMap) ){
+                    orphan.push(link)
+            }
+            else {
+                            let parent = self.parentMap[link.target];
+
+                if (parent in subconnections){
                 subconnections[parent].connections.push(link)
             } else {
+                if(!foster){foster = parent;}
                 subconnections[parent] = {connections:[]}
 			subconnections[parent].connections.push(link)
 
             }
         }
+        }
     })
+    console.log('orphans:')
+     console.log(orphan);
+    //subconnections[foster].connections = subconnections[foster].connections.concat(orphan);
     //pack into relative subconnctions
     return {connections:firstl, subconnections:subconnections}
 }
