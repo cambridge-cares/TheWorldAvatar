@@ -36,7 +36,7 @@ var visualizationRouterFactory = function (topNodeAddress) {
             
             //res.setHeader('Content-Type', 'application/json');
             //res.json(results);//for testing
-            console.log(results)
+            //console.log(results)
             conns = results;
             results.topnode = topNodeAddress;
     
@@ -46,18 +46,21 @@ var visualizationRouterFactory = function (topNodeAddress) {
         });
         
     });
-    /***
+    
     router.get('/includeImport', function(req, res, next) {
 
 
-        connectionsReader.getChildrenRecur({ showImport : true, topnode : topNodeAddress}, function (err, results) {
+    
+        connectionsReader.process({topnode : topNodeAddress, showImport:true}).then((results)=>{
 
-            if(err){
-                console.log(err);
-                res.status(500).send(err);
-            }
-
+            
             console.log("read connections");
+            
+            //res.setHeader('Content-Type', 'application/json');
+            //res.json(results);//for testing
+            //console.log(results)
+            conns = results;
+            results.topnode = topNodeAddress;
 
             //res.setHeader('Content-Type', 'application/json');
             // res.json(results);
@@ -67,7 +70,7 @@ var visualizationRouterFactory = function (topNodeAddress) {
         });
     });
 
-
+/**
     router.get('/showServiceOnly', function(req, res, next) {
 
         connectionsReader.getChildrenRecur({ showServiceOnly : true, showServiceUrl: true, topnode : topNodeAddress}, function (err, results) {

@@ -169,7 +169,7 @@ var FileLinkMap = function (options) {
                         url: link.target,
                         name: getSimpleName(link.target),
                         domain: getDomain(link.target),
-                        clustersize: link.target in bubbleMap.subconMap ? bubbleMap.subconMap[link.target].connections.length : null,
+                        clustersize: link.target in bubbleMap.subconMap ?bubbleMap.subconMap[link.target].connections.length : null,
                         level: thisLevel
                         ,                //add to node attri: geo coordinates
                         coord: getCoord(link.target),
@@ -213,7 +213,7 @@ var FileLinkMap = function (options) {
         // console.log(link.source.count);
         var nodeNThre = 5
         if (link.source.count > nodeNThre || link.target.count > nodeNThre) {
-            return 100;
+            return 200;
         }
         return 1;
     }
@@ -383,7 +383,7 @@ var FileLinkMap = function (options) {
             })
             .attr("r", function(d){
                 console.log(d.clustersize)
-                return d.clustersize?Math.log10(d.clustersize+1) * nodeR : nodeR
+                return d.clustersize? (7+Math.log10(d.clustersize+1) * nodeR ): nodeR
                 }
             )
             .attr("class", "nodes")
@@ -681,7 +681,7 @@ var FileLinkMap = function (options) {
         for (let node of newNodes) {
             if (!includeobj(bubbleMap.nodesArr, node, ['url'])) {
                 bubbleMap.nodesArr.push(node)
-            }
+            } 
         }
         let idx2DelNodes = []
         for (let idx = 0; idx < bubbleMap.nodesArr.length; idx++) {
@@ -773,6 +773,7 @@ var FileLinkMap = function (options) {
             var newlinks = bubbleMap.expandCluster(url)
             console.log("expand")
             console.log(newlinks)
+            if(!newlinks){return}
            map.update(newlinks, null, null, true)
          
           // bubbleMap.showHidden(...newlinks)
@@ -887,15 +888,24 @@ var FileLinkMap = function (options) {
     }
     
         bubbleMap.expandCluster = function (url) {
-        console.log(bubbleMap.subconMap[url].connections)
-        console.log(bubbleMap.initLinks)
+            if(!bubbleMap.subconMap[url]) return null;
+       // console.log(bubbleMap.subconMap[url].connections)
+        //console.log(bubbleMap.initLinks)
 		            bubbleMap.initLinks =  bubbleMap.initLinks.concat(bubbleMap.subconMap[url].connections)
 
         return bubbleMap.initLinks;
     
     };
+
+    bubbleMap.expandAll = function(){
+            for(let url in bubbleMap.subconMap )     {
+          bubbleMap.initLinks =  bubbleMap.initLinks.concat(bubbleMap.subconMap[url].connections)
+            }   
+    return bubbleMap.initLinks;
+    }
+    //this is not used, but kept for reference purpose
     bubbleMap.noClusterExpand= function(){
-        bubbleMap.update(bubbleMap.initLinks, [], [], true);
+       // bubbleMap.update(bubbleMap.initLinks, [], [], true);
     
     }
 
@@ -907,6 +917,24 @@ function deepcopyObjArr(arr) {
 return JSON.parse(JSON.stringify(arr));
 }
 
+function combineArrMap(obja, objb){
+
+    let copya = Object.assign({}, obja);
+    for (let attr in objb){
+        if(attr && (objb[attr].connections instanceof Array)) {
+        if(attr in copya){
+            if(attr && copya[attr].connections instanceof Array  ) {
+                let union = new Set(copya[attr].connections.concat(objb[attr].connections));
+                copya[attr].connections = [...union];
+            }
+        } else {
+            copya[attr] = {connections:[]};
+           objb[attr].connections.forEach((item)=>{copya[attr].connections.push(item)})
+        }
+    }
+    }
+    return copya
+}
 
 /*END constructor: d3 link graph*********************************************/
 
@@ -972,9 +1000,12 @@ $(window).load(function () {// when web dom ready
                                 }
                                 
                             }
-                            map.update(links, coords, [],true );
-                            
-                            
+                            map.update(links, coords, [],true);
+                            //todo:concate subconnection
+                                                        console.log(data.subconnections)
+                           map.subconMap = combineArrMap(map.subconMap,data.subconnections);
+                        console.log(map.subconMap);               
+                        map.expandAll()             
                         }
                         
                     }
