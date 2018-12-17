@@ -47,10 +47,10 @@ public class QueryPowerPlants extends HttpServlet {
 
 		logger.info("sparql= " + sparqlstring);
 
-		ResultSet rs_plant = QueryPowerPlants.queryFromFusekiServer(
-				"http://www.theworldavatar.com:80/damecoolquestion/worldpowerplantsng/query", sparqlstring);
 //		ResultSet rs_plant = QueryPowerPlants.queryFromFusekiServer(
-//				"http://www.theworldavatar.com:80/damecoolquestion/worldpowerplantsinmemory/query", sparqlstring);
+//				"http://www.theworldavatar.com:80/damecoolquestion/worldpowerplantsng/query", sparqlstring);
+		ResultSet rs_plant = QueryPowerPlants.queryFromFusekiServer(
+				"http://www.theworldavatar.com:80/damecoolquestion/worldpowerplantsinmemory/query", sparqlstring);
 
 		JSONObject dataSet = new JSONObject();
 		JSONArray array = new JSONArray();
