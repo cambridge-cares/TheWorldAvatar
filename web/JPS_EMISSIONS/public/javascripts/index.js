@@ -63,7 +63,8 @@ $( document ).ready(() => {
     $('#start').on('click', event => {
         event.preventDefault();
         const carbonPrice = $('select#carbon-price option:selected').val();
-        const technologyLearningRate = $('select#technology-learning-rate option:selected').val();
+        //const technologyLearningRate = $('select#technology-learning-rate option:selected').val();
+		const technologyLearningRate = 'low';
 
         $('#annual').attr('src', `/images/${carbonPrice}_carbon_annual.png`);
         $('#avoidance_cost').attr('src', `/images/${carbonPrice}_carbon_avoidance_cost.png`);
