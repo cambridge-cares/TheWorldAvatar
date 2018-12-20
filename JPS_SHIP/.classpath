@@ -13,5 +13,36 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="lib" path="WebContent/lib/commons-codec-1.10.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/commons-lang3-3.8-javadoc.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/commons-lang3-3.8-sources.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/commons-lang3-3.8-test-sources.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/commons-lang3-3.8-tests.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/commons-lang3-3.8.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/httpclient-4.5.5.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/httpclient-cache-4.5.5.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/httpclient-win-4.5.5.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/httpcore-4.4.9.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/httpmime-4.5.5.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/jena-arq-3.7.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/jena-base-3.7.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/jena-cmds-3.7.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/jena-core-3.7.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/jena-dboe-base-3.7.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/jena-dboe-index-3.7.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/jena-dboe-trans-data-3.7.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/jena-dboe-transaction-3.7.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/jena-iri-3.7.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/jena-rdfconnection-3.7.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/jena-shaded-guava-3.7.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/jena-tdb-3.7.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/libthrift-0.10.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/log4j-api-2.11.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/log4j-core-2.11.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/log4j-slf4j-impl-2.11.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/slf4j-api-1.7.25.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/xerces-2.7.1.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/xercesImpl-2.11.0.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
