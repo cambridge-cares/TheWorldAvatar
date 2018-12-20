@@ -26,12 +26,22 @@ function getContourMaps(address) {
                 //heights=   d2result.heights = [1.1,2.2,3.3,4.4,5.5]
     
                 //=============contour consts======================//
+				                d2result = d2Arr21d(d2result);//to 1d
+
+				let ubound  =  d2arraymax(d2result);
+				console.log('ub:'+enlarge(ubound))
                 
-                  const thresholds = d3.range(0, THRESHOULD_NUM) // [0, 1, 2, 3, 4, 5, 6, 7, 8]
-                    .map(function (p) {
-                        return Math.pow(4, p);
-                    });//todo: custom this, need to know output features
-                const middle = thresholds[Math.floor(thresholds.length / 2)]
+                  const thresholdsC = d3.scaleLog() // [0, 1, 2, 3, 4, 5, 6, 7, 8]
+                    .domain([1, enlarge(ubound)]).range([0, THRESHOULD_NUM]);
+				
+					let ticks = numberarray(THRESHOULD_NUM+1);
+					console.log(ticks)
+					console.log(thresholdsC.invert(3))
+					let  thresholds = ticks.map((tik)=> {return thresholdsC.invert(tik)});
+										let  thresholdsO = thresholds.map((t)=> restore(t));
+
+					console.log(thresholds)
+                const middle = thresholds[Math.floor(thresholds.length / 2)];
                 const color = d3.scaleLog(d3.interpolateRdYlBu)
                     .domain([1, middle, d3.max(thresholds)])
                     .range(['#3986ce', '#fee08b', '#d73027'])
@@ -43,11 +53,10 @@ function getContourMaps(address) {
                 while(legendWrapperNode.firstChild) {
                 	legendWrapperNode.removeChild(legendWrapperNode.firstChild);
                 }
-                makeLegend(LEGEND_DIV, thresholds, color);
+                makeLegend(LEGEND_DIV, thresholds, color,thresholdsO);
                 
                 //=============contour map as svg for each  ======================//
                 
-                d2result = d2Arr21d(d2result);//to 1d
                 let svgstrs = d2result.map((output) => {
                     var svg = d3.select("#svgwrapper svg"),
                         width = +svg.attr("width"),
@@ -57,6 +66,7 @@ function getContourMaps(address) {
                     let COL_NUM = 80;
                     let values = output;
                     
+					values = values.map((v)=> enlarge(v))
                     let contours = d3.contours()
                         .size([COL_NUM, ROW_NUM])
                         .thresholds(thresholds);
@@ -133,8 +143,33 @@ function getContourMaps(address) {
     
 }
 
+function numberarray(len){
+	var arr = [];
 
+for(var i = 0; i < len; i++){
+    arr.push(i);
+}
+return arr;
+}
+function enlarge(v){
+	return Math.sqrt(v)*10000;
+}
 
+function restore(v){
+	let t = v/10000;
+	
+	return t*t*t;
+}
+
+function d2arraymax(d2array){
+	let mmax = 0;
+	    d2array.forEach((arr) =>{
+        let arrmax = Math.max(...arr);
+		if(arrmax > mmax) {mmax = arrmax}
+    })
+	return mmax
+
+}
 
 function svgToImagePromise(svgstr) {
     return new Promise((resolve, reject) => {
@@ -158,11 +193,13 @@ function d2Arr21d(d2array){
     
 }
 
-function makeLegend(selector_id, thresholds, color) {
+function makeLegend(selector_id, thresholds, color, thresholdsO) {
     var thresholdScale = d3.scaleThreshold()
-        .domain(thresholds)
+        .domain(thresholdsO)
         .range(["rgb(244, 244, 244)"].concat(d3.range(THRESHOULD_NUM)
      .map(function(i) { return color(thresholds[i])})));
+
+	 
     console.log(d3.range(THRESHOULD_NUM+1).map(function(i) { return color(thresholds[i])}))
     console.log(d3.range(6).map(function(i) { return "q" + i + "-9"}))
 
@@ -177,7 +214,7 @@ function makeLegend(selector_id, thresholds, color) {
        // .attr("transform", "translate(20,20)");
     console.log('addl legend')
     var legend = d3.legendColor()
-        .labelFormat(d3.format(".2f"))
+        .labelFormat(d3.format("e"))
         .labels(d3.legendHelpers.thresholdLabels)
         .scale(thresholdScale)
     
