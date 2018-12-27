@@ -66,7 +66,7 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) =>
     	data => {
     		const geojson = data;
     		try {
-    			// console.log(JSON.stringify(geojson, null, 4));
+//    			 console.log(JSON.stringify(geojson, null, 4));
     			listGeoJsonAddedToOSMB.push(osmb.addGeoJSON(geojson)); // edit
     		} catch (err) {
     			console.log(err.name);
@@ -83,7 +83,7 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) =>
         function(data) {
             var geojson = data;
             var arrayLength = geojson.length;
-            console.log(data);
+//            console.log(data);
             
             for (var i = 0; i < arrayLength; i++) {
 

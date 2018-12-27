@@ -16,12 +16,12 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.KeyValueServer;
-import uk.ac.cam.cares.jps.composition.compositionengine.ServiceCompositionEngine;
-import uk.ac.cam.cares.jps.composition.enginemodel.Graph;
+import uk.ac.cam.cares.jps.composition.CompositionEngine.ServiceCompositionEngine;
+import uk.ac.cam.cares.jps.composition.EngineModel.Graph;
 import uk.ac.cam.cares.jps.composition.executor.ExecutionLayer;
 import uk.ac.cam.cares.jps.composition.executor.ExecutorNew;
 import uk.ac.cam.cares.jps.composition.executor.ExecutorProcessor;
-import uk.ac.cam.cares.jps.composition.servicemodel.Service;
+import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
 import uk.ac.cam.cares.jps.composition.util.FormatTranslator;
 import uk.ac.cam.cares.jps.composition.util.OptimalPathSearcher;
 

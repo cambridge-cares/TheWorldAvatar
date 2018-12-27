@@ -1,0 +1,77 @@
+        #map {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .control {
+            position: absolute;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .control.tilt {
+            top: 0;
+        }
+
+        .control.rotation {
+            top: 45px;
+        }
+
+        .control.zoom {
+            top: 90px;
+        }
+
+        .control.zoom button{
+            font-weight: normal;
+        }
+
+        .control button {
+            width: 30px;
+            height: 30px;
+            margin: 15px 0 0 15px;
+            border: 1px solid #999999;
+            background: #ffffff;
+            opacity: 0.6;
+            border-radius: 5px;
+            box-shadow: 0 0 5px #666666;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .control button:hover {
+            opacity: 1;
+            cursor: pointer;
+        }
+
+        #fieldsetCheckbox {
+            width: 250px;
+            position: absolute;
+            left: 0px;
+            top: 15px;
+            z-index: 1;
+            margin-left: 15px;
+            display: inline-block;
+            background-color: rgba(0,0,0,0.4);
+            padding: 5px 5px;
+            color: white;
+        }
+
+        legend {
+            font-size: 1em;
+            color: #333;
+            margin-bottom: .75em;
+            border-bottom: 1px solid #333;
+        }
+
+        label {
+            font-weight: normal !important;
+        }
+
+        p#lat, p#lon, p#conc {
+            margin-bottom: 0.5em;
+        }
+
+        div#output {
+            display: none;
+        }

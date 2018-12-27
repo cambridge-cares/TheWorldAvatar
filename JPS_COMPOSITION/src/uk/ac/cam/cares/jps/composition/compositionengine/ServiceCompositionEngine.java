@@ -1,14 +1,14 @@
-package uk.ac.cam.cares.jps.composition.compositionengine;
+package uk.ac.cam.cares.jps.composition.CompositionEngine;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
-import uk.ac.cam.cares.jps.composition.enginemodel.Graph;
-import uk.ac.cam.cares.jps.composition.enginemodel.Layer;
-import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
-import uk.ac.cam.cares.jps.composition.servicemodel.Service;
+import uk.ac.cam.cares.jps.composition.EngineModel.Graph;
+import uk.ac.cam.cares.jps.composition.EngineModel.Layer;
+import uk.ac.cam.cares.jps.composition.ServiceModel.MessagePart;
+import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
 import uk.ac.cam.cares.jps.composition.util.ConnectionBuilder;
 import uk.ac.cam.cares.jps.composition.util.MatchingTool;
 import uk.ac.cam.cares.jps.composition.util.OptimalPathSearcher;

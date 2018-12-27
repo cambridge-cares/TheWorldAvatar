@@ -14,10 +14,10 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.composition.servicemodel.MessageContent;
-import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
-import uk.ac.cam.cares.jps.composition.servicemodel.Operation;
-import uk.ac.cam.cares.jps.composition.servicemodel.Service;
+import uk.ac.cam.cares.jps.composition.ServiceModel.MessageContent;
+import uk.ac.cam.cares.jps.composition.ServiceModel.MessagePart;
+import uk.ac.cam.cares.jps.composition.ServiceModel.Operation;
+import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
 
 public class ServiceWriter {
 

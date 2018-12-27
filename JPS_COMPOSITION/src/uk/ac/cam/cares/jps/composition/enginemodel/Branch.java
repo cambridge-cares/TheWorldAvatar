@@ -1,10 +1,10 @@
-package uk.ac.cam.cares.jps.composition.enginemodel;
+package uk.ac.cam.cares.jps.composition.EngineModel;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import uk.ac.cam.cares.jps.composition.servicemodel.Service;
+import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
 
 public class Branch { 
 	public ArrayList<SubTrack> subtracks;
