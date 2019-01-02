@@ -18,10 +18,10 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 @WebServlet("/ADMSCoordinationAgentForShipWithoutComposition")
-public class ADMSCoordinationAgentWithoutComposition extends HttpServlet {
+public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet {
 
 	private static final long serialVersionUID = -2264681360832342804L;
-	Logger logger = LoggerFactory.getLogger(ADMSCoordinationAgentWithoutComposition.class);
+	Logger logger = LoggerFactory.getLogger(ADMSCoordinationAgentForShipWithoutComposition.class);
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	
@@ -35,6 +35,13 @@ public class ADMSCoordinationAgentWithoutComposition extends HttpServlet {
 		try {
 			
 			JSONObject jo = new JSONObject(jsonInput);
+			
+			String listShipIRIs = AgentCaller.executeGet("/JPS_SHIP/GetShipListFromRegion", "query", jsonInput);
+			
+			// TODO: WE
+			// Iterate over list of ship iris and perform query of each ship.
+			// Store results of ship GeoJSON variable
+			
 			String wasteresult = AgentCaller.executeGet("/JPS_SHIP/ShipAgent", "query", jsonInput);
 			String waste = new JSONObject(wasteresult).getString("waste");
 			jo.put("waste", waste);

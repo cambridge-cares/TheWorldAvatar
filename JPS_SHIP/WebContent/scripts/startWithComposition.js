@@ -71,7 +71,7 @@ $(function(){
     );
     
     // TBC: Building GeoJSON
-    osmb.addGeoJSONTiles('https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
+    // osmb.addGeoJSONTiles('https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
     //***************************************************************************
 
     
@@ -103,16 +103,16 @@ $(function(){
             const coordinatesArray = [];
 
             if (!isNaN(latitude) && !isNaN(longitude)) {
-            	console.log(latitude, longitude);
+            	console.log(longitude, latitude);
                 const convertedCoordinates = proj4('EPSG:28992', [parseFloat(longitude), parseFloat(latitude)]);
 
-                coordinatesArray.push(convertedCoordinates[0]); // latitude
-                coordinatesArray.push(convertedCoordinates[1]); // longitude
+                coordinatesArray.push(convertedCoordinates[0]); // x
+                coordinatesArray.push(convertedCoordinates[1]); // y
 
 //                document.getElementById("longitude").innerHTML = longitude; // convertedCoordinates[1];
 //                document.getElementById("latitude").innerHTML = latitude; // convertedCoordinates[0];
 
-//                console.log(coordinatesArray);
+                console.log(coordinatesArray);
             }
         });
     });

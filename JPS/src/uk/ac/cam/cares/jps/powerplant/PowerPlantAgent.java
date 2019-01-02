@@ -197,11 +197,11 @@ public class PowerPlantAgent extends HttpServlet {
 					+ "}";
 					
 			jenaOwlModel = ModelFactory.createOntologyModel();	
-			jenaOwlModel.read(iri2, null);
+			jenaOwlModel.read(iri2, null); // plant iri
 				
-			ResultSet rs_plant = PowerPlantAgent.query(wastestreamInfo,jenaOwlModel); 
+			ResultSet rs_plant = PowerPlantAgent.query(wastestreamInfo,jenaOwlModel); // wastestream and engine iri
 			
-			ResultSet rs_plant2 = PowerPlantAgent.query(engineInfo,jenaOwlModel); 
+			ResultSet rs_plant2 = PowerPlantAgent.query(engineInfo,jenaOwlModel); // engine 
 			
 			for (; rs_plant.hasNext();) {			
 				QuerySolution qs_p = rs_plant.nextSolution();
@@ -211,7 +211,7 @@ public class PowerPlantAgent extends HttpServlet {
 				System.out.println("cpirilistwastestream= "+valueiri);
 				logger.info("query result1= "+valueiri);
 
-				cpirilist.add(valueiri);
+				cpirilist.add(valueiri); // wastestream iri
 			}
 			
 			for (; rs_plant2.hasNext();) {			
@@ -220,7 +220,7 @@ public class PowerPlantAgent extends HttpServlet {
 				Resource engineiri = qs_p.getResource("engine");
 				String valueengineiri = engineiri.toString();
 				logger.info("query result2= "+valueengineiri);
-				cpirilist2.add(valueengineiri);
+				cpirilist2.add(valueengineiri); // engine iri
 			}
 
 			
@@ -235,7 +235,7 @@ public class PowerPlantAgent extends HttpServlet {
 				
 			
 			logger.info("message to sent= "+jo.toString());
-			response.getWriter().write(jo.toString());
+			response.getWriter().write(jo.toString()); // returns HTTP response with wastestream iri
 			
 			
 		    //send the info to SRM Engine Agent
