@@ -217,7 +217,6 @@ public class ShipKbCreator {
 		
 		Individual ship = Shipclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#"+shipinstance);
 		System.out.println(ship.getURI());
-		System.out.println(hasCallSign.getURI());
 		ship.setPropertyValue(hasCallSign, jenaOwlModel.createTypedLiteral("0"));
 		ship.setPropertyValue(hasShipname, jenaOwlModel.createTypedLiteral("0"));
 		ship.setPropertyValue(hasPAC, jenaOwlModel.createTypedLiteral("0"));
@@ -226,7 +225,7 @@ public class ShipKbCreator {
 		Resource engine = jenaOwlModel.createResource("http://www.theworldavatar.com/kb/sgp/DieselEngine-001.owl#DieselEngine-001");
 		ship.addProperty(hasSubsystem,engine);
 		
-		Individual chimney = Pipeclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#ChimneyhOf"+shipinstance);
+		Individual chimney = Pipeclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#ChimneyOf"+shipinstance);
 		ship.addProperty(hasSubsystem,chimney);
 		
 		Individual heightchimney = Bowclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#Height_ChimneyOf"+shipinstance);
