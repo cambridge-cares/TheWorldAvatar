@@ -18,8 +18,8 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 
 public class ShipKbCreator {
-	public static String baseURL2 = "D:\\KBDev-git/irp3-JPS-KBDev-git/Server Ontology Configuration Root/kb/sgp/";
-	public static String baseURL = "D:\\KBDev-git/irp3-JPS-KBDev-git/Server Ontology Configuration Root/kb/temporary/";
+	public static String baseURL2 = "C:/JPS_DATA/workingdir/JPS/SHIP/output/"; // directory of output file
+	public static String baseURL = "C:/JPS_DATA/workingdir/JPS/SHIP/input/"; // location of template file which is empty; file located in C:\Users\WE\Dropbox (Cambridge CARES)\IRP3 CAPRICORN shared folder\_JPS Development\workingdir\JPS_SHIP
 	public static String ontologymainiri="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#"; 
 	
 	private OntClass scalarvalueclass = null;
@@ -466,7 +466,7 @@ public class ShipKbCreator {
     	
     	String filePath = baseURL + "ShipTemplate.owl"; // the empty owl file
     	
-    	int shipamount= 1;
+    	int shipamount= 10;
     	
 
     	//System.out.println ("check="+jenaOwlModel.toString();

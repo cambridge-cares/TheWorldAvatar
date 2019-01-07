@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.composition.webserver;
+package uk.ac.cam.cares.jps.composition.WebServer;
 
 import java.io.IOException;
 
@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.HTTP;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.composition.servicemodel.Service;
+import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
 import uk.ac.cam.cares.jps.composition.util.FormatTranslator;
 
 /**

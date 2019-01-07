@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.composition.webapi;
+package uk.ac.cam.cares.jps.composition.WebAPI;
 
 import java.io.File;
 import java.io.IOException;

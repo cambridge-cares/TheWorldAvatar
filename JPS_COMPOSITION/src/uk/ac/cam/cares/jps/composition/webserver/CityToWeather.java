@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.composition.webserver;
+package uk.ac.cam.cares.jps.composition.WebServer;
 
 import java.io.IOException;
 import java.io.StringWriter;

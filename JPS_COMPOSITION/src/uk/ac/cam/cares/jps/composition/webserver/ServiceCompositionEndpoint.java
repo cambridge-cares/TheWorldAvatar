@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.composition.webserver;
+package uk.ac.cam.cares.jps.composition.WebServer;
 
 import java.io.IOException;
 import java.util.Map;
@@ -14,10 +14,10 @@ import org.json.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.composition.compositionengine.ServiceCompositionEngine;
-import uk.ac.cam.cares.jps.composition.enginemodel.Graph;
+import uk.ac.cam.cares.jps.composition.CompositionEngine.ServiceCompositionEngine;
+import uk.ac.cam.cares.jps.composition.EngineModel.Graph;
 import uk.ac.cam.cares.jps.composition.performance.SmartContractDataConnector;
-import uk.ac.cam.cares.jps.composition.servicemodel.Service;
+import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
 import uk.ac.cam.cares.jps.composition.util.FormatTranslator;
 
 

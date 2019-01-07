@@ -13,10 +13,10 @@ import org.junit.Test;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import uk.ac.cam.cares.jps.composition.servicemodel.MessageContent;
-import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
-import uk.ac.cam.cares.jps.composition.servicemodel.Operation;
-import uk.ac.cam.cares.jps.composition.servicemodel.Service;
+import uk.ac.cam.cares.jps.composition.ServiceModel.MessageContent;
+import uk.ac.cam.cares.jps.composition.ServiceModel.MessagePart;
+import uk.ac.cam.cares.jps.composition.ServiceModel.Operation;
+import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
 
 public class ServiceModelTest {
 

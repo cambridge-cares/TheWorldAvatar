@@ -18,10 +18,10 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.util.iterator.ExtendedIterator;
 
-import uk.ac.cam.cares.jps.composition.servicemodel.MessageContent;
-import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
-import uk.ac.cam.cares.jps.composition.servicemodel.Operation;
-import uk.ac.cam.cares.jps.composition.servicemodel.Service;
+import uk.ac.cam.cares.jps.composition.ServiceModel.MessageContent;
+import uk.ac.cam.cares.jps.composition.ServiceModel.MessagePart;
+import uk.ac.cam.cares.jps.composition.ServiceModel.Operation;
+import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
 
 public class ServiceReader {
 	

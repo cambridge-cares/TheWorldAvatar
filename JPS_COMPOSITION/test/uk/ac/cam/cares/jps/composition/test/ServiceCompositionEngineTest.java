@@ -8,8 +8,8 @@ import org.junit.Test;
 import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.KeyValueServer;
-import uk.ac.cam.cares.jps.composition.compositionengine.ServiceCompositionEngine;
-import uk.ac.cam.cares.jps.composition.servicemodel.Service;
+import uk.ac.cam.cares.jps.composition.CompositionEngine.ServiceCompositionEngine;
+import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
 import uk.ac.cam.cares.jps.composition.util.ConnectionBuilder;
 import uk.ac.cam.cares.jps.composition.util.FormatTranslator;
 
