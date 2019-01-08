@@ -355,7 +355,11 @@ public class DataDownload {
 	}
 
 	
-	
+	/**
+	 * this function receives an entity and returns market price of that entity from knowledge base
+	 * @param String entity; one of Crude Palm Oil, Biodiesel, Methanol, Natural Gas
+	 * @return String market prices
+	 */
 	public static String retrieveMarketPricesFromKnowledgeBase(String entity) throws Exception {
 		
 		String stringIndividual = ONTO_PATH_KB_MARKETS + "#" + entity;
