@@ -184,7 +184,7 @@ public class SRMAgent extends HttpServlet  {
 
 		/** PREPARE ALL THE INPUT FILE*/
 
-		//cleanDirectory();
+		cleanDirectory();
 		
 
 		
@@ -212,7 +212,7 @@ public class SRMAgent extends HttpServlet  {
 		
 		
 		//second, run using command prompt the owl file iri using the batch file to produce new bin
-		//startbinaryconverter(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM",rs_mechanism);
+		startbinaryconverter(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM",rs_mechanism);
 		
 		
 		//-------------------------------------------------------------------------------
@@ -415,12 +415,12 @@ public class SRMAgent extends HttpServlet  {
 		
 		// edit the input params file
 
-	//	editinputparamXML(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputParams.xml",AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputParams.xml","mechanism.bin");
+		editinputparamXML(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputParams.xml",AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputParams.xml","mechanism.bin");
 		
 		
 		/** This part put run to the SRM Engine simulation and take the output */
 
-	//	startSRM("C:/Program Files/Kinetics and SRM Engine Suite");
+		startSRM("C:/Program Files/Kinetics and SRM Engine Suite");
 
 		
 		String jsonFiledir = AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/OutputCase00001Cyc0001ADMS.json";

@@ -192,7 +192,7 @@ $(function(){
 					uppery
 				}
 			},
-        	plant,
+//        	plant,
         	reactionmechanism
         }
         
@@ -208,7 +208,7 @@ $(function(){
 //	        				query
 //        				});
 //        	} else {
-        		result =  $.getJSON('/JPS/ADMSCoordinationAgentWithoutComposition',
+        		result =  $.getJSON('/JPS_SHIP/ADMSCoordinationAgentForShipWithoutComposition',
         				{
 	        				query
         				});

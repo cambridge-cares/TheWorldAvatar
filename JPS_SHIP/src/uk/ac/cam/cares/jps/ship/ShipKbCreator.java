@@ -213,221 +213,117 @@ public class ShipKbCreator {
 		//KnowledgeBaseCreator xmlreader = new KnowledgeBaseCreator();
 		//hmap=xmlreader.editXML(filepath1);//read the xml and store to hashmap
 		
+		String chimneyinstance="Chimney-1"; //still hard-coded for the sample
 		
 		
-		Individual ship = Shipclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#"+shipinstance);
+		Individual ship = Shipclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#"+shipinstance);
 		System.out.println(ship.getURI());
 		ship.setPropertyValue(hasCallSign, jenaOwlModel.createTypedLiteral("0"));
 		ship.setPropertyValue(hasShipname, jenaOwlModel.createTypedLiteral("0"));
 		ship.setPropertyValue(hasPAC, jenaOwlModel.createTypedLiteral("0"));
 		//TODO tomorrow : contains directly 
 		
-		Resource engine = jenaOwlModel.createResource("http://www.theworldavatar.com/kb/sgp/DieselEngine-001.owl#DieselEngine-001");
+		Resource engine = jenaOwlModel.createResource("http://www.theworldavatar.com/kb/ships/Engine-001.owl#Engine-001");
 		ship.addProperty(hasSubsystem,engine);
 		
-		Individual chimney = Pipeclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#ChimneyOf"+shipinstance);
+		Individual chimney = Pipeclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+chimneyinstance+".owl#"+chimneyinstance);
 		ship.addProperty(hasSubsystem,chimney);
 		
-		Individual heightchimney = Bowclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#Height_ChimneyOf"+shipinstance);
-		Individual vheightchimney = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_Height_ChimneyOf"+shipinstance);
-		heightchimney.addProperty(hasvalue, vheightchimney);
-		vheightchimney.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
-		vheightchimney.addProperty(hasunit, m);
-		chimney.addProperty(hasHeight, heightchimney);
-
-		Individual Diameterchimney = Bowclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#Diameter_ChimneyOf"+shipinstance);
-		Individual vDiameterchimney = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_Diameter_ChimneyOf"+shipinstance);
-		Diameterchimney.addProperty(hasvalue, vDiameterchimney);
-		vDiameterchimney.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
-		vDiameterchimney.addProperty(hasunit, m);
-		chimney.addProperty(hasInsideDiameter, Diameterchimney);
-		
-		
-		Individual emission = processclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#EmissionReleaseOf"+shipinstance);
-		chimney.addProperty(realizes, emission);
-		Individual WasteStream = wastestreamclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#WasteStreamOf"+shipinstance);
-		emission.addProperty(hasOutput, WasteStream);
-		
-		Individual GenAmountWasteStream = genamountclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#GeneralizedAmount_WasteStreamOf"+shipinstance);
-		WasteStream.addProperty(refertogenamount, GenAmountWasteStream);
-		
-		Individual MaterialAmountWasteStream = matamountclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#MaterialAmount_WasteStreamOf"+shipinstance);
-		GenAmountWasteStream.addProperty(hasSubsystem, MaterialAmountWasteStream);
-		
-		Individual MassFWasteStream = convectivemassclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#MassF_WasteStreamOf"+shipinstance);
-		MaterialAmountWasteStream.addProperty(hasProperty, MassFWasteStream);
-		Individual valueMassFWasteStream = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_MassF_WasteStreamOf"+shipinstance);
-		MassFWasteStream.addProperty(hasvalue,valueMassFWasteStream);
-		valueMassFWasteStream.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
-		valueMassFWasteStream.addProperty(hasunit, kgperh);
-		
-		Individual MaterialWasteStream = materialclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#Material_WasteStreamOf"+shipinstance);
-		MaterialAmountWasteStream.addProperty(referstomaterial, MaterialWasteStream);
-		
-		Individual MixtureAmountWasteStream = mixtureclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#Mixture_WasteStreamOf"+shipinstance);
-		MaterialWasteStream.addProperty(intcharacteristic,MixtureAmountWasteStream);
-		
-		Individual componentflow1WasteStream = convectivemassclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#Unburned_Hydrocarbon_EmissionRate");
-		Individual componentflow2WasteStream = convectivemassclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#Carbon_monoxide_EmissionRate");
-		Individual componentflow3WasteStream = convectivemassclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#Carbon_dioxide_EmissionRate");
-		Individual componentflow4WasteStream = convectivemassclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#Nitrogen_dioxide_EmissionRate");
-		Individual componentflow5WasteStream = convectivemassclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#Nitrogen_oxides_EmissionRate");
-		Individual combinedmwWasteStream = convectivemassclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#Combined_MolecularMass_WasteStream");
-
-		MixtureAmountWasteStream.addProperty(hasProperty, componentflow1WasteStream);
-		MixtureAmountWasteStream.addProperty(hasProperty, componentflow2WasteStream);
-		MixtureAmountWasteStream.addProperty(hasProperty, componentflow3WasteStream);
-		MixtureAmountWasteStream.addProperty(hasProperty, componentflow4WasteStream);
-		MixtureAmountWasteStream.addProperty(hasProperty, componentflow5WasteStream);
-		MixtureAmountWasteStream.addProperty(hasProperty, combinedmwWasteStream);
-		
-		Individual valuecomponentflow1WasteStream = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_Unburned_Hydrocarbon_EmissionRate");
-		Individual valuecomponentflow2WasteStream = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_Carbon_monoxide_EmissionRate");
-		Individual valuecomponentflow3WasteStream = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_Carbon_dioxide_EmissionRate");
-		Individual valuecomponentflow4WasteStream = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_Nitrogen_dioxide_EmissionRate");
-		Individual valuecomponentflow5WasteStream = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_Nitrogen_oxides_EmissionRate");
-		Individual valuecombinedmwWasteStream = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_Combined_MolecularMass_WasteStream");
-		
-		componentflow1WasteStream.addProperty(hasvalue,valuecomponentflow1WasteStream);
-		componentflow2WasteStream.addProperty(hasvalue,valuecomponentflow2WasteStream);
-		componentflow3WasteStream.addProperty(hasvalue,valuecomponentflow3WasteStream);
-		componentflow4WasteStream.addProperty(hasvalue,valuecomponentflow4WasteStream);
-		componentflow5WasteStream.addProperty(hasvalue,valuecomponentflow5WasteStream);
-		combinedmwWasteStream.addProperty(hasvalue,valuecombinedmwWasteStream);
-		
-		valuecomponentflow1WasteStream.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
-		valuecomponentflow1WasteStream.addProperty(hasunit, gpers);
-		valuecomponentflow2WasteStream.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
-		valuecomponentflow2WasteStream.addProperty(hasunit, gpers);
-		valuecomponentflow3WasteStream.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
-		valuecomponentflow3WasteStream.addProperty(hasunit, gpers);
-		valuecomponentflow4WasteStream.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
-		valuecomponentflow4WasteStream.addProperty(hasunit, gpers);
-		valuecomponentflow5WasteStream.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
-		valuecomponentflow5WasteStream.addProperty(hasunit, gpers);
-		valuecombinedmwWasteStream.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
-		valuecombinedmwWasteStream.addProperty(hasunit, g);
-		
-		
-		Individual PhaseWasteStream = phaseclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#SinglePhase_WasteStreamOf"+shipinstance);
-		MaterialWasteStream.addProperty(thermbehavior,PhaseWasteStream);
-		
-		Individual TemperatureWasteStream = temperatureclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#Temperature_WasteStreamOf"+shipinstance);
-		PhaseWasteStream.addProperty(hastemperature,TemperatureWasteStream);
-		Individual valueTemperatureWasteStream = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_Temperature_WasteStreamOf"+shipinstance);
-		TemperatureWasteStream.addProperty(hasvalue,valueTemperatureWasteStream);
-		valueTemperatureWasteStream.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
-		valueTemperatureWasteStream.addProperty(hasunit, C);
-		
-		Individual PressureWasteStream = pressureclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#Pressure_WasteStreamOf"+shipinstance);
-		PhaseWasteStream.addProperty(haspressure,PressureWasteStream);
-		Individual valuePressureWasteStream = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_Pressure_WasteStreamOf"+shipinstance);
-		PressureWasteStream.addProperty(hasvalue,valuePressureWasteStream);
-		valuePressureWasteStream.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
-		valuePressureWasteStream.addProperty(hasunit, bar);
-		
-		
-		Individual CpWasteStream = Cpclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#Cp_WasteStreamOf"+shipinstance);
-		PhaseWasteStream.addProperty(hasProperty,CpWasteStream);
-		Individual valueCpWasteStream = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_Cp_WasteStreamOf"+shipinstance);
-		CpWasteStream.addProperty(hasvalue,valueCpWasteStream);
-		valueCpWasteStream.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
-		valueCpWasteStream.addProperty(hasunit, jperkgk);
 		
 		
 
 		
-		Individual bow = Bowclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#BowLengthOf"+shipinstance);
-		Individual vbow = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_BowLengthOf"+shipinstance);
+		Individual bow = Bowclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#BowLengthOf"+shipinstance);
+		Individual vbow = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#V_BowLengthOf"+shipinstance);
 		bow.addProperty(hasvalue, vbow);
 		vbow.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
 		vbow.addProperty(hasunit, m);
 		ship.addProperty(hasBowLength, bow);
 		
-		Individual port = Portclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#PortLengthOf"+shipinstance);
-		Individual vport = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_PortLengthOf"+shipinstance);
+		Individual port = Portclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#PortLengthOf"+shipinstance);
+		Individual vport = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#V_PortLengthOf"+shipinstance);
 		port.addProperty(hasvalue, vport);
 		vport.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
 		vport.addProperty(hasunit, m);
 		ship.addProperty(hasPortLength, port);
 		
-		Individual Stern = Sternclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#SternLengthOf"+shipinstance);
-		Individual vStern = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_SternLengthOf"+shipinstance);
+		Individual Stern = Sternclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#SternLengthOf"+shipinstance);
+		Individual vStern = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#V_SternLengthOf"+shipinstance);
 		Stern.addProperty(hasvalue, vStern);
 		vStern.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
 		vStern.addProperty(hasunit, m);
 		ship.addProperty(hasSternLength, Stern);
 		
-		Individual Starboard = Starboardclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#StarboardLengthOf"+shipinstance);
-		Individual vStarboard = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_StarboardLengthOf"+shipinstance);
+		Individual Starboard = Starboardclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#StarboardLengthOf"+shipinstance);
+		Individual vStarboard = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#V_StarboardLengthOf"+shipinstance);
 		Starboard.addProperty(hasvalue, vStarboard);
 		vStarboard.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
 		vStarboard.addProperty(hasunit, m);
 		ship.addProperty(hasStarboardLength, Starboard);
 		
-		Individual Draught = Draughtclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#DraughtLengthOf"+shipinstance);
-		Individual vDraught = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_DraughtLengthOf"+shipinstance);
+		Individual Draught = Draughtclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#DraughtLengthOf"+shipinstance);
+		Individual vDraught = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#V_DraughtLengthOf"+shipinstance);
 		Draught.addProperty(hasvalue, vDraught);
 		vDraught.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
 		vDraught.addProperty(hasunit, m);
 		ship.addProperty(hasDraught, Draught);
 		
-		Individual Heading = Headingclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#HeadingOf"+shipinstance);
-		Individual vHeading = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_HeadingOf"+shipinstance);
+		Individual Heading = Headingclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#HeadingOf"+shipinstance);
+		Individual vHeading = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#V_HeadingOf"+shipinstance);
 		Heading.addProperty(hasvalue, vHeading);
 		vHeading.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
 		vHeading.addProperty(hasunit, degree);
 		ship.addProperty(hasHeading, Heading);
 		
-		Individual RateofTurn = RoTclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#RateOfTurnOf"+shipinstance);
-		Individual vRateofTurn = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_RateOfTurnOf"+shipinstance);
+		Individual RateofTurn = RoTclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#RateOfTurnOf"+shipinstance);
+		Individual vRateofTurn = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#V_RateOfTurnOf"+shipinstance);
 		RateofTurn.addProperty(hasvalue, vRateofTurn);
 		vRateofTurn.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
 		ship.addProperty(hasROT, RateofTurn);
 		
-		Individual SOG = SOGclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#SOGOf"+shipinstance);
-		Individual vSOG = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_SOGOf"+shipinstance);
+		Individual SOG = SOGclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#SOGOf"+shipinstance);
+		Individual vSOG = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#V_SOGOf"+shipinstance);
 		SOG.addProperty(hasvalue, vSOG);
 		vSOG.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
 		//vSOG.addProperty(hasunit, knot);
 		ship.addProperty(hasSOG, SOG);
 		
-		Individual COG = COGclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#COGOf"+shipinstance);
-		Individual vCOG = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_COGhOf"+shipinstance);
+		Individual COG = COGclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#COGOf"+shipinstance);
+		Individual vCOG = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#V_COGhOf"+shipinstance);
 		COG.addProperty(hasvalue, vCOG);
 		vCOG.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
 		//vCOG.addProperty(hasunit, degree);
 		ship.addProperty(hasCOG, COG);
 		
-		Individual ShipType = ShipTypeclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#ShipTypeOf"+shipinstance);
-		Individual vShipType = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_ShipTypeOf"+shipinstance);
+		Individual ShipType = ShipTypeclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#ShipTypeOf"+shipinstance);
+		Individual vShipType = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#V_ShipTypeOf"+shipinstance);
 		ShipType.addProperty(hasvalue, vShipType);
 		vShipType.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
 		ship.addProperty(hasShipType, ShipType);
 		
-		Individual NavigationalStatus = NaviStatusclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#NavigationalStatusOf"+shipinstance);
-		Individual vNavigationalStatus = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_NavigationalStatusOf"+shipinstance);
+		Individual NavigationalStatus = NaviStatusclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#NavigationalStatusOf"+shipinstance);
+		Individual vNavigationalStatus = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#V_NavigationalStatusOf"+shipinstance);
 		NavigationalStatus.addProperty(hasvalue, vNavigationalStatus);
 		vNavigationalStatus.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
 		ship.addProperty(hasNavStatus, NavigationalStatus);
 		
-		Individual PositioningDeviceType = Positioningdevclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#PositioningDeviceTypeOf"+shipinstance);
-		Individual vPositioningDeviceType = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_PositioningDeviceTypeOf"+shipinstance);
+		Individual PositioningDeviceType = Positioningdevclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#PositioningDeviceTypeOf"+shipinstance);
+		Individual vPositioningDeviceType = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#V_PositioningDeviceTypeOf"+shipinstance);
 		PositioningDeviceType.addProperty(hasvalue, vPositioningDeviceType);
 		vPositioningDeviceType.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
 		ship.addProperty(hasPosDevType, PositioningDeviceType);
 		
-		Individual Dest = SOGclass.createIndividual("http://www.theworldavatar.com/kb/sgp/Ship-001.owl#SOGOfShip-001"); //still random		
+		Resource Dest = jenaOwlModel.createResource("http://dbpedia.org/resource/Singapore");
 		ship.addProperty(hasDestination, Dest);
 		
-		Individual shiptemporalcoordinate = temporalcoordinatesystemclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#TemporalCoordinateSystemOf"+shipinstance);
-		Individual shipcoordinate = coordinatesystemclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#CoordinateSystemOf"+shipinstance);
-		Individual xcoordinate = coordinateclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#xCoordinateOf"+shipinstance);
-		Individual ycoordinate = coordinateclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#yCoordinateOf"+shipinstance);
-		Individual tcoordinate = tempcoordinateclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#timestampOf"+shipinstance);
-		Individual xcoordinatevalue = coordinatevalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_xCoordinateOf"+shipinstance);
-		Individual ycoordinatevalue = coordinatevalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_yCoordinateOf"+shipinstance);
-		Individual tcoordinatevalue = coordinatevalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_timestampOf"+shipinstance);
+		Individual shiptemporalcoordinate = temporalcoordinatesystemclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#TemporalCoordinateSystemOf"+shipinstance);
+		Individual shipcoordinate = coordinatesystemclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#CoordinateSystemOf"+shipinstance);
+		Individual xcoordinate = coordinateclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#xCoordinateOf"+shipinstance);
+		Individual ycoordinate = coordinateclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#yCoordinateOf"+shipinstance);
+		Individual tcoordinate = tempcoordinateclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#timestampOf"+shipinstance);
+		Individual xcoordinatevalue = coordinatevalueclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#V_xCoordinateOf"+shipinstance);
+		Individual ycoordinatevalue = coordinatevalueclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#V_yCoordinateOf"+shipinstance);
+		Individual tcoordinatevalue = coordinatevalueclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#V_timestampOf"+shipinstance);
 		shipcoordinate.addProperty(hasx,xcoordinate);
 		shipcoordinate.addProperty(hasy,ycoordinate);
 		shiptemporalcoordinate.addProperty(hastemporalcoordinate,tcoordinate);
@@ -442,21 +338,21 @@ public class ShipKbCreator {
 		ship.addProperty(hastimestamp, shiptemporalcoordinate);
 		ship.addProperty(hascoordinatesystem, shipcoordinate);
 		
-		Individual MMSI = MMSIclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#MMSIOf"+shipinstance);
-		Individual vMMSI = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_MMSIOf"+shipinstance);
+		Individual MMSI = MMSIclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#MMSIOf"+shipinstance);
+		Individual vMMSI = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#V_MMSIOf"+shipinstance);
 		MMSI.addProperty(hasvalue, vMMSI);
 		vMMSI.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
 		ship.addProperty(hasMMSI, MMSI);
 		
-		Individual ETA = ETAclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#ETAOf"+shipinstance);
-		Individual vETA = coordinatevalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_ETAOf"+shipinstance);
+		Individual ETA = ETAclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#ETAOf"+shipinstance);
+		Individual vETA = coordinatevalueclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#V_ETAOf"+shipinstance);
 		ETA.addProperty(hasvalue, vETA);
 		vETA.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
 		//vETA.addProperty(hasunit, UTM);
 		ship.addProperty(hasETA, ETA);
 		
-		Individual IMONumber = IMOclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#IMONumberOf"+shipinstance);
-		Individual vIMONumber = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/"+shipinstance+".owl#V_IMONumberOf"+shipinstance);
+		Individual IMONumber = IMOclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#IMONumberOf"+shipinstance);
+		Individual vIMONumber = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/ships/"+shipinstance+".owl#V_IMONumberOf"+shipinstance);
 		IMONumber.addProperty(hasvalue, vIMONumber);
 		vIMONumber.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("0"));
 		ship.addProperty(hasIMONumber, IMONumber);
