@@ -11,6 +11,7 @@ import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetFactory;
@@ -25,7 +26,9 @@ public class ShipQuery {
 		ArrayList<ArrayList<String>> resultList = new ArrayList<ArrayList<String>>();		
 		OntModel jenaOwlModel = null;
 		jenaOwlModel = ModelFactory.createOntologyModel();
-		jenaOwlModel.read("C:\\JPS_DATA\\workingdir\\JPS\\SHIP\\output\\Ship-" + shipNumber + ".owl");
+//		jenaOwlModel.read("C:\\JPS_DATA\\workingdir\\JPS\\SHIP\\output\\Ship-" + shipNumber + ".owl");
+//		jenaOwlModel.read("http://www.theworldavatar.com/kb/ships/Ship-1.owl");
+		jenaOwlModel.read("http://172.25.182.41/kb/ships/Ship-1.owl#Ship-1");
 		
 		ParameterizedSparqlString queryString = new ParameterizedSparqlString(
 				"PREFIX j1: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>\r\n" + 
@@ -42,7 +45,7 @@ public class ShipQuery {
 				"}"
 				);
 		
-		queryString.setIri("shipIRI", "http://www.theworldavatar.com/kb/sgp/Ship-" + shipNumber + ".owl#Ship-" + shipNumber);
+		queryString.setIri("shipIRI", "http://www.theworldavatar.com/kb/ships/Ship-" + shipNumber + ".owl#Ship-" + shipNumber);
 		Query query = queryString.asQuery();
 		QueryExecution queryExec = QueryExecutionFactory.create(query, jenaOwlModel);
 		ResultSet rs = queryExec.execSelect();   
@@ -89,7 +92,7 @@ public class ShipQuery {
 		System.out.println(queryString.toString());
 		
 		QueryExecution queryExec = QueryExecutionFactory.sparqlService(
-				"http://www.theworldavatar.com/damecoolquestion/ships/sparql", 
+				"http://172.25.182.41/damecoolquestion/ships-persistent/sparql", 
 				queryString.asQuery());
 		ResultSet rs = queryExec.execSelect();   
 		//reset the cursor, so that the ResultSet can be repeatedly used
@@ -113,7 +116,7 @@ public class ShipQuery {
 	
 	public static String sparqlQueryPython() throws IOException {
 		String[] arrayOfShipIRIs = { 
-				"http://www.theworldavatar.com/kb/sgp/Ship-1.owl#Ship-1",
+				"http://www.theworldavatar.com/kb/ships/Ship-1.owl#Ship-1",
 			};
 			
 			Gson g = new Gson();
@@ -131,31 +134,74 @@ public class ShipQuery {
 			return returnValue;		
 	}
 	
+	public static void sparqlQueryShipAgent() {
+		ArrayList<ArrayList<String>> resultList = new ArrayList<ArrayList<String>>();		
+		OntModel jenaOwlModel = null;
+		jenaOwlModel = ModelFactory.createOntologyModel();
+		jenaOwlModel.read("http://172.25.182.41/kb/ships/Ship-1.owl#Ship-1");
+		
+		ParameterizedSparqlString queryString = new ParameterizedSparqlString(
+				"PREFIX cp:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> " +
+				"PREFIX j1: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>\r\n" + 
+				"SELECT ?engine\r\n" + 
+				"WHERE {?entity  j1:hasSubsystem ?engine ." + 
+				"MINUS" + 
+				"{?engine a cp:Pipe .}" + 
+				"}");
+		
+		queryString = new ParameterizedSparqlString("PREFIX cp:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> " + 
+				"PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> " + 
+				"SELECT ?chimney\r\n" + 
+				"WHERE " + 
+				"{ ?entity  j1:hasSubsystem ?chimney ." + 
+				"  ?chimney a cp:Pipe ." + 
+				"}");
+		
+		Query query = queryString.asQuery();
+		QueryExecution queryExec = QueryExecutionFactory.create(query, jenaOwlModel);
+		ResultSet rs = queryExec.execSelect();   
+		ResultSetRewindable results = ResultSetFactory.copyResults(rs);
+		
+		while (results.hasNext()) {			
+			QuerySolution qs_p = results.nextSolution();
+			
+			String coordinateX = qs_p.getResource("chimney").toString();
+
+			System.out.println(coordinateX);
+			
+			ArrayList<String> coordinates = new ArrayList<String>(Arrays.asList(coordinateX));
+			resultList.add(coordinates);
+		}
+		queryExec.close();
+		return;
+	}
+	
 	public static void main(String[] args) throws IOException {
 		
 //		System.out.println(Arrays.toString(sparqlQueryRead().toArray()));
 		long startTime = System.currentTimeMillis();
-//		sparqlQueryReadEndpoint("http://www.theworldavatar.com/kb/sgp/Ship-1.owl#Ship-1");
-		sparqlQueryRead("1");		
-//		System.out.println(sparqlQueryPython());		
+//		sparqlQueryReadEndpoint("http://www.theworldavatar.com/kb/ships/Ship-1.owl#Ship-1");
+//		sparqlQueryRead("1");	
+//		System.out.println(sparqlQueryPython());
+		sparqlQueryShipAgent();
 		long endTime = System.currentTimeMillis();
 		System.out.println((endTime-startTime));
 		
 		
 		startTime = System.currentTimeMillis();
-//		sparqlQueryReadEndpoint("http://www.theworldavatar.com/kb/sgp/Ship-2.owl#Ship-2");
-		sparqlQueryRead("2");
+//		sparqlQueryReadEndpoint("http://www.theworldavatar.com/kb/ships/Ship-2.owl#Ship-2");
+//		sparqlQueryRead("2");
 //		sparqlQueryPython();
 		endTime = System.currentTimeMillis();
-		System.out.println((endTime-startTime));
+//		System.out.println((endTime-startTime));
 
 		
 		startTime = System.currentTimeMillis();
-//		sparqlQueryReadEndpoint("http://www.theworldavatar.com/kb/sgp/Ship-3.owl#Ship-3");
-		sparqlQueryRead("3");
+//		sparqlQueryReadEndpoint("http://www.theworldavatar.com/kb/ships/Ship-3.owl#Ship-3");
+//		sparqlQueryRead("3");
 //		sparqlQueryPython();
 		endTime = System.currentTimeMillis();
-		System.out.println((endTime-startTime));
+//		System.out.println((endTime-startTime));
 
 		return;
 	}

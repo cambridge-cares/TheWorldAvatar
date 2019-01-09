@@ -171,83 +171,76 @@ public class ShipAgent extends HttpServlet {
 		
 //		response.getWriter().write("RESULT");		
 
-//		//try to query the owl file to get the waste stream inside it 
-//		String engineInfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> " 
-//				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-//				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-//				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-//				+ "SELECT ?engine "
-//				+ "WHERE {?entity  a  cp:Plant  ." 
-//				+ "?entity   j2:hasSubsystem ?engine ."
-//				+ "MINUS { ?engine a cp:Pipe .}"
-//				+ "}";
-//		
-//		String wastestreamInfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> " 
-//				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-//				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-//				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-//				+ "SELECT ?wastestream ?engine"
-//				+ "WHERE {?entity  a  cp:Plant  ." 
-//				+ "?entity   j2:hasSubsystem ?chimney ."
-//				+ "?chimney  j3:realizes  ?releaseprocess  ."
-//				+ "?releaseprocess   j4:hasOutput ?wastestream ."
-//				+ "}";
-//				
-//		jenaOwlModel = ModelFactory.createOntologyModel();	
-//		jenaOwlModel.read(iri2, null);
-//			
-//		ResultSet rs_plant = ShipAgent.query(wastestreamInfo,jenaOwlModel); 
-//		
-//		ResultSet rs_plant2 = ShipAgent.query(engineInfo,jenaOwlModel); 
-//		
-//		for (; rs_plant.hasNext();) {			
-//			QuerySolution qs_p = rs_plant.nextSolution();
-//
-//			Resource cpiri = qs_p.getResource("wastestream");
-//			String valueiri = cpiri.toString();
-//			System.out.println("cpirilistwastestream = " + valueiri);
-//			logger.info("query result1 = " + valueiri);
-//
-//			cpirilist.add(valueiri);
-//		}
-//		
-//		for (; rs_plant2.hasNext();) {			
-//			QuerySolution qs_p = rs_plant2.nextSolution();
-//
-//			Resource engineiri = qs_p.getResource("engine");
-//			String valueengineiri = engineiri.toString();
-//			logger.info("query result2= "+valueengineiri);
-//			cpirilist2.add(valueengineiri);
-//		}
-//
-//		
-//		JSONObject jo=null;
-//		
-//		try {
-//			jo = new JSONObject().put("waste", cpirilist.get(0));
-//		} catch (JSONException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//			
-//		
-//		logger.info("message to sent = " + jo.toString());
-//		response.getWriter().write(jo.toString());
-//		
-//		
-//	    //send the info to SRM Engine Agent
-//
-//		
-//		JSONObject dataSet = new JSONObject();
-//		try {
-//			dataSet.put("reactionmechanism",  iri) ;
-//			dataSet.put("engine",  cpirilist2.get(0)) ;
-//		}
-//		catch (JSONException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		
+		//try to query the owl file to get the waste stream inside it 
+		String engineInfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> " + 
+				"PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> " +  
+				"SELECT ?engine\r\n" + 
+				"WHERE {?entity  j1:hasSubsystem ?engine ." + 
+				"MINUS" + 
+				"{?engine a cp:Pipe .}" + 
+				"}"; 
+						
+		String chimneyInfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> " + 
+				"PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> " + 
+				"SELECT ?chimney\r\n" + 
+				"WHERE " + 
+				"{ ?entity  j1:hasSubsystem ?chimney ." + 
+				"  ?chimney a cp:Pipe ." + 
+				"}";
+				
+		jenaOwlModel = ModelFactory.createOntologyModel();	
+		jenaOwlModel.read(iri2);
+			
+		ResultSet rs_plant = ShipAgent.query(chimneyInfo,jenaOwlModel); 
+		
+		ResultSet rs_plant2 = ShipAgent.query(engineInfo,jenaOwlModel); 
+		
+		for (; rs_plant.hasNext();) {			
+			QuerySolution qs_p = rs_plant.nextSolution();
+
+			Resource cpiri = qs_p.getResource("chimney");
+			String valueiri = cpiri.toString();
+			System.out.println("cpirilistchimney = " + valueiri);
+			logger.info("query result1 = " + valueiri);
+
+			cpirilist.add(valueiri);
+		}
+		
+		for (; rs_plant2.hasNext();) {			
+			QuerySolution qs_p = rs_plant2.nextSolution();
+
+			Resource engineiri = qs_p.getResource("engine");
+			String valueengineiri = engineiri.toString();
+			logger.info("query result2= "+valueengineiri);
+			cpirilist2.add(valueengineiri);
+		}
+
+		
+		JSONObject jo=null;
+		
+		try {
+			jo = new JSONObject().put("waste", cpirilist.get(0)); // chimney
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+			
+		
+		logger.info("message to sent = " + jo.toString());
+		response.getWriter().write(jo.toString());
+		
+		
+	    //send the info to SRM Engine Agent
+
+		
+		JSONObject dataSet = new JSONObject();
+		try {
+			dataSet.put("reactionmechanism",  iri) ;
+			dataSet.put("engine",  cpirilist2.get(0)) ;
+		}
+		catch (JSONException e) {
+				e.printStackTrace();
+		}
+		
 //		String resultjson = AgentCaller.executeGet("JPS/SRMAgent", "query", dataSet.toString());
 //	    
 //	    String jsonsrmresult = null;
@@ -255,7 +248,6 @@ public class ShipAgent extends HttpServlet {
 //		try {
 //			jsonsrmresult = new JSONObject(resultjson).getString("file");
 //		} catch (JSONException e) {
-//			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
 //		
@@ -263,7 +255,6 @@ public class ShipAgent extends HttpServlet {
 //		try {
 //			startConversion(iri2,jsonsrmresult);
 //		} catch (Exception e) {
-//			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		} //convert to update value
 //

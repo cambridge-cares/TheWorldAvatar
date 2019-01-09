@@ -210,7 +210,6 @@ public class PowerPlantAgent extends HttpServlet {
 				String valueiri = cpiri.toString();
 				System.out.println("cpirilistwastestream= "+valueiri);
 				logger.info("query result1= "+valueiri);
-
 				cpirilist.add(valueiri); // wastestream iri
 			}
 			
@@ -247,7 +246,6 @@ public class PowerPlantAgent extends HttpServlet {
 				dataSet.put("engine",  cpirilist2.get(0)) ;
 			}
 			catch (JSONException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			
@@ -258,7 +256,6 @@ public class PowerPlantAgent extends HttpServlet {
 				try {
 					jsonsrmresult = new JSONObject(resultjson).getString("file");
 				} catch (JSONException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
@@ -266,7 +263,6 @@ public class PowerPlantAgent extends HttpServlet {
 				try {
 					startConversion(iri2,jsonsrmresult);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} //convert to update value
 

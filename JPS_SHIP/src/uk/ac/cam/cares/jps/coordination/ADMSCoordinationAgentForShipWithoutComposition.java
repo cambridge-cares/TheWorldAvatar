@@ -53,7 +53,7 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet 
 				jsonReactionShip.put("ship", shipIRI);
 				
 				String wasteResult = AgentCaller.executeGet("/JPS_SHIP/ShipAgent", "query", jsonReactionShip.toString());
-//				String waste = new JSONObject(wasteResult).getString("waste");
+				String waste = new JSONObject(wasteResult).getString("waste");
 //				jo.put("waste", waste);
 			}
 			// TODO: 
