@@ -20,14 +20,15 @@ public class ShipQuery {
 		ArrayList<ArrayList<String>> resultList = new ArrayList<ArrayList<String>>();		
 		OntModel jenaOwlModel = null;
 		jenaOwlModel = ModelFactory.createOntologyModel();
-		jenaOwlModel.read("C:\\JPS_DATA\\workingdir\\JPS\\SHIP\\output\\Ship-1.owl");
+		//jenaOwlModel.read("C:\\JPS_DATA\\workingdir\\JPS\\SHIP\\output\\Ship-1.owl");
+		jenaOwlModel.read("http://www.theworldavatar.com/kb/ships/Ship-1.owl#Ship-1");
 		
 		String sparqlQuery = "PREFIX j1: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>\r\n" + 
 				"        PREFIX j4: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>\r\n" + 
 				"\r\n" + 
 				"        SELECT ?coordinateX_value ?coordinateY_value\r\n" + 
 				"        WHERE { \r\n" + 
-				"          " + "<http://www.theworldavatar.com/kb/sgp/Ship-1.owl#Ship-1>"  + " j4:hasGISCoordinateSystem ?coordinateSystem .\r\n" + 
+				"          " + "<http://www.theworldavatar.com/kb/ships/Ship-1.owl#Ship-1>"  + " j4:hasGISCoordinateSystem ?coordinateSystem .\r\n" + 
 				"                ?coordinateSystem j4:hasProjectedCoordinate_x ?coordinateX .\r\n" + 
 				"                    ?coordinateX j1:hasValue ?coordinateX_V .\r\n" + 
 				"                        ?coordinateX_V j1:numericalValue ?coordinateX_value .\r\n" + 
