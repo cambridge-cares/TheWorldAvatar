@@ -90,8 +90,11 @@ public class ShipAgent extends HttpServlet {
 		
 		int valueoftotalpollutant = jsonObject.getJSONArray("pollutants").length();
 		
+		
+		System.out.println("value= "+massfluxvalue);
 		Individual valueofmassflowrate = jenaOwlModel.getIndividual(iri.split("#")[0] +"#V_massF_WasteStream-001");
 		valueofmassflowrate.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(massfluxvalue));
+
 		
 		Individual valueofdensityrate = jenaOwlModel.getIndividual(iri.split("#")[0] +"#V_Density_MaterialInWasteStream-001");
 		valueofdensityrate.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(densityvalue));
@@ -109,6 +112,7 @@ public class ShipAgent extends HttpServlet {
 			String parametername = jsonObject.getJSONArray("pollutants").getJSONObject(b).getString("name");
 			Double parametervalue = jsonObject.getJSONArray("pollutants").getJSONObject(b).getDouble("value")*1000; //(multiplied by 100 temporarily to make it visible)
 
+			System.out.println("iri needed= "+iri.split("#")[0] + "#V_" + hmap.get(parametername) + "_EmissionRate");
 			Individual valueofspeciesemissionrate = jenaOwlModel.getIndividual(iri.split("#")[0] + "#V_" + hmap.get(parametername) + "_EmissionRate");
 			valueofspeciesemissionrate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(parametervalue));
 		}
@@ -124,6 +128,9 @@ public class ShipAgent extends HttpServlet {
 	
 	public void startConversion(String iriOfPlant,String jsonresultstring) throws Exception {
 				
+		jenaOwlModel = ModelFactory.createOntologyModel();	
+		jenaOwlModel.read(iriOfPlant);
+		
 		initOWLClasses(jenaOwlModel);
 
 		doConversion(jenaOwlModel,iriOfPlant,jsonresultstring);
@@ -153,7 +160,7 @@ public class ShipAgent extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	    logger.info("plant agent is called");
+	    logger.info("ship agent is called");
 	    
 		JSONObject joforrec = AgentCaller.readJsonParameter(request);
 		System.out.println("json accepted= "+joforrec.toString());
@@ -241,25 +248,25 @@ public class ShipAgent extends HttpServlet {
 				e.printStackTrace();
 		}
 		
-//		String resultjson = AgentCaller.executeGet("JPS/SRMAgent", "query", dataSet.toString());
-//	    
-//	    String jsonsrmresult = null;
-//
-//		try {
-//			jsonsrmresult = new JSONObject(resultjson).getString("file");
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//		}
-//		
-//		//update the emission and other information into the plant owl file
-//		try {
-//			startConversion(iri2,jsonsrmresult);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		} //convert to update value
-//
-//	    
-//	    cpirilist.clear();
-//	    cpirilist2.clear();	
+		String resultjson = AgentCaller.executeGet("JPS/SRMAgent", "query", dataSet.toString());
+	    
+	    String jsonsrmresult = null;
+
+		try {
+			jsonsrmresult = new JSONObject(resultjson).getString("file");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		//update the emission and other information into the plant owl file
+		try {
+			startConversion(cpirilist.get(0),jsonsrmresult);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} //convert to update value
+
+	    
+	    cpirilist.clear();
+	    cpirilist2.clear();	
 	}
 }
