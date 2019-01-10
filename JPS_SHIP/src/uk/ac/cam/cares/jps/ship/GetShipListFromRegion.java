@@ -24,7 +24,6 @@ public class GetShipListFromRegion extends HttpServlet {
      */
     public GetShipListFromRegion() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
@@ -34,15 +33,15 @@ public class GetShipListFromRegion extends HttpServlet {
 		response.setContentType("application/json");
 		String[] arrayOfShipIRIs = { 
 				"http://www.theworldavatar.com/kb/ships/Ship-1.owl#Ship-1",
-		        "http://www.theworldavatar.com/kb/ships/Ship-2.owl#Ship-2",
-		        "http://www.theworldavatar.com/kb/ships/Ship-3.owl#Ship-3",
-		        "http://www.theworldavatar.com/kb/ships/Ship-4.owl#Ship-4",
-		        "http://www.theworldavatar.com/kb/ships/Ship-5.owl#Ship-5",
-		        "http://www.theworldavatar.com/kb/ships/Ship-6.owl#Ship-6",
-		        "http://www.theworldavatar.com/kb/ships/Ship-7.owl#Ship-7",
-		        "http://www.theworldavatar.com/kb/ships/Ship-8.owl#Ship-8",
-		        "http://www.theworldavatar.com/kb/ships/Ship-9.owl#Ship-9",
-		        "http://www.theworldavatar.com/kb/ships/Ship-10.owl#Ship-10"
+//		        "http://www.theworldavatar.com/kb/ships/Ship-2.owl#Ship-2",
+//		        "http://www.theworldavatar.com/kb/ships/Ship-3.owl#Ship-3",
+//		        "http://www.theworldavatar.com/kb/ships/Ship-4.owl#Ship-4",
+//		        "http://www.theworldavatar.com/kb/ships/Ship-5.owl#Ship-5",
+//		        "http://www.theworldavatar.com/kb/ships/Ship-6.owl#Ship-6",
+//		        "http://www.theworldavatar.com/kb/ships/Ship-7.owl#Ship-7",
+//		        "http://www.theworldavatar.com/kb/ships/Ship-8.owl#Ship-8",
+//		        "http://www.theworldavatar.com/kb/ships/Ship-9.owl#Ship-9",
+//		        "http://www.theworldavatar.com/kb/ships/Ship-10.owl#Ship-10"
 		};
 		
 //		String[] arrayOfShipIRIs1 = { 

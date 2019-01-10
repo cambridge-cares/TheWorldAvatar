@@ -24,8 +24,8 @@ public class ShipQueryAgent extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 
 		String[] arrayOfShipIRIs = { 
-			"http://www.theworldavatar.com/kb/ships/Ship-1.owl#Ship-1"
-	        ,"http://www.theworldavatar.com/kb/ships/Ship-2.owl#Ship-2",
+			"http://www.theworldavatar.com/kb/ships/Ship-1.owl#Ship-1",
+	        "http://www.theworldavatar.com/kb/ships/Ship-2.owl#Ship-2",
 	        "http://www.theworldavatar.com/kb/ships/Ship-3.owl#Ship-3",
 	        "http://www.theworldavatar.com/kb/ships/Ship-4.owl#Ship-4",
 	        "http://www.theworldavatar.com/kb/ships/Ship-5.owl#Ship-5",

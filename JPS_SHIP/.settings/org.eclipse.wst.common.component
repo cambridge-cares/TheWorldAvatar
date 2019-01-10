@@ -4,7 +4,6 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
         <wb-resource deploy-path="/python" source-path="/python"/>
         <wb-resource deploy-path="/workingdir" source-path="/workingdir"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/test"/>
         <dependent-module archiveName="jps_base.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/JPS_BASE/workingdir/jps_base.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>

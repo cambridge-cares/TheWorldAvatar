@@ -59,19 +59,19 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) =>
     osmb.setZoom(15.7);
 	osmb.setTilt(45.0);
 
-    $.getJSON('/JPS/ADMSPowerPlantGetter',
-    	{
-    		location
-    	},
-    	data => {
-    		const geojson = data;
-    		try {
-    			// console.log(JSON.stringify(geojson, null, 4));
-    			listGeoJsonAddedToOSMB.push(osmb.addGeoJSON(geojson)); // edit
-    		} catch (err) {
-    			console.log(err.name);
-    		}
-    	});
+//    $.getJSON('/JPS/ADMSPowerPlantGetter',
+//    	{
+//    		location
+//    	},
+//    	data => {
+//    		const geojson = data;
+//    		try {
+//    			// console.log(JSON.stringify(geojson, null, 4));
+//    			listGeoJsonAddedToOSMB.push(osmb.addGeoJSON(geojson)); // edit
+//    		} catch (err) {
+//    			console.log(err.name);
+//    		}
+//    	});
 
     // --- Rendering 3D building models --- //
     console.log("START")
