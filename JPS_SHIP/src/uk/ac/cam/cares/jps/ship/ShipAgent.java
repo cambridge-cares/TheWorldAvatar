@@ -241,25 +241,25 @@ public class ShipAgent extends HttpServlet {
 				e.printStackTrace();
 		}
 		
-//		String resultjson = AgentCaller.executeGet("JPS/SRMAgent", "query", dataSet.toString());
-//	    
-//	    String jsonsrmresult = null;
-//
-//		try {
-//			jsonsrmresult = new JSONObject(resultjson).getString("file");
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//		}
-//		
-//		//update the emission and other information into the plant owl file
-//		try {
-//			startConversion(iri2,jsonsrmresult);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		} //convert to update value
-//
-//	    
-//	    cpirilist.clear();
-//	    cpirilist2.clear();	
+		String resultjson = AgentCaller.executeGet("JPS/SRMAgent", "query", dataSet.toString());
+	    
+	    String jsonsrmresult = null;
+
+		try {
+			jsonsrmresult = new JSONObject(resultjson).getString("file");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		//update the emission and other information into the plant owl file
+		try {
+			startConversion(cpirilist.get(0),jsonsrmresult);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} //convert to update value
+
+	    
+	    cpirilist.clear();
+	    cpirilist2.clear();	
 	}
 }
