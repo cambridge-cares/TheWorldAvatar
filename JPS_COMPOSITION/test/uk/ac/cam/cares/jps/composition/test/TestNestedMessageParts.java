@@ -50,7 +50,8 @@ public class TestNestedMessageParts {
 	
 	public static String readTheServicePool(String filename) throws Exception {
 
- 		String directory = "C:\\Users\\nasac\\Documents\\GIT\\JPS_COMPOSITION\\testres\\serviceowlfiles";
+ 		//String directory = "C:\\Users\\nasac\\Documents\\GIT\\JPS_COMPOSITION\\testres\\serviceowlfiles";
+		String directory = "D:\\JPS\\JParkSimulator-git\\JPS_COMPOSITION\\testres\\serviceowlfiles";
  		String wholeContent = "";
 
 		try (BufferedReader br = new BufferedReader(new FileReader(directory + "\\" + filename))) {
