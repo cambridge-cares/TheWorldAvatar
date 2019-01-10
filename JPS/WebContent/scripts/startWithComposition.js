@@ -188,17 +188,17 @@ $(function(){
         	
         	var result = "hello";
         		
-        	if (document.getElementById("compose").checked) {
-        		result =  $.getJSON('/JPS_COMPOSITION/execute',
-        				{
-	        				query
-        				});
-        	} else {
+//        	if (document.getElementById("compose").checked) {
+//        		result =  $.getJSON('/JPS_COMPOSITION/execute',
+//        				{
+//	        				query
+//        				});
+//        	} else {
         		result =  $.getJSON('/JPS/ADMSCoordinationAgentWithoutComposition',
         				{
 	        				query
         				});
-        	}        	
+//        	}        	
   	
         	return result;
         };
