@@ -42,7 +42,7 @@ public class ShipQuery {
 				"}"
 				);
 		
-		queryString.setIri("shipIRI", "http://www.theworldavatar.com/kb/sgp/Ship-" + shipNumber + ".owl#Ship-" + shipNumber);
+		queryString.setIri("shipIRI", "http://www.theworldavatar.com/kb/ships/Ship-" + shipNumber + ".owl#Ship-" + shipNumber);
 		Query query = queryString.asQuery();
 		QueryExecution queryExec = QueryExecutionFactory.create(query, jenaOwlModel);
 		ResultSet rs = queryExec.execSelect();   
@@ -113,7 +113,7 @@ public class ShipQuery {
 	
 	public static String sparqlQueryPython() throws IOException {
 		String[] arrayOfShipIRIs = { 
-				"http://www.theworldavatar.com/kb/sgp/Ship-1.owl#Ship-1",
+				"http://www.theworldavatar.com/kb/ships/Ship-1.owl#Ship-1",
 			};
 			
 			Gson g = new Gson();
