@@ -38,9 +38,12 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.exception.PythonException;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 /**
- * Servlet implementation class WorldPowerPlant
+ * Servlet implementation class WorldPowerPlant (= loop agent)
  */
 @WebServlet("/WorldPowerPlant")
+
+//TODO TOMORROW : try to finish the changing of the number of agents involved!!!!
+
 public class WorldPowerPlant extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final String EXCHANGE_NAME = "jps.agents";
@@ -84,7 +87,9 @@ public class WorldPowerPlant extends HttpServlet {
 
 			agentIRI = "http://www.theworldavatar.com/kb/agents/Service__FactorModel.owl#Service";
 
-		} else {
+		} 
+		
+		else {
 			URIBuilder builder = new URIBuilder().setScheme("http").setHost("localhost:8000")
 					.setPath("/run-surrogate-model").setParameter("powerplantIRI", powerplantIRI);
 			// .setParameter("workingdir", WORKINGDIR_ADMS_PATH)
@@ -122,6 +127,7 @@ public class WorldPowerPlant extends HttpServlet {
     	int remainder = numPowerplants % numSegments;
     	int[] segmentInitialValue = new int[numSegments];
     	Arrays.fill(segmentInitialValue, 0);
+    	// all elements have initial value of 0
     	
     	int additional = 0;
 		int previousSegment = 0;
@@ -139,39 +145,71 @@ public class WorldPowerPlant extends HttpServlet {
 		
 		int maxLoop = (remainder > 0) ? sizeSegment + 1 : sizeSegment;
 		
+		//meaning : if remainder>0, then maxloop = sizeSegment+1 ; else maxloop=sizeSegment
+		
 		for (int i = 0; i < maxLoop; i++) {
+			for (int a=1;a<numSegments;a++)	{
+				if (segmentInitialValue[a-1] + i < segmentInitialValue[a]) {
+					System.out.println(String.format("idx: %d", segmentInitialValue[a-1] + i));
+					//System.out.println("use scenario " + a);
+					// System.out.println(arrayPowerplantIRI[i]);
+					publishMessage(arrayPowerplantIRI[segmentInitialValue[a-1]+i], String.valueOf(a), channel, chosenModel);
+				}
+			}
+
+				if (segmentInitialValue[numSegments-1] + i < numPowerplants) {
+					System.out.println(String.format("idx: %d", segmentInitialValue[numSegments-1] + i));
+					//System.out.println("use scenario "+numSegments);
+					// System.out.println(arrayPowerplantIRI[segmentInitialValue[4]+i]);
+					publishMessage(arrayPowerplantIRI[segmentInitialValue[numSegments-1] + i], String.valueOf(numSegments), channel, chosenModel);
+				}
+			
+			
+		}
+		
+/*		for (int i = 0; i < maxLoop; i++) {
 			
 			if (i < segmentInitialValue[1]) {
 				System.out.println("idx: " + i);
+				System.out.println("use scenario 1 ");
 //				System.out.println(arrayPowerplantIRI[i]);
 				publishMessage(arrayPowerplantIRI[i], SCENARIO_ID_1, channel, chosenModel);
 			}
 			
 			if (segmentInitialValue[1]+i < segmentInitialValue[2]) {
 				System.out.println(String.format("idx: %d", segmentInitialValue[1]+i));
+				System.out.println("use scenario 2");
 //				System.out.println(arrayPowerplantIRI[segmentInitialValue[1]+i]);
 				publishMessage(arrayPowerplantIRI[segmentInitialValue[1]+i], SCENARIO_ID_2, channel, chosenModel);
 			}
 			
 			if (segmentInitialValue[2]+i < segmentInitialValue[3]) {
 				System.out.println(String.format("idx: %d", segmentInitialValue[2]+i));
+				System.out.println("use scenario 3 ");
 //				System.out.println(arrayPowerplantIRI[segmentInitialValue[2]+i]);
 				publishMessage(arrayPowerplantIRI[segmentInitialValue[2]+i], SCENARIO_ID_3, channel, chosenModel);
 			}
 			
 			if (segmentInitialValue[3]+i < segmentInitialValue[4]) {
 				System.out.println(String.format("idx: %d", segmentInitialValue[3]+i));
+				System.out.println("use scenario 4 ");
 //				System.out.println(arrayPowerplantIRI[segmentInitialValue[3]+i]);
 				publishMessage(arrayPowerplantIRI[segmentInitialValue[3]+i], SCENARIO_ID_4, channel, chosenModel);
 			}
 			
 			if (segmentInitialValue[4]+i < numPowerplants) {
 				System.out.println(String.format("idx: %d", segmentInitialValue[4]+i));
+				System.out.println("use scenario 5 ");
 //				System.out.println(arrayPowerplantIRI[segmentInitialValue[4]+i]);
 				publishMessage(arrayPowerplantIRI[segmentInitialValue[4]+i], SCENARIO_ID_5, channel, chosenModel);
 			}
 			
-		}
+		}*/
+		
+		
+		
+
+		
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -180,6 +218,15 @@ public class WorldPowerPlant extends HttpServlet {
 		
 		String chosenModel = request.getParameter("model");
 		System.out.println(chosenModel);
+		
+		String agentnumber = request.getParameter("agent");
+		System.out.println(agentnumber);
+		
+		String nodenumber = request.getParameter("node");
+		System.out.println(nodenumber);
+		int numpowerplants=0;
+
+			
 		
 		ConnectionFactory factory = new ConnectionFactory();
 		factory.setHost("www.theworldavatar.com");
@@ -200,9 +247,17 @@ public class WorldPowerPlant extends HttpServlet {
 			
 			Gson g = new Gson();
 			String[] arrayOfPowerplantIRI = g.fromJson(stringArrayOfPowerplantIRI, String[].class);
+		
+			if (nodenumber.contentEquals("all"))
+			{
+		numpowerplants=arrayOfPowerplantIRI.length;
+			}
+			else
+			{
+				numpowerplants=Integer.parseInt(nodenumber);
+			}
 			
-			
-			publishMessages(arrayOfPowerplantIRI, arrayOfPowerplantIRI.length, 5, channel, chosenModel);
+			publishMessages(arrayOfPowerplantIRI, numpowerplants, Integer.parseInt(agentnumber), channel, chosenModel);
 			//publishMessages(arrayOfPowerplantIRI, arrayOfPowerplantIRI.length, 5, null, chosenModel);
 			//publishMessages(arrayOfPowerplantIRI, 10, 5, channel, chosenModel);
 			

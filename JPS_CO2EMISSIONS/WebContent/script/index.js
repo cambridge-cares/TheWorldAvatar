@@ -30,13 +30,18 @@ $( document ).ready(() => {
     $('#start').on('click', event => {
         event.preventDefault();
         const model = $('select#model option:selected').val();
+        const agent = parseInt($('#agent').val());
+        const node = $('#node').val();
+        
         console.log(model);
+        console.log(agent);
+        console.log(node);
 
         $.ajax({
             method: 'GET',
             dataType: 'json', // dataType of response body
             data: {
-                model
+                model,agent,node
             },
             url: '/JPS_CO2EMISSIONS/WorldPowerPlant',
             success: [
