@@ -178,7 +178,7 @@ $(function(){
 					uppery
 				}
 			},
-        	//plant,
+        	plant,
         	reactionmechanism
         }
         
