@@ -27,6 +27,18 @@ import org.slf4j.LoggerFactory;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
+/**
+ * 
+ * @author kevin
+ *
+ *TO update the dataset used in this powerplant emission project, update the dataset in:
+ * factor model.java
+ * QueryPowerPlants.java
+ * sparql_wrapper.py
+ * test_fuseki.py (in claudius that is related to flask server and docker)
+ * 
+ * 
+ */
 
 @WebServlet("/FactorModel")
 public class FactorModel extends HttpServlet {
