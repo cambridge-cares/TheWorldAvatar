@@ -56,15 +56,23 @@ public class ADMSAgent extends HttpServlet {
 			JSONObject input = new JSONObject(value);
 			input = new JSONObject(value);
 			JSONObject region = input.getJSONObject("region");
-		 	String plantIRI = input.getString("plant");
-		 	String cityIRI = input.getString("city");
+			String cityIRI = input.getString("city");
+			
+			String plantIRI = null;
+			if (!cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Singapore")) {
+				plantIRI = input.getString("plant"); //
+			}
+			
 			JSONObject weather = input.getJSONObject("weatherstate");
 			
 			//================== request agent GetBuildingDataForSimulation ===============
 			// It was previously an independent agent, currently it is merged with ADMSAgent
 			JSONObject bundle = new JSONObject();
 			bundle.put("city", cityIRI);
-			bundle.put("plant", plantIRI);
+			
+			if (!cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Singapore")) {
+				bundle.put("plant", plantIRI); // Why is this here? Does GetBuildingDataFromSimulation use it
+			}
 			bundle.put("region", region);
 
 			URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
@@ -76,67 +84,66 @@ public class ADMSAgent extends HttpServlet {
 			System.out.println("=============================================================");
 			
 			//==============================================================================
-			
-			
-			double[] plantXY = getPlantXY(plantIRI);
-			
+						
 			//String srsname = region.getString("srsname");
 			double upperx = Double.parseDouble(region.getJSONObject("uppercorner").getString("upperx"));
 			double uppery = Double.parseDouble(region.getJSONObject("uppercorner").getString("uppery"));
 			double lowerx = Double.parseDouble(region.getJSONObject("lowercorner").getString("lowerx"));
 			double lowery = Double.parseDouble(region.getJSONObject("lowercorner").getString("lowery"));
 			
+			double[] sourceXY = null;
+			if (!cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Singapore")) {
+				sourceXY = getPlantXY(plantIRI); //
+			} else if (cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Singapore")) {
+				sourceXY = new double[] {(lowerx + upperx)/2, (lowery + uppery)/2};
+			}
 			
-			String newBuildingData = retrieveBuildingDataInJSON(cityIRI, plantXY[0], plantXY[1], lowerx, lowery, upperx, uppery);
+			String newBuildingData = retrieveBuildingDataInJSON(cityIRI, sourceXY[0], sourceXY[1], lowerx, lowery, upperx, uppery);
 			newBuildingData = newBuildingData.replace('\"', '\'');
 			
 			String srsname = region.getString("srsname");
 			
- 
-			
-			
 			 
-				String targetCRSName = CRSTransformer.EPSG_25833;
-				if (cityIRI.equalsIgnoreCase(BuildingQueryPerformer.BERLIN_IRI)) {
-					targetCRSName =  CRSTransformer.EPSG_28992;
-				} else if (cityIRI.equalsIgnoreCase(BuildingQueryPerformer.THE_HAGUE_IRI)) {
-					targetCRSName = CRSTransformer.EPSG_28992;
-				} 
+			String targetCRSName = CRSTransformer.EPSG_25833;
+			if (cityIRI.equalsIgnoreCase(BuildingQueryPerformer.BERLIN_IRI)) {
+				targetCRSName =  CRSTransformer.EPSG_28992;
+			} else if (cityIRI.equalsIgnoreCase(BuildingQueryPerformer.THE_HAGUE_IRI)) {
+				targetCRSName = CRSTransformer.EPSG_28992;
+			} // ???
 
-				String sourceCRSName = CRSTransformer.EPSG_4326;
+			String sourceCRSName = CRSTransformer.EPSG_4326;
 
-				System.out.println("============= src name ==============");
-				System.out.println(srsname);
-				if(srsname.equalsIgnoreCase("EPSG:28992")) {
-					sourceCRSName = CRSTransformer.EPSG_28992;
-					writeAPLFile(newBuildingData,plantIRI, region);
-				}
-				else {
-					double[] p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {lowerx, lowery});
-					String lx = String.valueOf(p[0]);
-					String ly = String.valueOf(p[1]);
-					p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {upperx, uppery});
-					String ux = String.valueOf(p[0]);
-					String uy = String.valueOf(p[1]);
-				 
-					String regionTemplate = "{\r\n" + 
-							"	\"uppercorner\":\r\n" + 
-							"    	{\r\n" + 
-							"        	\"upperx\" : \"%s\",\r\n" + 
-							"            \"uppery\" : \"%s\"      	\r\n" + 
-							"        },\r\n" + 
-							"          \r\n" + 
-							"     \"lowercorner\":\r\n" + 
-							"     {\r\n" + 
-							"       \"lowerx\" : \"%s\",\r\n" + 
-							"       \"lowery\" : \"%s\"\r\n" + 
-							"     }\r\n" + 
-							"}";
-					
+			System.out.println("============= src name ==============");
+			System.out.println(srsname);
+			if (srsname.equalsIgnoreCase("EPSG:28992")) {
+				sourceCRSName = CRSTransformer.EPSG_28992;
+//				writeAPLFile(newBuildingData, plantIRI, region);
+			} else {
+				double[] p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {lowerx, lowery});
+				String lx = String.valueOf(p[0]);
+				String ly = String.valueOf(p[1]);
+				p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {upperx, uppery});
+				String ux = String.valueOf(p[0]);
+				String uy = String.valueOf(p[1]);
+			 
+				String regionTemplate = "{\r\n" + 
+						"	\"uppercorner\":\r\n" + 
+						"    	{\r\n" + 
+						"        	\"upperx\" : \"%s\",\r\n" + 
+						"            \"uppery\" : \"%s\"      	\r\n" + 
+						"        },\r\n" + 
+						"          \r\n" + 
+						"     \"lowercorner\":\r\n" + 
+						"     {\r\n" + 
+						"       \"lowerx\" : \"%s\",\r\n" + 
+						"       \"lowery\" : \"%s\"\r\n" + 
+						"     }\r\n" + 
+						"}";
+				
 
-					JSONObject newRegion  = new JSONObject(String.format(regionTemplate, ux,uy,lx,ly));
-					writeAPLFile(newBuildingData,plantIRI, newRegion);
-				}
+				JSONObject newRegion  = new JSONObject(String.format(regionTemplate, ux,uy,lx,ly));
+//				writeAPLFile(newBuildingData,plantIRI, newRegion);
+			}
 
  
 				
@@ -149,16 +156,16 @@ public class ADMSAgent extends HttpServlet {
 			
 			// =================== Start ADMS when input files are written =======================
 			
-			String targetFolder = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
-			if(request.getServerName().contains("localhost")) {
-				//uncomment if tested in kevin's computer
-				startADMS(targetFolder);
-			} else {
-				startADMS(targetFolder);
-			}
-			JSONObject result = new JSONObject();
-			result.put("folder", targetFolder);
-			response.getWriter().write(result.toString()); // TODO: ZXC Read the output file and then return JSON
+//			String targetFolder = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
+//			if(request.getServerName().contains("localhost")) {
+//				//uncomment if tested in kevin's computer
+//				startADMS(targetFolder);
+//			} else {
+//				startADMS(targetFolder);
+//			}
+//			JSONObject result = new JSONObject();
+//			result.put("folder", targetFolder);
+//			response.getWriter().write(result.toString()); // TODO: ZXC Read the output file and then return JSON
 			// ====================================================================================
 			
 		} catch (JSONException e) {

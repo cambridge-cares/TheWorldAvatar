@@ -26,9 +26,9 @@ public class ShipQuery {
 		ArrayList<ArrayList<String>> resultList = new ArrayList<ArrayList<String>>();		
 		OntModel jenaOwlModel = null;
 		jenaOwlModel = ModelFactory.createOntologyModel();
-//		jenaOwlModel.read("C:\\JPS_DATA\\workingdir\\JPS\\SHIP\\output\\Ship-" + shipNumber + ".owl");
+		jenaOwlModel.read("C:\\JPS_DATA\\workingdir\\JPS\\SHIP\\output\\Ship-" + shipNumber + ".owl");
 //		jenaOwlModel.read("http://www.theworldavatar.com/kb/ships/Ship-1.owl");
-		jenaOwlModel.read("http://172.25.182.41/kb/ships/Ship-1.owl#Ship-1");
+//		jenaOwlModel.read("http://172.25.182.41/kb/ships/Ship-" + shipNumber + ".owl#Ship-" + shipNumber);
 		
 		ParameterizedSparqlString queryString = new ParameterizedSparqlString(
 				"PREFIX j1: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>\r\n" + 
@@ -181,27 +181,27 @@ public class ShipQuery {
 //		System.out.println(Arrays.toString(sparqlQueryRead().toArray()));
 		long startTime = System.currentTimeMillis();
 //		sparqlQueryReadEndpoint("http://www.theworldavatar.com/kb/ships/Ship-1.owl#Ship-1");
-//		sparqlQueryRead("1");	
+		sparqlQueryRead("1");	
 //		System.out.println(sparqlQueryPython());
-		sparqlQueryShipAgent();
+//		sparqlQueryShipAgent();
 		long endTime = System.currentTimeMillis();
 		System.out.println((endTime-startTime));
 		
 		
 		startTime = System.currentTimeMillis();
 //		sparqlQueryReadEndpoint("http://www.theworldavatar.com/kb/ships/Ship-2.owl#Ship-2");
-//		sparqlQueryRead("2");
+		sparqlQueryRead("2");
 //		sparqlQueryPython();
 		endTime = System.currentTimeMillis();
-//		System.out.println((endTime-startTime));
+		System.out.println((endTime-startTime));
 
 		
 		startTime = System.currentTimeMillis();
 //		sparqlQueryReadEndpoint("http://www.theworldavatar.com/kb/ships/Ship-3.owl#Ship-3");
-//		sparqlQueryRead("3");
+		sparqlQueryRead("3");
 //		sparqlQueryPython();
 		endTime = System.currentTimeMillis();
-//		System.out.println((endTime-startTime));
+		System.out.println((endTime-startTime));
 
 		return;
 	}

@@ -163,7 +163,7 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 		double uppery = Double.parseDouble(region.getJSONObject("uppercorner").getString("uppery"));
 		double lowerx = Double.parseDouble(region.getJSONObject("lowercorner").getString("lowerx"));
 		double lowery = Double.parseDouble(region.getJSONObject("lowercorner").getString("lowery"));
-		if(!srsname.equalsIgnoreCase(CRSTransformer.EPSG_28992)) {
+		if (!srsname.equalsIgnoreCase(CRSTransformer.EPSG_28992)) {
 			if(cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Berlin")) {
 				String sourceCRS = CRSTransformer.EPSG_4326; 
 				String targetCRS = CRSTransformer.EPSG_28992; // The Hague
@@ -194,7 +194,7 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 		else {
 			result[0] = new double[] {upperx,uppery};
 			result[1] = new double[] {lowerx,lowery};
-			if(cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/The_Hague")) {
+			if (cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/The_Hague")) {
 				result[2] = new double[] {699583.49, 532938.39};
 			}
 			else {

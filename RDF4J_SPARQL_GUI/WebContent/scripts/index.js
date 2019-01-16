@@ -1,5 +1,5 @@
 let getTableResultRowString = (index, resultObj) => {
-	return `<tr>
+	return `<tr class="row-query-results">
 	    		<td>${index}</td>
 	    		<td>x</td>
 	    		<td>${resultObj.x}</td>
@@ -37,4 +37,5 @@ $("#execute").on("click", () => {
 
 $("#clear").on("click", () => {
 	$("#query-string").val('');
+	$(".row-query-results").remove();
 })

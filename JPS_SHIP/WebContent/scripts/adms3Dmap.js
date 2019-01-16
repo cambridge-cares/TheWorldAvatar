@@ -30,7 +30,7 @@ const controlButtonsSetter = osmb => {
 };
 
 
-const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) => {
+const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri, shipList) => {
 	
 	for(obj of listGeoJsonAddedToOSMB) {
 		obj.destroy();
@@ -91,12 +91,27 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) =>
                 try {
                 	listGeoJsonAddedToOSMB.push(osmb.addGeoJSON(geojson[i])); // edit
                     console.log(JSON.stringify(geojson[i], null, 4));
-                }
-                catch(err) {
+                } catch(err) {
                     console.log(err.name)
                 }
             }
         });
+    
+    // --- Rendering 3D ship models --- //
+    $.getJSON('/JPS_SHIP/ShipGeoJSON',
+		{
+    		listOfIRIs: JSON.stringify(shipList)
+		},
+    	geojsonData => {       
+    		for (let ship of geojsonData) {
+        		try {
+        			listGeoJsonAddedToOSMB.push(osmb.addGeoJSON(JSON.parse(ship))); // edit
+        			console.log(JSON.stringify(geojson, null, 4));
+        		} catch (err) {
+        			console.log(err.name);
+        		}
+    		}
+	});
     
     
     // --- Rendering 3D layer --- //
@@ -164,7 +179,7 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) =>
     }, err => {console.log(err)})
     //***************************************************************************
 
-
+ 
     // osmb.highlight('w420847275','#00ff00');
     //
     // osmb.on('pointermove', function(e) {

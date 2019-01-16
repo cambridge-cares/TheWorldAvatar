@@ -30,7 +30,7 @@ const controlButtonsSetter = osmb => {
 };
 
 
-const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) => {
+const initadms3dmap  = (buildingList, range, osmb, location, coordinatesMid, cityiri) => {
 	
 	for(obj of listGeoJsonAddedToOSMB) {
 		obj.destroy();
@@ -77,7 +77,7 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) =>
 
     $.getJSON('/JPS/ADMSHelper',
         {
-            listOfIRIs: JSON.stringify(list),
+            listOfIRIs: JSON.stringify(buildingList),
             cityiri
         },
         function(data) {

@@ -76,18 +76,7 @@ $(function(){
 
     
     //***************************************************************************
-    $.getJSON('/JPS_SHIP/ShipQueryAgent',
-        	geojsonData => {        		
-        		for(let ship of geojsonData) {
-	        		try {
-	        			// console.log(JSON.stringify(geojson, null, 4));
-	        			osmb.addGeoJSON(JSON.parse(ship));
-//	        			listGeoJsonAddedToOSMB.push(osmb.addGeoJSON(geojson)); // edit
-	        		} catch (err) {
-	        			console.log(err.name);
-	        		}
-        		}
-        	});   
+   
     
     //***************************************************************************
 
@@ -195,7 +184,7 @@ $(function(){
 //        	plant,
         	reactionmechanism
         }
-        
+        console.log(query);
 		query = JSON.stringify(query);        
      
         const getCoordinationResult = (query) => {
@@ -221,9 +210,12 @@ $(function(){
         $.when(getCoordinationResult(query)).done(coordResult => {
             		
 			var buildingIRIs = coordResult.building;
+			var shipIRIs = coordResult.ship;
+			console.log(coordResult);
 			console.log("buildingIRIs = " + buildingIRIs);
+			console.log("shipIRIs = " + shipIRIs);
 			
-        	initadms3dmap(buildingIRIs, [xmin, xmax, ymin, ymax], osmb, location, coordinatesMid, locationIRI);
+        	initadms3dmap(buildingIRIs, [xmin, xmax, ymin, ymax], osmb, location, coordinatesMid, locationIRI, shipIRIs);
         });
 
     });
