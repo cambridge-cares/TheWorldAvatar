@@ -49,7 +49,9 @@ public class ServiceOptimizationEndpoint extends HttpServlet {
 			System.out.println(GraphInJSON);
 			System.out.println("==================================================");
 			Graph graph = FormatTranslator.convertGraphJSONTOJavaClass(GraphInJSON.toString());
-			ArrayList<Service> servicesToBeDeleted = OptimalPathSearcher.getAllServicesToBeDeleted(graph);
+			OptimalPathSearcher searcher = new OptimalPathSearcher(graph);
+			ArrayList<Service> servicesToBeDeleted = new ArrayList<Service>();
+			servicesToBeDeleted = searcher.getAllServicesToBeDeleted(graph);
 			JSONArray servicesToBeDeletedInJSON = new JSONArray();
 			for (Service service : servicesToBeDeleted) {
 				servicesToBeDeletedInJSON.put(service.getUri().toASCIIString());
