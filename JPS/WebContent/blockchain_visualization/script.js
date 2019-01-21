@@ -18,20 +18,17 @@ function get_info(){
             let data_array = JSON.parse(data)['info'];
             let last_info = data_array[data_array.length - 1];
 
-            if(last_info !==previous_info){
-                for(let idx in data_array){
+            if(last_info !== previous_info) {
+                for (let idx in data_array) {
                     let _info = data_array[idx];
                     document.getElementById('info_box').innerText = document.getElementById('info_box').innerText + "\n" + _info + " @" + new Date() ;
                 }
                 previous_info = last_info;
             }
-            }
+        }
 
-        );
+    );
 }
-
-
-
 
 async function draw(mode, chart) {
     get_all_agents(mode, function (_agents_day_data) {

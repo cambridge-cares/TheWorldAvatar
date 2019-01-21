@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.composition.webserver;
+package uk.ac.cam.cares.jps.composition.WebServer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import uk.ac.cam.cares.jps.composition.enginemodel.Graph;
+import uk.ac.cam.cares.jps.composition.EngineModel.Graph;
 import uk.ac.cam.cares.jps.composition.executor.ExecutionLayer;
 import uk.ac.cam.cares.jps.composition.executor.ExecutorNew;
 import uk.ac.cam.cares.jps.composition.executor.ExecutorProcessor;

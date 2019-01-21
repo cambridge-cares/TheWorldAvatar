@@ -52,10 +52,7 @@ public class PowerPlantAgent extends HttpServlet {
 	ArrayList<String> cpirilist = new ArrayList<String>();
 	ArrayList<String> cpirilist2 = new ArrayList<String>();
 	
-    HashMap<String, String> hmap = new HashMap<String, String>();
-
-
-	
+    HashMap<String, String> hmap = new HashMap<String, String>();	
 	
 	public void savefile(OntModel jenaOwlModel, String filePath2) throws URISyntaxException, FileNotFoundException {
 
@@ -90,7 +87,7 @@ public class PowerPlantAgent extends HttpServlet {
 		Double molecularvalue = jsonObject.getJSONObject("mixture").getJSONObject("molmass").getDouble("value")*1000;
 		Double Cpvalue = jsonObject.getJSONObject("mixture").getJSONObject("cp").getDouble("value");
 		Double temperaturevalue = jsonObject.getJSONObject("mixture").getJSONObject("temperature").getDouble("value")-273.15;
-		Double massfluxvalue = jsonObject.getJSONObject("mixture").getJSONObject("massflux").getDouble("value")*100; //(multiplied by 100 temporarily to make it visible)
+		Double massfluxvalue = jsonObject.getJSONObject("mixture").getJSONObject("massflux").getDouble("value"); //(multiplied by 100 temporarily to make it visible)
 		Double densityvalue = jsonObject.getJSONObject("mixture").getJSONObject("density").getDouble("value");
 		
 		int valueoftotalpollutant = jsonObject.getJSONArray("pollutants").length();
@@ -112,7 +109,7 @@ public class PowerPlantAgent extends HttpServlet {
 		
 		for (int b = 0; b < valueoftotalpollutant; b++) {
 			String parametername = jsonObject.getJSONArray("pollutants").getJSONObject(b).getString("name");
-			Double parametervalue = jsonObject.getJSONArray("pollutants").getJSONObject(b).getDouble("value")*1000*100; //(multiplied by 100 temporarily to make it visible)
+			Double parametervalue = jsonObject.getJSONArray("pollutants").getJSONObject(b).getDouble("value")*1000; //(multiplied by 100 temporarily to make it visible)
 
 			Individual valueofspeciesemissionrate = jenaOwlModel.getIndividual(iri.split("#")[0] + "#V_" + hmap.get(parametername) + "_EmissionRate");
 			valueofspeciesemissionrate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(parametervalue));
@@ -129,19 +126,16 @@ public class PowerPlantAgent extends HttpServlet {
 	
 	public void startConversion(String iriOfPlant,String jsonresultstring) throws Exception {
 				
+		initOWLClasses(jenaOwlModel);
 
+		doConversion(jenaOwlModel,iriOfPlant,jsonresultstring);
 
-
-				initOWLClasses(jenaOwlModel);
-
-				doConversion(jenaOwlModel,iriOfPlant,jsonresultstring);
-
-				
-				String filePath2= iriOfPlant.replaceAll("http://www.theworldavatar.com/kb", "C:/TOMCAT/webapps/ROOT/kb").split("#")[0]; //update the file locally
-				System.out.println("filepath2= "+filePath2);
-				
-				/** save the updated model file */
-				savefile(jenaOwlModel, filePath2);
+		
+		String filePath2= iriOfPlant.replaceAll("http://www.theworldavatar.com/kb", "C:/TOMCAT/webapps/ROOT/kb").split("#")[0]; //update the file locally
+		System.out.println("filepath2= "+filePath2);
+		
+		/** save the updated model file */
+		savefile(jenaOwlModel, filePath2);
 
 	}
 	
@@ -180,34 +174,34 @@ public class PowerPlantAgent extends HttpServlet {
 		
 
 			
-			//try to query the owl file to get the waste stream inside it 
-			String engineInfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> " 
+		//try to query the owl file to get the waste stream inside it 
+		String engineInfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> " 
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "SELECT ?engine "
+				+ "WHERE {?entity  a  cp:Plant  ." 
+				+ "?entity   j2:hasSubsystem ?engine ."
+				+ "MINUS { ?engine a cp:Pipe .}"
+				+ "}";
+		
+		String wastestreamInfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> " 
 					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 					+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
 					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-					+ "SELECT ?engine "
+					+ "SELECT ?wastestream ?engine"
 					+ "WHERE {?entity  a  cp:Plant  ." 
-					+ "?entity   j2:hasSubsystem ?engine ."
-					+ "MINUS { ?engine a cp:Pipe .}"
+					+ "?entity   j2:hasSubsystem ?chimney ."
+					+ "?chimney  j3:realizes  ?releaseprocess  ."
+					+ "?releaseprocess   j4:hasOutput ?wastestream ."
 					+ "}";
-			
-			String wastestreamInfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> " 
-						+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-						+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-						+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-						+ "SELECT ?wastestream ?engine"
-						+ "WHERE {?entity  a  cp:Plant  ." 
-						+ "?entity   j2:hasSubsystem ?chimney ."
-						+ "?chimney  j3:realizes  ?releaseprocess  ."
-						+ "?releaseprocess   j4:hasOutput ?wastestream ."
-						+ "}";
 					
-				jenaOwlModel = ModelFactory.createOntologyModel();	
-				jenaOwlModel.read(iri2, null);
+			jenaOwlModel = ModelFactory.createOntologyModel();	
+			jenaOwlModel.read(iri2, null); // plant iri
 				
-			ResultSet rs_plant = PowerPlantAgent.query(wastestreamInfo,jenaOwlModel); 
+			ResultSet rs_plant = PowerPlantAgent.query(wastestreamInfo,jenaOwlModel); // wastestream and engine iri
 			
-			ResultSet rs_plant2 = PowerPlantAgent.query(engineInfo,jenaOwlModel); 
+			ResultSet rs_plant2 = PowerPlantAgent.query(engineInfo,jenaOwlModel); // engine 
 			
 			for (; rs_plant.hasNext();) {			
 				QuerySolution qs_p = rs_plant.nextSolution();
@@ -216,8 +210,7 @@ public class PowerPlantAgent extends HttpServlet {
 				String valueiri = cpiri.toString();
 				System.out.println("cpirilistwastestream= "+valueiri);
 				logger.info("query result1= "+valueiri);
-
-				cpirilist.add(valueiri);
+				cpirilist.add(valueiri); // wastestream iri
 			}
 			
 			for (; rs_plant2.hasNext();) {			
@@ -226,7 +219,7 @@ public class PowerPlantAgent extends HttpServlet {
 				Resource engineiri = qs_p.getResource("engine");
 				String valueengineiri = engineiri.toString();
 				logger.info("query result2= "+valueengineiri);
-				cpirilist2.add(valueengineiri);
+				cpirilist2.add(valueengineiri); // engine iri
 			}
 
 			
@@ -241,7 +234,7 @@ public class PowerPlantAgent extends HttpServlet {
 				
 			
 			logger.info("message to sent= "+jo.toString());
-			response.getWriter().write(jo.toString());
+			response.getWriter().write(jo.toString()); // returns HTTP response with wastestream iri
 			
 			
 		    //send the info to SRM Engine Agent
@@ -253,7 +246,6 @@ public class PowerPlantAgent extends HttpServlet {
 				dataSet.put("engine",  cpirilist2.get(0)) ;
 			}
 			catch (JSONException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			
@@ -264,7 +256,6 @@ public class PowerPlantAgent extends HttpServlet {
 				try {
 					jsonsrmresult = new JSONObject(resultjson).getString("file");
 				} catch (JSONException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
@@ -272,7 +263,6 @@ public class PowerPlantAgent extends HttpServlet {
 				try {
 					startConversion(iri2,jsonsrmresult);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} //convert to update value
 

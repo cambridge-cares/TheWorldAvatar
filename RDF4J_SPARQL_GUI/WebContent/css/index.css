@@ -1,0 +1,44 @@
+.row {
+    margin: 12px 0;
+}
+
+#query > label {
+    padding: 13.5em 0;
+    vertical-align: top;
+}
+
+label {
+    display: inline-block;
+    width: 10%;
+}
+
+body {
+    background: linear-gradient(#b3b3b3, #f7f7f7);
+}
+
+.header > p {
+    font: bold 2rem arial;
+    margin: 0;
+    border-bottom: 1px solid rgba(79, 79, 79, 0.97);
+}
+
+#actions > p {
+    display: inline-block;
+    width: 10%;
+}
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}

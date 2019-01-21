@@ -27,6 +27,18 @@ import org.slf4j.LoggerFactory;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
+/**
+ * 
+ * @author kevin
+ *
+ *TO update the dataset used in this powerplant emission project, update the dataset in:
+ * factor model.java
+ * QueryPowerPlants.java
+ * sparql_wrapper.py
+ * test_fuseki.py (in claudius that is related to flask server and docker)
+ * 
+ * 
+ */
 
 @WebServlet("/FactorModel")
 public class FactorModel extends HttpServlet {
@@ -79,10 +91,10 @@ public class FactorModel extends HttpServlet {
 				+ "WHERE { ?generation   j5:hasEmission ?emission ." + "?emission   j2:hasValue ?valueemission . "
 				+ "?valueemission   j2:numericalValue ?vemission ." + "}";
 
-		UpdateProcessor upp = UpdateExecutionFactory.createRemote(UpdateFactory.create(plantupdate),
-				"http://www.theworldavatar.com:80/damecoolquestion/worldpowerplantsng/update");
 //		UpdateProcessor upp = UpdateExecutionFactory.createRemote(UpdateFactory.create(plantupdate),
-//			"http://www.theworldavatar.com:80/damecoolquestion/worldpowerplantsinmemory/update");
+//				"http://www.theworldavatar.com:80/damecoolquestion/worldpowerplantsng/update");
+		UpdateProcessor upp = UpdateExecutionFactory.createRemote(UpdateFactory.create(plantupdate),
+			"http://www.theworldavatar.com:80/damecoolquestion/worldpowerplantsinmemory/update");
 		upp.execute();
 
 		// **************************************************************************************************
@@ -140,8 +152,8 @@ public class FactorModel extends HttpServlet {
 				+ "}"
 				+ "}";
 
-ResultSet rs_plant = FactorModel.queryFromFusekiServer("http://www.theworldavatar.com:80/damecoolquestion/worldpowerplantsng/query",plantInfo); 
-		//ResultSet rs_plant = FactorModel.queryFromFusekiServer("http://www.theworldavatar.com:80/damecoolquestion/worldpowerplantsinmemory/query",plantInfo); 
+//ResultSet rs_plant = FactorModel.queryFromFusekiServer("http://www.theworldavatar.com:80/damecoolquestion/worldpowerplantsng/query",plantInfo); 
+		ResultSet rs_plant = FactorModel.queryFromFusekiServer("http://www.theworldavatar.com:80/damecoolquestion/worldpowerplantsinmemory/query",plantInfo); 
 		
 		for (; rs_plant.hasNext();) {			
 			QuerySolution qs_p = rs_plant.nextSolution();

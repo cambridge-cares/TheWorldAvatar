@@ -23,12 +23,12 @@ import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueServer;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.composition.compositionengine.ServiceCompositionEngine;
-import uk.ac.cam.cares.jps.composition.enginemodel.Graph;
+import uk.ac.cam.cares.jps.composition.CompositionEngine.ServiceCompositionEngine;
+import uk.ac.cam.cares.jps.composition.EngineModel.Graph;
+import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
 import uk.ac.cam.cares.jps.composition.executor.ExecutionLayer;
 import uk.ac.cam.cares.jps.composition.executor.ExecutorNew;
 import uk.ac.cam.cares.jps.composition.executor.ExecutorProcessor;
-import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 import uk.ac.cam.cares.jps.composition.util.FormatTranslator;
 import uk.ac.cam.cares.jps.composition.util.OptimalPathSearcher;
 
@@ -45,7 +45,7 @@ public class AgentWebAPI extends HttpServlet {
 		
 		try {
 			String composedAgentIRI = (String) jo.remove("agent");
-			logger.info( "path=" + path + ", agent=" + composedAgentIRI + ", query=" + jo);
+			logger.info( "path=" + path + ", agent which is called=" + composedAgentIRI + ", query=" + jo);
 			String result = composeAndExecute(composedAgentIRI, jo.toString());
 			logger.info("result = " + result);
 					
@@ -59,7 +59,8 @@ public class AgentWebAPI extends HttpServlet {
 
 	public Object[] compose(Service compositeAgent, String hostPort) 
 			throws JsonParseException, JsonMappingException, JSONException, URISyntaxException, IOException, Exception {
-
+	
+		
 		ServiceCompositionEngine engine = new ServiceCompositionEngine(compositeAgent, hostPort);
 		
 		if(!engine.start()) { // If the composite service is unsolvable, the start() function would return false. 

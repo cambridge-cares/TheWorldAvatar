@@ -134,8 +134,8 @@ public class ADMSAgent extends HttpServlet {
 							"}";
 					
 
-				JSONObject newRegion  = new JSONObject(String.format(regionTemplate, ux,uy,lx,ly));
-				writeAPLFile(newBuildingData,plantIRI, newRegion);
+					JSONObject newRegion  = new JSONObject(String.format(regionTemplate, ux,uy,lx,ly));
+					writeAPLFile(newBuildingData,plantIRI, newRegion);
 				}
 
  
@@ -152,7 +152,7 @@ public class ADMSAgent extends HttpServlet {
 			String targetFolder = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
 			if(request.getServerName().contains("localhost")) {
 				//uncomment if tested in kevin's computer
-				//startADMS(targetFolder);
+				startADMS(targetFolder);
 			} else {
 				startADMS(targetFolder);
 			}

@@ -13,8 +13,8 @@ import org.junit.After;
 import org.junit.Test;
 
 import uk.ac.cam.cares.jps.agents.ontology.ServiceReader;
-import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
-import uk.ac.cam.cares.jps.composition.servicemodel.Service;
+import uk.ac.cam.cares.jps.composition.ServiceModel.MessagePart;
+import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
 
 public class TestNestedMessageParts {
 
@@ -50,7 +50,8 @@ public class TestNestedMessageParts {
 	
 	public static String readTheServicePool(String filename) throws Exception {
 
- 		String directory = "C:\\Users\\nasac\\Documents\\GIT\\JPS_COMPOSITION\\testres\\serviceowlfiles";
+ 		//String directory = "C:\\Users\\nasac\\Documents\\GIT\\JPS_COMPOSITION\\testres\\serviceowlfiles";
+		String directory = "D:\\JPS\\JParkSimulator-git\\JPS_COMPOSITION\\testres\\serviceowlfiles";
  		String wholeContent = "";
 
 		try (BufferedReader br = new BufferedReader(new FileReader(directory + "\\" + filename))) {

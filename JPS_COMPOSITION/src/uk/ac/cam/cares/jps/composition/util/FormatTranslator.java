@@ -12,11 +12,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import uk.ac.cam.cares.jps.composition.enginemodel.Branch;
-import uk.ac.cam.cares.jps.composition.enginemodel.Graph;
-import uk.ac.cam.cares.jps.composition.enginemodel.SubTrack;
+import uk.ac.cam.cares.jps.composition.EngineModel.Branch;
+import uk.ac.cam.cares.jps.composition.EngineModel.Graph;
+import uk.ac.cam.cares.jps.composition.EngineModel.SubTrack;
 import uk.ac.cam.cares.jps.composition.executor.ExecutorNew;
-import uk.ac.cam.cares.jps.composition.servicemodel.Service;
+import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
 
 public class FormatTranslator {
 

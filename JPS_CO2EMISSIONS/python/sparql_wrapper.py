@@ -2,7 +2,8 @@ from SPARQLWrapper import SPARQLWrapper, JSON, POST
 
 def sparqlQueryRead(queryString):
 #     sparql = SPARQLWrapper("http://localhost:8081/fuseki/test/sparql")
-    sparql = SPARQLWrapper("http://www.theworldavatar.com/damecoolquestion/worldpowerplantsng/sparql")
+#    sparql = SPARQLWrapper("http://www.theworldavatar.com/damecoolquestion/worldpowerplantsng/sparql")
+    sparql = SPARQLWrapper("http://www.theworldavatar.com/damecoolquestion/worldpowerplantsinmemory/sparql")
     sparql.setQuery(queryString)
     sparql.setReturnFormat(JSON)
 
@@ -10,7 +11,8 @@ def sparqlQueryRead(queryString):
 
 def sparqlQueryWrite(queryString):
 #     sparql = SPARQLWrapper("http://localhost:8081/fuseki/test/update")
-    sparql = SPARQLWrapper("http://www.theworldavatar.com/damecoolquestion/worldpowerplantsng/update")
+#    sparql = SPARQLWrapper("http://www.theworldavatar.com/damecoolquestion/worldpowerplantsng/update")
+    sparql = SPARQLWrapper("http://www.theworldavatar.com/damecoolquestion/worldpowerplantsinmemory/update")
     sparql.setQuery(queryString)
     sparql.setMethod(POST)
     return sparql.query()
