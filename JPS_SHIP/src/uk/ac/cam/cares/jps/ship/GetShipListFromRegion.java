@@ -12,6 +12,8 @@ import org.json.JSONObject;
 
 import com.google.gson.Gson;
 
+import uk.ac.cam.cares.jps.base.util.PythonHelper;
+
 /**
  * Servlet implementation class GetShipListFromRegion
  */
@@ -29,8 +31,8 @@ public class GetShipListFromRegion extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.setContentType("application/json");
+	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		res.setContentType("application/json");
 		String[] arrayOfShipIRIs = { 
 				"http://www.theworldavatar.com/kb/ships/Ship-1.owl#Ship-1",
 //		        "http://www.theworldavatar.com/kb/ships/Ship-2.owl#Ship-2",
@@ -50,16 +52,30 @@ public class GetShipListFromRegion extends HttpServlet {
 		
 //		Gson g = new Gson();
 //		response.getWriter().write(g.toJson(arrayOfShipIRIs));
+		double xmin, xmax, ymin, ymax;
+		String shipEp = "dummy";
+		String connectType= "endpoint";
+		int shipNum = 25;
+       //get parameter range		
+		String[] pparams = new String[7];
+		pparams[0] = shipEp;
+		pparams[1] = connectType;
+		pparams[2] = ""+shipNum;
+		pparams[3] = req.getParameter("xmin");
+		pparams[4]  = req.getParameter("xmax");
+		pparams[5]  = req.getParameter("ymin");
+		pparams[6]  = req.getParameter("ymax");
+
+		String paramStr = String.join(" ", pparams);
 		
-		JSONObject result = new JSONObject();
-		try {
-			result.put("shipIRIs", arrayOfShipIRIs);
-//			result.put("shipIRIs", arrayOfShipIRIs1);
-			response.getWriter().write(result.toString());
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+		String shipListStr = PythonHelper.callPython("caresjpsship/shipRegionQuery.py", paramStr
+				, this);
+		
+		
+		res.getWriter().write(shipListStr);
 	}
+
+	
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
