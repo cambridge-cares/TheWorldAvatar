@@ -387,7 +387,7 @@ owlProcessor.getChildren = function(root) {
 
     namespaceOb['owl'] = "http://www.w3.org/2002/07/owl#";
     namespaceOb['Eco-industrialPark'] = "http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#";
-    namespaceOb['system'] = "http://www.theworldavatar.com/ontocape/ontocape/upper_level/system.owl#";
+    namespaceOb['system'] = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#";
 
     //find all node with hasIRI property
     var uris = root.find("//Eco-industrialPark:hasIRI", namespaceOb);
@@ -412,7 +412,15 @@ owlProcessor.getChildren = function(root) {
         //    logger.debug(curi.name());
         children.push(curi.text().trim());//push to targets list
     }
+    let urisSs = root.find("//system:hasSubsystem", namespaceOb);
+	    console.log("found node Eco-system:hasSubsystem" + urisSs.length);
 
+    //logger.debug("found node system:hasIRI:"+urisS.length);
+    for(let curi of urisSs){
+        //    logger.debug(curi.name());
+        if(curi.attr("resource")&&curi.attr("resource").value()){
+            children.push(curi.attr("resource").value());//push to targets list
+        }    }
        
     //delete # (location part)
     children = children.map((uri)=>{
