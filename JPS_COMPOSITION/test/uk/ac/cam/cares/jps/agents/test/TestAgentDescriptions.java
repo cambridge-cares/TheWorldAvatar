@@ -117,7 +117,7 @@ public class TestAgentDescriptions extends TestCase {
 	private Service createDescrForAgentADMS() {
 		return addInputRegion(new ServiceBuilder().operation(null, JPS + "/ADMSAgent"))
 			.input("http://dbpedia.org/ontology/city", "city")
-			//.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
+			.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
 			.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
 			.input(WEATHER + "#WeatherState", "weatherstate").down()
 			.input(WEATHER + "#hasHumidity", "humidity").down()
@@ -162,7 +162,7 @@ public class TestAgentDescriptions extends TestCase {
 				.composed()
 				.operation(null, null)
 				.input("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType", "region")
-				//.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
+				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
 				.input("https://como.cheng.cam.ac.uk/kb/ontochem.owl#ReactionMechanism", "reactionmechanism")
 				.output("https://www.w3.org/ns/csvw#Table", "dispersiongrid")
 				.output("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType", true, "buildings", true)

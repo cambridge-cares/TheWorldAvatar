@@ -59,10 +59,7 @@ public class AgentWebAPI extends HttpServlet {
 
 	public Object[] compose(Service compositeAgent, String hostPort) 
 			throws JsonParseException, JsonMappingException, JSONException, URISyntaxException, IOException, Exception {
-
-		
-		System.out.println("MY HOSTPORT=" + hostPort);
-		
+	
 		
 		ServiceCompositionEngine engine = new ServiceCompositionEngine(compositeAgent, hostPort);
 		
