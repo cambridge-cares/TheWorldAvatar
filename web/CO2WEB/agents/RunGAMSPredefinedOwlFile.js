@@ -94,13 +94,17 @@ function runGAMSPredefined(id, cb){
                     let parenturi = "http://www.jparksimulator.com/kb/sgp/jurongisland/nuclearpowerplants/NuclearPowerPlants.owl";
                     let baseUri = config.baseUri;
                     /*call API to update the top node****/
-                    let deleteStr = SPARQLStr.construct('delete', '<http://www.jparksimulator.com/kb/sgp/jurongisland/nuclearpowerplants/NuclearPowerPlants.owl#JurongIslandNuclearPlants>','Eco-industrialPark:hasIRI','?o', {'Eco-industrialPark':'http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#'});
+                    let deleteStr = SPARQLStr.construct('delete', '<http://www.jparksimulator.com/kb/sgp/jurongisland/nuclearpowerplants/NuclearPowerPlants.owl#JurongIslandNuclearPlants>','system:hasSubsystem','?o', {'system':'http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#'});
                     console.log(deleteStr)
                     QList.push(deleteStr)
+					let deleteStr2 = SPARQLStr.construct('delete', '<http://www.jparksimulator.com/kb/sgp/jurongisland/nuclearpowerplants/NuclearPowerPlants.owl#JurongIslandNuclearPlants>','j.0:hasSubsystem');
+                    console.log(deleteStr2)
+                    QList.push(deleteStr2)
                     csvresult.forEach((item) =>{
                         let childuri = baseUri+"/kb/sgp/jurongisland/nuclearpowerplants/"+item.name+'.owl';
-                        let updateStr=  SPARQLStr.construct('insertdata', '<http://www.jparksimulator.com/kb/sgp/jurongisland/nuclearpowerplants/NuclearPowerPlants.owl#JurongIslandNuclearPlants>','<http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#hasIRI>',{value:childuri, type:"string"});
-                        QList.push(updateStr)
+                        let updateStr=  SPARQLStr.construct('insertdata', '<http://www.jparksimulator.com/kb/sgp/jurongisland/nuclearpowerplants/NuclearPowerPlants.owl#JurongIslandNuclearPlants>','<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem>', '<'+childuri+'>');
+                        //let updateStr=  SPARQLStr.construct('insertdata', '<http://www.jparksimulator.com/kb/sgp/jurongisland/nuclearpowerplants/NuclearPowerPlants.owl#JurongIslandNuclearPlants>','<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl##hasSubsystem>','<${childuri}#${item.name}>' );
+						QList.push(updateStr)
                         console.log(updateStr)
 
                     })
