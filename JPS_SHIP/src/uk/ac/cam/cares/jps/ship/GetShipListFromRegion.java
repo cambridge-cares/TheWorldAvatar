@@ -28,11 +28,8 @@ public class GetShipListFromRegion extends HttpServlet {
         super();
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		res.setContentType("application/json");
+//		res.setContentType("application/json");
 //		String[] arrayOfShipIRIs = { 
 //				"http://www.theworldavatar.com/kb/ships/Ship-1.owl#Ship-1",
 //		        "http://www.theworldavatar.com/kb/ships/Ship-2.owl#Ship-2",
@@ -45,10 +42,15 @@ public class GetShipListFromRegion extends HttpServlet {
 //		        "http://www.theworldavatar.com/kb/ships/Ship-9.owl#Ship-9",
 //		        "http://www.theworldavatar.com/kb/ships/Ship-10.owl#Ship-10"
 //		};
+//		
+//		JSONObject result = new JSONObject();
+//		try {
+//			result.put("shipIRIs", arrayOfShipIRIs);
+//			res.getWriter().write(result.toString());
+//		} catch (JSONException e) {
+//			e.printStackTrace();
+//		}
 		
-//		Gson g = new Gson();
-//		response.getWriter().write(g.toJson(arrayOfShipIRIs));
-		double xmin, xmax, ymin, ymax;
 		String shipEp = "dummy";
 		String connectType= "endpoint";
 		int shipNum = 25;
@@ -66,7 +68,6 @@ public class GetShipListFromRegion extends HttpServlet {
 		
 		String shipListStr = PythonHelper.callPython("caresjpsship/shipRegionQuery.py", paramStr
 				, this);
-		
 		
 		res.getWriter().write(shipListStr);
 	}
