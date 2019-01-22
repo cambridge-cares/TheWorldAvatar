@@ -42,3 +42,7 @@ td, th {
 tr:nth-child(even) {
   background-color: #dddddd;
 }
+
+.row-header {
+	font-weight: bold;
+}

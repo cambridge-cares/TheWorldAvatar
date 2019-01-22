@@ -89,7 +89,7 @@ public class ShipQuery {
 				);
 		
 		queryString.setIri("shipIRI", shipIRI);
-		System.out.println(queryString.toString());
+//		System.out.println(queryString.toString());
 		
 		QueryExecution queryExec = QueryExecutionFactory.sparqlService(
 				"http://172.25.182.41/damecoolquestion/ships-persistent/sparql", 
@@ -180,8 +180,8 @@ public class ShipQuery {
 		
 //		System.out.println(Arrays.toString(sparqlQueryRead().toArray()));
 		long startTime = System.currentTimeMillis();
-//		sparqlQueryReadEndpoint("http://www.theworldavatar.com/kb/ships/Ship-1.owl#Ship-1");
-		sparqlQueryRead("1");	
+		sparqlQueryReadEndpoint("http://www.theworldavatar.com/kb/ships/Ship-1.owl#Ship-1");
+//		sparqlQueryRead("1");	
 //		System.out.println(sparqlQueryPython());
 //		sparqlQueryShipAgent();
 		long endTime = System.currentTimeMillis();
@@ -189,16 +189,16 @@ public class ShipQuery {
 		
 		
 		startTime = System.currentTimeMillis();
-//		sparqlQueryReadEndpoint("http://www.theworldavatar.com/kb/ships/Ship-2.owl#Ship-2");
-		sparqlQueryRead("2");
+		sparqlQueryReadEndpoint("http://www.theworldavatar.com/kb/ships/Ship-2.owl#Ship-2");
+//		sparqlQueryRead("2");
 //		sparqlQueryPython();
 		endTime = System.currentTimeMillis();
 		System.out.println((endTime-startTime));
 
 		
 		startTime = System.currentTimeMillis();
-//		sparqlQueryReadEndpoint("http://www.theworldavatar.com/kb/ships/Ship-3.owl#Ship-3");
-		sparqlQueryRead("3");
+		sparqlQueryReadEndpoint("http://www.theworldavatar.com/kb/ships/Ship-3.owl#Ship-3");
+//		sparqlQueryRead("3");
 //		sparqlQueryPython();
 		endTime = System.currentTimeMillis();
 		System.out.println((endTime-startTime));
