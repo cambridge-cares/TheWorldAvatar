@@ -40,8 +40,6 @@ public class SPARQLEndpointProxy extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-//		response.getWriter().append("Served at: ").append(request.getContextPath());
 		request.setCharacterEncoding("UTF-8");
 		String queryString = request.getParameter("queryString");
 		String queryResult = null;
@@ -51,7 +49,6 @@ public class SPARQLEndpointProxy extends HttpServlet {
 			e.printStackTrace();
 		}
 		
-//		response.getWriter().write("DATA RECEIVED");
 		response.getWriter().write(queryResult);
 	}
 

@@ -40,7 +40,7 @@ public class TestCityToWeather {
 		
 		
 		JSONObject input = new JSONObject();
-		input.put("city", "http://dbpedia.org/resource/Berlin");
+		input.put("city", "http://dbpedia.org/resource/Singapore");
 		//input.put("city", "http://dbpedia.org/resource/Singapore");
 
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)

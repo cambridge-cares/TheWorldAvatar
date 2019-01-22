@@ -32,6 +32,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 	public static final String DEFAULT_CRS_NAME = CRSTransformer.EPSG_28992;
 	public static final String BERLIN_IRI = "http://dbpedia.org/resource/Berlin";
 	public static final String THE_HAGUE_IRI = "http://dbpedia.org/resource/The_Hague"; // The IRIs have be changed to /resource instead of /page
+	public static final String SINGAPORE_IRI = "http://dbpedia.org/resource/Singapore";
 	
 	private Logger logger = LoggerFactory.getLogger(BuildingQueryPerformer.class);
 	
@@ -40,9 +41,11 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		String urlKey = IKeys.URL_BUILDINGSQUERY_THEHAGUE;
 		if (cityIRI.equalsIgnoreCase(BERLIN_IRI)) {
 			urlKey = IKeys.URL_BUILDINGSQUERY_BERLIN;
+		} else if (cityIRI.equalsIgnoreCase(SINGAPORE_IRI)) {
+			urlKey = IKeys.URL_BUILDINGSQUERY_SINGAPORE;
 		}
 		
-		return AgentCaller.executeGetWithURLKey(urlKey, AgentCaller.MediaType.TEXT_CSV ,"query", query);
+		return AgentCaller.executeGetWithURLKey(urlKey, AgentCaller.MediaType.TEXT_CSV, "query", query);
 	}
 	
 	// TODO-AE: move method to JPS BASE (AgentCaller)
@@ -83,7 +86,9 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			return CRSTransformer.EPSG_25833;
 		} else if (cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
 			return CRSTransformer.EPSG_28992;
-		} 
+		} else if (cityIRI.equalsIgnoreCase(SINGAPORE_IRI)) {
+			return CRSTransformer.EPSG_4326;
+		}
 		
 		return DEFAULT_CRS_NAME;
 	}
@@ -100,7 +105,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		String targetCRSName = getCRSName(cityIRI);
 		String sourceCRSName = DEFAULT_CRS_NAME;
 		
-		if(lowerx <= 180) {
+		if (lowerx <= 180) {
 			sourceCRSName = CRSTransformer.EPSG_4326;
 			double[] p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {plantx, planty});
 			plx = p[0];
@@ -111,24 +116,27 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {upperx, uppery});
 			ux = p[0];
 			uy = p[1];
+		} else {
+			if (!DEFAULT_CRS_NAME.equals(targetCRSName)) {
+				
+				double[] p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {plantx, planty});
+				plx = p[0];
+				ply = p[1];
+				p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {lowerx, lowery});
+				lx = p[0];
+				ly = p[1];
+				p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {upperx, uppery});
+				ux = p[0];
+				uy = p[1];
+				
+				if (targetCRSName.equals(CRSTransformer.EPSG_4326)) {
+					double temp = ly;
+					ly = uy;
+					uy = temp;
+				}
+			}
 		}
-		else {
-			
-		
-		
-		if (!DEFAULT_CRS_NAME.equals(targetCRSName)) {
-			
-			double[] p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {plantx, planty});
-			plx = p[0];
-			ply = p[1];
-			p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {lowerx, lowery});
-			lx = p[0];
-			ly = p[1];
-			p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {upperx, uppery});
-			ux = p[0];
-			uy = p[1];
-		}
-		}
+
 		String query = getQueryClosestBuildingsFromRegion(200, lx, ly, ux, uy);		
 		String result = performQuery(cityIRI, query);
 		System.out.println("=============== query result ===============");

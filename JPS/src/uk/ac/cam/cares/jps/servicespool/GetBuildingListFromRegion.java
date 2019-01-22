@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.servicespool;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -34,28 +35,31 @@ public class GetBuildingListFromRegion extends HttpServlet {
 		 * This agent takes region and city and returns a list of building IRIs
 		 */
 		String value = request.getParameter("query");
-		
+//		System.out.println("QUERY HERE: " + value);
 		try {
 			JSONObject input = new JSONObject(value);
 			String city = input.getString("city");
 			 
 			double[][] coords = convertCoordinate(input,city);
+//			System.out.println("source point: " + Arrays.deepToString(coords));
 			double lowerx = coords[1][0];
 			double lowery = coords[1][1];
 			double upperx = coords[0][0];
 			double uppery = coords[0][1];
 			double plantx = coords[2][0];
 			double planty = coords[2][1];
-
+			
+//			System.out.println(lowerx + " | " + lowery + " | " + upperx + " | " + uppery +  " | " + plantx + " | " + planty);
 			logger.debug(lowerx + " | " + lowery + " | " + upperx + " | " + uppery +  " | " + plantx + " | " + planty);
 			
 			BuildingQueryPerformer performer = new BuildingQueryPerformer();
 			List<String> buildingIRIs = performer.performQueryClosestBuildingsFromRegion(city.trim(), plantx, planty, 25, 
 					Double.valueOf(lowerx), Double.valueOf(lowery), Double.valueOf(upperx),  Double.valueOf(uppery));
-			
+//			
 			JSONObject result = new JSONObject();
 			result.put("building", buildingIRIs); // The result is wrapped into an JSONObject with key "building", which is indicated in its description. 
 			response.getWriter().write(result.toString());
+//			response.getWriter().write(coords.toString());
 		} catch (JSONException e) {
 			logger.error(e.getMessage(), e);
 			throw new JPSRuntimeException(e.getMessage(), e);
@@ -66,7 +70,14 @@ public class GetBuildingListFromRegion extends HttpServlet {
 		doGet(request, response);
 	}
 	
-	public double[][] convertCoordinate(JSONObject region, String cityIRI) throws NumberFormatException, JSONException{
+	public double[] getCenterLatLon(double xmin, double xmax, double ymin, double ymax) {
+		double xcenter = (xmax + xmin)/2;
+		double ycenter = (ymax + ymin)/2;
+				 
+		return new double[] {xcenter, ycenter};
+	}
+	
+	public double[][] convertCoordinate(JSONObject region, String cityIRI) throws NumberFormatException, JSONException {
 		
 		logger.debug("city: " + cityIRI);
 		double[][] result = new double[3][2];
@@ -89,13 +100,14 @@ public class GetBuildingListFromRegion extends HttpServlet {
 		result[0] = upperPointNew;
 		result[1] = lowerPointNew;
 		
-		if(cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Berlin")) {
+		if (cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Berlin")) {
 			// TODO-AE URGENT the plant coordinates must be read from the powerplant OWL file
 			// maybe add plant parameter to this agent for reading the coordinates or additional plant coordinate parameters
 			result[2] = new double[] {699583.49, 532938.39};
-		}
-		else if (cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/The_Hague")) {
-			result[2] = new double[]{79831., 454766.};
+		} else if (cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/The_Hague")) {
+			result[2] = new double[] {79831., 454766.};
+		} else if (cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Singapore")) {
+			result[2] = getCenterLatLon(lowerx, upperx, lowery, uppery);
 		}
 		return result;
 	}
