@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.thermo;
 
-
 import java.io.File;
 
 import java.io.FileOutputStream;
@@ -42,152 +41,160 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
 
 /**
  *
- * Servlet implementation class ServiceTemplate
+ *@author NK510
+ * Servlet implementation class ServiceTemplate Takes an input parameter as IRI
+ * (owl file) and runs thermo calculations. Results of thermo calculations are
+ * stored in json file.
  * 
  */
 
 @WebServlet("/thermocalculation")
 public class Thermocalculation extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	final static Logger logger = Logger.getLogger(Thermocalculation.class.getName());
-	
+
 	public static String catalinaFolderPath = System.getProperty("catalina.home");
-	
-	public static final String SPARQL_FOLDER =catalinaFolderPath + "/conf/Catalina/sparql_query/";
-	
-	public static final String ABOX_FILE = "http://www.theworldavatar.com/66d74432-d44a-354f-a07e-0e1a15c049f1/Cl2O6.owl"; 
-	
+
+	public static final String SPARQL_FOLDER = catalinaFolderPath + "/conf/Catalina/sparql_query/";
+
+	public static final String ABOX_FILE = "http://www.theworldavatar.com/66d74432-d44a-354f-a07e-0e1a15c049f1/Cl2O6.owl";
+
 	public static final String RESULT_FOLDER = catalinaFolderPath + "/webapps/ROOT/temp/JPS_THERMO/";
-	
+
 	private String folderName = "";
-	
-    /**
-     * 
-     * @see HttpServlet#HttpServlet()
-     * 
-     */
-	
-    public Thermocalculation() {
-    
-        super();
-        
-        // TODO Auto-generated constructor stub
-    }
 
 	/**
 	 * 
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#HttpServlet()
 	 * 
 	 */
-    
-    @Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	
-    	JSONObject parameterOne = AgentCaller.readJsonParameter(request);
-    	
-    	String gaussian = parameterOne.getString("gaussian");    	
-    	
-    	logger.info("INPUT FOR THERMO: gaussian = " + gaussian);
-    	
-    	Utility utility = new FileUtility();
-    	
-    	String fileName = gaussian.substring(gaussian.lastIndexOf("/") + 1);
-    	
-    	folderName = FolderManager.generateUniqueFolderName(fileName, catalinaFolderPath);
-    	 
-    	FolderManager.createFolder(RESULT_FOLDER + folderName);
-    	
+
+	public Thermocalculation() {
+
+		super();
+
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * 
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 * 
+	 */
+
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		JSONObject parameterOne = AgentCaller.readJsonParameter(request);
+
+		String gaussian = parameterOne.getString("gaussian");
+
+		logger.info("INPUT FOR THERMO: gaussian = " + gaussian);
+
+		Utility utility = new FileUtility();
+
+		String fileName = gaussian.substring(gaussian.lastIndexOf("/") + 1);
+
+		folderName = FolderManager.generateUniqueFolderName(fileName, catalinaFolderPath);
+
+		FolderManager.createFolder(RESULT_FOLDER + folderName);
+
 		OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM_TRANS_INF);
-		
+
 		FileManager.get().readModel(model, gaussian);
-		
+
 		/**
-		 * Runs SPARQL query that returns data that are input for thermo calculation.  Results of SPARQL query are stored in json file.
+		 * @author NK510
+		 * Runs SPARQL query that returns data that are input for thermo calculation.
+		 * Results of SPARQL query are stored in json file.
 		 */
 		File sparqlFile = new File(SPARQL_FOLDER + "query_all.sparql");
-			
-			String q = FileUtils.readFileToString(sparqlFile, "UTF-8");
-					
-			Query query = QueryFactory.create(q);
 
-			QueryExecution qexec = QueryExecutionFactory.create(query, model);
-			
-			FileOutputStream fileOutputStream = null;
-			
-			String jsonInputFilePath = RESULT_FOLDER + folderName + "/"+ StringUtils.substringBefore(fileName, ".")  +".json";			
+		String q = FileUtils.readFileToString(sparqlFile, "UTF-8");
 
-			try {
+		Query query = QueryFactory.create(q);
 
-				ResultSet resultSet = qexec.execSelect();
-				
-				while(resultSet.hasNext()) { 
-			    
-			    fileOutputStream=new FileOutputStream(new File(jsonInputFilePath),true);
-		       		
+		QueryExecution qexec = QueryExecutionFactory.create(query, model);
+
+		FileOutputStream fileOutputStream = null;
+
+		String jsonInputFilePath = RESULT_FOLDER + folderName + "/" + StringUtils.substringBefore(fileName, ".")
+				+ ".json";
+
+		try {
+
+			ResultSet resultSet = qexec.execSelect();
+
+			while (resultSet.hasNext()) {
+
+				fileOutputStream = new FileOutputStream(new File(jsonInputFilePath), true);
+
 				ResultSetFormatter.outputAsJSON(fileOutputStream, resultSet);
 
-				}
-
-			} finally {
-				
-				qexec.close();
-				
-				fileOutputStream.close();
 			}
-			
+
+		} finally {
+
+			qexec.close();
+
+			fileOutputStream.close();
+		}
+
 		List<File> jsonInputFileList = utility.getArrayFileList(RESULT_FOLDER + folderName + "/", ".json");
-			
+
 		/**
-		 * 
+		 * @author NK510
 		 * Runs thermo-calculation Python script over data queried by SPARQL.
 		 * 
 		 */
 		for (int i = 0; i < jsonInputFileList.size(); i++) {
-				
-				String pyscript = catalinaFolderPath + "/conf/Catalina/c4e-dln22-TDC/Source/thermoDriver.py";
-				
-                String[] cmd = { "python", pyscript, "-j", jsonInputFileList.get(i).getAbsolutePath(), };
 
-				Runtime.getRuntime().exec(cmd);
+			String pyscript = catalinaFolderPath + "/conf/Catalina/c4e-dln22-TDC/Source/thermoDriver.py";
+
+			String[] cmd = { "python", pyscript, "-j", jsonInputFileList.get(i).getAbsolutePath(), };
+
+			Runtime.getRuntime().exec(cmd);
 		}
-		
+
 		List<File> jsonOutputFileList = utility.getArrayFileList(RESULT_FOLDER + folderName + "/", ".json");
-		
+
 		System.out.println("jsonOutputFileList.size(): " + jsonOutputFileList.size());
-		
+
 		String content = new QueryBroker().readFile(jsonInputFilePath);
 
 		response.getWriter().write(content);
 
-    }
+	}
 
 	/**
 	 * 
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 * 
 	 */
 
-    @Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
-		
 	}
-    
-   public void getThermoCalculationAgent() {
-	   
-	   JSONObject json = new JSONObject();
-		
-	   json.put("gaussian", "http://www.theworldavatar.com/66d74432-d44a-354f-a07e-0e1a15c049f1/Cl2O6.owl");
-		
-	   // GET ...twa.com/JPS_THERMO/thermocalcualtion?query={"gaussian":".......owl"}
-		
-	   String result = AgentCaller.executeGetWithJsonParameter("JPS_THERMO/thermocalculation", json.toString());
-		
-	   System.out.println("result = " + result);
-   }
 
-	
-} 
+	public void getThermoCalculationAgent() {
+
+		JSONObject json = new JSONObject();
+
+		json.put("gaussian", "http://www.theworldavatar.com/66d74432-d44a-354f-a07e-0e1a15c049f1/Cl2O6.owl");
+
+		// GET ...twa.com/JPS_THERMO/thermocalcualtion?query={"gaussian":".......owl"}
+
+		String result = AgentCaller.executeGetWithJsonParameter("JPS_THERMO/thermocalculation", json.toString());
+
+		System.out.println("result = " + result);
+	}
+
+}
