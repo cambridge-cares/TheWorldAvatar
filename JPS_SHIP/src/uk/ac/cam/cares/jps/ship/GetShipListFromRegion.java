@@ -69,6 +69,27 @@ public class GetShipListFromRegion extends HttpServlet {
 		String shipListStr = PythonHelper.callPython("caresjpsship/shipRegionQuery.py", paramStr
 				, this);
 		
-		res.getWriter().write(shipListStr);
+		System.out.println(shipListStr);
+		res.getWriter().write(convertFromUTF8(shipListStr));
 	}
+
+	
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+    public static String convertFromUTF8(String s) {
+        String out = null;
+        try {
+            out = new String(s.getBytes("ISO-8859-1"), "UTF-8");
+        } catch (java.io.UnsupportedEncodingException e) {
+            return null;
+        }
+        return out;
+    }
+
 }
