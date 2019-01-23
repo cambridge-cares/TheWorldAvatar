@@ -48,7 +48,6 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
  * 
  */
 
-
 @WebServlet("/thermocalculation")
 public class Thermocalculation extends HttpServlet {
 
