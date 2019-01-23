@@ -47,7 +47,6 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
  * stored in json file.
  * 
  */
-
 @WebServlet("/thermocalculation")
 public class Thermocalculation extends HttpServlet {
 
@@ -196,5 +195,4 @@ public class Thermocalculation extends HttpServlet {
 
 		System.out.println("result = " + result);
 	}
-
 }
