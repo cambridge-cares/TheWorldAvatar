@@ -78,7 +78,7 @@ public class CommandHelper {
 		} catch (IOException e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		}
-		
+		logger.info("=== Result === :" + resultString);
 		return resultString; 
 	}
 	

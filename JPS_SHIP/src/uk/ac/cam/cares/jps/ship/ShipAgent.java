@@ -126,17 +126,17 @@ public class ShipAgent extends HttpServlet {
         return content2;
     }
 	
-	public void startConversion(String iriOfPlant,String jsonresultstring) throws Exception {
+	public void startConversion(String iriOfChimney,String jsonresultstring) throws Exception {
 				
 		jenaOwlModel = ModelFactory.createOntologyModel();	
-		jenaOwlModel.read(iriOfPlant);
+		jenaOwlModel.read(iriOfChimney);
 		
 		initOWLClasses(jenaOwlModel);
 
-		doConversion(jenaOwlModel,iriOfPlant,jsonresultstring);
+		doConversion(jenaOwlModel,iriOfChimney,jsonresultstring);
 
 		
-		String filePath2= iriOfPlant.replaceAll("http://www.theworldavatar.com/kb", "C:/TOMCAT/webapps/ROOT/kb").split("#")[0]; //update the file locally
+		String filePath2= iriOfChimney.replaceAll("http://www.theworldavatar.com/kb", "C:/TOMCAT/webapps/ROOT/kb").split("#")[0]; //update the file locally
 		System.out.println("filepath2= "+filePath2);
 		
 		/** save the updated model file */
@@ -196,14 +196,14 @@ public class ShipAgent extends HttpServlet {
 				"}";
 				
 		jenaOwlModel = ModelFactory.createOntologyModel();	
-		jenaOwlModel.read(iri2);
+		jenaOwlModel.read(iri2); // read from ship owl file
 			
-		ResultSet rs_plant = ShipAgent.query(chimneyInfo,jenaOwlModel); 
+		ResultSet rs_ship = ShipAgent.query(chimneyInfo,jenaOwlModel); 
 		
-		ResultSet rs_plant2 = ShipAgent.query(engineInfo,jenaOwlModel); 
+		ResultSet rs_ship2 = ShipAgent.query(engineInfo,jenaOwlModel); 
 		
-		for (; rs_plant.hasNext();) {			
-			QuerySolution qs_p = rs_plant.nextSolution();
+		for (; rs_ship.hasNext();) {			
+			QuerySolution qs_p = rs_ship.nextSolution();
 
 			Resource cpiri = qs_p.getResource("chimney");
 			String valueiri = cpiri.toString();
@@ -213,8 +213,8 @@ public class ShipAgent extends HttpServlet {
 			cpirilist.add(valueiri);
 		}
 		
-		for (; rs_plant2.hasNext();) {			
-			QuerySolution qs_p = rs_plant2.nextSolution();
+		for (; rs_ship2.hasNext();) {			
+			QuerySolution qs_p = rs_ship2.nextSolution();
 
 			Resource engineiri = qs_p.getResource("engine");
 			String valueengineiri = engineiri.toString();
@@ -222,11 +222,30 @@ public class ShipAgent extends HttpServlet {
 			cpirilist2.add(valueengineiri);
 		}
 
+		jenaOwlModel.read(cpirilist.get(0));
+		String wasteStreamInfo = "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#> " + 
+				"PREFIX j7:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> " + 
+				"SELECT ?wasteStream \r\n" + 
+				"WHERE " + 
+				"{ ?chimney j7:hasOutput ?wasteStream ." + 
+				"  ?wasteStream a j4:NonReusableWasteProduct ." + 
+				"}";
+		
+		ResultSet rs_chimney = ShipAgent.query(wasteStreamInfo, jenaOwlModel);
+		String wasteStreamIRI = null;
+		for (; rs_chimney.hasNext();) {			
+			QuerySolution qs_p = rs_chimney.nextSolution();
+
+			Resource cpiri = qs_p.getResource("wasteStream");
+			wasteStreamIRI = cpiri.toString();
+			System.out.println("waste stream iri = " + wasteStreamIRI);
+			logger.info("query result3 = " + wasteStreamIRI);
+		}
 		
 		JSONObject jo=null;
 		
 		try {
-			jo = new JSONObject().put("waste", cpirilist.get(0)); // chimney
+			jo = new JSONObject().put("waste", wasteStreamIRI); // waste stream iri
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -242,7 +261,7 @@ public class ShipAgent extends HttpServlet {
 		JSONObject dataSet = new JSONObject();
 		try {
 			dataSet.put("reactionmechanism",  iri) ;
-			dataSet.put("engine",  cpirilist2.get(0)) ;
+			dataSet.put("engine", cpirilist2.get(0)) ;
 		}
 		catch (JSONException e) {
 				e.printStackTrace();
@@ -258,7 +277,7 @@ public class ShipAgent extends HttpServlet {
 			e.printStackTrace();
 		}
 		
-		//update the emission and other information into the plant owl file
+		//update the emission and other information into the chimney owl file
 		try {
 			startConversion(cpirilist.get(0),jsonsrmresult);
 		} catch (Exception e) {

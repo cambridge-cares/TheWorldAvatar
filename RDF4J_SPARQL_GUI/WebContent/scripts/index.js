@@ -1,15 +1,24 @@
 let getTableResultRowString = (index, resultObj) => {
-	return `<tr>
+	let tdNodes = '';
+	
+	console.log(resultObj);
+	for (let x in resultObj) {
+		console.log(resultObj[x]);
+		tdNodes += `<td>${resultObj[x]}</td>`;
+	}
+	
+	return `<tr class="row-query-results">
 	    		<td>${index}</td>
-	    		<td>x</td>
-	    		<td>${resultObj.x}</td>
-			</tr>`
-}
+    		` +
+    		tdNodes +
+			`</tr>`
+};
 
 $("#execute").on("click", () => {
 	let queryString = $("#query-string").val();
 	let queryResultsTable = $("#table-query-results");
 	$(".query-result").remove();
+	$(".row-query-results").remove();
 	
 	$.ajax({
 		type: 'GET',
@@ -20,10 +29,20 @@ $("#execute").on("click", () => {
 			let resultArray = trimmedResult.split('}');
 			resultArray.pop();
 			
+			firstResult = resultArray[0] + '}';
+			firstResult = firstResult.replace(/\n +/g, "");
+			firstResultObj = JSON.parse(firstResult);
+			$(".row-header").append(`<td class="row-query-results">Index</td>`);
+			for (let x in firstResultObj) {
+				$(".row-header").append(`<td class="row-query-results">${x}</td>`)
+			}
+			
+			
 			let count = 1;
 			for (let result of resultArray) {
 				jsonString = result + '}'
-				resultObj = JSON.parse(jsonString);	
+				jsonString = jsonString.replace(/\n +/g, "");
+				resultObj = JSON.parse(jsonString);
 				queryResultsTable.append(getTableResultRowString(count++, resultObj));
 			}
 		},
@@ -37,4 +56,5 @@ $("#execute").on("click", () => {
 
 $("#clear").on("click", () => {
 	$("#query-string").val('');
+	$(".row-query-results").remove();
 })
