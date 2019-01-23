@@ -16,7 +16,6 @@ import uk.ac.cam.cares.jps.composition.servicemodel.Service;
  * 
  * 
  */
-
 public class TestThermoAgentDescription extends TestCase {
 
 	private static final String JPS_THERMO = "http://www.theworldavatar.com/JPS_THERMO";
