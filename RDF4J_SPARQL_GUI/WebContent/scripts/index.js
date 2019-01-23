@@ -8,7 +8,7 @@ let getTableResultRowString = (index, resultObj) => {
 	}
 	
 	return `<tr class="row-query-results">
-	    		<td>${index}</td>
+	    		<td class="index">${index}</td>
     		` +
     		tdNodes +
 			`</tr>`
@@ -17,7 +17,7 @@ let getTableResultRowString = (index, resultObj) => {
 $("#execute").on("click", () => {
 	let queryString = $("#query-string").val();
 	let queryResultsTable = $("#table-query-results");
-	$(".query-result").remove();
+	$("#num-results").text("");
 	$(".row-query-results").remove();
 	
 	
@@ -29,16 +29,17 @@ $("#execute").on("click", () => {
 			let trimmedResult = data.slice(1, data.length-2);
 			let resultArray = trimmedResult.split('}');
 			if (resultArray.length === 1) {
-				alert("Your query returned 0 results.");
+//				alert("Your query returned 0 results.");
+				$("#num-results").text("No results found.");				
 			} else {
 				resultArray.pop();
 				
 				firstResult = resultArray[0] + '}';
 				firstResult = firstResult.replace(/\n +/g, "");
 				firstResultObj = JSON.parse(firstResult);
-				$(".row-header").append(`<td class="row-query-results">Index</td>`);
+				$(".row-header").append(`<th class="row-query-results first-column">Index</td>`);
 				for (let x in firstResultObj) {
-					$(".row-header").append(`<td class="row-query-results">${x}</td>`)
+					$(".row-header").append(`<th class="row-query-results">${x}</td>`)
 				}
 				
 				
@@ -49,7 +50,8 @@ $("#execute").on("click", () => {
 					resultObj = JSON.parse(jsonString);
 					queryResultsTable.append(getTableResultRowString(count++, resultObj));
 				}
-				alert(`Your query return ${count-1} results.`);
+//				alert(`Your query return ${count-1} results.`);
+				$("#num-results").text(`${count-1} results found.`);
 			}
 		},
 		error: (XMLHttpRequest, textStatus, errorThrown) => { 
@@ -62,5 +64,6 @@ $("#execute").on("click", () => {
 
 $("#clear").on("click", () => {
 	$("#query-string").val('');
+	$("#num-results").text('');
 	$(".row-query-results").remove();
 })
