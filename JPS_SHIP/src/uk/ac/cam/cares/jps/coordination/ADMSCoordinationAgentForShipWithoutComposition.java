@@ -33,8 +33,6 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet 
 	public JSONObject executeWithoutComposition(String jsonInput) {
 		
 		try {
-//			System.out.println("jsonInput: HERE");
-//			System.out.println(jsonInput);
 			
 			JSONObject jo = new JSONObject(jsonInput);
 			
@@ -42,37 +40,37 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet 
 			String jsonArrayOfShipIRI = AgentCaller.executeGet("/JPS_SHIP/GetShipListFromRegion", "query", jsonInput);
 			
 			JSONObject jsonShipIRIs = new JSONObject(jsonArrayOfShipIRI);
-			JSONArray shipIRIs = (JSONArray) jsonShipIRIs.get("shipIRIs");
+			JSONArray shipIRIs = jsonShipIRIs.getJSONArray("shipIRIs");
+			jo.put("ship", shipIRIs);
 			
 			JSONObject jsonReactionShip = new JSONObject();
 			String reactionMechanism = jo.getString("reactionmechanism");
 			jsonReactionShip.put("reactionmechanism", reactionMechanism);
 						
-			for (int i = 0; i < shipIRIs.length(); i++) {
-				String shipIRI = shipIRIs.getString(i);
-				jsonReactionShip.put("ship", shipIRI);
-				
-				String wasteResult = AgentCaller.executeGet("/JPS_SHIP/ShipAgent", "query", jsonReactionShip.toString());
-				String waste = new JSONObject(wasteResult).getString("waste");
-//				jo.put("waste", waste);
-			}
-			// TODO: 
+//			for (int i = 0; i < shipIRIs.length(); i++) {
+//				String shipIRI = shipIRIs.getString(i);
+//				jsonReactionShip.put("ship", shipIRI);
+//				
+//				String wasteResult = AgentCaller.executeGet("/JPS_SHIP/ShipAgent", "query", jsonReactionShip.toString());
+//				String waste = new JSONObject(wasteResult).getString("waste");
+////				jo.put("waste", waste);
+//			}
+			// TODO: SC
 			// Iterate over list of ship iris and perform query of each ship.
-			// Store results of ship GeoJSON variable
 			
 						
-//			String regionToCityResult = execute("/JPS/RegionToCity", jsonInput);
-//			String city = new JSONObject(regionToCityResult).getString("city");
-//			jo.put("city", city);
-//			
-//			String result = execute("/JPS/GetBuildingListFromRegion", jo.toString());
-//			JSONArray building = new JSONObject(result).getJSONArray("building");
-//			jo.put("building", building);
-//			
-//			result = execute("/JPS_COMPOSITION/CityToWeather", regionToCityResult);
-//			JSONObject weatherstate = new JSONObject(result).getJSONObject("weatherstate");
-//			jo.put("weatherstate", weatherstate);
-//			
+			String regionToCityResult = execute("/JPS/RegionToCity", jsonInput);
+			String city = new JSONObject(regionToCityResult).getString("city");
+			jo.put("city", city);
+			
+			String result = execute("/JPS/GetBuildingListFromRegion", jo.toString());
+			JSONArray building = new JSONObject(result).getJSONArray("building");
+			jo.put("building", building);
+			
+			result = execute("/JPS_COMPOSITION/CityToWeather", regionToCityResult);
+			JSONObject weatherstate = new JSONObject(result).getJSONObject("weatherstate");
+			jo.put("weatherstate", weatherstate);
+			
 //			result = execute("/JPS/ADMSAgent", jo.toString());
 //			String folder = new JSONObject(result).getString("folder");
 //			jo.put("folder", folder);

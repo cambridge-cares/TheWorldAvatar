@@ -28,13 +28,10 @@ public class GetShipListFromRegion extends HttpServlet {
         super();
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		res.setContentType("application/json");
-		String[] arrayOfShipIRIs = { 
-				"http://www.theworldavatar.com/kb/ships/Ship-1.owl#Ship-1",
+//		res.setContentType("application/json");
+//		String[] arrayOfShipIRIs = { 
+//				"http://www.theworldavatar.com/kb/ships/Ship-1.owl#Ship-1",
 //		        "http://www.theworldavatar.com/kb/ships/Ship-2.owl#Ship-2",
 //		        "http://www.theworldavatar.com/kb/ships/Ship-3.owl#Ship-3",
 //		        "http://www.theworldavatar.com/kb/ships/Ship-4.owl#Ship-4",
@@ -44,15 +41,16 @@ public class GetShipListFromRegion extends HttpServlet {
 //		        "http://www.theworldavatar.com/kb/ships/Ship-8.owl#Ship-8",
 //		        "http://www.theworldavatar.com/kb/ships/Ship-9.owl#Ship-9",
 //		        "http://www.theworldavatar.com/kb/ships/Ship-10.owl#Ship-10"
-		};
-		
-//		String[] arrayOfShipIRIs1 = { 
-//				"http://www.theworldavatar.com/kb/ships/Ship-1.owl#Ship-1"
 //		};
+//		
+//		JSONObject result = new JSONObject();
+//		try {
+//			result.put("shipIRIs", arrayOfShipIRIs);
+//			res.getWriter().write(result.toString());
+//		} catch (JSONException e) {
+//			e.printStackTrace();
+//		}
 		
-//		Gson g = new Gson();
-//		response.getWriter().write(g.toJson(arrayOfShipIRIs));
-		double xmin, xmax, ymin, ymax;
 		String shipEp = "dummy";
 		String connectType= "endpoint";
 		int shipNum = 25;
