@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import org.json.JSONException;
 import org.junit.Test;
 
-import uk.ac.cam.cares.jps.composition.ServiceModel.MessagePart;
+import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
 
 public class ServiceDiscoveryTest {
 

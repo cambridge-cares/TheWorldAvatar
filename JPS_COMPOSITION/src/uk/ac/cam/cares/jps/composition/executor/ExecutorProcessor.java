@@ -9,8 +9,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
-import uk.ac.cam.cares.jps.composition.ServiceModel.MessagePart;
-import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
+import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
+import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 public class ExecutorProcessor {
 

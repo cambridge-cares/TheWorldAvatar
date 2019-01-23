@@ -9,7 +9,7 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceBuilder;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceReader;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceWriter;
-import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
+import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 public class TestAgentDescriptions extends TestCase {
 

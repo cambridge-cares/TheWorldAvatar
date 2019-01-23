@@ -1,13 +1,13 @@
-package uk.ac.cam.cares.jps.composition.EngineModel;
+package uk.ac.cam.cares.jps.composition.enginemodel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import uk.ac.cam.cares.jps.composition.ServiceModel.MessagePart;
-import uk.ac.cam.cares.jps.composition.ServiceModel.Resource;
-import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
+import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
+import uk.ac.cam.cares.jps.composition.servicemodel.Resource;
+import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 @JsonIgnoreProperties(value = {"outputs","allInputs","allOutputs"})
 
 public class Layer {
