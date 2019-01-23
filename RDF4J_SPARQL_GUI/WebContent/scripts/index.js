@@ -20,6 +20,7 @@ $("#execute").on("click", () => {
 	$(".query-result").remove();
 	$(".row-query-results").remove();
 	
+	
 	$.ajax({
 		type: 'GET',
 		url: "/RDF4J_SPARQL_GUI/SPARQLEndpointProxy",
@@ -27,23 +28,28 @@ $("#execute").on("click", () => {
 		success: data => {
 			let trimmedResult = data.slice(1, data.length-2);
 			let resultArray = trimmedResult.split('}');
-			resultArray.pop();
-			
-			firstResult = resultArray[0] + '}';
-			firstResult = firstResult.replace(/\n +/g, "");
-			firstResultObj = JSON.parse(firstResult);
-			$(".row-header").append(`<td class="row-query-results">Index</td>`);
-			for (let x in firstResultObj) {
-				$(".row-header").append(`<td class="row-query-results">${x}</td>`)
-			}
-			
-			
-			let count = 1;
-			for (let result of resultArray) {
-				jsonString = result + '}'
-				jsonString = jsonString.replace(/\n +/g, "");
-				resultObj = JSON.parse(jsonString);
-				queryResultsTable.append(getTableResultRowString(count++, resultObj));
+			if (resultArray.length === 1) {
+				alert("Your query returned 0 results.");
+			} else {
+				resultArray.pop();
+				
+				firstResult = resultArray[0] + '}';
+				firstResult = firstResult.replace(/\n +/g, "");
+				firstResultObj = JSON.parse(firstResult);
+				$(".row-header").append(`<td class="row-query-results">Index</td>`);
+				for (let x in firstResultObj) {
+					$(".row-header").append(`<td class="row-query-results">${x}</td>`)
+				}
+				
+				
+				let count = 1;
+				for (let result of resultArray) {
+					jsonString = result + '}'
+					jsonString = jsonString.replace(/\n +/g, "");
+					resultObj = JSON.parse(jsonString);
+					queryResultsTable.append(getTableResultRowString(count++, resultObj));
+				}
+				alert(`Your query return ${count-1} results.`);
 			}
 		},
 		error: (XMLHttpRequest, textStatus, errorThrown) => { 
