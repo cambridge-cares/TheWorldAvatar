@@ -42,6 +42,7 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet 
 			JSONObject jsonShipIRIs = new JSONObject(jsonArrayOfShipIRI);
 			JSONArray shipIRIs = jsonShipIRIs.getJSONArray("shipIRIs");
 			jo.put("ship", shipIRIs);
+			System.out.println(shipIRIs.toString());
 			
 			JSONObject jsonReactionShip = new JSONObject();
 			String reactionMechanism = jo.getString("reactionmechanism");
