@@ -89,7 +89,6 @@ class shipRegionQuery(object):
             if  x - self.range[0]>=0 and x - self.range[2] <= 0 and y - self.range[1] >= 0 and y - self.range[3]<= 0:  
                 filtered.append(auri)
                 #print('add to filtered {}'.format(auri))
-                break
     
         return filtered
     
