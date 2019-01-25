@@ -72,16 +72,11 @@ public class GetShipListFromRegion extends HttpServlet {
 //		System.out.println(shipListStr);
 //		res.getWriter().write(convertFromUTF8(shipListStr));
 	}
-
 	
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
+	
     public static String convertFromUTF8(String s) {
         String out = null;
         try {
