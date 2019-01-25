@@ -1,6 +1,10 @@
 package uk.ac.cam.cares.jps.ship;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -12,6 +16,8 @@ import org.json.JSONObject;
 
 import com.google.gson.Gson;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 /**
@@ -70,17 +76,27 @@ public class GetShipListFromRegion extends HttpServlet {
 		pparams[2] = ""+shipNum;
 		try {
 			pparams[3] =""+ input.getJSONObject("region").getJSONObject("lowercorner").get("lowerx");
-			pparams[4]  = ""+ input.getJSONObject("region").getJSONObject("uppercorner").get("upperx");
-			pparams[5]  = ""+ input.getJSONObject("region").getJSONObject("lowercorner").get("lowery");
+			pparams[5]  = ""+ input.getJSONObject("region").getJSONObject("uppercorner").get("upperx");
+			pparams[4]  = ""+ input.getJSONObject("region").getJSONObject("lowercorner").get("lowery");
 			pparams[6]  = ""+ input.getJSONObject("region").getJSONObject("uppercorner").get("uppery");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
+		String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsship", this);
 
-		String paramStr = String.join(" ", pparams);
-		String shipListStr = PythonHelper.callPython("caresjpsship/shipRegionQuery.py", paramStr
-				, this);
+		ArrayList<String> args = new ArrayList<String>();
+		args.add("python");
+		args.add("shipRegionQuery.py"); 
+		args.add(pparams[0]);
+		args.add(pparams[1]);
+		args.add(pparams[2]);
+		args.add(pparams[3]);
+		args.add(pparams[4]);
+		args.add(pparams[5]);
+		args.add(pparams[6]);
+
+		String shipListStr = CommandHelper.executeCommands(targetFolder, args);
 		
 		System.out.println(shipListStr);
 		res.getWriter().write(convertFromUTF8(shipListStr));
