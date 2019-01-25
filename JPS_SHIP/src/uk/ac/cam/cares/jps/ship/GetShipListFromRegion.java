@@ -54,18 +54,31 @@ public class GetShipListFromRegion extends HttpServlet {
 		String shipEp = "http://172.25.182.41/damecoolquestion/ships-persistent/sparql";
 		String connectType= "endpoint";
 		int shipNum = 25;
-       //get parameter range		
+		JSONObject input = null;
+		try {
+			input = new JSONObject(req.getParameter("query"));
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(input.toString());  
+		//get parameter range		
 		String[] pparams = new String[7];
+		
 		pparams[0] = shipEp;
 		pparams[1] = connectType;
 		pparams[2] = ""+shipNum;
-		pparams[3] = req.getParameter("xmin");
-		pparams[4]  = req.getParameter("xmax");
-		pparams[5]  = req.getParameter("ymin");
-		pparams[6]  = req.getParameter("ymax");
+		try {
+			pparams[3] =""+ input.getJSONObject("region").getJSONObject("lowercorner").get("lowerx");
+			pparams[4]  = ""+ input.getJSONObject("region").getJSONObject("uppercorner").get("upperx");
+			pparams[5]  = ""+ input.getJSONObject("region").getJSONObject("lowercorner").get("lowery");
+			pparams[6]  = ""+ input.getJSONObject("region").getJSONObject("uppercorner").get("uppery");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 
 		String paramStr = String.join(" ", pparams);
-		
 		String shipListStr = PythonHelper.callPython("caresjpsship/shipRegionQuery.py", paramStr
 				, this);
 		
@@ -73,9 +86,9 @@ public class GetShipListFromRegion extends HttpServlet {
 		res.getWriter().write(convertFromUTF8(shipListStr));
 	}
 	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
-	}
+//	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+//		doGet(request, response);
+//	}
 	
     public static String convertFromUTF8(String s) {
         String out = null;
