@@ -33,8 +33,16 @@ class shipRegionQuery(object):
         self.endpoint = endpoint
         self.connectType = connectType 
         coordC = defineCoordConvert('epsg:28992','epsg:4326')
-        self.range = (*coordC(float(xmin), float(ymin)), *coordC(float(xmax), float(ymax)))
+        lower = coordC(float(xmin), float(ymin))
+        upper = coordC(float(xmax), float(ymax))
+        xlow = math.min(lower[0], upper[0])     
+        xupper = math.max(lower[0], upper[0])     
+        ylow = math.min(lower[1], upper[1])     
+        yupper =  math.max(lower[1], upper[1])   
+        self.range = (xlow, ylow, xupper, yupper)
+
         self.address = None
+        print(self.range)
 
 
 
