@@ -10,6 +10,7 @@ import os
 import json
 import rdflib.plugins.sparql.results.jsonresults as jsresult
 from collections import namedtuple
+from pyproj import Proj, transform
 
 
 
@@ -31,9 +32,18 @@ class shipRegionQuery(object):
         self.numLimit = numLimit
         self.endpoint = endpoint
         self.connectType = connectType 
-        self.range = (float(xmin), float(xmax), float(ymin), float(ymax))
+        coordC = defineCoordConvert('epsg:28992','epsg:4326')
+        lower = coordC(float(xmin), float(ymin))
+        upper = coordC(float(xmax), float(ymax))
+        xlow = min(lower[0], upper[0])     
+        xupper = max(lower[0], upper[0])     
+        ylow = min(lower[1], upper[1]) - 0.01    
+        yupper =  max(lower[1], upper[1]) - 0.01   
+        self.range = (xlow, ylow, xupper, yupper)
+
         self.address = None
-        print(self.range)
+#         print(self.range)
+
 
 
 
@@ -76,10 +86,9 @@ class shipRegionQuery(object):
         for row in coordQresults:
             x,y,auri = float(row['x'].toPython()), float(row['y'].toPython()),row['a'].toPython()
             #print("{},{},{}".format(x, y, content))
-            if  x - self.range[0]>=0 and x - self.range[1] <= 0 and y - self.range[2] >= 0 and y - self.range[3]<= 0:  
+            if  x - self.range[0]>=0 and x - self.range[2] <= 0 and y - self.range[1] >= 0 and y - self.range[3]<= 0:  
                 filtered.append(auri)
-                print('add to filtered {}'.format(auri))
-                break
+                #print('add to filtered {}'.format(auri))
     
         return filtered
     
@@ -97,19 +106,19 @@ class shipRegionQuery(object):
                     if value['type'] == 'literal' and 'datatype' in value:
                         value['type'] = 'typed-literal'
 
-        print('requesting @ '+self.address+" with query:")
+        #print('requesting @ '+self.address+" with query:")
         #print(str)
         resp = requests.get(self.address, params = {'query':str}, timeout = 1500, headers = {'user-agent': 'my-app/0.0.1'})
-        print('raw resp:')
+        #print('raw resp:')
 
-        print(resp.json())
+        #print(resp.json())
         result = resp.json()
         literal2TLit(result)
-        print('literal to typed-literal')
-        print(result)
+        #print('literal to typed-literal')
+        #print(result)
         qres = jsresult.JSONResult(result)#json decoded
-        print('after parse:')
-        print(qres)
+        #print('after parse:')
+        #print(qres)
         return qres
 
 
@@ -151,7 +160,7 @@ class shipRegionQuery(object):
         self.qmethodMap = {'parse': self.queryLocalGraph, 'endpoint':self.queryEndpoint}
 
         if not sameGraph(address, self.address):
-            print ('parsing graph: '+ address)
+            #print ('parsing graph: '+ address)
             if connectType not in self.qmethodMap:
                 raise exception('db connection method not defined')
             #self.connectType = connectType
@@ -182,9 +191,17 @@ def uri2name(uri):
     base = 'http://www.theworldavatar.com/'
     return uri.split('#')[1]
 
+def defineCoordConvert(inCode, outCode):
+    inProj = Proj(init=inCode)
+    outProj = Proj(init=outCode)
+    def coordConvert(x,y):
+        return transform(inProj, outProj, x, y)
+    return coordConvert
 
 
 if __name__ == "__main__":
     q  = shipRegionQuery(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4],sys.argv[5],sys.argv[6],sys.argv[7])
-
-    print(json.dumps({"arrayOfShipIRIs" : q.queryRange()}, ensure_ascii=False).encode('utf-8'))
+    res = q.queryRange()
+    pythonObj = {}
+    pythonObj["shipIRIs"] = res
+    print(json.dumps(pythonObj))

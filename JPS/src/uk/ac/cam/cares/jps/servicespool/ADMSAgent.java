@@ -62,7 +62,7 @@ public class ADMSAgent extends HttpServlet {
 			if (!cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Singapore")) {
 				plantIRI = input.getString("plant"); //
 			}
-			
+
 			JSONObject weather = input.getJSONObject("weatherstate");
 			
 			//================== request agent GetBuildingDataForSimulation ===============
