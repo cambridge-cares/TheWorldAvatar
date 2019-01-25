@@ -142,7 +142,7 @@ public class ADMSAgent extends HttpServlet {
 				
 
 				JSONObject newRegion  = new JSONObject(String.format(regionTemplate, ux,uy,lx,ly));
-//				writeAPLFile(newBuildingData,plantIRI, newRegion);
+				writeAPLFile(newBuildingData,plantIRI, newRegion);
 			}
 
  
@@ -156,16 +156,16 @@ public class ADMSAgent extends HttpServlet {
 			
 			// =================== Start ADMS when input files are written =======================
 			
-//			String targetFolder = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
-//			if(request.getServerName().contains("localhost")) {
-//				//uncomment if tested in kevin's computer
-//				startADMS(targetFolder);
-//			} else {
-//				startADMS(targetFolder);
-//			}
-//			JSONObject result = new JSONObject();
-//			result.put("folder", targetFolder);
-//			response.getWriter().write(result.toString()); // TODO: ZXC Read the output file and then return JSON
+			String targetFolder = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
+			if(request.getServerName().contains("localhost")) {
+				//uncomment if tested in kevin's computer
+				startADMS(targetFolder);
+			} else {
+				startADMS(targetFolder);
+			}
+			JSONObject result = new JSONObject();
+			result.put("folder", targetFolder);
+			response.getWriter().write(result.toString()); // TODO: ZXC Read the output file and then return JSON
 			// ====================================================================================
 			
 		} catch (JSONException e) {
