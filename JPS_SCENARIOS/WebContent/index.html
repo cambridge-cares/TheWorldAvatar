@@ -1,0 +1,167 @@
+
+<html>
+
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+    <title>J-Park Simulator : Agents and Scenarios</title>
+    
+    
+	<script src="scripts/start.js"></script>
+	<script src="scripts/jquery-3.3.1.js"></script>
+	
+	<!--  link rel="stylesheet" type="text/css" href="css/datatables.css">
+	<script src="scripts/datatables.js"></script-->
+	
+	<!-- link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/sl-1.2.6/datatables.min.css"/>
+	<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/sl-1.2.6/datatables.min.js"></script-->
+	
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"/>
+	<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
+</head>
+<style>
+TH {
+    padding: 5px; align-content:center
+}
+</style>
+<body>
+<div class="jumbotron text-center" id="topBanner">
+
+
+    <a href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
+        <img  src="images/cam_lang_negativ1%20NEW_0.png">
+    </a>
+       <h1 id="head1">J-Park Simulator : Agents and Scenarios</h1>
+	   
+	   <span id="readme-button">?</span>
+	<span id="readme-text">This agent ... TODO</span>
+
+		
+<p id="description">Description: TODO  </p>
+
+</div>
+
+
+
+
+
+
+<div class="container">
+  <div class="panel">
+    <button id="loadData" class="btn btn-default">Load Data</button>
+
+    <table id="example" class="display" cellspacing="0" width="100%">
+      <thead>
+        <tr>
+          <th>name</th>
+          <th>type</th>
+          <th>description</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+</div>
+
+
+<div>
+	<p><b>operations</b></p>
+	<input type="radio" id="op0" name="operationgroup">
+	<label id="op0label"></label>
+	<input type="radio" id="op1" name="operationgroup">
+ 	<label id="op1label"></label>
+	<input type="radio" id="op2" name="operationgroup">
+  	<label id="op2label"></label>
+    <input type="radio" id="op3" name="operationgroup">
+ 	<label id="op3label"></label>
+	<input type="radio" id="op4" name="operationgroup">
+	<label id="op4label"></label>
+</div>
+
+<div>
+   <p><b>parameters</b></p>
+   <table id="tableparams">
+        <tr>
+          <th>in/out</th>
+          <th>name</th>
+          <th>class/datatype</th>
+          <th>instance/value</th>
+        </tr>
+      	<tr>
+      	  <td> <input type="checkbox" id="paraminout0"> </td>
+      	  <td> <input type="text" id="paramname0"> </td>
+      	  <td> <input type="text" id="paramtype0"> </td>
+      	  <td> <input type="text" id="paramvalue0"> </td>
+     	</tr>
+     	<tr>
+      	  <td> <input type="checkbox" id="paraminout1"> </td>
+      	  <td> <input type="text" id="paramname1"> </td>
+      	  <td> <input type="text" id="paramtype1"> </td>
+      	  <td> <input type="text" id="paramvalue1"> </td>
+     	</tr>
+     	<tr>
+    	  <td> <input type="checkbox" id="paraminout2"> </td>
+    	  <td> <input type="text" id="paramname2"> </td>
+      	  <td> <input type="text" id="paramtype2"> </td>
+      	  <td> <input type="text" id="paramvalue2"> </td>
+     	</tr>
+       	<tr>
+      	  <td> <input type="checkbox" id="paraminout3"> </td>
+      	  <td> <input type="text" id="paramname3"> </td>
+      	  <td> <input type="text" id="paramtype3"> </td>
+      	  <td> <input type="text" id="paramvalue3"> </td>
+     	</tr>
+     	<tr>
+      	  <td> <input type="checkbox" id="paraminout4"> </td>
+      	  <td> <input type="text" id="paramname4"> </td>
+      	  <td> <input type="text" id="paramtype4"> </td>
+      	  <td> <input type="text" id="paramvalue4"> </td>
+     	</tr> 
+     	<tr>
+      	  <td> <input type="checkbox" id="paraminout5"> </td>
+      	  <td> <input type="text" id="paramname5"> </td>
+      	  <td> <input type="text" id="paramtype5"> </td>
+      	  <td> <input type="text" id="paramvalue5"> </td>
+     	</tr>
+     	<tr>
+      	  <td> <input type="checkbox" id="paraminout6"> </td>
+      	  <td> <input type="text" id="paramname6"> </td>
+      	  <td> <input type="text" id="paramtype6"> </td>
+      	  <td> <input type="text" id="paramvalue6"> </td>
+     	</tr>
+     	<tr>
+      	  <td> <input type="checkbox" id="paraminout7"> </td>
+      	  <td> <input type="text" id="paramname7"> </td>
+      	  <td> <input type="text" id="paramtype7"> </td>
+      	  <td> <input type="text" id="paramvalue7"> </td>
+     	</tr>
+     	<tr>
+      	  <td> <input type="checkbox" id="paraminout8"> </td>
+      	  <td> <input type="text" id="paramname8"> </td>
+      	  <td> <input type="text" id="paramtype8"> </td>
+      	  <td> <input type="text" id="paramvalue8"> </td>
+     	</tr>
+     	<tr>
+      	  <td> <input type="checkbox" id="paraminout9"> </td>
+      	  <td> <input type="text" id="paramname9"> </td>
+      	  <td> <input type="text" id="paramtype9"> </td>
+      	  <td> <input type="text" id="paramvalue9"> </td>
+     	</tr>
+    </table>
+</div>
+
+
+<button id="start">Start simulation</button>
+
+</body>
+</html>
