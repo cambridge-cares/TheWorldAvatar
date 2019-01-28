@@ -12,8 +12,8 @@ import uk.ac.cam.cares.jps.agents.ontology.ServiceBuilder;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 /**
  * 
- * @author NK
- * 
+ * @author NK510
+ * Creates agent description for thermo calculation ans save it as abox of msm ontology.
  * 
  */
 public class TestThermoAgentDescription extends TestCase {

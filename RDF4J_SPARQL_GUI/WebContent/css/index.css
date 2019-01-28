@@ -1,3 +1,7 @@
+body {
+	margin: 0 0;
+}
+
 .row {
     margin: 12px 0;
 }
@@ -12,8 +16,9 @@ label {
     width: 10%;
 }
 
-body {
+#user-interface {
     background: linear-gradient(#b3b3b3, #f7f7f7);
+    padding: 8px 8px;
 }
 
 .header > p {
@@ -22,15 +27,24 @@ body {
     border-bottom: 1px solid rgba(79, 79, 79, 0.97);
 }
 
-#actions > p {
+#actions > p, #results > p {
     display: inline-block;
     width: 10%;
+}
+
+#num-results {
+	display: inline-block;
+	width: 90%;
 }
 
 table {
   font-family: arial, sans-serif;
   border-collapse: collapse;
+
+  table-layout: fixed;
   width: 100%;
+  word-break: break-all;
+
 }
 
 td, th {
@@ -39,10 +53,23 @@ td, th {
   padding: 8px;
 }
 
+.index {
+	width: 20px;
+}
+
 tr:nth-child(even) {
   background-color: #dddddd;
 }
 
 .row-header {
 	font-weight: bold;
+	background-color: #dddddd;
+}
+
+.first-column {
+	width: 60px;
+}
+
+#table {
+	padding: 0px 8px;
 }
