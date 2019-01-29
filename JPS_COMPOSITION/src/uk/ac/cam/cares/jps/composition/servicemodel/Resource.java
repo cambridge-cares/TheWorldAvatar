@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.composition.ServiceModel;
+package uk.ac.cam.cares.jps.composition.servicemodel;
 
 import java.net.URI;
 import java.util.Date;

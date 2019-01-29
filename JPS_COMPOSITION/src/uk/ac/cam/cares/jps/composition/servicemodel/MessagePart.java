@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.composition.ServiceModel;
+package uk.ac.cam.cares.jps.composition.servicemodel;
 
 /*
  * Author: ZHOU XIAOCHI 2018-06-18
@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import uk.ac.cam.cares.jps.composition.EngineModel.Edge;
+import uk.ac.cam.cares.jps.composition.enginemodel.Edge;
 @JsonIgnoreProperties(value = {"typeNamesUnderThisMessagePart"})
 public class MessagePart{
 

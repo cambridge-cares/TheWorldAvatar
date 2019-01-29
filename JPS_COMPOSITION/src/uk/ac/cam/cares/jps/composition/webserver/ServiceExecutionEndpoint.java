@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.composition.WebServer;
+package uk.ac.cam.cares.jps.composition.webserver;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

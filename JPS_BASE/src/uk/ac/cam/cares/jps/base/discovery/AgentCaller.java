@@ -82,7 +82,19 @@ public class AgentCaller {
 		} catch (Exception e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		} 
-	}	
+	}
+	
+	public static String executeGetWithURL(String url) {
+		URI uri = createURI(url);
+		HttpGet request = new HttpGet(uri);
+		return AgentCaller.executeGet(request);
+	}
+	
+	public static String executeGetWithURLAndJSON(String url, String json) {
+		URI uri = createURI(url, JSON_PARAMETER_KEY, json);
+		HttpGet request = new HttpGet(uri);
+		return AgentCaller.executeGet(request);
+	}
 	
 	public static URI createURI(String url, String... keyOrValue) {
 		
@@ -106,10 +118,12 @@ public class AgentCaller {
 			builder.setPort(port);
 		}
 		
-		for (int i=0; i<keyOrValue.length; i=i+2) {
-			String key = keyOrValue[i];
-			String value = keyOrValue[i+1];
-			builder.setParameter(key, value);
+		if (keyOrValue != null) {
+			for (int i=0; i<keyOrValue.length; i=i+2) {
+				String key = keyOrValue[i];
+				String value = keyOrValue[i+1];
+				builder.setParameter(key, value);
+			}
 		}
 	
 		try {
@@ -194,17 +208,27 @@ public class AgentCaller {
 		out.print(message);
 	}
 	
-	private static String executeGet(HttpGet request) {
+	public static String executeGet(HttpGet request) {
 		try {
 			StringBuffer buf = new StringBuffer(request.getMethod()).append(" ").append(request.getURI().getScheme()).append("://")
-					.append(request.getURI().getHost()).append(":").append(request.getURI().getPort())
-					.append(request.getURI().getPath())
+					.append(request.getURI().getHost());
+			int port = request.getURI().getPort();
+			if (port > -1) {
+				buf.append(":").append(request.getURI().getPort());
+			}
+			
+			buf.append(request.getURI().getPath())
 					.append(" DECODED ?").append(request.getURI().getQuery());
 			logger.info(buf.toString());
+			
+			// use the next line to log the percentage encoded query component
+			//logger.info(request.toString());
 			
 			HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 			
 			if (httpResponse.getStatusLine().getStatusCode() != 200) {
+				String body =  EntityUtils.toString(httpResponse.getEntity());
+				logger.error(body);
 				throw new JPSRuntimeException("HTTP response with error = " + httpResponse.getStatusLine());
 			}
 		
@@ -260,6 +284,10 @@ public class AgentCaller {
 	}
 	
 	public static void printToResponse(Object object, HttpServletResponse resp) {
+		
+		if (object == null) {
+			return;
+		}
 		
 		String message = null;
 		if (object instanceof String) {

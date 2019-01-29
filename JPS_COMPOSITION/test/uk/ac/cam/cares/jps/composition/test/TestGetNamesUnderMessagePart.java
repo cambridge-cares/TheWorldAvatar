@@ -9,8 +9,8 @@ import org.junit.After;
 import org.junit.Test;
 
 import uk.ac.cam.cares.jps.agents.ontology.ServiceReader;
-import uk.ac.cam.cares.jps.composition.ServiceModel.MessagePart;
-import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
+import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
+import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 public class TestGetNamesUnderMessagePart {
 

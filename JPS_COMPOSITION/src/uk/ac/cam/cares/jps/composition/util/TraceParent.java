@@ -2,11 +2,11 @@ package uk.ac.cam.cares.jps.composition.util;
 
 import java.util.ArrayList;
 
-import uk.ac.cam.cares.jps.composition.EngineModel.Edge;
-import uk.ac.cam.cares.jps.composition.EngineModel.Graph;
-import uk.ac.cam.cares.jps.composition.EngineModel.SubTrack;
-import uk.ac.cam.cares.jps.composition.ServiceModel.MessagePart;
-import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
+import uk.ac.cam.cares.jps.composition.enginemodel.Edge;
+import uk.ac.cam.cares.jps.composition.enginemodel.Graph;
+import uk.ac.cam.cares.jps.composition.enginemodel.SubTrack;
+import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
+import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 public class TraceParent {
 

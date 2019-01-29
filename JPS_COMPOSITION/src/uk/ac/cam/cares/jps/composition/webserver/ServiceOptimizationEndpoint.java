@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.composition.WebServer;
+package uk.ac.cam.cares.jps.composition.webserver;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,8 +13,8 @@ import org.json.HTTP;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.composition.EngineModel.Graph;
-import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
+import uk.ac.cam.cares.jps.composition.enginemodel.Graph;
+import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 import uk.ac.cam.cares.jps.composition.util.FormatTranslator;
 import uk.ac.cam.cares.jps.composition.util.OptimalPathSearcher;
 
