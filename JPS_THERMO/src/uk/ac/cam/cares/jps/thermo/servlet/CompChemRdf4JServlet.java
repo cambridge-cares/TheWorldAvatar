@@ -23,11 +23,12 @@ import uk.ac.cam.cares.jps.thermo.manager.SPARQLManager;
  * This servlet does the following:
  * 1. Queries CompChem remote repository (RDF4J), saves results of that query as Json file.
  * 2. Run thermo calculations and generates json file that contains results of that calculation.
+ * 3. Implementation is not thread safe.
  *
  */
 
 @WebServlet("/compchemcalculation")
-public class CompChemRdf4JServlet extends HttpServlet {
+public class CompChemRdf4JServlet extends HttpServlet  {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -47,7 +48,7 @@ public class CompChemRdf4JServlet extends HttpServlet {
 	private String folderName = "";
 	
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	synchronized protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		/**
 		 * 
@@ -95,7 +96,7 @@ public class CompChemRdf4JServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	synchronized protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		super.doPost(request, response);
 	

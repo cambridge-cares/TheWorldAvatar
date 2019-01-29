@@ -5,7 +5,7 @@ import java.io.IOException;
 
 public class ThermoCalculation {
 
-	public void runThermoCalculation (String jsonInputFilePath, String catalinaFolderPath) throws IOException {
+	synchronized public  void runThermoCalculation (String jsonInputFilePath, String catalinaFolderPath) throws IOException {
 		
 		/**
 		 * @author NK510

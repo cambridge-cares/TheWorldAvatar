@@ -24,7 +24,7 @@ public class SPARQLManager {
 	
 	
 	
-	public void runCompChemSPARQL(String gaussian, String jsonInputFilePath,String serverUrl ) {
+	public synchronized void runCompChemSPARQL(String gaussian, String jsonInputFilePath,String serverUrl ) {
 		
 		/**
 		 * 

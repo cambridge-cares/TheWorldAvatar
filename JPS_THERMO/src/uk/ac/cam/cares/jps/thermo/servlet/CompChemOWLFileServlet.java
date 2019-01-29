@@ -46,7 +46,7 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
  * 
  */
 
-@WebServlet("/thermocalculation")
+@WebServlet("/calculation")
 public class CompChemOWLFileServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
@@ -82,7 +82,7 @@ public class CompChemOWLFileServlet extends HttpServlet {
 	 */
 
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+	synchronized protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 //		super.doGet(request, response);
@@ -176,7 +176,7 @@ public class CompChemOWLFileServlet extends HttpServlet {
 	 */
 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+	synchronized protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
