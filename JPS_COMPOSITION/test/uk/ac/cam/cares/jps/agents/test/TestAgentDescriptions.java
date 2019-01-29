@@ -52,7 +52,7 @@ public class TestAgentDescriptions extends TestCase {
 		backAndforthAndWrite(service, "_SurrogateModel");
 	}
 	
-	private void backAndforthAndWrite(Service service, String name) throws URISyntaxException, FileNotFoundException {
+	public static void backAndforthAndWrite(Service service, String name) throws URISyntaxException, FileNotFoundException {
 		
 		new ServiceWriter().writeAsOwlFile(service, name, "C://JPS_DATA/workingdir/JPS_COMPOSITION/testagents");
 		

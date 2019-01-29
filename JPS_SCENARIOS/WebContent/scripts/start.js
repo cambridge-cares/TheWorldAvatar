@@ -2,9 +2,8 @@ $(function() {
 
   var selected = [];
   var loadeddata;
-  var table = $("#example").DataTable();
-  //var testDataUrl = "https://raw.githubusercontent.com/chennighan/RapidlyPrototypeJavaScript/master/lesson4/data.json"
-  var testDataUrl = "http://localhost:8080/JPS_SCENARIO/scenariomanagement/listscenarios"
+  var table = $("#tablescenarios").DataTable();
+  var listScenariosUrl = "http://localhost:8080/JPS_SCENARIO/scenariomanagement/listscenarios"
   var selectedScenario;
   var selectedOperation;
  
@@ -15,7 +14,7 @@ $(function() {
   function loadData() {
     $.ajax({
       type: 'GET',
-      url: testDataUrl,
+      url: listScenariosUrl,
       contentType: "text/plain",
       dataType: 'json',
       success: function (data) {
@@ -35,12 +34,11 @@ $(function() {
     loadeddata = data;
     
     // clear the table before populating it with more data
-    //$("#example").DataTable().clear();
+    //$("#tablescenarios").DataTable().clear();
     table.clear();
     
     var scenarios = loadeddata.result;
-    for(var i in scenarios)
-    {
+    for(var i in scenarios) {
       var name = scenarios[i].name;
       var type = scenarios[i].type;
       var id = scenarios[i].id;
@@ -49,7 +47,7 @@ $(function() {
      // warning: don't use table here because there is a difference
      // between dataTable() and DataTable()
      // see https://www.datatables.net/reference/api/ 
-     $('#example').dataTable().fnAddData( [
+     $('#tablescenarios').dataTable().fnAddData( [
         name,
         type,
         irilink
@@ -57,8 +55,28 @@ $(function() {
     }
   }
   
+  $('#createscenariobutton').click(function() {
+	  
+	  var scenarioname = $('#newscenarioname').val();
+	  
+	  var url = "http://localhost:8080/JPS_SCENARIO/scenario/" + scenarioname;
+	  
+	    $.ajax({
+	        type: 'GET',
+	        url: url,
+	        contentType: "text/plain",
+	        dataType: 'json',
+	        success: function (data) {
+	          loadData(data);
+	        },
+	        error: function (e) {
+	          console.log("There was an error with your request...");
+	          console.log("error: " + JSON.stringify(e));
+	        }
+	      });
+  });
   
-  $('#example tbody').on('click', 'tr', function () {
+  $('#tablescenarios tbody').on('click', 'tr', function () {
       var data = table.row( this ).data();
       //alert( 'You clicked on '+data[0]+'\'s row' );
       
@@ -74,18 +92,17 @@ $(function() {
 	    }
 	  }
       
+       $('#tableparams2').DataTable().clear();
       showOperations(selectedScenario);
   } );
- 
+  
   function showOperations(scenario) {
 	  
 	  //alert('hello' + scenario.service[0].hasOperation.hasHttpUrl);
 	  
-	  clearParameters();
-	  
 	  var operations = scenario.service;	  
 	  for (i=0; i<=4; i++) {
-		$("#op"+i).prop('checked', false);
+		//$("#op"+i).prop('checked', false);
 		if (i < operations.length) {
 			var httpUrl = operations[i].hasOperation.hasHttpUrl;
 			var index = httpUrl.lastIndexOf("/");
@@ -99,6 +116,11 @@ $(function() {
 			$("#op"+i+"label").hide()			
 		}
 	  }
+	  
+	  // pre select the first operation
+	  selectedOperation = operations[0].hasOperation;
+	  $("#op"+0).prop('checked', true);
+	  populateParams();
   }
   
   $('input[type="radio"]').click(function () {	  
@@ -112,52 +134,76 @@ $(function() {
 		}
 	  }
 	  
-	  clearParameters();
-	  showParameters();
+	  populateParams();
   });
 
   
-  function showParameters2(scenario) {
-	  // show parameters for selected agent / scenario
-	  var parameters = scenario.parameters;
-	  for (i=0; i<=4; i++) {
-		  if (i < parameters.length) {
-			  var isInputParam = parameters[i].input;
-			  $("#paraminout"+i).prop('checked', isInputParam);
-			  $("#paramname"+i).val(parameters[i].name);
-			  $("#paramtype"+i).val(parameters[i].type);
-		  }
-	  }
+  function populateParams() {
+    console.log("populating params for " + selectedOperation.hasHttpUrl);
+    
+    $('#tableparams2').DataTable().clear();
+    
+	var params = selectedOperation.hasInput;
+    for(var i in params) {
+      var inout = "in";
+      var name = params[i].hasName;
+      var type = params[i].hasType;
+      var typelink = '<a href="' + type + '">' + type + '</a>';
+      var value =  "<input type=\"text\" id=\"inparamvalue" + i + "\">";
+      
+     // warning: don't use table here because there is a difference
+     // between dataTable() and DataTable()
+     // see https://www.datatables.net/reference/api/ 
+     $('#tableparams2').dataTable().fnAddData( [
+        inout,
+    	name,
+        typelink,
+        value
+      ]);
+    }
+    
+	var params = selectedOperation.hasOutput;
+    for(var i in params) {
+      var inout = "out";
+      var name = params[i].hasName;
+      var type = params[i].hasType;
+      var typelink = '<a href="' + type + '">' + type + '</a>';
+      var value = "---";
+      
+      
+     // warning: don't use table here because there is a difference
+     // between dataTable() and DataTable()
+     // see https://www.datatables.net/reference/api/ 
+     $('#tableparams2').dataTable().fnAddData( [
+        inout,
+    	name,
+        typelink,
+        value
+      ]);
+    }
   }
   
-  function clearParameters() {
-	  for (i=0; i<10; i++) {
-		$("#paraminout"+i).prop('checked', false);
-		$("#paramname"+i).val("");
-		$("#paramtype"+i).val("");
-	  }
-  }
-  
-  function showParameters() {
-	  //alert("scenario=" + selectedScenario.name + ", operation=" + selectedOperation.hasHttpUrl);
+  $('#showlinkbutton').click(function() {
 	  
-	  var params = selectedOperation.hasInput;
-	  var numberInputParams = params.length;
-	  for (i=0; i<numberInputParams; i++) {
-		  $("#paraminout"+i).prop('checked', true);
-		  $("#paramname"+i).val(params[i].hasName);
-		  $("#paramtype"+i).val(params[i].hasType);
+	  var json = {};
+	  var paramsdata = $('#tableparams2').DataTable().rows().data();
+	  var numberInParams = selectedOperation.hasInput.length;
+	  console.log("no " + numberInParams);
+	  for (i=0; i<numberInParams; i++) {
+		  var paramkey = paramsdata[i][1];
+		  var paramvalue = $('#inparamvalue' + i).val();
+		  // the next line does not work since it adds "paramkey": "...Berlin" instead of "city": "...Berlin"
+		  //json.paramkey = paramvalue;  
+		  console.log("key=" + paramkey + ", value=" + paramvalue);
+		  if (paramvalue.length > 0) {
+		  	json["" + paramkey] = paramvalue;
+	  	}
 	  }
-	  
-	  params = selectedOperation.hasOutput;
-	  if (params) {
-		  for (i=0; i<params.length; i++) {
-			  var j = i + numberInputParams;
-			  $("#paraminout"+j).prop('checked', false);
-			  $("#paramname"+j).val(params[i].hasName);
-			  $("#paramtype"+j).val(params[i].hasType);
-		  }
-	  }	
-  }
+
+	  var url = selectedOperation.hasHttpUrl + "?query=" + JSON.stringify(json);
+	  var urlencoded = selectedOperation.hasHttpUrl + "?query=" + encodeURIComponent(JSON.stringify(json));
+	  $("#linkforaction").prop('href', urlencoded);
+	  $("#linkforaction").text(url);
+  });
   
 });

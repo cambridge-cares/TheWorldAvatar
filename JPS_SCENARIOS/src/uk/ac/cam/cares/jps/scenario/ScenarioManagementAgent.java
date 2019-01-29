@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -18,6 +19,7 @@ import org.json.JSONWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueServer;
@@ -25,6 +27,9 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.query.ScenarioKeys;
+import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
+import uk.ac.cam.cares.jps.composition.servicemodel.Operation;
+import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 @WebServlet(urlPatterns = {"/scenariomanagement/*"})
 public class ScenarioManagementAgent extends HttpServlet {
@@ -100,51 +105,92 @@ public class ScenarioManagementAgent extends HttpServlet {
 	}
 	
 	public void writeListToFile() {
-		String content = listScenariosAndAgentsAsJson();
+		JSONWriter writer = new JSONStringer().object().key("result").array();
+		addAgents(writer);
+		addScenarios(writer);
+		writer.endArray().endObject();	
+		
+		String content = writer.toString();
+		//String content = listAgentsAsJson();
 		String path = getWorkingDir() + "/xxxlist.json";
 		System.out.println(path);
 		writeToFile(content, path);
 	}
 	
-	public String listScenariosAndAgentsAsJson() {
+	public void addAgents(JSONWriter writer) {
 		
-		JSONWriter writer = new JSONStringer().object().key("result").array();
+		ArrayList<Service> services = ServiceDiscovery.getInstance().getServices();
+		for (Service current : services) {
+			addAgent(writer, current);
+		}
+	}
+	
+	private void addAgent(JSONWriter writer, Service service) {
 		
-		String ontAgentIri = "http://www.theworldavatar.com/ontology/OntoAgent#";
+		String name = service.getUri().toString();
+		int i = name.lastIndexOf("/");
+		name = name.substring(i+1);
+		String type = service.isComposed()? "composed" : "agent";
+		addEntry(writer, service.getUri().toString(), name, type);
 		
+		Operation op = service.getOperations().get(0);
+		System.out.println(op.getHttpUrl());
+		addOperation(writer, op.getHttpUrl());
+		addParameterSection(writer, op, true);
+		addParameterSection(writer, op, false);
+		
+		writer.endObject().endObject(); // both for addOperation
+		writer.endArray().endObject();	// both for addEntry
+	}
+	
+	private void addParameterSection(JSONWriter writer, Operation operation, boolean input) {
+		List<String> params = new ArrayList<String>();
+		
+		Iterator<MessagePart> it = null;
+		if (input) {
+			params.add("hasInput");
+			it = operation.getInputs().get(0).getMandatoryParts().iterator();
+		} else {
+			params.add("hasOutput");
+			it = operation.getOutputs().get(0).getMandatoryParts().iterator();	
+		}
+		while (it.hasNext()) {
+			MessagePart current = it.next();
+			System.out.println("name=" + current.getName());
+			params.add(current.getName());
+			params.add(current.getType().toString());
+		}
+		String[] array = params.toArray(new String[0]);
+		addParameterSection(writer, array);
+	}
+	
+	public void addScenarios(JSONWriter writer) {
+			
 		List<String> list = getScenarioIRIs();
-		int j = 0;
 		for (String current : list) {
+			
 			int i = current.lastIndexOf('/');
 			String name = current.substring(i+1);
 			i = name.lastIndexOf('.');
 			name = name.substring(0, i);
-			writer.object();
-			writer.key("id").value(current).key("name").value(name).key("type").value("scenario");
-			
-			// list operation
-			writer.key("service").array();
+			addEntry(writer, current, name, "scenario");
 			
 			i = current.lastIndexOf('.');
 			String path = current.substring(0, i);
-			
-			writer.object().key("hasOperation").object();
-			writer.key("hasHttpUrl").value(path + "/call");
+			addOperation(writer, path + "/call");
 			addParameterSection(writer, "hasInput", 
 					ScenarioAgent.SCENARIO_AGENT, "http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service", 
-					ScenarioKeys.SCENARIO_AGENT_OPERATION, "http://www.theworldavatar.com/ontology/ontoagent/MSM.owl/hasHttpUrl");
+					ScenarioKeys.SCENARIO_AGENT_OPERATION, "http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasHttpUrl");
 			writer.endObject().endObject();
 			
-			writer.object().key("hasOperation").object();
-			writer.key("hasHttpUrl").value(path + "/read");
+			addOperation(writer, path + "/read");
 			addParameterSection(writer, "hasInput", 
 					ScenarioKeys.SCENARIO_RESOURCE, "http://www.theworldavatar.com/ontology/ontoagent/OntoAgent.owl#Resource");
 			addParameterSection(writer, "hasOuput", 
 					"", "http://www.w3.org/2001/XMLSchema#string");
 			writer.endObject().endObject();
 			
-			writer.object().key("hasOperation").object();
-			writer.key("hasHttpUrl").value(path + "/query");
+			addOperation(writer, path + "/query");
 			addParameterSection(writer, "hasInput", 
 					ScenarioKeys.SCENARIO_RESOURCE, "http://www.theworldavatar.com/ontology/ontoagent/OntoAgent.owl#Resource",
 					ScenarioKeys.QUERY_SPARQL_QUERY, "http://www.theworldavatar.com/ontology/ontoagent/OntoAgent.owl#SparqlQuery");
@@ -152,46 +198,19 @@ public class ScenarioManagementAgent extends HttpServlet {
 					"", "http://www.w3.org/2001/XMLSchema#string");
 			writer.endObject().endObject();
 			
-			String[] operations = new String[] {"scenop1"};
-
-			for (String currentOp : operations) {
-				writer.object().key("hasOperation").object();
-				writer.key("hasHttpUrl").value(path + "/"+currentOp);
-				
-				writer.key("hasInput").array();
-				j++;
-				for (i=1; i<=3; i++) {
-					addParameter(writer, "inname"+j+"_"+i, "type"+j+"_"+i);
-				}
-				writer.endArray();
-				
-				writer.key("hasOutput").array();
-				for (i=1; i<=2; i++) {
-					addParameter(writer, "outname"+j+"_"+i, "type"+j+"_"+i);
-				}
-				writer.endArray();
-				
-				writer.endObject().endObject();
-			}
-			
-			writer.endArray();
-			
-			// parameter details
-//			writer.key("parameters").array();	
-//			j++;
-//			for (i=1; i<=3; i++) {
-//				writer.object();
-//				writer.key("name").value("name"+j+"_"+i).key("type").value("type"+j+"_"+i).key("input").value(true);
-//				writer.endObject();
-//			}
-//			writer.endArray();
-			
-			writer.endObject();
+			writer.endArray().endObject();
 		}
-		
-		writer.endArray().endObject();	
-			
-		return writer.toString();
+	}
+	
+	private void addEntry(JSONWriter writer, String id, String name, String type) {
+		writer.object();
+		writer.key("id").value(id).key("name").value(name).key("type").value(type);
+		writer.key("service").array();
+	}
+	
+	private void addOperation(JSONWriter writer, String httpUrl) {
+		writer.object().key("hasOperation").object();
+		writer.key("hasHttpUrl").value(httpUrl);
 	}
 	
 	private void addParameterSection(JSONWriter writer, String... s) {
@@ -203,12 +222,6 @@ public class ScenarioManagementAgent extends HttpServlet {
 			writer.endObject();
 		}
 		writer.endArray();
-	}
-	
-	private void addParameter(JSONWriter writer, String name, String type) {
-		writer.object();
-		writer.key("hasName").value(name).key("hasType").value(type);
-		writer.endObject();
 	}
 	
 	public List<String> getScenarioIRIs() {
