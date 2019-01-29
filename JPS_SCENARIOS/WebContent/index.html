@@ -53,15 +53,11 @@ TH {
 </div>
 
 
-
-
-
-
 <div class="container">
   <div class="panel">
     <button id="loadData" class="btn btn-default">Load Data</button>
 
-    <table id="example" class="display" cellspacing="0" width="100%">
+    <table id="tablescenarios" class="display" cellspacing="0" width="100%">
       <thead>
         <tr>
           <th>name</th>
@@ -74,8 +70,20 @@ TH {
 </div>
 
 
-<div>
-	<p><b>operations</b></p>
+
+<div class="container">
+  <div class="panel">
+   	<input type="text" id="newscenarioname">
+	<button id="createscenariobutton">Create Scenario</button>
+  </div>
+</div>
+
+
+
+<div class="container">
+  <div class="panel">
+	<!-- p><b>Operations</b></p -->
+	<label>Operations: </label>
 	<input type="radio" id="op0" name="operationgroup">
 	<label id="op0label"></label>
 	<input type="radio" id="op1" name="operationgroup">
@@ -86,82 +94,36 @@ TH {
  	<label id="op3label"></label>
 	<input type="radio" id="op4" name="operationgroup">
 	<label id="op4label"></label>
+  </div>
 </div>
 
-<div>
-   <p><b>parameters</b></p>
-   <table id="tableparams">
+
+<div class="container">
+  <div class="panel">
+    <!--  button id="loadData2" class="btn btn-default">Load Data</button-->
+
+    <table id="tableparams2" class="display" cellspacing="0" width="100%">
+      <thead>
         <tr>
           <th>in/out</th>
           <th>name</th>
           <th>class/datatype</th>
           <th>instance/value</th>
         </tr>
-      	<tr>
-      	  <td> <input type="checkbox" id="paraminout0"> </td>
-      	  <td> <input type="text" id="paramname0"> </td>
-      	  <td> <input type="text" id="paramtype0"> </td>
-      	  <td> <input type="text" id="paramvalue0"> </td>
-     	</tr>
-     	<tr>
-      	  <td> <input type="checkbox" id="paraminout1"> </td>
-      	  <td> <input type="text" id="paramname1"> </td>
-      	  <td> <input type="text" id="paramtype1"> </td>
-      	  <td> <input type="text" id="paramvalue1"> </td>
-     	</tr>
-     	<tr>
-    	  <td> <input type="checkbox" id="paraminout2"> </td>
-    	  <td> <input type="text" id="paramname2"> </td>
-      	  <td> <input type="text" id="paramtype2"> </td>
-      	  <td> <input type="text" id="paramvalue2"> </td>
-     	</tr>
-       	<tr>
-      	  <td> <input type="checkbox" id="paraminout3"> </td>
-      	  <td> <input type="text" id="paramname3"> </td>
-      	  <td> <input type="text" id="paramtype3"> </td>
-      	  <td> <input type="text" id="paramvalue3"> </td>
-     	</tr>
-     	<tr>
-      	  <td> <input type="checkbox" id="paraminout4"> </td>
-      	  <td> <input type="text" id="paramname4"> </td>
-      	  <td> <input type="text" id="paramtype4"> </td>
-      	  <td> <input type="text" id="paramvalue4"> </td>
-     	</tr> 
-     	<tr>
-      	  <td> <input type="checkbox" id="paraminout5"> </td>
-      	  <td> <input type="text" id="paramname5"> </td>
-      	  <td> <input type="text" id="paramtype5"> </td>
-      	  <td> <input type="text" id="paramvalue5"> </td>
-     	</tr>
-     	<tr>
-      	  <td> <input type="checkbox" id="paraminout6"> </td>
-      	  <td> <input type="text" id="paramname6"> </td>
-      	  <td> <input type="text" id="paramtype6"> </td>
-      	  <td> <input type="text" id="paramvalue6"> </td>
-     	</tr>
-     	<tr>
-      	  <td> <input type="checkbox" id="paraminout7"> </td>
-      	  <td> <input type="text" id="paramname7"> </td>
-      	  <td> <input type="text" id="paramtype7"> </td>
-      	  <td> <input type="text" id="paramvalue7"> </td>
-     	</tr>
-     	<tr>
-      	  <td> <input type="checkbox" id="paraminout8"> </td>
-      	  <td> <input type="text" id="paramname8"> </td>
-      	  <td> <input type="text" id="paramtype8"> </td>
-      	  <td> <input type="text" id="paramvalue8"> </td>
-     	</tr>
-     	<tr>
-      	  <td> <input type="checkbox" id="paraminout9"> </td>
-      	  <td> <input type="text" id="paramname9"> </td>
-      	  <td> <input type="text" id="paramtype9"> </td>
-      	  <td> <input type="text" id="paramvalue9"> </td>
-     	</tr>
+      </thead>
     </table>
+  </div>
 </div>
 
 
-<button id="start">Start simulation</button>
+<div class="container">
+  <div class="panel">
+	<button id="showlinkbutton">Show Link</button>
+  </div>
+  <div class="panel">
+	<a id="linkforaction"></a>
+  </div>
+</div>
 
 </body>
 </html>

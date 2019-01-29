@@ -125,5 +125,9 @@ public class ServiceDiscovery {
  		}
 		return servicesLoaded;	 
 	}
+
+	public ArrayList<Service> getServices() {
+		return services;
+	}
 	
 }

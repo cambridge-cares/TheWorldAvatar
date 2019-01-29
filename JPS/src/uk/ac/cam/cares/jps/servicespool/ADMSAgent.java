@@ -93,6 +93,7 @@ public class ADMSAgent extends HttpServlet {
 			}
 			bundle.put("region", region);
 
+			//TODO-AE URGENT this called is not needed any more
 			URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 					.setPath("/JPS/GetBuildingDataForSimulation")
 					.setParameter("query", bundle.toString());
