@@ -17,6 +17,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -59,8 +60,25 @@ public class ADMSAgent extends HttpServlet {
 			String cityIRI = input.getString("city");
 			
 			String plantIRI = null;
+			JSONArray shipIRIs = null;
 			if (!cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Singapore")) {
 				plantIRI = input.getString("plant"); //
+			} else {
+				shipIRIs = input.getJSONArray("ship");
+//				plantIRI = shipIRIs.toString();
+				
+				List<String> list = new ArrayList<String>();
+				for (int i = 0; i < shipIRIs.length(); i++) {
+					String shipIRI = shipIRIs.getString(i);
+					list.add(shipIRI);
+					System.out.println(i);
+					System.out.println(shipIRI);
+				}
+				
+				Gson g = new Gson();
+				plantIRI = g.toJson(g.toJson(list.toArray()));
+				System.out.println("SHIP IRIS in String: " + plantIRI);
+				
 			}
 
 			JSONObject weather = input.getJSONObject("weatherstate");
@@ -117,7 +135,11 @@ public class ADMSAgent extends HttpServlet {
 			System.out.println(srsname);
 			if (srsname.equalsIgnoreCase("EPSG:28992")) {
 				sourceCRSName = CRSTransformer.EPSG_28992;
-//				writeAPLFile(newBuildingData, plantIRI, region);
+				if (input.has("ship")) {
+					writeAPLFileShip(newBuildingData, plantIRI, region);
+				} else {
+					writeAPLFile(newBuildingData, plantIRI, region);
+				}
 			} else {
 				double[] p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {lowerx, lowery});
 				String lx = String.valueOf(p[0]);
@@ -142,15 +164,14 @@ public class ADMSAgent extends HttpServlet {
 				
 
 				JSONObject newRegion  = new JSONObject(String.format(regionTemplate, ux,uy,lx,ly));
-				writeAPLFile(newBuildingData,plantIRI, newRegion);
+				if (input.has("ship")) {
+					writeAPLFileShip(newBuildingData, plantIRI, newRegion);
+				} else {
+					writeAPLFile(newBuildingData,plantIRI, newRegion);
+				}
 			}
 
- 
-				
- 			//writeAPLFile(newBuildingData,plantIRI, newRegion);
-			
-			
-			//writeAPLFile(buildingsInString,plantIRI, region);
+
 			
 			writeMetFile(weather);
 			
@@ -203,12 +224,49 @@ public class ADMSAgent extends HttpServlet {
 		args.add("python");
 		args.add("admsTest.py"); 
   		args.add(buildingInString.replace("\"", "'"));
-  		
- 		args.add(regionInJSON.toString().replace("\"", "'")); //TODO ZXC: We should solve the encoding problem once for all 
- 		args.add(plantIRI.replace("\"", "'"));
+  		System.out.println(buildingInString.replace("\"", "'"));
+  		  		
+ 		args.add(regionInJSON.toString().replace("\"", "'")); //TODO ZXC: We should solve the encoding problem once for all
+ 		System.out.println(regionInJSON.toString().replace("\"", "'"));
+// 		args.add(plantIRI.replace("\"", "'"));
+ 		args.add(plantIRI);
+// 		System.out.println(plantIRI.replace("\"", "'"));
+ 		System.out.println(plantIRI);
  		args.add(fullPath);
+ 		System.out.println(fullPath);
  		// TODO-AE use PythonHelper instead of CommandHelper
-  		String result = CommandHelper.executeCommands(targetFolder, args);		
+  		String result = CommandHelper.executeCommands(targetFolder, args);
+  		System.out.println("ARGUMENTS");
+  		System.out.println(args.toString());
+  		System.out.println(result);
+		return result;		
+	}
+	
+	public String writeAPLFileShip (String buildingInString, String plantIRI, JSONObject regionInJSON) {
+		String fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
+		System.out.println("==================== full path ====================");
+		System.out.println(fullPath);
+		System.out.println("===================================================");
+		String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
+		ArrayList<String> args = new ArrayList<String>();
+		args.add("python");
+		args.add("admsTestShip.py"); 
+  		args.add(buildingInString.replace("\"", "'"));
+  		System.out.println(buildingInString.replace("\"", "'"));
+  		  		
+ 		args.add(regionInJSON.toString().replace("\"", "'")); //TODO ZXC: We should solve the encoding problem once for all
+ 		System.out.println(regionInJSON.toString().replace("\"", "'"));
+// 		args.add(plantIRI.replace("\"", "'"));
+ 		args.add(plantIRI);
+// 		System.out.println(plantIRI.replace("\"", "'"));
+ 		System.out.println(plantIRI);
+ 		args.add(fullPath);
+ 		System.out.println(fullPath);
+ 		// TODO-AE use PythonHelper instead of CommandHelper
+  		String result = CommandHelper.executeCommands(targetFolder, args);
+  		System.out.println("ARGUMENTS");
+  		System.out.println(args.toString());
+  		System.out.println(result);
 		return result;		
 	}
 
