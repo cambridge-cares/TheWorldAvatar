@@ -77,7 +77,7 @@ public class CompChemRdf4JServlet extends HttpServlet  {
 		 */
 		String jsonInputFilePath = RESULT_FOLDER + folderName + "/" + folderName +".json";		
 
-		synchronized(this) {
+		
 		/**
 		 * @author NK510
 		 * Querying CompChem remote RDF4J repository. 
@@ -95,7 +95,7 @@ public class CompChemRdf4JServlet extends HttpServlet  {
 		ThermoCalculation thermoCalculation = new ThermoCalculation();
 		
 		thermoCalculation.runThermoCalculation(jsonInputFilePath, catalinaFolderPath);		
-		}
+	
 	}
 
 	@Override
