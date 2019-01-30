@@ -94,7 +94,8 @@ public class CompChemRdf4JServlet extends HttpServlet  {
 		 
 		ThermoCalculation thermoCalculation = new ThermoCalculation();
 		
-		thermoCalculation.runThermoCalculation(jsonInputFilePath, catalinaFolderPath);		
+		thermoCalculation.runThermoCalculation(jsonInputFilePath, catalinaFolderPath);	
+		
 	
 	}
 

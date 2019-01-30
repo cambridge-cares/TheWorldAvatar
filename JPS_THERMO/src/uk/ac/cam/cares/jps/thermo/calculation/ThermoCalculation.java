@@ -25,6 +25,9 @@ public class ThermoCalculation {
 		 * 
 		 * 
 		 */
+		synchronized(this) {
+			
+		
 		File inputFile = new File(jsonInputFilePath);
 		
 		String pyscript = catalinaFolderPath + "/conf/Catalina/c4e-dln22-TDC/Source/thermoDriver.py";
@@ -32,6 +35,8 @@ public class ThermoCalculation {
 		String[] cmd = { "python", pyscript, "-j", inputFile.getAbsolutePath(), };
 
 		Runtime.getRuntime().exec(cmd);
+		
+		}
 		
 	}
 }
