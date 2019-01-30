@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.discovery.test;
+package uk.ac.cam.cares.jps.base.test;
 
 import java.io.IOException;
 
@@ -14,10 +14,10 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 
-@WebServlet(urlPatterns = {"/test/AgentOne/*"})
-public class AgentOne extends HttpServlet {
+@WebServlet(urlPatterns = {"/test/AgentBase/*"})
+public class AgentBase extends HttpServlet {
 	
-	Logger logger = LoggerFactory.getLogger(AgentOne.class);
+	Logger logger = LoggerFactory.getLogger(AgentBase.class);
 
 	private static final long serialVersionUID = 1L;
 

@@ -1,11 +1,13 @@
 package uk.ac.cam.cares.jps.base.config;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.StringTokenizer;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -25,7 +27,8 @@ public class AgentLocator {
 	
 	private static Logger logger = LoggerFactory.getLogger(AgentLocator.class);
 	private static final String[] SUBDIRECTORIES_FOR_COMPILED_CLASSES = new String[] {
-			"/WEB-INF/classes/", "\\WEB-INF/classes/", "/bin/", "\\bin\\", "/build/classes/", "\\build\\classes\\"
+			"/WEB-INF/classes/", "\\WEB-INF/classes/", "/bin/", "\\bin\\", "/build/classes/", "\\build\\classes\\",
+			"/target/classes/", "\\target\\classes\\", "/target/test-classes/", "\\target\\test-classes\\", 
 	};
 	private String jpsBaseDirectory = null;
 //	private Properties jpsProps = null;
@@ -50,57 +53,78 @@ public class AgentLocator {
 	private void init() {
 		
 		String path = getCurrentJpsAppDirectory(this);
-		boolean isJpsBaseDir = path.endsWith("/JPS_BASE") || path.endsWith("\\JPS_BASE");
-
-		if (!isJpsBaseDir) {
-			int index = path.lastIndexOf("/JPS");
-			if (index == -1) {
-				index = path.lastIndexOf("\\JPS");
-				path = path.substring(0, index) + "\\JPS_BASE";
-			} else {
-				path = path.substring(0, index) + "/JPS_BASE";
+		jpsBaseDirectory = createJpsBaseDirectory(path);
+		logger.info("JPS_BASE directory = " + jpsBaseDirectory);
+		
+		url = "http://" + getProperty("host") + ":" + getProperty("port");
+		logger.info("created url from properties: " + url);
+	}
+	
+	public static String createJpsBaseDirectory(String currentJpsAppDirectory) {
+		
+		String result = null;
+		
+		String path = currentJpsAppDirectory.replace("\\", "/");
+		int index = path.lastIndexOf("/");
+		String firstPart = path.substring(0, index);
+		System.out.println("jps base dir first part = " + firstPart);
+		File dir = new File(firstPart);
+		
+		// there might be several webapps with name of form JPS_BASE##x.y.z
+		// find the one with the largest version x.y.z
+		String highestVersion = null;
+		for (File current : dir.listFiles()) {
+			if (!current.isDirectory()) {
+				continue;
+			}
+			path = current.getAbsolutePath().replace("\\", "/");
+			index = path.lastIndexOf("/");
+			String secondPart = path.substring(index+1);
+			System.out.println("jps base dir second part = " + secondPart);
+			if (secondPart.startsWith("JPS_BASE")) {
+				String version = null;
+				index = secondPart.lastIndexOf("##");
+				if (index >= 0) {
+					version = secondPart.substring(index+2);
+				}
+				if (result == null || isVersionLargerThan(version, highestVersion)) {
+					result = path;
+					highestVersion = version;
+					System.out.println("jps base dir current path candidate = " + path);
+				}		
 			}
 		}
 		
-		jpsBaseDirectory = path;
-		logger.info("JPS_BASE directory = " + jpsBaseDirectory);
-			
-//		if (isJpsBaseDir) {
-//			try {
-//				if (path.startsWith("C:/TOMCAT/webapps/JPS_BASE") || path.startsWith("C:\\TOMCAT\\webapps\\JPS_BASE"))  {
-//					loadProperties(path + "/conf/jps.properties");
-//				} else {
-//					loadProperties(path + "/conf/jpstest.properties");
-//				}
-//			} catch (IOException exc) {
-//				LogServer.error(this, exc);
-//				throw new JPSRuntimeException(exc.getMessage(), exc);
-//			}
-//		}
+		return result;
+	}
+	
+	public static boolean isVersionLargerThan(String v1, String v2) {
 		
-//		try {
-//			jpsProps = loadProperties("jps.properties");
-//			if (isJpsBaseDir) {
-//				logProperties(jpsProps);
-//			}
-//			// else no need to log again
-//		} catch (IOException exc) {
-//			logger.error(exc.getMessage(), exc);
-//		}
-//		
-//		try {
-//			jpsTestProps = loadProperties("jpstest.properties");
-//			if (isJpsBaseDir) {
-//				logProperties(jpsTestProps);
-//			}
-//			// else no need to log again
-//		} catch (IOException exc) {
-//			// this is no error. jpstest.properties should not be available on production system.
-//			logger.info("jpstest.properties not found");
-//		}
-
-		url = "http://" + getProperty("host") + ":" + getProperty("port");
-		logger.info("created url from properties: " + url);
+		if (v1 == null) {
+			return false;
+		}
+		if (v2 == null) {
+			return true;
+		}
+		StringTokenizer t1 = new StringTokenizer(v1, ".");
+		StringTokenizer t2 = new StringTokenizer(v2, ".");
+		while (t1.hasMoreTokens()) {
+			
+			if (!t2.hasMoreTokens()) {
+				return true;
+			}
+			
+			int i1 = Integer.valueOf(t1.nextToken());
+			int i2 = Integer.valueOf(t2.nextToken());
+			if (i1 < i2) {
+				return false;
+			}
+			if (i1 > i2) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	private void loadProperties(String propertyFile) throws IOException {

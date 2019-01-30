@@ -1,10 +1,10 @@
-package uk.ac.cam.cares.jps.composition.EngineModel;
+package uk.ac.cam.cares.jps.composition.enginemodel;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Map;
 
-import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
+import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 public class SubTrack {
 

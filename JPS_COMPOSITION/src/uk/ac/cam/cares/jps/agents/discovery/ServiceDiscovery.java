@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceReader;
 import uk.ac.cam.cares.jps.base.config.KeyValueServer;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.composition.ServiceModel.MessagePart;
-import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
+import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
+import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 public class ServiceDiscovery {
 	
@@ -124,6 +124,10 @@ public class ServiceDiscovery {
  			}
  		}
 		return servicesLoaded;	 
+	}
+
+	public ArrayList<Service> getServices() {
+		return services;
 	}
 	
 }

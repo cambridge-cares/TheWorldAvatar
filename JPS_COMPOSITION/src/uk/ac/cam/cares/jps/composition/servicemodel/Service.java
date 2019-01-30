@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.composition.ServiceModel;
+package uk.ac.cam.cares.jps.composition.servicemodel;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import uk.ac.cam.cares.jps.composition.EngineModel.Edge;
+import uk.ac.cam.cares.jps.composition.enginemodel.Edge;
 
 /*
  * Author ZHOU XIAOCHI 2018-06-18

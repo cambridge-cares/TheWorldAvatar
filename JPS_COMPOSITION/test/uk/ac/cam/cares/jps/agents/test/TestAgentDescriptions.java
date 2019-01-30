@@ -9,7 +9,7 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceBuilder;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceReader;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceWriter;
-import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
+import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 public class TestAgentDescriptions extends TestCase {
 
@@ -52,7 +52,7 @@ public class TestAgentDescriptions extends TestCase {
 		backAndforthAndWrite(service, "_SurrogateModel");
 	}
 	
-	private void backAndforthAndWrite(Service service, String name) throws URISyntaxException, FileNotFoundException {
+	public static void backAndforthAndWrite(Service service, String name) throws URISyntaxException, FileNotFoundException {
 		
 		new ServiceWriter().writeAsOwlFile(service, name, "C://JPS_DATA/workingdir/JPS_COMPOSITION/testagents");
 		

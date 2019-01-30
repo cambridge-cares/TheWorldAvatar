@@ -1,12 +1,12 @@
-package uk.ac.cam.cares.jps.composition.EngineModel;
+package uk.ac.cam.cares.jps.composition.enginemodel;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import uk.ac.cam.cares.jps.composition.ServiceModel.MessagePart;
-import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
+import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
+import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 import uk.ac.cam.cares.jps.composition.util.MatchingTool;
 
 //@JsonIgnoreProperties(value = { "inputPool", "servicePool" }) // Variables in JsonIgnoreProperties will not be mapped to

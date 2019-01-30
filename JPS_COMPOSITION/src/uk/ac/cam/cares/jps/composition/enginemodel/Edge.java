@@ -1,10 +1,10 @@
-package uk.ac.cam.cares.jps.composition.EngineModel;
+package uk.ac.cam.cares.jps.composition.enginemodel;
 
 import java.net.URI;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import uk.ac.cam.cares.jps.composition.ServiceModel.Service;
+import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 @JsonIgnoreProperties(value = {"fromNode", "toNode"})
 
 public class Edge {

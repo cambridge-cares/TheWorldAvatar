@@ -62,7 +62,7 @@ public class ADMSAgent extends HttpServlet {
 			if (!cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Singapore")) {
 				plantIRI = input.getString("plant"); //
 			}
-			
+
 			JSONObject weather = input.getJSONObject("weatherstate");
 			
 			//================== request agent GetBuildingDataForSimulation ===============
@@ -75,6 +75,7 @@ public class ADMSAgent extends HttpServlet {
 			}
 			bundle.put("region", region);
 
+			//TODO-AE URGENT this called is not needed any more
 			URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 					.setPath("/JPS/GetBuildingDataForSimulation")
 					.setParameter("query", bundle.toString());

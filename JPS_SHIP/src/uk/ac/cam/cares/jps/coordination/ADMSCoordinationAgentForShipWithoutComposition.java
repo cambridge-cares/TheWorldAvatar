@@ -42,6 +42,7 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet 
 			JSONObject jsonShipIRIs = new JSONObject(jsonArrayOfShipIRI);
 			JSONArray shipIRIs = jsonShipIRIs.getJSONArray("shipIRIs");
 			jo.put("ship", shipIRIs);
+			System.out.println("shipIRIs: " + shipIRIs.toString());
 			
 			JSONObject jsonReactionShip = new JSONObject();
 			String reactionMechanism = jo.getString("reactionmechanism");
@@ -67,9 +68,9 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet 
 			JSONArray building = new JSONObject(result).getJSONArray("building");
 			jo.put("building", building);
 			
-			result = execute("/JPS_COMPOSITION/CityToWeather", regionToCityResult);
-			JSONObject weatherstate = new JSONObject(result).getJSONObject("weatherstate");
-			jo.put("weatherstate", weatherstate);
+//			result = execute("/JPS_COMPOSITION/CityToWeather", regionToCityResult);
+//			JSONObject weatherstate = new JSONObject(result).getJSONObject("weatherstate");
+//			jo.put("weatherstate", weatherstate);
 			
 //			result = execute("/JPS/ADMSAgent", jo.toString());
 //			String folder = new JSONObject(result).getString("folder");

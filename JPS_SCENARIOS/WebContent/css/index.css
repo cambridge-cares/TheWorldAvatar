@@ -1,0 +1,43 @@
+#topBanner
+{
+    background-color: #10616C;
+}
+
+#head1
+{
+    color: white;
+}
+
+#description
+{
+    color: white;
+    width:60%;
+    margin-left: 20%;
+}
+
+
+
+#loadData {
+  margin: 10px 0 15px 0;
+}
+
+
+#tablebutton {
+	
+	margin-top: 30px;
+	color: blue;
+	
+}
+
+
+#table2 {
+	color: green;
+}
+
+#table2 td {
+	color: black; border: 1px #555 solid; padding: 5px; cursor: pointer;}
+
+.selected {
+    background-color: brown;
+    color: #FFF;
+}

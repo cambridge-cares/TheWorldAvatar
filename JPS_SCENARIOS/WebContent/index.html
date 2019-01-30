@@ -1,0 +1,129 @@
+
+<html>
+
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+    <title>J-Park Simulator : Agents and Scenarios</title>
+    
+    
+	<script src="scripts/start.js"></script>
+	<script src="scripts/jquery-3.3.1.js"></script>
+	
+	<!--  link rel="stylesheet" type="text/css" href="css/datatables.css">
+	<script src="scripts/datatables.js"></script-->
+	
+	<!-- link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/sl-1.2.6/datatables.min.css"/>
+	<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/sl-1.2.6/datatables.min.js"></script-->
+	
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"/>
+	<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
+</head>
+<style>
+TH {
+    padding: 5px; align-content:center
+}
+</style>
+<body>
+<div class="jumbotron text-center" id="topBanner">
+
+
+    <a href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
+        <img  src="images/cam_lang_negativ1%20NEW_0.png">
+    </a>
+       <h1 id="head1">J-Park Simulator : Agents and Scenarios</h1>
+	   
+	   <span id="readme-button">?</span>
+	<span id="readme-text">This agent ... TODO</span>
+
+		
+<p id="description">Description: TODO  </p>
+
+</div>
+
+
+<div class="container">
+  <div class="panel">
+    <button id="loadData" class="btn btn-default">Load Data</button>
+
+    <table id="tablescenarios" class="display" cellspacing="0" width="100%">
+      <thead>
+        <tr>
+          <th>name</th>
+          <th>type</th>
+          <th>description</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+</div>
+
+
+
+<div class="container">
+  <div class="panel">
+   	<input type="text" id="newscenarioname">
+	<button id="createscenariobutton">Create Scenario</button>
+  </div>
+</div>
+
+
+
+<div class="container">
+  <div class="panel">
+	<!-- p><b>Operations</b></p -->
+	<label>Operations: </label>
+	<input type="radio" id="op0" name="operationgroup">
+	<label id="op0label"></label>
+	<input type="radio" id="op1" name="operationgroup">
+ 	<label id="op1label"></label>
+	<input type="radio" id="op2" name="operationgroup">
+  	<label id="op2label"></label>
+    <input type="radio" id="op3" name="operationgroup">
+ 	<label id="op3label"></label>
+	<input type="radio" id="op4" name="operationgroup">
+	<label id="op4label"></label>
+  </div>
+</div>
+
+
+<div class="container">
+  <div class="panel">
+    <!--  button id="loadData2" class="btn btn-default">Load Data</button-->
+
+    <table id="tableparams2" class="display" cellspacing="0" width="100%">
+      <thead>
+        <tr>
+          <th>in/out</th>
+          <th>name</th>
+          <th>class/datatype</th>
+          <th>instance/value</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+</div>
+
+
+<div class="container">
+  <div class="panel">
+	<button id="showlinkbutton">Show Link</button>
+  </div>
+  <div class="panel">
+	<a id="linkforaction"></a>
+  </div>
+</div>
+
+</body>
+</html>
