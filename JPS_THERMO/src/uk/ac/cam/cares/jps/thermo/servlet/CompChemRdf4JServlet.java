@@ -23,7 +23,7 @@ import uk.ac.cam.cares.jps.thermo.manager.SPARQLManager;
  * This servlet does the following:
  * 1. Queries CompChem remote repository (RDF4J), saves results of that query as Json file.
  * 2. Run thermo calculations and generates json file that contains results of that calculation.
- * 3. Implementation is not thread safe.
+ * 3. Implementation is not thread safe. Not tested 
  *
  */
 
@@ -45,10 +45,12 @@ public class CompChemRdf4JServlet extends HttpServlet  {
 	 */
 	public static final String RESULT_FOLDER = catalinaFolderPath + "/webapps/ROOT/";
 	
-	private String folderName = "";
+	
 	
 	@Override
 	synchronized protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		String folderName = "";
 		
 		/**
 		 * 
@@ -75,6 +77,7 @@ public class CompChemRdf4JServlet extends HttpServlet  {
 		 */
 		String jsonInputFilePath = RESULT_FOLDER + folderName + "/" + folderName +".json";		
 
+		synchronized(this) {
 		/**
 		 * @author NK510
 		 * Querying CompChem remote RDF4J repository. 
@@ -92,7 +95,7 @@ public class CompChemRdf4JServlet extends HttpServlet  {
 		ThermoCalculation thermoCalculation = new ThermoCalculation();
 		
 		thermoCalculation.runThermoCalculation(jsonInputFilePath, catalinaFolderPath);		
-				
+		}
 	}
 
 	@Override

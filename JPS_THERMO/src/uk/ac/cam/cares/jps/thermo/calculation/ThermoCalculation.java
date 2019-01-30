@@ -2,14 +2,27 @@ package uk.ac.cam.cares.jps.thermo.calculation;
 
 import java.io.File;
 import java.io.IOException;
-
+/**
+ * 
+ * @author NK510
+ * Runs thermo calculations implemented by using Python.
+ *
+ */
 public class ThermoCalculation {
 
-	synchronized public  void runThermoCalculation (String jsonInputFilePath, String catalinaFolderPath) throws IOException {
+	/**
+	 * 
+	 * @param jsonInputFilePath json file that contains results of sparql query over compchem repository (graph).
+	 * @param catalinaFolderPath folder inside Apache Tomcat .
+	 * @throws IOException
+	 */
+	synchronized public void runThermoCalculation (String jsonInputFilePath, String catalinaFolderPath) throws IOException {
 		
 		/**
 		 * @author NK510
-		 * Thermo calculation that runs Python script
+		 * 
+		 * Thermo calculation that runs Python script.
+		 * 
 		 * 
 		 */
 		File inputFile = new File(jsonInputFilePath);

@@ -58,9 +58,7 @@ public class CompChemOWLFileServlet extends HttpServlet {
 	public static final String SPARQL_FOLDER = catalinaFolderPath + "/conf/Catalina/sparql_query/";
 
 	public static final String RESULT_FOLDER = catalinaFolderPath + "/webapps/ROOT/temp/JPS_THERMO/";
-
-	private String folderName = "";
-
+	
 	/**
 	 * 
 	 * @see HttpServlet#HttpServlet()
@@ -86,6 +84,8 @@ public class CompChemOWLFileServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 //		super.doGet(request, response);
+		
+		String folderName = "";
 		
 		JSONObject parameterOne = AgentCaller.readJsonParameter(request);
 
