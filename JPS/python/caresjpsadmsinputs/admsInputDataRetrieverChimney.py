@@ -4,7 +4,7 @@ module that retreives and pack adms input info
 import rdflib
 #from pyproj import Proj, transform
 import requests
-
+import json
 import math
 import sys
 import os
@@ -14,8 +14,11 @@ from admsSrcChimney import admsSrc
 from admsPolygon import Polygon
 from caresjpsutil import PythonLogger
 import cobbling
+import requests
+from pyproj import Proj, transform
 
-
+sourceCRS = Proj(init='epsg:28992')
+targetCRS = Proj(init='epsg:3414')
 
 class admsInputDataRetriever(object):
     BDN = namedtuple('BDN', ['BldNumBuildings','BldName','BldType','BldX','BldY','BldHeight', 'BldLength', 'BldWidth', 'BldAngle'])
@@ -48,8 +51,27 @@ class admsInputDataRetriever(object):
         self.pythonLogger = PythonLogger('admsInputDataRetrieverChimney.py')
 
     def getRange(self, userrange):
-        return ((userrange['xmin'], userrange['xmax']), (userrange['ymin'],userrange['ymax']))
-
+        max = transform(sourceCRS, targetCRS, userrange['xmax'], userrange['ymax'])
+        min = transform(sourceCRS, targetCRS, userrange['xmin'], userrange['ymin'])
+        
+#         PARAMS = {'x': userrange['xmin'],
+#                   'y': userrange['ymin']}
+#         print(PARAMS)
+#         r= requests.get(url="http://localhost:8080/JPS/CoordinatesConversionAgent", params = PARAMS)
+#         min = tuple(r.json()) 
+#         print(min)
+#         
+#         PARAMS = {'x': userrange['xmax'],
+#                   'y': userrange['ymax']}
+#         print(PARAMS)
+#         r= requests.get(url="http://localhost:8080/JPS/CoordinatesConversionAgent", params = PARAMS)
+#         max = tuple(r.json()) 
+#         print(max)        
+        
+#         return ((userrange['xmin'], userrange['xmax']), (userrange['ymin'],userrange['ymax']))
+#         print("CONVERTED: ")
+#         print((min[0], max[1]), (max[0], min[1]))
+        return ((min[0], max[0]), (max[1] - 1000, min[1]))
 
     def getSrcData(self):
         '''get all sourced data : 
@@ -74,7 +96,8 @@ class admsInputDataRetriever(object):
                 PREFIX plant:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#>
                 PREFIX topology:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
                 PREFIX behavior: <http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#>
-                PREFIX chemical_process_system:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#>
+                PREFIX chemical_process_system: <http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#>
+                PREFIX techsys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
                 PREFIX phase_system:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#>
                 PREFIX material: <http://www.theworldavatar.com/ontology/ontocape/material/material.owl#>
                 PREFIX substance:<http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#>
@@ -85,6 +108,16 @@ class admsInputDataRetriever(object):
                 ?o plant:hasHeight ?he.
                 ?he sys:hasValue ?hv.
                 ?hv sys:numericalValue ?height .
+  
+                  ?o  techsys:realizes ?process.
+                ?process topology:hasOutput ?stream.
+                ?stream chemical_process_system:refersToGeneralizedAmount ?ga.
+                ?ga sys:hasSubsystem ?ma.
+                
+                ?ma sys:hasProperty ?ve.
+                ?ve a behavior:ConvectiveMassFlowrate .
+                ?ve sys:hasValue ?vv.
+                ?vv sys:numericalValue ?massflow.
                 
                 ?o a plant:Pipe .
                 ?o plant:hasInsideDiameter ?de . #?dev sys:hasValue ?de.
@@ -95,10 +128,6 @@ class admsInputDataRetriever(object):
                 ?tempE sys:hasValue ?vte.
                 ?vte sys:numericalValue ?temp .
                 
-                ?ma sys:hasProperty ?me.
-                ?me a behavior:ConvectiveMassFlowrate .
-                ?me sys:hasValue ?mv.
-                ?mv sys:numericalValue ?massflow.
                 
                 ?cp a phase_system:ThermodynamicStateProperty.
                 ?cp sys:hasValue ?cpv.
@@ -122,22 +151,16 @@ class admsInputDataRetriever(object):
                 ?ye sys:hasValue ?yv.
                 ?yv sys:numericalValue ?y.
                 
-                ?stream topology:leaves ?o.
-                ?stream chemical_process_system:refersToGeneralizedAmount ?ga.
-                ?ga sys:hasSubsystem ?ma.
-                
-                ?ma sys:hasProperty ?ve.
-                ?ve a behavior:Velocity .
-                ?ve sys:hasValue ?vv.
-                ?vv sys:numericalValue ?velocity.
-                
                 }
                 }
             """)
 
- 
+            print("")
+            print("")
             for row in qdata:
-                print(row)
+#                 print(row)
+#                 print(type(row))
+                print(row.asdict())
             aresult, = [row.asdict() for row in qdata]
             
             
@@ -350,7 +373,7 @@ class admsInputDataRetriever(object):
 
     def getOpt(self, PolNames, SrcNames):
         numPol = len(PolNames)
-        return self.OPT(numPol,PolNames, [1]*numPol,[0]*numPol,[1]*numPol,[3]*numPol,[0]*numPol,[0]*numPol,[0]*numPol,[0]*80,[0]*80,['ug/m3']*numPol,1,0,1,"Grouptank001",SrcNames,0)
+        return self.OPT(numPol,PolNames, [1]*numPol,[0]*numPol,[1]*numPol,[3]*numPol,[0]*numPol,[0]*numPol,[0]*numPol,[0]*80,[0]*80,['ug/m3']*numPol,0,1,1,"Grouptank001","SrcNames",0)
 
     def polIRI2Name(self, polIRI):
         substances = {
