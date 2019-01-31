@@ -71,13 +71,13 @@ public class ADMSAgent extends HttpServlet {
 				for (int i = 0; i < shipIRIs.length(); i++) {
 					String shipIRI = shipIRIs.getString(i);
 					list.add(shipIRI);
-					System.out.println(i);
-					System.out.println(shipIRI);
+					//system.out.println(i);
+					//system.out.println(shipIRI);
 				}
 				
 				Gson g = new Gson();
 				plantIRI = g.toJson(g.toJson(list.toArray()));
-				System.out.println("SHIP IRIS in String: " + plantIRI);
+				//system.out.println("SHIP IRIS in String: " + plantIRI);
 				
 			}
 
@@ -98,9 +98,9 @@ public class ADMSAgent extends HttpServlet {
 					.setPath("/JPS/GetBuildingDataForSimulation")
 					.setParameter("query", bundle.toString());
 			String buildingsInString = executeGet(builder);	 	
-			System.out.println("=========================== buildingsInString ===========================");
-			System.out.println(buildingsInString);
-			System.out.println("=============================================================");
+			//system.out.println("=========================== buildingsInString ===========================");
+			//system.out.println(buildingsInString);
+			//system.out.println("=============================================================");
 			
 			//==============================================================================
 						
@@ -132,8 +132,8 @@ public class ADMSAgent extends HttpServlet {
 
 			String sourceCRSName = CRSTransformer.EPSG_4326;
 
-			System.out.println("============= src name ==============");
-			System.out.println(srsname);
+			//system.out.println("============= src name ==============");
+			//system.out.println(srsname);
 			if (srsname.equalsIgnoreCase("EPSG:28992")) {
 				sourceCRSName = CRSTransformer.EPSG_28992;
 				if (input.has("ship")) {
@@ -217,57 +217,58 @@ public class ADMSAgent extends HttpServlet {
 	
 	public String writeAPLFile(String buildingInString, String plantIRI, JSONObject regionInJSON) {
 		String fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
-		System.out.println("==================== full path ====================");
-		System.out.println(fullPath);
-		System.out.println("===================================================");
+		//system.out.println("==================== full path ====================");
+		//system.out.println(fullPath);
+		//system.out.println("===================================================");
 		String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
 		ArrayList<String> args = new ArrayList<String>();
 		args.add("python");
 		args.add("admsTest.py"); 
-  		args.add(buildingInString.replace("\"", "'"));
-  		System.out.println(buildingInString.replace("\"", "'"));
+  		
+		args.add(buildingInString.replace("\"", "'"));
+  		logger.info(buildingInString.replace("\"", "'"));
   		  		
  		args.add(regionInJSON.toString().replace("\"", "'")); //TODO ZXC: We should solve the encoding problem once for all
- 		System.out.println(regionInJSON.toString().replace("\"", "'"));
-// 		args.add(plantIRI.replace("\"", "'"));
- 		args.add(plantIRI);
-// 		System.out.println(plantIRI.replace("\"", "'"));
- 		System.out.println(plantIRI);
+ 		logger.info(regionInJSON.toString().replace("\"", "'"));
+ 		
+ 		args.add(plantIRI.replace("\"", "'"));
+ 		logger.info(plantIRI.replace("\"", "'"));
+ 		
  		args.add(fullPath);
- 		System.out.println(fullPath);
+ 		logger.info(fullPath);
  		// TODO-AE use PythonHelper instead of CommandHelper
   		String result = CommandHelper.executeCommands(targetFolder, args);
-  		System.out.println("ARGUMENTS");
-  		System.out.println(args.toString());
-  		System.out.println(result);
+  		logger.info("ARGUMENTS");
+  		////system.out.println(args.toString());
+  		logger.info(result);
 		return result;		
 	}
 	
 	public String writeAPLFileShip (String buildingInString, String plantIRI, JSONObject regionInJSON) {
 		String fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
-		System.out.println("==================== full path ====================");
-		System.out.println(fullPath);
-		System.out.println("===================================================");
+		//system.out.println("==================== full path ====================");
+		//system.out.println(fullPath);
+		//system.out.println("===================================================");
 		String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
 		ArrayList<String> args = new ArrayList<String>();
 		args.add("python");
 		args.add("admsTestShip.py"); 
   		args.add(buildingInString.replace("\"", "'"));
-  		System.out.println(buildingInString.replace("\"", "'"));
+  		logger.info(buildingInString.replace("\"", "'"));
   		  		
  		args.add(regionInJSON.toString().replace("\"", "'")); //TODO ZXC: We should solve the encoding problem once for all
- 		System.out.println(regionInJSON.toString().replace("\"", "'"));
+ 		logger.info(regionInJSON.toString().replace("\"", "'"));
 // 		args.add(plantIRI.replace("\"", "'"));
  		args.add(plantIRI);
-// 		System.out.println(plantIRI.replace("\"", "'"));
- 		System.out.println(plantIRI);
+// 		//system.out.println(plantIRI.replace("\"", "'"));
+ 		logger.info(plantIRI);
  		args.add(fullPath);
- 		System.out.println(fullPath);
+ 		logger.info(fullPath);
  		// TODO-AE use PythonHelper instead of CommandHelper
   		String result = CommandHelper.executeCommands(targetFolder, args);
-  		System.out.println("ARGUMENTS");
-  		System.out.println(args.toString());
-  		System.out.println(result);
+  		logger.info("ARGUMENTS");
+  		logger.info(args.toString());
+  		logger.info(result);
 		return result;		
 	}
 

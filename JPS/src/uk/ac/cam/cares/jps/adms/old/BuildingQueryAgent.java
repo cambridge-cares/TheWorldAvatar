@@ -57,24 +57,24 @@ public class BuildingQueryAgent extends HttpServlet {
 				planty = targetCenter[1];
 			}
 			
-//			System.out.println("==============================");
-//			System.out.println("city: " + cityIRI);
-//			System.out.println(plantx + "| "+ planty + "| " + lowerx + "| "+ lowery + "| "+ upperx + "|" + uppery);
-//			System.out.println("==============================");
+//			//system.out.println("==============================");
+//			//system.out.println("city: " + cityIRI);
+//			//system.out.println(plantx + "| "+ planty + "| " + lowerx + "| "+ lowery + "| "+ upperx + "|" + uppery);
+//			//system.out.println("==============================");
 
 			//List<String> buildingIRIs = performer.performQueryBuildingsFromRegion(cityIRI, buildingLimit, lowerx, lowery, upperx, uppery);
 			List<String> buildingIRIs = performer.performQueryClosestBuildingsFromRegion(cityIRI, plantx, planty, 25, lowerx, lowery, upperx, uppery);
-			System.out.println("=============== building List selected ===============");
-			System.out.println(buildingIRIs.size());
+			//system.out.println("=============== building List selected ===============");
+			//system.out.println(buildingIRIs.size());
 			String message = new Gson().toJson(buildingIRIs);
-			System.out.println("Direct printout: " + buildingIRIs);
-			System.out.println("Direct printout to string: " + buildingIRIs.toString());
+			//system.out.println("Direct printout: " + buildingIRIs);
+			//system.out.println("Direct printout to string: " + buildingIRIs.toString());
 			for(String iri : buildingIRIs)
 			{
-				System.out.println(iri);
+				//system.out.println(iri);
 			}
-			System.out.println("The message : " + message);
-			System.out.println("======================================================");
+			//system.out.println("The message : " + message);
+			//system.out.println("======================================================");
 			print(resp, message);
 			
 		} else if ("/buildings/simpleshape".equals(path)) {

@@ -94,6 +94,7 @@ $(function(){
             if (!isNaN(latitude) && !isNaN(longitude)) {
             	console.log(longitude, latitude);
                 const convertedCoordinates = proj4('EPSG:28992', [parseFloat(longitude), parseFloat(latitude)]);
+//            	const convertedCoordinates = proj4('EPSG:3414', [parseFloat(longitude), parseFloat(latitude)]);
 
                 coordinatesArray.push(convertedCoordinates[0]); // x
                 coordinatesArray.push(convertedCoordinates[1]); // y
@@ -137,14 +138,17 @@ $(function(){
   
         console.log(reactionmechanism);
         
+
+//        approximate becasue texture only work on power2(has to be 1:1,1:2,1:4...)
+//        [xmin, xmax, ymin, ymax] = appro2ratio(xmin, xmax, ymin, ymax);
+        [xmin, xmax, ymin, ymax, ratio] = appro2ratio(xmin, xmax, ymin, ymax); // 28 Aug 18
+        //   
         const lowerx = xmin;
         const lowery = ymin;
         const upperx = xmax;
         const uppery = ymax;
 
-//        approximate becasue texture only work on power2(has to be 1:1,1:2,1:4...)
-//        [xmin, xmax, ymin, ymax] = appro2ratio(xmin, xmax, ymin, ymax);
-        [xmin, xmax, ymin, ymax, ratio] = appro2ratio(xmin, xmax, ymin, ymax); // 28 Aug 18
+      console.log('result')
         var canvas = $('#drawcanvas'); canvas.width(1024*ratio).height(1024); // 28 Aug 18
         var svg = $('contoursvg');svg.width(1024*ratio).height(1024); // 28 Aug 18
 
