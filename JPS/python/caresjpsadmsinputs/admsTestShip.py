@@ -10,7 +10,8 @@ from caresjpsutil import PythonLogger
 from pyproj import Proj, transform
 
 pythonLogger = PythonLogger('admsTest.py')
-sourceCRS = Proj(init='epsg:28992')
+# sourceCRS = Proj(init='epsg:28992')
+sourceCRS = Proj(init='epsg:4326')
 targetCRS = Proj(init='epsg:3414')
 
 try:
@@ -40,8 +41,8 @@ try:
     xmin = coordinates['lowercorner']['lowerx']
     ymin = coordinates['lowercorner']['lowery']
     
-    print(transform(sourceCRS, targetCRS, xmax, ymax))
-    print(transform(sourceCRS, targetCRS, xmin, ymin))
+#     print(transform(sourceCRS, targetCRS, xmax, ymax))
+#     print(transform(sourceCRS, targetCRS, xmin, ymin))
 
     coordinates['xmin'] = xmin
     coordinates['ymin'] = ymin
@@ -55,41 +56,35 @@ try:
     ship_coordinates_list = []
     chimney_iri_list = []
     
-    index = 1
-    URL = "http://localhost:8080/JPS_SHIP/ShipCoordinates"
-    
     for ship in ships:
         print(ship)
         graph = rdflib.Graph().parse(ship)
-#         query_string_coordinates = """
-#             PREFIX j1: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-#             PREFIX j4: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-#      
-#             SELECT ?coordinateX_value ?coordinateY_value
-#             WHERE {{ 
-#                 <{0}> j4:hasGISCoordinateSystem ?coordinateSystem .
-#                     ?coordinateSystem j4:hasProjectedCoordinate_x ?coordinateX .
-#                         ?coordinateX j1:hasValue ?coordinateX_V .
-#                             ?coordinateX_V j1:numericalValue ?coordinateX_value .
-#                     ?coordinateSystem j4:hasProjectedCoordinate_y ?coordinateY .
-#                         ?coordinateY j1:hasValue ?coordinateY_V .
-#                             ?coordinateY_V j1:numericalValue ?coordinateY_value .
-#             }}
-#         """.format(ship)
-#     
-#         query_results = graph.query(query_string_coordinates).bindings
-#      
-#         x_coordinate_value = float(query_results[0]['coordinateX_value'].toPython())
-#         y_coordinate_value = float(query_results[0]['coordinateY_value'].toPython())
+        query_string_coordinates = """
+            PREFIX j1: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+            PREFIX j4: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+      
+            SELECT ?coordinateX_value ?coordinateY_value
+            WHERE {{ 
+                <{0}> j4:hasGISCoordinateSystem ?coordinateSystem .
+                    ?coordinateSystem j4:hasProjectedCoordinate_x ?coordinateX .
+                        ?coordinateX j1:hasValue ?coordinateX_V .
+                            ?coordinateX_V j1:numericalValue ?coordinateX_value .
+                    ?coordinateSystem j4:hasProjectedCoordinate_y ?coordinateY .
+                        ?coordinateY j1:hasValue ?coordinateY_V .
+                            ?coordinateY_V j1:numericalValue ?coordinateY_value .
+            }}
+        """.format(ship)
+     
+        query_results = graph.query(query_string_coordinates).bindings
+      
+        x_coordinate_value = float(query_results[0]['coordinateX_value'].toPython())
+        y_coordinate_value = float(query_results[0]['coordinateY_value'].toPython())
         
 #         ship_coordinates_list.append((x_coordinate_value, y_coordinate_value))
-#         ship_coordinates_list.append(transform(sourceCRS, targetCRS, x_coordinate_value, y_coordinate_value))
+        print(list(transform(sourceCRS, targetCRS, x_coordinate_value, y_coordinate_value)))
+        ship_coordinates_list.append(list(transform(sourceCRS, targetCRS, x_coordinate_value, y_coordinate_value)))
 #         print(transform(sourceCRS, targetCRS, x_coordinate_value, y_coordinate_value))
-        PARAMS = {'shipIRI': ship}
-        r= requests.get(url=URL, params = PARAMS) 
-#         print(r.json())
-        ship_coordinates_list.append(r.json())
-
+        
     
         # query each ship for chimney
         
@@ -110,7 +105,6 @@ try:
         
 #         chimney_iri_list.append(chimney_iri)
         chimney_iri_list.append(chimney_iri)
-        index = index + 1
         
     # workingDir = str(sys.argv[4]).replace('/','//')
     workingDir = str(sys.argv[4])

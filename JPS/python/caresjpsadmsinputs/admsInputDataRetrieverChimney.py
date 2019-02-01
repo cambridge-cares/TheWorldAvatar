@@ -54,23 +54,6 @@ class admsInputDataRetriever(object):
         max = transform(sourceCRS, targetCRS, userrange['xmax'], userrange['ymax'])
         min = transform(sourceCRS, targetCRS, userrange['xmin'], userrange['ymin'])
         
-#         PARAMS = {'x': userrange['xmin'],
-#                   'y': userrange['ymin']}
-#         print(PARAMS)
-#         r= requests.get(url="http://localhost:8080/JPS/CoordinatesConversionAgent", params = PARAMS)
-#         min = tuple(r.json()) 
-#         print(min)
-#         
-#         PARAMS = {'x': userrange['xmax'],
-#                   'y': userrange['ymax']}
-#         print(PARAMS)
-#         r= requests.get(url="http://localhost:8080/JPS/CoordinatesConversionAgent", params = PARAMS)
-#         max = tuple(r.json()) 
-#         print(max)        
-        
-#         return ((userrange['xmin'], userrange['xmax']), (userrange['ymin'],userrange['ymax']))
-#         print("CONVERTED: ")
-#         print((min[0], max[1]), (max[0], min[1]))
         return ((min[0], max[0]), (max[1] - 1000, min[1]))
 
     def getSrcData(self):
