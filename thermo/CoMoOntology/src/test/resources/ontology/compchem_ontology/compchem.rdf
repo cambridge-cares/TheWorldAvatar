@@ -516,6 +516,10 @@ thermodynamics, the symmetry number corrects for any overcounting of equivalent 
     <rdfs:isDefinedBy rdf:resource="http://www.xml-cml.org/dictionary/compchem/#programVersion"/>
     <rdfs:domain rdf:resource="http://purl.org/gc/SourcePackage"/>
   </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="hasUniqueSpeciesIRI">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="http://purl.org/gc/QuantumMechanics"/>
+  </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="hasLevelOfTheory">
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     <rdfs:domain rdf:resource="#LevelOfTheory"/>
