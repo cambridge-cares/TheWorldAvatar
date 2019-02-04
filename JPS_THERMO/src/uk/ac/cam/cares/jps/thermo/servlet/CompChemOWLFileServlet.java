@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.thermo;
+package uk.ac.cam.cares.jps.thermo.servlet;
 
 import java.io.File;
 
@@ -37,8 +37,6 @@ import uk.ac.cam.cares.jps.thermo.manager.FolderManager;
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.FileUtility;
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
 
-//import uk.ac.cam.cares.jps.base.util.PythonHelper;
-
 /**
  *
  *@author NK510
@@ -47,30 +45,27 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
  * stored in json file.
  * 
  */
-@WebServlet("/thermocalculation")
-public class Thermocalculation extends HttpServlet {
+
+@WebServlet("/calculation")
+public class CompChemOWLFileServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	final static Logger logger = Logger.getLogger(Thermocalculation.class.getName());
+	final static Logger logger = Logger.getLogger(CompChemOWLFileServlet.class.getName());
 
 	public static String catalinaFolderPath = System.getProperty("catalina.home");
 
 	public static final String SPARQL_FOLDER = catalinaFolderPath + "/conf/Catalina/sparql_query/";
 
-	public static final String ABOX_FILE = "http://www.theworldavatar.com/66d74432-d44a-354f-a07e-0e1a15c049f1/Cl2O6.owl";
-
 	public static final String RESULT_FOLDER = catalinaFolderPath + "/webapps/ROOT/temp/JPS_THERMO/";
-
-	private String folderName = "";
-
+	
 	/**
 	 * 
 	 * @see HttpServlet#HttpServlet()
 	 * 
 	 */
 
-	public Thermocalculation() {
+	public CompChemOWLFileServlet() {
 
 		super();
 
@@ -85,9 +80,13 @@ public class Thermocalculation extends HttpServlet {
 	 */
 
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+	synchronized protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+//		super.doGet(request, response);
+		
+		String folderName = "";
+		
 		JSONObject parameterOne = AgentCaller.readJsonParameter(request);
 
 		String gaussian = parameterOne.getString("gaussian");
@@ -111,6 +110,7 @@ public class Thermocalculation extends HttpServlet {
 		 * Runs SPARQL query that returns data that are input for thermo calculation.
 		 * Results of SPARQL query are stored in json file.
 		 */
+		
 		File sparqlFile = new File(SPARQL_FOLDER + "query_all.sparql");
 
 		String q = FileUtils.readFileToString(sparqlFile, "UTF-8");
@@ -121,8 +121,7 @@ public class Thermocalculation extends HttpServlet {
 
 		FileOutputStream fileOutputStream = null;
 
-		String jsonInputFilePath = RESULT_FOLDER + folderName + "/" + StringUtils.substringBefore(fileName, ".")
-				+ ".json";
+		String jsonInputFilePath = RESULT_FOLDER + folderName + "/" + StringUtils.substringBefore(fileName, ".") + ".json";
 
 		try {
 
@@ -177,7 +176,7 @@ public class Thermocalculation extends HttpServlet {
 	 */
 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+	synchronized protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);

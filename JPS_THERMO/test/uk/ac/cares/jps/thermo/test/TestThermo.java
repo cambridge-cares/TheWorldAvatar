@@ -1,10 +1,10 @@
 package uk.ac.cares.jps.thermo.test;
 import org.json.JSONObject;
+import org.junit.Test;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.thermo.Thermocalculation;
 
 public class TestThermo extends TestCase {
 	
@@ -14,7 +14,7 @@ public class TestThermo extends TestCase {
 		
 		System.out.println(content);
 	}
-	
+	@Test
 	public void testThermoCalculationAgent() { 
 		
 		JSONObject json = new JSONObject();
