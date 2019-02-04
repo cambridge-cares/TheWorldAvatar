@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns="https://como.cheng.cam.ac.uk/kb/species.owl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:species="http://como.cheng.cam.ac.uk/kb/species.owl#"
+    xmlns:compchem="https://como.cheng.cam.ac.uk/kb/compchem.owl#"
+    xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+    xmlns:j.0="http://www.w3.org/2008/05/skos#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="https://como.cheng.cam.ac.uk/kb/species.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://www.w3.org/2008/05/skos"/>
+  </owl:Ontology>
+  <owl:DatatypeProperty rdf:about="http://purl.org/dc/elements/1.1/identifier"/>
+  <owl:Thing rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_8">
+    <j.0:altLabel>H 2 O 2</j.0:altLabel>
+    <dc:identifier>species_8</dc:identifier>
+  </owl:Thing>
+  <owl:Thing rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_9">
+    <j.0:altLabel>H 2</j.0:altLabel>
+    <dc:identifier>species_9</dc:identifier>
+  </owl:Thing>
+  <owl:Thing rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_10">
+    <j.0:altLabel>Ar 1</j.0:altLabel>
+    <dc:identifier>species_10</dc:identifier>
+  </owl:Thing>
+  <owl:Thing rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_6">
+    <j.0:altLabel>H 1</j.0:altLabel>
+    <dc:identifier>species_6</dc:identifier>
+  </owl:Thing>
+  <owl:Thing rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_7">
+    <dc:identifier>species_7</dc:identifier>
+    <j.0:altLabel>H 2 O 1</j.0:altLabel>
+  </owl:Thing>
+  <owl:Thing rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_4">
+    <dc:identifier>species_4</dc:identifier>
+    <j.0:altLabel>N 2</j.0:altLabel>
+  </owl:Thing>
+  <owl:Thing rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_5">
+    <j.0:altLabel>H 1 O 2</j.0:altLabel>
+    <dc:identifier>species_5</dc:identifier>
+  </owl:Thing>
+  <owl:Thing rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_2">
+    <dc:identifier>species_2</dc:identifier>
+    <j.0:altLabel>O 1</j.0:altLabel>
+  </owl:Thing>
+  <owl:Thing rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_3">
+    <j.0:altLabel>O 2</j.0:altLabel>
+    <dc:identifier>species_3</dc:identifier>
+  </owl:Thing>
+  <owl:Thing rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_1">
+    <dc:identifier>species_1</dc:identifier>
+    <j.0:altLabel> H 1 O 1 </j.0:altLabel>
+  </owl:Thing>
+</rdf:RDF>
+
+<!-- Created with TopBraid -->
