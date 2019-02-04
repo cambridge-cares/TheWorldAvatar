@@ -119,15 +119,20 @@
 
         <xsl:variable name="folder" select="@href" />
         
+        <xsl:variable name ="formula_name">	
+    	<xsl:value-of select="s:module/s:molecule/*[local-name() = 'formula']/@concise" />
+        </xsl:variable>
+				
 		<!-- 
 		
 		Creates root rdf node that is instance of 'G09' ontology class. It 
 		also creates property relation between root node and node that has a tree 
-		structure of information stored in initialisation module. 
+		structure of information stored in initialization module. 
 		
 		-->
 		
 <!-- 		<owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_no_namespace}_{$vmodule}_molecular_methоdology_{$id}">-->
+            
             <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$folder_name}">
 			<rdf:type rdf:resource="https://como.cheng.cam.ac.uk/kb/compchem.owl#G09"/>
 			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
@@ -137,8 +142,114 @@
 		    <compchemkb:hasEnvironment rdf:resource="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_no_namespace}_{$vmodule}_has_environment_module_{$id}"/>
 		    
 		    <!--<gc:hasFile><xsl:value-of select="date()" disable-output-escaping="yes"/></gc:hasFile>-->
+		    
+		    <!-- Mapping between name of species and unique URI for each species specified  in species ontology.-->
+		    
+		    <!-- begin  date: 2019-02-04 -->
+		    
+		    <xsl:if test="$formula_name='Ar 1 '">
+		    <compchemkb:hasUniqueSpeciesIRI rdf:resource="http://como.cheng.cam.ac.uk/kb/species.owl#species_10"/>
+		    </xsl:if>
 
+            <xsl:if test="$formula_name='H 1 '">
+		    <compchemkb:hasUniqueSpeciesIRI rdf:resource="http://como.cheng.cam.ac.uk/kb/species.owl#species_6"/>
+		    </xsl:if>
+		    
+		    <xsl:if test="$formula_name='H 2 '">
+		    <compchemkb:hasUniqueSpeciesIRI rdf:resource="http://como.cheng.cam.ac.uk/kb/species.owl#species_9"/>
+		    </xsl:if>
+		    
+		    <xsl:if test="$formula_name='H 2 O 1 '">
+		    <compchemkb:hasUniqueSpeciesIRI rdf:resource="http://como.cheng.cam.ac.uk/kb/species.owl#species_7"/>
+		    </xsl:if>
+		    
+		    <xsl:if test="$formula_name='H 2 O 2 '">
+		    <compchemkb:hasUniqueSpeciesIRI rdf:resource="http://como.cheng.cam.ac.uk/kb/species.owl#species_8"/>
+		    </xsl:if>
+
+	        <xsl:if test="$formula_name='H 1 O 2 '">
+		    <compchemkb:hasUniqueSpeciesIRI rdf:resource="http://como.cheng.cam.ac.uk/kb/species.owl#species_5"/>
+		    </xsl:if>		    
+		    
+		    <xsl:if test="$formula_name='N 2 '">
+		    <compchemkb:hasUniqueSpeciesIRI rdf:resource="http://como.cheng.cam.ac.uk/kb/species.owl#species_4"/>
+		    </xsl:if>
+		    
+		    <xsl:if test="$formula_name='O 1 '">
+		    <compchemkb:hasUniqueSpeciesIRI rdf:resource="http://como.cheng.cam.ac.uk/kb/species.owl#species_2"/>
+		    </xsl:if>
+		    
+		    <xsl:if test="$formula_name='O 2 '">
+		    <compchemkb:hasUniqueSpeciesIRI rdf:resource="http://como.cheng.cam.ac.uk/kb/species.owl#species_3"/>
+		    </xsl:if>
+		    
+		    <xsl:if test="$formula_name='H 1 O 1 '">
+		    <compchemkb:hasUniqueSpeciesIRI rdf:resource="http://como.cheng.cam.ac.uk/kb/species.owl#species_1"/>
+		    </xsl:if>
+		    
 		    </owl:NamedIndividual>
+		    
+		    <xsl:if test="$formula_name='Ar 1 '">
+		    <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_10">
+			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+			</owl:NamedIndividual>
+		    </xsl:if>
+		    
+		    <xsl:if test="$formula_name='H 1 '">
+		    <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_6">
+			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+			</owl:NamedIndividual>
+		    </xsl:if>
+		    
+		    <xsl:if test="$formula_name='H 2 '">
+		    <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_9">
+			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+			</owl:NamedIndividual>
+		    </xsl:if>
+		    
+		    <xsl:if test="$formula_name='H 2 O 1 '">
+		    <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_7">
+			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+			</owl:NamedIndividual>
+		    </xsl:if>
+		    
+		    <xsl:if test="$formula_name='H 2 O 2 '">
+		    <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_8">
+			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+			</owl:NamedIndividual>
+		    </xsl:if>
+		    
+		    <xsl:if test="$formula_name='H 1 O 2 '">
+		    <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_5">
+			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+			</owl:NamedIndividual>
+		    </xsl:if>
+		    
+		    <xsl:if test="$formula_name='N 2 '">
+		    <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_4">
+			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+			</owl:NamedIndividual>
+		    </xsl:if>
+		    
+		    <xsl:if test="$formula_name='O 1 '">
+		    <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_2">
+			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+			</owl:NamedIndividual>
+		    </xsl:if>
+		    
+		    <xsl:if test="$formula_name='O 2 '">
+		    <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_3">
+			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+			</owl:NamedIndividual>
+		    </xsl:if>
+		    
+		    <xsl:if test="$formula_name='H 1 O 1 '">
+		    <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_1">
+			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+			</owl:NamedIndividual>
+		    </xsl:if>
+		    		    
+		    <!-- end -->
 
 	</xsl:template>
 
@@ -275,8 +386,7 @@
 			    <xsl:value-of select="." />
 		        </xsl:variable>
 		
-		        <owl:NamedIndividual
-					rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_no_namespace}_{$vmodule}_has_initilization_module_{$id}">
+		        <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_no_namespace}_{$vmodule}_has_initilization_module_{$id}">
 				<gc:hasParameter rdf:resource="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_no_namespace}_{$vmodule}_has_basis_set_parameter_{$id}"/>	
 				</owl:NamedIndividual>
 					    
@@ -290,11 +400,9 @@
 				<gc:hasBasisSet><xsl:value-of select="."/></gc:hasBasisSet>
 		        </owl:NamedIndividual>
 			    </xsl:if>
-				
-				
+			    
 				</xsl:for-each>
-
-
+				
 				<!-- 
 				Read value of 'count' and 'elementType' attributes for a molecule 
 				as attribute values of tag 'atom' and creates rdf graph for each atom by 
