@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -19,7 +18,6 @@ import org.json.JSONWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueServer;
@@ -27,9 +25,6 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.query.ScenarioKeys;
-import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
-import uk.ac.cam.cares.jps.composition.servicemodel.Operation;
-import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 @WebServlet(urlPatterns = {"/scenariomanagement/*"})
 public class ScenarioManagementAgent extends HttpServlet {
@@ -106,63 +101,63 @@ public class ScenarioManagementAgent extends HttpServlet {
 	
 	public void writeListToFile() {
 		JSONWriter writer = new JSONStringer().object().key("result").array();
-		addAgents(writer);
+		//addAgents(writer);
 		addScenarios(writer);
 		writer.endArray().endObject();	
 		
 		String content = writer.toString();
 		//String content = listAgentsAsJson();
 		String path = getWorkingDir() + "/xxxlist.json";
-		System.out.println(path);
+		//system.out.println(path);
 		writeToFile(content, path);
 	}
 	
-	public void addAgents(JSONWriter writer) {
-		
-		ArrayList<Service> services = ServiceDiscovery.getInstance().getServices();
-		for (Service current : services) {
-			addAgent(writer, current);
-		}
-	}
-	
-	private void addAgent(JSONWriter writer, Service service) {
-		
-		String name = service.getUri().toString();
-		int i = name.lastIndexOf("/");
-		name = name.substring(i+1);
-		String type = service.isComposed()? "composed" : "agent";
-		addEntry(writer, service.getUri().toString(), name, type);
-		
-		Operation op = service.getOperations().get(0);
-		System.out.println(op.getHttpUrl());
-		addOperation(writer, op.getHttpUrl());
-		addParameterSection(writer, op, true);
-		addParameterSection(writer, op, false);
-		
-		writer.endObject().endObject(); // both for addOperation
-		writer.endArray().endObject();	// both for addEntry
-	}
-	
-	private void addParameterSection(JSONWriter writer, Operation operation, boolean input) {
-		List<String> params = new ArrayList<String>();
-		
-		Iterator<MessagePart> it = null;
-		if (input) {
-			params.add("hasInput");
-			it = operation.getInputs().get(0).getMandatoryParts().iterator();
-		} else {
-			params.add("hasOutput");
-			it = operation.getOutputs().get(0).getMandatoryParts().iterator();	
-		}
-		while (it.hasNext()) {
-			MessagePart current = it.next();
-			System.out.println("name=" + current.getName());
-			params.add(current.getName());
-			params.add(current.getType().toString());
-		}
-		String[] array = params.toArray(new String[0]);
-		addParameterSection(writer, array);
-	}
+//	public void addAgents(JSONWriter writer) {
+//		
+//		ArrayList<Service> services = ServiceDiscovery.getInstance().getServices();
+//		for (Service current : services) {
+//			addAgent(writer, current);
+//		}
+//	}
+//	
+//	private void addAgent(JSONWriter writer, Service service) {
+//		
+//		String name = service.getUri().toString();
+//		int i = name.lastIndexOf("/");
+//		name = name.substring(i+1);
+//		String type = service.isComposed()? "composed" : "agent";
+//		addEntry(writer, service.getUri().toString(), name, type);
+//		
+//		Operation op = service.getOperations().get(0);
+//		//system.out.println(op.getHttpUrl());
+//		addOperation(writer, op.getHttpUrl());
+//		addParameterSection(writer, op, true);
+//		addParameterSection(writer, op, false);
+//		
+//		writer.endObject().endObject(); // both for addOperation
+//		writer.endArray().endObject();	// both for addEntry
+//	}
+//	
+//	private void addParameterSection(JSONWriter writer, Operation operation, boolean input) {
+//		List<String> params = new ArrayList<String>();
+//		
+//		Iterator<MessagePart> it = null;
+//		if (input) {
+//			params.add("hasInput");
+//			it = operation.getInputs().get(0).getMandatoryParts().iterator();
+//		} else {
+//			params.add("hasOutput");
+//			it = operation.getOutputs().get(0).getMandatoryParts().iterator();	
+//		}
+//		while (it.hasNext()) {
+//			MessagePart current = it.next();
+//			//system.out.println("name=" + current.getName());
+//			params.add(current.getName());
+//			params.add(current.getType().toString());
+//		}
+//		String[] array = params.toArray(new String[0]);
+//		addParameterSection(writer, array);
+//	}
 	
 	public void addScenarios(JSONWriter writer) {
 			
