@@ -88,12 +88,17 @@ public class QueryString {
 				+ "PREFIX gc: <http://purl.org/gc/>" + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
 				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
 				+ "SELECT DISTINCT (strafter(str(?g09), 'compchem/') AS ?uuid) ?levelOfTheory ?basisSetValue "
-				+ "WHERE {" + "?g09 compchemkb:hasInitialization ?mn0 ." + "?mn0 gc:hasMoleculeProperty ?mp0 ."
-				+ "?mp0 gc:hasName " + moleculeName + "." + "?g09 compchemkb:hasInitialization ?mn0 ."
+				+ "WHERE {" + "?g09 compchemkb:hasInitialization ?mn0 ." 
+				+ "?mn0 gc:hasMoleculeProperty ?mp0 ."
+				+ "?mp0 gc:hasName " + moleculeName + "." 
+//				+ "?g09 compchemkb:hasInitialization ?mn0 ."
 				+ "?mn0 gc:hasParameter ?p1 ."
 				+ "?p1  rdf:type <https://como.cheng.cam.ac.uk/kb/compchem.owl#LevelOfTheory> ."
-				+ "?p1  compchemkb:hasLevelOfTheory ?levelOfTheory ." + "?mn2 gc:hasParameter ?p2 ."
-				+ "?p2  rdf:type <http://purl.org/gc/BasisSet> ." + "?p2  gc:hasBasisSet ?basisSetValue ." + "}";
+				+ "?p1  compchemkb:hasLevelOfTheory ?levelOfTheory ." 
+				+ "?mn0 gc:hasParameter ?p2 ."
+				+ "?p2  rdf:type <http://purl.org/gc/BasisSet> ." 
+				+ "?p2  gc:hasBasisSet ?basisSetValue ." 
+				+ "}";
 
 		return query;
 	}
