@@ -101,12 +101,14 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 				logger.info("jsonFile.getAbsolutePath(): " + jsonFiles.get(i).getAbsolutePath());
 
 				/**
-				 * @author nk510 <p>Runs Python script for thermodynamic calculations. Python script implemented by {@author danieln@cmclinnovations.com} 
+				 * 
+				 * @author nk510 <p>Runs Python script for thermodynamic calculations. Python script is implemented by {@author danieln@cmclinnovations.com} 
+				 * 
 				 */
 
 				String pyscript = catalinaFolderPath + "/conf/Catalina/c4e-dln22-TDC/Source/thermoDriver.py";
-                String[] cmd = { "python", pyscript, "-j",
-						jsonFiles.get(i).getAbsolutePath(), };
+				
+                String[] cmd = { "python", pyscript, "-j", jsonFiles.get(i).getAbsolutePath(), };
 
 				Runtime.getRuntime().exec(cmd);
 			}

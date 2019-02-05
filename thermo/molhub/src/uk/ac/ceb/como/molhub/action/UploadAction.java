@@ -30,7 +30,7 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.rio.RDFFormat;
-
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 // TODO: Auto-generated Javadoc
@@ -99,7 +99,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	private String uri = "http://como.cheng.cam.ac.uk/molhub/compchem/";
 
 
-	 private String serverUrl = "http://localhost:8080/rdf4j-server/repositories/compchemkb";
+	private String serverUrl = "http://localhost:8080/rdf4j-server/repositories/compchemkb";
 
 	/** Remote rdf4j server url. */
 //	private String serverUrl = "http://172.24.155.69:8080/rdf4j-server/repositories/compchemkb";
@@ -156,9 +156,19 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 			 */
 
 			String folderName = FolderManager.generateUniqueFolderName(f.getName(), catalinaFolderPath);
+			
+			
 
 			File inputG09File = new File(folderName + "/" + uploadFileName[fileNumber]);
 
+			/**
+			 * @author NK510
+			 * <p>Get file extension.</p> 
+			 */
+			String fileExtension = FilenameUtils.getExtension(folderName + "/" + uploadFileName[fileNumber]);
+			
+			logger.info("File extension: " + fileExtension);
+			
 			File outputXMLFile = new File(
 					folderName + "/" + uploadFileName[fileNumber].replaceAll(".g09", "") + ".xml");
 
@@ -286,7 +296,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 							 * @author nk510
 							 *         <p>
 							 * 		Begins a new transaction. Requires commit() or rollback() to be
-							 *         called to end the transaction.
+							 *         called to end of the transaction.
 							 *         </p>
 							 */
 

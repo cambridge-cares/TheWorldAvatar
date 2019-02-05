@@ -33,10 +33,12 @@ import uk.ac.ceb.como.molhub.bean.QueryString;
 import uk.ac.ceb.como.molhub.bean.RotationalConstant;
 
 /**
+ * 
  * The Class QueryManager.
  *
  * @author nk510
  * <p>The Class QueryManager. Implements methods for query remote RDF4J repository.</p>
+ * 
  */
 
 public class QueryManager {
@@ -294,6 +296,7 @@ public class QueryManager {
 	 * @param listOfSets
 	 *            <p>A list that contains sets of all unions in all clauses.</p>
 	 * @return a Java Set. <p>Intersection of all clauses as sets of strings.</p>
+	 * 
 	 */
 	
 	public static Set<String> intersection(List<Set<String>> listOfSets) {
@@ -330,12 +333,14 @@ public class QueryManager {
 	}
 	
 	/**
+	 * 
 	 * Gets the all frequencies.
 	 *
 	 * @author nk510
 	 * @param uuid
 	 *            unique folder name.
 	 * @return A Java List. <p>A list of all frequencies (size, value, unit) for given uuid.</p>
+	 * 
 	 */
 	
 	public static List<Frequency> getAllFrequencies(String uuid) {
@@ -402,11 +407,13 @@ public class QueryManager {
 	}
 
 	/**
+	 * 
 	 * Gets the all non compositet molecule properties.
 	 *
 	 * @param uuid
 	 *            the uuid is name for unique folder name
 	 * @return A Java List. <p>all non composite molecule properties . Non composite molecule properties includes: molecule name, basis set value, level of theory, and geometry type.</p>
+	 * 
 	 */
 	
 	public static List<MoleculeProperty> getAllNonCompositetMoleculeProperties(String uuid) {
@@ -474,11 +481,13 @@ public class QueryManager {
 	}
 
 	/**
+	 * 
 	 * Gets the all rotational symmerty number.
 	 *
 	 * @param uuid
 	 *            the uuid is name for unique folder name.
 	 * @return the rotational symmerty number.
+	 * 
 	 */
 	public static String getAllRotationalSymmertyNumber(String uuid) {
 
@@ -521,9 +530,6 @@ public class QueryManager {
 				
 				result.close();
 			}
-
-			
-			
 			
 		} catch (RepositoryException e) {
 
@@ -543,12 +549,15 @@ public class QueryManager {
 	}
 
 	/**
+	 * 
 	 * Gets the all spin multiplicity.
 	 *
 	 * @param uuid
 	 *            the uuid is name for unique folder name.
 	 * @return the spin multiplicity value.
+	 * 
 	 */
+	
 	public static String getAllSpinMultiplicity(String uuid) {
 
 		String queryString = QueryString.getSpinMultiplicity(uuid);
@@ -611,11 +620,14 @@ public class QueryManager {
 
 	
 	/**
+	 * 
 	 * Gets the all formal charge.
 	 *
 	 * @param uuid the uuid is unique folder name 
 	 * @return the all formal charge value
+	 * 
 	 */
+	
 	public static List<FormalCharge> getAllFormalCharge(String uuid) {
 
 		List<FormalCharge> formalChargeList = new ArrayList<FormalCharge>();
@@ -678,11 +690,13 @@ public class QueryManager {
 	}
 	
 	/**
+	 * 
 	 * Gets the all atomic mass.
 	 *
 	 * @param uuid
 	 *            the uuid is name for unique folder name.
 	 * @return the atomic masses. <p>These data are given as the following 3-tuple (atom name, atomic mass value, atomic mass unit). </p>
+	 * 
 	 */
 	public static List<AtomicMass> getAllAtomicMass(String uuid) {
 
@@ -750,6 +764,7 @@ public class QueryManager {
 	}
 
 	/**
+	 * 
 	 * Gets the all rotational constant.
 	 *
 	 * @param uuid
@@ -757,6 +772,7 @@ public class QueryManager {
 	 * @return the rotational constant. <p>These data are given as the following 3-tuple (rotational constant size, rotational constant value, rotational constant unit).</p>
 	 *         
 	 */
+	
 	public static List<RotationalConstant> getAllRotationalConstant(String uuid) {
 
 		List<RotationalConstant> rotationalConstantList = new ArrayList<RotationalConstant>();
