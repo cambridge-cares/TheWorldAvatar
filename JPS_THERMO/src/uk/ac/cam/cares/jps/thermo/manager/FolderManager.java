@@ -20,7 +20,7 @@ public class FolderManager {
 		 * @return A unique folder name.
 		 * @throws UnsupportedEncodingException the unsupported encoding exception
 		 */
-		synchronized public static String generateUniqueFolderName(String fileName, String catalinaFolderPath)
+		 public static String generateUniqueFolderName(String fileName, String catalinaFolderPath)
 				throws UnsupportedEncodingException {
 			
 			String folderName = "";
@@ -57,7 +57,7 @@ public class FolderManager {
 		 * @author nk510
 		 * @param folderName <p>A folder's name to be created based on using uuid.</p>
 		 */
-		synchronized public static void createFolder(String folderName) {
+		public  static void createFolder(String folderName) {
 
 			Path folderPath = Paths.get(folderName);
 

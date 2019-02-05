@@ -24,7 +24,7 @@ public class SPARQLManager {
 	
 	
 	
-	public synchronized void runCompChemSPARQL(String gaussian, String jsonInputFilePath,String serverUrl ) {
+	public void runCompChemSPARQL(String gaussian, String jsonInputFilePath,String serverUrl ) {
 		
 		/**
 		 * 
@@ -45,7 +45,7 @@ public class SPARQLManager {
 				 */
 	    		String queryString = QueryString.getAllTriplesForThermoCalculation(gaussian);
 		
-				TupleQuery query = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+				TupleQuery query = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);				
 				
 				try {
 					
@@ -65,10 +65,7 @@ public class SPARQLManager {
 				
 					e.getMessage();
 					
-				} finally {
-					
-				
-				}
+				} 
 				
 				connection.commit();
 
