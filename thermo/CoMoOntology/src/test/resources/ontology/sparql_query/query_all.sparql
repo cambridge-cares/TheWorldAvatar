@@ -55,14 +55,16 @@ UNION
 ?go2 gc:hasResult ?r .
 ?r rdf:type gc:Frequency .
 ?r gc:hasVibrationCount ?frequenciesSize .
-?r compchemkb:hasFrequenciesValue ?frequenciesValue .
+#?r compchemkb:hasFrequenciesValue ?frequenciesValue .
+?r compchemkb:hasFrequencies ?frequenciesValue .
 ?r gc:hasUnit ?frequenciesUnit.
 }
 UNION
 {
 ?g09 gc:isCalculationOn ?go3. 
 ?go3 a compchemkb:GeometryType .
-?go3 compchemkb:hasGeometryTypeValue ?geometryTypeValue.
+#?go3 compchemkb:hasGeometryTypeValue ?geometryTypeValue.
+?go3 compchemkb:hasGeometryType ?geometryTypeValue.
  }
  UNION
  {

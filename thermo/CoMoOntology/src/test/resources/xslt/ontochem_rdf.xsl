@@ -76,7 +76,6 @@
 	</xsl:variable>	
 	
 	<!-- Randomly generated UUID used as id for each G09-->
-	
 		
 	<xsl:variable name="uuidVar">
 	<xsl:value-of select="uuid:randomUUID()"/>
@@ -337,7 +336,7 @@
 			</xsl:when>
 			
  
-			<!-- Transformation of information about molecule stored in initialisation 
+			<!-- Transformation of information about molecule stored in initialization 
 				module of CompChem xml file. -->
 
 			<xsl:when test="$module_type='cc:initialization'">
