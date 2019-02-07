@@ -3,9 +3,10 @@ package uk.ac.cam.cares.jps.thermo.sparql;
 public class QueryString {
 
 	/**
-	 * 
+	 * @author NK510
 	 * @param uuid
-	 * @return String sparql query that contains given uuid as input parameter. Result of this query are data that are input for thermo calculations implemented in Python. 
+	 * @return <p>String sparql query that contains given uuid as input parameter. 
+	 * Result of this query are data that are input for thermo calculations implemented in Python.</p> 
 	 * 
 	 */
 	public static String getAllTriplesForThermoCalculation(String uuid) {

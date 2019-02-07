@@ -16,6 +16,7 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.thermo.calculation.ThermoCalculation;
 import uk.ac.cam.cares.jps.thermo.manager.SPARQLManager;
 
+
 /**
  * 
  * @author NK510
