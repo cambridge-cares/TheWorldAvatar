@@ -5,7 +5,7 @@ public class QueryString {
 	/**
 	 * 
 	 * @param uuid
-	 * @return String sparql query that contains given uuid as input parameter.
+	 * @return String sparql query that contains given uuid as input parameter. Result of this query are data that are input for thermo calculations implemented in Python. 
 	 * 
 	 */
 	public static String getAllTriplesForThermoCalculation(String uuid) {
@@ -14,13 +14,17 @@ public class QueryString {
 			+"PREFIX gc: <http://purl.org/gc/>"
 				+"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
 				+"PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
-				+"SELECT ?g09 ?moleculeName ?atomName ?atomNumber ?levelOfTheory ?basisSetValue ?frequenciesSize ?frequenciesValue ?frequenciesUnit ?spinMultiplicityValue  ?coordinateX ?coordinateY ?coordinateZ ?massValue ?massUnit ?geometryTypeValue ?rotationalConstantsSize ?rotationalConstantsUnit ?rotationalConstantsValue ?rotationalSymmetryNumber ?programName ?programVersion ?runDate " 
+				+"SELECT ?g09 ?speciesIRI ?moleculeName ?atomName ?atomNumber ?levelOfTheory ?basisSetValue ?frequenciesSize ?frequenciesValue ?frequenciesUnit ?spinMultiplicityValue  ?coordinateX ?coordinateY ?coordinateZ ?massValue ?massUnit ?geometryTypeValue ?rotationalConstantsSize ?rotationalConstantsUnit ?rotationalConstantsValue ?rotationalSymmetryNumber ?programName ?programVersion ?runDate " 
 				+"WHERE { " 
 				+"{ "
 				+"?g09 compchemkb:hasInitialization ?mn0 . " 
 				+"?mn0 gc:hasMoleculeProperty ?mp0 . " 
 				+"?mp0 gc:hasName ?moleculeName . " 
 				+"} "
+				+ "UNION"
+				+ "{"
+				+"?g09 compchemkb:hasUniqueSpeciesIRI ?speciesIRI . "
+				+ "}"
 				+"UNION "
 				+"{ "
 				+"?g09 compchemkb:hasInitialization ?mn1 . " 
