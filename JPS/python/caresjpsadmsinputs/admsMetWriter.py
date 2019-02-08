@@ -29,7 +29,8 @@ try:
 	if weatherData['haswind']['hasdirection'] == '':
 		windDirection = 180
 	else:
-		windDirection = 180 + float(weatherData['haswind']['hasdirection'])
+		#windDirection = 180 + float(weatherData['haswind']['hasdirection']) (why like this?)
+		windDirection =  float(weatherData['haswind']['hasdirection'])
 	if windDirection > 360:
 		windDirection = windDirection % 360
 	windSpeed = weatherData['haswind']['hasspeed']
