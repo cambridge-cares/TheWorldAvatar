@@ -33,7 +33,6 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 
 import uk.ac.cam.cares.jps.thermo.manager.FolderManager;
-
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.FileUtility;
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
 
@@ -46,7 +45,7 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
  * 
  */
 
-@WebServlet("/calculation")
+@WebServlet("/compchem")
 public class CompChemOWLFileServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
@@ -80,7 +79,7 @@ public class CompChemOWLFileServlet extends HttpServlet {
 	 */
 
 	@Override
-	synchronized protected void doGet(HttpServletRequest request, HttpServletResponse response)
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 //		super.doGet(request, response);

@@ -2,12 +2,16 @@ PREFIX compchemkb: <https://como.cheng.cam.ac.uk/kb/compchem.owl#>
 PREFIX gc: <http://purl.org/gc/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-SELECT ?g09 ?moleculeName ?atomName ?atomNumber ?levelOfTheory ?basisSetValue ?frequenciesSize ?frequenciesValue ?frequenciesUnit ?spinMultiplicityValue  ?coordinateX ?coordinateY ?coordinateZ ?massValue ?massUnit ?geometryTypeValue ?rotationalConstantsSize ?rotationalConstantsUnit ?rotationalConstantsValue ?rotationalSymmetryNumber ?programName ?programVersion ?runDate 
+SELECT ?g09 ?speciesIRI ?moleculeName ?atomName ?atomNumber ?levelOfTheory ?basisSetValue ?frequenciesSize ?frequenciesValue ?frequenciesUnit ?spinMultiplicityValue  ?coordinateX ?coordinateY ?coordinateZ ?massValue ?massUnit ?geometryTypeValue ?rotationalConstantsSize ?rotationalConstantsUnit ?rotationalConstantsValue ?rotationalSymmetryNumber ?programName ?programVersion ?runDate 
 WHERE { 
 {
 ?g09 compchemkb:hasInitialization ?mn0 . 
 ?mn0 gc:hasMoleculeProperty ?mp0 . 
 ?mp0 gc:hasName ?moleculeName . 
+}
+UNION
+{
+?g09 compchemkb:hasUniqueSpeciesIRI ?speciesIRI .
 }
 UNION
 {
@@ -55,14 +59,16 @@ UNION
 ?go2 gc:hasResult ?r .
 ?r rdf:type gc:Frequency .
 ?r gc:hasVibrationCount ?frequenciesSize .
-?r compchemkb:hasFrequenciesValue ?frequenciesValue .
+#?r compchemkb:hasFrequenciesValue ?frequenciesValue .
+?r compchemkb:hasFrequencies ?frequenciesValue .
 ?r gc:hasUnit ?frequenciesUnit.
 }
 UNION
 {
 ?g09 gc:isCalculationOn ?go3. 
 ?go3 a compchemkb:GeometryType .
-?go3 compchemkb:hasGeometryTypeValue ?geometryTypeValue.
+#?go3 compchemkb:hasGeometryTypeValue ?geometryTypeValue.
+?go3 compchemkb:hasGeometryType ?geometryTypeValue.
  }
  UNION
  {
