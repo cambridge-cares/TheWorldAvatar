@@ -88,7 +88,7 @@ public class ADMSAgent extends HttpServlet {
 			JSONObject bundle = new JSONObject();
 			bundle.put("city", cityIRI);
 			
-			if (!cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Singapore")) {
+			if (!(cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Singapore") || cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Hong_Kong"))) {
 				bundle.put("plant", plantIRI); // Why is this here? Does GetBuildingDataFromSimulation use it
 			}
 			bundle.put("region", region);
@@ -111,10 +111,11 @@ public class ADMSAgent extends HttpServlet {
 			double lowery = Double.parseDouble(region.getJSONObject("lowercorner").getString("lowery"));
 			
 			double[] sourceXY = null;
-			if (!cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Singapore")) {
-				sourceXY = getPlantXY(plantIRI); //
-			} else if (cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Singapore")) {
-				sourceXY = new double[] {(lowerx + upperx)/2, (lowery + uppery)/2};
+			
+			if (cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Singapore") || cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Hong_Kong")) {
+				sourceXY = new double[] {(lowerx + upperx)/2, (lowery + uppery)/2};				
+			} else {
+				sourceXY = getPlantXY(plantIRI); 				
 			}
 			
 			String newBuildingData = retrieveBuildingDataInJSON(cityIRI, sourceXY[0], sourceXY[1], lowerx, lowery, upperx, uppery);
@@ -124,20 +125,26 @@ public class ADMSAgent extends HttpServlet {
 			
 			 
 			String targetCRSName = CRSTransformer.EPSG_25833;
-			if (cityIRI.equalsIgnoreCase(BuildingQueryPerformer.BERLIN_IRI)) {
-				targetCRSName =  CRSTransformer.EPSG_28992;
-			} else if (cityIRI.equalsIgnoreCase(BuildingQueryPerformer.THE_HAGUE_IRI)) {
-				targetCRSName = CRSTransformer.EPSG_28992;
-			} // ???
-
 			String sourceCRSName = CRSTransformer.EPSG_4326;
+			
+			if (cityIRI.equalsIgnoreCase(BuildingQueryPerformer.BERLIN_IRI) || cityIRI.equalsIgnoreCase(BuildingQueryPerformer.THE_HAGUE_IRI)) {
+				targetCRSName =  CRSTransformer.EPSG_28992;
+			} else if (cityIRI.equalsIgnoreCase(BuildingQueryPerformer.SINGAPORE_IRI)) {
+				sourceCRSName = CRSTransformer.EPSG_3857;
+				targetCRSName = CRSTransformer.EPSG_3414;
+			}
+			 else if (cityIRI.equalsIgnoreCase(BuildingQueryPerformer.HONG_KONG_IRI)) {
+				sourceCRSName = CRSTransformer.EPSG_3857;
+				targetCRSName = CRSTransformer.EPSG_2326;
+			}
+
 
 			//system.out.println("============= src name ==============");
 			//system.out.println(srsname);
 			if (srsname.equalsIgnoreCase("EPSG:28992")) {
 				sourceCRSName = CRSTransformer.EPSG_28992;
 				if (input.has("ship")) {
-					writeAPLFileShip(newBuildingData, plantIRI, region);
+					writeAPLFileShip(newBuildingData, plantIRI, region, targetCRSName);
 				} else {
 					writeAPLFile(newBuildingData, plantIRI, region);
 				}
@@ -166,7 +173,7 @@ public class ADMSAgent extends HttpServlet {
 
 				JSONObject newRegion  = new JSONObject(String.format(regionTemplate, ux,uy,lx,ly));
 				if (input.has("ship")) {
-					writeAPLFileShip(newBuildingData, plantIRI, newRegion);
+					writeAPLFileShip(newBuildingData, plantIRI, newRegion, targetCRSName);
 				} else {
 					writeAPLFile(newBuildingData,plantIRI, newRegion);
 				}
@@ -244,7 +251,7 @@ public class ADMSAgent extends HttpServlet {
 		return result;		
 	}
 	
-	public String writeAPLFileShip (String buildingInString, String plantIRI, JSONObject regionInJSON) {
+	public String writeAPLFileShip (String buildingInString, String plantIRI, JSONObject regionInJSON, String targetCRSName) {
 		String fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
 		//system.out.println("==================== full path ====================");
 		//system.out.println(fullPath);
@@ -264,6 +271,9 @@ public class ADMSAgent extends HttpServlet {
  		logger.info(plantIRI);
  		args.add(fullPath);
  		logger.info(fullPath);
+ 		
+ 		args.add(targetCRSName);
+ 		logger.info(targetCRSName);
  		// TODO-AE use PythonHelper instead of CommandHelper
   		String result = CommandHelper.executeCommands(targetFolder, args);
   		logger.info("ARGUMENTS");

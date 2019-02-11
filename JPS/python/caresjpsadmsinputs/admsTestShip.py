@@ -12,7 +12,8 @@ from pyproj import Proj, transform
 pythonLogger = PythonLogger('admsTest.py')
 # sourceCRS = Proj(init='epsg:28992')
 sourceCRS = Proj(init='epsg:4326')
-targetCRS = Proj(init='epsg:3414')
+# targetCRS = Proj(init='epsg:3857')
+targetCRS = Proj(init=sys.argv[5][:4].lower() + sys.argv[5][4:])
 
 try:
 #     pythonLogger.postInfoToLogServer('start')
@@ -115,14 +116,15 @@ try:
     print("")
     print(chimney_iri_list,config.bldTopnode, coordinates,  ["CO2"   ,"CO" ,  "NO2" ,  "HC" ,  "NOx"], 2, config.bdnLimit,False, BDN)
     print("")
-    test = admsInputDataRetriever(chimney_iri_list,config.bldTopnode, coordinates,  ["CO2"   ,"CO" ,  "NO2" ,  "HC" ,  "NOx"], 2, config.bdnLimit,False, BDN)
+    test = admsInputDataRetriever(chimney_iri_list,config.bldTopnode, coordinates,  ["CO2"   ,"CO" ,  "NO2" ,  "HC" ,  "NOx"], 2, config.bdnLimit,False, BDN, targetCRS)
     result = test.get()
     
     print("RESULT TYPE: ")
     print(type(result))
     pythonLogger.postInfoToLogServer('calling admsAplWirter ...')
     result['Bdn'] = BDN
-    result['CoordiSys'] = '3414';
+    result['CoordiSys'] = sys.argv[5][5:]
+#     result['CoordiSys'] = '3857';
     
     for idx in range(len(ship_coordinates_list)):
         result['Src'][idx].setCoordinates(ship_coordinates_list[idx])

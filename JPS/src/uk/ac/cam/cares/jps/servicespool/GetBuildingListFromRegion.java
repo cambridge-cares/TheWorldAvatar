@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.servicespool;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -92,7 +91,12 @@ public class GetBuildingListFromRegion extends HttpServlet {
 			sourceCRS = region.getString("srsname");
 		}
 		
-		String targetCRS = CRSTransformer.EPSG_28992; // The Hague
+		String targetCRS = null;
+		if (cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Berlin") || cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/The_Hague")) {
+			targetCRS = CRSTransformer.EPSG_28992; // The Hague
+		} else {
+			targetCRS = CRSTransformer.EPSG_3857; // for Singapore and HK
+		}
 		double[] upperPointOld = new double[] {upperx,uppery};
 		double[] lowerPointOld = new double[] {lowerx,lowery};
 		double[] upperPointNew = CRSTransformer.transform(sourceCRS, targetCRS, upperPointOld);

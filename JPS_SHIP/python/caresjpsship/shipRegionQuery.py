@@ -32,7 +32,7 @@ class shipRegionQuery(object):
         self.numLimit = numLimit
         self.endpoint = endpoint
         self.connectType = connectType 
-        coordC = defineCoordConvert('epsg:28992','epsg:4326')
+        coordC = defineCoordConvert('epsg:3857','epsg:4326')
         lower = coordC(float(xmin), float(ymin))
         upper = coordC(float(xmax), float(ymax))
         xlow = min(lower[0], upper[0])     
@@ -190,13 +190,6 @@ def defineCoordConvert(inCode, outCode):
 def uri2name(uri):
     base = 'http://www.theworldavatar.com/'
     return uri.split('#')[1]
-
-def defineCoordConvert(inCode, outCode):
-    inProj = Proj(init=inCode)
-    outProj = Proj(init=outCode)
-    def coordConvert(x,y):
-        return transform(inProj, outProj, x, y)
-    return coordConvert
 
 
 if __name__ == "__main__":

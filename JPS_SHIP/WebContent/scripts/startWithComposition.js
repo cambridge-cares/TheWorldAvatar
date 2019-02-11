@@ -28,8 +28,8 @@ $(function(){
         }
     });
     //*****************************************************//
-
-    proj4.defs("EPSG:28992","+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.417,50.3319,465.552,-0.398957,0.343988,-1.8774,4.0725 +units=m +no_defs");
+    proj4.defs("EPSG:3857","+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs");
+    //proj4.defs("EPSG:28992","+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.417,50.3319,465.552,-0.398957,0.343988,-1.8774,4.0725 +units=m +no_defs");
     //***************************************************************************
 	// default position of map is set at Singapore
 	const position = {
@@ -93,7 +93,7 @@ $(function(){
 
             if (!isNaN(latitude) && !isNaN(longitude)) {
             	console.log(longitude, latitude);
-                const convertedCoordinates = proj4('EPSG:28992', [parseFloat(longitude), parseFloat(latitude)]);
+                const convertedCoordinates = proj4('EPSG:3857', [parseFloat(longitude), parseFloat(latitude)]);
 //            	const convertedCoordinates = proj4('EPSG:3414', [parseFloat(longitude), parseFloat(latitude)]);
 
                 coordinatesArray.push(convertedCoordinates[0]); // x
@@ -115,7 +115,7 @@ $(function(){
     // returns an array
     // longitude = array[0], latitude = array[1]
     const getOSMPoint = (x, y) => {
-        return proj4('EPSG:28992', 'EPSG:4326', [x,y])
+        return proj4('EPSG:3857', 'EPSG:4326', [x,y])
     };
 
     const getMidPoint = (coordinatesMin, coordinatesMax) => {
@@ -159,8 +159,8 @@ $(function(){
         
 		let locationIRI;
 //		let plant;
-		if (location === "The Hague") {
-        	locationIRI = "http://dbpedia.org/resource/The_Hague";
+		if (location === "Hong Kong") {
+        	locationIRI = "http://dbpedia.org/resource/Hong_Kong";
 //        	plant = "http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl#Plant-001";
         } else if (location === "Singapore") {
         	locationIRI = "http://dbpedia.org/resource/Singapore";
@@ -175,7 +175,7 @@ $(function(){
         	agent, 
 			"region": {
 				//"srsname": "EPSG:4326",
-				"srsname": "EPSG:28992",
+				"srsname": "EPSG:3857",
 				"lowercorner": {
 					lowerx,
 					lowery
@@ -236,24 +236,30 @@ $(function(){
                 latitude: 1.262008,
                 longitude: 103.850973
             });
-            $("#xlower").val("13728088");
-            $("#xupper").val("13736486");
-            $("#ylower").val("2281341");
-            $("#yupper").val("2286829");
-        } else if (location === "The Hague") {
+            $("#xlower").val("11558666.37");
+            $("#xupper").val("11562079.502");
+            $("#ylower").val("139186.423");
+            $("#yupper").val("141908.33");
+            
+            osmb.setZoom(14.5);
+            osmb.setTilt(20.6);
+            osmb.setRotation(-45.6);
+        } else if (location === "Hong Kong") {
             osmb.setPosition({
-                latitude: 52.076146,
-                longitude: 4.309961
+                longitude: 114.1491155592187,
+                latitude: 22.28911086466781
             });
-            $("#xlower").val("79173");
-            $("#xupper").val("80199");
-            $("#ylower").val("454193");
-            $("#yupper").val("455030");
+            $("#xlower").val("12706653.262");
+            $("#xupper").val("12707579.57");
+            $("#ylower").val("2545984.846");
+            $("#yupper").val("2546721.448");
+            
+            osmb.setZoom(14.5);
+            osmb.setTilt(14.5);
+            osmb.setRotation(20.9);
         }
         
-        osmb.setZoom(14.5);
-        osmb.setTilt(20.6);
-        osmb.setRotation(-45.6);
+        
     })
     //***************************************************************************
 });
