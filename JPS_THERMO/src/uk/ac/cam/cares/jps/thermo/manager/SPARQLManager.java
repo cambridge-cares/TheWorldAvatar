@@ -49,23 +49,23 @@ public class SPARQLManager {
 				
 				try {
 					
-					OutputStream outputJson = new FileOutputStream(jsonInputFilePath);
+//					OutputStream outputJson = new FileOutputStream(jsonInputFilePath);
 					
 					/**
 					 * @author NK510
 					 * Serialization of sparql query result as Json file.
 					 */
-					TupleQueryResultHandler writer = new SPARQLResultsJSONWriter(outputJson);
+					TupleQueryResultHandler writer = new SPARQLResultsJSONWriter(new FileOutputStream(jsonInputFilePath));
 					
 					query.evaluate(writer);
 					
-					outputJson.close();
+//					outputJson.close();
 				
 				} catch (Exception e) {
 				
 					e.getMessage();
 					
-				} 
+				}
 				
 				connection.commit();
 
