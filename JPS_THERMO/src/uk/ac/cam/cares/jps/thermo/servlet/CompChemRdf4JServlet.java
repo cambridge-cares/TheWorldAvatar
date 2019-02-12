@@ -1,6 +1,13 @@
 package uk.ac.cam.cares.jps.thermo.servlet;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -8,14 +15,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import org.json.JSONObject;
 
+
+
+import uk.ac.cam.cares.jos.thermo.json.parser.JsonToJsonConverter;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.thermo.calculation.ThermoCalculation;
 import uk.ac.cam.cares.jps.thermo.manager.SPARQLManager;
-
 
 /**
  * 
@@ -39,7 +49,7 @@ public class CompChemRdf4JServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/** The Constant logger. */
-	final static Logger logger = Logger.getLogger(CompChemRdf4JServlet.class.getName());
+	public static Logger logger = Logger.getLogger(CompChemRdf4JServlet.class.getName());
 
 	public static String catalinaFolderPath = System.getProperty("catalina.home");
 
@@ -51,9 +61,14 @@ public class CompChemRdf4JServlet extends HttpServlet {
 	public static final String RESULT_FOLDER = catalinaFolderPath + "/webapps/ROOT/";
 
 	@Override
-	synchronized protected void doGet(HttpServletRequest request, HttpServletResponse response)
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+	
 			throws ServletException, IOException {
-
+		
+		response.setContentType("text/html;charset=UTF-8");
+		
+		Set<String> jsonSet = new HashSet<String>();
+		
 		String folderName = "";
 
 		/**
@@ -78,33 +93,68 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		 * @author NK510 Name of Json file that contains results of thermo calculations.
 		 * 
 		 */
-		String jsonInputFilePath = RESULT_FOLDER + folderName + "/" + folderName + ".json";
+		String jsonSPARQLOutputFilePath = RESULT_FOLDER + folderName + "/" + folderName + ".json";
 
 		/**
 		 * @author NK510 Querying CompChem remote RDF4J repository.
 		 */
 		SPARQLManager sparqlManager = new SPARQLManager();
 
-		sparqlManager.runCompChemSPARQL(gaussian, jsonInputFilePath, serverUrl);
-		;
+		sparqlManager.runCompChemSPARQL(gaussian, jsonSPARQLOutputFilePath, serverUrl);	
 
 		/**
-		 * @author NK510 Thermo calculation that runs Python script
+		 * 
+		 * @author NK510 Thermo calculation run by Python script.
 		 * 
 		 */
 
 		ThermoCalculation thermoCalculation = new ThermoCalculation();
 
-		thermoCalculation.runThermoCalculation(jsonInputFilePath, catalinaFolderPath);
-
+		thermoCalculation.runThermoCalculation(jsonSPARQLOutputFilePath, catalinaFolderPath);
+		
+		JsonToJsonConverter jsonConverter = new JsonToJsonConverter();
+		
+		/**
+		 * 
+		 * @author NK510
+		 * Updates generated json file with two features: "uniqueSpeciesIRI" and "quantumCalculationIRI":
+		 * 
+		 */
+		String jsonOutputFilePath = RESULT_FOLDER + folderName + "/" + folderName +"_nasa"+ ".json";
+		
+		jsonSet = jsonConverter.getListIRI(jsonSPARQLOutputFilePath);
+		
+		logger.info("jsonList.size(): " + jsonSet.size());
+        
+		List<String> jsonList = new ArrayList<String>(jsonSet);
+		
+		
+		logger.info("jsonList.get(0): " + jsonList.get(0));
+		logger.info("jsonList.get(1): " + jsonList.get(1));
+		logger.info("jsonList.get(2): " + jsonList.get(2));
+		
+		/**
+		 * @author NK510
+		 * Converts updated json object into String.
+		 */
+		String updatedJsonContent = jsonConverter.updateJsonContent(jsonOutputFilePath, jsonList.get(1), jsonList.get(2), jsonList.get(0));
+		
+		
+		/**
+		 * @author NK510
+		 * File path where updated json content will be saved.
+		 */
+		String updatedJsonOutputFilePath = RESULT_FOLDER + folderName + "/" + folderName +"_updated_nasa"+ ".json";
+		
+		jsonConverter.writeUpdatedJsonToFile(updatedJsonContent, updatedJsonOutputFilePath, response);	
+		
 	}
 
 	@Override
-	synchronized protected void doPost(HttpServletRequest request, HttpServletResponse response)
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+		
 		super.doPost(request, response);
-
-	}
-
+		
+	}	
 }
