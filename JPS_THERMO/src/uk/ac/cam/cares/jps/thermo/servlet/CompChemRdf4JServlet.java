@@ -1,9 +1,7 @@
 package uk.ac.cam.cares.jps.thermo.servlet;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -15,12 +13,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import org.json.JSONObject;
-
-
 
 import uk.ac.cam.cares.jos.thermo.json.parser.JsonToJsonConverter;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -43,7 +38,7 @@ import uk.ac.cam.cares.jps.thermo.manager.SPARQLManager;
  *
  */
 
-@WebServlet("/tc")
+@WebServlet("/calculation")
 public class CompChemRdf4JServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
