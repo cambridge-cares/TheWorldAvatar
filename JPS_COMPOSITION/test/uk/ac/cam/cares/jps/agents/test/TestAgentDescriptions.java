@@ -40,6 +40,8 @@ public class TestAgentDescriptions extends TestCase {
 		backAndforthAndWrite(service, "_OpenWeatherMap");
 		service = createDescrForAgentPowerPlant();
 		backAndforthAndWrite(service, "_PowerPlant");
+		service = createDescrForAgentShip();
+		backAndforthAndWrite(service, "_Ship");
 		service = createDescrForAgentBuildingQuery();
 		backAndforthAndWrite(service, "_BuildingQuery");
 		service = createDescrForAgentADMS();
@@ -102,6 +104,14 @@ public class TestAgentDescriptions extends TestCase {
 	private Service createDescrForAgentPowerPlant() {
 		return new ServiceBuilder().operation(null, JPS + "/PowerPlant")
 			.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
+			.input("https://como.cheng.cam.ac.uk/kb/ontochem.owl#ReactionMechanism", "reactionmechanism")
+			.output("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
+			.build();
+	}
+	
+	private Service createDescrForAgentShip() {
+		return new ServiceBuilder().operation(null, JPS + "/ShipAgent")
+			.input("http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship", "ship")
 			.input("https://como.cheng.cam.ac.uk/kb/ontochem.owl#ReactionMechanism", "reactionmechanism")
 			.output("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
 			.build();

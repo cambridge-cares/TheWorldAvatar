@@ -41,8 +41,18 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri, sh
     
     const parsedLowLeft = proj4("EPSG:28992", "WGS84", [range[0], range[2]]);
     const parsedTopRight = proj4("EPSG:28992", "WGS84", [range[1], range[3]]);
-    
-
+    let lowLeft = [], topRight = [];
+//    lowLeft[0] = Math.min(parsedLowLeft[0],parsedTopRight[0] ) + 0.005
+//    lowLeft[1] = Math.min(parsedLowLeft[1],parsedTopRight[1]) - 0.018;
+//    topRight[0] = Math.max(parsedLowLeft[0],parsedTopRight[0] ) + 0.005
+//    topRight[1] = Math.max(parsedLowLeft[1],parsedTopRight[1]);
+    lowLeft[0] = 103.8352845
+    lowLeft[1] = 1.2379346;
+    topRight[0] = 103.8780914;
+    topRight[1] = 1.2754878;
+    console.log('****');
+    console.log(lowLeft );
+    console.log(topRight);
     const position = {};
     // if(location === "The Hague"){
     //     position.latitude = 52.07690;
@@ -135,11 +145,11 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri, sh
                     type: 'Polygon',
                     coordinates: [//TODO:ã€€LINK THIS TO USER INPUT
                         [
-                            [parsedLowLeft[0],parsedTopRight[1]],
-                            [parsedTopRight[0],parsedTopRight[1]],
-                            [parsedTopRight[0],parsedLowLeft[1]],
-                            [parsedLowLeft[0],parsedLowLeft[1]],
-                            [parsedLowLeft[0],parsedTopRight[1]]
+                            [lowLeft[0],topRight[1]],
+                            [topRight[0],topRight[1]],
+                            [topRight[0],lowLeft[1]],
+                            [lowLeft[0],lowLeft[1]],
+                            [lowLeft[0],topRight[1]]
                         ]
                     ]
                 }

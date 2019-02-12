@@ -139,10 +139,10 @@ public class BuildingQueryPerformer implements SparqlConstants {
 
 		String query = getQueryClosestBuildingsFromRegion(200, lx, ly, ux, uy);		
 		String result = performQuery(cityIRI, query);
-		System.out.println("=============== query result ===============");
-		System.out.println("With query:\n" + query);
-		System.out.println(result);
-		System.out.println("============================================");
+		//system.out.println("=============== query result ===============");
+		//system.out.println("With query:\n" + query);
+		//system.out.println(result);
+		//system.out.println("============================================");
 		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		
 		return selectClosestBuilding(plx, ply, buildingLimit, map);
@@ -252,9 +252,9 @@ public class BuildingQueryPerformer implements SparqlConstants {
 	}
 	
 	public SimpleBuildingData performQuerySimpleBuildingData(String cityIRI, List<String> buildingIRIs) {
-		System.out.println("=========================== buildingIRIs ===========================");
-		System.out.println(buildingIRIs);
-		System.out.println("=============================================================");
+		//system.out.println("=========================== buildingIRIs ===========================");
+		//system.out.println(buildingIRIs);
+		//system.out.println("=============================================================");
 		SimpleBuildingData result = new SimpleBuildingData();
 		
 		for (String currentIRI : buildingIRIs) {
@@ -264,8 +264,14 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			Map<String, List<String>> map = MatrixConverter.fromCsv(queryResult);
 			
 			String sourceCRSName = getCRSName(cityIRI);
+			logger.info("sourceCRSName: " + sourceCRSName);
+			
+//			if (sourceCRSName.equals("EPSG:4326")) {
+//				
+//			} else 
 			if (!DEFAULT_CRS_NAME.equals(sourceCRSName)) {
 				logger.info("transforming coordinate from " + sourceCRSName + " to " + DEFAULT_CRS_NAME + " ...");
+				logger.info("map: " + map.toString());
 				map = transformCoordinates(sourceCRSName, DEFAULT_CRS_NAME, map);
 			}
 					
@@ -289,8 +295,17 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			}		
 			result.BldName.add(name);
 			result.BldType.add(shape.shapeType);
-			result.BldX.add(shape.centerX);
-			result.BldY.add(shape.centerY);
+			if (sourceCRSName.equals("EPSG:4326") ) {
+				double[] centrePoint = CRSTransformer.transform("EPSG:28992", 
+						"EPSG:3414", new double[] {shape.centerX, shape.centerY});
+				result.BldX.add(centrePoint[0]);
+				result.BldY.add(centrePoint[1]);
+				logger.info("coordinate x: " + centrePoint[0]);
+				logger.info("coordinate y: " + centrePoint[1]);
+			} else {
+				result.BldX.add(shape.centerX);
+				result.BldY.add(shape.centerY);
+			}
 			result.BldLength.add(shape.length);
 			result.BldWidth.add(shape.width);
 			result.BldAngle.add(shape.angle);

@@ -79,6 +79,11 @@ public class PowerPlantAgent extends HttpServlet {
 	    hmap.put("HC", "PseudoComponent_Unburned_Hydrocarbon");
 	    hmap.put("NOx", "PseudoComponent_Nitrogen__oxides");
 	    
+		for (int b = 0; b < hmap.size(); b++) {
+			Individual valueofspeciesemissionrate = jenaOwlModel.getIndividual(iri.split("#")[0] + "#V_" + hmap.get(hmap.keySet().toArray()[b]) + "_EmissionRate");
+			valueofspeciesemissionrate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double("0")));
+		}
+	    
 	    
 
 	    JSONObject jsonObject=new JSONObject(jsonresultstring);
@@ -87,7 +92,7 @@ public class PowerPlantAgent extends HttpServlet {
 		Double molecularvalue = jsonObject.getJSONObject("mixture").getJSONObject("molmass").getDouble("value")*1000;
 		Double Cpvalue = jsonObject.getJSONObject("mixture").getJSONObject("cp").getDouble("value");
 		Double temperaturevalue = jsonObject.getJSONObject("mixture").getJSONObject("temperature").getDouble("value")-273.15;
-		Double massfluxvalue = jsonObject.getJSONObject("mixture").getJSONObject("massflux").getDouble("value"); //(multiplied by 100 temporarily to make it visible)
+		Double massfluxvalue = jsonObject.getJSONObject("mixture").getJSONObject("massflux").getDouble("value"); 
 		Double densityvalue = jsonObject.getJSONObject("mixture").getJSONObject("density").getDouble("value");
 		
 		int valueoftotalpollutant = jsonObject.getJSONArray("pollutants").length();
@@ -109,11 +114,13 @@ public class PowerPlantAgent extends HttpServlet {
 		
 		for (int b = 0; b < valueoftotalpollutant; b++) {
 			String parametername = jsonObject.getJSONArray("pollutants").getJSONObject(b).getString("name");
-			Double parametervalue = jsonObject.getJSONArray("pollutants").getJSONObject(b).getDouble("value")*1000; //(multiplied by 100 temporarily to make it visible)
+			Double parametervalue = jsonObject.getJSONArray("pollutants").getJSONObject(b).getDouble("value")*1000; 
 
 			Individual valueofspeciesemissionrate = jenaOwlModel.getIndividual(iri.split("#")[0] + "#V_" + hmap.get(parametername) + "_EmissionRate");
 			valueofspeciesemissionrate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(parametervalue));
 		}
+		
+
 	}
 		
 	

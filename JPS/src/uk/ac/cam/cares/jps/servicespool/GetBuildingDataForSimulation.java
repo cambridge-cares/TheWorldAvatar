@@ -65,9 +65,9 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 			double uppery = result[0][1];
 			
 			
-			System.out.println("================ result =================");
-			System.out.println(plantx + "|" + planty + "|" + lowerx + "|" + lowery + "|" + upperx + "|" + uppery);
-			System.out.println("=========================================");
+			//system.out.println("================ result =================");
+			//system.out.println(plantx + "|" + planty + "|" + lowerx + "|" + lowery + "|" + upperx + "|" + uppery);
+			//system.out.println("=========================================");
  			String data = retrieveBuildingDataInJSON(city, plantx, planty, 25, lowerx, lowery, upperx, uppery);
 			response.getWriter().write(data);
 
@@ -153,9 +153,16 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 		} 
 	}
 	
+	public double[] getCenterLatLon(double xmin, double xmax, double ymin, double ymax) {
+		double xcenter = (xmax + xmin)/2;
+		double ycenter = (ymax + ymin)/2;
+				 
+		return new double[] {xcenter, ycenter};
+	}
+	
 	public double[][] convertCoordinate(JSONObject region, String cityIRI) throws NumberFormatException, JSONException{
 		
-		System.out.println("city: " + cityIRI);
+		//system.out.println("city: " + cityIRI);
 		double[][] result = new double[3][2];
 		region = region.getJSONObject("region");
 		String srsname = region.getString("srsname");
@@ -195,10 +202,11 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 			result[0] = new double[] {upperx,uppery};
 			result[1] = new double[] {lowerx,lowery};
 			if (cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/The_Hague")) {
-				result[2] = new double[] {699583.49, 532938.39};
-			}
-			else {
 				result[2] = new double[] {79831, 454766};
+			} else if (cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Berlin")) {
+				result[2] = new double[] {699583.49, 532938.39};
+			} else if (cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Singapore")) {
+				result[2] = getCenterLatLon(lowerx, upperx, lowery, uppery);
 			}
 		}
 		

@@ -204,7 +204,7 @@ BKGETC = '''
     BkgFixedLevels  = 1
     /
     &ADMS_PARAMETERS_ETC
-    SrcNumSources    = 1
+    SrcNumSources    = 10
     PolNumPollutants = 18
     PolNumIsotopes   = 0
     /
@@ -696,8 +696,8 @@ POLD = '''
     PolBkgLevel        = 6.0e+0
     PolBkgUnits        = "ppb"
     /
-	
-	&ADMS_POLLUTANT_DETAILS
+    
+    &ADMS_POLLUTANT_DETAILS
     PolName                  = "HC"
     PolPollutantType         = 0
     PolGasDepVelocityKnown   = 0
@@ -753,7 +753,8 @@ class admsAplWriter(object):
             self.writeStr(file,BKGETC)
 
 
-            self.writeCoordSys(file)# a special case, to be unified in future
+            self.writeCoordSys(file, self.data['CoordiSys'])# a special case, to be unified in future
+            #self.writeCoordSys(file, self.data['CoordiSys'])# a special case, to be unified in future
             self.writeStr(file,MAP)
             self.writeStr(file,POLD)
             #self.writeTemp(self.data['OPT'])
@@ -809,8 +810,9 @@ class admsAplWriter(object):
         self.writeAttr(file, bdn)
         file.write("/\n")
 
-    def writeCoordSys(self, file, csys = 32648):
-        self.writeTemp(file, '&ADMS_COORDINATESYSTEM\nProjectedEPSG = {0}\n', [28992])
+    def writeCoordSys(self, file, csys = 28992):
+        self.writeTemp(file, '&ADMS_COORDINATESYSTEM\nProjectedEPSG = {0}\n', [csys] )
+#         self.writeTemp(file, '&ADMS_COORDINATESYSTEM\nProjectedEPSG = {0}\n', [28992] )
         file.write("/\n")
        
     def writeStr(self, file, ori):

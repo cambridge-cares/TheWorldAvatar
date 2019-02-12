@@ -71,7 +71,7 @@ public class SRMAgent extends HttpServlet  {
 	}
 	
 	private void startbinaryconverter(String batchFolderlocation,String iri) {
-		System.out.println("starting the binary converter");
+		//system.out.println("starting the binary converter");
 		String startSRMCommand = "C:/JPS_DATA/workingdir/JPS/SRM/ontochemConvertOwlToBin.bat "+iri;
 		CommandHelper.executeSingleCommand(batchFolderlocation, startSRMCommand);
 	}
@@ -122,7 +122,7 @@ public class SRMAgent extends HttpServlet  {
 		JSONObject mainObj = new JSONObject();
 		mainObj.put("bindings", ja);
 		
-		System.out.println("result query= "+mainObj);
+		//system.out.println("result query= "+mainObj);
 
 		JSONArray bindings = mainObj.getJSONArray("bindings");
 		String X = "null"; 
@@ -134,12 +134,12 @@ public class SRMAgent extends HttpServlet  {
 		
 		int sizeofar= urimech.size();
 		for(int index=0;index<sizeofar;index++) {
-		System.out.println(urimech.get(index));
-		System.out.println("iriresult= "+iriresult);
+		//system.out.println(urimech.get(index));
+		//system.out.println("iriresult= "+iriresult);
 		
 			if (urimech.get(index).contains(iriresult))
 		{
-			System.out.println("it goes to query the ontokin");
+			//system.out.println("it goes to query the ontokin");
 			X=iriresult;
 		}
 
@@ -179,8 +179,8 @@ public class SRMAgent extends HttpServlet  {
 			
 			
 		}
-		System.out.println("data got for reaction mechanism= " + iri);
-		System.out.println("data got for engine iri= " + iriofengine);
+		//system.out.println("data got for reaction mechanism= " + iri);
+		//system.out.println("data got for engine iri= " + iriofengine);
 
 		/** PREPARE ALL THE INPUT FILE*/
 
@@ -202,7 +202,7 @@ public class SRMAgent extends HttpServlet  {
 	
 		try {
 			rs_mechanism = SRMAgent.queryFromRDF4JServer(mechanismquery,iri);
-			System.out.println("result of the total query= "+rs_mechanism);
+			//system.out.println("result of the total query= "+rs_mechanism);
 		} catch (JSONException e1) {
 
 			logger.error(e1.getMessage());
@@ -364,7 +364,7 @@ public class SRMAgent extends HttpServlet  {
 
 	String []a= {"No_cyl","No_exh_val","No_int_val","Strokes","C_to_H","RON","RPM","Int_dia","Exh_dia","Int_event_height","Exh_event_height","EVO","EVC","IVO","IVC","AFRstoich","IniFuelAirEquivRatio","AFR","Tman","Pman","Tex","Pex","Wrist_pin_offset","Bore","intEGR","extEGR","Eng_displ_vol","Con_rod","Stroke","CR","amfr"};
 	int sizea=a.length;
-	System.out.println("size of a= "+sizea);
+	//system.out.println("size of a= "+sizea);
 	String valueiri=null;
 	SRMAgent xmlreader = new SRMAgent();
 	for (; rs_engine.hasNext();) {			
@@ -375,7 +375,7 @@ public class SRMAgent extends HttpServlet  {
 				Literal cpiri = qs_p.getLiteral(a[b]); // extract the name of the source
 				 valueiri = cpiri.toString();
 
-		System.out.println(a[b]+" = "+valueiri);
+		//system.out.println(a[b]+" = "+valueiri);
 		try {
 
 			xmlreader.editXMLForengine(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputEngineML.xml",AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputEngineML.xml",a[b],valueiri);
@@ -401,7 +401,7 @@ public class SRMAgent extends HttpServlet  {
 			if(valueiri2.contains("http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#")&&!valueiri2.contains("#Engine"))
 			{
 				valuetype2=("CI");
-				System.out.println("query result1= "+valuetype2);
+				//system.out.println("query result1= "+valuetype2);
 				try {
 					xmlreader.editXMLForengine(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputEngineML.xml",AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputEngineML.xml","OpMode",valuetype2);
 				} catch (TransformerFactoryConfigurationError | TransformerException e) {
@@ -495,7 +495,7 @@ public class SRMAgent extends HttpServlet  {
 			StreamResult result = new StreamResult(new File(filepath2));
 			transformer.transform(source, result);
 
-			//System.out.println("Done");
+			////system.out.println("Done");
 
 		} catch (ParserConfigurationException pce) {
 			pce.printStackTrace();
@@ -551,12 +551,12 @@ public class SRMAgent extends HttpServlet  {
 
 					String a = eElement.getAttribute("xsi:type");
 
-					//System.out.println("a= "+a);
+					////system.out.println("a= "+a);
 
 						Node value = eElement.getChildNodes().item(1);
 						if (a.contentEquals(propname))
 						{
-							System.out.println(a+" is updated!!!!");
+							//system.out.println(a+" is updated!!!!");
 						value.setTextContent(datavalue);
 						}
 				}
@@ -643,7 +643,7 @@ public class SRMAgent extends HttpServlet  {
 		        sb.append(s);
 		    }
 
-		    System.out.println(sb.toString());
+		    //system.out.println(sb.toString());
 			
 			return sb.toString().trim();
 		}

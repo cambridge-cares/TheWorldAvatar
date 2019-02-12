@@ -77,7 +77,10 @@ public class ShipAgent extends HttpServlet {
 	    hmap.put("HC", "PseudoComponent_Unburned_Hydrocarbon");
 	    hmap.put("NOx", "PseudoComponent_Nitrogen__oxides");
 	    
-	    
+		for (int b = 0; b < hmap.size(); b++) {
+			Individual valueofspeciesemissionrate = jenaOwlModel.getIndividual(iri.split("#")[0] + "#V_" + hmap.get(hmap.keySet().toArray()[b]) + "_EmissionRate");
+			valueofspeciesemissionrate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double("0")));
+		}
 
 	    JSONObject jsonObject=new JSONObject(jsonresultstring);
 		
