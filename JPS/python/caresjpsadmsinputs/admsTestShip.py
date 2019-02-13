@@ -19,9 +19,9 @@ try:
 #     pythonLogger.postInfoToLogServer('start')
         
     buildingdata = json.loads(sys.argv[1].replace("'",'"'))
-    print("BUILDING")
-    print(buildingdata)
-    print("")
+#     print("BUILDING")
+#     print(buildingdata)
+#     print("")
     BDN = namedtuple('BDN', ['BldNumBuildings','BldName','BldType','BldX','BldY','BldHeight', 'BldLength', 'BldWidth', 'BldAngle'])
     BDN.BldName = buildingdata['BldName']
     BDN.BldNumBuildings = len(BDN.BldName)
