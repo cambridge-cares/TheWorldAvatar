@@ -48,6 +48,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			urlKey = IKeys.URL_BUILDINGSQUERY_HONGKONG;
 		}
 		
+		logger.info("urlKey: " + urlKey);
 		return AgentCaller.executeGetWithURLKey(urlKey, AgentCaller.MediaType.TEXT_CSV, "query", query);
 	}
 	
@@ -145,8 +146,10 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			}
 		}
 
-		String query = getQueryClosestBuildingsFromRegion(200, lx, ly, ux, uy);		
+		String query = getQueryClosestBuildingsFromRegion(200, lx, ly, ux, uy);
+		logger.info("BEFORE performQuery");
 		String result = performQuery(cityIRI, query);
+		logger.info("AFTER performQuery");
 		//system.out.println("=============== query result ===============");
 		//system.out.println("With query:\n" + query);
 		//system.out.println(result);
@@ -279,7 +282,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 				logger.info("map: " + map.toString());
 				map = transformCoordinates(sourceCRSName, DEFAULT_CRS_NAME, map);
 			} else if (!sourceCRSName.equalsIgnoreCase(CRSTransformer.EPSG_28992)) {
-				logger.info("transforming coordinate from " + sourceCRSName + " to " + DEFAULT_CRS_NAME + " ...");
+				logger.info("transforming coordinate from " + sourceCRSName + " to " + CRSTransformer.EPSG_3857 + " ...");
 				logger.info("map: " + map.toString());
 				map = transformCoordinates(sourceCRSName, CRSTransformer.EPSG_3857, map);
 			}
