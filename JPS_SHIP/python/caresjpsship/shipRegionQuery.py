@@ -35,14 +35,16 @@ class shipRegionQuery(object):
         coordC = defineCoordConvert('epsg:3857','epsg:4326')
         lower = coordC(float(xmin), float(ymin))
         upper = coordC(float(xmax), float(ymax))
-        xlow = min(lower[0], upper[0])     
-        xupper = max(lower[0], upper[0])     
-        ylow = min(lower[1], upper[1]) - 0.01    
-        yupper =  max(lower[1], upper[1]) - 0.01   
+        # print(lower)
+        # print(upper)
+        xlow = min(lower[0], upper[0])   
+        xupper = max(lower[0], upper[0])
+        ylow = min(lower[1], upper[1])
+        yupper =  max(lower[1], upper[1])
         self.range = (xlow, ylow, xupper, yupper)
 
         self.address = None
-#         print(self.range)
+        # print(self.range)
 
 
 
