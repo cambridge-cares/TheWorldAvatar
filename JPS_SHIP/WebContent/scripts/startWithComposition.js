@@ -250,9 +250,9 @@ $(function(){
                 latitude: 22.28911086466781
             });
             $("#xlower").val("12706653.262");
-            $("#xupper").val("12707579.57");
-            $("#ylower").val("2545984.846");
-            $("#yupper").val("2546721.448");
+            $("#xupper").val("12708695.125");
+            $("#ylower").val("2545539.172");
+            $("#yupper").val("2546838.028");
             
             osmb.setZoom(14.5);
             osmb.setTilt(14.5);
