@@ -61,7 +61,7 @@ public class ADMSAgent extends HttpServlet {
 			
 			String plantIRI = null;
 			JSONArray shipIRIs = null;
-			if (!cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Singapore")) {
+			if (!(cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Singapore") || cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Hong_Kong"))) {
 				plantIRI = input.getString("plant"); //
 			} else {
 				shipIRIs = input.getJSONArray("ship");
@@ -303,6 +303,7 @@ public class ADMSAgent extends HttpServlet {
 				+ ", lowerx=" + lowerx + ", lowery=" + lowery + ", upperx=" + upperx + ", uppery=" + uppery);
 		
 		List<String> buildingIRIs = new BuildingQueryPerformer().performQueryClosestBuildingsFromRegion(city, plantx, planty, 25, lowerx, lowery, upperx, uppery);
+		logger.info("building iris in ADMS Agent: " + buildingIRIs.toString());
 		SimpleBuildingData result = new BuildingQueryPerformer().performQuerySimpleBuildingData(city, buildingIRIs);
 		String argument = new Gson().toJson(result);
 		return argument;
