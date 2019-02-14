@@ -107,6 +107,7 @@ public class CompChemQuery {
 	 * @param tboxSource the Compchemchem ontology (tbox source)
 	 * @param aboxSource the ontochem data assertions (abox source)
 	 * @return model Gets instance of OntModel.
+	 * 
 	 */
 
 	public static OntModel getOntModel(String tboxSource, String aboxSource) {
@@ -125,6 +126,7 @@ public class CompChemQuery {
 	 *
 	 * @param aboxSource the ontochem data assertions (abox source)
 	 * @return model Gets instance of OntModel.
+	 * 
 	 */
 
 	public static OntModel getOntModel(String aboxSource) {
@@ -138,6 +140,7 @@ public class CompChemQuery {
 	}
 	
 	/**
+	 * 
 	 * Perform query.
 	 *
 	 * @param model the instance of OntModel.
@@ -147,6 +150,7 @@ public class CompChemQuery {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 * 
 	 */	
+
 	public static void performQuery(OntModel model, String queryString, String fileName, String targetFolder) throws IOException {
 		
 		Query query = QueryFactory.create(queryString);
@@ -174,4 +178,5 @@ public class CompChemQuery {
 			fileOutputStream.close();
 		}
 	}
+	
 }
