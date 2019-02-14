@@ -148,8 +148,8 @@ function groupwatcher(dir, informIndi){
             let hasDRO = false;
 
             this.observers.forEach(function (observer) {
-               console.log("!!!!!!!!!!!!!!")
-                console.log(observer)
+              // console.log("!!!!!!!!!!!!!!")
+               // console.log(observer)
                 if(observer.receiveData){
                    hasDRO = true;
                 }

@@ -56,8 +56,8 @@ class PowerplantSPARQLSync:
                         ?capacity j1:numericalValue ?capacityValue.
 
                 <{0}> j8:hasYearOfBuilt ?yearOfBuilt.
-                    ?yearOfBuilt j1:hasValue ?yearValue.
-                        ?yearValue j1:numericalValue ?year.
+                            ?yearOfBuilt j1:hasValue ?yearValue.
+                                ?yearValue j1:numericalValue ?year.
 
                 <{0}> j5:realizes ?generation.
                     ?generation j8:consumesPrimaryFuel ?primaryFuel.

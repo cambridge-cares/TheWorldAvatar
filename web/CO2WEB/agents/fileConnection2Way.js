@@ -34,18 +34,27 @@ const { Readable,PassThrough } = require('stream');
     //todo: add cluster logic
     
 var owlProcessor = {
-PREDICATE:['Eco-industrialPark:hasIRI','system:hasIRI','system:hasSubsystem'],
+PREDICATE:['Eco-industrialPark:hasIRI','system:hasIRI','system:hasSubsystem','j.0:hasSubsystem'],
 queryStr:`
-PREFIX Eco-industrialPark: <http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#>
-PREFIX system: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+PREFIX Eco-industrialPark: <http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#>
+PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
     select distinct ?uri
     where {
-    {?a Eco-industrialPark:hasIRI ?uri;}
+	{?a system:hasSubsystem ?uri;}    
     UNION {?a system:hasIRI ?uri;}
+	UNION {?a Eco-industrialPark:hasIRI ?uri;}
+    UNION {  ?uri rdf:type ontochem:ReactionMechanism .}
      @placeholder@
-     }
-`,
+     }`,
+        queryStr2:`
+PREFIX ontochem: <https://como.cheng.cam.ac.uk/kb/ontochem.owl#>
+    select distinct ?uri
+    where {
+    ?uri rdf:type ontochem:ReactionMechanism .
+     @placeholder@
+     }`,
+
 UnionImport:`
   UNION{?a system:hasIRI ?uri;}
 `
@@ -71,15 +80,19 @@ owlProcessor.doConnect = function(address, level) {
             if(result&&result.length>0){
 				let iset = new Set();
 				
-                result.forEach(item=>{
-                    item = this.normalAddr(item);
-					if(!iset.has(item)){
-						iset.add(item);
-						address = me.root2baseUri(address);
-                    if(level>=2 && ! (item in this.parentMap)) {//
-                        this.parentMap[item] = address in this.parentMap ? this.parentMap[address] : address;
+                result.forEach(target=>{
+                    if(typeof  target !=='string'&& 'target' in target && 'address' in target){//
+                        target = result['target']
+                        address = result['address']
                     }
-                    me.result.push({'source':address, 'target':item, 'level':level})
+                    target = me.normalAddr(target);
+					if(!iset.has(target)){
+						iset.add(target);
+						address = me.root2baseUri(address);
+                    if(level>=2 && ! (target in this.parentMap)) {//
+                        me.parentMap[target] = address in me.parentMap ? me.parentMap[address] : address;
+                    }
+                    me.result.push({'source':address, 'target':target, 'level':level})
 					}
                     //todo: cluster result on the fly
                 })
@@ -92,6 +105,7 @@ owlProcessor.doConnect = function(address, level) {
                     me.buffer.push(null);
 					me.buffer.pause();
                 } else {//directly resolve
+				console.log('request for one layer result')
 				console.log(me.result);
                     resolve(me.result)
                 }
@@ -99,7 +113,7 @@ owlProcessor.doConnect = function(address, level) {
         
         }).catch(err=>{
 				me.linkCounter--;
-                console.log('err: '+err)
+                console.log('err connect: '+err)
 				            if( me.linkCounter <= 0){//end condition, return
                 console.log('all end, print result')
                 //end buffer
@@ -107,6 +121,8 @@ owlProcessor.doConnect = function(address, level) {
                     me.buffer.push(null);
 					me.buffer.pause();
                 } else {//directly resolve
+								console.log('request for one layer result')
+
                     resolve(me.result)
                 }
                 }
@@ -222,7 +238,7 @@ owlProcessor.xmlstreamParser = function (instream, level) {
             }
             if((!me.OUTER || flagOuter) && PREDICATE.includes(name)){
                 flag = true;
-				if(name === 'system:hasSubsystem'){//get rdf:resource//todo:hard code for now
+				if(name.includes('hasSubsystem')){//get rdf:resource//todo:hard code for now
 					let text = attrs['rdf:resource'];
 					if(text){
 					result.push(text);
@@ -278,7 +294,7 @@ owlProcessor.checkFile = function (loc) {
     
         parser.on('opentag', (name, attrs) => {
         if(name === 'owl:Ontology'){
-           // console.log(loc+' pass validation');
+            //console.log(loc+' pass validation');
             resolve(clone)
             parser.end()
         }
@@ -321,9 +337,10 @@ owlProcessor.queryPromise = function (loc, type, level) {
             console.log('query for end point')
             return new Promise((resolve, reject)=>{
                 //run query against endpoint
-                request.get(loc, {qs:{'query':self.queryStr,'output':'json'},timeout: 1500, agent: false}, function (err, res, body) {
+				console.log(loc);
+                request.get(loc, {qs:{'query':self.queryStr2,'output':'json'},timeout: 1500, agent: false}, function (err, res, body) {
                     console.log('endpoint resquest result')
-                    if (err||!body||body===undefined||body.includes('<!doctype html>')) {
+                    if (err||!body||body===undefined||body.includes('<!doctype html>')||body.includes('<?xml version="1.0" encoding="utf-8"?>')) {
 						console.log('no result from endpoint, reject')
 						reject(err);
 						return;
@@ -332,11 +349,11 @@ owlProcessor.queryPromise = function (loc, type, level) {
                     console.log("body:"+body)
     
                     body = JSON.parse(body)
-                    let {uri} = RdfParser.unwrapResult(body, ['uri']);
+                    let links = RdfParser.unwrapResult(body, ['source','target']);
                     //console.log(uri)
-                    let tobuffer = uri.map((text)=> {return text+'@'+(level+1)}).join(';')
-                    self.buffer.push(tobuffer);
-                         resolve(uri)
+                    //let tobuffer = uri.map((text)=> {return text+'@'+(level+1)}).join(';')
+                    //self.buffer.push(tobuffer);
+                         resolve(links)
                 })
             });
             
@@ -391,14 +408,18 @@ owlProcessor.fileStreamPromise = function (loc) {
         this.loc = options.topnode;
 		this.unpack = options.unpack?options.unpack:false;
         //modify query
-        let extraQ = options.extraQuery?options.extraQuery:'';
+        let extraQ = options.supQuery?options.supQuery:'';
         let extraP = options.extraPredicate?options.extraPredicate:'';
         let showImport = options.showImport || false; // if showServiceOnly is chosen, will not show Import
+        
+        
         if(showImport){
             owlProcessor.PREDICATE.push("owl:imports");
             extraQ = extraQ.query + self.UnionImport;
         }
         this.queryStr = this.queryStr.replace('@placeholder@', extraQ);
+        this.queryStr2 = this.queryStr2.replace('@placeholder@', extraQ);
+    
         if(extraP){owlProcessor.PREDICATE.push(extraP);}
         this.OUTER = options.outer?options.outer:null;
         console.log(this.queryStr)
@@ -414,13 +435,13 @@ owlProcessor.packIntoClusterData = function (rawconn) {
     //get level 1 connections
     let self = this
     let firstl = [], subconnections = {};
-	//console.log(self.parentMap)
+	console.log(self.parentMap);
     rawconn.forEach((link)=>{
 		console.log(link)
-        if(link.level === 1){
+        if(link.level == 1){
             firstl.push(link)
         } else{
-            let parent = self.parentMap[link.target]
+            let parent = self.parentMap[link.target];
             if (parent in subconnections){
                 subconnections[parent].connections.push(link)
             } else {
@@ -444,7 +465,6 @@ owlProcessor.process = function (options) {
         let self = this
         this.init(options);
         console.log(self.root2baseUri(this.loc));
-        this.doConnect(this.loc, 1);
         this.doConnect(this.loc, 1);
         this.buffer = new Readable({read() {}});
 

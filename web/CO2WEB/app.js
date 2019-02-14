@@ -48,6 +48,7 @@ var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
 var getChildrenSingle = require('./routes/GetChildrenSingle');
 
 var BMSWatcher = require('./agents/setBMSWatcher');
+var agentWatcher = require('./agents/msgFace');
 
 var app = express();
 var port = config.port;
@@ -77,7 +78,7 @@ function acHeader(res){
 
 }
 
- app.use('/visualizeWorld', visualizeWorld);
+app.use('/visualizeWorld', visualizeWorld);
 app.use('/visualizeBMS', visualizeBMS);
 app.use('/visualizeSemakau', visualizeSemakau);
 app.use('/visualizeJurong', visualizeJurong);
@@ -132,7 +133,7 @@ app.post("/change", function (req, res) {//data change of other nodes will be po
 var watcherReturn = BMSWatcher();
 var ev= watcherReturn.watchEvent;
 var bmsWatcher = watcherReturn.bmsWatcher;
-
+agentWatcher.init(io);
 //When any change happened to the file system
 ev.on('change', function (data) {
     logger.debug("update event: "+" on "+data.uri+"_nodata");
@@ -151,7 +152,7 @@ io.on('connection', function(socket){
 socket.on('join', function (uriSubscribeList) {
     //May be do some authorization
 
-
+    console.log('client join')
     let sl = JSON.parse(uriSubscribeList);
     logger.debug(sl)
     sl.forEach(function (uri2Sub) {
@@ -161,12 +162,14 @@ socket.on('join', function (uriSubscribeList) {
 
         let affix = uri2Sub.withData? "_data" :"_nodata";
         diskLoc = path.normalize(diskLoc)
+        socket.join(diskLoc+affix);
+		       console.log(socket.id, "joined", diskLoc+affix);
 
-            socket.join(diskLoc + affix);
-            logger.debug(socket.id, "joined", diskLoc + affix);
-        
-        //TODO:leave mechanism
-        
+		
+
+        //TODO:check client legnth first, if 0 ,first join, ask to register for data
+
+
         if(uri2Sub.withData){
             var clients = io.sockets.adapter.rooms[diskLoc+affix].sockets;
 

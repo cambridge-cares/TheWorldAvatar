@@ -26,7 +26,9 @@
             this.actionType = actionType.toString().toLowerCase()
             this.s =s;
             this.p = ((p=p.toString())&&p==="numerical")?this.numericalP:p;
-            this.o = o?this.constructO(o):'?o';
+            this.o = o ?this.constructO(o):'?o';
+            
+            
             this.template = template?this.brace(template):'';
             this.prefix = prefix?this.constructPrefix(prefix):''
             return this.combine()

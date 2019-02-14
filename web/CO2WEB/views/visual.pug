@@ -15,7 +15,7 @@ block description
 
 block content
     body
-        script(src="https://code.jquery.com/jquery-2.2.0.min.js")
+        script(src="https://code.jquery.com/jquery-2.1.1.min.js")
         script(src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js')
 
         script(src="https://d3js.org/d3.v4.min.js")
@@ -49,27 +49,19 @@ block content
                         table#xyr-inputs
                             tr
                                 td
-                                    label(for="search-center-x") Center x:
+                                    label Max number of agentlink at the same time:
                                 td
-                                    input(type="text" id="search-center-x" value="")
+                                    input(type="text" id="agent-number" value="")
 
                             tr
                                 td
-                                    label Center y:
+                                    label Agent show duration:
                                 td
-                                    input(type="text" id="search-center-y" value="")
-                            tr
-                                td
-                                    label Radius:
-                                td
-                                    input(type="text" id="search-radius" value="")
+                                    input(type="text" id="agent-duration" value="")
+
 
                     li
-                        label(for="device-select") Choose a device:
-                    li
-                        select(class="form-control" id="device-select")
-                    li
-                        button(type="button" id= "search-submit" class="btn btn-primary") Search
+                        button(type="button" id= "search-submit" class="btn btn-primary") Set
 
             div#page-content-wrapper
                 div#draw-panel()

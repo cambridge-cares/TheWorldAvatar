@@ -205,17 +205,20 @@ RdfParser.unwrapResult = function (result, varNames) {
         if(!(result['head']['vars'].includes(varname))){
             return null
         }
-    unwrapped[varname] = []
     }
     //unwrap
     console.log('upwrap')
-    console.log(unwrapped)
-    for(let line of result['results']['bindings']){
-        for(let varname of varNames){
-         unwrapped[varname].push(line[varname]['value']);
-        }
-    }
+    unwrapped = []
     
+    for(let line of result['results']['bindings']){
+        let item = [];
+        for(let varname of varNames){
+            item[varname] = line[varname]['value'];
+        }
+        unwrapped.push(item)
+    }
+    console.log('unwrap endpoint return')
+   console.log(unwrapped)
     return unwrapped;//return unwrapped result
 }
 module.exports = RdfParser;
