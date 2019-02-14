@@ -25,6 +25,7 @@ var visualizeSemakau =require("./routes/visualizeSemakau.js");
 var visualizeJurong =require("./routes/visualizeJurong.js");
 var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
 var visualizeOntoChem = require("./routes/visualizeOntoChem.js");
+var visualizeAgent = require("./routes/visualizeAgent.js");
 
 
  var showCO2 = require("./routes/showCO2");
@@ -49,6 +50,7 @@ var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
 var getChildrenSingle = require('./routes/GetChildrenSingle');
 
 var BMSWatcher = require('./agents/setBMSWatcher');
+var agentWatcher = require('./agents/msgFace');
 
 var app = express();
 var port = config.port;
@@ -77,6 +79,7 @@ function acHeader(res){
 	  res.setHeader('Access-Control-Allow-Origin', 'http://www.theworldavatar.com:80');
 
 }
+app.use('/visualizeAgent', visualizeAgent);
 
 app.use('/visualizeWorld', visualizeWorld);
 app.use('/visualizeBMS', visualizeBMS);
@@ -133,7 +136,7 @@ app.post("/change", function (req, res) {//data change of other nodes will be po
 var watcherReturn = BMSWatcher();
 var ev= watcherReturn.watchEvent;
 var bmsWatcher = watcherReturn.bmsWatcher;
-
+agentWatcher.init(io);
 //When any change happened to the file system
 ev.on('change', function (data) {
     logger.debug("update event: "+" on "+data.uri+"_nodata");

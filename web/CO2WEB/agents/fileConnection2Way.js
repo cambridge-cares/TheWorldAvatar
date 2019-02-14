@@ -39,11 +39,15 @@ queryStr:`
 PREFIX Eco-industrialPark: <http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#>
 PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
+             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+             PREFIX ontochem: 
+<https://como.cheng.cam.ac.uk/kb/ontochem.owl#>
     select distinct ?uri
     where {
 	{?a system:hasSubsystem ?uri;}    
     UNION {?a system:hasIRI ?uri;}
 	UNION {?a Eco-industrialPark:hasIRI ?uri;}
+	UNION {?uri rdf:type ontochem:ReactionMechanism .}
      @placeholder@
      }
 `,
@@ -79,21 +83,35 @@ owlProcessor.doConnect = function(address, level) {
             console.log('linkcounter');
             console.log(me.linkCounter);
         	console.log('try connecting: '+address)
-
+            address = me.diskLoc2Uri(address);//resolve address inconsistency
+            address = me.equalHost(address);
             if(result&&result.length>0){
 				let iset = new Set();
 				
                 result.forEach(item=>{
+                    let parent = null;
+                    if(typeof item === 'object'){
+                        if('uri' in item && 'parent' in item ){
+                        parent = item['parent']?item['parent']:address;//if parent iri is null, just use address
+                        item = item['uri'];
+                        }
+                    } else {
+                        parent = address;
+                    }
+
+                    if(!item){
+                        return;//skip null 
+                    }
+
                     item = me.normalAddr(item);
+                    item = me.equalHost(item);
+
 					if(!iset.has(item)){
 						iset.add(item);
-						address = me.diskLoc2Uri(address);
-						address = me.equalHost(address);
-						item = me.equalHost(item);
-                    if(level>=2 && !(item in me.parentMap) && (address!==item)) {
-                        me.parentMap[item] = address in me.parentMap ? me.parentMap[address] : address;
+                    if(level>=2 && !(item in me.parentMap) && (parent!==item)) {
+                        me.parentMap[item] = parent in me.parentMap ? me.parentMap[parent] : parent;
                     }
-                    me.result.push({'source':address, 'target':item, 'level':level})
+                    me.result.push({'source':parent, 'target':item, 'level':level})
 					}
                     //todo: cluster result on the fly
                 })
@@ -167,6 +185,7 @@ owlProcessor.connectPromise = function (address, level) {
                 me.queryPromise(address, 'endpoint',level).then(result =>{
                     console.log('ep result:');
                     console.log(result)
+                    //!!!!!return result
                    resolve(result)
                 }).catch((err)=>{
 					reject(err)
@@ -174,6 +193,7 @@ owlProcessor.connectPromise = function (address, level) {
 
             } else {//query the file
                 me.xmlstreamParser(instream, level).then(result => {
+                    //!!!!!return result
                   resolve(result)
                 }).catch((err)=>{
 					reject(err)
@@ -246,7 +266,7 @@ owlProcessor.xmlstreamParser = function (instream, level) {
             if((!me.OUTER || flagOuter) && me.mPredicate.includes(name)){
                 console.log(name)
                 flag = true;
-				if(name.includes('hasSubsystem') ||name.includes('owl:imports') ){//get rdf:resource//todo:hard code for now
+				if(name.includes('hasSubsystem') ||name.includes('owl:imports')|| name.includes('hasIRI')){//get rdf:resource//todo:hard code for now
 					let text = attrs['rdf:resource'];
 					if(text){
                         console.log(text);
@@ -348,7 +368,7 @@ owlProcessor.queryPromise = function (loc, type, level) {
                 //run query against endpoint
 				console.log(loc);
                 //toodo: this is blasphemy, fix the endpoibt then delete this
-                request.get(loc, {qs:{'query':self.queryStr2C,'output':'json'},timeout: 150000, agent: false}, function (err, res, body) {
+                request.get(loc, {qs:{'query':self.queryStrC,'output':'json'},timeout: 150000, agent: false}, function (err, res, body) {
                     console.log('endpoint resquest result');
                                         console.log("body:"+body);
 
@@ -361,12 +381,12 @@ owlProcessor.queryPromise = function (loc, type, level) {
                    
                     
                     body = self.parsePseudoJson(body);
-                    //let {uri} = RdfParser.unwrapResult(body, ['uri']);
+                    //let {uri} = RdfParser.unwrapResult(body, ['parent' ,'uri']);
                     let uri = body.map(item=>item.uri);
 					//console.log(uri)
                     let tobuffer = uri.map((text)=> {return text+'@'+(level+1)}).join(';')
                     //self.buffer.push(tobuffer);
-                         resolve(uri)
+                         resolve(body)
                 })
             });
             
@@ -463,8 +483,17 @@ owlProcessor.fileStreamPromise = function (loc) {
                 this.queryStr2C = this.queryStr2.replace('@placeholder@', extraQ);
 
         if(extraP){this.mPredicate.push(extraP);}
+
+        if(options.supQuery){
+            this.queryStrC = options.supQuery;
+        }
+
+        if(options.supPredicate){
+            this.mPredicate = options.supPredicate;
+        }
+
         this.OUTER = options.outer?options.outer:null;
-        console.log(this.queryStr2C);
+        console.log(this.queryStrC);
     
         //process variable init
         this.processed = new Set();
