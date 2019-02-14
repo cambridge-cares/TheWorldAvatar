@@ -2,20 +2,23 @@ package uk.ac.cam.cares.jps.thermo.json.parser;
 
 import java.io.File;
 import java.io.FileInputStream;
-
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import org.eclipse.rdf4j.query.BindingSet;
@@ -26,6 +29,9 @@ import org.eclipse.rdf4j.query.resultio.sparqljson.SPARQLResultsJSONParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonParser;
 
 /**
  * 
@@ -119,25 +125,13 @@ public class JsonToJsonConverter {
 	 */
 	public String updateJsonContent(String filePath, String speciesIRI, String quantumCalculationIRI, String massUnit)
 			throws UnsupportedEncodingException, IOException {
-
+		
 		/**
-		 * @author NK510 Adds the content of JSON file into Java String.
+		 * @author NK510 Adds the content of JSON file into object.
 		 */
 		
-		String jsonContent = new String(Files.readAllBytes(Paths.get(filePath)));
-
-		JSONObject jsonObject = null;
-
-		try {
-
-			jsonObject = new JSONObject(jsonContent);
-
-		} catch (JSONException e) {
-
-			e.printStackTrace();
-
-		}
-
+		JSONObject  jsonObject = new JSONObject(IOUtils.toString(new FileInputStream (new File(filePath)),"UTF-8"));
+		
 		/**
 		 * 
 		 * @author NK510 Updates generated Json Object with quantum calculation IRI and
@@ -145,13 +139,13 @@ public class JsonToJsonConverter {
 		 * 
 		 */
 
-		jsonObject.put("massUnit", massUnit);
+		jsonObject.append("massUnit", massUnit);
 
-		jsonObject.put("speciesIRI", speciesIRI);
+		jsonObject.append("speciesIRI", speciesIRI);
 
-		jsonObject.put("quantumCalculationIRI", quantumCalculationIRI);
+		jsonObject.append("quantumCalculationIRI", quantumCalculationIRI);
 
-		jsonObject.put("ThermoAgentIRI", "Thermo agent IRI will be added later.");
+		jsonObject.append("ThermoAgentIRI", "Thermo agent IRI will be added later.");
 		
 		String updatedJsonContent = jsonObject.toString();
 
@@ -165,7 +159,7 @@ public class JsonToJsonConverter {
 			HttpServletResponse response) throws IOException {
 
 		/**
-		 * @author NK510 Stores updated json content in new json file.
+		 * @author NK510 Stores updated json content into  json file.
 		 */
 
 		FileWriter fileWriter = new FileWriter(new File(updatedJsonOutputFilePath));

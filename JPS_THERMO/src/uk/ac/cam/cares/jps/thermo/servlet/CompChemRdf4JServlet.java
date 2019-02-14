@@ -122,28 +122,33 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		JsonToJsonConverter jsonConverter = new JsonToJsonConverter();
 
 		jsonSet = jsonConverter.getListIRI(jsonSPARQLOutputFilePath);
+		
+		List<String> jsonList = new ArrayList<String>(jsonSet);		
 
-		logger.info("jsonList.size(): " + jsonSet.size());
-
-		List<String> jsonList = new ArrayList<String>(jsonSet);
-
-		logger.info("jsonList.get(0): " + jsonList.get(0));
-		logger.info("jsonList.get(1): " + jsonList.get(1));
-		logger.info("jsonList.get(2): " + jsonList.get(2));		
-
+		/** 
+		 * @author NK
+		 * Waits 2 second to complete thermo calcualtion.
+		 * 
+		 */
+		 try {
+			 
+			Thread.sleep(2000);
+		
+		 } catch (InterruptedException e) {
+			
+			e.printStackTrace();
+		}
+		 
 		/**
-		 * @author NK510 Converts updated json object into String.
+		 * @author NK510 updates json file and converts it into Java String.
 		 */
 
+		 
 		String updatedJsonContent = jsonConverter.updateJsonContent(jsonOutputFilePath, jsonList.get(2),
-				jsonList.get(0), jsonList.get(1));
+				jsonList.get(0), jsonList.get(1));		
 
-		/**
-		 * @author NK510 File path where updated json content will be saved.
-		 */
-		String updatedJsonOutputFilePath = RESULT_FOLDER + folderName + "/" + folderName + "_updated_nasa" + ".json";
-
-		jsonConverter.writeUpdatedJsonToFile(updatedJsonContent, updatedJsonOutputFilePath, response);
+		
+		jsonConverter.writeUpdatedJsonToFile(updatedJsonContent, jsonOutputFilePath, response);
 
 	}
 

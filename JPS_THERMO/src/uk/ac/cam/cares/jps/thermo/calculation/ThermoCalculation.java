@@ -20,7 +20,7 @@ public class ThermoCalculation {
 	 * 
 	 */	
 	
-	public void runThermoCalculation (String jsonInputFilePath, String jsonOutputFilePath,  String catalinaFolderPath) throws IOException {
+	synchronized public void runThermoCalculation (String jsonInputFilePath, String jsonOutputFilePath,  String catalinaFolderPath) throws IOException {
 		
 		/**
 		 * @author NK510
@@ -28,7 +28,6 @@ public class ThermoCalculation {
 		 * Thermo calculation that runs Python script.
 		 * 
 		 */
-		
 		
 		File inputFile = new File(jsonInputFilePath);
 		
@@ -38,5 +37,11 @@ public class ThermoCalculation {
 
 		Runtime.getRuntime().exec(cmd);
 		
+		File outputFile = new File(jsonOutputFilePath);
+		
+		if(!outputFile.exists()) {
+			
+			outputFile.createNewFile();
+		}
 	}
 }
