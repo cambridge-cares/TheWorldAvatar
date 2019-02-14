@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -56,10 +57,10 @@ public class JsonToJsonConverter {
 	 *                                     calculation IRI. Both features are stored
 	 *                                     in Java List data structure.
 	 */
-	public Set<String> getListIRI(String filePath)
+	public List<String> getListIRI(String filePath)
 			throws QueryResultParseException, QueryResultHandlerException, IOException {
 
-		Set<String> iriSet = new HashSet<String>();
+		List<String> iriSet = new ArrayList<String>();
 
 		SPARQLResultsJSONParser parser = new SPARQLResultsJSONParser();// SimpleValueFactory.getInstance()
 
@@ -84,25 +85,27 @@ public class JsonToJsonConverter {
 
 			if ((b.getValue("speciesIRI") != null)) {
 				speciesIRI = b.getValue("speciesIRI").stringValue();
-				iriSet.add(speciesIRI);
 				logger.info("speciesIRI: " + speciesIRI + ",  species  name: " + b.getBinding("speciesIRI").getName());
-			}
-			;
+			};
 
 			if ((b.getValue("g09") != null)) {
 				qunatumCalculationIRI = b.getValue("g09").stringValue();
-				iriSet.add(qunatumCalculationIRI);
+				
 				logger.info("qunatumCalculationIRI: " + qunatumCalculationIRI + ", g09 name: "
 						+ b.getBinding("g09").getName());
 			}
 
 			if ((b.getValue("massUnit") != null)) {
 				massUnit = b.getBinding("massUnit").getValue().stringValue();
-				iriSet.add(massUnit);
+				
 				logger.info("massUnit: " + massUnit + ", mass unit name: " + b.getBinding("massUnit").getName());
 			}
 
 		}
+		
+		iriSet.add(speciesIRI);
+		iriSet.add(qunatumCalculationIRI);
+		iriSet.add(massUnit);
 
 		return iriSet;
 
@@ -137,11 +140,13 @@ public class JsonToJsonConverter {
 		 * 
 		 */
 
-		jsonObject.append("massUnit", massUnit);
+		
 
 		jsonObject.append("speciesIRI", speciesIRI);
 
 		jsonObject.append("quantumCalculationIRI", quantumCalculationIRI);
+		
+		jsonObject.append("massUnit", massUnit);
 
 		jsonObject.append("ThermoAgentIRI", "Thermo agent IRI will be added later.");
 		

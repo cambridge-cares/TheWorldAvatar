@@ -64,7 +64,7 @@ public class CompChemRdf4JServlet extends HttpServlet {
 
 		response.setContentType("text/html;charset=UTF-8");
 
-		Set<String> jsonSet = new HashSet<String>();
+		List<String> jsonList = new ArrayList<String>();
 
 		String folderName = "";
 
@@ -116,11 +116,11 @@ public class CompChemRdf4JServlet extends HttpServlet {
 
 		JsonToJsonConverter jsonConverter = new JsonToJsonConverter();
 
-		jsonSet = jsonConverter.getListIRI(jsonSPARQLOutputFilePath);
+		jsonList.addAll(jsonConverter.getListIRI(jsonSPARQLOutputFilePath));
 		
-		logger.info("jsonSet.size(): " + jsonSet.size());
+		logger.info("jsonSet.size(): " + jsonList.size());
 		
-		List<String> jsonList = new ArrayList<String>(jsonSet);		
+//		List<String> jsonList = new ArrayList<String>(jsonSet);		
 
 		/** 
 		 * @author NK
@@ -142,12 +142,12 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		 
 		
 
-		logger.info("jsonList.get(2): " + jsonList.get(2)); 
-		logger.info("jsonList.get(0): " + jsonList.get(0));
-		logger.info("jsonList.get(1): " + jsonList.get(1));
+		logger.info("jsonList.get(2): " + jsonList.get(0)); 
+		logger.info("jsonList.get(0): " + jsonList.get(1));
+		logger.info("jsonList.get(1): " + jsonList.get(2));
 		
-		String updatedJsonContent = jsonConverter.updateJsonContent(jsonOutputFilePath, jsonList.get(2),
-				jsonList.get(0), jsonList.get(1));		
+		String updatedJsonContent = jsonConverter.updateJsonContent(jsonOutputFilePath, jsonList.get(0),
+				jsonList.get(1), jsonList.get(2));		
 
 		
 		/**
