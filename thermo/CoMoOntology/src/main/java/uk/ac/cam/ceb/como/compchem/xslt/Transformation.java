@@ -43,8 +43,11 @@ public class Transformation {
 	 * @author nk510 Path to XSLT file.
 	 */
 
-	static String xsltPath = "src/test/resources/xslt/ontochem_rdf.xsl";
+//	static String xsltPath = "src/test/resources/xslt/ontochem_rdf.xsl"; //this version of xslt uses http://como.cheng.cam.ac.uk/molhub/compchem/ URI
 
+	static String xsltPath = "src/test/resources/xslt/gxmltoowl.xsl";
+
+	
 	/**
 	 * The main method.
 	 *
