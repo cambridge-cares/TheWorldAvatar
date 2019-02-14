@@ -23,7 +23,7 @@ public class TestThermo extends TestCase {
 		
 		// GET ...twa.com/JPS_THERMO/thermocalcualtion?query={"gaussian":".......owl"}
 		
-		String result = AgentCaller.executeGetWithJsonParameter("JPS_THERMO/thermocalculation", json.toString());
+		String result = AgentCaller.executeGetWithJsonParameter("JPS_THERMO/calculation", json.toString());
 		
 		System.out.println("result = " + result);
 		
