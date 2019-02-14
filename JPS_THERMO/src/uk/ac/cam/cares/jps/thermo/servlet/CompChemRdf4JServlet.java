@@ -1,7 +1,9 @@
 package uk.ac.cam.cares.jps.thermo.servlet;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -17,9 +19,9 @@ import org.apache.log4j.Logger;
 
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jos.thermo.json.parser.JsonToJsonConverter;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.thermo.calculation.ThermoCalculation;
+import uk.ac.cam.cares.jps.thermo.json.parser.JsonToJsonConverter;
 import uk.ac.cam.cares.jps.thermo.manager.SPARQLManager;
 
 /**
@@ -53,17 +55,17 @@ public class CompChemRdf4JServlet extends HttpServlet {
 	/**
 	 * @author NK510 Root folder inside Apache Tomcat.
 	 */
-	public static final String RESULT_FOLDER = catalinaFolderPath + "/webapps/ROOT/";
+	public static final String RESULT_FOLDER = catalinaFolderPath + "/webapps/ROOT/kb/";
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-	
+
 			throws ServletException, IOException {
-		
+
 		response.setContentType("text/html;charset=UTF-8");
-		
+
 		Set<String> jsonSet = new HashSet<String>();
-		
+
 		String folderName = "";
 
 		/**
@@ -80,7 +82,9 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		 * Folder that is already created on server side (Apache Tomcat) where result of
 		 * sparql query and result of thermo calcuation will be saved.
 		 */
-		folderName = gaussian.substring(gaussian.lastIndexOf("/") + 1);
+		folderName = gaussian.substring(gaussian.lastIndexOf("#") + 1);
+
+		logger.info("folder name:  " + folderName);
 
 		System.out.println("CompChem IRI: " + gaussian + "  folder name: " + folderName);
 
@@ -91,11 +95,19 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		String jsonSPARQLOutputFilePath = RESULT_FOLDER + folderName + "/" + folderName + ".json";
 
 		/**
+		 * 
+		 * @author NK510 Updates generated json file with two features:
+		 *         "uniqueSpeciesIRI" and "quantumCalculationIRI":
+		 * 
+		 */
+		String jsonOutputFilePath = RESULT_FOLDER + folderName + "/" + folderName + "_nasa" + ".json";
+
+		/**
 		 * @author NK510 Querying CompChem remote RDF4J repository.
 		 */
 		SPARQLManager sparqlManager = new SPARQLManager();
 
-		sparqlManager.runCompChemSPARQL(gaussian, jsonSPARQLOutputFilePath, serverUrl);	
+		sparqlManager.runCompChemSPARQL(gaussian, jsonSPARQLOutputFilePath, serverUrl);
 
 		/**
 		 * 
@@ -105,51 +117,41 @@ public class CompChemRdf4JServlet extends HttpServlet {
 
 		ThermoCalculation thermoCalculation = new ThermoCalculation();
 
-		thermoCalculation.runThermoCalculation(jsonSPARQLOutputFilePath, catalinaFolderPath);
-		
+		thermoCalculation.runThermoCalculation(jsonSPARQLOutputFilePath, jsonOutputFilePath, catalinaFolderPath);		
+
 		JsonToJsonConverter jsonConverter = new JsonToJsonConverter();
-		
-		/**
-		 * 
-		 * @author NK510
-		 * Updates generated json file with two features: "uniqueSpeciesIRI" and "quantumCalculationIRI":
-		 * 
-		 */
-		String jsonOutputFilePath = RESULT_FOLDER + folderName + "/" + folderName +"_nasa"+ ".json";
-		
+
 		jsonSet = jsonConverter.getListIRI(jsonSPARQLOutputFilePath);
-		
+
 		logger.info("jsonList.size(): " + jsonSet.size());
-        
+
 		List<String> jsonList = new ArrayList<String>(jsonSet);
-		
-		
+
 		logger.info("jsonList.get(0): " + jsonList.get(0));
 		logger.info("jsonList.get(1): " + jsonList.get(1));
-		logger.info("jsonList.get(2): " + jsonList.get(2));
-		
+		logger.info("jsonList.get(2): " + jsonList.get(2));		
+
 		/**
-		 * @author NK510
-		 * Converts updated json object into String.
+		 * @author NK510 Converts updated json object into String.
 		 */
-		String updatedJsonContent = jsonConverter.updateJsonContent(jsonOutputFilePath, jsonList.get(1), jsonList.get(2), jsonList.get(0));
-		
-		
+
+		String updatedJsonContent = jsonConverter.updateJsonContent(jsonOutputFilePath, jsonList.get(2),
+				jsonList.get(0), jsonList.get(1));
+
 		/**
-		 * @author NK510
-		 * File path where updated json content will be saved.
+		 * @author NK510 File path where updated json content will be saved.
 		 */
-		String updatedJsonOutputFilePath = RESULT_FOLDER + folderName + "/" + folderName +"_updated_nasa"+ ".json";
-		
-		jsonConverter.writeUpdatedJsonToFile(updatedJsonContent, updatedJsonOutputFilePath, response);	
-		
+		String updatedJsonOutputFilePath = RESULT_FOLDER + folderName + "/" + folderName + "_updated_nasa" + ".json";
+
+		jsonConverter.writeUpdatedJsonToFile(updatedJsonContent, updatedJsonOutputFilePath, response);
+
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
+
 		super.doPost(request, response);
-		
-	}	
+
+	}
 }
