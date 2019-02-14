@@ -282,11 +282,11 @@ if __name__ == "__main__":
         file_destination = "{0}\\{1}.owl".format(ship_owl_files_dir, ship_name)
 #         print(file_destination)
         graph = Graph().parse(file_destination)
-        write_ship_coordinates_file(ship_iri, list_ship_coordinates[i][ship_index], graph, file_destination)
+#         write_ship_coordinates_file(ship_iri, list_ship_coordinates[i][ship_index], graph, file_destination)
         
 #         print('ship index', ship_index)
         print(read_ship_coordinates_fuseki(ship_iri))
-        print(read_ship_coordinates_file(ship_iri, graph))
+#         print(read_ship_coordinates_file(ship_iri, graph))
         
         ship_index = ship_index + 1
     

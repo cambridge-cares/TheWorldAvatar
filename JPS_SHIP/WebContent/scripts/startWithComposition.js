@@ -191,12 +191,12 @@ $(function(){
         console.log(query);
 		query = JSON.stringify(query);        
 		
-		$.ajax({
-			url: '/JPS_SHIP/UpdateShipCoordinates',
-			method: 'GET'
-		}).done(data => {
-			console.log(data);
-		})
+//		$.ajax({
+//			url: '/JPS_SHIP/UpdateShipCoordinates',
+//			method: 'GET',
+//		}).done(data => {
+//			console.log(data);
+//		})
 		
         const getCoordinationResult = (query) => {
         	

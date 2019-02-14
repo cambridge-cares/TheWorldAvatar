@@ -1,5 +1,9 @@
 package uk.ac.cam.cares.jps.coordination;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -16,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 @WebServlet("/ADMSCoordinationAgentForShipWithoutComposition")
 public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet {
@@ -30,11 +35,57 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet 
 		AgentCaller.writeJsonParameter(response, result);
 	}
 	
-	public JSONObject executeWithoutComposition(String jsonInput) {
+	private void updateShipCoordinates() throws IOException {
+		File file = new File("C:\\JPS_DATA\\workingdir\\JPS\\SHIP\\counter.txt");        
+        BufferedReader reader = null;
+        FileWriter writer = null;
+        int countIn = 0;
+        int countOut = 0;
+        
+        try 
+        {
+            reader = new BufferedReader(new FileReader(file));
+            
+            //Reading all the lines of input text file into oldContent
+            
+            String line = reader.readLine();
+            logger.info("line: " + line);
+            
+            countIn = Integer.parseInt(line);
+            logger.info(String.valueOf(countIn));
+            
+            //Rewriting the input text file with newContent
+            
+            writer = new FileWriter(file);
+            
+    		if (countIn < 4 && countIn >= 0) {
+    			countOut = countIn + 1;
+    		} else {
+    			countOut = 0;
+    		}
+    		logger.info("countOut: " + String.valueOf(countOut));
+            writer.write(String.valueOf(countOut));
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            reader.close();                
+            writer.close();
+            String result = PythonHelper.callPython("caresjpsship/writeThenReadShipCoordinates.py", String.valueOf(countIn), this);
+            logger.info("DONE UPDATING SHIP COORDINATES with count " + String.valueOf(countIn));
+        }
+	}
+	
+	public JSONObject executeWithoutComposition(String jsonInput) throws IOException {
 		
 		try {
 			
 			JSONObject jo = new JSONObject(jsonInput);
+			
+			updateShipCoordinates();
 			
 			// get a serialized JSON array of ship IRIs
 			String jsonArrayOfShipIRI = AgentCaller.executeGet("/JPS_SHIP/GetShipListFromRegion", "query", jsonInput);
