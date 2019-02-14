@@ -94,12 +94,7 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		 */
 		String jsonSPARQLOutputFilePath = RESULT_FOLDER + folderName + "/" + folderName + ".json";
 
-		/**
-		 * 
-		 * @author NK510 Updates generated json file with two features:
-		 *         "uniqueSpeciesIRI" and "quantumCalculationIRI":
-		 * 
-		 */
+
 		String jsonOutputFilePath = RESULT_FOLDER + folderName + "/" + folderName + "_nasa" + ".json";
 
 		/**
@@ -123,11 +118,13 @@ public class CompChemRdf4JServlet extends HttpServlet {
 
 		jsonSet = jsonConverter.getListIRI(jsonSPARQLOutputFilePath);
 		
+		logger.info("jsonSet.size(): " + jsonSet.size());
+		
 		List<String> jsonList = new ArrayList<String>(jsonSet);		
 
 		/** 
 		 * @author NK
-		 * Waits 2 second to complete thermo calcualtion.
+		 * Waits 2 second to complete thermo calculation.
 		 * 
 		 */
 		 try {
@@ -140,13 +137,24 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		}
 		 
 		/**
-		 * @author NK510 updates json file and converts it into Java String.
+		 * @author NK510 updates json file and converts it into String.
 		 */
-
 		 
+		
+
+		logger.info("jsonList.get(2): " + jsonList.get(2)); 
+		logger.info("jsonList.get(0): " + jsonList.get(0));
+		logger.info("jsonList.get(1): " + jsonList.get(1));
+		
 		String updatedJsonContent = jsonConverter.updateJsonContent(jsonOutputFilePath, jsonList.get(2),
 				jsonList.get(0), jsonList.get(1));		
 
+		
+		/**
+		 * 
+		 * @author NK510 Updated json is saved to json file.
+		 * 
+		 */
 		
 		jsonConverter.writeUpdatedJsonToFile(updatedJsonContent, jsonOutputFilePath, response);
 

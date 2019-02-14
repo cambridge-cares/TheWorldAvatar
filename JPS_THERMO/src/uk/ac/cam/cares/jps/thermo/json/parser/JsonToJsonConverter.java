@@ -27,11 +27,9 @@ import org.eclipse.rdf4j.query.resultio.QueryResultParseException;
 import org.eclipse.rdf4j.query.resultio.helpers.QueryResultCollector;
 import org.eclipse.rdf4j.query.resultio.sparqljson.SPARQLResultsJSONParser;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonParser;
+
 
 /**
  * 
@@ -127,15 +125,15 @@ public class JsonToJsonConverter {
 			throws UnsupportedEncodingException, IOException {
 		
 		/**
-		 * @author NK510 Adds the content of JSON file into object.
+		 * @author NK510 Adds the content of JSON file into Json object.
 		 */
 		
 		JSONObject  jsonObject = new JSONObject(IOUtils.toString(new FileInputStream (new File(filePath)),"UTF-8"));
 		
 		/**
 		 * 
-		 * @author NK510 Updates generated Json Object with quantum calculation IRI and
-		 *         species IRI
+		 * @author NK510 Updates generated Json Object with quantum calculation IRI, 
+		 *         species IRI, mass unit IRI, thermo agent IRI.
 		 * 
 		 */
 
