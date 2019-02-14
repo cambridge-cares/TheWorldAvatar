@@ -5,16 +5,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import uk.ac.ceb.como.molhub.bean.GaussianUploadReport;
-
 
 /**
  * @author nk510
@@ -62,7 +63,9 @@ public class FolderManager {
 
 		UUID uuid = UUID.nameUUIDFromBytes(bytes);
 
-		folderName = catalinaFolderPath + "/webapps/ROOT/" + uuid.toString();
+//		folderName = catalinaFolderPath + "/webapps/ROOT/" + uuid.toString();
+		
+		folderName = catalinaFolderPath + "/webapps/ROOT/kb/" + uuid.toString();
 
 		return folderName;
 
@@ -143,8 +146,10 @@ public class FolderManager {
 		
 		String fileName=null;
 		
-		String folderName = catalinaFolderPath + "/webapps/ROOT/" + uuid.toString();
+//		In earlier version of molhub all files were generated and stored in Tomcat's ROOT folder.
+//		String folderName = catalinaFolderPath + "/webapps/ROOT/" + uuid.toString();
 		
+		String folderName = catalinaFolderPath + "/webapps/ROOT/kb/" + uuid.toString();
 		File file = new File(folderName);
 
 		for(File f : file.listFiles()) {
