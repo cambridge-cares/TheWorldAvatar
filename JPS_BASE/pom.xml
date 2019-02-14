@@ -6,7 +6,7 @@
 	<artifactId>jps-base</artifactId>
 	<packaging>jar</packaging>
 
-	<!-- >artifactId>JPS_BASE</artifactId>
+	<!-- artifactId>JPS_BASE</artifactId>
 	<packaging>war</packaging-->
 
 
@@ -62,10 +62,10 @@
 					</webResources>
 					<failOnMissingWebXml>true</failOnMissingWebXml>
 					<webXml>WebContent\WEB-INF\web.xml</webXml>
-					<warName>${project.artifactId}##${project.version}</warName>
+					<warName>${project.artifactId}#${project.version}</warName>
 				    <outputDirectory>${tomcatPath}/webapps</outputDirectory>
 				</configuration>
-			</plugin-->
+			</plugin -->
 
 		</plugins>
 	</build>
