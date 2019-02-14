@@ -58,6 +58,7 @@ public class ParsingGeometry {
 
 		List<String> atomicWeightList = ParsingAtomicMass.getListOfAtomicMass(weightTokenizer);
 
+		
 		if (atomicWeightList.size() > 1) {
 
 			CMLMolecule cml_m = getFinalCMLMolecule(file);
@@ -155,7 +156,7 @@ public class ParsingGeometry {
 		 *         </p>
 		 */
 		atomJxb.setElementType(getAtoNameOfOneAtomMolecule(formulaUtility.extractFormulaName(file)));
-
+		
 		atomJxb.setAtomicMass(atomicWeightList.get(0));
 
 		atomArrayJxb.getAtom().add(atomJxb);
