@@ -139,7 +139,7 @@ def write_ship_coordinates_file(ship_iri, coordinates, graph, file_destination):
     processUpdate(graph, query_string)
     print(file_destination)
 
-    graph.serialize(destination="C:\\{0}".format(file_destination), format='xml')
+    graph.serialize(file_destination, format='xml')
 
 if __name__ == "__main__":
 
@@ -276,15 +276,15 @@ if __name__ == "__main__":
         write_ship_coordinates_fuseki(ship_iri, list_ship_coordinates[i][ship_index])
         
         
-        print(i)
-        print(ship_index)
+#         print(i)
+#         print(ship_index)
         ship_name = ship_iri[ship_iri.rfind('#') + 1:]
         file_destination = "{0}\\{1}.owl".format(ship_owl_files_dir, ship_name)
-        print(file_destination)
+#         print(file_destination)
         graph = Graph().parse(file_destination)
         write_ship_coordinates_file(ship_iri, list_ship_coordinates[i][ship_index], graph, file_destination)
         
-        print('ship index', ship_index)
+#         print('ship index', ship_index)
         print(read_ship_coordinates_fuseki(ship_iri))
         print(read_ship_coordinates_file(ship_iri, graph))
         
