@@ -14,6 +14,7 @@ import uk.ac.cam.ceb.como.compchem.ontology.query.CompChemQuery;
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.FileUtility;
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
 
+
 import org.apache.commons.io.FileUtils;
 
 import org.apache.log4j.Logger;
@@ -42,6 +43,8 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 	Map<String, Object> session;
 
 	String catalinaFolderPath = System.getProperty("catalina.home");
+	
+	
 
 	/**
 	 * @author nk510 <p>SPARQL query used in thermo - calculations. It queries
@@ -51,6 +54,8 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 	 */
 	
 	String sparql = catalinaFolderPath + "/conf/Catalina/sparql_query/query_all.sparql";
+	
+	
 
 	@Override
 	public String execute() throws Exception {
@@ -79,8 +84,11 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 		 */
 		
 		for (Map.Entry<String, Object> mp : session.entrySet()) {
-
-			String speciesFolder = catalinaFolderPath + "/webapps/ROOT/" + mp.getKey().toString() + "/";
+			
+//          Earlier version of molhub stored all uploaded and generated files into Tomcat's ROOT folder.
+//			String speciesFolder = catalinaFolderPath + "/webapps/ROOT/" + mp.getKey().toString() + "/";
+			
+			String speciesFolder = catalinaFolderPath + "/webapps/ROOT/kb/" + mp.getKey().toString() + "/";
 
 			List<File> aboxFiles = utility.getArrayFileList(speciesFolder, ".owl");
 
@@ -107,6 +115,8 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 				 */
 
 				String pyscript = catalinaFolderPath + "/conf/Catalina/c4e-dln22-TDC/Source/thermoDriver.py";
+				
+				
 				
                 String[] cmd = { "python", pyscript, "-j", jsonFiles.get(i).getAbsolutePath(), };
 

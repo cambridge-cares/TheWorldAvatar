@@ -33,7 +33,6 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class UploadAction.
  *
@@ -55,8 +54,11 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	/** The catalina folder path. */
 	private String catalinaFolderPath = System.getProperty("catalina.home");
 
-	/** The xslt. */
-	private String xslt = catalinaFolderPath + "/conf/Catalina/xslt/ontochem_rdf.xsl";
+	/** The xslt transformation uses 'compchemkb' namespace. */
+//	private String xslt = catalinaFolderPath + "/conf/Catalina/xslt/ontochem_rdf.xsl";  
+	
+	/** This xslt uses http://www.theworldavatar.com/kb/ namespace **/
+	private String xslt = catalinaFolderPath + "/conf/Catalina/xslt/gxmltoowl.xsl";
 
 	/** The xsd. */
 	private String xsd = catalinaFolderPath + "/conf/Catalina/xml_schema/schema.xsd";
@@ -95,9 +97,9 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	/** The upload report list. */
 	private List<GaussianUploadReport> uploadReportList = new ArrayList<GaussianUploadReport>();
 
-	/** The uri. */
-	private String uri = "http://como.cheng.cam.ac.uk/molhub/compchem/";
-
+	/** The uri for compchem ontology. */
+	private String compchemUri = "http://como.cheng.cam.ac.uk/molhub/compchem/";
+	
 
 	private String serverUrl = "http://localhost:8080/rdf4j-server/repositories/compchemkb";
 
@@ -156,14 +158,14 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 			 */
 
 			String folderName = FolderManager.generateUniqueFolderName(f.getName(), catalinaFolderPath);
-			
-			
 
 			File inputG09File = new File(folderName + "/" + uploadFileName[fileNumber]);
 
 			/**
+			 * 
 			 * @author NK510
 			 * <p>Get file extension.</p> 
+			 * 
 			 */
 			String fileExtension = FilenameUtils.getExtension(folderName + "/" + uploadFileName[fileNumber]);
 			
@@ -172,17 +174,20 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 			File outputXMLFile = new File(
 					folderName + "/" + uploadFileName[fileNumber].replaceAll(".g09", "") + ".xml");
 
-			String outputOwlPath = folderName + "/" + uploadFileName[fileNumber].replaceAll(".g09", "").toString()
-					+ ".owl";
+//			Previous version of molhub generates owl file that has the same name as uploaded Gaussian file. 
+//			String outputOwlPath = "kb" +"/"+folderName + "/" + uploadFileName[fileNumber].replaceAll(".g09", "").toString() + ".owl";			
+			
+			String outputOwlPath = folderName + "/" + folderName.substring(folderName.lastIndexOf("/") + 1) + ".owl";
 
+			
 			final File owlFile = new File(outputOwlPath);
 
 			/**
+			 * 
 			 * @author nk510
-			 *         <p>
-			 * 		Png file name is the same as the name of folder where that image is
-			 *         saved.
-			 *         </p>
+			 *      
+			 *<p> Png file name is the same as the name of folder where that image is saved.</p>
+			 *         
 			 */
 
 			File pngFile = new File(folderName + "/" + folderName.substring(folderName.lastIndexOf("/") + 1) + ".png");
@@ -249,9 +254,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 			 * 
 			 */
 
-			boolean consistency = InconsistencyExplanation.getConsistencyOWLFile(outputOwlPath);
-
-			// boolean xmlValidation = XMLValidationManager.validateXMLSchema(xsd, outputXMLFile);
+			boolean consistency = InconsistencyExplanation.getConsistencyOWLFile(outputOwlPath);			
 
 			gaussianUploadReport = new GaussianUploadReport(folderName.substring(folderName.lastIndexOf("/") + 1),
 					uploadFileName[fileNumber], xmlValidation, consistency);
@@ -311,7 +314,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 								 *         </p>
 								 */
 								
-								connection.add(owlFile, uri, RDFFormat.RDFXML);
+								connection.add(owlFile, compchemUri, RDFFormat.RDFXML);
 
 								connection.commit();
 

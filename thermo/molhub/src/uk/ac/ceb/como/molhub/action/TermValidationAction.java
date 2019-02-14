@@ -228,10 +228,7 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 
 					queryResultString = new HashSet<String>();
 
-					queryResultString = QueryManager.performSPARQLQueryOnQueryString(sentence);
-
-					// optional solution: Set<String> listTemp =
-					// QueryManager.performSPARQLQueryOnQueryString(sentence);
+					queryResultString = QueryManager.performSPARQLQueryOnQueryString(sentence);					
 
 					for (String mpp : queryResultString) {
 
