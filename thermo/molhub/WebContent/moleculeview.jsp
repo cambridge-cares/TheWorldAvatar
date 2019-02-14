@@ -54,7 +54,7 @@ var Info = {
 		j2sPath: "<%=request.getContextPath()%>/jsmol/j2s",
 		jarFile: "JmolAppletSigned.jar",
 		isSigned: false,
-		script: "set zoomlarge false;set antialiasDisplay;load http://<%=request.getHeader("host")%>/<s:property  value="uuid"/>/<s:property value="gaussianFileName"/>",		
+		script: "set zoomlarge false;set antialiasDisplay;load http://<%=request.getHeader("host")%>/kb/<s:property  value="uuid"/>/<s:property value="gaussianFileName"/>",		
 		addSelectionOptions: false,
 		serverURL: "<%=request.getContextPath()%>/jsmol/php/jsmol.php",
 		readyFunction: null,
@@ -395,11 +395,11 @@ $(document).ready(function(){
             Depending on your browser these may not be rendered properly.
 
         <ul>
-            <li><a href="http://<%=request.getHeader("host")%>/<s:property  value="uuid"/>/<s:property value="gaussianFileName"/>">Gaussian(G09)</a></li>
-  <li><a href="http://<%=request.getHeader("host")%>/<s:property  value="uuid"/>/<s:property value="xmlFileName"/>">XML</a></li>
-  <li><a href="http://<%=request.getHeader("host")%>/<s:property  value="uuid"/>/<s:property value="owlFileName"/>">OWL</a></li>
+            <li><a href="http://<%=request.getHeader("host")%>/kb/<s:property  value="uuid"/>/<s:property value="gaussianFileName"/>">Gaussian(G09)</a></li>
+  <li><a href="http://<%=request.getHeader("host")%>/kb/<s:property  value="uuid"/>/<s:property value="xmlFileName"/>">XML</a></li>
+  <li><a href="http://<%=request.getHeader("host")%>/kb/<s:property  value="uuid"/>/<s:property value="owlFileName"/>">OWL</a></li>
   <s:if test="%{nasaFileName!=null}">
-  <li><a href="http://<%=request.getHeader("host")%>/<s:property  value="uuid"/>/<s:property value="nasaFileName"/>">NASA</a></li>
+  <li><a href="http://<%=request.getHeader("host")%>/kb/<s:property  value="uuid"/>/<s:property value="nasaFileName"/>">NASA</a></li>
   </s:if>
         </ul>
         </p>

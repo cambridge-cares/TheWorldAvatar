@@ -201,7 +201,7 @@ Session result: <s:property value="session"/>
  
 <!--<img alt="" src="http://como.cheng.cam.ac.uk/molhub/compchem/6498a583-a210-4ac1/data.3d.thumb.png" class="species-image"/>-->
  
-<img alt="" src="http://<%=request.getHeader("host")%>/<s:property  value="uuid"/>/<s:property  value="uuid"/>.png" class="species-image"/>
+<img alt="" src="http://<%=request.getHeader("host")%>/kb/<s:property  value="uuid"/>/<s:property  value="uuid"/>.png" class="species-image"/>
   
 <s:url action="moleculeview.action" var="moleculeView">
 
@@ -221,7 +221,7 @@ Session result: <s:property value="session"/>
             <div>
                 <div class="property-name"><s:property value="resultsColumn[1]"/></div>
                 <div class="property-value">
-                <s:a href="%{moleculeView}" target="_blank">http://<%=request.getHeader("host")%>/<s:property  value="uuid"/></s:a>
+                <s:a href="%{moleculeView}" target="_blank">http://<%=request.getHeader("host")%>/kb/<s:property  value="uuid"/></s:a>
                 </div>
             </div>
             <p/>
