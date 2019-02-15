@@ -65,7 +65,7 @@ public class SPARQLManager {
 				
 					e.getMessage();
 					
-				} 
+				}
 				
 				connection.commit();
 

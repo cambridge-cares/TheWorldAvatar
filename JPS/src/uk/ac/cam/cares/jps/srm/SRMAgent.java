@@ -183,7 +183,7 @@ public class SRMAgent extends HttpServlet  {
 		//system.out.println("data got for engine iri= " + iriofengine);
 
 		/** PREPARE ALL THE INPUT FILE*/
-
+		// for PRODUCTION
 		cleanDirectory();
 		
 
@@ -212,6 +212,7 @@ public class SRMAgent extends HttpServlet  {
 		
 		
 		//second, run using command prompt the owl file iri using the batch file to produce new bin
+		// for PRODUCTION
 		startbinaryconverter(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM",rs_mechanism);
 		
 		
@@ -420,6 +421,7 @@ public class SRMAgent extends HttpServlet  {
 		
 		/** This part put run to the SRM Engine simulation and take the output */
 
+		// for PRODUCTION
 		startSRM("C:/Program Files/Kinetics and SRM Engine Suite");
 
 		

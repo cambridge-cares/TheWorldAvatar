@@ -1,5 +1,9 @@
 package uk.ac.cam.cares.jps.coordination;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -16,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 @WebServlet("/ADMSCoordinationAgentForShipWithoutComposition")
 public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet {
@@ -30,11 +35,57 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet 
 		AgentCaller.writeJsonParameter(response, result);
 	}
 	
-	public JSONObject executeWithoutComposition(String jsonInput) {
+	private void updateShipCoordinates() throws IOException {
+		File file = new File("C:\\JPS_DATA\\workingdir\\JPS\\SHIP\\counter.txt");        
+        BufferedReader reader = null;
+        FileWriter writer = null;
+        int countIn = 0;
+        int countOut = 0;
+        
+        try 
+        {
+            reader = new BufferedReader(new FileReader(file));
+            
+            //Reading all the lines of input text file into oldContent
+            
+            String line = reader.readLine();
+            logger.info("line: " + line);
+            
+            countIn = Integer.parseInt(line);
+            logger.info(String.valueOf(countIn));
+            
+            //Rewriting the input text file with newContent
+            
+            writer = new FileWriter(file);
+            
+    		if (countIn < 4 && countIn >= 0) {
+    			countOut = countIn + 1;
+    		} else {
+    			countOut = 0;
+    		}
+    		logger.info("countOut: " + String.valueOf(countOut));
+            writer.write(String.valueOf(countOut));
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            reader.close();                
+            writer.close();
+            String result = PythonHelper.callPython("caresjpsship/writeThenReadShipCoordinates.py", String.valueOf(countIn), this);
+            logger.info("DONE UPDATING SHIP COORDINATES with count " + String.valueOf(countIn));
+        }
+	}
+	
+	public JSONObject executeWithoutComposition(String jsonInput) throws IOException {
 		
 		try {
 			
 			JSONObject jo = new JSONObject(jsonInput);
+			
+			updateShipCoordinates();
 			
 			// get a serialized JSON array of ship IRIs
 			String jsonArrayOfShipIRI = AgentCaller.executeGet("/JPS_SHIP/GetShipListFromRegion", "query", jsonInput);
@@ -42,7 +93,7 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet 
 			JSONObject jsonShipIRIs = new JSONObject(jsonArrayOfShipIRI);
 			JSONArray shipIRIs = jsonShipIRIs.getJSONArray("shipIRIs");
 			jo.put("ship", shipIRIs);
-			//system.out.println("shipIRIs: " + shipIRIs.toString());
+//			logger.info("shipIRIs FROM COORDINA
 			
 			JSONObject jsonReactionShip = new JSONObject();
 			String reactionMechanism = jo.getString("reactionmechanism");
@@ -64,14 +115,17 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet 
 			String regionToCityResult = execute("/JPS/RegionToCity", jsonInput);
 			String city = new JSONObject(regionToCityResult).getString("city");
 			jo.put("city", city);
+//			logger.info("city FROM COORDINATION AGENT: " + city);
 			
 			String result = execute("/JPS/GetBuildingListFromRegion", jo.toString());
 			JSONArray building = new JSONObject(result).getJSONArray("building");
 			jo.put("building", building);
+//			logger.info("building FROM COORDINATION AGENT: " + building.toString());
 			
 			result = execute("/JPS_COMPOSITION/CityToWeather", regionToCityResult);
 			JSONObject weatherstate = new JSONObject(result).getJSONObject("weatherstate");
 			jo.put("weatherstate", weatherstate);
+//			logger.info("weatherstate FROM COORDINATION AGENT: " + weatherstate.toString());
 			
 			result = execute("/JPS/ADMSAgent", jo.toString());
 			String folder = new JSONObject(result).getString("folder");

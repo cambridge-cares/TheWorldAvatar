@@ -17,14 +17,14 @@ import cobbling
 import requests
 from pyproj import Proj, transform
 
-sourceCRS = Proj(init='epsg:28992')
-targetCRS = Proj(init='epsg:3414')
+sourceCRS = Proj(init='epsg:3857')
+# targetCRS = Proj(init='epsg:3414')
 
 class admsInputDataRetriever(object):
     BDN = namedtuple('BDN', ['BldNumBuildings','BldName','BldType','BldX','BldY','BldHeight', 'BldLength', 'BldWidth', 'BldAngle'])
     OPT = namedtuple('OPT', ['OptNumOutputs','OptPolName','OptInclude','OptShortOrLong', 'OptSamplingTime','OptSamplingTimeUnits','OptCondition','OptNumPercentiles','OptNumExceedences','OptPercentiles','OptExceedences','OptUnits','OptGroupsOrSource','OptAllSources','OptNumGroups','OptIncludedGroups','OptIncludedSource','OptCreateComprehensiveFile'])
 
-    def __init__(self, topnode, bdnnode=None, range=None, pollutants =['HC'], srcLimit = 5, bdnLimit = 5, filterSrc = False, rawBdn = None):
+    def __init__(self, topnode, bdnnode=None, range=None, pollutants =['HC'], srcLimit = 5, bdnLimit = 5, filterSrc = False, rawBdn = None, targetCRS = None):
         '''constructor
         inputs:
         range - user input range {'xmin', 'xmax', 'ymin', 'ymax'}, actual range is the min(user range, region envelope(e.g. jurongisland))
@@ -45,16 +45,18 @@ class admsInputDataRetriever(object):
         self.filterSrc = False
         self.rawBdn = rawBdn
 
-        self.range = self.getRange(range)
+        self.range = self.getRange(range, targetCRS)
         print("RANGE HERE")
         print(self.range)
         self.pythonLogger = PythonLogger('admsInputDataRetrieverChimney.py')
 
-    def getRange(self, userrange):
-        max = transform(sourceCRS, targetCRS, userrange['xmax'], userrange['ymax'])
-        min = transform(sourceCRS, targetCRS, userrange['xmin'], userrange['ymin'])
+    def getRange(self, userrange, targetCRS):
+#         max = transform(sourceCRS, targetCRS, userrange['xmax'], userrange['ymax'])
+#         min = transform(sourceCRS, targetCRS, userrange['xmin'], userrange['ymin'])
         
-        return ((min[0], max[0]), (max[1] - 1000, min[1]))
+#         return ((min[0], max[0]), (max[1] - 1000, min[1]))
+#         return ((min[0], max[0]), (min[1], max[1]))
+        return ((float(userrange['xmin']), float(userrange['xmax'])), (float(userrange['ymin']), float(userrange['ymax'])))
 
     def getSrcData(self):
         '''get all sourced data : 

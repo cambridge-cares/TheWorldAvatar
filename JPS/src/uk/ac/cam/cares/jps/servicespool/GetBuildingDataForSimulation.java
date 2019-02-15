@@ -205,7 +205,7 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 				result[2] = new double[] {79831, 454766};
 			} else if (cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Berlin")) {
 				result[2] = new double[] {699583.49, 532938.39};
-			} else if (cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Singapore")) {
+			} else if (cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Singapore") || cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Hong_Kong")) {
 				result[2] = getCenterLatLon(lowerx, upperx, lowery, uppery);
 			}
 		}

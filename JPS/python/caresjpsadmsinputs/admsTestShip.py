@@ -8,19 +8,29 @@ from admsAplWriterShip import admsAplWriter
 from admsInputDataRetrieverChimney import admsInputDataRetriever
 from caresjpsutil import PythonLogger
 from pyproj import Proj, transform
+from SPARQLWrapper import SPARQLWrapper, JSON
 
 pythonLogger = PythonLogger('admsTest.py')
 # sourceCRS = Proj(init='epsg:28992')
 sourceCRS = Proj(init='epsg:4326')
-targetCRS = Proj(init='epsg:3414')
+# targetCRS = Proj(init='epsg:3857')
+targetCRS = Proj(init=sys.argv[5][:4].lower() + sys.argv[5][4:])
+
+def sparqlQueryRead(queryString):
+    # sparql = SPARQLWrapper("http://www.theworldavatar.com/damecoolquestion/ships/sparql")
+    sparql = SPARQLWrapper("http://172.25.182.41/damecoolquestion/ships-persistent/sparql")
+    sparql.setQuery(queryString)
+    sparql.setReturnFormat(JSON)
+
+    return sparql.query().convert()
 
 try:
 #     pythonLogger.postInfoToLogServer('start')
         
     buildingdata = json.loads(sys.argv[1].replace("'",'"'))
-    print("BUILDING")
-    print(buildingdata)
-    print("")
+#     print("BUILDING")
+#     print(buildingdata)
+#     print("")
     BDN = namedtuple('BDN', ['BldNumBuildings','BldName','BldType','BldX','BldY','BldHeight', 'BldLength', 'BldWidth', 'BldAngle'])
     BDN.BldName = buildingdata['BldName']
     BDN.BldNumBuildings = len(BDN.BldName)
@@ -75,10 +85,15 @@ try:
             }}
         """.format(ship)
      
-        query_results = graph.query(query_string_coordinates).bindings
-      
-        x_coordinate_value = float(query_results[0]['coordinateX_value'].toPython())
-        y_coordinate_value = float(query_results[0]['coordinateY_value'].toPython())
+        queryResults = sparqlQueryRead(query_string_coordinates)
+        queryResults = queryResults['results']['bindings']
+
+        x_coordinate_value = float(queryResults[0]['coordinateX_value']['value'])
+        y_coordinate_value = float(queryResults[0]['coordinateY_value']['value'])
+        
+#         query_results = graph.query(query_string_coordinates).bindings
+#         x_coordinate_value = float(query_results[0]['coordinateX_value'].toPython())
+#         y_coordinate_value = float(query_results[0]['coordinateY_value'].toPython())
         
 #         ship_coordinates_list.append((x_coordinate_value, y_coordinate_value))
         print(list(transform(sourceCRS, targetCRS, x_coordinate_value, y_coordinate_value)))
@@ -115,14 +130,15 @@ try:
     print("")
     print(chimney_iri_list,config.bldTopnode, coordinates,  ["CO2"   ,"CO" ,  "NO2" ,  "HC" ,  "NOx"], 2, config.bdnLimit,False, BDN)
     print("")
-    test = admsInputDataRetriever(chimney_iri_list,config.bldTopnode, coordinates,  ["CO2"   ,"CO" ,  "NO2" ,  "HC" ,  "NOx"], 2, config.bdnLimit,False, BDN)
+    test = admsInputDataRetriever(chimney_iri_list,config.bldTopnode, coordinates,  ["CO2"   ,"CO" ,  "NO2" ,  "HC" ,  "NOx"], 2, config.bdnLimit,False, BDN, targetCRS)
     result = test.get()
     
     print("RESULT TYPE: ")
     print(type(result))
     pythonLogger.postInfoToLogServer('calling admsAplWirter ...')
     result['Bdn'] = BDN
-    result['CoordiSys'] = '3414';
+    result['CoordiSys'] = sys.argv[5][5:]
+#     result['CoordiSys'] = '3857';
     
     for idx in range(len(ship_coordinates_list)):
         result['Src'][idx].setCoordinates(ship_coordinates_list[idx])
