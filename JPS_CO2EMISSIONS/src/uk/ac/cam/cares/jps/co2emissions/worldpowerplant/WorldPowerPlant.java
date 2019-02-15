@@ -248,7 +248,7 @@ public class WorldPowerPlant extends HttpServlet {
 			Gson g = new Gson();
 			String[] arrayOfPowerplantIRI = g.fromJson(stringArrayOfPowerplantIRI, String[].class);
 		
-			if (nodenumber.contentEquals("all"))
+			if (nodenumber.toLowerCase().contentEquals("all"))
 			{
 		numpowerplants=arrayOfPowerplantIRI.length;
 			}
