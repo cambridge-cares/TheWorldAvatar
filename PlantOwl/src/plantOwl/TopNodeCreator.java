@@ -9,12 +9,10 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntClass;
