@@ -335,8 +335,18 @@ function optimizeService() {
 
     })
         .done(function (msg) {
-            serviceList = JSON.parse(msg);
-            console.log(serviceList);
+			
+			console.log('----- msg -----')
+			console.log(msg);
+			if(msg == ''){
+				serviceList = ["http://www.theworldavatar.com/kb/agents/Service__AccuWeather.owl#Service",
+				"http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#Service"];
+			}
+			else{
+				serviceList = JSON.parse(msg);
+				console.log(serviceList);
+			}
+
             (function myLoop(i) {
                 console.log(i);
                 setTimeout(function () {

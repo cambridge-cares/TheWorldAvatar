@@ -44,13 +44,21 @@ public class ServiceDiscovery {
 	private synchronized void init() {	
 		this.services = new ArrayList<Service>();
 		this.httpToServiceMap = new HashMap<String,Service>();
-		String directory = KeyValueServer.get(KEY_DIR_KB_AGENTS);
+		//String directory = KeyValueServer.get(KEY_DIR_KB_AGENTS);
+		String directory = "C:\\TOMCAT\\webapps\\ROOT\\kb\\agents";
+		System.out.println("================== Directory ====================");
+		System.out.println(directory);
+		System.out.println("=================================================");
+		
 		this.services = readTheServicePool(directory);
 		this.generateHttpToServiceMap();
 	}	
 	
 	public ArrayList<Service> getAllServiceCandidates(List<MessagePart> inputs, ArrayList<Service> servicePool){
-		
+		System.out.println("------------------ SERVICE POOL ---------------------------");
+		for (Service s : servicePool) {
+			System.out.println(s.httpUrl);
+		}
 		ArrayList<Service> result = new ArrayList<Service>();
 		ArrayList<URI> inputTypesList = new ArrayList<URI>();
 		for (MessagePart messagePart_inputs : inputs) {
