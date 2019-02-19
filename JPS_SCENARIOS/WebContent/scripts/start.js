@@ -3,7 +3,7 @@ $(function() {
   var selected = [];
   var loadeddata;
   var table = $("#tablescenarios").DataTable();
-  var listScenariosUrl = "http://localhost:8080/JPS_SCENARIO/scenariomanagement/listscenarios"
+  var listScenariosUrl = "http://localhost:8080/JPS_SCENARIO/scenariomanagement/list"
   var selectedScenario;
   var selectedOperation;
  
@@ -36,6 +36,7 @@ $(function() {
     // clear the table before populating it with more data
     //$("#tablescenarios").DataTable().clear();
     table.clear();
+    $('#tableparams2').DataTable().clear();
     
     var scenarios = loadeddata.result;
     for(var i in scenarios) {
@@ -65,7 +66,7 @@ $(function() {
 	        type: 'GET',
 	        url: url,
 	        contentType: "text/plain",
-	        dataType: 'json',
+	        dataType: 'text',
 	        success: function (data) {
 	          loadData(data);
 	        },
@@ -79,41 +80,52 @@ $(function() {
   $('#tablescenarios tbody').on('click', 'tr', function () {
       var data = table.row( this ).data();
       //alert( 'You clicked on '+data[0]+'\'s row' );
-      
-      // find object in json array that correspond to the selected row by name comparison
-      //var selectedScenario;
 	  var selectedname = data[0];
+	  $('#newscenarioname').val(selectedname);
+      showOperations(selectedname);
+  } );
+  
+  function showOperations(scenarioname) {
+	  
+	  //alert('hello' + scenario.service[0].hasOperation.hasHttpUrl);
+	  
+	  $('#tableparams2').DataTable().clear();
+	  
+	  // find object in json array that correspond to the selected row by name comparison
 	  var scenarios = loadeddata.result;
 	  for(var i in scenarios) {
 	    var name = scenarios[i].name;
-	    if (name === selectedname) {
+	    if (name === scenarioname) {
 	    	selectedScenario = scenarios[i]
 	    	break;
 	    }
 	  }
-      
-       $('#tableparams2').DataTable().clear();
-      showOperations(selectedScenario);
-  } );
-  
-  function showOperations(scenario) {
 	  
-	  //alert('hello' + scenario.service[0].hasOperation.hasHttpUrl);
-	  
-	  var operations = scenario.service;	  
-	  for (i=0; i<=4; i++) {
+	  var operations = selectedScenario.service; 
+	  for (i=0; i<=9; i++) {
 		//$("#op"+i).prop('checked', false);
 		if (i < operations.length) {
-			var httpUrl = operations[i].hasOperation.hasHttpUrl;
-			var index = httpUrl.lastIndexOf("/");
-			var opName = httpUrl.substring(index+1);
+			var currentOperation = operations[i].hasOperation;
+			var opName = null;
+			var scenarioWithoutHttpUrl = ((selectedScenario.type === 'scenario') && !currentOperation.hasHttpUrl);
+			if (scenarioWithoutHttpUrl || (selectedScenario.type === 'composed')) {
+				var opid =  currentOperation.id;
+				var index = opid.lastIndexOf('#');
+				opName = 'compose (' + opid.substring(index+1) + ')';
+			} else {
+				var httpUrl = currentOperation.hasHttpUrl;
+				var index = httpUrl.lastIndexOf('/');
+				opName = httpUrl.substring(index+1);
+			}
 			$("#op"+i).show()
 			$("#op"+i).val(opName);
 			$("#op"+i+"label").show()
 			$("#op"+i+"label").html(opName);
 		} else {
 			$("#op"+i).hide()
-			$("#op"+i+"label").hide()			
+			$("#op"+i).val("");
+			$("#op"+i+"label").hide();
+			$("#op"+i+"label").html("");
 		}
 	  }
 	  
@@ -128,7 +140,10 @@ $(function() {
 	  var operations = selectedScenario.service;	  
 	  for (i=0; i<operations.length; i++) {
 		var currentOperation = operations[i].hasOperation;
-		if (currentOperation.hasHttpUrl.endsWith(opName)) {
+		if (!currentOperation.hasHttpUrl && opName.startsWith("compose")) {
+			selectedOperation=currentOperation;
+			break;
+		} else if (currentOperation.hasHttpUrl.endsWith(opName)) {
 			selectedOperation=currentOperation;
 			break;
 		}
@@ -141,16 +156,22 @@ $(function() {
   function populateParams() {
     console.log("populating params for " + selectedOperation.hasHttpUrl);
     
-    $('#tableparams2').DataTable().clear();
+    // does not work
+    //$('#tableparams2').DataTable().clear();
+    $('#tableparams2').dataTable().fnClearTable(); 
     
-	var params = selectedOperation.hasInput;
+ 	var params = selectedOperation.hasInput;
     for(var i in params) {
       var inout = "in";
       var name = params[i].hasName;
       var type = params[i].hasType;
-      var typelink = '<a href="' + type + '">' + type + '</a>';
-      var value =  "<input type=\"text\" id=\"inparamvalue" + i + "\">";
-      
+	  var typelink = '<a href="' + type + '">' + type + '</a>';
+	  var value =  "<input type=\"text\" id=\"inparamvalue" + i + "\">";
+
+      if (name === "scenarioagent") {
+    	value =  getSelectBoxForScenarioAgent()
+      } 
+    	  
      // warning: don't use table here because there is a difference
      // between dataTable() and DataTable()
      // see https://www.datatables.net/reference/api/ 
@@ -180,28 +201,84 @@ $(function() {
         typelink,
         value
       ]);
+    
     }
+    
+  }
+  
+  function getSelectBoxForScenarioAgent() {
+	  var box = "<select id=\"selectboxscenarionagent\">"
+		+ "<option value=\"\">Select an agent</option>";
+	  
+	    var scenarios = loadeddata.result;
+	    for(var i in scenarios) {
+	        var name = scenarios[i].name;
+	        var type = scenarios[i].type;
+	        var id = scenarios[i].id;
+	        
+	        if (type === 'agent' || type === 'composed') {
+	        	box += "<option value=\"" + id + "\">" + name + "</option>";
+	        }
+	    }
+		
+	  box += "</select>";
+	  return box;
   }
   
   $('#showlinkbutton').click(function() {
 	  
-	  var json = {};
-	  var paramsdata = $('#tableparams2').DataTable().rows().data();
-	  var numberInParams = selectedOperation.hasInput.length;
-	  console.log("no " + numberInParams);
-	  for (i=0; i<numberInParams; i++) {
-		  var paramkey = paramsdata[i][1];
-		  var paramvalue = $('#inparamvalue' + i).val();
-		  // the next line does not work since it adds "paramkey": "...Berlin" instead of "city": "...Berlin"
-		  //json.paramkey = paramvalue;  
-		  console.log("key=" + paramkey + ", value=" + paramvalue);
-		  if (paramvalue.length > 0) {
-		  	json["" + paramkey] = paramvalue;
-	  	}
-	  }
+	  var url = selectedOperation.hasHttpUrl;
+	  
+	  if (selectedScenario.type === 'composed') {
+		  url = 'http://www.theworldavatar.com/JPS_COMPOSITION/execute';
+	  } else if ((selectedScenario.type === 'scenario' && !url)) {
+		  var id = selectedScenario.id;
+		  var index = id.lastIndexOf('.owl');
+		  url = id.substring(0, index) + '/compose';
+  	  }
+	  
+	  var urlencoded = url;
 
-	  var url = selectedOperation.hasHttpUrl + "?query=" + JSON.stringify(json);
-	  var urlencoded = selectedOperation.hasHttpUrl + "?query=" + encodeURIComponent(JSON.stringify(json));
+	  var paramsdata = $('#tableparams2').DataTable().rows().data();
+	  if (selectedOperation.hasInput) {
+		  var json = {}
+		 
+		  if ((url !== null) && url.endsWith('mock')) {
+			  
+			  var paramvalue = $('#selectboxscenarionagent').val();
+			  json["scenarioagent"] = paramvalue;
+
+		  } else {
+			  
+			  if (selectedScenario.type === 'composed') {
+				  json["agent"] = selectedScenario.id;
+			  } 
+		  
+			  var numberInParams = selectedOperation.hasInput.length;
+			  console.log("no " + numberInParams);
+			  for (i=0; i<numberInParams; i++) {
+				  var paramkey = paramsdata[i][1];
+				  var paramvalue = $('#inparamvalue' + i).val();
+				  // the next line does not work since it adds "paramkey": "...Berlin" instead of "city": "...Berlin"
+				  //json.paramkey = paramvalue;  
+				  console.log("key=" + paramkey + ", value=" + paramvalue);
+				  
+				  if (paramvalue && paramvalue.length > 0) {
+					
+				    try {
+				        paramvalue = JSON.parse(paramvalue);
+				    } catch (e) {
+				    }
+					  
+				  	json["" + paramkey] = paramvalue;
+			  	}
+			  }
+		  }
+		  
+		  url += "?query=" + JSON.stringify(json);
+		  urlencoded += "?query=" + encodeURIComponent(JSON.stringify(json));
+  	  }
+
 	  $("#linkforaction").prop('href', urlencoded);
 	  $("#linkforaction").text(url);
   });

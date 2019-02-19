@@ -8,14 +8,17 @@ import org.json.JSONObject;
 import org.json.JSONStringer;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
-import uk.ac.cam.cares.jps.base.query.ScenarioKeys;
-//import uk.ac.cam.cares.jps.base.query.test.TestQuery;
-import uk.ac.cam.cares.jps.scenario.ScenarioAgent;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 
 public class TestScenarios extends TestCase {
+	
+	// TODO-AE SC 20190218 what if the plant file is removed from claudius as OWL file and only triple store are used; find a solution such that test don't fail in future
+	//private static final String PLANT = "http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl";
+	private static final String PLANT = "http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#Northwest_Kabul_Power_Plant_Afghanistan";
+	
 	
 	private void putToThreadContext() {
 		ThreadContext.put("scenarioname", "abc");
@@ -26,127 +29,7 @@ public class TestScenarios extends TestCase {
 		assertEquals("abc", ThreadContext.get("scenarioname"));
 	}
 	
-	public void testDividePath() {
-		
-		// auto generate a scenario id
-		String path = "/";
-		String[] actual= new ScenarioAgent().dividePath(path);
-		assertNotNull(actual[0]);
-		assertNull(actual[1]);
-		
-		// throws an exception because path (without /) does not contain at least 10 characters
-		path = "/123456789";
-		try {
-			new ScenarioAgent().dividePath(path);
-		} catch (Exception e) {
-		}
-	
-		path = "/1234567890";
-		actual= new ScenarioAgent().dividePath(path);
-		assertEquals("1234567890", actual[0]);
-		assertNull(actual[1]);
-		
-		path = "/1234567890/any/fancy/operation";
-		actual= new ScenarioAgent().dividePath(path);
-		assertEquals("1234567890", actual[0]);
-		assertEquals("/any/fancy/operation", actual[1]);
-	}
-	
-	public void testEmissionTestAgentQueryEmission() {
-		
-		String plant = "http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl";		
-		
-		String json = new JSONStringer().object()
-				.key("powerplant").value(plant)
-				.endObject().toString();
-
-		String result = AgentCaller.executeGetWithJsonParameter("/JPS_SCENARIO/EmissionTestAgent/queryemission", json);
-		System.out.println(result);
-	}
-	
-	public void testCreateScenarioAndCallEmissionTestAgentRead() throws JSONException {
-		
-		//String plant = AgentLocator.getCurrentJpsAppDirectory(this)+"/testres/Northwest_Kabul_Power_Plant_Afghanistan.owl";
-		String plant = "http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl";		
-		
-		String json = new JSONStringer().object()
-				.key(ScenarioKeys.SCENARIO_AGENT_OPERATION).value("/JPS_SCENARIO/EmissionTestAgent/read")
-				.key("powerplant").value(plant)
-				.endObject().toString();
-		
-		String result = AgentCaller.executeGetWithJsonParameter("/JPS_SCENARIO/scenario/test1234567/call", json);
-		assertTrue(result.startsWith("<rdf:RDF"));
-	}
-	
-	public void TODOtestCreateScenarioAndCallWeatherAgentWithCreatingScenarioDescription() throws JSONException {
-		
-		String city = "http://dbpedia.org/resource/Berlin";		
-		
-		String json = new JSONStringer().object()
-				.key(ScenarioAgent.SCENARIO_AGENT).value("http://www.theworldavatar.com/kb/agents/Service__OpenWeatherMap.owl")
-				.key(ScenarioKeys.SCENARIO_AGENT_OPERATION).value("http://www.theworldavatar.com/JPS_COMPOSITION/CityToWeather")
-				.key("city").value(city)
-				.endObject().toString();
-		
-		String result = AgentCaller.executeGetWithJsonParameter("/JPS_SCENARIO/scenario/test1234567/call", json);
-		assertTrue(result.startsWith("<rdf:RDF"));
-	}
-	
-	public void testCreateScenarioAndCallEmissionAgentCreatingScenarioDescription() throws JSONException {
-		
-		createScenarioAndCallEmissionAgentCreatingScenarioDescription("scenabcemissionagenttest");
-	}
-	
-	public static void createScenarioAndCallEmissionAgentCreatingScenarioDescription(String scenarioName) throws JSONException {
-		String agent = AgentLocator.getCurrentJpsAppDirectory(new TestScenarios()) + "/testres/Service__EmissionTest.owl";
-		String plant = "http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl";	
-		
-		String json = new JSONStringer().object()
-				.key(ScenarioAgent.SCENARIO_AGENT).value(agent)
-				.key(ScenarioKeys.SCENARIO_AGENT_OPERATION).value("http://localhost:8080/JPS_SCENARIO/EmissionTestAgent/queryemission")
-				.key("powerplant").value(plant)
-				.endObject().toString();
-		
-		String result = AgentCaller.executeGetWithJsonParameter("/JPS_SCENARIO/scenario/" + scenarioName + "/call", json);
-		List<JSONObject> list = JenaResultSetFormatter.convertToSimplifiedList(result);
-		assertEquals("15.75", list.get(0).get("emissionvaluenum"));
-		
-		result = AgentCaller.executeGetWithJsonParameter("/JPS_SCENARIO/scenario/" + scenarioName + "/queryemission", json);
-		list = JenaResultSetFormatter.convertToSimplifiedList(result);
-		assertEquals("15.75", list.get(0).get("emissionvaluenum"));
-	}
-	
-	public void testCreateScenarioAndCallEmissionTestAgentQueryEmission() throws JSONException {
-		
-		//String plant = AgentLocator.getCurrentJpsAppDirectory(this)+"/testres/Northwest_Kabul_Power_Plant_Afghanistan.owl";
-		String plant = "http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl";		
-		
-		String json = new JSONStringer().object()
-				.key(ScenarioKeys.SCENARIO_AGENT_OPERATION).value("/JPS_SCENARIO/EmissionTestAgent/queryemission")
-				.key("powerplant").value(plant)
-				.endObject().toString();
-		
-		String result = AgentCaller.executeGetWithJsonParameter("/JPS_SCENARIO/scenario/test1234567/call", json);
-		List<JSONObject> list = JenaResultSetFormatter.convertToSimplifiedList(result);
-		assertEquals("15.75", list.get(0).get("emissionvaluenum"));
-	}
-	
-	public void testCreateScenarioAndCallEmissionTestAgentIncreaseEmission() throws JSONException {
-		
-		String plant = "http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl";		
-		
-		String json = new JSONStringer().object()
-				.key(ScenarioKeys.SCENARIO_AGENT_OPERATION).value("/JPS_SCENARIO/EmissionTestAgent/increaseemission")
-				.key("powerplant").value(plant)
-				.key("increment").value("2")
-				.endObject().toString();
-		
-		String result = AgentCaller.executeGetWithJsonParameter("/JPS_SCENARIO/scenario/test1234567/call", json);
-		
-		System.out.println(result);
-	}
-	
-	public void testJsonQuery() throws JSONException {
+	public void testJsonQueryOnJpsBase() throws JSONException {
 		
 		JSONObject json = new JSONObject();
 		json.put("key1", "value1");
@@ -157,5 +40,127 @@ public class TestScenarios extends TestCase {
 		
 		assertEquals("value1", json.get("key1"));
 		assertEquals("value2", json.get("key2"));
+	}
+	
+	private void assertEmissionValue(String scenario, String plant, double expected) {
+		
+		String json = new JSONStringer().object()
+				.key("plant").value(plant)
+				.endObject().toString();
+		
+		String result = new ScenarioClient().call(scenario, "/JPS_BASE/EmissionTestAgent/queryemission", json);
+		
+		List<JSONObject> list = JenaResultSetFormatter.convertToSimplifiedList(result);
+		double actual = list.get(0).getDouble("emissionvaluenum");
+		assertEquals(expected, actual);
+	}
+	
+	private String setEmissionValue(String scenario, String plant, double emissionValue) {
+		String json = new JSONStringer().object()
+				.key("plant").value(plant)
+				.key("emission").value(emissionValue)
+				.endObject().toString();
+		
+		return new ScenarioClient().call(scenario, "/JPS_BASE/EmissionTestAgent/setemission", json);
+	}
+
+	public void testCreateScenarioAndCallEmissionTestAgentRead() throws JSONException {
+		
+		String json = new JSONStringer().object()
+				.key("plant").value(PLANT)
+				.endObject().toString();
+		
+		String result = new ScenarioClient().call("test1234567", "/JPS_BASE/EmissionTestAgent/read", json);
+		assertTrue(result.startsWith("<rdf:RDF"));
+	}
+	
+	public void testCreateAndDeleteScenario() {
+		
+		String scenarioName = "test1234567b";
+		//new ScenarioAgent().deleteScenario(scenarioName);
+		
+		setEmissionValue(scenarioName, PLANT, 100.00);
+		String path = ScenarioHelper.getScenarioPath(scenarioName) + "/delete";
+		System.out.println(path);
+		//AgentCaller.executeGet(path);
+		
+		// TODO-AE SC 20190219 problems with deleting OWL files --> problem might be caused by Jena. 
+		// deletion is also necessary to clean up the test cases
+		throw new RuntimeException("deletion of files is not solved yet");
+	}
+	
+	public void testCreateScenarioAndCallEmissionTestAgentSet() throws JSONException {
+	
+		String scenarioName = "test1234567d";
+		double emissionValue = 114.07;
+		setEmissionValue(scenarioName, PLANT, emissionValue);
+		assertEmissionValue(scenarioName, PLANT, emissionValue);
+	}
+	
+	public void testCreateScenarioAndCallEmissionTestAgentAdd() throws JSONException {
+		
+		String scenarioName = "test1234567e";
+		double emissionValue = 167.01;
+		setEmissionValue(scenarioName, PLANT, emissionValue);
+		
+		String json = new JSONStringer().object()
+				.key("plant").value(PLANT)
+				.key("increment").value("3")
+				.endObject().toString();
+		new ScenarioClient().call(scenarioName, "/JPS_BASE/EmissionTestAgent/add", json);
+		
+		assertEmissionValue(scenarioName, PLANT, 170.01);
+	}
+	
+	public void testCreateScenarioAndCallEmissionTestAgentMultiply() throws JSONException {
+		
+		String scenarioName = "test1234567f";
+		double emissionValue = 100;
+		setEmissionValue(scenarioName, PLANT, emissionValue);
+		
+		String json = new JSONStringer().object()
+				.key("plant").value(PLANT)
+				.key("factor").value("2.511")
+				.endObject().toString();
+		new ScenarioClient().call(scenarioName, "/JPS_BASE/EmissionTestAgent/multiply", json);
+				
+		assertEmissionValue(scenarioName, PLANT, 251.1);
+	}
+	
+	/**
+	 * This test case calls the change method of EmissionTestAgent with the formula "+10.5*2-22"
+	 * which lead to 2 further recursive calls of the change method. This test case
+	 * shows that the scenario mechanism works even if several agents call each other 
+	 * (all the agents involved in this test case are of the same type EmissionTestAgent).
+	 * 
+	 * @throws JSONException
+	 */
+	public void testCreateScenarioAndCallEmissionTestAgentChange() throws JSONException {
+		
+		String scenarioName = "test1234567g";
+		double emissionValue = 100;
+		setEmissionValue(scenarioName, PLANT, emissionValue);
+		
+		String json = new JSONStringer().object()
+				.key("plant").value(PLANT)
+				.key("formula").value("+10.5*2-22")
+				.endObject().toString();
+		new ScenarioClient().call(scenarioName, "/JPS_BASE/EmissionTestAgent/change", json);
+				
+		assertEmissionValue(scenarioName, PLANT, 199);
+	}
+	
+	public void testCreateScenarioAndCallWeatherAgent() throws JSONException {
+		
+		String scenarioName = "test1234567h";
+
+		String json = new JSONStringer().object()
+				.key("city").value("http://dbpedia.org/resource/Berlin")
+				.endObject().toString();
+		String result = new ScenarioClient().call(scenarioName, "http://www.theworldavatar.com/JPS_COMPOSITION/CityToWeather", json);
+		
+		System.out.println(result);
+		JSONObject jo = new JSONObject(result);
+		assertTrue(jo.has("weatherstate"));
 	}
 }

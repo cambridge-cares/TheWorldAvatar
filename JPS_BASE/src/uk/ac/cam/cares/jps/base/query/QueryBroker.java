@@ -1,29 +1,32 @@
 package uk.ac.cam.cares.jps.base.query;
 
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.apache.jena.ontology.OntModel;
-import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 import org.apache.logging.log4j.ThreadContext;
 import org.json.JSONStringer;
 
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueServer;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.log.LogServer;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 
 public class QueryBroker {
 	
 	public String readFile(String urlOrPath) {
 		
-		String scenarioURL = ThreadContext.get(ScenarioKeys.SCENARIO_URL);	
+		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	
 		LogServer.debug(this, "reading file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
 		
 		// call the scenario agent if a scenario url is set in the input
@@ -33,20 +36,33 @@ public class QueryBroker {
 			String url = scenarioURL + "/read";
 			
 			String json = new JSONStringer().object()
-					.key(ScenarioKeys.SCENARIO_RESOURCE).value(urlOrPath)
+					.key(JPSConstants.SCENARIO_RESOURCE).value(urlOrPath)
 					.endObject().toString();
 			
 			return AgentCaller.executeGetWithURLAndJSON(url, json);
 		}
 		
 		if (urlOrPath.startsWith("http")) {
+			
+			// Apache HTTP client applies percentage encoding to any URL.
+			// Usually, this is not a problem when requesting an OWL file. 
+			// But if requesting http://www.theworldavatar.com/kb/agents/Service__OpenWeatherMap.owl#Service 
+			// then percentage encoding results into http://www.theworldavatar.com/kb/agents/Service__OpenWeatherMap.owl%23Service
+			// and a consecutive Tomcat error.
+			// To avoid %23 instead of #, we simply skip the #-part.
+			int i = urlOrPath.lastIndexOf("#");
+			if (i >= 0) {
+				urlOrPath = urlOrPath.substring(0, i);
+			}
+			
 			return AgentCaller.executeGetWithURL(urlOrPath);
 		} else {
-			return readFileLocally(urlOrPath);
+			String localFile = ScenarioHelper.cutHash(urlOrPath);
+			return readFileLocally(localFile);
 		}
 	}
 	
-	private String readFileLocally(String path) {
+	public String readFileLocally(String path) {
 		
 		try {
 			return new String(Files.readAllBytes(Paths.get(path)));
@@ -54,10 +70,10 @@ public class QueryBroker {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		}
 	}
-	
+		
 	public String queryFile(String urlOrPath, String sparqlQuery) {
 		
-		String scenarioURL = ThreadContext.get(ScenarioKeys.SCENARIO_URL);	
+		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	
 		LogServer.debug(this, "querying file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
 		
 		// call the scenario agent if a scenario url is set in the input
@@ -67,8 +83,8 @@ public class QueryBroker {
 			String url = scenarioURL + "/query";
 			
 			String json = new JSONStringer().object()
-					.key(ScenarioKeys.SCENARIO_RESOURCE).value(urlOrPath)
-					.key(ScenarioKeys.QUERY_SPARQL_QUERY).value(sparqlQuery)
+					.key(JPSConstants.SCENARIO_RESOURCE).value(urlOrPath)
+					.key(JPSConstants.QUERY_SPARQL_QUERY).value(sparqlQuery)
 					.endObject().toString();
 			
 			return AgentCaller.executeGetWithURLAndJSON(url, json);
@@ -78,27 +94,94 @@ public class QueryBroker {
 		if (urlOrPath.startsWith("http")) {
 			resultSet = JenaHelper.queryUrl(urlOrPath, sparqlQuery);
 		} else {
-			resultSet = JenaHelper.queryFile(urlOrPath, sparqlQuery);
+			String localFile = ScenarioHelper.cutHash(urlOrPath);
+			resultSet = JenaHelper.queryFile(localFile, sparqlQuery);
 		}
 		
 		return JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
 	}
 	
-	public String updateFile(String urlOrPath, String sparqlUpdate) {
+	/**
+	 * @param urlOrPath
+	 * @param content
+	 * @return the URL to access the written file
+	 */
+	public String writeFile(String urlOrPath, String content) {
 		
-		String scenarioURL = ThreadContext.get(ScenarioKeys.SCENARIO_URL);	
+		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	
+		LogServer.debug(this, "writing file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
+		
+		if (scenarioURL != null) {
+			
+			String[] parts = ScenarioHelper.dividePath(scenarioURL);
+			String scenarioName = parts[0];
+			String scenarioBucket = ScenarioHelper.getScenarioBucket(scenarioName);
+			String path = ScenarioHelper.getFileNameWithinBucket(urlOrPath, scenarioBucket);
+
+			// Don't use HTTP GET to call the scenario agent as is done in method readFile().
+			// In future, HTTP PUT might be used to call the scenario agent on a different server for writing a file.
+			// However, so far the content is written locally.
+			writeFileLocally(path, content);
+			return path;
+		}
+		
+		if (urlOrPath.startsWith("http")) {
+			// In future, HTTP PUT might be used to write a file on a remote server.
+			throw new JPSRuntimeException("writing file via HTTP is not supported yet, urlOrPath=" + urlOrPath);
+		}
+		
+		writeFileLocally(urlOrPath, content);
+		return urlOrPath;
+	}
+	
+	public static void writeFileLocally(String path, String content) {
+		
+	    FileWriter fileWriter = null;
+	    
+	    try {
+			fileWriter = new FileWriter(path);
+			fileWriter.write(content);
+			fileWriter.close();
+		} catch (IOException e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		}   
+	}
+	
+	public static void writeFileLocally2(String path, String content) {
+		FileOutputStream outputStream = null;
+	    try {
+		    outputStream = new FileOutputStream(path);
+		    byte[] strToBytes = content.getBytes();
+			outputStream.write(strToBytes);
+		} catch (IOException e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		} finally {
+			try {
+				outputStream.close();
+			} catch (IOException e) {
+				throw new JPSRuntimeException(e.getMessage(), e);
+			}
+		}
+	}
+	
+	public void updateFile(String urlOrPath, String sparqlUpdate) {
+		
+		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	
 		LogServer.debug(this, "updating file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
 		
+		
+		// TODO-AE SC 20190218 URGENT
 		// call the scenario agent if a scenario url is set in the input
 		if (scenarioURL != null)  {
 			String url = scenarioURL + "/update";
 			
 			String json = new JSONStringer().object()
-					.key(ScenarioKeys.SCENARIO_RESOURCE).value(urlOrPath)
-					.key(ScenarioKeys.QUERY_SPARQL_UPDATE).value(sparqlUpdate)
+					.key(JPSConstants.SCENARIO_RESOURCE).value(urlOrPath)
+					.key(JPSConstants.QUERY_SPARQL_UPDATE).value(sparqlUpdate)
 					.endObject().toString();
 			
-			return AgentCaller.executeGetWithURLAndJSON(url, json);
+			AgentCaller.executeGetWithURLAndJSON(url, json);
+			return;
 		}
 		
 		// TODO-AE SC for updating a remote file, first load the content and update it. But the update can only
@@ -109,28 +192,14 @@ public class QueryBroker {
 			URI uri = AgentCaller.createURI(urlOrPath);
 			String rootPath = KeyValueServer.get("absdir.root");
 			localFile = rootPath + uri.getPath();
+			localFile = ScenarioHelper.cutHash(localFile);
 		}
 		
 		LogServer.debug(this, "updating local file=" + localFile);
 		
-		
-		OntModel model =  ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
-		
-		UpdateRequest request = UpdateFactory.create("bla");
-		
-		
-		
-//		ResultSet resultSet = null;
-//		if (urlOrPath.startsWith("http")) {
-//			resultSet = JenaHelper.queryUrl(urlOrPath, sparqlUpdate);
-//		} else {
-//			resultSet = JenaHelper.queryFile(urlOrPath, sparqlUpdate);
-//		}
-//		
-//		return JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-		
-		return null;
+		UpdateRequest request = UpdateFactory.create(sparqlUpdate);
+		OntModel model = JenaHelper.createModel(localFile);	
+		UpdateAction.execute(request, model);
+		JenaHelper.writeAsFile(model, localFile);
 	}
-	
-
 }
