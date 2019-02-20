@@ -39,20 +39,15 @@ public class MenAgent extends HttpServlet {
 		logger.info("MENAgent start");
 		
 		JSONObject jo = AgentCaller.readJsonParameter(req);			
-		String transportationModes = jo.getString("transportationModes");
+		String transportationModes = jo.optString("transportationmodes", "http://www.jparksimulator.com/kb/sgp/jurongisland/MaterialTransportMode.owl");
 		
-		if (jo.has("ChemicalPlants")) {
+		if (jo.has("chemicalplants")) {
 			
-			String chemicalPlants = jo.getString("ChemicalPlants");
-			
-			logger.info("MYMY chemicalPlant =" + chemicalPlants);
-			
+			String chemicalPlants = jo.getString("chemicalplants");			
 			String[] arr=chemicalPlants.split(",");
 			cpirilist.addAll(Arrays.asList(arr));
 		} else {
 			String ecoindustrialpark = jo.getString("ecoindustrialpark");
-			
-			logger.info("MYMY ecoindustrialpark =" + ecoindustrialpark);
 			
 			String chemicalplantInfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#> " 
 					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -72,34 +67,38 @@ public class MenAgent extends HttpServlet {
 	
 				Literal cpiri = qs_p.getLiteral("iri");
 				String irilist = cpiri.getString();
+				irilist = irilist.replace(" ", "");
+				irilist = irilist.replace("\n", "");
+				irilist = irilist.replace("\r", "");
+				irilist = irilist.replace("\t", "");
 	
 				cpirilist.add(irilist);
 			}
 		}
 		
-		String carbonTax = jo.getString("CarbonTax");
-		String interestFactor = jo.getString("InterestFactor");
-		String annualCostFactor = jo.getString("AnnualCostFactor");
-		String internationalMarketPriceFactor = jo.getString("InternationalMarketPriceFactor");
-		String internationalMarketLowestPriceApplied = jo.getString("InternationalMarketLowestPriceApplied");
+		String carbonTax = "" + jo.getDouble("carbontax");
+		String interestFactor = "" + jo.getDouble("interestfactor");
+		String annualCostFactor = "" + jo.getDouble("annualcostfactor");
+		String internationalMarketPriceFactor = "" + jo.optDouble("internationalmarketpricefactor", 1.05);
+		String internationalMarketLowestPriceApplied = jo.optString("internationalmarketlowestpriceapplied", "false");
 		
 		MenCalculationParameters parameters = new MenCalculationParameters(Double.parseDouble(carbonTax), Double.parseDouble(interestFactor), Double.parseDouble(annualCostFactor), Double.parseDouble(internationalMarketPriceFactor), Boolean.parseBoolean(internationalMarketLowestPriceApplied));
 		MenDataProvider converter = new MenDataProvider();
 		MenResult actual = converter.startCalculation(parameters,transportationModes,cpirilist);
 		
 		JSONObject result = new JSONObject();
-		result.put("objectiveValue",String.valueOf(actual.objValue));
-		result.put("totalMaterialPurchaseCost",String.valueOf(actual.totalMaterialPurchaseCost));
-		result.put("totalMaterialPurchaseCostInternationalMarket",String.valueOf(actual.totalMaterialPurchaseCostInternationalMarket));
-		result.put("totalTransportationCost",String.valueOf(actual.totalTransportationCost));
-		result.put("totalCO2Emission",String.valueOf(actual.totalCO2Emission));
-		result.put("totalCO2EmissionCost",String.valueOf(actual.totalC02EmissionCost));
-		result.put("totalInstallationCost",String.valueOf(actual.totalInstallationCost));
+		//result.put("objectivevalue",String.valueOf(actual.objValue));
+		result.put("totalmaterialpurchasecost",String.valueOf(actual.totalMaterialPurchaseCost));
+		result.put("totalmaterialpurchasecostinternationalmarket",String.valueOf(actual.totalMaterialPurchaseCostInternationalMarket));
+		result.put("totaltransportationcost",String.valueOf(actual.totalTransportationCost));
+		result.put("totalco2emission",String.valueOf(actual.totalCO2Emission));
+		result.put("totalco2emissioncost",String.valueOf(actual.totalC02EmissionCost));
+		result.put("totalinstallationcost",String.valueOf(actual.totalInstallationCost));
 		
-		
-		
-		logger.info("MYMY MenAgent result =" + result.toString());
-		
+		double totalCost = actual.totalMaterialPurchaseCost + actual.totalMaterialPurchaseCostInternationalMarket 
+				+ actual.totalTransportationCost + actual.totalC02EmissionCost + actual.totalInstallationCost;
+		result.put("totalcost", totalCost);
+			
 		AgentCaller.printToResponse(result.toString(), resp);
 
 		cpirilist.clear();

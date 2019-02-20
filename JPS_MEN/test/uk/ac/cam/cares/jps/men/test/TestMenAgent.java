@@ -76,22 +76,22 @@ public class TestMenAgent extends TestCase {
 	public void testCallAgent() throws IOException, URISyntaxException {
 		
 		JSONObject jo = new JSONObject();
-		jo.put("transportationModes", getTransportationFile());
-		//jo.put("ChemicalPlants", getChemicalPlants());
+		jo.put("transportationmodes", getTransportationFile());
+		//jo.put("chemicalplants", getChemicalPlants());
 		jo.put("ecoindustrialpark", "http://www.theworldavatar.com/kb/sgp/jurongisland/JurongIsland.owl");
-		jo.put("CarbonTax", getCarbonTax());
-		jo.put("InterestFactor", getInterestFactor());
-		jo.put("AnnualCostFactor", getAnnualCostFactor());
-		jo.put("InternationalMarketPriceFactor", getInternationalMarketPriceFactor());
-		jo.put("InternationalMarketLowestPriceApplied", getInternationalMarketLowestPrice());
+		jo.put("carbontax", getCarbonTax());
+		jo.put("interestfactor", getInterestFactor());
+		jo.put("annualcostfactor", getAnnualCostFactor());
+		jo.put("internationalmarketpricefactor", getInternationalMarketPriceFactor());
+		jo.put("internationalmarketlowestpriceapplied", getInternationalMarketLowestPrice());
 		
 		String resultAsString = AgentCaller.executeGetWithJsonParameter(getContextPathForJPSMen(), jo.toString());
 		
 		JSONObject result = new JSONObject(resultAsString);
-		Double ans4 = Double.valueOf(result.getString("totalTransportationCost"));//totalTransportationCost
-		Double ans5 = Double.valueOf(result.getString("totalCO2Emission"));//totalCO2Emission
-		Double ans6 = Double.valueOf(result.getString("totalCO2EmissionCost"));//totalCO2EmissionCost
-		Double ans7 = Double.valueOf(result.getString("totalInstallationCost"));//totalInstallationCost
+		Double ans4 = Double.valueOf(result.getString("totaltransportationcost"));//totalTransportationCost
+		Double ans5 = Double.valueOf(result.getString("totalco2emission"));//totalCO2Emission
+		Double ans6 = Double.valueOf(result.getString("totalco2emissioncost"));//totalCO2EmissionCost
+		Double ans7 = Double.valueOf(result.getString("totalinstallationcost"));//totalInstallationCost
 
 		assertEquals(22539.661189, ans4, 1.);
 		assertEquals(53.7127, ans5, 1.);

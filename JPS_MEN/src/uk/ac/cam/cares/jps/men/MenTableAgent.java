@@ -71,16 +71,16 @@ public class MenTableAgent extends HttpServlet {
 		
 		
 		// read form fields	
-		String carbontax="0.0";
-		String interestfactor = "1.0";
-		String intmarketpricefactor="0.0";
-		String intmarketlowestprice="0.0";
+		double carbontax = 0.0;
+		double interestfactor = 1.0;
+		double intmarketpricefactor = 0.0;
+		boolean intmarketlowestprice = false;
 		JSONArray annualfactor= null;
 		try {
 			
-			carbontax = "" + jogui.getDouble("CarbonTax");
-			intmarketpricefactor= "" + jogui.getDouble("InternationalMarketPriceFactor");
-			intmarketlowestprice = "" + jogui.getBoolean("InternationalMarketLowestPriceApplied");
+			carbontax = jogui.getDouble("CarbonTax");
+			intmarketpricefactor= jogui.getDouble("InternationalMarketPriceFactor");
+			intmarketlowestprice = jogui.getBoolean("InternationalMarketLowestPriceApplied");
 			annualfactor = jogui.getJSONArray("AnnualCostFactor");
 					
 		} catch (JSONException e1) {
@@ -107,27 +107,23 @@ public class MenTableAgent extends HttpServlet {
 		for (int time = 0; time < annualcostfactor.length; time++) {
 			
 			JSONObject jo = new JSONObject();
-			jo.put("transportationModes", getTransportationFile());
+			jo.put("transportationmodes", getTransportationFile());
 			jo.put("ecoindustrialpark", getChemicalPlants());
-			jo.put("CarbonTax", carbontax);
-			jo.put("InterestFactor", interestfactor);
-			jo.put("AnnualCostFactor", getAnnualCostFactor(time,annualcostfactor));
-			jo.put("InternationalMarketPriceFactor", intmarketpricefactor);
-			jo.put("InternationalMarketLowestPriceApplied", intmarketlowestprice);
+			jo.put("carbontax", carbontax);
+			jo.put("interestfactor", interestfactor);
+			jo.put("annualcostfactor", Double.valueOf(getAnnualCostFactor(time,annualcostfactor)));
+			jo.put("internationalmarketpricefactor", intmarketpricefactor);
+			jo.put("internationalmarketlowestpriceapplied", intmarketlowestprice);
 			
 			
 			String resultAsString = AgentCaller.executeGetWithJsonParameter(getContextPathForJPSMen(), jo.toString());
-			
-			
-			logger.info("MYMY result=" + resultAsString);
-			
-			
+
 			JSONObject result = new JSONObject(resultAsString);
-			Double totalMaterialPurchaseCost= Double.valueOf(result.getString("totalMaterialPurchaseCost"))/1000000000;
-			Double totalTransportationCost= Double.valueOf(result.getString("totalTransportationCost"))/1000;
-			Double totalCO2Emission= Double.valueOf(result.getString("totalCO2Emission"));
-			Double totalCO2EmissionCost= Double.valueOf(result.getString("totalCO2EmissionCost"))/1000;
-			Double totalInstallationCost= Double.valueOf(result.getString("totalInstallationCost"))/1000000;
+			Double totalMaterialPurchaseCost= Double.valueOf(result.getString("totalmaterialpurchasecost"))/1000000000;
+			Double totalTransportationCost= Double.valueOf(result.getString("totaltransportationcost"))/1000;
+			Double totalCO2Emission= Double.valueOf(result.getString("totalco2emission"));
+			Double totalCO2EmissionCost= Double.valueOf(result.getString("totalco2emissioncost"))/1000;
+			Double totalInstallationCost= Double.valueOf(result.getString("totalinstallationcost"))/1000000;
 			
 			tmpc.put(String.format("%.2f",totalMaterialPurchaseCost));
 			ttc.put(String.format("%.2f", totalTransportationCost));

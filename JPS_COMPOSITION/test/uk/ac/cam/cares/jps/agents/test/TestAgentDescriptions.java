@@ -17,6 +17,7 @@ public class TestAgentDescriptions extends TestCase {
 	private static final String JPS_BASE = "http://www.theworldavatar.com/JPS_BASE";
 	private static final String JPS_CO2EMISSIONS = "http://www.theworldavatar.com/JPS_CO2EMISSIONS";
 	private static final String JPS_COMPOSITION = "http://www.theworldavatar.com/JPS_COMPOSITION";
+	private static final String JPS_MEN = "http://www.theworldavatar.com/JPS_MEN";
 	private static final String JPS_SCENARIO = "http://www.theworldavatar.com/JPS_SCENARIO";
 	
 	private static final String WEATHER = "https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl";
@@ -226,13 +227,35 @@ public class TestAgentDescriptions extends TestCase {
 				.build();
 	}
 	
+	private Service createDescrForAgentADMSWithScenarioTest() {
+		return new ServiceBuilder()
+				.operation(null, JPS + "/ADMSCoordinationAgentWithScenario")
+				.input("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType", "region")
+				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
+				.input("https://como.cheng.cam.ac.uk/kb/ontochem.owl#ReactionMechanism", "reactionmechanism")
+				.output("https://www.w3.org/ns/csvw#Table", "dispersiongrid")
+				.output("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType", true, "buildings", true)
+				.build();
+	}
+	
+	private Service createDescrForAgentMEN() {
+		return new ServiceBuilder()
+				.operation(null, JPS_MEN + "/MENAgent")
+				.input("http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#Eco-industrialPark", "ecoindustrialpark")
+				.input("http://www.theworldavatar.com/ontology/Market.owl#Price", "carbontax")
+				.input("http://www.theworldavatar.com/ontology/Market.owl#InterestFactor", "interestfactor")
+				.input("http://www.theworldavatar.com/ontology/Market.owl#CostFactor", "annualcostfactor")
+				.output("http://www.theworldavatar.com/ontology/Market.owl#Cost", "totalcost")
+				.build();
+	}
+	
 	public void testDescription() throws URISyntaxException, FileNotFoundException {
 		
-		Service service = createDescrForAgentEmissionTest();
+		Service service = createDescrForAgentMEN();
 		
 		String json = new Gson().toJson(service);
 		System.out.println(json);
 		
-		backAndforthAndWrite(service, "_EmissionTestAgent");
+		backAndforthAndWrite(service, "_MEN");
 	}
 }
