@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.scenario;
+package uk.ac.cam.cares.jps.base.scenario;
 
 import java.io.IOException;
 
@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.ThreadContext;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.ScenarioKeys;
 
 /**
  * All JPS agents that want to make use of scenario have to inherit from this servlet class.
@@ -47,9 +47,9 @@ public abstract class JPSHttpServlet extends HttpServlet {
 	 */
 	public static void enableScenario(HttpServletRequest request) {
 		JSONObject jo = AgentCaller.readJsonParameter(request);
-		if (!jo.isNull(ScenarioKeys.SCENARIO_URL)) {
-			String scenarioURL = jo.getString(ScenarioKeys.SCENARIO_URL);
-			ThreadContext.put(ScenarioKeys.SCENARIO_URL, scenarioURL);
+		if (!jo.isNull(JPSConstants.SCENARIO_URL)) {
+			String scenarioURL = jo.getString(JPSConstants.SCENARIO_URL);
+			ThreadContext.put(JPSConstants.SCENARIO_URL, scenarioURL);
 		}
 	}
 	
@@ -59,6 +59,6 @@ public abstract class JPSHttpServlet extends HttpServlet {
 	 * must be called whenever enable was called - even in case of an exception during any get, put etc. method of a servlet. 
 	 */
 	public static void disableScenario() {
-		ThreadContext.remove(ScenarioKeys.SCENARIO_URL);
+		ThreadContext.remove(JPSConstants.SCENARIO_URL);
 	}
 }

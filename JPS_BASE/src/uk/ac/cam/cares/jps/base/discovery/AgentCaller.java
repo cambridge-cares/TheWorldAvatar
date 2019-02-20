@@ -5,16 +5,22 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -217,13 +223,15 @@ public class AgentCaller {
 				buf.append(":").append(request.getURI().getPort());
 			}
 			
-			buf.append(request.getURI().getPath())
-					.append(" DECODED ?").append(request.getURI().getQuery());
+			buf.append(request.getURI().getPath());
+			String query = request.getURI().getQuery();
+			if (query != null) {
+				buf.append(" DECODED ?").append(request.getURI().getQuery());
+			}
 			logger.info(buf.toString());
-			
 			// use the next line to log the percentage encoded query component
 			//logger.info(request.toString());
-			
+		
 			HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 			
 			if (httpResponse.getStatusLine().getStatusCode() != 200) {
@@ -302,5 +310,18 @@ public class AgentCaller {
 		} catch (IOException e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		}	
+	}
+	
+	public static String encodePercentage(String s) {
+		Charset charset = Charset.forName("UTF-8");
+		List<BasicNameValuePair> params = Arrays.asList(new BasicNameValuePair("query", s));
+		String encoded = URLEncodedUtils.format(params, charset);
+		return encoded.substring(6);
+	}
+
+	public static String decodePercentage(String s) {
+		Charset charset = Charset.forName("UTF-8");
+		List<NameValuePair> pair = URLEncodedUtils.parse("query="+s, charset);
+		return pair.get(0).getValue();
 	}
 }

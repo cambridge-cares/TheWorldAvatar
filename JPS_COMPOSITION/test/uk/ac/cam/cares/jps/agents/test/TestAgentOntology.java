@@ -10,11 +10,13 @@ import com.google.gson.Gson;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
+import uk.ac.cam.cares.jps.agents.ontology.JSONConverter;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceBuilder;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceReader;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceWriter;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.KeyValueServer;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
 import uk.ac.cam.cares.jps.composition.servicemodel.Operation;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
@@ -357,7 +359,7 @@ public class TestAgentOntology extends TestCase {
 		//new ServiceWriter().writeAsOwlFile(service, "Op2", "C:\\Users\\Andreas\\TMP\\newAgentsMSM");
 	}
 	
-	public void testJSONSerialization() {
+	public void testJSONSerializationWithGson() {
 		
 		Service compositeAgent = new ServiceBuilder()
 				.operation(null, "http://www.theworldavatar.com/Composite_Service_ODsMpRv")
@@ -379,6 +381,17 @@ public class TestAgentOntology extends TestCase {
 		MessagePart part = new MessagePart();
 		part.setName("hello");
 		json = new Gson().toJson(part);
+		System.out.println(json);
+	}
+	
+	public void testJSONSerializationSimplifiedWithConverter() throws URISyntaxException {
+		
+		String url = "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service";
+		String owl = new QueryBroker().readFile(url);
+		List<Service> serviceList = new ServiceReader().parse(owl, null);
+		Service compositeAgent = serviceList.get(0);
+		
+		String json = JSONConverter.convertToSimplifiedJson(compositeAgent);
 		System.out.println(json);
 	}
 }

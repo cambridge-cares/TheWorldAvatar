@@ -211,4 +211,35 @@ public class TestAgentWebAPI extends TestCase {
 		// TODO: The result returned from this test is not in the form of a JSON Object 
 		System.out.println("result=\n" + result);
 	}
+	
+	public void testDescribeInJson() throws JSONException, URISyntaxException {
+			
+		String json = new AgentWebAPI().getAgentsInJson();
+		JSONObject jo = new JSONObject(json);
+		String firstAgent =  jo.getJSONArray("result").getString(0);
+		
+		json = new AgentWebAPI().describeInJson(firstAgent);
+		System.out.println(json);
+		jo = new JSONObject(json);
+		assertNotNull(jo.get("id"));
+		assertNotNull(jo.getJSONArray("service").getJSONObject(0).getJSONObject("hasOperation"));
+	}
+	
+	public void testGetAgentsInJson() throws JSONException {
+		String json = new AgentWebAPI().getAgentsInJson();
+		System.out.println(json);
+		
+		JSONObject jo = new JSONObject(json);
+		int numberOfAgents = jo.getJSONArray("result").length();
+		assertTrue(numberOfAgents > 0);
+	}
+	
+	public void testGetAgentDescriptionsInJson() throws JSONException {
+		String json = new AgentWebAPI().getAgentDescriptionsInJson();
+		System.out.println(json);
+		
+		JSONObject jo = new JSONObject(json);
+		int numberOfAgents = jo.getJSONArray("result").length();
+		assertTrue(numberOfAgents > 0);
+	}
 }
