@@ -15,9 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
-import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
-import uk.ac.cam.cares.jps.base.discovery.Parameter;
 
 
 
@@ -68,36 +65,27 @@ public class MenTableAgent extends HttpServlet {
 		logger.info("MEN_Table Agent start");
 		request.setCharacterEncoding("UTF-8");
 		
-		String jsonString = request.getParameter("agentrequest");
 		
-		logger.info("jsonstring= "+jsonString);
-		
+		JSONObject jogui = AgentCaller.readJsonParameter(request);	
+		logger.info("jsonstring= "+jogui);
 		
 		
 		// read form fields	
-		JSONArray queryresult = null;
 		String carbontax="0.0";
 		String interestfactor = "1.0";
 		String intmarketpricefactor="0.0";
 		String intmarketlowestprice="0.0";
 		JSONArray annualfactor= null;
-		JSONObject carbontaxobj;
 		try {
-			queryresult = new JSONObject(jsonString).getJSONArray("inputParameters");
-			carbontaxobj = queryresult.getJSONObject(0);
-			carbontax = "" + carbontaxobj.getDouble("value");
-			logger.info("carbontaxobj= "+carbontaxobj);
-			logger.info("value= "+carbontax);
-			intmarketpricefactor= "" + queryresult.getJSONObject(2).getDouble("value");
-			intmarketlowestprice = "" + queryresult.getJSONObject(3).getBoolean("value");
-			annualfactor=queryresult.getJSONObject(4).getJSONArray("value");
 			
+			carbontax = "" + jogui.getDouble("CarbonTax");
+			intmarketpricefactor= "" + jogui.getDouble("InternationalMarketPriceFactor");
+			intmarketlowestprice = "" + jogui.getBoolean("InternationalMarketLowestPriceApplied");
+			annualfactor = jogui.getJSONArray("AnnualCostFactor");
+					
 		} catch (JSONException e1) {
 			logger.error(e1.getMessage(), e1);
 		}
-
-		int sizeofparameterjson= queryresult.length();
-		logger.info("valueof parameter size= "+sizeofparameterjson);
 		
 		String[] annualcostfactor= new String[annualfactor.length()];
 		for (int i=0; i<annualfactor.length(); i++) {
@@ -118,36 +106,28 @@ public class MenTableAgent extends HttpServlet {
 		
 		for (int time = 0; time < annualcostfactor.length; time++) {
 			
-			AgentRequest agrequest = new AgentRequest();
-			Parameter param = new Parameter("transportationModes", getTransportationFile());
-			agrequest.getInputParameters().add(param);
-
-			Parameter param2 = new Parameter("eco-industrialpark", getChemicalPlants());
-			agrequest.getInputParameters().add(param2);
-
-			// additional Parameters --> five parameters
-			Parameter param3 = new Parameter("CarbonTax", carbontax);
-			agrequest.getInputParameters().add(param3);
-
-			Parameter param4 = new Parameter("InterestFactor", interestfactor);
-			agrequest.getInputParameters().add(param4);
-
-			Parameter param5 = new Parameter("AnnualCostFactor", getAnnualCostFactor(time,annualcostfactor));
-			agrequest.getInputParameters().add(param5);
-
-			Parameter param6 = new Parameter("InternationalMarketPriceFactor", intmarketpricefactor);
-			agrequest.getInputParameters().add(param6);
-
-			Parameter param7 = new Parameter("InternationalMarketLowestPriceApplied", intmarketlowestprice);
-			agrequest.getInputParameters().add(param7);
-
-			AgentResponse resp = AgentCaller.callAgent(getContextPathForJPSMen(), agrequest);
+			JSONObject jo = new JSONObject();
+			jo.put("transportationModes", getTransportationFile());
+			jo.put("ecoindustrialpark", getChemicalPlants());
+			jo.put("CarbonTax", carbontax);
+			jo.put("InterestFactor", interestfactor);
+			jo.put("AnnualCostFactor", getAnnualCostFactor(time,annualcostfactor));
+			jo.put("InternationalMarketPriceFactor", intmarketpricefactor);
+			jo.put("InternationalMarketLowestPriceApplied", intmarketlowestprice);
 			
-			Double totalMaterialPurchaseCost= Double.valueOf((String) resp.getOutputParameters().get(1).getValue())/1000000000;
-			Double totalTransportationCost= Double.valueOf((String) resp.getOutputParameters().get(3).getValue())/1000;
-			Double totalInstallationCost= Double.valueOf((String) resp.getOutputParameters().get(6).getValue())/1000000;
-			Double totalCO2Emission= Double.valueOf((String) resp.getOutputParameters().get(4).getValue());
-			Double totalCO2EmissionCost= Double.valueOf((String) resp.getOutputParameters().get(5).getValue())/1000;
+			
+			String resultAsString = AgentCaller.executeGetWithJsonParameter(getContextPathForJPSMen(), jo.toString());
+			
+			
+			logger.info("MYMY result=" + resultAsString);
+			
+			
+			JSONObject result = new JSONObject(resultAsString);
+			Double totalMaterialPurchaseCost= Double.valueOf(result.getString("totalMaterialPurchaseCost"))/1000000000;
+			Double totalTransportationCost= Double.valueOf(result.getString("totalTransportationCost"))/1000;
+			Double totalCO2Emission= Double.valueOf(result.getString("totalCO2Emission"));
+			Double totalCO2EmissionCost= Double.valueOf(result.getString("totalCO2EmissionCost"))/1000;
+			Double totalInstallationCost= Double.valueOf(result.getString("totalInstallationCost"))/1000000;
 			
 			tmpc.put(String.format("%.2f",totalMaterialPurchaseCost));
 			ttc.put(String.format("%.2f", totalTransportationCost));
@@ -195,12 +175,4 @@ public class MenTableAgent extends HttpServlet {
 
 		logger.info("MEN_Table Agent stop");
 	}
-	
-	 public void doPost(HttpServletRequest request, HttpServletResponse response)
-			    throws IOException, ServletException
-			    {
-			        doGet(request, response);
-			    }
-	
-	 
 }
