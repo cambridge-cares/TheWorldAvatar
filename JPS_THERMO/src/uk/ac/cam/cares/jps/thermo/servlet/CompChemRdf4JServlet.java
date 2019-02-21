@@ -140,8 +140,6 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		 * @author NK510 updates json file and converts it into String.
 		 */
 		 
-		
-
 		logger.info("jsonList.get(2): " + jsonList.get(0)); 
 		logger.info("jsonList.get(0): " + jsonList.get(1));
 		logger.info("jsonList.get(1): " + jsonList.get(2));
