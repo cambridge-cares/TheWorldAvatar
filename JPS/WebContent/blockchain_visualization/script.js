@@ -30,7 +30,7 @@ function get_info(){
     );
 }
 
-function draw(mode, chart) {
+async function draw(mode, chart) {
     get_all_agents(mode, function (_agents_day_data) {
 
         console.log('-----------------------------');

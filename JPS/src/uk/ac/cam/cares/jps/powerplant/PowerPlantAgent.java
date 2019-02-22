@@ -256,8 +256,6 @@ public class PowerPlantAgent extends HttpServlet {
 					e.printStackTrace();
 				}
 			
-			// TODO-AE SC URGENT URGENT REMOVE UNCOMMENTING
-			if (false) {
 			String resultjson = AgentCaller.executeGet("JPS/SRMAgent", "query", dataSet.toString());
 		    
 		    String jsonsrmresult = null;
@@ -274,7 +272,7 @@ public class PowerPlantAgent extends HttpServlet {
 				} catch (Exception e) {
 					e.printStackTrace();
 				} //convert to update value
-			}
+
 		    
 		    cpirilist.clear();
 		    cpirilist2.clear();
