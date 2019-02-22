@@ -35,7 +35,7 @@ public class TestBuildingJSON {
 			"]";
 	
 	@Test
-	void test() {
+	public void test() {
 
 		
 		try {

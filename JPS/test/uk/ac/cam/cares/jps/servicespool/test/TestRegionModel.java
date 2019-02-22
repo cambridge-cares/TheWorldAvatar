@@ -16,7 +16,7 @@ import uk.ac.cam.cares.jps.building.CRSTransformer;
 public class TestRegionModel {
 
 	@Test
-	void test() {
+	 public void test() {
 		Model regionModel = ModelFactory.createDefaultModel();
 		Property hasX = regionModel.createProperty("http://test.com/Property/hasX");
 		Property hasY = regionModel.createProperty("http://test.com/Property/hasY");

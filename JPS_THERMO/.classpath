@@ -26,6 +26,5 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
-	<classpathentry kind="lib" path="C:/Users/NK/git/JParkSimulator-git/JPS_THERMO/WebContent/WEB-INF/lib/jps_base.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
