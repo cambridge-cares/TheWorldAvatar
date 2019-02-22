@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.discovery.test;
+package uk.ac.cam.cares.jps.discovery.test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import uk.ac.cam.cares.jps.base.discovery.Parameter;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
-public class TestDiscovery extends TestCase {
+public class TestDiscoveryBase extends TestCase {
 	
 	public class MonthPriceMatrix {
 		String[] months = null;

@@ -23,7 +23,7 @@ public class DiscoveryProvider {
 	}
 
 	public static AgentResponse callAgent(AgentRequest agentRequest)  {
-		return AgentCaller.callAgent("/JPS_DISCOVERY/call", agentRequest);
+		return AgentCallAdditionalMethods.callAgent("/JPS_DISCOVERY/call", agentRequest);
 	}
 	
 	public static void registerAgent(Agent agent) {

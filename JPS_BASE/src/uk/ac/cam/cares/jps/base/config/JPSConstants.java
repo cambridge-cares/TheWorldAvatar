@@ -1,9 +1,11 @@
-package uk.ac.cam.cares.jps.base.query;
+package uk.ac.cam.cares.jps.base.config;
 
-public interface ScenarioKeys {
+public interface JPSConstants {
 
+	// TODO-AE SC 20190218 rename the constant value and use prefix jps to make them unique, merge this interface with others (e.g. from config)
 	static String SCENARIO_URL = "scenariourl";
 	static String SCENARIO_RESOURCE = "scenarioresource";
+	static String SCENARIO_AGENT = "scenarioagent";
 	static String SCENARIO_AGENT_OPERATION = "scenarioagentoperation";
 	
 	static String QUERY_SPARQL_QUERY = "sparqlquery";

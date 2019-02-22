@@ -8,4 +8,5 @@ public interface IKeys {
 	public static final String URL_BUILDINGSQUERY_BERLIN = "url.buildingsquery.berlin";
 	public static final String URL_BUILDINGSQUERY_THEHAGUE = "url.buildingsquery.thehague";
 	public static final String URL_BUILDINGSQUERY_SINGAPORE = "url.buildingsquery.singapore";
+	public static final String URL_BUILDINGSQUERY_HONGKONG = "url.buildingsquery.hongkong";
 }

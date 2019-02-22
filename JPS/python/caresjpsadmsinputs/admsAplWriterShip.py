@@ -204,7 +204,7 @@ BKGETC = '''
     BkgFixedLevels  = 1
     /
     &ADMS_PARAMETERS_ETC
-    SrcNumSources    = 10
+    SrcNumSources    = {0}
     PolNumPollutants = 18
     PolNumIsotopes   = 0
     /
@@ -750,7 +750,7 @@ class admsAplWriter(object):
             self.writeStr(file,PUFGAM)
             self.writeOpt(file,self.data['Opt'])
             self.writeStr(file,CHM)
-            self.writeStr(file,BKGETC)
+            self.writeStr(file,BKGETC.format(len(self.data['Src'])))
 
 
             self.writeCoordSys(file, self.data['CoordiSys'])# a special case, to be unified in future

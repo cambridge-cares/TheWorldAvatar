@@ -36,25 +36,26 @@ $(function(){
        var timefactor = $('#timefactor').val().split(",");
       var list =[carbontax,interestfactor,intmarketpricefactor,intmarketlowestprice,timefactor];
       
-      var someData = {"inputParameters":
-    	  [
-    	   {key: "CarbonTax", value: carbontax},
-    	   {key:"InterestFactor",value:interestfactor},
-    	   {key:"InternationalMarketPriceFactor",value:intmarketpricefactor},
-    	   {key:"InternationalMarketLowestPriceApplied",value:intmarketlowestprice},
-    	   {key: "AnnualCostFactor", value: timefactor}
-    	]
-      };
+      
+      var query = {
+    		"CarbonTax": carbontax,
+    		//"InterestFactor":interestfactor,
+    		"InternationalMarketPriceFactor":intmarketpricefactor,
+    		"InternationalMarketLowestPriceApplied":intmarketlowestprice,
+    		"AnnualCostFactor":timefactor
+          }
+          
+  		query = JSON.stringify(query);        
       
       
       console.log("data of input= "+JSON.stringify(list)); 
         
       
       $.getJSON('/JPS_MEN/MENTableAgent',
-                {
-    	  		agentrequest: JSON.stringify(someData)	
-                },
-                function(data) {
+    		  {
+			  query
+    		  },
+               function(data) {
                     
                var result = data;
                console.log("data of result= "+JSON.stringify(result)); 

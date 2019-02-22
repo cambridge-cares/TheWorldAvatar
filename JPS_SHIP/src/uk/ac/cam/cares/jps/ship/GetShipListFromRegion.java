@@ -1,8 +1,6 @@
 package uk.ac.cam.cares.jps.ship;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import javax.servlet.ServletException;
@@ -13,12 +11,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
-import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 /**
  * Servlet implementation class GetShipListFromRegion
@@ -26,6 +23,7 @@ import uk.ac.cam.cares.jps.base.util.PythonHelper;
 @WebServlet("/GetShipListFromRegion")
 public class GetShipListFromRegion extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private Logger logger = LoggerFactory.getLogger(GetShipListFromRegion.class);
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -82,6 +80,15 @@ public class GetShipListFromRegion extends HttpServlet {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		logger.info("FINDING SHIPS");
+		logger.info(pparams[0]);
+		logger.info(pparams[1]);
+		logger.info(pparams[2]);
+		logger.info(pparams[3]);
+		logger.info(pparams[4]);
+		logger.info(pparams[5]);
+		logger.info(pparams[6]);
 		
 		String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsship", this);
 

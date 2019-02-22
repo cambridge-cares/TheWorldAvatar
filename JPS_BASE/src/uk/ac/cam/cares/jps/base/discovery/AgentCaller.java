@@ -5,16 +5,22 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -217,13 +223,19 @@ public class AgentCaller {
 				buf.append(":").append(request.getURI().getPort());
 			}
 			
-			buf.append(request.getURI().getPath())
-					.append(" DECODED ?").append(request.getURI().getQuery());
+			buf.append(request.getURI().getPath());
+			String query = request.getURI().getQuery();
+			if (query != null) {
+				int length = query.length();
+				if (length > 100) {
+					query = query.substring(0, 99);
+				}
+				buf.append("?").append(query);
+			}
 			logger.info(buf.toString());
-			
 			// use the next line to log the percentage encoded query component
 			//logger.info(request.toString());
-			
+		
 			HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 			
 			if (httpResponse.getStatusLine().getStatusCode() != 200) {
@@ -254,36 +266,9 @@ public class AgentCaller {
 	    }
 	}
 	
-	@Deprecated
-	public static AgentResponse callAgent(String contextPath, AgentRequest agentRequest)  {
-		
-		Gson gson = new Gson();
-		
-		logger.info("callAgent start ");
-		
-		String serializedAgentRequest = gson.toJson(agentRequest);
-		
-		logger.info("SerAgRequ " + serializedAgentRequest);
-		
-		try {
-			String serializedAgentResponse = executeGet(contextPath, "agentrequest", serializedAgentRequest);
-			
-			logger.info("SerAgResp " + serializedAgentResponse);
-						
-			return gson.fromJson(serializedAgentResponse, AgentResponse.class);
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			throw new JPSRuntimeException(e.getMessage(), e);
-		}
-	}
-	
-	@Deprecated
-	public static AgentRequest getAgentRequest(HttpServletRequest req) {
-		String serializedAgentRequest = req.getParameter("agentrequest");
-		return new Gson().fromJson(serializedAgentRequest, AgentRequest.class);
-	}
-	
 	public static void printToResponse(Object object, HttpServletResponse resp) {
+		
+		// TODO-AE SC 20190220 add the case where object is of type org.json.JSONObject to avoid GSON transformation
 		
 		if (object == null) {
 			return;
@@ -302,5 +287,18 @@ public class AgentCaller {
 		} catch (IOException e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		}	
+	}
+	
+	public static String encodePercentage(String s) {
+		Charset charset = Charset.forName("UTF-8");
+		List<BasicNameValuePair> params = Arrays.asList(new BasicNameValuePair("query", s));
+		String encoded = URLEncodedUtils.format(params, charset);
+		return encoded.substring(6);
+	}
+
+	public static String decodePercentage(String s) {
+		Charset charset = Charset.forName("UTF-8");
+		List<NameValuePair> pair = URLEncodedUtils.parse("query="+s, charset);
+		return pair.get(0).getValue();
 	}
 }

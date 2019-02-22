@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.men;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.ThreadContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +12,8 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Literal;
 
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.men.entity.FeasibleConnection;
 import uk.ac.cam.cares.jps.men.entity.INamed;
 import uk.ac.cam.cares.jps.men.entity.MenCalculationParameters;
@@ -454,6 +457,16 @@ public class MenDataProvider {
 	 * @param Qstring
 	 */
 	public static ResultSet sparql (String fileLocat, String sparql) {
+		
+		// TODO-AE SC 20190220 URGENT REMOVE
+		// and also change from JenaHelper to QueryBroker.query()
+		// TODO-AE SC get url from scenarionManagementAgent (move to JPS_BASE)
+		//String url = "http://localhost:8080" + ScenarioHelper.getScenarioPath("scMENinternal");
+		//ThreadContext.put(JPSConstants.SCENARIO_URL, url);
+		//new QueryBroker().readFile(fileLocat);
+		if (ThreadContext.containsKey(JPSConstants.SCENARIO_URL)) {
+			new QueryBroker().readFile(fileLocat);
+		}
 		
 		OntModel model = JenaHelper.createModel(fileLocat);
 		return JenaHelper.query(sparql, model);

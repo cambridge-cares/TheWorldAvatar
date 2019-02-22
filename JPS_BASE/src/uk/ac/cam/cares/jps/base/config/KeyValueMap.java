@@ -40,19 +40,15 @@ public class KeyValueMap {
 	 */
 	private void init() {
 		
-//		String path = AgentLocator.getCurrentJpsAppDirectory(this);
-//		boolean isJpsBaseDir = path.endsWith("/JPS_BASE") || path.endsWith("\\JPS_BASE");
-//		if (! isJpsBaseDir) {
-//			String message = "The current path is not within JPS_BASE directory, path=" + path;
-//			LogServer.error(this, message);
-//			throw new JPSRuntimeException(message);
-//		}
-		
 		String path = AgentLocator.getJPSBaseDirectory();
 		
 		try {
+			
+			boolean runningForTest = AgentLocator.isJPSRunningForTest();
+			LogServer.info(this, "Tomcat is running for test = " + runningForTest);
+			
 			loadProperties(path + "/conf/jps.properties");
-			if (! (path.startsWith("C:/TOMCAT/webapps/JPS_BASE") || path.startsWith("C:\\TOMCAT\\webapps\\JPS_BASE")))  {
+			if (runningForTest)  {
 				// if started on local server then overwrite values from jps.properties
 				loadProperties(path + "/conf/jpstest.properties");
 			}

@@ -59,7 +59,7 @@ public class LogServer extends HttpServlet {
 	}
 	
 	public static void debug(Object sender, String message) {
-		logger.info(sender.getClass().getSimpleName() + " " + message);
+		logger.debug(sender.getClass().getSimpleName() + " " + message);
 	}
 	
 	public static void info(Object sender, String message) {

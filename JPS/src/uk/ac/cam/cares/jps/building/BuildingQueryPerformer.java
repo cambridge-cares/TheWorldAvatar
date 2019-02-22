@@ -33,6 +33,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 	public static final String BERLIN_IRI = "http://dbpedia.org/resource/Berlin";
 	public static final String THE_HAGUE_IRI = "http://dbpedia.org/resource/The_Hague"; // The IRIs have be changed to /resource instead of /page
 	public static final String SINGAPORE_IRI = "http://dbpedia.org/resource/Singapore";
+	public static final String HONG_KONG_IRI = "http://dbpedia.org/resource/Hong_Kong";
 	
 	private Logger logger = LoggerFactory.getLogger(BuildingQueryPerformer.class);
 	
@@ -43,8 +44,11 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			urlKey = IKeys.URL_BUILDINGSQUERY_BERLIN;
 		} else if (cityIRI.equalsIgnoreCase(SINGAPORE_IRI)) {
 			urlKey = IKeys.URL_BUILDINGSQUERY_SINGAPORE;
+		} else if (cityIRI.equalsIgnoreCase(HONG_KONG_IRI)) {
+			urlKey = IKeys.URL_BUILDINGSQUERY_HONGKONG;
 		}
 		
+		logger.info("urlKey: " + urlKey);
 		return AgentCaller.executeGetWithURLKey(urlKey, AgentCaller.MediaType.TEXT_CSV, "query", query);
 	}
 	
@@ -86,7 +90,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			return CRSTransformer.EPSG_25833;
 		} else if (cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
 			return CRSTransformer.EPSG_28992;
-		} else if (cityIRI.equalsIgnoreCase(SINGAPORE_IRI)) {
+		} else if (cityIRI.equalsIgnoreCase(SINGAPORE_IRI) || cityIRI.equalsIgnoreCase(HONG_KONG_IRI)) {
 			return CRSTransformer.EPSG_4326;
 		}
 		
@@ -103,7 +107,12 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		double uy = uppery;
 		
 		String targetCRSName = getCRSName(cityIRI);
-		String sourceCRSName = DEFAULT_CRS_NAME;
+		String sourceCRSName = null;
+		if (cityIRI.equalsIgnoreCase(BERLIN_IRI) || cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
+			sourceCRSName = DEFAULT_CRS_NAME;
+		} else if (cityIRI.equalsIgnoreCase(SINGAPORE_IRI) || cityIRI.equalsIgnoreCase(HONG_KONG_IRI)) {
+			sourceCRSName = CRSTransformer.EPSG_3857; 
+		}
 		
 		if (lowerx <= 180) {
 			sourceCRSName = CRSTransformer.EPSG_4326;
@@ -129,16 +138,18 @@ public class BuildingQueryPerformer implements SparqlConstants {
 				ux = p[0];
 				uy = p[1];
 				
-				if (targetCRSName.equals(CRSTransformer.EPSG_4326)) {
-					double temp = ly;
-					ly = uy;
-					uy = temp;
-				}
+//				if (targetCRSName.equals(CRSTransformer.EPSG_4326)) {
+//					double temp = ly;
+//					ly = uy;
+//					uy = temp;
+//				}
 			}
 		}
 
-		String query = getQueryClosestBuildingsFromRegion(200, lx, ly, ux, uy);		
+		String query = getQueryClosestBuildingsFromRegion(200, lx, ly, ux, uy);
+		logger.info("BEFORE performQuery");
 		String result = performQuery(cityIRI, query);
+		logger.info("AFTER performQuery");
 		//system.out.println("=============== query result ===============");
 		//system.out.println("With query:\n" + query);
 		//system.out.println(result);
@@ -266,13 +277,14 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			String sourceCRSName = getCRSName(cityIRI);
 			logger.info("sourceCRSName: " + sourceCRSName);
 			
-//			if (sourceCRSName.equals("EPSG:4326")) {
-//				
-//			} else 
-			if (!DEFAULT_CRS_NAME.equals(sourceCRSName)) {
+			if (sourceCRSName.equalsIgnoreCase(CRSTransformer.EPSG_25833)) {
 				logger.info("transforming coordinate from " + sourceCRSName + " to " + DEFAULT_CRS_NAME + " ...");
 				logger.info("map: " + map.toString());
 				map = transformCoordinates(sourceCRSName, DEFAULT_CRS_NAME, map);
+			} else if (!sourceCRSName.equalsIgnoreCase(CRSTransformer.EPSG_28992)) {
+				logger.info("transforming coordinate from " + sourceCRSName + " to " + CRSTransformer.EPSG_3857 + " ...");
+				logger.info("map: " + map.toString());
+				map = transformCoordinates(sourceCRSName, CRSTransformer.EPSG_3857, map);
 			}
 					
 			List<Polygon> polygons = SimpleShapeConverter.convertTo2DPolygons(map, "groundsurface", "x", "y");
@@ -295,9 +307,16 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			}		
 			result.BldName.add(name);
 			result.BldType.add(shape.shapeType);
-			if (sourceCRSName.equals("EPSG:4326") ) {
-				double[] centrePoint = CRSTransformer.transform("EPSG:28992", 
+			if (cityIRI.equalsIgnoreCase(SINGAPORE_IRI)) {
+				double[] centrePoint = CRSTransformer.transform("EPSG:3857", 
 						"EPSG:3414", new double[] {shape.centerX, shape.centerY});
+				result.BldX.add(centrePoint[0]);
+				result.BldY.add(centrePoint[1]);
+				logger.info("coordinate x: " + centrePoint[0]);
+				logger.info("coordinate y: " + centrePoint[1]);
+			} else if (cityIRI.equalsIgnoreCase(HONG_KONG_IRI)) {
+				double[] centrePoint = CRSTransformer.transform("EPSG:3857", 
+						"EPSG:2326", new double[] {shape.centerX, shape.centerY});
 				result.BldX.add(centrePoint[0]);
 				result.BldY.add(centrePoint[1]);
 				logger.info("coordinate x: " + centrePoint[0]);
