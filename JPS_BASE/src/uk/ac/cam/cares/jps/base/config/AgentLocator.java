@@ -1,12 +1,9 @@
 package uk.ac.cam.cares.jps.base.config;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.apache.http.HttpResponse;
@@ -19,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.log.LogServer;
 
 public class AgentLocator {
 
@@ -31,8 +27,6 @@ public class AgentLocator {
 			"/target/classes/", "\\target\\classes\\", "/target/test-classes/", "\\target\\test-classes\\", 
 	};
 	private String jpsBaseDirectory = null;
-//	private Properties jpsProps = null;
-//	private Properties jpsTestProps = null;
 	private String url = null;
 
 	private AgentLocator() {
@@ -55,9 +49,6 @@ public class AgentLocator {
 		String path = getCurrentJpsAppDirectory(this);
 		jpsBaseDirectory = createJpsBaseDirectory(path);
 		logger.info("JPS_BASE directory = " + jpsBaseDirectory);
-		
-		url = "http://" + getProperty("host") + ":" + getProperty("port");
-		logger.info("created url from properties: " + url);
 	}
 	
 	public static String createJpsBaseDirectory(String currentJpsAppDirectory) {
@@ -126,35 +117,6 @@ public class AgentLocator {
 		
 		return false;
 	}
-	
-	private void loadProperties(String propertyFile) throws IOException {
-	    
-		LogServer.info(this, "loading key-value pairs from " + propertyFile);
-		
-		FileInputStream inputStream = new FileInputStream(propertyFile);
-		Properties props = new Properties();
-		props.load(inputStream);	
-		
-		logProperties(props);
-	}
-	
-//	private Properties loadProperties(String fileName) throws IOException {
-//	      
-//		String configPath = getJPSBaseDirectory() + "/conf/" + fileName;
-//		logger.info("loading " + configPath);
-//		
-//		FileInputStream inputStream = new FileInputStream(configPath);
-//		Properties props = new Properties();
-//		props.load(inputStream);
-//		
-//		return props;
-//	}
-	
-	private void logProperties(Properties properties) {
-		for (Entry<Object, Object> current : properties.entrySet()) {
-			logger.info(current.toString());
-		}
-	}
 
 	public static String getCurrentJpsAppDirectory(Object thisObject) {
 		
@@ -192,6 +154,13 @@ public class AgentLocator {
 		return getSingleton().jpsBaseDirectory;
 	}
 	
+	public static boolean isJPSRunningForTest() {
+		
+		String path = getJPSBaseDirectory();
+		boolean runningForTest = ! (path.startsWith("C:/TOMCAT/webapps/JPS_BASE") || path.startsWith("C:\\TOMCAT\\webapps\\JPS_BASE"));
+		return runningForTest;
+	}
+	
 	public static String getAbsolutePath(String keyForRelativePath, Object thisObject) {
 		String relativePath = getProperty(keyForRelativePath);
 		return getCurrentJpsAppDirectory(thisObject) + "/" + relativePath;
@@ -225,17 +194,6 @@ public class AgentLocator {
 	 * @return
 	 */
 	public static String getProperty(String key) {
-//		String result = null;
-//
-//		Properties testProps = getSingleton().jpsTestProps;
-//		if (testProps != null) {
-//			result = (String) testProps.get(key);
-//		}
-//		if ((testProps == null) || (result == null)) {
-//			result = (String) getSingleton().jpsProps.getProperty(key);
-//		}
-//
-//		return result;
 		
 		return KeyValueMap.getInstance().get(key);
 	}
@@ -245,11 +203,20 @@ public class AgentLocator {
 	}
 	
 	private String callAgentInternally(String agentKey)  throws ClientProtocolException, IOException {
-		String combinedUrl = url + AgentLocator.getProperty(agentKey);
+		String combinedUrl = getUrl() + AgentLocator.getProperty(agentKey);
 		logger.info("calling agent " + combinedUrl);
 		HttpUriRequest request = new HttpGet(combinedUrl);
 		HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 		String response = EntityUtils.toString(httpResponse.getEntity());
 		return response;
+	}
+	
+	private String getUrl() {
+		if (url == null) {
+			url = "http://" + getProperty("host") + ":" + getProperty("port");
+			logger.info("created url from properties: " + url);
+		}
+		
+		return url;
 	}
 }

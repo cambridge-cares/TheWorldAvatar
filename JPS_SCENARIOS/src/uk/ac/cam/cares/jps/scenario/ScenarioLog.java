@@ -15,6 +15,7 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 public class ScenarioLog {
 
 	public class ScenarioLogEntry implements Comparable {
+		String scenario = null;
 		String timestamp = null;
 		JSONObject message = null;
 		
@@ -28,23 +29,23 @@ public class ScenarioLog {
 	private List<ScenarioLogEntry> entries = new ArrayList<ScenarioLog.ScenarioLogEntry>();
 	private String filePath = null;
 	
-	public ScenarioLog() {
-		create();
+	public ScenarioLog(String scenarioName) {
+		create(scenarioName);
 	}
 	
-	public ScenarioLog(String filePath) {
+	public ScenarioLog(String scenarioName, String filePath) {
 		this.filePath = filePath;
 		
 		if (!new File(filePath).exists()) {
-			create();
+			create(scenarioName);
 		} else {
 			read();
 		}
 	}
 	
-	public void create() {
+	public void create(String scenarioName) {
 		JSONObject message = new JSONObject().put("extendsagent", "http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#Service");
-		addMessage(message);
+		addMessage(scenarioName, message);
 		write();
 	}
 	
@@ -54,14 +55,16 @@ public class ScenarioLog {
 		JSONArray joarray = jo.getJSONArray("entries");
 		for (int i=0; i<joarray.length(); i++) {
 			ScenarioLogEntry entry = new ScenarioLogEntry();
+			entry.scenario = joarray.getJSONObject(i).getString("scenario");
 			entry.timestamp = joarray.getJSONObject(i).getString("timestamp");
 			entry.message = joarray.getJSONObject(i).getJSONObject("message");
 			entries.add(entry);
 		}
 	}
 
-	private void addMessage(JSONObject message) {
+	private void addMessage(String scenarioName, JSONObject message) {
 		ScenarioLogEntry entry = new ScenarioLogEntry();
+		entry.scenario = scenarioName;
 		Date date = new Date(System.currentTimeMillis());
 		entry.timestamp = sdf.format(date);;
 		entry.message = message;
@@ -75,8 +78,8 @@ public class ScenarioLog {
 		}
 	}
 	
-	public void logMessage(JSONObject message) {
-		addMessage(message);
+	public void logMessage(String scenarioName, JSONObject message) {
+		addMessage(scenarioName, message);
 		write();
 	}
 	
@@ -84,6 +87,7 @@ public class ScenarioLog {
 		JSONArray joarray = new JSONArray();
 		for (ScenarioLogEntry current : entries) {
 			JSONObject joentry = new JSONObject();
+			joentry.put("scenario", current.scenario);
 			joentry.put("timestamp", current.timestamp);
 			joentry.put("message", current.message);
 			joarray.put(joentry);

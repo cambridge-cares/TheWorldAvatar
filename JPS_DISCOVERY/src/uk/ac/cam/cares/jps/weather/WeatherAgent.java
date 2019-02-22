@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AbstractAgentServiceDescription;
 import uk.ac.cam.cares.jps.base.discovery.Agent;
+import uk.ac.cam.cares.jps.base.discovery.AgentCallAdditionalMethods;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
@@ -36,7 +37,7 @@ public class WeatherAgent extends HttpServlet {
 		
 		logger.info("WeatherAgent start");
 
-		AgentRequest agentRequest = AgentCaller.getAgentRequest(req);
+		AgentRequest agentRequest = AgentCallAdditionalMethods.getAgentRequest(req);
 				
 		//if need to take the value using the python code
 		//PythonHelper.callPython("JPS/python/caresjpsadmsinputs/cobbling.py", "main");

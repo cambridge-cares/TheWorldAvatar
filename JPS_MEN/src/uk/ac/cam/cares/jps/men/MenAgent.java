@@ -8,7 +8,6 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -21,12 +20,13 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Literal;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.men.entity.MenCalculationParameters;
 
 
 @WebServlet(urlPatterns = {"/MENAgent"})
 
-public class MenAgent extends HttpServlet {
+public class MenAgent extends JPSHttpServlet {
 	
 	private static final long serialVersionUID = -4199209974912271432L;
 	private List<String> cpirilist = new ArrayList<String>();
@@ -34,7 +34,8 @@ public class MenAgent extends HttpServlet {
 	Logger logger = LoggerFactory.getLogger(MenAgent.class);
 	
 	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+	protected void doGetJPS(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
 		
 		logger.info("MENAgent start");
 		

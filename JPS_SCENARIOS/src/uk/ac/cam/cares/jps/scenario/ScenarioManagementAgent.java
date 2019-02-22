@@ -28,6 +28,8 @@ public class ScenarioManagementAgent extends HttpServlet {
 
 	private static final long serialVersionUID = 1733142247564226760L;
 	private static Logger logger = LoggerFactory.getLogger(ScenarioManagementAgent.class);
+	// TODO-AE SC 20190220 move key to JPS_BASE
+	public static final String COPY_ON_READ = "copyonread";
 	
 	public static String getWorkingDir() {
 		return ScenarioHelper.getWorkingDir();
@@ -68,6 +70,22 @@ public class ScenarioManagementAgent extends HttpServlet {
 	}
 	
 	/**
+	 * Returns the latest value for copy-on-read from the log. Default is false, i.e. copy-on-write.
+	 * 
+	 * @param log
+	 * @return
+	 */
+	public static boolean getCopyOnRead(ScenarioLog log) {
+		List<ScenarioLogEntry> entries = log.search(COPY_ON_READ, null);
+		if (entries.size() > 0) {
+			ScenarioLogEntry latestEntry = entries.get(entries.size()-1);
+			return latestEntry.message.getBoolean(COPY_ON_READ);
+		}
+		
+		return false;
+	}
+	
+	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -96,7 +114,7 @@ public class ScenarioManagementAgent extends HttpServlet {
 		for (String current : names) {
 			logger.info("adding scenario agent for scenario=" + current);
 			String path = getScenarioLogPath(current);
-			ScenarioLog log = new ScenarioLog(path);
+			ScenarioLog log = new ScenarioLog(current, path);
 			JSONObject jo = createScenarioAgent(current, log);
 			if (jo != null) {							
 				joarray.put(jo);

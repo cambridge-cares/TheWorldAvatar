@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.scenario.testagent;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.ThreadContext;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -106,8 +106,8 @@ public class EmissionTestAgent extends JPSHttpServlet {
 				int increment = jo.getInt("increment");
 			
 				String result = new QueryBroker().queryFile(powerplant, SPARQL_EMISSION);
-				List<JSONObject> list = JenaResultSetFormatter.convertToSimplifiedList(result);
-				double emission = list.get(0).getDouble("emissionvaluenum");
+				JSONArray list = JenaResultSetFormatter.convertToSimplifiedList(result).getJSONArray("results");
+				double emission = list.getJSONObject(0).getDouble("emissionvaluenum");
 				logger.info("increasing the current emission value=" + emission + " by increment=" + increment);
 
 				// TODO-AE SC URGENT 20190215 implement increment for EmissionTestAgent
