@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.base.query;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -16,7 +15,6 @@ import org.apache.logging.log4j.ThreadContext;
 import org.json.JSONStringer;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
-import uk.ac.cam.cares.jps.base.config.KeyValueServer;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.log.LogServer;
@@ -27,7 +25,7 @@ public class QueryBroker {
 	public String readFile(String urlOrPath) {
 		
 		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	
-		LogServer.debug(this, "reading file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
+		LogServer.info(this, "reading file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
 		
 		// call the scenario agent if a scenario url is set in the input
 		// the scenario agent has to be called even for copy-on-write since in the past
@@ -42,8 +40,10 @@ public class QueryBroker {
 			return AgentCaller.executeGetWithURLAndJSON(url, json);
 		}
 		
+		urlOrPath = ResourcePathConverter.convert(urlOrPath);
+		
 		if (urlOrPath.startsWith("http")) {
-			
+		
 			// Apache HTTP client applies percentage encoding to any URL.
 			// Usually, this is not a problem when requesting an OWL file. 
 			// But if requesting http://www.theworldavatar.com/kb/agents/Service__OpenWeatherMap.owl#Service 
@@ -74,7 +74,7 @@ public class QueryBroker {
 	public String queryFile(String urlOrPath, String sparqlQuery) {
 		
 		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	
-		LogServer.debug(this, "querying file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
+		LogServer.info(this, "querying file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
 		
 		// call the scenario agent if a scenario url is set in the input
 		// the scenario agent has to be called even for copy-on-write since in the past
@@ -89,6 +89,8 @@ public class QueryBroker {
 			
 			return AgentCaller.executeGetWithURLAndJSON(url, json);
 		}
+		
+		urlOrPath = ResourcePathConverter.convert(urlOrPath);
 		
 		ResultSet resultSet = null;
 		if (urlOrPath.startsWith("http")) {
@@ -109,12 +111,12 @@ public class QueryBroker {
 	public String writeFile(String urlOrPath, String content) {
 		
 		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	
-		LogServer.debug(this, "writing file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
+		LogServer.info(this, "writing file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
 		
 		if (scenarioURL != null) {
 			
-			String[] parts = ScenarioHelper.dividePath(scenarioURL);
-			String scenarioName = parts[0];
+			int i = scenarioURL.lastIndexOf("/");
+			String scenarioName = scenarioURL.substring(i);
 			String scenarioBucket = ScenarioHelper.getScenarioBucket(scenarioName);
 			String path = ScenarioHelper.getFileNameWithinBucket(urlOrPath, scenarioBucket);
 
@@ -164,10 +166,28 @@ public class QueryBroker {
 		}
 	}
 	
+	/**
+	 * Useful links for the question how to update with Jena for future purpose:<br>
+	 * <br> 
+	 * https://jena.apache.org/documentation/rdfconnection/ <br>
+	 * https://jena.apache.org/documentation/javadoc/rdfconnection/org/apache/jena/rdfconnection/RDFConnection.html <br>
+	 * https://jena.apache.org/documentation/javadoc/rdfconnection/org/apache/jena/rdfconnection/RDFConnectionFactory.html <br>
+	 * https://github.com/apache/jena/blob/master/jena-rdfconnection/src/main/java/org/apache/jena/rdfconnection/examples/RDFConnectionExample1.java  <br>
+	 * https://jena.apache.org/documentation/query/update.html <br>
+	 * https://github.com/apache/jena/tree/master/jena-arq/src-examples/arq/examples/update   <br>
+	 * https://jena.apache.org/documentation/javadoc/arq/org/apache/jena/update/UpdateExecutionFactory.html  <br>
+	 * https://jena.apache.org/documentation/javadoc/arq/org/apache/jena/query/DatasetFactory.html   <br>
+	 * https://stackoverflow.com/questions/16487746/jena-sparql-update-doesnt-execute   <br>
+	 * https://stackoverflow.com/questions/13709698/sparql-update-query-over-local-files
+	 * 
+	 * 
+	 * @param urlOrPath
+	 * @param sparqlUpdate
+	 */
 	public void updateFile(String urlOrPath, String sparqlUpdate) {
 		
 		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	
-		LogServer.debug(this, "updating file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
+		LogServer.info(this, "updating file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
 		
 		
 		// TODO-AE SC 20190218 URGENT
@@ -187,19 +207,34 @@ public class QueryBroker {
 		// TODO-AE SC for updating a remote file, first load the content and update it. But the update can only
 		// be stored within scenarios. Later: Broker should find out, whether an QueryAgent (or another broker)
 		// is running on remote server which has local access. 
+		
+		urlOrPath = ResourcePathConverter.convert(urlOrPath);
+		
 		String localFile = urlOrPath;
 		if (urlOrPath.startsWith("http")) {
-			URI uri = AgentCaller.createURI(urlOrPath);
-			String rootPath = KeyValueServer.get("absdir.root");
-			localFile = rootPath + uri.getPath();
+//			URI uri = AgentCaller.createURI(urlOrPath);
+//			String rootPath = KeyValueServer.get("absdir.root");
+//			localFile = rootPath + uri.getPath();
 			localFile = ScenarioHelper.cutHash(localFile);
+			localFile = ResourcePathConverter.convertToLocalPath(localFile);
 		}
 		
-		LogServer.debug(this, "updating local file=" + localFile);
+		
+		
+		LogServer.info(this, "updating local file=" + localFile);
 		
 		UpdateRequest request = UpdateFactory.create(sparqlUpdate);
 		OntModel model = JenaHelper.createModel(localFile);	
 		UpdateAction.execute(request, model);
 		JenaHelper.writeAsFile(model, localFile);
+		
+		// alternative:
+//		UpdateRequest request = UpdateFactory.create(sparqlUpdate);
+//		OntModel model = JenaHelper.createModel(localFile);	
+//		Dataset dataset = DatasetFactory.wrap(model);
+//		UpdateProcessor processor = UpdateExecutionFactory.create(request, dataset);
+//		processor.execute();		
+//		Model updatedModel = dataset.getDefaultModel();
+//		JenaHelper.writeAsFile(updatedModel, localFile);
 	}
 }

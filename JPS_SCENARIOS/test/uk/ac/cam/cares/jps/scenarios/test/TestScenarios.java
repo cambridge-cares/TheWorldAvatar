@@ -1,15 +1,13 @@
 package uk.ac.cam.cares.jps.scenarios.test;
 
-import java.util.List;
-
 import org.apache.logging.log4j.ThreadContext;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONStringer;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 
@@ -50,8 +48,10 @@ public class TestScenarios extends TestCase {
 		
 		String result = new ScenarioClient().call(scenario, "/JPS_BASE/EmissionTestAgent/queryemission", json);
 		
-		List<JSONObject> list = JenaResultSetFormatter.convertToSimplifiedList(result);
-		double actual = list.get(0).getDouble("emissionvaluenum");
+		System.out.println(result);
+		
+		JSONArray list = new JSONObject(result).getJSONArray("results");
+		double actual = list.getJSONObject(0).getDouble("emissionvaluenum");
 		assertEquals(expected, actual);
 	}
 	
@@ -87,6 +87,20 @@ public class TestScenarios extends TestCase {
 		// TODO-AE SC 20190219 problems with deleting OWL files --> problem might be caused by Jena. 
 		// deletion is also necessary to clean up the test cases
 		throw new RuntimeException("deletion of files is not solved yet");
+	}
+	
+	public void testCreateScenarioAndCallEmissionTestAgentGet() throws JSONException {
+		
+		String scenarioName = "test1234567c";
+		double emissionValue = 139.99;
+		setEmissionValue(scenarioName, PLANT, emissionValue);
+		
+		String json = new JSONStringer().object()
+				.key("plant").value(PLANT)
+				.endObject().toString();
+		new ScenarioClient().call(scenarioName, "/JPS_BASE/EmissionTestAgent/getemission", json);
+
+		assertEmissionValue(scenarioName, PLANT, emissionValue);
 	}
 	
 	public void testCreateScenarioAndCallEmissionTestAgentSet() throws JSONException {

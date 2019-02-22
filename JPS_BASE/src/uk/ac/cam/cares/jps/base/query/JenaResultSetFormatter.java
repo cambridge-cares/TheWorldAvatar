@@ -1,9 +1,6 @@
 package uk.ac.cam.cares.jps.base.query;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetFormatter;
@@ -50,18 +47,20 @@ public class JenaResultSetFormatter {
 	/**
 	 * returns a list of simplified JSONObjects where each element represents a row in the resultSet and contains of key-value pairs <br>
 	 * <br>
-	 * example: <br>
+	 * example with one row (list element): <br>
+	 * { "results": [<br>
 	 * { <br>
 	 * "generation":"http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGasGeneration",<br>
 	 * "emission":"http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#CO2Emission_of_Northwest_Kabul_Power_Plant_Afghanistan",<br>
 	 * "emissionvalue":"http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#v_CO2Emission_of_Northwest_Kabul_Power_Plant_Afghanistan",<br>
 	 * "emissionvaluenum":"15.75"<br>
-	 * }
+	 * }<br>
+	 * ]}
 	 * 
 	 * @param resultSet
 	 * @return
 	 */
-	public static List<JSONObject> convertToSimplifiedList(ResultSet resultSet) {
+	public static JSONObject convertToSimplifiedList(ResultSet resultSet) {
 		String json = convertToJSONW3CStandard(resultSet);
 		return convertToSimplifiedList(json);
 	}
@@ -72,24 +71,26 @@ public class JenaResultSetFormatter {
 	 * @param resultJSONW3CStandard a query result string according the official W3C JSON format as described in https://www.w3.org/TR/rdf-sparql-json-res/
 	 * @return
 	 */
-	public static List<JSONObject> convertToSimplifiedList(String resultJSONW3CStandard) {
-		List<JSONObject> result = new ArrayList<JSONObject>();
+	public static JSONObject convertToSimplifiedList(String resultJSONW3CStandard) {
+		JSONObject result = new JSONObject();
+		
+		JSONArray joarray = new JSONArray();
+		result.put("results", joarray);
 		
 		JSONObject jo = new JSONObject(resultJSONW3CStandard);
 		JSONArray array = jo.getJSONObject("results").getJSONArray("bindings");
-		Iterator<Object> iterator = array.iterator();
-		while (iterator.hasNext()) {
+		for (int i=0; i<array.length(); i++) {
 			
+			JSONObject row = array.getJSONObject(i);
 			JSONObject simplifiedRow = new JSONObject();
-			JSONObject row = (JSONObject) iterator.next();
 			for (String current : row.keySet()) {
 				String value =  row.getJSONObject(current).getString("value");
 				simplifiedRow.put(current, value);
 			}
 			
-			result.add(simplifiedRow);
+			joarray.put(simplifiedRow);
 		}
-		
+	
 		return result;
 	}
 	

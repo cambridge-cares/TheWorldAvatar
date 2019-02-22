@@ -23,10 +23,10 @@ public class TestScenarioManagement extends TestCase {
 	public void testCreateScenarioAgent() {
 	
 		String scenarioName = "testscenarioabc";
-		ScenarioLog log = new ScenarioLog();
+		ScenarioLog log = new ScenarioLog(scenarioName);
 		JSONObject message = new JSONObject().put("agent", "http://www.theworldavatar.com/kb/agents/Service__OpenWeatherMap.owl#Service");
 		message.put("operation", "mock");
-		log.logMessage(message);
+		log.logMessage(scenarioName, message);
 		
 		JSONObject jo = new ScenarioManagementAgent().createScenarioAgent(scenarioName, log);
 		
@@ -34,7 +34,7 @@ public class TestScenarioManagement extends TestCase {
 		
 		JSONArray joarray = jo.getJSONArray("service");
 		// operations: mock, call, read, query, delete and one from OpenWeatherMap
-		assertEquals(6, joarray.length());
+		assertEquals(7, joarray.length());
 	}
 	
 	

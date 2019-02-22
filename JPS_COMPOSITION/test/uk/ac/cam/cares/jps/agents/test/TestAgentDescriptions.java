@@ -212,6 +212,9 @@ public class TestAgentDescriptions extends TestCase {
 				.output("http://www.w3.org/2001/XMLSchema#string", "hasOutput")
 			.operation(null, JPS_SCENARIO + "/delete")
 				//.input("http://www.w3.org/2001/XMLSchema#string", "scenarioname")
+				.input("http://www.theworldavatar.com/ontology/ontoagent/OntoAgent.owl#Resource", "scenarioresource")
+			.operation(null, JPS_SCENARIO + "/option")
+				.input("http://www.w3.org/2001/XMLSchema#boolean", "copyonread")
 			.build();
 	}
 	
@@ -249,13 +252,22 @@ public class TestAgentDescriptions extends TestCase {
 				.build();
 	}
 	
+	private Service createDescrForAgentSRMEmissions() {
+		return new ServiceBuilder()
+				.operation(null, JPS + "/SRMAgent")
+				.input("https://como.cheng.cam.ac.uk/kb/ontochem.owl#ReactionMechanism", "reactionmechanism")
+				.input("http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CompressionIgnitionEngine", "engine")
+				.output("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
+				.build();
+	}
+	
 	public void testDescription() throws URISyntaxException, FileNotFoundException {
 		
-		Service service = createDescrForAgentMEN();
+		Service service = createDescrForAgentSRMEmissions();
 		
 		String json = new Gson().toJson(service);
 		System.out.println(json);
 		
-		backAndforthAndWrite(service, "_MEN");
+		backAndforthAndWrite(service, "_SRMEmissions");
 	}
 }

@@ -61,4 +61,8 @@ public abstract class JPSHttpServlet extends HttpServlet {
 	public static void disableScenario() {
 		ThreadContext.remove(JPSConstants.SCENARIO_URL);
 	}
+	
+	public static String getScenarioName() {
+		 return ThreadContext.get(JPSConstants.SCENARIO_URL);
+	}
 }

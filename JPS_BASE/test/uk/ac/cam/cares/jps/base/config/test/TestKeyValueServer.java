@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.base.config.test;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.KeyValueServer;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class TestKeyValueServer extends TestCase {
 
@@ -33,9 +34,19 @@ public class TestKeyValueServer extends TestCase {
 	public void testKeysFromPropertyFile() {
 		String value = KeyValueServer.get("host");
 		boolean ok = false;
-		if ("www.theworldavatar.com".equals(value) || "localhost".equals(value)) {
+		if ("localhost".equals(value)) {
 			ok = true;
 		}
 		assertTrue(ok);
+	}
+	
+	public void testUnknownKeyFromPropertyFile() {
+		boolean jpsruntimeexc = false;
+		try {
+			KeyValueServer.get("unknown");
+		} catch (JPSRuntimeException e) {
+			jpsruntimeexc = true;
+		}
+		assertTrue(jpsruntimeexc);
 	}
 }

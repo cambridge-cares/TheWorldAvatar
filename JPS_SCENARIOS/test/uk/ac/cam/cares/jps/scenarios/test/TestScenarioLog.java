@@ -9,13 +9,13 @@ public class TestScenarioLog extends TestCase {
 
 	public void testToJson() {
 		
-		ScenarioLog log = new ScenarioLog();
+		ScenarioLog log = new ScenarioLog("test789xyz");
 		JSONObject message = new JSONObject();
 		message.put("operation", "mock").put("input", "some input parameter values");
-		log.logMessage(message);
+		log.logMessage("test789xyz", message);
 		message = new JSONObject();
 		message.put("operation", "query").put("input", "some other input parameter values");
-		log.logMessage(message);
+		log.logMessage("test789xyz", message);
 		
 		JSONObject jo = log.toJson();
 		

@@ -226,7 +226,11 @@ public class AgentCaller {
 			buf.append(request.getURI().getPath());
 			String query = request.getURI().getQuery();
 			if (query != null) {
-				buf.append(" DECODED ?").append(request.getURI().getQuery());
+				int length = query.length();
+				if (length > 100) {
+					query = query.substring(0, 99);
+				}
+				buf.append("?").append(query);
 			}
 			logger.info(buf.toString());
 			// use the next line to log the percentage encoded query component
@@ -262,36 +266,9 @@ public class AgentCaller {
 	    }
 	}
 	
-	@Deprecated
-	public static AgentResponse callAgent(String contextPath, AgentRequest agentRequest)  {
-		
-		Gson gson = new Gson();
-		
-		logger.info("callAgent start ");
-		
-		String serializedAgentRequest = gson.toJson(agentRequest);
-		
-		logger.info("SerAgRequ " + serializedAgentRequest);
-		
-		try {
-			String serializedAgentResponse = executeGet(contextPath, "agentrequest", serializedAgentRequest);
-			
-			logger.info("SerAgResp " + serializedAgentResponse);
-						
-			return gson.fromJson(serializedAgentResponse, AgentResponse.class);
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			throw new JPSRuntimeException(e.getMessage(), e);
-		}
-	}
-	
-	@Deprecated
-	public static AgentRequest getAgentRequest(HttpServletRequest req) {
-		String serializedAgentRequest = req.getParameter("agentrequest");
-		return new Gson().fromJson(serializedAgentRequest, AgentRequest.class);
-	}
-	
 	public static void printToResponse(Object object, HttpServletResponse resp) {
+		
+		// TODO-AE SC 20190220 add the case where object is of type org.json.JSONObject to avoid GSON transformation
 		
 		if (object == null) {
 			return;

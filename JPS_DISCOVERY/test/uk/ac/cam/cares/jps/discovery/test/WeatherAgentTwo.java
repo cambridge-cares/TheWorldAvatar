@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AbstractAgentServiceDescription;
 import uk.ac.cam.cares.jps.base.discovery.Agent;
+import uk.ac.cam.cares.jps.base.discovery.AgentCallAdditionalMethods;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
@@ -30,7 +31,7 @@ public class WeatherAgentTwo extends HttpServlet {
 		
 		logger.info("WeatherAgentTwo start");
 		
-		AgentRequest agentRequest = AgentCaller.getAgentRequest(req);
+		AgentRequest agentRequest = AgentCallAdditionalMethods.getAgentRequest(req);
 		AgentResponse agentResponse = new AgentResponse();
 		AbstractAgentServiceDescription.copyParameters(agentRequest, agentResponse);
 		

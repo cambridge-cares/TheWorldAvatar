@@ -26,6 +26,7 @@ public class ScenarioAgent extends HttpServlet {
 	private static final long serialVersionUID = 3746092168199681624L;
 
 	private static Logger logger = LoggerFactory.getLogger(ScenarioAgent.class);
+	
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -47,13 +48,18 @@ public class ScenarioAgent extends HttpServlet {
 		String scenarioBucket = ScenarioHelper.getScenarioBucket(scenarioName);
 		
 		ScenarioLog log = getScenarioLog(scenarioName);
+		boolean copyOnRead = ScenarioManagementAgent.getCopyOnRead(log);
 		
-		String result = null;
+		String result = "";
 		if (operation == null) {
 			
 			// do nothing, the scenario log file has been already created above
 			
 			//result = getScenarioFile(scenarioName);
+			
+		} else if ("/option".equals(operation)) {
+			
+			setOptions(jo, scenarioName, log);
 
 		} else if ("/mock".equals(operation)) {
 			
@@ -65,21 +71,19 @@ public class ScenarioAgent extends HttpServlet {
 				
 		} else if ("/read".equals(operation)) {
 			
-			result = readFile(jo, scenarioBucket);
+			result = readFile(jo, scenarioBucket, copyOnRead);
 			
 		} else if ("/query".equals(operation)) {
 			
-			result = queryFile(jo, scenarioBucket);
+			result = queryFile(jo, scenarioBucket, copyOnRead);
 			
 		} else if ("/update".equals(operation)) {
 
 			updateFile(jo, scenarioBucket);
-			result = "";
 			
 		} else if ("/delete".equals(operation)) {
 			
 			deleteScenario(scenarioName);
-			result = "";
 			
 		} else if ("/compose".equals(operation)) {
 			
@@ -100,7 +104,18 @@ public class ScenarioAgent extends HttpServlet {
 	private ScenarioLog getScenarioLog(String scenarioName) {
 		
 		String path = ScenarioManagementAgent.getScenarioLogPath(scenarioName);
-		return new ScenarioLog(path);
+		return new ScenarioLog(scenarioName, path);
+	}
+	
+	private void setOptions(JSONObject jo, String scenarioName, ScenarioLog log) {
+		
+		JSONObject message = new JSONObject().put("operation", "option");
+		
+		if (jo.has(ScenarioManagementAgent.COPY_ON_READ)) {
+			message.put(ScenarioManagementAgent.COPY_ON_READ, jo.getBoolean(ScenarioManagementAgent.COPY_ON_READ));
+		}
+		
+		log.logMessage(scenarioName, message);
 	}
 	
 	private void mock(JSONObject jo, String scenarioName, ScenarioLog log) {
@@ -110,10 +125,9 @@ public class ScenarioAgent extends HttpServlet {
 		}
 		
 		String agent = jo.getString(JPSConstants.SCENARIO_AGENT);
-		//createScenarioDescription(scenarioName, agent);
 
 		JSONObject message = new JSONObject().put("operation", "mock").put("agent", agent);
-		log.logMessage(message);
+		log.logMessage(scenarioName, message);
 	}
 	
 	private String call(JSONObject jo, String scenarioName) {
@@ -145,25 +159,31 @@ public class ScenarioAgent extends HttpServlet {
 	}
 	
 	/**
-	 * The resource location is the full path for the resource: either the original url given as an input parameter or the local scenario path. 
+	 * Returns the path of the requested resource from the bucket. If it doesn't exist and copyToBucket = true,
+	 * then its content is copied to the bucket. If if doesn't exist and copyToBucket = false, then 
+	 * the path of the requested resource itself is returned.
 	 * 
 	 * @param jo
 	 * @param scenarioBucket
-	 * @return the resource location
+	 * @param copyToBucket if true the copy the requested resource to the scenario bucket
+	 * @return the complete path of the scenario resource
 	 */
-	private String getBucket(JSONObject jo, String scenarioBucket) {
+	private String getResourcePath(JSONObject jo, String scenarioBucket, boolean copyToBucket) {
 			    
 		String resource = jo.getString(JPSConstants.SCENARIO_RESOURCE);
 		String completePathWithinBucket = ScenarioHelper.getFileNameWithinBucket(resource, scenarioBucket);
+		logger.info("get resource path for resource=" + resource + ", in bucket=" + completePathWithinBucket + ", copyToBucket=" + copyToBucket);
 		
-		logger.info("readFile path within bucket=" + completePathWithinBucket);
 		File fileWithinBucket = new File(completePathWithinBucket);
-	    if (!fileWithinBucket.exists()) {
+	    if (fileWithinBucket.exists()) {
+	    	return completePathWithinBucket;
+	    } else if (copyToBucket) {
 	    	String content = new QueryBroker().readFile(resource);
 	    	QueryBroker.writeFileLocally2(completePathWithinBucket, content);
-	    } 
+	    	return completePathWithinBucket;
+	    }  
 
-	    return completePathWithinBucket;
+	    return resource;
 	}
 	
 	/**
@@ -175,17 +195,17 @@ public class ScenarioAgent extends HttpServlet {
 	 * @param rdfResource
 	 * @return
 	 */
-	private String readFile(JSONObject jo, String scenarioBucket) {
+	private String readFile(JSONObject jo, String scenarioBucket, boolean copyOnRead) {
 		
-		String resource = getBucket(jo, scenarioBucket);
+		String resource = getResourcePath(jo, scenarioBucket, copyOnRead);
 		// TODO-AE SC the prepare method might create a scenario copy; in this case prepare method already reads the content; i.e. in this case
 		// we read it here a second time --> refactor the code such that this is not required; the same for queryFile
 		return new QueryBroker().readFile(resource);
 	}
 	
-	private String queryFile(JSONObject jo, String scenarioBucket) {
+	private String queryFile(JSONObject jo, String scenarioBucket, boolean copyOnRead) {
 		
-		String resource = getBucket(jo, scenarioBucket);
+		String resource = getResourcePath(jo, scenarioBucket, copyOnRead);
 		String sparqlQuery = jo.getString(JPSConstants.QUERY_SPARQL_QUERY);
 		
 		logger.info("sparqlquery=" + sparqlQuery);
@@ -195,7 +215,7 @@ public class ScenarioAgent extends HttpServlet {
 	
 	private void updateFile(JSONObject jo, String scenarioBucket) {
 		
-		String resource = getBucket(jo, scenarioBucket);
+		String resource = getResourcePath(jo, scenarioBucket, true);
 		String sparqlUpdate = jo.getString(JPSConstants.QUERY_SPARQL_UPDATE);
 		
 		logger.info("sparqlupdate=" + sparqlUpdate);
@@ -251,6 +271,32 @@ public class ScenarioAgent extends HttpServlet {
 	
 	private String executeOperationOfMockedAgent(JSONObject jo, String scenarioName, String operation, ScenarioLog log) {
 		
+		String httpUrl = findHttpUrlForOperationOfMockedAgent(jo, scenarioName, operation, log);
+		if (httpUrl == null) {
+			throw new JPSRuntimeException("unknown operation for scenario agent, scenarioName=" + scenarioName + ", operation=" + operation);
+		}
+		
+		jo.put(JPSConstants.SCENARIO_URL, ScenarioManagementAgent.getScenarioUrl(scenarioName));
+		String result = AgentCaller.executeGetWithURLAndJSON(httpUrl, jo.toString());
+		
+		System.out.println("MYMY = " + result);
+		
+		JSONObject joresult = new JSONObject(result);
+		
+		JSONObject message = new JSONObject();
+		String agent = ScenarioManagementAgent.getLatestMockedAgent(log);
+		message.put("agent", agent);
+		message.put("operation", operation);
+		// TODO-AE SC 20190220 only log the input and output parameters for the mocked operation
+		message.put("input", jo);
+		message.put("ouput", joresult);
+		log.logMessage(scenarioName, message);
+		
+		return result;
+	}
+	
+	private String findHttpUrlForOperationOfMockedAgent(JSONObject jo, String scenarioName, String operation, ScenarioLog log) {
+		
 		String agent = ScenarioManagementAgent.getLatestMockedAgent(log);
 		if (agent != null ) {
 			JSONObject input = new JSONObject().put("agent", agent); 
@@ -262,13 +308,12 @@ public class ScenarioAgent extends HttpServlet {
 				String httpUrl = jooperation.getString("hasHttpUrl");
 				int index = httpUrl.lastIndexOf("/");
 				if (operation.equals(httpUrl.substring(index))) {
-					jo.put(JPSConstants.SCENARIO_URL, ScenarioManagementAgent.getScenarioUrl(scenarioName));
-					return AgentCaller.executeGetWithURLAndJSON(httpUrl, jo.toString());
+					return httpUrl;
 				}
 			}
 		}
 		
-		throw new JPSRuntimeException("unknown operation for scenario agent, scenarioName=" + scenarioName + ", operation=" + operation);
+		return null;
 	}
 	
 	private String prepareRecording(JSONObject jo, String scenarioName, ScenarioLog log) {
@@ -291,9 +336,8 @@ public class ScenarioAgent extends HttpServlet {
 		JSONObject message = new JSONObject().put("operation", "preparerecording")
 				.put(JPSConstants.SCENARIO_AGENT, agent)
 				.put(JPSConstants.SCENARIO_AGENT_OPERATION, agentoperation);
-		log.logMessage(message);
-		
-		
+		log.logMessage(scenarioName, message);
+
 		return "";
 	}
 }

@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.base.test;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.servlet.ServletException;
@@ -10,8 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.ThreadContext;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONStringer;
+import org.json.JSONWriter;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -68,8 +70,8 @@ public class EmissionTestAgent extends JPSHttpServlet {
 		
 			LogServer.info(this, "called with path=" + path + ", plant=" + powerplant);
 			LogServer.info(this, "scenarioURL=" + ThreadContext.get("scenariourl"));
-			double em = getEmission(powerplant);
-			LogServer.info(this, "currentEmission=" + em);
+			double oldEmission = getEmission(powerplant);
+			LogServer.info(this, "oldEmission=" + oldEmission);
 			
 			String reducedFormula = null;
 						
@@ -85,11 +87,21 @@ public class EmissionTestAgent extends JPSHttpServlet {
 			} else if ("/queryemission".equals(path)) {
 			
 				String result = new QueryBroker().queryFile(powerplant, SPARQL_PLANT_QUERY_EMISSION);
+				result = JenaResultSetFormatter.convertToSimplifiedList(result).toString();
 				LogServer.info(this, "query result:\n");
 				LogServer.info(this, result);
 				
 				AgentCaller.printToResponse(result, response);
 			
+			} else if ("/getemission".equals(path)) {
+				
+				JSONWriter writer = new JSONStringer().object().key("hasemission")
+						.object().key("hasvalue")
+						.object().key("hasnumericalvalue").value(oldEmission)
+						.endObject().endObject().endObject();
+				String result = writer.toString();
+				AgentCaller.printToResponse(result, response);
+				
 			} else if ("/setemission".equals(path)) {
 				
 				double emission = jo.getDouble("emission");
@@ -121,8 +133,8 @@ public class EmissionTestAgent extends JPSHttpServlet {
 				throw new JPSRuntimeException("unknown operation");
 			}
 					
-			em = getEmission(powerplant);
-			LogServer.info(this, "newEmission=" + em);
+			double newEmission = getEmission(powerplant);
+			LogServer.info(this, "newEmission=" + newEmission);
 			
 			if ((reducedFormula != null) && (reducedFormula.length() > 0)) {
 				jo.put("formula", reducedFormula);
@@ -136,8 +148,8 @@ public class EmissionTestAgent extends JPSHttpServlet {
 	
 	private double getEmission(String powerplant) {
 		String result = new QueryBroker().queryFile(powerplant, SPARQL_PLANT_QUERY_EMISSION);
-		List<JSONObject> list = JenaResultSetFormatter.convertToSimplifiedList(result);
-		return list.get(0).getDouble("emissionvaluenum");
+		JSONArray list = JenaResultSetFormatter.convertToSimplifiedList(result).getJSONArray("results");
+		return list.getJSONObject(0).getDouble("emissionvaluenum");
 	}
 	
 	private void setEmission(String powerplant, double emission) {
