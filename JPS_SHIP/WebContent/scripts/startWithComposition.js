@@ -28,8 +28,8 @@ $(function(){
         }
     });
     //*****************************************************//
-    proj4.defs("EPSG:3857","+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs");
     //proj4.defs("EPSG:28992","+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.417,50.3319,465.552,-0.398957,0.343988,-1.8774,4.0725 +units=m +no_defs");
+    proj4.defs("EPSG:3857","+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs");
     //***************************************************************************
 	// default position of map is set at Singapore
 	const position = {
@@ -94,7 +94,7 @@ $(function(){
             if (!isNaN(latitude) && !isNaN(longitude)) {
             	console.log(longitude, latitude);
                 const convertedCoordinates = proj4('EPSG:3857', [parseFloat(longitude), parseFloat(latitude)]);
-//            	const convertedCoordinates = proj4('EPSG:3414', [parseFloat(longitude), parseFloat(latitude)]);
+            	//const convertedCoordinates = proj4('EPSG:3857', [parseFloat(longitude), parseFloat(latitude)]);
 
                 coordinatesArray.push(convertedCoordinates[0]); // x
                 coordinatesArray.push(convertedCoordinates[1]); // y
@@ -138,7 +138,6 @@ $(function(){
   
         console.log(reactionmechanism);
         
-
 //        approximate becasue texture only work on power2(has to be 1:1,1:2,1:4...)
 //        [xmin, xmax, ymin, ymax] = appro2ratio(xmin, xmax, ymin, ymax);
         [xmin, xmax, ymin, ymax, ratio] = appro2ratio(xmin, xmax, ymin, ymax); // 28 Aug 18
@@ -148,7 +147,7 @@ $(function(){
         const upperx = xmax;
         const uppery = ymax;
 
-      console.log('result')
+      	console.log('result')
         var canvas = $('#drawcanvas'); canvas.width(1024*ratio).height(1024); // 28 Aug 18
         var svg = $('contoursvg');svg.width(1024*ratio).height(1024); // 28 Aug 18
 
