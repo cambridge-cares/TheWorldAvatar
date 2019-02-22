@@ -59,6 +59,14 @@
 						<targetPath>python</targetPath>
 					</resource>
 					<resource>
+						<directory>MoDS</directory>
+						<targetPath>MoDS</targetPath>
+					</resource>
+					<resource>
+						<directory>workingdir</directory>
+						<targetPath>workingdir</targetPath>
+					</resource>
+					<resource>
 						<directory>WebContent/css</directory>
 						<targetPath>css</targetPath>
 					</resource>
