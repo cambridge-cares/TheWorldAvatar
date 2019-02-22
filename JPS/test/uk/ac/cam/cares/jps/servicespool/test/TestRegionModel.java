@@ -9,7 +9,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.vocabulary.RDF;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import uk.ac.cam.cares.jps.building.CRSTransformer;
 

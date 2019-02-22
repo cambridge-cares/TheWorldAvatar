@@ -3,7 +3,7 @@ package uk.ac.cam.cares.jps.servicespool.test;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 public class TestBuildingJSON {
 	public String IRIs  = "[\r\n" + 

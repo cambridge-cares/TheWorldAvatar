@@ -105,10 +105,10 @@ public class ADMSAgent extends HttpServlet {
 			//==============================================================================
 						
 			//String srsname = region.getString("srsname");
-			double upperx = Double.parseDouble(region.getJSONObject("uppercorner").getString("upperx"));
-			double uppery = Double.parseDouble(region.getJSONObject("uppercorner").getString("uppery"));
-			double lowerx = Double.parseDouble(region.getJSONObject("lowercorner").getString("lowerx"));
-			double lowery = Double.parseDouble(region.getJSONObject("lowercorner").getString("lowery"));
+			double upperx = Double.parseDouble(""+region.getJSONObject("uppercorner").get("upperx"));
+			double uppery = Double.parseDouble(""+region.getJSONObject("uppercorner").get("uppery"));
+			double lowerx = Double.parseDouble(""+region.getJSONObject("lowercorner").get("lowerx"));
+			double lowery = Double.parseDouble(""+region.getJSONObject("lowercorner").get("lowery"));
 			
 			double[] sourceXY = null;
 			

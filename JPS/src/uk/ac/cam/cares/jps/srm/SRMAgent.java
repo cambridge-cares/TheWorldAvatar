@@ -128,7 +128,7 @@ public class SRMAgent extends HttpServlet  {
 		String X = "null"; 
 		for(int i = 0; i < bindings.length();i++) {
 			
-			urimech.add(bindings.getString(i));
+			urimech.add(String.valueOf(bindings.get(i)));
 
 		}
 		
