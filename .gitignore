@@ -1,1 +1,7 @@
 /JPS_BMS/workingdir/rdf-xml-output
+/.metadata/
+*.jar
+*.pyc
+/JPS_MEN/WebContent/WEB-INF/lib/*.dll
+/JPS_SCENARIOS/bin/uk/ac/cam/cares/jps/scenario/*.class
+target

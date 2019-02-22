@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -27,6 +26,8 @@ import com.google.gson.Gson;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.building.BuildingQueryPerformer;
 import uk.ac.cam.cares.jps.building.CRSTransformer;
@@ -34,12 +35,14 @@ import uk.ac.cam.cares.jps.building.SimpleBuildingData;
 
 
 @WebServlet("/ADMSAgent")
-public class ADMSAgent extends HttpServlet {
+public class ADMSAgent extends JPSHttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	private Logger logger = LoggerFactory.getLogger(ADMSAgent.class);
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	@Override
+	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		
 		/*
 		 * This agent takes: region, plantIRI, city, weatherstate and later emission stream 
@@ -188,12 +191,27 @@ public class ADMSAgent extends HttpServlet {
 			String targetFolder = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
 			if(request.getServerName().contains("localhost")) {
 				//uncomment if tested in kevin's computer
-				startADMS(targetFolder);
+				// TODO-AE SC URGENT URGENT REMOVE UNCOMMENTING
+				//startADMS(targetFolder);
 			} else {
 				startADMS(targetFolder);
 			}
 			JSONObject result = new JSONObject();
 			result.put("folder", targetFolder);
+			
+			
+			
+			// TODO-AE SC URGENT URGENT REMOVE
+			System.out.println("MYMYMY2 = " + getScenarioName());
+			String scenarioName = JPSHttpServlet.getScenarioName();
+			if (scenarioName != null) {
+				String outputContent = new QueryBroker().readFileLocally(targetFolder + "/test.gst");
+				String targetUrl = "http://www.theworldavatar.com/kb/admsoutput";
+				String targetIRI = new QueryBroker().writeFile(targetUrl, outputContent);
+				result.put("dispersiongrid", targetIRI);
+			}
+			
+			
 			response.getWriter().write(result.toString()); // TODO: ZXC Read the output file and then return JSON
 			// ====================================================================================
 			
