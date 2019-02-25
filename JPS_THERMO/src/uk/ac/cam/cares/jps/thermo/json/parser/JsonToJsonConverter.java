@@ -128,9 +128,7 @@ public class JsonToJsonConverter {
 		 *         species IRI, mass unit IRI, thermo agent IRI.
 		 * 
 		 */
-
 		
-
 		jsonObject.append("speciesIRI", speciesIRI);
 
 		jsonObject.append("quantumCalculationIRI", quantumCalculationIRI);

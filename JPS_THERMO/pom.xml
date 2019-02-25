@@ -42,8 +42,7 @@
 <artifactId>CoMoOntology</artifactId>
 <version>0.0.0</version>
 </dependency>
- 
- 
+
 <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
 <dependency>
     <groupId>commons-io</groupId>
