@@ -124,6 +124,9 @@ public class TestAgentWebAPI extends TestCase {
 		
 		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithWasteProduct");
 		Service composedAgent = createADMSWithWasteProduct();
+ 
+		
+		
 		JSONObject result = composeAndExecuteForBerlinDirectCallWithWaste(composedAgent);
 		assertEquals(25, result.getJSONArray("building").length());
 	}

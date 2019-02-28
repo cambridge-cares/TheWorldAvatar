@@ -44,8 +44,8 @@ public class ServiceDiscovery {
 	private synchronized void init() {	
 		this.services = new ArrayList<Service>();
 		this.httpToServiceMap = new HashMap<String,Service>();
-		//String directory = KeyValueServer.get(KEY_DIR_KB_AGENTS);
-		String directory = "C:\\TOMCAT\\webapps\\ROOT\\kb\\agents";
+		String directory = KeyValueServer.get(KEY_DIR_KB_AGENTS);
+		//String directory = "C:\\TOMCAT\\webapps\\ROOT\\kb\\agents";
 		System.out.println("================== Directory ====================");
 		System.out.println(directory);
 		System.out.println("=================================================");
@@ -57,7 +57,7 @@ public class ServiceDiscovery {
 	public ArrayList<Service> getAllServiceCandidates(List<MessagePart> inputs, ArrayList<Service> servicePool){
 		System.out.println("------------------ SERVICE POOL ---------------------------");
 		for (Service s : servicePool) {
-			System.out.println(s.httpUrl);
+			System.out.println(s.uri.toASCIIString());
 		}
 		ArrayList<Service> result = new ArrayList<Service>();
 		ArrayList<URI> inputTypesList = new ArrayList<URI>();
@@ -113,6 +113,7 @@ public class ServiceDiscovery {
  		for(File file : files) {
  			
  			if(file.getName().endsWith("owl")) {
+ 				logger.info("Loading file=" + file.getName());
  	 	 		String wholeContent = "";
  	 			try (BufferedReader br = new BufferedReader(new FileReader(file.getAbsoluteFile()))) {
  	 				String sCurrentLine;

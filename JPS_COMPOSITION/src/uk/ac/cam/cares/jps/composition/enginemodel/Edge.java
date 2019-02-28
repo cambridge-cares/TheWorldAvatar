@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.composition.enginemodel;
 
 import java.net.URI;
+import java.util.Arrays;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -23,4 +24,7 @@ public class Edge {
 	}
 	
 	
+	public boolean compare_two_edge(Edge theOtherEdge) {
+		return Arrays.equals(theOtherEdge.fromOutput, this.fromOutput) && Arrays.equals(theOtherEdge.toInput, this.toInput); 
+}
 }

@@ -3,22 +3,6 @@ var serviceList = {};
 var executionChain = {};
 
 var hostname = window.location.href;
-var defaultRealService = {"class": "go.GraphLinksModel",
-    "nodeDataArray": [
-        {"key":1, "text":"Composite_Service_11Yju7k1", "category":"Service", "fullIRI":"http://www.theworldavatar.com/Composite_Service_11Yju7k1"},
-        {"text":"Operation_pexDwAC", "category":"Operation", "fullIRI":"http://www.theworldavatar.com/Operation_pexDwAC", "httpUrl":"http://www.theworldavatar.com/JPS_COMPOSITION/CoordinateToWeather", "key":-2},
-        {"text":"MessageContent_Input_xzbAvBW", "category":"MessageContent_Input", "fullIRI":"http://www.theworldavatar.com/MessageContent_Input_xzbAvBW", "key":-3},
-        {"text":"Mandatory_MessagePart_CghedAK", "category":"Mandatory_MessagePart", "fullIRI":"http://www.theworldavatar.com/Mandatory_MessagePart_CghedAK", "key":-4, "params":{"hasValue":"", "hasDatatype":"", "type":"http://test.com/ontology/Region"}},
-        {"text":"MessageContent_Output_18YRk5SC", "category":"MessageContent_Output", "fullIRI":"http://www.theworldavatar.com/MessageContent_Output_18YRk5SC", "key":-5},
-        {"text":"Mandatory_MessagePart_15wGxcwo", "category":"Mandatory_MessagePart", "fullIRI":"http://www.theworldavatar.com/Mandatory_MessagePart_15wGxcwo", "key":-6, "params":{"hasValue":"", "hasDatatype":"", "type":"http://test.com/ontology/ADMSSimulation"}}
-    ],
-    "linkDataArray": [
-        {"from":1, "to":-2},
-        {"from":-2, "to":-3},
-        {"from":-3, "to":-4},
-        {"from":-2, "to":-5},
-        {"from":-5, "to":-6}
-    ]};
 // This function creates a hashcode basing on the current date in milliseconds
 function toHex(input) {
     var hash = "",
