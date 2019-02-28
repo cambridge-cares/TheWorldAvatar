@@ -30,6 +30,9 @@ import uk.ac.cam.cares.jps.building.CRSTransformer;
 
 
 
+
+
+
 @WebServlet("/RegionToCity")
 public class RegionToCity extends HttpServlet {
  
@@ -145,10 +148,10 @@ public class RegionToCity extends HttpServlet {
 	public String getCenterLatLon(JSONObject region) {
 		String result = "";
 		try {
-			double xmin = Double.parseDouble(region.getString("lowerx"));
-			double xmax = Double.parseDouble(region.getString("upperx"));
-			double ymin = Double.parseDouble(region.getString("lowery"));
-			double ymax = Double.parseDouble(region.getString("uppery"));
+			double xmin = Double.parseDouble(String.valueOf(region.get("lowerx")));
+			double xmax = Double.parseDouble(String.valueOf(region.get("upperx")));
+			double ymin = Double.parseDouble(String.valueOf(region.get("lowery")));
+			double ymax = Double.parseDouble(String.valueOf(region.get("uppery")));
 			
 			double xcenter = (xmax + xmin)/2;
 			double ycenter = (ymax + ymin)/2;

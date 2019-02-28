@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.scenario.testagent;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.ThreadContext;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -18,9 +18,11 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
-@WebServlet(urlPatterns = {"/EmissionTestAgent/*"}) 
+// TODO-AE SC 20190218 delete this call after full migration to JPS BASE
+//@WebServlet(urlPatterns = {"/EmissionTestAgent/*"}) 
+@WebServlet(urlPatterns = {"/xxxxx/*"}) 
 public class EmissionTestAgent extends JPSHttpServlet {
 	
 	private static final long serialVersionUID = -1180303749059632458L;
@@ -77,9 +79,9 @@ public class EmissionTestAgent extends JPSHttpServlet {
 		JSONObject jo = AgentCaller.readJsonParameter(request);
 		
 		try {
-			String powerplant = jo.getString("powerplant");
+			String powerplant = jo.getString("plant");
 		
-			logger.info("called with path=" + path + ", powerplant=" + powerplant);
+			logger.info("called with path=" + path + ", plant=" + powerplant);
 			logger.info("scenarioURL=" + ThreadContext.get("scenariourl"));
 			
 			if ("/read".equals(path)) {
@@ -104,10 +106,12 @@ public class EmissionTestAgent extends JPSHttpServlet {
 				int increment = jo.getInt("increment");
 			
 				String result = new QueryBroker().queryFile(powerplant, SPARQL_EMISSION);
-				List<JSONObject> list = JenaResultSetFormatter.convertToSimplifiedList(result);
-				double emission = list.get(0).getDouble("emissionvaluenum");
+				JSONArray list = JenaResultSetFormatter.convertToSimplifiedList(result).getJSONArray("results");
+				double emission = list.getJSONObject(0).getDouble("emissionvaluenum");
 				logger.info("increasing the current emission value=" + emission + " by increment=" + increment);
 
+				// TODO-AE SC URGENT 20190215 implement increment for EmissionTestAgent
+				
 				//AgentCaller.printToResponse(result, response);
 			}
 			

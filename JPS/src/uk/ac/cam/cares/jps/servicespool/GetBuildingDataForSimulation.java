@@ -166,10 +166,10 @@ public class GetBuildingDataForSimulation extends HttpServlet {
 		double[][] result = new double[3][2];
 		region = region.getJSONObject("region");
 		String srsname = region.getString("srsname");
-		double upperx = Double.parseDouble(region.getJSONObject("uppercorner").getString("upperx"));
-		double uppery = Double.parseDouble(region.getJSONObject("uppercorner").getString("uppery"));
-		double lowerx = Double.parseDouble(region.getJSONObject("lowercorner").getString("lowerx"));
-		double lowery = Double.parseDouble(region.getJSONObject("lowercorner").getString("lowery"));
+		double upperx = Double.parseDouble(String.valueOf(region.getJSONObject("uppercorner").get("upperx")));
+		double uppery = Double.parseDouble(String.valueOf(region.getJSONObject("uppercorner").get("uppery")));
+		double lowerx = Double.parseDouble(String.valueOf(region.getJSONObject("lowercorner").get("lowerx")));
+		double lowery = Double.parseDouble(String.valueOf(region.getJSONObject("lowercorner").get("lowery")));
 		if (!srsname.equalsIgnoreCase(CRSTransformer.EPSG_28992)) {
 			if(cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Berlin")) {
 				String sourceCRS = CRSTransformer.EPSG_4326; 

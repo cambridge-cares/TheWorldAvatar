@@ -62,8 +62,7 @@ public class GetShipListFromRegion extends HttpServlet {
 		try {
 			input = new JSONObject(req.getParameter("query"));
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		}
 		System.out.println(input.toString());  
 		//get parameter range		

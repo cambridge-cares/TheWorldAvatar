@@ -8,8 +8,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Test;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -57,7 +57,7 @@ public class TestSPARQLQuery {
 			"Filter(xsd:double(?x) > \"391937.258878\"^^xsd:double && xsd:double(?y) > \"5819820.136031\"^^xsd:double && xsd:double(?x) < \"392050.641151\"^^xsd:double && xsd:double(?y) < \"5820066.169883\"^^xsd:double) \r\n" + 
 			"}\r\n" + 
 			"LIMIT 25";
-	@AfterEach
+	@After
 	void tearDown() throws Exception {
 	}
 

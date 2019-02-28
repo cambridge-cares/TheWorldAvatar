@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.Agent;
+import uk.ac.cam.cares.jps.base.discovery.AgentCallAdditionalMethods;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
 import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
@@ -32,7 +33,7 @@ public class SearchAgent extends HttpServlet {
 		logger.info("SearchAgent is called, path = " + path);
 
 		if ("/search".equals(path)) {
-			AgentRequest agentRequest = AgentCaller.getAgentRequest(req);
+			AgentRequest agentRequest = AgentCallAdditionalMethods.getAgentRequest(req);
 			List<String> list = search(agentRequest);
 			AgentCaller.printToResponse(list, resp);
 		} else if ("/call".equals(path)) {
@@ -58,7 +59,7 @@ public class SearchAgent extends HttpServlet {
 		
 		AgentResponse result = null;
 		
-		AgentRequest agentRequest = AgentCaller.getAgentRequest(req);
+		AgentRequest agentRequest = AgentCallAdditionalMethods.getAgentRequest(req);
 		
 		List<String> list = search(agentRequest);
 		if (list.size() > 0) {
@@ -70,7 +71,7 @@ public class SearchAgent extends HttpServlet {
 			// TODO-AE this is a complete hack to get the path
 			int index = address.indexOf("8080");
 			String path = address.substring(index+4);
-			result = AgentCaller.callAgent(path, agentRequest);
+			result = AgentCallAdditionalMethods.callAgent(path, agentRequest);
 			
 		} else {
 			throw new JPSRuntimeException("no suitable agent found");

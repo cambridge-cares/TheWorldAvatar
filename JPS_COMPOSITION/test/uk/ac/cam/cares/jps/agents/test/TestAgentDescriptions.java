@@ -14,8 +14,11 @@ import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 public class TestAgentDescriptions extends TestCase {
 
 	private static final String JPS = "http://www.theworldavatar.com/JPS";
+	private static final String JPS_BASE = "http://www.theworldavatar.com/JPS_BASE";
 	private static final String JPS_CO2EMISSIONS = "http://www.theworldavatar.com/JPS_CO2EMISSIONS";
 	private static final String JPS_COMPOSITION = "http://www.theworldavatar.com/JPS_COMPOSITION";
+	private static final String JPS_MEN = "http://www.theworldavatar.com/JPS_MEN";
+	private static final String JPS_SCENARIO = "http://www.theworldavatar.com/JPS_SCENARIO";
 	
 	private static final String WEATHER = "https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl";
 	
@@ -167,6 +170,54 @@ public class TestAgentDescriptions extends TestCase {
 			.build();
 	}
 	
+	private Service createDescrForAgentEmissionTest() {
+		return new ServiceBuilder()
+			.operation(null, JPS_BASE + "/EmissionTestAgent/queryemission")
+			.input("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl", "plant")
+			.output("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#hasEmission", "hasEmission").down()
+				.output("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue", "hasValue").down()
+					.output("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue", "numericalValue").up()
+				.up()
+			.operation(null, JPS_BASE + "/EmissionTestAgent/setemission")
+			.input("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl", "plant")
+			.input("http://www.w3.org/2001/XMLSchema#double", "emission")
+			.operation(null, JPS_BASE + "/EmissionTestAgent/add")
+			.input("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl", "plant")
+			.input("http://www.w3.org/2001/XMLSchema#double", "increment")
+			.operation(null, JPS_BASE + "/EmissionTestAgent/multiply")
+			.input("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl", "plant")
+			.input("http://www.w3.org/2001/XMLSchema#double", "factor")
+			.operation(null, JPS_BASE + "/EmissionTestAgent/change")
+			.input("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl", "plant")
+			.input("http://www.w3.org/2001/XMLSchema#string", "formula")		
+			.build();
+	}
+	
+	private Service createDescrForAgentScenario() {
+		return new ServiceBuilder()
+			.operation(null, JPS_SCENARIO + "/mock")
+				.input("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service", "scenarioagent")
+				//.input("http://www.w3.org/2001/XMLSchema#string", "scenarioname")
+			.operation(null, JPS_SCENARIO + "/call")
+				.input("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasHttpUrl", "scenarioagentoperation")
+				//.input("http://www.w3.org/2001/XMLSchema#string", "scenarioname")
+			.operation(null, JPS_SCENARIO + "/read")
+				.input("http://www.theworldavatar.com/ontology/ontoagent/OntoAgent.owl#Resource", "scenarioresource")
+				//.input("http://www.w3.org/2001/XMLSchema#string", "scenarioname")
+				.output("http://www.w3.org/2001/XMLSchema#string", "hasOutput")
+			.operation(null, JPS_SCENARIO + "/query")
+				.input("http://www.theworldavatar.com/ontology/ontoagent/OntoAgent.owl#Resource", "scenarioresource")
+				.input("http://www.theworldavatar.com/ontology/ontoagent/OntoAgent.owl#SparqlQuery", "sparqlquery")
+				//.input("http://www.w3.org/2001/XMLSchema#string", "scenarioname")
+				.output("http://www.w3.org/2001/XMLSchema#string", "hasOutput")
+			.operation(null, JPS_SCENARIO + "/delete")
+				//.input("http://www.w3.org/2001/XMLSchema#string", "scenarioname")
+				.input("http://www.theworldavatar.com/ontology/ontoagent/OntoAgent.owl#Resource", "scenarioresource")
+			.operation(null, JPS_SCENARIO + "/option")
+				.input("http://www.w3.org/2001/XMLSchema#boolean", "copyonread")
+			.build();
+	}
+	
 	private Service createDescrForComposedAgentADMS() {
 		return new ServiceBuilder()
 				.composed()
@@ -179,11 +230,44 @@ public class TestAgentDescriptions extends TestCase {
 				.build();
 	}
 	
+	private Service createDescrForAgentADMSWithScenarioTest() {
+		return new ServiceBuilder()
+				.operation(null, JPS + "/ADMSCoordinationAgentWithScenario")
+				.input("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType", "region")
+				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
+				.input("https://como.cheng.cam.ac.uk/kb/ontochem.owl#ReactionMechanism", "reactionmechanism")
+				.output("https://www.w3.org/ns/csvw#Table", "dispersiongrid")
+				.output("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType", true, "buildings", true)
+				.build();
+	}
+	
+	private Service createDescrForAgentMEN() {
+		return new ServiceBuilder()
+				.operation(null, JPS_MEN + "/MENAgent")
+				.input("http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#Eco-industrialPark", "ecoindustrialpark")
+				.input("http://www.theworldavatar.com/ontology/Market.owl#Price", "carbontax")
+				.input("http://www.theworldavatar.com/ontology/Market.owl#InterestFactor", "interestfactor")
+				.input("http://www.theworldavatar.com/ontology/Market.owl#CostFactor", "annualcostfactor")
+				.output("http://www.theworldavatar.com/ontology/Market.owl#Cost", "totalcost")
+				.build();
+	}
+	
+	private Service createDescrForAgentSRMEmissions() {
+		return new ServiceBuilder()
+				.operation(null, JPS + "/SRMAgent")
+				.input("https://como.cheng.cam.ac.uk/kb/ontochem.owl#ReactionMechanism", "reactionmechanism")
+				.input("http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CompressionIgnitionEngine", "engine")
+				.output("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
+				.build();
+	}
+	
 	public void testDescription() throws URISyntaxException, FileNotFoundException {
 		
-		Service service = createDescrForAgentADMS(); 
+		Service service = createDescrForAgentSRMEmissions();
 		
 		String json = new Gson().toJson(service);
 		System.out.println(json);
+		
+		backAndforthAndWrite(service, "_SRMEmissions");
 	}
 }
