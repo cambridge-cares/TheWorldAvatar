@@ -57,6 +57,12 @@ public class ServiceCompositionEngine {
 				this.newGraph.servicePool);
 		 
 		
+		System.out.println("================ Printing from service append ===========");
+		for(Service s: servicesToAppend) {
+			System.out.println(s.httpUrl);
+		}
+		
+		
 		this.newGraph.servicePool.addAll(servicesToAppend);
 		for (Service service : servicesToAppend) {
 			this.inputsToAppend.addAll(service.getAllOutputs());
@@ -147,7 +153,7 @@ public class ServiceCompositionEngine {
 		int index = 0;
 		while (!met && index <= 50) {
 			index++;
-			System.out.println(index);
+			System.out.println("Index layer" + index);
 			met = this.appendLayerToGraph(index);
 		}
 		int size = 1;

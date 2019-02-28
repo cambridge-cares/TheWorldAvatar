@@ -24,7 +24,7 @@ function showPopupWindow(e, obj) {
 
                         thisNodeData['hasValue'] = hasValue;
                         thisNodeData['hasDatatype'] = hasDatatype;
-                        thisNodeData['modelReference'] = modelReference;
+                        thisNodeData['type'] = modelReference;
                         fromNode['data']['params'] = thisNodeData;
                     },
                     onShow: function () {
@@ -32,7 +32,7 @@ function showPopupWindow(e, obj) {
                         if (fromNode['data']['params']) {
                             $('#instanceSearch').find('.input').find('.prompt').val(fromNode['data']['params']['hasValue'])
                             $('#datatypeSearch').find('.input').find('.prompt').val(fromNode['data']['params']['hasDatatype']);
-                            $('#classSearch').find('.input').find('.prompt').val(fromNode['data']['params']['modelReference']);
+                            $('#classSearch').find('.input').find('.prompt').val(fromNode['data']['params']['type']);
                         }
 
                         setUpSearchFunction();
