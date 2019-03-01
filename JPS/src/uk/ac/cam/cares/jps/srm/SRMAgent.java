@@ -426,15 +426,11 @@ public class SRMAgent extends HttpServlet  {
 
 		
 		String jsonFiledir = AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/OutputCase00001Cyc0001ADMS.json";
+		JSONObject json = dojsonmodif(jsonFiledir);
+		AgentCaller.writeJsonParameter(response, json);
 
-		JSONObject dataSet = new JSONObject();
-		try {
-
-			dataSet.put("file", dojsonmodif(jsonFiledir));
-			response.getWriter().write(dataSet.toString());
-		} catch (JSONException e) {
-			logger.error(e.getMessage());
-		}
+		logger.info("finished successfully");
+		
 	}
 
 	private void cleanDirectory() {
@@ -470,6 +466,7 @@ public class SRMAgent extends HttpServlet  {
 					if (a.equals("general")) {
 
 						updateChemistryBlock(doc, b,"ADMSOutput","1");
+						//updateChemistryBlock(doc, b,"MomentsPostProcessOutput","1"); //(only for sooth later)
 					}
 
 					if (a.equals("Chemistry")) {
@@ -477,12 +474,17 @@ public class SRMAgent extends HttpServlet  {
 						updateChemistryBlock(doc, b,"MechFile",valueofmech);
 						updateChemistryBlock(doc, b,"ChemModel","5"); //based on user input mechanism
 					}
-					if (a.equals("fuel")) {
-
-						//updateFuelBlock(doc, b,"FuelSpeciesIndices","NC7H16","IC8H18");
-						
+					if(a.equals("soot")) {
+						//updateChemistryBlock(doc, b,"PopBalModel","2"); //(only for sooth later)
 					}
-					if (a.equals("InjectionFuel")) {
+					if (a.equals("NanoModelPostProcess")) {
+						//updateChemistryBlock(doc, b,"Number_KDE_point","200"); //(only for sooth later)
+					}
+					if (a.equals("NanoModel")) {
+						//updateChemistryBlock(doc, b,"NanoModelFlag","1"); //(only for sooth later)
+					}
+
+					if (a.equals("fuel")) {
 
 						//updateFuelBlock(doc, b,"InjSpeciesIndices","NC7H16","IC8H18");
 						
@@ -593,60 +595,65 @@ public class SRMAgent extends HttpServlet  {
 	        return fileContents.toString();
 	    }
 	}
-	
-	
+		
 	//to convert the file of adms output in srm to the string of corrected json format
-		public String dojsonmodif(String outputfiledir) throws IOException
-		{	
-			//the flow is fixed and cannot be changed
-		    
-			ArrayList <String> newstring = new ArrayList <String> ();
-		    String newjsonfile = readFile(outputfiledir);
-		    newjsonfile=newjsonfile.replace("/*","_");
-		    newjsonfile=newjsonfile.replace("*/","_");
-		    
-		    //remove the "mixture" part error except the last part
-		    newjsonfile=newjsonfile.replace("\",\r\n" + 
-		    		"        }","\"\r\n" + 
-		    				"        },");
-		  //remove the "pollutant" part error except the last part
-		    newjsonfile =newjsonfile.replaceAll("\",\r\n" + 
-		    		"            }","\"\r\n" + 
-		    	    		"            },");
-		     
-		    //move the comma to the last } for pollutant
-		      newjsonfile=newjsonfile.replace("},\r\n" + 
-		    		"        }\r\n" + 
-		    		"        {","}\r\n" + 
-		    				"        },\r\n" + 
-		    				"        {");
-		    
-		    //move the comma to the last } for mixture
-		    newjsonfile=newjsonfile.replace("},\r\n" + 
-		    		"    }","}\r\n" + 
-		    				"    },");
-		    
-		    //delete the comma for the last } in json
-		    newjsonfile=newjsonfile.replace("},\r\n" + 
-		    		"        }\r\n" + 
-		    		"    ]","}\r\n" + 
-		    				"        }\r\n" + 
-		    				"    ]");
+	public JSONObject dojsonmodif(String outputfiledir) throws IOException {	
+		//the flow is fixed and cannot be changed
+	    
+		ArrayList <String> newstring = new ArrayList <String> ();
+	    String newjsonfile = readFile(outputfiledir);
+	    newjsonfile=newjsonfile.replace("/*","_");
+	    newjsonfile=newjsonfile.replace("*/","_");
+	    
+	    //remove the "mixture" part error except the last part
+	    newjsonfile=newjsonfile.replace("\",\r\n" + 
+	    		"        }","\"\r\n" + 
+	    				"        },");
+	  //remove the "pollutant" part error except the last part
+	    newjsonfile =newjsonfile.replaceAll("\",\r\n" + 
+	    		"            }","\"\r\n" + 
+	    	    		"            },");
+	     
+	    //move the comma to the last } for pollutant
+	      newjsonfile=newjsonfile.replace("},\r\n" + 
+	    		"        }\r\n" + 
+	    		"        {","}\r\n" + 
+	    				"        },\r\n" + 
+	    				"        {");
+	    
+	    //move the comma to the last } for mixture
+	    newjsonfile=newjsonfile.replace("},\r\n" + 
+	    		"    }","}\r\n" + 
+	    				"    },");
+	    
+	    //delete the comma for the last } in json
+	    newjsonfile=newjsonfile.replace("},\r\n" + 
+	    		"        }\r\n" + 
+	    		"    ]","}\r\n" + 
+	    				"        }\r\n" + 
+	    				"    ]");
 
-		    int x=newjsonfile.split("_").length;
-		    for(int a=0;a<x;a+=2)
-		    {
-		    	newstring.add(newjsonfile.split("_")[a]);
-		    }
-		    
-		    StringBuilder sb = new StringBuilder();
-		    for (String s : newstring)
-		    {
-		        sb.append(s);
-		    }
+	    int x=newjsonfile.split("_").length;
+	    for(int a=0;a<x;a+=2)
+	    {
+	    	newstring.add(newjsonfile.split("_")[a]);
+	    }
+	    
+	    StringBuilder sb = new StringBuilder();
+	    for (String s : newstring)
+	    {
+	        sb.append(s);
+	    }
 
-		    //system.out.println(sb.toString());
-			
-			return sb.toString().trim();
-		}
+	    //system.out.println(sb.toString());
+		
+	    
+	    
+		JSONObject dataSet = new JSONObject(sb.toString());
+		
+		
+		JSONObject result = new JSONObject();
+		result.put("results", dataSet);
+		return result;
+	}
 }

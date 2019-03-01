@@ -58,11 +58,11 @@ public class TestSPARQLQuery {
 			"}\r\n" + 
 			"LIMIT 25";
 	@After
-	void tearDown() throws Exception {
+	public void tearDown() throws Exception {
 	}
 
 	@Test
-	void test() {
+	public void test() {
 		String myHost = "www.theworldavatar.com" ;
 		int myPort = 80;
 		String myPath = "/damecoolquestion/berlinbuildings/query";

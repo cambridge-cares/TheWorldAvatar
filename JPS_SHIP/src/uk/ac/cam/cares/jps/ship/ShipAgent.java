@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
  * Servlet implementation class ShipAgent
@@ -68,7 +69,7 @@ public class ShipAgent extends HttpServlet {
 	}
 		
 	
-	public void doConversion(OntModel jenaOwlModel,String iri,String jsonresultstring) throws JSONException, IOException
+	public void doConversion(OntModel jenaOwlModel,String iri,JSONObject jsonObject) throws JSONException, IOException
 	{
 	    /*Adding elements to HashMap*/
 	    hmap.put("CO", "ChemSpecies_Carbon__monoxide");
@@ -82,7 +83,7 @@ public class ShipAgent extends HttpServlet {
 			valueofspeciesemissionrate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double("0")));
 		}
 
-	    JSONObject jsonObject=new JSONObject(jsonresultstring);
+	   
 		
 		//JSONObject jsonObject = parseJSONFile(outputfiledir); (used after the format of json file is fixed )
 		Double molecularvalue = jsonObject.getJSONObject("mixture").getJSONObject("molmass").getDouble("value")*1000;
@@ -129,7 +130,7 @@ public class ShipAgent extends HttpServlet {
         return content2;
     }
 	
-	public void startConversion(String iriOfChimney,String jsonresultstring) throws Exception {
+	public void startConversion(String iriOfChimney,JSONObject jsonresultstring) throws Exception {
 				
 		jenaOwlModel = ModelFactory.createOntologyModel();	
 		jenaOwlModel.read(iriOfChimney);
@@ -264,27 +265,13 @@ public class ShipAgent extends HttpServlet {
 		JSONObject dataSet = new JSONObject();
 		try {
 			dataSet.put("reactionmechanism",  iri) ;
-			dataSet.put("engine", cpirilist2.get(0)) ;
-		}
-		catch (JSONException e) {
-				e.printStackTrace();
-		}
-		
+			dataSet.put("engine", cpirilist2.get(0)) ;	
 		String resultjson = AgentCaller.executeGet("JPS/SRMAgent", "query", dataSet.toString());
-	    
-	    String jsonsrmresult = null;
-
-		try {
-			jsonsrmresult = new JSONObject(resultjson).getString("file");
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		
-		//update the emission and other information into the chimney owl file
-		try {
+			JSONObject jsonsrmresult = new JSONObject(resultjson).getJSONObject("results");
 			startConversion(cpirilist.get(0),jsonsrmresult);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
+			throw new JPSRuntimeException(e.getMessage(), e);
 		} //convert to update value
 
 	    

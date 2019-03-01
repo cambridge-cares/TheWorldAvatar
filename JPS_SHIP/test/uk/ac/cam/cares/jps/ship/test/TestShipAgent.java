@@ -13,8 +13,11 @@ public class TestShipAgent extends TestCase {
 		arguments.put("reactionmechanism", "https://como.cheng.cam.ac.uk/kb/Reduced_PRF_ERC.owl#ReactionMechanism_4909454516579602");
 		arguments.put("ship", "http://www.theworldavatar.com/kb/ships/Ship-1.owl#Ship-1");
 		
-		String wasteResult = AgentCaller.executeGet("/JPS_SHIP/ShipAgent", 
-				"query", arguments.toString());
+		String wasteResult = AgentCaller.executeGet("/JPS_SHIP/ShipAgent", "query", arguments.toString());
 		System.out.println(wasteResult);
+		
+		String emission = new JSONObject(wasteResult).getString("waste");
+		assertEquals("http://www.theworldavatar.com/kb/ships/Chimney-1.owl#WasteStreamOfChimney-1", emission);
 	}
+	
 }
