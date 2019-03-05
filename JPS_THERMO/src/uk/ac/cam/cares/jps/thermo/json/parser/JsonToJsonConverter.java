@@ -135,7 +135,7 @@ public class JsonToJsonConverter {
 		
 		jsonObject.append("massUnit", massUnit);
 
-		jsonObject.append("ThermoAgentIRI", "Thermo agent IRI will be added later.");
+		jsonObject.append("ThermoAgentIRI", "http://www.theworldavatar.com/kb/agents/Service__calculation.owl#Service");
 		
 		String updatedJsonContent = jsonObject.toString();
 
@@ -149,10 +149,14 @@ public class JsonToJsonConverter {
 			HttpServletResponse response) throws IOException {
 
 		/**
+		 * 
 		 * @author NK510 Stores updated json content into  json file.
+		 * 
 		 */
-
+		
 		FileWriter fileWriter = new FileWriter(new File(updatedJsonOutputFilePath));
+		
+		logger.info("json content:" + updatedJsonContent);
 
 		fileWriter.write(updatedJsonContent);
 

@@ -20,7 +20,7 @@ public class ThermoCalculation {
 	 * 
 	 */	
 	
-	synchronized public void runThermoCalculation (String jsonInputFilePath, String jsonOutputFilePath,  String catalinaFolderPath) throws IOException {
+	 public void runThermoCalculation (String jsonInputFilePath, String jsonOutputFilePath,  String catalinaFolderPath) throws IOException {
 		
 		/**
 		 * @author NK510
@@ -29,6 +29,13 @@ public class ThermoCalculation {
 		 * 
 		 */
 		
+		File outputFile = new File(jsonOutputFilePath);
+		
+		if(!outputFile.exists()) {
+			
+			outputFile.createNewFile();
+		}
+		
 		File inputFile = new File(jsonInputFilePath);
 		
 		String pyscript = catalinaFolderPath + "/conf/Catalina/c4e-dln22-TDC/Source/thermoDriver.py";
@@ -36,12 +43,5 @@ public class ThermoCalculation {
 		String[] cmd = { "python", pyscript, "-j", inputFile.getAbsolutePath() };
 
 		Runtime.getRuntime().exec(cmd);
-		
-		File outputFile = new File(jsonOutputFilePath);
-		
-		if(!outputFile.exists()) {
-			
-			outputFile.createNewFile();
-		}
-	}
+	}	 
 }
