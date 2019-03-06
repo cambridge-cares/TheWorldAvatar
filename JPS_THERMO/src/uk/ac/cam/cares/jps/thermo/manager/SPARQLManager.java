@@ -15,7 +15,12 @@ import org.eclipse.rdf4j.repository.http.HTTPRepository;
 
 import uk.ac.cam.cares.jps.thermo.sparql.QueryString;
 
-
+/**
+ * 
+ * @author NK510
+ * 
+ *
+ */
 
 public class SPARQLManager {
 
@@ -23,7 +28,12 @@ public class SPARQLManager {
 	final static Logger logger = Logger.getLogger(SPARQLManager.class.getName());
 	
 	
-	
+	/**
+	 * @author NK510
+	 * @param gaussian
+	 * @param jsonInputFilePath
+	 * @param serverUrl
+	 */
 	public void runCompChemSPARQL(String gaussian, String jsonInputFilePath,String serverUrl ) {
 		
 		/**

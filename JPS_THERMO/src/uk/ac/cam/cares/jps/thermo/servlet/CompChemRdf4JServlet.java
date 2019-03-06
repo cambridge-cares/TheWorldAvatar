@@ -17,7 +17,9 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.thermo.calculation.ThermoCalculation;
 import uk.ac.cam.cares.jps.thermo.json.parser.JsonToJsonConverter;
 import uk.ac.cam.cares.jps.thermo.json.parser.JsonToOwlConverter;
+import uk.ac.cam.cares.jps.thermo.manager.FolderManager;
 import uk.ac.cam.cares.jps.thermo.manager.SPARQLManager;
+import uk.ac.cam.cares.jps.thermo.manager.UploadOntology;
 
 /**
  * 
@@ -45,17 +47,19 @@ public class CompChemRdf4JServlet extends HttpServlet {
 
 	public static String catalinaFolderPath = System.getProperty("catalina.home");
 
-	String serverUrl = "http://localhost:8080/rdf4j-server/repositories/compchemkb";
-
+	String compchemServerUrl = "http://localhost:8080/rdf4j-server/repositories/compchemkb";
+	
+	String ontokinServerUrl = "http://localhost:8080/rdf4j-server/repositories/ontokin";
+	
+	/** The uri for ontokin ontology instances. */
+	private String aboxOntokinUri = "http://theworldavatar.com/kb/ontokin/";
+	
 	/**
 	 * 
 	 * @author NK510 Root folder inside Apache Tomcat.
 	 * 
 	 */
 	public static final String RESULT_FOLDER = catalinaFolderPath + "/webapps/ROOT/kb/";
-	
-	public static final String ONTOKIN_BATCH_FILE= catalinaFolderPath + "/conf/Catalina/jsonconverter/convertCompchemToOntoKin.bat";
-
 	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -104,7 +108,7 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		 */
 		SPARQLManager sparqlManager = new SPARQLManager();
 
-		sparqlManager.runCompChemSPARQL(gaussian, jsonSPARQLOutputFilePath, serverUrl);
+		sparqlManager.runCompChemSPARQL(gaussian, jsonSPARQLOutputFilePath, compchemServerUrl);
 
 		/**
 		 * 
@@ -179,10 +183,29 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		
 		JsonToOwlConverter jsonToOwlConverter = new JsonToOwlConverter ();
 		
-		jsonToOwlConverter.convertJsonIntoOwl(updatedJsonOutputFilePath, RESULT_FOLDER + folderName);
+		jsonToOwlConverter.convertJsonIntoOwl(updatedJsonOutputFilePath, RESULT_FOLDER + folderName +"/");
 		
+		/** 
+		 * @author NK
+		 * Waits 2 second to complete thermo calculation.
+		 * 
+		 */
+		 try {
+			 
+			Thread.sleep(2000);
 		
-
+		 } catch (InterruptedException e) {
+			
+			e.printStackTrace();
+		}
+		 
+		/**
+		 * @author NK510
+		 * Upload generated Ontokin individual assertions (owl file) into RDF4J repository.
+		 */
+		UploadOntology uploadOntology = new UploadOntology();
+		
+		uploadOntology.uploadOntoKin(new FolderManager().getOwlFilePath(RESULT_FOLDER + folderName +"/kb/"), ontokinServerUrl, aboxOntokinUri);
 	}
 
 	@Override
