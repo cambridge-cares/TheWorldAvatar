@@ -11,7 +11,6 @@ import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLAxiom;
-
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -42,7 +41,7 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
 public class InconsistencyExplanation {	
 	
 	/** File path to generated ontologies (Abox of Compchem ontology). */
-	static String compchemFilePath = "src/test/resources/ontology/compchem_abox/";
+	static String compchemFilePath = "src/test/resources/ontology/compchem_abox/"; //ontokin_h2
 	
 	/**
 	 * The main method.
