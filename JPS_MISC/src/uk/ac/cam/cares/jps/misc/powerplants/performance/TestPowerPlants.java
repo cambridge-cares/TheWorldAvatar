@@ -14,33 +14,27 @@ import junit.framework.TestCase;
  * @author Andreas
  *
  */
-public class TestPerformance extends TestCase {
+public class TestPowerPlants extends TestCase {
 
 	private static final String IRI_TEST_PLANT = "http://www.theworldavatar.com/kb/powerplants/powerplant_test";
 	
 	private String datasetUrl = null;
-
-	public static void main(String[] args) throws IOException {
-		new TestPerformance().start(args);
+	
+	public void printHelp() {
+		System.out.println("\nTestPowerPlants <command number> <url for dataset> (<new emission value>)");
+		System.out.println("1 = list all power plants");
+		System.out.println("2 = set new emission value to all power plants ");
+		System.out.println("3 = sum up emission values for all power plants ");
+		System.out.println("4 = sum up and set emission values for all power plants ");
+		System.out.println("99 = insert emission triples");
+		System.out.println("example url for fuseki = http://localhost:3030/<dataset name>");
+		System.out.println("example url for rdf4j  = http://localhost:8080/rdf4j-server/repositories/<dataset name>");
 	}
 	
-	private void start(String[] args) throws IOException {
-		
-		System.out.println("starting with arguments:");
-		
-		for (String current : args) {
-			System.out.println(current);
-		}
+	public void start(String[] args) throws IOException {
 		
 		if (args.length == 0) {
-			System.out.println("\nplease call the jar file with arguments: <command number> <url for dataset> (<new emission value>)");
-			System.out.println("1 = list all power plants");
-			System.out.println("2 = set new emission value to all power plants ");
-			System.out.println("3 = sum up emission values for all power plants ");
-			System.out.println("4 = sum up and set emission values for all power plants ");
-			System.out.println("99 = insert emission triples");
-			System.out.println("example url for fuseki = http://localhost:3030/<dataset name>");
-			System.out.println("example url for rdf4j  = http://localhost:8080/rdf4j-server/repositories/<dataset name>");
+			printHelp();
 			return;
 		}
 		
