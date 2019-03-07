@@ -14,8 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -215,6 +215,9 @@ public class AgentCaller {
 	}
 	
 	public static String executeGet(HttpGet request) {
+		
+		CloseableHttpResponse httpResponse = null;
+		
 		try {
 			StringBuffer buf = new StringBuffer(request.getMethod()).append(" ").append(request.getURI().getScheme()).append("://")
 					.append(request.getURI().getHost());
@@ -236,7 +239,7 @@ public class AgentCaller {
 			// use the next line to log the percentage encoded query component
 			//logger.info(request.toString());
 		
-			HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
+			httpResponse = HttpClientBuilder.create().build().execute(request);
 			
 			if (httpResponse.getStatusLine().getStatusCode() != 200) {
 				String body =  EntityUtils.toString(httpResponse.getEntity());
@@ -249,7 +252,16 @@ public class AgentCaller {
 			return body;
 		} catch (Exception e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
-		} 
+		} finally {
+			if (httpResponse != null) {
+				try {
+					httpResponse.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+					logger.error(e.getMessage(), e);
+				}
+			}
+		}
 	}
 	
 	// TODO-AE this method seems not to be required. 
