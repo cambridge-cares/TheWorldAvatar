@@ -102,7 +102,7 @@ $(function() {
 	  }
 	  
 	  var operations = selectedScenario.service; 
-	  for (i=0; i<=9; i++) {
+	  for (i=0; i<=14; i++) {
 		//$("#op"+i).prop('checked', false);
 		if (i < operations.length) {
 			var currentOperation = operations[i].hasOperation;
@@ -226,7 +226,14 @@ $(function() {
   }
   
   $('#showlinkbutton').click(function() {
-	  
+	  showLink(false);
+  });
+  
+  $('#executelinkbutton').click(function() {
+	  showLink(true);
+  });
+	
+  function showLink(execute) {
 	  var url = selectedOperation.hasHttpUrl;
 	  
 	  if (selectedScenario.type === 'composed') {
@@ -281,6 +288,23 @@ $(function() {
 
 	  $("#linkforaction").prop('href', urlencoded);
 	  $("#linkforaction").text(url);
-  });
+	  
+	  
+	  if (execute) {
+		    $.ajax({
+		        type: 'GET',
+		        url: urlencoded,
+		        contentType: "text/plain",
+		        dataType: 'text',
+		        success: function (data) {
+		          alert(data);
+		        },
+		        error: function (e) {
+		          console.log("There was an error with your request...");
+		          console.log("error: " + JSON.stringify(e));
+		        }
+		      });
+	  }
+  }
   
 });

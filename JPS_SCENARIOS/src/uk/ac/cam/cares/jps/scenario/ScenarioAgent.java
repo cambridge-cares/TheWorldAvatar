@@ -281,7 +281,10 @@ public class ScenarioAgent extends HttpServlet {
 		
 		System.out.println("MYMY = " + result);
 		
-		JSONObject joresult = new JSONObject(result);
+		JSONObject joresult = new JSONObject();
+		if ((result != null) && !result.isEmpty()) {
+			joresult = new JSONObject(result);
+		}
 		
 		JSONObject message = new JSONObject();
 		String agent = ScenarioManagementAgent.getLatestMockedAgent(log);
@@ -289,7 +292,7 @@ public class ScenarioAgent extends HttpServlet {
 		message.put("operation", operation);
 		// TODO-AE SC 20190220 only log the input and output parameters for the mocked operation
 		message.put("input", jo);
-		message.put("ouput", joresult);
+		message.put("output", joresult);
 		log.logMessage(scenarioName, message);
 		
 		return result;
