@@ -5,7 +5,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -23,13 +22,6 @@ public class TestQuery extends TestCase implements ITestConstants{
 	}
 	
 	public void setUp() {
-		System.out.println("MY HELLO ");
-		
-		String root = KeyValueManager.get("absdir.root");
-		System.out.println("MY ROOT " + root);
-		
-	
-		
 		copyPowerPlantAfg();
 	}
 	
