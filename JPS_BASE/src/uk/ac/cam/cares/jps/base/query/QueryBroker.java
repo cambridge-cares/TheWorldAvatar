@@ -17,7 +17,7 @@ import org.json.JSONStringer;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.log.LogServer;
+import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 
 public class QueryBroker {
@@ -25,7 +25,7 @@ public class QueryBroker {
 	public String readFile(String urlOrPath) {
 		
 		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	
-		LogServer.info(this, "reading file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
+		JPSBaseLogger.info(this, "reading file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
 		
 		// call the scenario agent if a scenario url is set in the input
 		// the scenario agent has to be called even for copy-on-write since in the past
@@ -74,7 +74,7 @@ public class QueryBroker {
 	public String queryFile(String urlOrPath, String sparqlQuery) {
 		
 		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	
-		LogServer.info(this, "querying file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
+		JPSBaseLogger.info(this, "querying file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
 		
 		// call the scenario agent if a scenario url is set in the input
 		// the scenario agent has to be called even for copy-on-write since in the past
@@ -111,7 +111,7 @@ public class QueryBroker {
 	public String writeFile(String urlOrPath, String content) {
 		
 		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	
-		LogServer.info(this, "writing file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
+		JPSBaseLogger.info(this, "writing file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
 		
 		if (scenarioURL != null) {
 			
@@ -187,7 +187,7 @@ public class QueryBroker {
 	public void updateFile(String urlOrPath, String sparqlUpdate) {
 		
 		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	
-		LogServer.info(this, "updating file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
+		JPSBaseLogger.info(this, "updating file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
 		
 		
 		// TODO-AE SC 20190218 URGENT
@@ -212,16 +212,11 @@ public class QueryBroker {
 		
 		String localFile = urlOrPath;
 		if (urlOrPath.startsWith("http")) {
-//			URI uri = AgentCaller.createURI(urlOrPath);
-//			String rootPath = KeyValueServer.get("absdir.root");
-//			localFile = rootPath + uri.getPath();
 			localFile = ScenarioHelper.cutHash(localFile);
 			localFile = ResourcePathConverter.convertToLocalPath(localFile);
 		}
 		
-		
-		
-		LogServer.info(this, "updating local file=" + localFile);
+		JPSBaseLogger.info(this, "updating local file=" + localFile);
 		
 		UpdateRequest request = UpdateFactory.create(sparqlUpdate);
 		OntModel model = JenaHelper.createModel(localFile);	

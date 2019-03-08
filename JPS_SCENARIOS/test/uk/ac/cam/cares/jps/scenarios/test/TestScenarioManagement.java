@@ -91,24 +91,5 @@ public class TestScenarioManagement extends TestCase {
 		System.out.println(result);
 	}
 	
-	public void testTmp8() {
-		
-		String resource = "C://JPS_DATA/workingdir/JPS_SCENARIO/aa1sc/-1109798725_Northwest_Kabul_Power_Plant_Afghanistan.owl";
-		String sparqlUpdate = "PREFIX : <http://www.theworldavatar.com/kb/powerplants/>\r\n" + 
-				"PREFIX powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>\r\n" + 
-				"PREFIX system_v1: <http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#>\r\n" + 
-				"PREFIX spacetimeext: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>\r\n" + 
-				"PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>\r\n" + 
-				"PREFIX system_realization: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#>\r\n" + 
-				"PREFIX system_performance: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#>\r\n" + 
-				"PREFIX technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>\r\n" + 
-				"DELETE { ?emissionvalue system:numericalValue ?emissionvaluenum .} INSERT { ?emissionvalue system:numericalValue 100.000000 .} WHERE {\r\n" + 
-				"<http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#Northwest_Kabul_Power_Plant_Afghanistan> technical_system:realizes ?generation .\r\n" + 
-				"?generation system_performance:hasEmission ?emission .\r\n" + 
-				"?emission system:hasValue ?emissionvalue .\r\n" + 
-				"?emissionvalue system:numericalValue ?emissionvaluenum .\r\n" + 
-				"}";
-		
-		new QueryBroker().updateFile(resource, sparqlUpdate);
-	}
+
 }

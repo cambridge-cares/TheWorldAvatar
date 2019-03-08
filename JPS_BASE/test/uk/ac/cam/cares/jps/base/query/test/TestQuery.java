@@ -5,12 +5,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
 import uk.ac.cam.cares.jps.base.test.EmissionTestAgent;
-import uk.ac.cam.cares.jps.base.test.ITestConstants;
 
 public class TestQuery extends TestCase implements ITestConstants{
 	
@@ -23,6 +23,13 @@ public class TestQuery extends TestCase implements ITestConstants{
 	}
 	
 	public void setUp() {
+		System.out.println("MY HELLO ");
+		
+		String root = KeyValueManager.get("absdir.root");
+		System.out.println("MY ROOT " + root);
+		
+	
+		
 		copyPowerPlantAfg();
 	}
 	
@@ -83,7 +90,7 @@ public class TestQuery extends TestCase implements ITestConstants{
 		assertTrue(result.startsWith("<rdf:RDF"));
 	}
 	
-	public void testQueryBrokerLocalSparqlQuery() {	
+	public void testQueryBrokerLocalSparqlQuery() {			
 		String plantFile = ResourcePathConverter.convertToLocalPath(POWER_PLANT_AFG_FILE);		
 		String result = new QueryBroker().queryFile(plantFile, EmissionTestAgent.SPARQL_PLANT_QUERY_EMISSION);
 		JSONArray list = JenaResultSetFormatter.convertToSimplifiedList(result).getJSONArray("results");

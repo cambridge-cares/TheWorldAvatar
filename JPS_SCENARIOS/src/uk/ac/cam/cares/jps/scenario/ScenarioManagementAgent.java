@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.IKeys;
-import uk.ac.cam.cares.jps.base.config.KeyValueServer;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
@@ -50,7 +50,7 @@ public class ScenarioManagementAgent extends HttpServlet {
 	}
 	
 	public static String getServerAddress() {
-		return "http://" + KeyValueServer.get(IKeys.HOST) + ":" + KeyValueServer.get(IKeys.PORT);
+		return "http://" + KeyValueManager.get(IKeys.HOST) + ":" + KeyValueManager.get(IKeys.PORT);
 	}
 	
 	public static String getScenarioUrl(String scenarioName) {

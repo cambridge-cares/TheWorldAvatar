@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
-import uk.ac.cam.cares.jps.base.config.KeyValueServer;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.util.Misc;
@@ -53,7 +53,7 @@ public class RemoteFileOperations extends HttpServlet {
 		String sparqlUpdate = Misc.notNull(jo, JPSConstants.QUERY_SPARQL_UPDATE);
 		
 		URI uri = AgentCaller.createURI(resource);
-		String rootPath = KeyValueServer.get("absdir.root");
+		String rootPath = KeyValueManager.get("absdir.root");
 		String localFile = rootPath + uri.getPath();
 		
 		

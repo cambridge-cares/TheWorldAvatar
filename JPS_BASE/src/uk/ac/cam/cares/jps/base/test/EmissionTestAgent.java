@@ -17,7 +17,7 @@ import org.json.JSONWriter;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.log.LogServer;
+import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
@@ -68,10 +68,10 @@ public class EmissionTestAgent extends JPSHttpServlet {
 		try {
 			String powerplant = jo.getString("plant");
 		
-			LogServer.info(this, "called with path=" + path + ", plant=" + powerplant);
-			LogServer.info(this, "scenarioURL=" + ThreadContext.get("scenariourl"));
+			JPSBaseLogger.info(this, "called with path=" + path + ", plant=" + powerplant);
+			JPSBaseLogger.info(this, "scenarioURL=" + ThreadContext.get("scenariourl"));
 			double oldEmission = getEmission(powerplant);
-			LogServer.info(this, "oldEmission=" + oldEmission);
+			JPSBaseLogger.info(this, "oldEmission=" + oldEmission);
 			
 			String reducedFormula = null;
 						
@@ -79,8 +79,8 @@ public class EmissionTestAgent extends JPSHttpServlet {
 			
 				String result = new QueryBroker().readFile(powerplant);
 				result = result.substring(0, 400);
-				LogServer.info(this, "read result (400 signs only):\n");
-				LogServer.info(this, result);
+				JPSBaseLogger.info(this, "read result (400 signs only):\n");
+				JPSBaseLogger.info(this, result);
 				
 				AgentCaller.printToResponse(result, response);
 			
@@ -88,8 +88,8 @@ public class EmissionTestAgent extends JPSHttpServlet {
 			
 				String result = new QueryBroker().queryFile(powerplant, SPARQL_PLANT_QUERY_EMISSION);
 				result = JenaResultSetFormatter.convertToSimplifiedList(result).toString();
-				LogServer.info(this, "query result:\n");
-				LogServer.info(this, result);
+				JPSBaseLogger.info(this, "query result:\n");
+				JPSBaseLogger.info(this, result);
 				
 				AgentCaller.printToResponse(result, response);
 			
@@ -134,7 +134,7 @@ public class EmissionTestAgent extends JPSHttpServlet {
 			}
 					
 			double newEmission = getEmission(powerplant);
-			LogServer.info(this, "newEmission=" + newEmission);
+			JPSBaseLogger.info(this, "newEmission=" + newEmission);
 			
 			if ((reducedFormula != null) && (reducedFormula.length() > 0)) {
 				jo.put("formula", reducedFormula);
@@ -153,7 +153,7 @@ public class EmissionTestAgent extends JPSHttpServlet {
 	}
 	
 	private void setEmission(String powerplant, double emission) {
-		LogServer.info(this, "setting emission value to " + emission);
+		JPSBaseLogger.info(this, "setting emission value to " + emission);
 		String query = String.format(EmissionTestAgent.SPARQL_PLANT_UPDATE_EMISSION, emission, powerplant);
 		new QueryBroker().updateFile(powerplant, query);
 	}

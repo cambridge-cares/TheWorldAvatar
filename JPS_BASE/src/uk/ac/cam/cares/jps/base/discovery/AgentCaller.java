@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.config.KeyValueServer;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 
@@ -141,7 +141,7 @@ public class AgentCaller {
 	
 	public static String executeGetWithURLKey(String urlKey, MediaType type, String... keyOrValue) {
 
-		String url = KeyValueServer.get(urlKey);
+		String url = KeyValueManager.get(urlKey);
 		URI uri = createURI(url, keyOrValue);
 		HttpGet request = new HttpGet(uri);
 		if (type != null) {

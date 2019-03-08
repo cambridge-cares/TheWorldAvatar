@@ -2,9 +2,9 @@ package uk.ac.cam.cares.jps.base.query;
 
 import java.net.URI;
 
-import uk.ac.cam.cares.jps.base.config.KeyValueServer;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.log.LogServer;
+import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 
 public class ResourcePathConverter {
 	
@@ -28,17 +28,17 @@ public class ResourcePathConverter {
 			return path;
 		}
 		
-		LogServer.info(getInstance(), "converted resource path " + path + " to " + converted);
+		JPSBaseLogger.info(getInstance(), "converted resource path " + path + " to " + converted);
 		return converted;
 	}
 	
 	public static String convertToLocalPath(String path) {
 		
 		URI uri = AgentCaller.createURI(path);
-		String root = KeyValueServer.get("absdir.root");
+		String root = KeyValueManager.get("absdir.root");
 		String converted = root + uri.getPath();
 		
-		LogServer.info(getInstance(), "converted resource path " + path + " to " + converted);
+		JPSBaseLogger.info(getInstance(), "converted resource path " + path + " to " + converted);
 		return converted;
 	}
 }
