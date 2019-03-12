@@ -17,6 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.srm.SRMAgent;
 
@@ -29,8 +30,8 @@ public class TestSRMAgent extends TestCase {
 	public void testCallAgent () throws JSONException {
 		JSONObject dataSet = new JSONObject();
 		try {
-			dataSet.put("reactionmechanism", "https://como.cheng.cam.ac.uk/kb/Toluene.owl#ReactionMechanism_4631074216281807") ;
-			//dataSet.put("reactionmechanism", "https://como.cheng.cam.ac.uk/kb/Reduced_PRF_ERC.owl#ReactionMechanism_4909454516579602") ;
+			//dataSet.put("reactionmechanism", "https://como.cheng.cam.ac.uk/kb/Toluene.owl#ReactionMechanism_4631074216281807") ;
+			dataSet.put("reactionmechanism", "https://como.cheng.cam.ac.uk/kb/Reduced_PRF_ERC.owl#ReactionMechanism_4909454516579602") ;
 			dataSet.put("engine", "http://www.theworldavatar.com/kb/deu/berlin/powerplants/DieselEngine-001.owl#DieselEngine-001") ;
 		}
 		catch (JSONException e) {
@@ -102,8 +103,8 @@ public class TestSRMAgent extends TestCase {
 	
 	public void testdojsonmodif() throws IOException {
 		
-		// String jsonFile = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres/OutputCase00001Cyc0001ADMS.text";
-		String jsonFile = "D:\\JPS\\JParkSimulator-git\\JPS" + "\\testres\\OutputCase00001Cyc0001ADMS.txt";
+		 String jsonFile = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres/OutputCase00001Cyc0001ADMSvalid.txt";
+		//String jsonFile = "D:\\JPS\\JParkSimulator-git\\JPS" + "\\testres\\OutputCase00001Cyc0001ADMS-withParticles.txt";
 		
 		JSONObject result = new SRMAgent().dojsonmodif(jsonFile);
 	

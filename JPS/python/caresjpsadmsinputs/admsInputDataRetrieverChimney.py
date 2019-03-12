@@ -99,6 +99,7 @@ class admsInputDataRetriever(object):
                 ?stream chemical_process_system:refersToGeneralizedAmount ?ga.
                 ?ga sys:hasSubsystem ?ma.
                 
+                ?ma a behavior:MaterialAmount .
                 ?ma sys:hasProperty ?ve.
                 ?ve a behavior:ConvectiveMassFlowrate .
                 ?ve sys:hasValue ?vv.
@@ -118,6 +119,8 @@ class admsInputDataRetriever(object):
                 ?cp sys:hasValue ?cpv.
                 ?cpv sys:numericalValue ?heatcapa.
                 
+                ?singlephase a phase_system:SinglePhase.
+                ?singlephase phase_system:has_density ?den.
                 ?den a phase_system:Density.
                 ?den sys:hasValue ?denv.
                 ?denv sys:numericalValue ?density.

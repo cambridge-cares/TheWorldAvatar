@@ -1,3 +1,5 @@
+let osmbGlobal;
+
 $(function(){
 
     //*****************************************************//
@@ -54,7 +56,7 @@ $(function(){
         attribution: '� 3D <a href="https://osmbuildings.org/copyright/">OSM Buildings</a>'
     }).appendTo('map');
     //***************************************************************************
-
+	osmbGlobal = osmb;
 	
     //***************************************************************************
     // buttons to tilt camera angle, rotate the map, and zoom in/out
@@ -161,7 +163,7 @@ $(function(){
 		if (location === "Hong Kong") {
         	locationIRI = "http://dbpedia.org/resource/Hong_Kong";
 //        	plant = "http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl#Plant-001";
-        } else if (location === "Singapore") {
+        } else if (location === "Singapore" || location === "Singapore_2") {
         	locationIRI = "http://dbpedia.org/resource/Singapore";
 //        	plant = "http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002";
         }
@@ -242,10 +244,28 @@ $(function(){
                 latitude: 1.262008,
                 longitude: 103.850973
             });
-            $("#xlower").val("11558666.37");
-            $("#xupper").val("11562079.502");
-            $("#ylower").val("139186.423");
-            $("#yupper").val("141908.33");
+//            $("#xlower").val("11558666.37");
+//            $("#xupper").val("11562079.502");
+//            $("#ylower").val("139186.423");
+//            $("#yupper").val("141908.33");
+        	
+        	$("#xlower").val("11560879.832");
+            $("#xupper").val("11563323.926");
+            $("#ylower").val("140107.739");
+            $("#yupper").val("143305.896");
+            
+            osmb.setZoom(14.5);
+            osmb.setTilt(20.6);
+            osmb.setRotation(-45.6);
+        } else if (location === "Singapore_2") {
+        	osmb.setPosition({
+                latitude: 1.262008,
+                longitude: 103.850973
+            });
+            $("#xlower").val("11560879.832");
+            $("#xupper").val("11563323.926");
+            $("#ylower").val("140107.739");
+            $("#yupper").val("143305.896");
             
             osmb.setZoom(14.5);
             osmb.setTilt(20.6);

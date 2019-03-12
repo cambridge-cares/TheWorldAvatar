@@ -38,6 +38,7 @@ public class GetBuildingListFromRegion extends HttpServlet {
 		try {
 			JSONObject input = new JSONObject(value);
 			String city = input.getString("city");
+			logger.info("city from getbuildinglistfromregion: " + city);
 			 
 			double[][] coords = convertCoordinate(input,city);
 //			System.out.println("source point: " + Arrays.deepToString(coords));

@@ -18,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.ObjectProperty;
+import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
@@ -49,6 +51,26 @@ public class PowerPlantAgent extends HttpServlet {
 	
 	OntModel jenaOwlModel = null;
 	private DatatypeProperty numval = null;
+	private ObjectProperty hasProperty = null;
+	private ObjectProperty hasValue = null;
+	private ObjectProperty contains = null;
+	private ObjectProperty has_density = null;
+	private ObjectProperty has_length = null;
+	private OntClass particleclass = null;
+	private OntClass flowclass = null;
+	private OntClass scalarvalueclass = null;
+	private OntClass moleculargroupclass = null;
+	private OntClass diameterclass = null;
+	private OntClass massfractionclass = null;
+	private OntClass densityclass = null;
+	
+	static Individual gpers;
+	static Individual m;
+	static Individual kg_per_m3;
+	
+	
+	private ObjectProperty hasunit = null;
+	
 	public static String baseURL = null;
 	ArrayList<String> cpirilist = new ArrayList<String>();
 	ArrayList<String> cpirilist2 = new ArrayList<String>();
@@ -67,7 +89,23 @@ public class PowerPlantAgent extends HttpServlet {
 	
 	public void initOWLClasses(OntModel jenaOwlModel) {
 		numval = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");	
-		
+		particleclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#MolecularEntity");	
+		flowclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate");
+		hasProperty=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty");
+		hasValue=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue");
+		 hasunit = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure");
+		 scalarvalueclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue");
+		 contains=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains");
+		 moleculargroupclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/material/substance/molecular_structure.owl#MolecularGroup");
+		 gpers=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#g_per_s");
+		 diameterclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#Diameter");
+		 densityclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Density");
+		 massfractionclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#MassFraction");
+		 has_density=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_density");
+		 has_length=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#has_length");
+		 m=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m");
+		 kg_per_m3=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_cubic_m");
+		 
 	}
 		
 	
@@ -91,9 +129,7 @@ public class PowerPlantAgent extends HttpServlet {
 		Double temperaturevalue = joSRMResult.getJSONObject("mixture").getJSONObject("temperature").getDouble("value")-273.15;
 		Double massfluxvalue = joSRMResult.getJSONObject("mixture").getJSONObject("massflux").getDouble("value"); 
 		Double densityvalue = joSRMResult.getJSONObject("mixture").getJSONObject("density").getDouble("value");
-		
-		int valueoftotalpollutant = joSRMResult.getJSONArray("pollutants").length();
-		
+				
 		Individual valueofmassflowrate = jenaOwlModel.getIndividual(iri.split("#")[0] +"#V_massF_WasteStream-001");
 		valueofmassflowrate.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(massfluxvalue));
 		
@@ -109,6 +145,49 @@ public class PowerPlantAgent extends HttpServlet {
 		Individual valueofcombinedheatcapacity = jenaOwlModel.getIndividual(iri.split("#")[0] +"#V_Cp_MaterialInWasteStream-001");
 		valueofcombinedheatcapacity.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(Cpvalue));
 		
+		Individual particulate = jenaOwlModel.getIndividual(iri.split("#")[0] +"#Particulate-001"); 
+		//Individual particulate = jenaOwlModel.createIndividual(iri.split("#")[0] +"#Particulate-001",particleclass);//if it is not there
+		Individual particulaterate = jenaOwlModel.createIndividual(iri.split("#")[0] +"#Particulate-001_EmissionRate",flowclass);
+		particulate.addProperty(hasProperty, particulaterate);
+		Individual particleratevalue = jenaOwlModel.createIndividual(iri.split("#")[0] + "#V_Particulate-001_EmissionRate",scalarvalueclass);
+		particulaterate.addProperty(hasValue, particleratevalue);
+		particleratevalue.addProperty(hasunit, gpers);
+		particleratevalue.setPropertyValue(numval, jenaOwlModel.createTypedLiteral("1.5")); //temporary as the json file value is not exist
+		
+		int valueoftotalparticlesincluded = joSRMResult.getJSONArray("particle").length();
+		for( int a=0; a<valueoftotalparticlesincluded;a++) {
+			double valueofdiameter=joSRMResult.getJSONArray("particle").getJSONObject(a).getJSONObject("diameter").getDouble("value");
+			String valueofmassfraction=String.valueOf(joSRMResult.getJSONArray("particle").getJSONObject(a).getJSONObject("mass_fraction").get("value"));
+			int valueofdensity=joSRMResult.getJSONArray("particle").getJSONObject(a).getJSONObject("density").getInt("value");
+			logger.info("mass fraction= "+valueofmassfraction);
+			if(Double.valueOf(valueofmassfraction)>0) { //maybe later can be added the condition if diameter less than 1nm
+				logger.info("the particle selected= "+a);
+				Individual partialparticulate = jenaOwlModel.createIndividual(iri.split("#")[0] +"#Partial-"+a+"OfParticulate-001",moleculargroupclass);
+				particulate.addProperty(contains, partialparticulate);
+				
+				Individual diameterpartialparticulate = jenaOwlModel.createIndividual(iri.split("#")[0] +"#Diameter_Partial-"+a+"OfParticulate-001",diameterclass);
+				partialparticulate.addProperty(has_length,diameterpartialparticulate);
+				Individual diametervaluepartialparticulate = jenaOwlModel.createIndividual(iri.split("#")[0] +"#V_Diameter_Partial-"+a+"OfParticulate-001",scalarvalueclass);
+				diameterpartialparticulate.addProperty(hasValue, diametervaluepartialparticulate);
+				diametervaluepartialparticulate.addProperty(hasunit, m);
+				diametervaluepartialparticulate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(valueofdiameter*0.000000001));
+				
+				Individual densitypartialparticulate = jenaOwlModel.createIndividual(iri.split("#")[0] +"#Density_Partial-"+a+"OfParticulate-001",densityclass);
+				partialparticulate.addProperty(has_density,densitypartialparticulate);
+				Individual densityvaluepartialparticulate = jenaOwlModel.createIndividual(iri.split("#")[0] +"#V_Density_Partial-"+a+"OfParticulate-001",scalarvalueclass);
+				densitypartialparticulate.addProperty(hasValue, densityvaluepartialparticulate);
+				densityvaluepartialparticulate.addProperty(hasunit, kg_per_m3);
+				densityvaluepartialparticulate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(valueofdensity));
+				
+				Individual massfractionpartialparticulate = jenaOwlModel.createIndividual(iri.split("#")[0] +"#MassFraction_Partial-"+a+"OfParticulate-001",massfractionclass);
+				partialparticulate.addProperty(hasProperty,massfractionpartialparticulate);
+				Individual massfractionvaluepartialparticulate = jenaOwlModel.createIndividual(iri.split("#")[0] +"#V_MassFraction_Partial-"+a+"OfParticulate-001",scalarvalueclass);
+				massfractionpartialparticulate.addProperty(hasValue, massfractionvaluepartialparticulate);
+				massfractionvaluepartialparticulate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(valueofmassfraction));
+			}
+		}
+		
+		int valueoftotalpollutant = joSRMResult.getJSONArray("pollutants").length();
 		for (int b = 0; b < valueoftotalpollutant; b++) {
 			String parametername = joSRMResult.getJSONArray("pollutants").getJSONObject(b).getString("name");
 			Double parametervalue = joSRMResult.getJSONArray("pollutants").getJSONObject(b).getDouble("value")*1000; 

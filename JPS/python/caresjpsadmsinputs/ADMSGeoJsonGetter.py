@@ -83,13 +83,20 @@ def sparqlBuildingHeights(building, sparqlEndPoint):
         PREFIX p3: <http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>
         PREFIX j2: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
 
-        SELECT ?numericalValue
+        SELECT ?height ?minHeight
         WHERE
         {{
             <{0}> p3:measuredHeight ?lengthType .
             <{0}> a p3:BuildingType .
             ?lengthType j2:hasValue ?scalarValue .
-            ?scalarValue j2:numericalValue ?numericalValue
+            ?scalarValue j2:numericalValue ?height .
+    
+            OPTIONAL {{
+                <{0}> p3:lowerHeight ?minHeightType .
+                <{0}> a p3:BuildingType .
+                ?minHeightType j2:hasValue ?scalarValueMinHeight .
+                ?scalarValueMinHeight j2:numericalValue ?minHeight .    
+            }}
         }}
 
         """.format(building)
@@ -120,7 +127,13 @@ def readFromJSONFile(fileName):
     return listBuildingsToTransfer
 
 def getBuildingHeights(buildingHeight):
-    return float(buildingHeight[0]['numericalValue']['value'])
+    heights = {}
+    if 'minHeight' in buildingHeight[0]:
+        heights['minHeight'] = float(buildingHeight[0]['minHeight']['value'])
+    else:
+        heights['minHeight'] = 0
+    heights['height'] = float(buildingHeight[0]['height']['value'])
+    return heights
 
 def getBuildingCoordinates(buildingCoordinates, owlCRS, osmCRS):
     building = []
@@ -166,8 +179,8 @@ def getGeoJSON(listBuildingCoordinates, listBuildingHeights):
             'features': [{
                 'type': 'Feature',
                 'properties': {
-                    'height': listBuildingHeights[idx],
-                    'minHeight': 0,
+                    'height': listBuildingHeights[idx]['height'],
+                    'minHeight': listBuildingHeights[idx]['minHeight'],
                     'color': 'red',
                     'roofColor': 'red'
                 },
@@ -203,7 +216,7 @@ def return_buildings():
         sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/berlinbuildings/sparql"
     elif cityiri == "http://dbpedia.org/resource/Singapore":
         owlCRS = Proj(init='epsg:4326')
-        sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/singaporebuildings/sparql"
+        sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/mbs/sparql"
     elif cityiri == "http://dbpedia.org/resource/Hong_Kong":
         owlCRS = Proj(init='epsg:4326')
         sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/hongkongbuildings/sparql"
