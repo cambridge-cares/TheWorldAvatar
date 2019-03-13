@@ -1,19 +1,11 @@
 package uk.ac.cam.cares.jps.arbitragetest;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +15,7 @@ import com.google.gson.reflect.TypeToken;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.market.DataDownload;
 
 
 public class TestMarketPackage extends TestCase {
@@ -86,6 +79,31 @@ public class TestMarketPackage extends TestCase {
 		
 		assertEquals(cpo.get("arrayHeader")[0], "CPO");
 		assertEquals(fame.get("arrayHeader")[0], "FAME");
+	}
+	
+	public void testBio() throws Exception {
+		
+		DataDownload.downloadingAndSavingMarketDataInTheKnowledgeBase("Biodiesel");
+		
+	}
+	
+	public void testRetrieve() throws Exception {
+		
+		System.out.println("MY TEST");
+		
+		Gson g = new Gson();
+		
+		String jsonString = "V_Price_CoolingWater_001,V_Price_Storage_Biodiesel_001,V_Price_Storage_CrudePalmOil_001,V_Price_Transport_Malaysia-SG_CrudePalmOil_001,V_Price_Electricity_001,V_USD_to_SGD,V_Price_ProcessWater_001,V_Price_HighPressureSteam_001,V_Price_MediumPressureSteam_001,V_Price_Transport_SEA-SC_Biodiesel_001,V_Price_FuelGas_001";
+
+		try {
+			String result = g.toJson(DataDownload
+					.retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase(
+							jsonString.split(",")));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 	
 	public void testDownloadingAndSavingMarketDataInTheKnowledgeBaseMethanol()
