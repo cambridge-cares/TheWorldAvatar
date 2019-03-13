@@ -3,21 +3,20 @@ package uk.ac.ceb.como.molhub.action;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.jena.ontology.OntModel;
-import org.apache.struts2.interceptor.SessionAware;
+import org.apache.log4j.Logger;
 import org.apache.struts2.dispatcher.SessionMap;
+import org.apache.struts2.interceptor.SessionAware;
 
 import com.opensymphony.xwork2.ActionSupport;
 
 import uk.ac.cam.ceb.como.compchem.ontology.query.CompChemQuery;
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.FileUtility;
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
-
-
-import org.apache.commons.io.FileUtils;
-
-import org.apache.log4j.Logger;
+import uk.ac.ceb.como.molhub.model.PropertiesManager;
 
 /**
  * 
@@ -42,21 +41,28 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 	
 	Map<String, Object> session;
 
-	String catalinaFolderPath = System.getProperty("catalina.home");
+//	String catalinaFolderPath = System.getProperty("catalina.home");
 	
+	Properties molhubProperties = PropertiesManager
+			.loadProperties(CalculationAction.class.getClassLoader().getResourceAsStream("molhub.management.properties"));
 	
-
 	/**
 	 * @author nk510 <p>SPARQL query used in thermo - calculations. It queries
 	 *         generated ontology file (Abox of Compchem ontology) in a given folder
 	 *         name (uuid), and stores sparql results in json file in the same folder
 	 *         (uuid).</p>
 	 */
-	
-	String sparql = catalinaFolderPath + "/conf/Catalina/sparql_query/query_all.sparql";
-	
-	
 
+	//	String sparql = catalinaFolderPath + "/conf/Catalina/sparql_query/query_all.sparql";
+
+	private String sparql = molhubProperties.getProperty("sparql.file.path").toString();	
+
+	private String pythonScriptFilePath = molhubProperties.getProperty("python.file.path").toString();
+	
+	private String owlFolderPath = molhubProperties.getProperty("kb.folder.path").toString();
+	
+	private String dataFolderPath = molhubProperties.getProperty("data.folder.path").toString();
+	
 	@Override
 	public String execute() throws Exception {
 
@@ -85,10 +91,12 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 		
 		for (Map.Entry<String, Object> mp : session.entrySet()) {
 			
-//          Earlier version of molhub stored all uploaded and generated files into Tomcat's ROOT folder.
-//			String speciesFolder = catalinaFolderPath + "/webapps/ROOT/" + mp.getKey().toString() + "/";
+
+
+			String speciesFolder = owlFolderPath +  mp.getKey().toString() + "/";
+//			String speciesFolder = catalinaFolderPath + "/webapps/ROOT/kb/" + mp.getKey().toString() + "/";
 			
-			String speciesFolder = catalinaFolderPath + "/webapps/ROOT/kb/" + mp.getKey().toString() + "/";
+			String jsonFolderPath = dataFolderPath + mp.getKey().toString() + "/";
 
 			List<File> aboxFiles = utility.getArrayFileList(speciesFolder, ".owl");
 
@@ -98,11 +106,15 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 
 				String q = FileUtils.readFileToString(sparqlFile, "UTF-8");
 
-				CompChemQuery.performQuery(model, q, af.getName().toString(), speciesFolder);
+//				CompChemQuery.performQuery(model, q, af.getName().toString(), speciesFolder);  
+				
+				CompChemQuery.performQuery(model, q, af.getName().toString(), jsonFolderPath); 
 
 			}
 			
-			List<File> jsonFiles = utility.getArrayFileList(speciesFolder, ".json");
+//			List<File> jsonFiles = utility.getArrayFileList(speciesFolder, ".json");
+			
+			List<File> jsonFiles = utility.getArrayFileList(jsonFolderPath, ".json");
 
 			for (int i = 0; i < jsonFiles.size(); i++) {
 
@@ -114,10 +126,14 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 				 * 
 				 */
 
-				String pyscript = catalinaFolderPath + "/conf/Catalina/c4e-dln22-TDC/Source/thermoDriver.py";
+//				String pyscript = catalinaFolderPath + "/conf/Catalina/c4e-dln22-TDC/Source/thermoDriver.py";
+			
+				String pyscript =pythonScriptFilePath;
 				
-				
-				
+				/**
+				 * @author NK510
+				 * Python script stores the result of calculation (json file) in the same folder where owl file is stored.
+				 */
                 String[] cmd = { "python", pyscript, "-j", jsonFiles.get(i).getAbsolutePath(), };
 
 				Runtime.getRuntime().exec(cmd);

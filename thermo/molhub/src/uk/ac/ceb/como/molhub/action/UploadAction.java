@@ -223,6 +223,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 
 			FolderManager.createFolder(dataFolderPath + "/" + uuidFolderName);
 
+			
 			FolderManager.createFolder(kbFolderPath + "/" + uuidFolderName);
 
 			/**

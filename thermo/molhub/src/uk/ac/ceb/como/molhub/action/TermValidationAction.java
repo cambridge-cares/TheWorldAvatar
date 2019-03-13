@@ -7,11 +7,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
+import org.apache.struts2.dispatcher.SessionMap;
 import org.apache.struts2.interceptor.SessionAware;
 
-import org.apache.struts2.dispatcher.SessionMap;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ValidationAware;
 
@@ -21,12 +22,11 @@ import aima.core.logic.propositional.kb.data.Clause;
 import aima.core.logic.propositional.parsing.PLParser;
 import aima.core.logic.propositional.parsing.ast.PropositionSymbol;
 import aima.core.logic.propositional.parsing.ast.Sentence;
-
 import uk.ac.cam.ceb.como.chem.periodictable.Element;
 import uk.ac.cam.ceb.como.chem.periodictable.PeriodicTable;
 import uk.ac.ceb.como.molhub.bean.MoleculeProperty;
 import uk.ac.ceb.como.molhub.bean.Term;
-
+import uk.ac.ceb.como.molhub.model.PropertiesManager;
 import uk.ac.ceb.como.molhub.model.QueryManager;
 import uk.ac.ceb.como.molhub.model.SentenceManager;
 
@@ -70,13 +70,21 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 
 	/** The query result string. */
 	private Set<String> queryResultString;
-
+	
 	/** The results column. */
 	List<String> resultsColumn = new ArrayList<String>();
 
 	/** The session. */
 	private Map<String, Object> session = new HashMap<String, Object>();
 	
+	 Properties kbProperties = PropertiesManager.loadProperties(TermValidationAction.class.getClassLoader().getResourceAsStream("kb.management.properties"));
+	 
+//	 private String ontoCompChemUri = kbProperties.getProperty("ontocompchem.kb.tbox.uri").toString(); 
+	 
+//	 private String aboxCompChemUri = kbProperties.getProperty("ontocompchem.kb.abox.uri").toString();
+	
+//	 private String ontoCompChemNameSpace = kbProperties.getProperty("ontocompchem.kb.tbox.namespace").toString();
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -228,7 +236,7 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 
 					queryResultString = new HashSet<String>();
 
-					queryResultString = QueryManager.performSPARQLQueryOnQueryString(sentence);					
+					queryResultString = QueryManager.performSPARQLQueryOnQueryString(sentence);
 
 					for (String mpp : queryResultString) {
 
@@ -569,5 +577,7 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 	public void setRunningTime(String runningTime) {
 		this.runningTime = runningTime;
 	}
+
+	
 
 }

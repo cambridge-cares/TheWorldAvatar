@@ -1,14 +1,13 @@
 package uk.ac.ceb.como.molhub.model;
 
-import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-
+import java.util.Properties;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.IsolationLevels;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryLanguage;
@@ -37,99 +36,136 @@ import uk.ac.ceb.como.molhub.bean.RotationalConstant;
  * The Class QueryManager.
  *
  * @author nk510
- * <p>The Class QueryManager. Implements methods for query remote RDF4J repository.</p>
+ *         <p>
+ *         The Class QueryManager. Implements methods for query remote RDF4J
+ *         repository.
+ *         </p>
  * 
  */
 
 public class QueryManager {
 
-	/** The server url. */
-	static String serverUrl = "http://localhost:8080/rdf4j-server/repositories/compchemkb";
-//	static String serverUrl =    "http://172.24.155.69:8080/rdf4j-server/repositories/compchemkb";
-
 	/** The Constant logger. */
 	final static Logger logger = Logger.getLogger(QueryManager.class.getName());
 
+	Properties kbProperties = PropertiesManager
+			.loadProperties(QueryManager.class.getClassLoader().getResourceAsStream("kb.management.properties"));
+
+//	static String serverUrl = new String(kbProperties.getProperty("ontocompchem.kb.local.rdf4j.server.url"));
+
+//	static String ontoCompChemUri = kbProperties.getProperty("ontocompchem.kb.tbox.uri").toString(); 
+//	static String aboxCompChemUri = kbProperties.getProperty("ontocompchem.kb.abox.uri").toString();
+
+//	static String ontoCompChemNameSpace = kbProperties.getProperty("ontocompchem.kb.tbox.namespace").toString();
+
+	/** The server url. */
+	static String serverUrl = "http://localhost:8080/rdf4j-server/repositories/ontocompchem";
+//	static String serverUrl =    "http://172.24.155.69:8080/rdf4j-server/repositories/ontocompchem";
+
 	/**
-	 * <p>Runs SPARQL query. </p> 
+	 * <p>
+	 * Runs SPARQL query.
+	 * </p>
 	 *
 	 * @param sentence
-	 *            <p>Input query string given as propositional formula. Each literal in
-	 *            this query string contains atom name and number of atoms.</p>
-	 * @return a list of molecule names as a result of sparql queries RDF4J triple store
-	 *         triple store.
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 *                 <p>
+	 *                 Input query string given as propositional formula. Each
+	 *                 literal in this query string contains atom name and number of
+	 *                 atoms.
+	 *                 </p>
+	 * @return a list of molecule names as a result of sparql queries RDF4J triple
+	 *         store triple store.
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static Set<String> performSPARQLQueryOnQueryString(Sentence sentence) throws IOException {
-	
+
 		/**
-		 * @author nk510 <p>List of Strings that represents final solution of querying
-		 *         triple store by using input string (propositional logic formula).</p>
+		 * @author nk510
+		 *         <p>
+		 *         List of Strings that represents final solution of querying triple
+		 *         store by using input string (propositional logic formula).
+		 *         </p>
 		 */
 		List<Set<String>> listMoleculeNameSet = new ArrayList<Set<String>>();
-		
+
 		/**
-		 * @author nk510 <p>Set of all clauses built based on input query.</p>
+		 * @author nk510
+		 *         <p>
+		 *         Set of all clauses built based on input query.
+		 *         </p>
 		 */
-		
+
 		Set<Clause> clauseSet = SentenceManager.getClauseSet(sentence);
-		
+
 		/**
-		 * @author nk510 <p>Here we use Philip's parser for empirical formula.</p>
+		 * @author nk510
+		 *         <p>
+		 *         Here we use Philip's parser for empirical formula.
+		 *         </p>
 		 */
 		EmpiricalFormulaParser empiricalFormulaParser = new EmpiricalFormulaParser();
-		
-        Repository repository =  new HTTPRepository(serverUrl); 
-		
+
+		Repository repository = new HTTPRepository(serverUrl);
+
 		repository.initialize();
-		
+
 		RepositoryConnection connection = repository.getConnection();
-		
+
 		try {
 
 			connection.begin();
 
 //			int step = 0;
-			
-			for (Clause c : clauseSet) {				
-				
+
+			for (Clause c : clauseSet) {
+
 				HashSet<String> setB = new HashSet<String>();
-				
+
 				Set<Literal> literalSet = c.getLiterals();
 
 				for (Literal literal : literalSet) {
-					
 
 					String queryString = "";
 
 					/**
-					 * @author nk510 <p>Returns atom name by parsing each literal in clause. Here we
-					 *         use {@author pb556} parser.</p>
+					 * @author nk510
+					 *         <p>
+					 *         Returns atom name by parsing each literal in clause. Here we use
+					 *         {@author pb556} parser.
+					 *         </p>
 					 */
 					String atomName = empiricalFormulaParser.getAtomName(literal.getAtomicSentence().toString());
 
 					/**
-					 * @author nk510 <p>Returns number of atoms by parsing literal in clause. Here we
-					 *         use {@author pb556} parser.</p>
+					 * @author nk510
+					 *         <p>
+					 *         Returns number of atoms by parsing literal in clause. Here we use
+					 *         {@author pb556} parser.
+					 *         </p>
 					 */
 					int numberOfAtoms = empiricalFormulaParser.getAtomSum(literal.getAtomicSentence().toString());
 
 					/**
-					 * @author nk510 <p>If literal is positive then query manager returns sparql query
-					 *         string that will query those molecule name containing selected atom
-					 *         name and selected number of atoms.</p>
+					 * @author nk510
+					 *         <p>
+					 *         If literal is positive then query manager returns sparql query string
+					 *         that will query those molecule name containing selected atom name and
+					 *         selected number of atoms.
+					 *         </p>
 					 */
-					
+
 					if (literal.isPositiveLiteral()) {
 
 						queryString = QueryString.getAllTriplesForPositiveLiteral(atomName, numberOfAtoms);
 					}
 
 					/**
-					 * @author nk510 <p>If literal is negative then query manager returns sparql query
-					 *         string that will query those molecule name not containing selected
-					 *         atom name and selected number of atoms.</p>
+					 * @author nk510
+					 *         <p>
+					 *         If literal is negative then query manager returns sparql query string
+					 *         that will query those molecule name not containing selected atom name
+					 *         and selected number of atoms.
+					 *         </p>
 					 */
 
 					if (literal.isNegativeLiteral()) {
@@ -137,7 +173,7 @@ public class QueryManager {
 						queryString = QueryString.getAllTriplesForNegativeLiteral(atomName, numberOfAtoms);
 
 					}
-					
+
 					TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
 
 					TupleQueryResult result = tupleQuery.evaluate();
@@ -146,29 +182,34 @@ public class QueryManager {
 
 						/**
 						 * 
-						 * @author nk510 <p>Evaluates sparql query and populates 'MoleculeProperty' beans.</p>
+						 * @author nk510
+						 *         <p>
+						 *         Evaluates sparql query and populates 'MoleculeProperty' beans.
+						 *         </p>
 						 * 
 						 */
 
 						HashSet<String> setA = new HashSet<String>();
-						
+
 						while (result.hasNext()) {
 
 							BindingSet bindingSet = result.next();
-							
+
 							/**
 							 * 
-							 * @author nk510 <p>Add all query results for one literal into a set.</p>
+							 * @author nk510
+							 *         <p>
+							 *         Add all query results for one literal into a set.
+							 *         </p>
 							 * 
 							 */
 
 							setA.add(bindingSet.getValue("name").toString());
 
 						}
-						
+
 						setB.addAll(setA);
-						
-						
+
 						connection.commit();
 
 					} catch (Exception e) {
@@ -176,75 +217,78 @@ public class QueryManager {
 						logger.info(e.getMessage());
 
 					} finally {
-						
+
 						result.close();
 					}
-				}//literalSet
-				
+				} // literalSet
+
 				if (clauseSet.size() <= 1) {
 
 					return setB;
 
 				}
-				
+
 				listMoleculeNameSet.add(setB);
-				
-				
-			}//clauseSet
-			
-		} catch(RepositoryException e) {
-			
+
+			} // clauseSet
+
+		} catch (RepositoryException e) {
+
 			logger.info("Repository Exception: " + e.getMessage());
-			
+
 			connection.rollback();
-			
-		}finally {
-			
+
+		} finally {
+
 			connection.close();
-			
+
 			repository.shutDown();
 
 		}
-		
+
 		/**
 		 * 
-		 * @author nk510 <p>Calculates intersection of all results for all clauses
-		 *         (unions).</p>
+		 * @author nk510
+		 *         <p>
+		 *         Calculates intersection of all results for all clauses (unions).
+		 *         </p>
 		 * 
 		 */
-		
+
 		return intersection(listMoleculeNameSet);
-		
+
 	}
 
 	/**
 	 * Perform SPARQL for molecule name.
 	 *
 	 * @author nk510
-	 * @param moleculeName
-	 *            a name of a molecule
-	 * @return a Java Set. <p>For given molecule name sparql returns uuid, level of theory, and
-	 *         basis set. </p>
+	 * @param moleculeName a name of a molecule
+	 * @return a Java Set.
+	 *         <p>
+	 *         For given molecule name sparql returns uuid, level of theory, and
+	 *         basis set.
+	 *         </p>
 	 */
 
 	public static Set<MoleculeProperty> performSPARQLForMoleculeName(String moleculeName) {
 
 		Set<MoleculeProperty> moleculePropertyList = new HashSet<MoleculeProperty>();
-		
+
 		String queryString = QueryString.getAllTriplesMoleculeProperty(moleculeName);
-		
-        Repository repository =   new HTTPRepository(serverUrl); 
-			
+
+		Repository repository = new HTTPRepository(serverUrl);
+
 		repository.initialize();
-			
-	    RepositoryConnection connection = repository.getConnection();
-	    
+
+		RepositoryConnection connection = repository.getConnection();
+
 		try {
 
 			connection.begin(IsolationLevels.SNAPSHOT_READ);
-			
+
 			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
-			
+
 			TupleQueryResult result = tupleQuery.evaluate();
 
 			try {
@@ -256,31 +300,31 @@ public class QueryManager {
 					MoleculeProperty moleculeProperty = new MoleculeProperty(bindingSet.getValue("uuid").stringValue(),
 							moleculeName, bindingSet.getValue("levelOfTheory").toString(),
 							bindingSet.getValue("basisSetValue").toString());
-					
+
 					moleculePropertyList.add(moleculeProperty);
 				}
 
 			} catch (Exception e) {
 
 				e.getMessage();
-				
+
 			} finally {
 
 				result.close();
 			}
-			
+
 			connection.commit();
 
 		} catch (RepositoryException e) {
 
 			logger.info(e.getMessage());
-			
+
 			connection.rollback();
-			
+
 		} finally {
 
 			connection.close();
-			
+
 			repository.shutDown();
 
 		}
@@ -294,15 +338,20 @@ public class QueryManager {
 	 *
 	 * @author nk510
 	 * @param listOfSets
-	 *            <p>A list that contains sets of all unions in all clauses.</p>
-	 * @return a Java Set. <p>Intersection of all clauses as sets of strings.</p>
+	 *                   <p>
+	 *                   A list that contains sets of all unions in all clauses.
+	 *                   </p>
+	 * @return a Java Set.
+	 *         <p>
+	 *         Intersection of all clauses as sets of strings.
+	 *         </p>
 	 * 
 	 */
-	
+
 	public static Set<String> intersection(List<Set<String>> listOfSets) {
 
 		Set<String> finalSet = new HashSet<String>(listOfSets.get(0));
-		
+
 		logger.info("step " + 0 + ". final set before intersection:");
 
 		for (String mps : finalSet) {
@@ -331,34 +380,36 @@ public class QueryManager {
 
 		return finalSet;
 	}
-	
+
 	/**
 	 * 
 	 * Gets the all frequencies.
 	 *
 	 * @author nk510
-	 * @param uuid
-	 *            unique folder name.
-	 * @return A Java List. <p>A list of all frequencies (size, value, unit) for given uuid.</p>
+	 * @param uuid unique folder name.
+	 * @return A Java List.
+	 *         <p>
+	 *         A list of all frequencies (size, value, unit) for given uuid.
+	 *         </p>
 	 * 
 	 */
-	
+
 	public static List<Frequency> getAllFrequencies(String uuid) {
 
 		List<Frequency> frequencyList = new ArrayList<Frequency>();
 
 		String queryString = QueryString.geFrequency(uuid);
-		
-		Repository repository =  new HTTPRepository(serverUrl);
-		
+
+		Repository repository = new HTTPRepository(serverUrl);
+
 		repository.initialize();
-		
+
 		RepositoryConnection connection = repository.getConnection();
 
 		try {
 
 			connection.begin(IsolationLevels.SNAPSHOT_READ);
-			
+
 			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
 
 			TupleQueryResult result = tupleQuery.evaluate();
@@ -375,30 +426,28 @@ public class QueryManager {
 
 					frequencyList.add(frequency);
 				}
-				
+
 				connection.commit();
 
 			} catch (Exception e) {
 
 				logger.info(e.getMessage());
-				
+
 			} finally {
 
 				result.close();
 			}
 
-			
-			
 		} catch (RepositoryException e) {
-			
+
 			logger.info(e.getMessage());
-			
+
 			connection.rollback();
-			
+
 		} finally {
-			
+
 			connection.close();
-			
+
 			repository.shutDown();
 		}
 
@@ -410,28 +459,32 @@ public class QueryManager {
 	 * 
 	 * Gets the all non compositet molecule properties.
 	 *
-	 * @param uuid
-	 *            the uuid is name for unique folder name
-	 * @return A Java List. <p>all non composite molecule properties . Non composite molecule properties includes: molecule name, basis set value, level of theory, and geometry type.</p>
+	 * @param uuid the uuid is name for unique folder name
+	 * @return A Java List.
+	 *         <p>
+	 *         all non composite molecule properties . Non composite molecule
+	 *         properties includes: molecule name, basis set value, level of theory,
+	 *         and geometry type.
+	 *         </p>
 	 * 
 	 */
-	
+
 	public static List<MoleculeProperty> getAllNonCompositetMoleculeProperties(String uuid) {
 
 		String queryString = QueryString.geNonCompositetMoleculeProperties(uuid);
 
 		List<MoleculeProperty> moleculePropertyList = new ArrayList<MoleculeProperty>();
-		
-		Repository repository =  new HTTPRepository(serverUrl); 
-		
+
+		Repository repository = new HTTPRepository(serverUrl);
+
 		repository.initialize();
-		
+
 		RepositoryConnection connection = repository.getConnection();
 
 		try {
 
 			connection.begin(IsolationLevels.SNAPSHOT_READ);
-			
+
 			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
 
 			TupleQueryResult result = tupleQuery.evaluate();
@@ -451,29 +504,29 @@ public class QueryManager {
 					moleculePropertyList.add(moleculeProperty);
 
 				}
-				
+
 				connection.commit();
-				
+
 			} catch (Exception e) {
 
 				logger.info(e.getMessage());
 
 			} finally {
-				
+
 				result.close();
-				
-			}			
-			
+
+			}
+
 		} catch (RepositoryException e) {
 
 			logger.info(e.getMessage());
-			
+
 			connection.rollback();
-			
+
 		} finally {
-			
+
 			connection.close();
-			
+
 			repository.shutDown();
 		}
 
@@ -484,8 +537,7 @@ public class QueryManager {
 	 * 
 	 * Gets the all rotational symmerty number.
 	 *
-	 * @param uuid
-	 *            the uuid is name for unique folder name.
+	 * @param uuid the uuid is name for unique folder name.
 	 * @return the rotational symmerty number.
 	 * 
 	 */
@@ -494,17 +546,17 @@ public class QueryManager {
 		String queryString = QueryString.getRotationalSymmertyNumber(uuid);
 
 		String rotationalSymmetryNumber = new String();
-		
+
 		Repository repository = new HTTPRepository(serverUrl);
-		
+
 		repository.initialize();
-		
+
 		RepositoryConnection connection = repository.getConnection();
 
 		try {
 
 			connection.begin(IsolationLevels.SNAPSHOT_READ);
-			
+
 			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
 
 			TupleQueryResult result = tupleQuery.evaluate();
@@ -518,29 +570,28 @@ public class QueryManager {
 					rotationalSymmetryNumber = bindingSet.getValue("rotationalSymmetryNumber").stringValue();
 
 				}
-				
+
 				connection.commit();
-				
 
 			} catch (Exception e) {
 
 				logger.info(e.getMessage());
-				
+
 			} finally {
-				
+
 				result.close();
 			}
-			
+
 		} catch (RepositoryException e) {
 
 			logger.info(e.getMessage());
-			
+
 			connection.rollback();
-			
+
 		} finally {
 
 			connection.close();
-			
+
 			repository.shutDown();
 
 		}
@@ -552,29 +603,27 @@ public class QueryManager {
 	 * 
 	 * Gets the all spin multiplicity.
 	 *
-	 * @param uuid
-	 *            the uuid is name for unique folder name.
+	 * @param uuid the uuid is name for unique folder name.
 	 * @return the spin multiplicity value.
 	 * 
 	 */
-	
+
 	public static String getAllSpinMultiplicity(String uuid) {
 
 		String queryString = QueryString.getSpinMultiplicity(uuid);
 
 		String spinMultiplicityValue = new String();
-		
-		Repository repository =  new HTTPRepository(serverUrl);
-		
+
+		Repository repository = new HTTPRepository(serverUrl);
+
 		repository.initialize();
-		
+
 		RepositoryConnection connection = repository.getConnection();
-		
 
 		try {
 
 			connection.begin(IsolationLevels.SNAPSHOT_READ);
-			
+
 			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
 
 			TupleQueryResult result = tupleQuery.evaluate();
@@ -588,7 +637,7 @@ public class QueryManager {
 					spinMultiplicityValue = bindingSet.getValue("spinMultiplicityValue").stringValue();
 
 				}
-				
+
 				connection.commit();
 
 			} catch (Exception e) {
@@ -599,52 +648,48 @@ public class QueryManager {
 
 				result.close();
 			}
-			
-			
-			
+
 		} catch (RepositoryException e) {
 
 			logger.info(e.getMessage());
-			
+
 			connection.rollback();
 
 		} finally {
 
 			connection.close();
-			
+
 			repository.shutDown();
 		}
 
 		return spinMultiplicityValue;
 	}
 
-	
 	/**
 	 * 
 	 * Gets the all formal charge.
 	 *
-	 * @param uuid the uuid is unique folder name 
+	 * @param uuid the uuid is unique folder name
 	 * @return the all formal charge value
 	 * 
 	 */
-	
+
 	public static List<FormalCharge> getAllFormalCharge(String uuid) {
 
 		List<FormalCharge> formalChargeList = new ArrayList<FormalCharge>();
-		
-		String queryString = QueryString.getFormalCharge(uuid);		
-		
-		Repository repository =  new HTTPRepository(serverUrl);
-		
+
+		String queryString = QueryString.getFormalCharge(uuid);
+
+		Repository repository = new HTTPRepository(serverUrl);
+
 		repository.initialize();
-		
+
 		RepositoryConnection connection = repository.getConnection();
-		
 
 		try {
 
 			connection.begin(IsolationLevels.SNAPSHOT_READ);
-			
+
 			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
 
 			TupleQueryResult result = tupleQuery.evaluate();
@@ -655,11 +700,12 @@ public class QueryManager {
 
 					BindingSet bindingSet = result.next();
 
-					FormalCharge formalCharge = new FormalCharge(bindingSet.getValue("formalChargeValue").stringValue(),bindingSet.getValue("formalChargeUnit").stringValue());
+					FormalCharge formalCharge = new FormalCharge(bindingSet.getValue("formalChargeValue").stringValue(),
+							bindingSet.getValue("formalChargeUnit").stringValue());
 
 					formalChargeList.add(formalCharge);
 				}
-				
+
 				connection.commit();
 
 			} catch (Exception e) {
@@ -670,32 +716,33 @@ public class QueryManager {
 
 				result.close();
 			}
-			
-			
-			
+
 		} catch (RepositoryException e) {
 
 			logger.info(e.getMessage());
-			
+
 			connection.rollback();
 
 		} finally {
 
 			connection.close();
-			
+
 			repository.shutDown();
 		}
 
 		return formalChargeList;
 	}
-	
+
 	/**
 	 * 
 	 * Gets the all atomic mass.
 	 *
-	 * @param uuid
-	 *            the uuid is name for unique folder name.
-	 * @return the atomic masses. <p>These data are given as the following 3-tuple (atom name, atomic mass value, atomic mass unit). </p>
+	 * @param uuid the uuid is name for unique folder name.
+	 * @return the atomic masses.
+	 *         <p>
+	 *         These data are given as the following 3-tuple (atom name, atomic mass
+	 *         value, atomic mass unit).
+	 *         </p>
 	 * 
 	 */
 	public static List<AtomicMass> getAllAtomicMass(String uuid) {
@@ -703,18 +750,17 @@ public class QueryManager {
 		List<AtomicMass> atomicMassList = new ArrayList<AtomicMass>();
 
 		String queryString = QueryString.getAtomicMass(uuid);
-		
-		Repository repository =  new HTTPRepository(serverUrl); 
-		
+
+		Repository repository = new HTTPRepository(serverUrl);
+
 		repository.initialize();
-		
+
 		RepositoryConnection connection = repository.getConnection();
-		
 
 		try {
 
 			connection.begin(IsolationLevels.SNAPSHOT_READ);
-			
+
 			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
 
 			TupleQueryResult result = tupleQuery.evaluate();
@@ -731,7 +777,7 @@ public class QueryManager {
 
 					atomicMassList.add(atomicMass);
 				}
-				
+
 				connection.commit();
 
 			} catch (Exception e) {
@@ -742,20 +788,17 @@ public class QueryManager {
 
 				result.close();
 			}
-			
-			
-
 
 		} catch (RepositoryException e) {
 
 			logger.info(e.getMessage());
-			
+
 			connection.rollback();
 
 		} finally {
 
 			connection.close();
-			
+
 			repository.shutDown();
 		}
 
@@ -767,22 +810,25 @@ public class QueryManager {
 	 * 
 	 * Gets the all rotational constant.
 	 *
-	 * @param uuid
-	 *            the uuid is name for unique folder.
-	 * @return the rotational constant. <p>These data are given as the following 3-tuple (rotational constant size, rotational constant value, rotational constant unit).</p>
-	 *         
+	 * @param uuid the uuid is name for unique folder.
+	 * @return the rotational constant.
+	 *         <p>
+	 *         These data are given as the following 3-tuple (rotational constant
+	 *         size, rotational constant value, rotational constant unit).
+	 *         </p>
+	 * 
 	 */
-	
+
 	public static List<RotationalConstant> getAllRotationalConstant(String uuid) {
 
 		List<RotationalConstant> rotationalConstantList = new ArrayList<RotationalConstant>();
 
 		String queryString = QueryString.getRotationalConstant(uuid);
-		
+
 		Repository repository = new HTTPRepository(serverUrl);
-		
+
 		repository.initialize();
-		
+
 		RepositoryConnection connection = repository.getConnection();
 
 		try {
@@ -806,29 +852,29 @@ public class QueryManager {
 
 					rotationalConstantList.add(rotationalConstant);
 				}
-				
+
 				connection.commit();
-				
+
 			} catch (Exception e) {
 
 				logger.info(e.getMessage());
-				
+
 			} finally {
-				
+
 				result.close();
-				
+
 			}
 
 		} catch (RepositoryException e) {
 
 			logger.info(e.getMessage());
-			
+
 			connection.rollback();
 
 		} finally {
-			
+
 			connection.close();
-			
+
 			repository.shutDown();
 
 		}

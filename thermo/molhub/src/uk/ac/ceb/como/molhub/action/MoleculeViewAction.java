@@ -1,8 +1,10 @@
 package uk.ac.ceb.como.molhub.action;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 
 import com.opensymphony.xwork2.ActionSupport;
@@ -13,9 +15,8 @@ import uk.ac.ceb.como.molhub.bean.Frequency;
 import uk.ac.ceb.como.molhub.bean.MoleculeProperty;
 import uk.ac.ceb.como.molhub.bean.RotationalConstant;
 import uk.ac.ceb.como.molhub.model.FolderManager;
+import uk.ac.ceb.como.molhub.model.PropertiesManager;
 import uk.ac.ceb.como.molhub.model.QueryManager;
-
-import org.apache.log4j.Logger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -32,7 +33,7 @@ public class MoleculeViewAction extends ActionSupport {
 
 	/** The folder manager. */
 	FolderManager folderManager = new FolderManager();
-
+	
 	/** The rotational symmetry number. */
 	String rotationalSymmetryNumber;
 
@@ -45,6 +46,24 @@ public class MoleculeViewAction extends ActionSupport {
 	/** The catalina folder path. */
 	private String catalinaFolderPath = System.getProperty("catalina.home");
 
+//	Properties molhubProperties = PropertiesManager
+//			.loadProperties(MoleculeViewAction.class.getClassLoader().getResourceAsStream("molhub.management.properties"));
+	
+//	private String dataFolderPath = molhubProperties.getProperty("data.folder.path");
+	
+	
+//	private String kbFolderPath = molhubProperties.getProperty("kb.folder.path");
+	
+
+	 Properties kbProperties = PropertiesManager
+			.loadProperties(MoleculeViewAction.class.getClassLoader().getResourceAsStream("kb.management.properties"));
+	
+//	 private String ontoCompChemUri = kbProperties.getProperty("ontocompchem.kb.tbox.uri").toString(); 
+	 
+//	 private String aboxCompChemUri = kbProperties.getProperty("ontocompchem.kb.abox.uri").toString();
+	 
+//	 private String ontoCompChemNameSpace = kbProperties.getProperty("ontocompchem.kb.tbox.namespace").toString();
+	 
 	/**
 	 * The uuid is used as unique identifier for query all properties of a digital
 	 * entity and showing results on new page.
@@ -82,9 +101,11 @@ public class MoleculeViewAction extends ActionSupport {
 	 */
 	public String execute() {
 
+		
 		/**
 		 * @author nk510 <p>SPARQL returns a list of frequencies for given uuid.</p>
 		 */
+//		frequencyList = QueryManager.getAllFrequencies(getUuid(), aboxCompChemUri, ontoCompChemNameSpace, ontoCompChemUri);
 		frequencyList = QueryManager.getAllFrequencies(getUuid());
 
 		/**
@@ -92,6 +113,7 @@ public class MoleculeViewAction extends ActionSupport {
 		 *         basis set value, level of theory, and geometry type value.</p>
 		 */
 
+//		moleculePropertyList = QueryManager.getAllNonCompositetMoleculeProperties(getUuid(), ontoCompChemUri, ontoCompChemNameSpace, aboxCompChemUri);
 		moleculePropertyList = QueryManager.getAllNonCompositetMoleculeProperties(getUuid());
 
 		/**
@@ -99,6 +121,7 @@ public class MoleculeViewAction extends ActionSupport {
 		 *         for given uuid.</p>
 		 */
 
+//		rotationalSymmetryNumber = QueryManager.getAllRotationalSymmertyNumber(getUuid(),  aboxCompChemUri, ontoCompChemNameSpace, ontoCompChemUri);
 		rotationalSymmetryNumber = QueryManager.getAllRotationalSymmertyNumber(getUuid());
 
 		/**
@@ -106,12 +129,14 @@ public class MoleculeViewAction extends ActionSupport {
 		 *         for given uuid.</p>
 		 */
 
+//		spinMultiplicityValue = QueryManager.getAllSpinMultiplicity(getUuid(),  aboxCompChemUri, ontoCompChemNameSpace, ontoCompChemUri);
 		spinMultiplicityValue = QueryManager.getAllSpinMultiplicity(getUuid());
 
 		/**
 		 * @author nk510 <p>Remembers atomic masses for each atom appearing in a molecule (species) based on uuid. It
 		 *         includes atomic mass value, atomic mass unit, and atom name.</p>
 		 */
+//		atomicMassList = QueryManager.getAllAtomicMass(getUuid(),aboxCompChemUri, ontoCompChemNameSpace, ontoCompChemUri);
 		atomicMassList = QueryManager.getAllAtomicMass(getUuid());
 		
 		/**
@@ -120,6 +145,7 @@ public class MoleculeViewAction extends ActionSupport {
 	     *         constant value, rotational constant unit).</p> 
 		 */
 
+//		rotationalConstantList = QueryManager.getAllRotationalConstant(getUuid(),aboxCompChemUri, ontoCompChemNameSpace, ontoCompChemUri);
 		rotationalConstantList = QueryManager.getAllRotationalConstant(getUuid());
 
 		/**
@@ -127,6 +153,7 @@ public class MoleculeViewAction extends ActionSupport {
 		 *         for given uuid.</p>
 		 */
 		
+//		formalChargeList = QueryManager.getAllFormalCharge(getUuid(),aboxCompChemUri, ontoCompChemNameSpace, ontoCompChemUri);
 		formalChargeList = QueryManager.getAllFormalCharge(getUuid());
 		
 		
@@ -265,7 +292,7 @@ public class MoleculeViewAction extends ActionSupport {
 	public void setMoleculePropertyList(List<MoleculeProperty> moleculePropertyList) {
 		this.moleculePropertyList = moleculePropertyList;
 	}
-
+	
 	/**
 	 * Gets the rotational symmetry number.
 	 *
