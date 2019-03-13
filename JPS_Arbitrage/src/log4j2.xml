@@ -5,11 +5,17 @@
 		<Http name="JPSHTTPLOGSERVER" url="http://www.theworldavatar.com/JPS_BASE/LogServer"  method="POST">
 			<PatternLayout pattern="%d %p [%t] %C{1} %m%n"/>
 		</Http>		
+		
+		<Console name="STDOUT">
+			<PatternLayout pattern="%d %p [%t] %C{1} %m%n"/>
+		</Console>	
+		
 	</Appenders>
 	
 	<Loggers>
 		<Root level="info">
 			<AppenderRef ref="JPSHTTPLOGSERVER"/>
+			<AppenderRef ref="STDOUT"/>
 		</Root>
 	</Loggers>
 	
