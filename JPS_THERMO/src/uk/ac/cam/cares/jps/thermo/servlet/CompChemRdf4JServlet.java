@@ -42,12 +42,14 @@ public class CompChemRdf4JServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
+//	Properties jpsThermoProperties = PropertiesManager.loadProperties(CompChemRdf4JServlet.class.getClassLoader().getResourceAsStream("jps_thermo.management.properties"));
+	
 	/** The Constant logger. */
 	public static Logger logger = Logger.getLogger(CompChemRdf4JServlet.class.getName());
 
 	public static String catalinaFolderPath = System.getProperty("catalina.home");
 
-	String compchemServerUrl = "http://localhost:8080/rdf4j-server/repositories/compchemkb";
+	String compchemServerUrl = "http://localhost:8080/rdf4j-server/repositories/ontocompchem";
 	
 	String ontokinServerUrl = "http://localhost:8080/rdf4j-server/repositories/ontokin";
 	
@@ -59,7 +61,12 @@ public class CompChemRdf4JServlet extends HttpServlet {
 	 * @author NK510 Root folder inside Apache Tomcat.
 	 * 
 	 */
-	public static final String RESULT_FOLDER = catalinaFolderPath + "/webapps/ROOT/kb/";
+//	public static final String RESULT_FOLDER = catalinaFolderPath + "/webapps/ROOT/kb/";
+	public static final String RESULT_FOLDER = catalinaFolderPath + "/webapps/ROOT/data/ontocompchem/";
+	
+	public static final String RESULT_ONTOKIN_FOLDER = catalinaFolderPath + "/webapps/ROOT/kb/ontokin/";
+	
+//	String RESULT_FOLDER = jpsThermoProperties.getProperty("data.folder.path").toString();
 	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -90,14 +97,13 @@ public class CompChemRdf4JServlet extends HttpServlet {
 
 		logger.info("folder name:  " + folderName);
 
-		System.out.println("CompChem IRI: " + gaussian + "  folder name: " + folderName);
+		logger.info("OntoCompChem IRI: " + gaussian + "  folder name: " + folderName);
 
 		/**
 		 * @author NK510 Name of Json file that contains results of thermo calculations.
 		 * 
 		 */
 		String jsonSPARQLOutputFilePath = RESULT_FOLDER + folderName + "/" + folderName + ".json";
-
 
 		String jsonOutputFilePath = RESULT_FOLDER + folderName + "/" + folderName + "_nasa" + ".json";
 		
@@ -183,7 +189,7 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		
 		JsonToOwlConverter jsonToOwlConverter = new JsonToOwlConverter ();
 		
-		jsonToOwlConverter.convertJsonIntoOwl(updatedJsonOutputFilePath, RESULT_FOLDER + folderName +"/");
+		jsonToOwlConverter.convertJsonIntoOwl(updatedJsonOutputFilePath, RESULT_ONTOKIN_FOLDER+folderName+"/");
 		
 		/** 
 		 * @author NK
@@ -205,7 +211,11 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		 */
 		UploadOntology uploadOntology = new UploadOntology();
 		
-		uploadOntology.uploadOntoKin(new FolderManager().getOwlFilePath(RESULT_FOLDER + folderName +"/kb/"), ontokinServerUrl, aboxOntokinUri);
+		
+		
+//		uploadOntology.uploadOntoKin(new FolderManager().getOwlFilePath(RESULT_ONTOKIN_FOLDER + folderName +"/kb/"), ontokinServerUrl, aboxOntokinUri);
+		uploadOntology.uploadOntoKin(new FolderManager().getOwlFilePath(RESULT_ONTOKIN_FOLDER+folderName+"/"), ontokinServerUrl, aboxOntokinUri);
+		
 	}
 
 	@Override

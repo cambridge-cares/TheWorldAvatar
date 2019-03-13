@@ -35,7 +35,7 @@ public class JsonToJsonConverter {
 	/**
 	 * 
 	 * @author NK510
-	 * @param filePath
+	 * @param filePath 
 	 * @throws QueryResultParseException
 	 * @throws QueryResultHandlerException
 	 * @throws IOException
@@ -119,8 +119,10 @@ public class JsonToJsonConverter {
 		/**
 		 * @author NK510 Adds the content of JSON file into Json object.
 		 */
+		logger.info("JSON string: " + IOUtils.toString(new FileInputStream (new File(filePath)),"UTF-8"));
 		
 		JSONObject  jsonObject = new JSONObject(IOUtils.toString(new FileInputStream (new File(filePath)),"UTF-8"));
+		//JSONArray jsonArray = new JSONArray();
 		
 		/**
 		 * 
