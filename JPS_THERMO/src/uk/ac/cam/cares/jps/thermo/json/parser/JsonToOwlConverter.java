@@ -29,7 +29,7 @@ public class JsonToOwlConverter {
 	public void convertJsonIntoOwl(String jsonFilePath, String catalinaFolderPath) throws IOException {
 
 		/**
-		 * @author NK This source code (method) is implemented by Dr M.S.F. Farazi.
+		 * @author NK510 This source code (method) is implemented by Dr M.S.F. Farazi.
 		 * e-mail:  <msff2@cam.ac.uk>
 		 */
 
@@ -56,5 +56,7 @@ public class JsonToOwlConverter {
 		}
 
 	}
+	
+	
 
 }

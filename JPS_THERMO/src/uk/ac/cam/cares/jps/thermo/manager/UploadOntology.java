@@ -19,11 +19,14 @@ public class UploadOntology {
 	
 	public void uploadOntoKin(String owlFilePath, String serverUrl, String ontologyUri) {
 		
+		
+		File owlFile = new File (owlFilePath);
+		
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 
 		Thread threadTask = new Thread(new Runnable() {
 
-			final File owlFile = new File (owlFilePath);
+			 
 			
 			@Override
 			public void run() {
@@ -36,6 +39,8 @@ public class UploadOntology {
 				 * 
 				 */
 
+				
+				
 				Repository repository = new HTTPRepository(serverUrl);
 
 				repository.initialize();
@@ -102,6 +107,6 @@ public class UploadOntology {
 		ExecutorManager em = new ExecutorManager();
 
 		em.shutdownExecutorService(executor);
-		
+
 	}
 }
