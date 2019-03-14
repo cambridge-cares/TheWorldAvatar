@@ -130,7 +130,7 @@ try:
     print("")
     print(chimney_iri_list,config.bldTopnode, coordinates,  ["CO2"   ,"CO" ,  "NO2" ,  "HC" ,  "NOx"], 2, config.bdnLimit,False, BDN)
     print("")
-    test = admsInputDataRetriever(chimney_iri_list,config.bldTopnode, coordinates,  ["CO2"   ,"CO" ,  "NO2" ,  "HC" ,  "NOx"], 2, config.bdnLimit,False, BDN, targetCRS)
+    test = admsInputDataRetriever(chimney_iri_list,config.bldTopnode, coordinates,  ["CO2"   ,"CO" ,  "NO2" ,  "HC" ,  "NOx", "Particulate001"], 2, config.bdnLimit,False, BDN, targetCRS)
     result = test.get()
     
     print("RESULT TYPE: ")
