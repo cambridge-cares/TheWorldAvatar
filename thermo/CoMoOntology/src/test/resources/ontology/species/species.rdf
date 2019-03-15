@@ -2,58 +2,55 @@
 <rdf:RDF
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:dc="http://purl.org/dc/elements/1.1/"
-    xmlns="https://como.cheng.cam.ac.uk/kb/species.owl#"
     xmlns:owl="http://www.w3.org/2002/07/owl#"
-    xmlns:species="http://como.cheng.cam.ac.uk/kb/species.owl#"
-    xmlns:compchem="https://como.cheng.cam.ac.uk/kb/compchem.owl#"
-    xmlns:skos="http://www.w3.org/2004/02/skos/core#"
-    xmlns:j.0="http://www.w3.org/2008/05/skos#"
+    xmlns:skos="http://www.w3.org/2008/05/skos#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns="http://www.theworldavatar.com/kb/species/species.owl#"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-  xml:base="https://como.cheng.cam.ac.uk/kb/species.owl">
-  <owl:Ontology rdf:about="">
-    <owl:imports rdf:resource="http://www.w3.org/2004/02/skos/core"/>
-  </owl:Ontology>
+  xml:base="http://www.theworldavatar.com/kb/species/species.owl">
   <owl:DatatypeProperty rdf:about="http://purl.org/dc/elements/1.1/identifier"/>
-  <owl:Thing rdf:about="http://www.theworldavatar.com/kb/species_4.owl#species_4">
-    <dc:identifier>species_4</dc:identifier>
-    <j.0:altLabel>N 2</j.0:altLabel>
-  </owl:Thing>
-  <owl:Thing rdf:about="http://www.theworldavatar.com/kb/species_8.owl#species_8">
-    <j.0:altLabel>H 2 O 2</j.0:altLabel>
-    <dc:identifier>species_8</dc:identifier>
-  </owl:Thing>
-  <owl:Thing rdf:about="http://www.theworldavatar.com/kb/species_7.owl#species_7">
-    <dc:identifier>species_7</dc:identifier>
-    <j.0:altLabel>H 2 O 1</j.0:altLabel>
-  </owl:Thing>
-  <owl:Thing rdf:about="http://www.theworldavatar.com/kb/species_3.owl#species_3">
-    <j.0:altLabel>O 2</j.0:altLabel>
-    <dc:identifier>species_3</dc:identifier>
-  </owl:Thing>
-  <owl:Thing rdf:about="http://www.theworldavatar.com/kb/species_9.owl#species_9">
-    <j.0:altLabel>H 2</j.0:altLabel>
-    <dc:identifier>species_9</dc:identifier>
-  </owl:Thing>
-  <owl:Thing rdf:about="http://www.theworldavatar.com/kb/species_5.owl#species_5">
-    <j.0:altLabel>H 1 O 2</j.0:altLabel>
-    <dc:identifier>species_5</dc:identifier>
-  </owl:Thing>
-  <owl:Thing rdf:about="http://www.theworldavatar.com/kb/species_10.owl#species_10">
-    <j.0:altLabel>Ar 1</j.0:altLabel>
+  <owl:Thing rdf:ID="species_10">
     <dc:identifier>species_10</dc:identifier>
+    <skos:altLabel>Ar 1</skos:altLabel>
   </owl:Thing>
-  <owl:Thing rdf:about="http://www.theworldavatar.com/kb/species_1.owl#species_1">
+  <owl:Thing rdf:ID="species_1">
+    <skos:altLabel> H 1 O 1 </skos:altLabel>
     <dc:identifier>species_1</dc:identifier>
-    <j.0:altLabel> H 1 O 1 </j.0:altLabel>
   </owl:Thing>
-  <owl:Thing rdf:about="http://www.theworldavatar.com/kb/species_6.owl#species_6">
-    <j.0:altLabel>H 1</j.0:altLabel>
-    <dc:identifier>species_6</dc:identifier>
-  </owl:Thing>
-  <owl:Thing rdf:about="http://www.theworldavatar.com/kb/species_2.owl#species_2">
+  <owl:Thing rdf:ID="species_2">
+    <skos:altLabel>O 1</skos:altLabel>
     <dc:identifier>species_2</dc:identifier>
-    <j.0:altLabel>O 1</j.0:altLabel>
+  </owl:Thing>
+  <owl:Thing rdf:ID="species_3">
+    <dc:identifier>species_3</dc:identifier>
+    <skos:altLabel>O 2</skos:altLabel>
+  </owl:Thing>
+  <owl:Thing rdf:ID="species_4">
+    <skos:altLabel>N 2</skos:altLabel>
+    <dc:identifier>species_4</dc:identifier>
+  </owl:Thing>
+  <owl:Thing rdf:ID="species_5">
+    <dc:identifier>species_5</dc:identifier>
+    <skos:altLabel>H 1 O 2</skos:altLabel>
+  </owl:Thing>
+  <owl:Thing rdf:ID="species_6">
+    <dc:identifier>species_6</dc:identifier>
+    <skos:altLabel>H 1</skos:altLabel>
+  </owl:Thing>
+  <owl:Thing rdf:ID="species_7">
+    <skos:altLabel>H 2 O 1</skos:altLabel>
+    <dc:identifier>species_7</dc:identifier>
+  </owl:Thing>
+  <owl:AnnotationProperty rdf:about="http://www.w3.org/2008/05/skos#altLabel">
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#label"/>
+  </owl:AnnotationProperty>
+  <owl:Thing rdf:ID="species_8">
+    <dc:identifier>species_8</dc:identifier>
+    <skos:altLabel>H 2 O 2</skos:altLabel>
+  </owl:Thing>
+  <owl:Thing rdf:ID="species_9">
+    <dc:identifier>species_9</dc:identifier>
+    <skos:altLabel>H 2</skos:altLabel>
   </owl:Thing>
 </rdf:RDF>
 
