@@ -16,7 +16,7 @@ import uk.ac.cam.cares.jps.agents.api.AgentWebAPI;
 import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceBuilder;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.config.KeyValueServer;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
@@ -30,10 +30,10 @@ import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 		// TODO-AE URGENT find a better solution for setting test properties,
 		// e.g. is someone wants to test the GUI on his local computer then he should not force to run this test method each time he restarts tomcat
 		
-		KeyValueServer.set("host", "localhost");
-		KeyValueServer.set("port", "8080");	
+		KeyValueManager.set("host", "localhost");
+		KeyValueManager.set("port", "8080");	
 		String compositionDir = AgentLocator.getCurrentJpsAppDirectory(this);
-		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithoutWasteProduct");
+		KeyValueManager.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithoutWasteProduct");
 	}
 	
 	private Service createADMSWithoutWasteProduct() {
@@ -116,7 +116,7 @@ import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 	public void testComposeAndExecuteForBerlinDirectCallWithoutWasteProduct() throws Exception {
 		String compositionDir = AgentLocator.getCurrentJpsAppDirectory(this);
 		Service composedAgent = createADMSWithoutWasteProduct();
-		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithoutWasteProduct");
+		KeyValueManager.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithoutWasteProduct");
 		JSONObject result = composeAndExecuteForBerlinDirectCall(composedAgent);
 		//assertEquals(25, result.getJSONArray("building").length());
 	}
@@ -124,7 +124,7 @@ import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 	public void testComposeAndExecuteForBerlinDirectCallWithWasteProduct() throws Exception {
 		String compositionDir = AgentLocator.getCurrentJpsAppDirectory(this);
 		
-		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithWasteProduct");
+		KeyValueManager.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithWasteProduct");
 		Service composedAgent = createADMSWithWasteProduct();
  
 		
@@ -135,7 +135,7 @@ import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 	
 	public void testComposeAndExecuteWithUnresolvableParameter() throws Exception {
 		String compositionDir = AgentLocator.getCurrentJpsAppDirectory(this);
-		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithoutWasteProduct");
+		KeyValueManager.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithoutWasteProduct");
 		
 		Service composedAgent = new ServiceBuilder()
 				.operation(null, "http://www.theworldavatar.com/Composite_Service_ODsMpRv")
@@ -178,8 +178,8 @@ import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 		
 		String compositionDir = AgentLocator.getCurrentJpsAppDirectory(this);
 		
-		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithoutWasteProduct");
-		//KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithWasteProduct");
+		KeyValueManager.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithoutWasteProduct");
+		//KeyValueManager.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithWasteProduct");
 			
 		String result = AgentCaller.executeGetWithJsonParameter("/JPS_COMPOSITION/execute", jsonInput.toString());
 		// TODO: The result returned from this test is not in the form of a JSON Object 
@@ -210,7 +210,7 @@ import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 		
 		String compositionDir = AgentLocator.getCurrentJpsAppDirectory(this);
 		
-		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithWasteProduct");
+		KeyValueManager.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithWasteProduct");
 			
 		String result = AgentCaller.executeGetWithJsonParameter("/JPS_COMPOSITION/execute", jsonInput.toString());
 		// TODO: The result returned from this test is not in the form of a JSON Object 

@@ -11,13 +11,15 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Resource;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Literal;
+
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
@@ -50,14 +52,22 @@ public class MenAgent extends JPSHttpServlet {
 		} else {
 			String ecoindustrialpark = jo.getString("ecoindustrialpark");
 			
+//			String chemicalplantInfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#> " 
+//					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+//					+ "SELECT ?iri "
+//					+ "WHERE {?entity  a  cp:Eco-industrialPark  ." 
+//					+ "?entity   j2:hasSubsystem ?cpl ."
+//					+ "?cpl  a  cp:ChemicalPlant  ."
+//					+ "?cpl   cp:hasConceptualModel ?cm ."
+//					+ "?cm   cp:hasIRI ?iri ." 
+//					+ "}"
+//					+ "ORDER BY ?product DESC(?added)";
+			
 			String chemicalplantInfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#> " 
 					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 					+ "SELECT ?iri "
 					+ "WHERE {?entity  a  cp:Eco-industrialPark  ." 
-					+ "?entity   j2:hasSubsystem ?cpl ."
-					+ "?cpl  a  cp:ChemicalPlant  ."
-					+ "?cpl   cp:hasConceptualModel ?cm ."
-					+ "?cm   cp:hasIRI ?iri ." 
+					+ "?entity   j2:hasSubsystem ?iri ."
 					+ "}"
 					+ "ORDER BY ?product DESC(?added)";
 	
@@ -66,12 +76,19 @@ public class MenAgent extends JPSHttpServlet {
 			for (; rs_plant.hasNext();) {			
 				QuerySolution qs_p = rs_plant.nextSolution();
 	
-				Literal cpiri = qs_p.getLiteral("iri");
-				String irilist = cpiri.getString();
+				//Literal cpiri = qs_p.getLiteral("iri");
+				
+				Resource cpiri = qs_p.getResource("iri");
+				
+				//String irilist = cpiri.getString();
+				String irilist = cpiri.toString();
+				
 				irilist = irilist.replace(" ", "");
 				irilist = irilist.replace("\n", "");
 				irilist = irilist.replace("\r", "");
 				irilist = irilist.replace("\t", "");
+				
+				
 	
 				cpirilist.add(irilist);
 			}
@@ -86,6 +103,8 @@ public class MenAgent extends JPSHttpServlet {
 		MenCalculationParameters parameters = new MenCalculationParameters(Double.parseDouble(carbonTax), Double.parseDouble(interestFactor), Double.parseDouble(annualCostFactor), Double.parseDouble(internationalMarketPriceFactor), Boolean.parseBoolean(internationalMarketLowestPriceApplied));
 		MenDataProvider converter = new MenDataProvider();
 		MenResult actual = converter.startCalculation(parameters,transportationModes,cpirilist);
+		
+
 		
 		JSONObject result = new JSONObject();
 		//result.put("objectivevalue",String.valueOf(actual.objValue));

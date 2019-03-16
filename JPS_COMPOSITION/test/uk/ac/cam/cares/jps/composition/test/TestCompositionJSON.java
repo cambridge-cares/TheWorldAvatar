@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.config.KeyValueServer;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.composition.compositionengine.ServiceCompositionEngine;
 import uk.ac.cam.cares.jps.composition.enginemodel.Graph;
 import uk.ac.cam.cares.jps.composition.executor.ExecutionLayer;
@@ -35,10 +35,10 @@ public class TestCompositionJSON {
 	public void test() throws JsonParseException, JsonMappingException, JSONException, URISyntaxException, IOException, Exception {
 		// Load semantic description of CityToWeather .. and another one ..
 		
-		KeyValueServer.set("host", "localhost");
-		KeyValueServer.set("port", "8080");	
+		KeyValueManager.set("host", "localhost");
+		KeyValueManager.set("port", "8080");	
 		String compositionDir = AgentLocator.getCurrentJpsAppDirectory(this);
-		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithoutWasteProduct");
+		KeyValueManager.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithoutWasteProduct");
 		
 		
 		ServiceCompositionEngine engine = new ServiceCompositionEngine(getDebugCase(), "http://localhost:8080");

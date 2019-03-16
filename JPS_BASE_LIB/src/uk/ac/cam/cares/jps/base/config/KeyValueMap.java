@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.log.LogServer;
+import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 
 public class KeyValueMap {
 
@@ -26,11 +26,11 @@ public class KeyValueMap {
 		init();
 	}
 	
-	String get(String key) {
+	public String get(String key) {
 		return map.get(key);
 	}
 	
-	String put(String key, String value) {
+	public String put(String key, String value) {
 		return map.put(key, value);
 	}
 	
@@ -45,7 +45,7 @@ public class KeyValueMap {
 		try {
 			
 			boolean runningForTest = AgentLocator.isJPSRunningForTest();
-			LogServer.info(this, "Tomcat is running for test = " + runningForTest);
+			JPSBaseLogger.info(this, "Tomcat is running for test = " + runningForTest);
 			
 			loadProperties(path + "/conf/jps.properties");
 			if (runningForTest)  {
@@ -53,14 +53,14 @@ public class KeyValueMap {
 				loadProperties(path + "/conf/jpstest.properties");
 			}
 		} catch (IOException exc) {
-			LogServer.error(this, exc);
+			JPSBaseLogger.error(this, exc);
 			throw new JPSRuntimeException(exc.getMessage(), exc);
 		}
 	}
 	
 	private void loadProperties(String propertyFile) throws IOException {
 	    
-		LogServer.info(this, "loading key-value pairs from " + propertyFile);
+		JPSBaseLogger.info(this, "loading key-value pairs from " + propertyFile);
 		
 		FileInputStream inputStream = new FileInputStream(propertyFile);
 		Properties props = new Properties();
@@ -70,7 +70,7 @@ public class KeyValueMap {
 		for (String key : keys) {
 			String value = props.getProperty(key);
 			put(key, value);
-			LogServer.info(this, key + " = " + value);
+			JPSBaseLogger.info(this, key + " = " + value);
 		}
 	}
 }

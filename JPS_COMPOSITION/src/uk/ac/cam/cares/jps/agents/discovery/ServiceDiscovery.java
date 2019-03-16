@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.agents.ontology.ServiceReader;
-import uk.ac.cam.cares.jps.base.config.KeyValueServer;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
@@ -44,7 +44,7 @@ public class ServiceDiscovery {
 	private synchronized void init() {	
 		this.services = new ArrayList<Service>();
 		this.httpToServiceMap = new HashMap<String,Service>();
-		String directory = KeyValueServer.get(KEY_DIR_KB_AGENTS);
+		String directory = KeyValueManager.get(KEY_DIR_KB_AGENTS);
 		//String directory = "C:\\TOMCAT\\webapps\\ROOT\\kb\\agents";
 		System.out.println("================== Directory ====================");
 		System.out.println(directory);

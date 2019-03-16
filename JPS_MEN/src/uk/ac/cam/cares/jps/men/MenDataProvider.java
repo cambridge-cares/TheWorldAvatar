@@ -3,14 +3,16 @@ package uk.ac.cam.cares.jps.men;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.logging.log4j.ThreadContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Literal;
+
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -373,7 +375,7 @@ public class MenDataProvider {
 			// ResultSet rs_prod = sparql(OKB, sourceInfo);
 			ResultSet rs_prod = sparql(plantkb.get(file), sourceInfo); // query product information (product name,
 																		// capacity, price) for the sources
-
+			//logger.info("filelocat= "+plantkb.get(file));
 			// go through the product set and extract capacity and price
 			for (; rs_prod.hasNext();) {
 				QuerySolution qs_p = rs_prod.nextSolution();
@@ -468,7 +470,7 @@ public class MenDataProvider {
 			new QueryBroker().readFile(fileLocat);
 		}
 		
-		OntModel model = JenaHelper.createModel(fileLocat);
+		OntModel model = JenaHelper.createModel(fileLocat); 		
 		return JenaHelper.query(sparql, model);
 	}
 

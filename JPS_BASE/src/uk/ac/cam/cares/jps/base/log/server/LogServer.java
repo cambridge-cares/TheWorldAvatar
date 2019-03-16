@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.log;
+package uk.ac.cam.cares.jps.base.log.server;
 
 import java.io.BufferedReader;
 //import java.io.File;
@@ -12,19 +12,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 
 /**
  * Servlet implementation class LogServer
  */
 @WebServlet("/LogServer")
 public class LogServer extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-	private static Logger logger = LoggerFactory.getLogger(LogServer.class);
+	
+	private static final long serialVersionUID = -1926926842257332242L;
 
 	public LogServer() {
-		info(this, "started");
+		JPSBaseLogger.info(this, "started");
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -46,31 +45,15 @@ public class LogServer extends HttpServlet {
 //			writer.close();	
 			
 			//response.getWriter().append("Served at: ").append(request.getContextPath()).append(" message: ").append(buffer.toString());
-			logger.info(buffer.toString());
+			JPSBaseLogger.info(this, buffer.toString());
 			
 		} catch (Exception e) {
-			error(this, "failed to read the request body from the request.");
+			JPSBaseLogger.error(this, "failed to read the request body from the request.");
 		}
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		doGet(request, response);
-	}
-	
-	public static void debug(Object sender, String message) {
-		logger.debug(sender.getClass().getSimpleName() + " " + message);
-	}
-	
-	public static void info(Object sender, String message) {
-		logger.info(sender.getClass().getSimpleName() + " " + message);
-	}
-	
-	public static void error(Object sender, String message) {
-		logger.error(sender.getClass().getSimpleName() + " " + message);
-	}
-	
-	public static void error(Object sender, Exception exc) {
-		logger.error(sender.getClass().getSimpleName() + " " + exc.getMessage() + "\n" + exc.getStackTrace());
 	}
 }

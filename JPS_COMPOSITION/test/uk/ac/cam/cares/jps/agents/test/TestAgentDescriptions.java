@@ -172,7 +172,7 @@ public class TestAgentDescriptions extends TestCase {
 	
 	private Service createDescrForAgentEmissionTest() {
 		return new ServiceBuilder()
-			.operation(null, JPS_BASE + "/EmissionTestAgent/queryemission")
+			.operation(null, JPS_BASE + "/EmissionTestAgent/getemission")
 			.input("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl", "plant")
 			.output("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#hasEmission", "hasEmission").down()
 				.output("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue", "hasValue").down()
@@ -263,11 +263,11 @@ public class TestAgentDescriptions extends TestCase {
 	
 	public void testDescription() throws URISyntaxException, FileNotFoundException {
 		
-		Service service = createDescrForAgentSRMEmissions();
+		Service service = createDescrForAgentEmissionTest();
 		
 		String json = new Gson().toJson(service);
 		System.out.println(json);
 		
-		backAndforthAndWrite(service, "_SRMEmissions");
+		backAndforthAndWrite(service, "_EmissionTestAgent");
 	}
 }

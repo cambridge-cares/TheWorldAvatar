@@ -3,18 +3,18 @@
     xmlns:msm="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#">
   <msm:Service rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#Service">
     <msm:hasOperation>
-      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#Operation_eb6591f9-4a60-4ffa-b146-d49774c3dc27">
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#Operation_6a0e8134-e68b-4aaf-96c6-62d3720ecfb1">
         <msm:hasInput>
-          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessageContent_65a5f485-c3bd-4e61-91f7-cd59d32b6dca">
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessageContent_3a9676fa-3e07-4aec-9ad6-5e88304be1a5">
             <msm:hasMandatoryPart>
-              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_efc3ae5d-0ad6-48bf-80c0-5bdf625841d6">
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_b5a55f15-0dd5-47ba-8560-3b484177c8bd">
                 <msm:hasName>formula</msm:hasName>
                 <msm:isArray>false</msm:isArray>
                 <msm:hasType>http://www.w3.org/2001/XMLSchema#string</msm:hasType>
               </msm:MessagePart>
             </msm:hasMandatoryPart>
             <msm:hasMandatoryPart>
-              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_b3121ffb-6b04-4396-b8d7-bc8fb9f48886">
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_f9bd848f-6d48-4496-8976-3c08da33712f">
                 <msm:hasName>plant</msm:hasName>
                 <msm:isArray>false</msm:isArray>
                 <msm:hasType>http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl</msm:hasType>
@@ -26,18 +26,18 @@
       </msm:Operation>
     </msm:hasOperation>
     <msm:hasOperation>
-      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#Operation_ade2f915-4731-4ec1-a3ef-b2098281f3d6">
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#Operation_03490bb1-ab96-4379-b273-820e2539a43b">
         <msm:hasInput>
-          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessageContent_95018cbe-be81-4f4c-bb97-1bb23ab36fec">
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessageContent_d9b17cee-8840-410a-93e0-beb27188795e">
             <msm:hasMandatoryPart>
-              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_8ee167ef-5c62-493a-9197-76b6e2b68ac1">
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_8760b5a6-0932-4090-8b83-c33d4d4db75c">
                 <msm:hasName>factor</msm:hasName>
                 <msm:isArray>false</msm:isArray>
                 <msm:hasType>http://www.w3.org/2001/XMLSchema#double</msm:hasType>
               </msm:MessagePart>
             </msm:hasMandatoryPart>
             <msm:hasMandatoryPart>
-              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_34600b8b-660b-4780-ba46-bd035ca616d5">
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_ef750545-7ae9-413c-b901-23f8fc13daca">
                 <msm:hasName>plant</msm:hasName>
                 <msm:isArray>false</msm:isArray>
                 <msm:hasType>http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl</msm:hasType>
@@ -49,18 +49,18 @@
       </msm:Operation>
     </msm:hasOperation>
     <msm:hasOperation>
-      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#Operation_d8f02d68-7660-481c-adb5-ce411b449fa3">
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#Operation_da0e81c8-8c46-4af4-a31e-55dcfaa054ae">
         <msm:hasInput>
-          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessageContent_3ae4cf3b-3451-43a9-a3d9-6d6a29c69073">
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessageContent_5f9de20a-695c-4f44-9581-2d60efec5f8a">
             <msm:hasMandatoryPart>
-              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_29024b57-7cbc-4f50-9f42-c171fa90fd94">
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_0c9da3e7-8300-412f-98a5-d6893f647ef3">
                 <msm:hasName>increment</msm:hasName>
                 <msm:isArray>false</msm:isArray>
                 <msm:hasType>http://www.w3.org/2001/XMLSchema#double</msm:hasType>
               </msm:MessagePart>
             </msm:hasMandatoryPart>
             <msm:hasMandatoryPart>
-              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_67eb6509-d304-491c-9f88-859c6f900efa">
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_5dac4180-de41-41c1-8f24-72eac9a73865">
                 <msm:hasName>plant</msm:hasName>
                 <msm:isArray>false</msm:isArray>
                 <msm:hasType>http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl</msm:hasType>
@@ -72,18 +72,18 @@
       </msm:Operation>
     </msm:hasOperation>
     <msm:hasOperation>
-      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#Operation_c7e74d10-4eec-4c9c-a37b-9087c836dc19">
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#Operation_3919f604-6e5e-460f-bc0f-ba331ae0c2ad">
         <msm:hasInput>
-          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessageContent_5a81a795-5aec-4a03-9501-300ac479d0a7">
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessageContent_e24f5574-0e73-4a15-b847-bab1e1230be6">
             <msm:hasMandatoryPart>
-              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_e28ca10e-594c-4131-ab6b-89c5fddb5161">
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_c6594228-e357-4884-971b-2e6f61e7c5c7">
                 <msm:hasName>emission</msm:hasName>
                 <msm:isArray>false</msm:isArray>
                 <msm:hasType>http://www.w3.org/2001/XMLSchema#double</msm:hasType>
               </msm:MessagePart>
             </msm:hasMandatoryPart>
             <msm:hasMandatoryPart>
-              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_d06bd203-c1dc-4775-aab3-68f7f2fd556a">
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_8e3f9afb-0d53-492e-8324-3a0147b0e430">
                 <msm:hasName>plant</msm:hasName>
                 <msm:isArray>false</msm:isArray>
                 <msm:hasType>http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl</msm:hasType>
@@ -95,15 +95,15 @@
       </msm:Operation>
     </msm:hasOperation>
     <msm:hasOperation>
-      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#Operation_e48a53ad-21fe-417f-b52f-63ce91101691">
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#Operation_d9a9d5c5-e3f6-4a71-9302-bdd32c4c9b3c">
         <msm:hasOutput>
-          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessageContent_9008e056-ef50-4a4d-8479-ee2fa68f9c01">
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessageContent_3f599737-19c7-43ba-86a7-28535003066d">
             <msm:hasMandatoryPart>
-              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_920c8ec0-124d-47c0-ae1c-fbec66e5aa66">
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_205c6f13-f12d-4cec-bb16-d8aeb3b6333f">
                 <msm:hasMandatoryPart>
-                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_9cde5cc2-b20e-4a03-ba34-93cc8e968bb1">
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_bbd638de-e63a-44da-87dc-f39e93f0a2c1">
                     <msm:hasMandatoryPart>
-                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_bc8c8f3c-7081-45d6-84b3-327931a6f9f9">
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_07f9ed3a-fe68-4c10-8465-6588ced008f2">
                         <msm:hasName>numericalValue</msm:hasName>
                         <msm:isArray>false</msm:isArray>
                         <msm:hasType>http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue</msm:hasType>
@@ -122,9 +122,9 @@
           </msm:MessageContent>
         </msm:hasOutput>
         <msm:hasInput>
-          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessageContent_1a35014f-3319-4e60-a469-bf10e942412c">
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessageContent_7f47cc1f-94c7-42a0-97bd-96e0c87cdb5c">
             <msm:hasMandatoryPart>
-              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_9d5b0717-965a-4199-93b4-fe9c55e0910c">
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__EmissionTestAgent.owl#MessagePart_905ab306-3bf9-4bc5-bb7d-eecfe30097e3">
                 <msm:hasName>plant</msm:hasName>
                 <msm:isArray>false</msm:isArray>
                 <msm:hasType>http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl</msm:hasType>
@@ -132,7 +132,7 @@
             </msm:hasMandatoryPart>
           </msm:MessageContent>
         </msm:hasInput>
-        <msm:hasHttpUrl>http://localhost:8080/JPS_BASE/EmissionTestAgent/queryemission</msm:hasHttpUrl>
+        <msm:hasHttpUrl>http://localhost:8080/JPS_BASE/EmissionTestAgent/getemission</msm:hasHttpUrl>
       </msm:Operation>
     </msm:hasOperation>
     <msm:isComposed>false</msm:isComposed>

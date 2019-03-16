@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 
 /**
@@ -70,8 +71,7 @@ public class PowerPlantAgent extends HttpServlet {
 	}
 		
 	
-	public void doConversion(OntModel jenaOwlModel,String iri,String jsonresultstring) throws JSONException, IOException
-	{
+	public void doConversion(OntModel jenaOwlModel,String iri, JSONObject joSRMResult) throws JSONException, IOException {
 	    /*Adding elements to HashMap*/
 	    hmap.put("CO", "ChemSpecies_Carbon__monoxide");
 	    hmap.put("CO2", "ChemSpecies_Carbon__dioxide");
@@ -83,19 +83,16 @@ public class PowerPlantAgent extends HttpServlet {
 			Individual valueofspeciesemissionrate = jenaOwlModel.getIndividual(iri.split("#")[0] + "#V_" + hmap.get(hmap.keySet().toArray()[b]) + "_EmissionRate");
 			valueofspeciesemissionrate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double("0")));
 		}
-	    
-	    
 
-	    JSONObject jsonObject=new JSONObject(jsonresultstring);
 		
 		//JSONObject jsonObject = parseJSONFile(outputfiledir); (used after the format of json file is fixed )
-		Double molecularvalue = jsonObject.getJSONObject("mixture").getJSONObject("molmass").getDouble("value")*1000;
-		Double Cpvalue = jsonObject.getJSONObject("mixture").getJSONObject("cp").getDouble("value");
-		Double temperaturevalue = jsonObject.getJSONObject("mixture").getJSONObject("temperature").getDouble("value")-273.15;
-		Double massfluxvalue = jsonObject.getJSONObject("mixture").getJSONObject("massflux").getDouble("value"); 
-		Double densityvalue = jsonObject.getJSONObject("mixture").getJSONObject("density").getDouble("value");
+		Double molecularvalue = joSRMResult.getJSONObject("mixture").getJSONObject("molmass").getDouble("value")*1000;
+		Double Cpvalue = joSRMResult.getJSONObject("mixture").getJSONObject("cp").getDouble("value");
+		Double temperaturevalue = joSRMResult.getJSONObject("mixture").getJSONObject("temperature").getDouble("value")-273.15;
+		Double massfluxvalue = joSRMResult.getJSONObject("mixture").getJSONObject("massflux").getDouble("value"); 
+		Double densityvalue = joSRMResult.getJSONObject("mixture").getJSONObject("density").getDouble("value");
 		
-		int valueoftotalpollutant = jsonObject.getJSONArray("pollutants").length();
+		int valueoftotalpollutant = joSRMResult.getJSONArray("pollutants").length();
 		
 		Individual valueofmassflowrate = jenaOwlModel.getIndividual(iri.split("#")[0] +"#V_massF_WasteStream-001");
 		valueofmassflowrate.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(massfluxvalue));
@@ -113,8 +110,8 @@ public class PowerPlantAgent extends HttpServlet {
 		valueofcombinedheatcapacity.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(Cpvalue));
 		
 		for (int b = 0; b < valueoftotalpollutant; b++) {
-			String parametername = jsonObject.getJSONArray("pollutants").getJSONObject(b).getString("name");
-			Double parametervalue = jsonObject.getJSONArray("pollutants").getJSONObject(b).getDouble("value")*1000; 
+			String parametername = joSRMResult.getJSONArray("pollutants").getJSONObject(b).getString("name");
+			Double parametervalue = joSRMResult.getJSONArray("pollutants").getJSONObject(b).getDouble("value")*1000; 
 
 			Individual valueofspeciesemissionrate = jenaOwlModel.getIndividual(iri.split("#")[0] + "#V_" + hmap.get(parametername) + "_EmissionRate");
 			valueofspeciesemissionrate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(parametervalue));
@@ -131,11 +128,11 @@ public class PowerPlantAgent extends HttpServlet {
         return content2;
     }
 	
-	public void startConversion(String iriOfPlant,String jsonresultstring) throws Exception {
+	public void startConversion(String iriOfPlant, JSONObject joSRMResult) throws Exception {
 				
 		initOWLClasses(jenaOwlModel);
 
-		doConversion(jenaOwlModel,iriOfPlant,jsonresultstring);
+		doConversion(jenaOwlModel,iriOfPlant, joSRMResult);
 
 		
 		String filePath2= iriOfPlant.replaceAll("http://www.theworldavatar.com/kb", "C:/TOMCAT/webapps/ROOT/kb").split("#")[0]; //update the file locally
@@ -230,48 +227,27 @@ public class PowerPlantAgent extends HttpServlet {
 			}
 
 			
-			JSONObject jo=null;
-			
-				 try {
-					jo = new JSONObject().put("waste", cpirilist.get(0));
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-			
-			logger.info("message to sent= "+jo.toString());
-			response.getWriter().write(jo.toString()); // returns HTTP response with wastestream iri
-			
-			
-		    //send the info to SRM Engine Agent
-
-			
-			JSONObject dataSet = new JSONObject();
 			try {
+				JSONObject jo = new JSONObject().put("waste", cpirilist.get(0));
+			
+				logger.info("message to sent= "+jo.toString());
+				response.getWriter().write(jo.toString()); // returns HTTP response with wastestream iri
+			
+				//send the info to SRM Engine Agent
+				JSONObject dataSet = new JSONObject();
 				dataSet.put("reactionmechanism",  iri) ;
 				dataSet.put("engine",  cpirilist2.get(0)) ;
-			}
-			catch (JSONException e) {
-					e.printStackTrace();
-				}
 			
-			String resultjson = AgentCaller.executeGet("JPS/SRMAgent", "query", dataSet.toString());
-		    
-		    String jsonsrmresult = null;
-
-				try {
-					jsonsrmresult = new JSONObject(resultjson).getString("file");
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
+				String resultjson = AgentCaller.executeGet("JPS/SRMAgent", "query", dataSet.toString());
+			    JSONObject joSrmResult = new JSONObject(resultjson).getJSONObject("results");
 				
 				//update the emission and other information into the plant owl file
-				try {
-					startConversion(iri2,jsonsrmresult);
-				} catch (Exception e) {
-					e.printStackTrace();
-				} //convert to update value
+
+				startConversion(iri2, joSrmResult);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				throw new JPSRuntimeException(e.getMessage(), e);
+			} //convert to update value
 
 		    
 		    cpirilist.clear();

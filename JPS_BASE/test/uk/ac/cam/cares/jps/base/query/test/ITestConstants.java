@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.test;
+package uk.ac.cam.cares.jps.base.query.test;
 
 public interface ITestConstants {
 

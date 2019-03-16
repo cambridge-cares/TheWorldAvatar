@@ -21,7 +21,6 @@ public class TestPowerPlantAgent extends TestCase {
 			dataSet.put("reactionmechanism", "https://como.cheng.cam.ac.uk/kb/Toluene.owl#ReactionMechanism_4631074216281807") ;
 			dataSet.put("plant", "http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002") ;
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
