@@ -53,6 +53,9 @@ public class ExecutorNew {
 						ArrayList<String> targetHttpUrlList = task.targetHttpUrl;
 						ArrayList<ArrayList<String>> keysArray = task.keysArray;
 						String path = executionHttpUrl.replace("http://www.theworldavatar.com","");
+						System.out.println("=================== execution HTTP Url =======================");
+						System.out.println(path);
+						System.out.println("==============================================================");
 						if(layerCounter == 0) {
 							URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 									.setPath(path)
@@ -79,7 +82,17 @@ public class ExecutorNew {
 								ExecutionPackage executionPackage = entry.getValue();
 								if(executionPackage.targetHttpUrl.equalsIgnoreCase(task.httpUrl)) {
 									for(String key: executionPackage.keys) {
-										Map<String, String> nameMapping = executionPackage.nameMappingList.get(key);
+										System.out.println("check point");
+										System.out.println(executionPackage.nameMappingList);
+										System.out.println(executionPackage.nameMappingList.get(key));
+										Map<String, String> nameMapping = new HashMap<String, String>();
+										if (executionPackage.nameMappingList == null) {
+											nameMapping.put(key, key);
+										}
+										else{
+											nameMapping = executionPackage.nameMappingList.get(key);
+												
+										}
 										executionPackage.result = replaceKeysInJSON(executionPackage.result,nameMapping);
 									}
 									URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)

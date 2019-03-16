@@ -22,8 +22,7 @@ public class Edge {
 	public Edge() {
 		
 	}
-	
-	
+	 
 	public boolean compare_two_edge(Edge theOtherEdge) {
 		return Arrays.equals(theOtherEdge.fromOutput, this.fromOutput) && Arrays.equals(theOtherEdge.toInput, this.toInput); 
 }
