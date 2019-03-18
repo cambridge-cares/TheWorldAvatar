@@ -39,7 +39,7 @@ public class TestMarketPackage extends TestCase {
 		System.out.println(path);
 		String actual = AgentCaller.executeGet(path, "choicePlant", "Biodiesel");
 		logger.info(actual);
-		System.out.println(actual);
+		System.out.println("actual result= "+actual);
 		
 		// Send HTTP get request to endpoint
 //		URIBuilder builder = new URIBuilder().setScheme("http").setHost("localhost:8080")
@@ -234,7 +234,7 @@ public class TestMarketPackage extends TestCase {
 
 	}
 
-	public void testdownloadingAndSavingExchangeRatesInTheKnowledgeBase() throws Exception {
+	public void testdownloadingAndSavingExchangeRatesInTheKnowledgeBaselocal() throws Exception {
 		Gson g = new Gson();
 		String result = g.toJson(DataDownload
 				.downloadingAndSavingExchangeRatesInTheKnowledgeBase());
