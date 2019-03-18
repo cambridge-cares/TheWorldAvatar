@@ -205,7 +205,7 @@ BKGETC = '''
     /
     &ADMS_PARAMETERS_ETC
     SrcNumSources    = {0}
-    PolNumPollutants = 18
+    PolNumPollutants = 19
     PolNumIsotopes   = 0
     /
 '''
@@ -759,6 +759,7 @@ class admsAplWriter(object):
             self.writeStr(file,POLD)
             #self.writeTemp(self.data['OPT'])
             #del self.data['OPT']
+            self.writePol(file,self.data['Pol'])
             self.writeSrc(file, self.data['Src'])
 
           
@@ -792,6 +793,12 @@ class admsAplWriter(object):
             file.write('&ADMS_SOURCE_DETAILS\n')
             self.writeAttr(file, src)
             file.write('/\n')
+            
+    def writePol(self, file, pol):
+        print('writing extra pol')
+        file.write('&ADMS_POLLUTANT_DETAILS\n')
+        self.writeAttr(file, pol)
+        file.write('/\n')
 
     def quoteStr(self, item):
         if isinstance(item, str):

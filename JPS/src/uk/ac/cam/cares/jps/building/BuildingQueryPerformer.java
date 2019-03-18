@@ -56,7 +56,9 @@ public class BuildingQueryPerformer implements SparqlConstants {
 	public String executeGet(URIBuilder builder) {
 		try {
 			URI uri = builder.build();
-			logger.info(uri.toString());
+			String message = uri.toString();
+			int min = Math.min(message.length(), 100);
+			logger.info(message.substring(0, min));
 			HttpGet request = new HttpGet(uri);
 			request.setHeader(HttpHeaders.ACCEPT, "text/csv");
 			//request.setHeader(HttpHeaders.ACCEPT, "application/json");
@@ -147,9 +149,9 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		}
 
 		String query = getQueryClosestBuildingsFromRegion(200, lx, ly, ux, uy);
-		logger.info("BEFORE performQuery");
+		//logger.info("BEFORE performQuery");
 		String result = performQuery(cityIRI, query);
-		logger.info("AFTER performQuery");
+		//logger.info("AFTER performQuery");
 		//system.out.println("=============== query result ===============");
 		//system.out.println("With query:\n" + query);
 		//system.out.println(result);

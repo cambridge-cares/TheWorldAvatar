@@ -209,11 +209,19 @@ $(function(){
 //	        				query
 //        				});
 //        	} else {
+        	
+        	
+        	if (document.getElementById("mock").checked) {
+    		result =  $.getJSON('/JPS_SHIP/ADMSCoordinationAgentForShipWithoutCompositionWithMocks',
+    				{
+        				query
+    				});
+    	} else {
         		result =  $.getJSON('/JPS_SHIP/ADMSCoordinationAgentForShipWithoutComposition',
         				{
 	        				query
         				});
-//        	}        	
+        	}        	
   	
         	return result;
         };

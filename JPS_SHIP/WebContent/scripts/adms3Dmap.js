@@ -157,7 +157,7 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri, sh
             }]
     };
     
-    getContourMaps('/JPS/ADMSOutputAll').then(dataurls => {
+    getContourMaps('/JPS/ADMSOutputAllForShips').then(dataurls => {
     	
     	var idxSrc = 0, idxH = 0, preObj;
     	$(".radiogroup").change(function(){

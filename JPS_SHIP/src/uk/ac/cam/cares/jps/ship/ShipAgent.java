@@ -117,8 +117,11 @@ public class ShipAgent extends HttpServlet {
 			Individual valueofspeciesemissionrate = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] + "#V_" + hmap.get(hmap.keySet().toArray()[b]) + "_EmissionRate");
 			valueofspeciesemissionrate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double("0")));
 		}
-
-	   
+		
+		Individual particleratevalue = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] + "#V_Particulate-001_EmissionRate");
+		if(particleratevalue!=null) {
+		particleratevalue.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double("0")));
+		}
 		
 		//JSONObject jsonObject = parseJSONFile(outputfiledir); (used after the format of json file is fixed )
 		Double molecularvalue = jsonObject.getJSONObject("mixture").getJSONObject("molmass").getDouble("value")*1000;
@@ -155,7 +158,7 @@ public class ShipAgent extends HttpServlet {
 			particulate = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] +"#Particulate-001",particleclass);//if it is not there	
 		}
 		Individual particulaterate = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] +"#Particulate-001_EmissionRate");
-		Individual particleratevalue = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] + "#V_Particulate-001_EmissionRate");
+		//particleratevalue = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] + "#V_Particulate-001_EmissionRate"); //thereis above
 		if(particulaterate==null)
 		{
 			particulaterate = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] +"#Particulate-001_EmissionRate",flowclass);	
@@ -177,10 +180,10 @@ public class ShipAgent extends HttpServlet {
 				double valueofparticlerate=jsonObject.getJSONArray("particle").getJSONObject(a).optJSONObject("emission_rate").getDouble("value");
 				totalparticleemission=totalparticleemission+valueofparticlerate;
 			}
-			else
-			{
-				totalparticleemission=1.5;
-			}
+//			else
+//			{
+//				totalparticleemission=0.0;
+//			}
 		}
 		particleratevalue.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(totalparticleemission)); //temporary 1.5 as the json file value is not exist	
 		//---------------------------------------------------------------------------------------------------------------------------------

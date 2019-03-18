@@ -194,11 +194,19 @@ $(function(){
 //	        				query
 //        				});
 //        	} else {
+        	
+        	
+        	if (document.getElementById("mock").checked) {
+        		result =  $.getJSON('/JPS/ADMSCoordinationAgentWithoutCompositionWithMocks',
+    				{
+        				query
+    				});
+    	   	} else {
         		result =  $.getJSON('/JPS/ADMSCoordinationAgentWithoutComposition',
-        				{
-	        				query
-        				});
-//        	}        	
+        			{
+	        			query
+        			});
+        	}        	
   	
         	return result;
         };

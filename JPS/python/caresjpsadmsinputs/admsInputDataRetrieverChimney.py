@@ -12,6 +12,7 @@ import rdflib.plugins.sparql.results.jsonresults as jsresult
 from collections import namedtuple
 from admsSrcChimney import admsSrc
 from admsPolygon import Polygon
+from admsPol import admsPol
 from caresjpsutil import PythonLogger
 import cobbling
 import requests
@@ -161,9 +162,14 @@ class admsInputDataRetriever(object):
 
             SELECT DISTINCT  ?content
             WHERE {{
+            {{
             ?mix a substance:Mixture.
             ?mix sys:containsDirectly  ?content. 
+            }} UNION {{
+             ?content   a substance:MolecularEntity.
             }}
+            }}
+
             """)
 
             contents = [row['content'].toPython() for row in qdataC]
@@ -179,7 +185,6 @@ class admsInputDataRetriever(object):
 
             SELECT DISTINCT  ?er ?v
             WHERE {{
-            ?mix a substance:Mixture.
             ?mix sys:hasProperty  ?er.
             ?er  a behavior:ConvectiveMassFlowrate.
                          ?er sys:hasValue ?erv.
@@ -370,7 +375,8 @@ class admsInputDataRetriever(object):
         'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Carbon__monoxide':'CO',
         'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Carbon__dioxide':'CO2',
         'http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Unburned_Hydrocarbon':'HC',
-        'http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Nitrogen__oxides':'NOx'
+        'http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Nitrogen__oxides':'NOx',
+         'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Particulate-001':'Particulate001'
 
         }
 
@@ -391,6 +397,41 @@ class admsInputDataRetriever(object):
         metpath = "C://JPS_DATA/workingdir/JPS/ADMS/test.met"
         self.pythonLogger.postInfoToLogServer('path for adms met file='+metpath)
         return metpath
+
+    def getPol(self):
+        self.connectDB('http://www.theworldavatar.com/kb/ships/Chimney-1.owl', connectType = 'parse')
+        qb =self.query('''
+            PREFIX j.0: <http://www.theworldavatar.com/ontology/ontocape/material/substance/molecular_structure.owl#>
+            PREFIX j.3: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#>
+            PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+            PREFIX j.1:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#>
+
+              SELECT distinct ?p ?diameter ?density ?massFraction
+              WHERE{
+              ?p a j.0:MolecularGroup.
+              ?p j.3:has_length ?de.
+              ?de system:hasValue ?ve.
+              ?ve system:numericalValue ?diameter.
+              ?p j.1:has_density ?dene.
+              ?dene system:hasValue ?dve.
+              ?dve system:numericalValue ?density.
+              ?p system:hasProperty ?mf.
+              ?mf system:hasValue ?mfve.
+              ?mfve system:numericalValue ?massFraction.
+                        }
+              ''')
+
+        print('now query')
+        for row in qb:
+            print(row)
+
+        self.pythonLogger.postInfoToLogServer([row['diameter'] for row in qb])
+        rawSol =  admsPol('Particulate001',len(qb),[row['diameter'].toPython() for row in qb],[row['density'].toPython() for row in qb],[float(row['massFraction'].toPython()) for row in qb] )
+        print(rawSol)
+        self.pythonLogger.postInfoToLogServer(rawSol)
+        return rawSol
+
+
 
 
     def get(self):
@@ -417,9 +458,10 @@ class admsInputDataRetriever(object):
         met = self.getWeather()
         xran,yran = self.range
         grd = xran[0], yran[0], xran[1], yran[1]
+        pol = self.getPol()
 
         #return {'Src': self.rawSrc, 'Bdn': self.rawBdn, 'Opt': rawOpt, 'Met': met, 'Grd':grd}
-        return {'Src': self.rawSrc, 'Opt': rawOpt, 'Met': met, 'Grd':grd}
+        return {'Src': self.rawSrc, 'Opt': rawOpt, 'Met': met, 'Grd':grd, 'Pol':pol}
         
 
 
