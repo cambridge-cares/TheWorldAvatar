@@ -234,4 +234,10 @@ public class TestMarketPackage extends TestCase {
 
 	}
 
+	public void testdownloadingAndSavingExchangeRatesInTheKnowledgeBase() throws Exception {
+		Gson g = new Gson();
+		String result = g.toJson(DataDownload
+				.downloadingAndSavingExchangeRatesInTheKnowledgeBase());
+		System.out.println("result= "+result);
+	}
 }
