@@ -52,9 +52,6 @@ public class CommandHelper {
 		return resultString; 
 	}
 	
-	
-	
-	
 	public static String executeCommands(String targetFolder , ArrayList<String> commands) {  
 	 
 		logger.info("In folder: " + targetFolder + " Excuted: " + commands);
@@ -78,12 +75,9 @@ public class CommandHelper {
 		} catch (IOException e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		}
-		logger.info("=== Result === :" + resultString);
+		
+		int min = Math.min(resultString.length(), 200);
+		logger.info("=== Result (only the first 200 characters) === :" + resultString.substring(0, min));
 		return resultString; 
 	}
-	
-	
-	
-	
-	
 }
