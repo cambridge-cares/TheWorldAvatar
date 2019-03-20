@@ -8,9 +8,9 @@ const parser = require('../agents/rdfParser');
 const fs = require('graceful-fs')
 /*SPRAQL Query******************/
 const SPA = `
-PREFIX JParkLandLots: <http://www.jparksimulator.com/JParkLandLots#>
+PREFIX JParkLandLots: <http://www.jparksimulator.com/JParkLandLots.owl#>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX system: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+    PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
 
     select distinct ?LandLot_CarbonEmissions ?ValueOf_CarbonEmissions
     where {

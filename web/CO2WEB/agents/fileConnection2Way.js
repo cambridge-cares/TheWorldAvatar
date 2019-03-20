@@ -39,26 +39,36 @@ queryStr:`
 PREFIX Eco-industrialPark: <http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#>
 PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
-    select distinct ?uri
+             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+             PREFIX ontochem: 
+<https://como.cheng.cam.ac.uk/kb/ontochem.owl#>
+    select ?parent  ?uri
     where {
-	{?a system:hasSubsystem ?uri;}    
-    UNION {?a system:hasIRI ?uri;}
-	UNION {?a Eco-industrialPark:hasIRI ?uri;}
-    UNION {  ?uri rdf:type ontochem:ReactionMechanism .}
+	{?parent  system:hasSubsystem ?uri;}    
+    UNION {?parent  system:hasIRI ?uri;}
+	UNION {?parent  Eco-industrialPark:hasIRI ?uri;}
+	UNION {?uri rdf:type ontochem:ReactionMechanism .}
      @placeholder@
-     }`,
-        queryStr2:`
-PREFIX ontochem: <https://como.cheng.cam.ac.uk/kb/ontochem.owl#>
-    select distinct ?uri
-    where {
-    ?uri rdf:type ontochem:ReactionMechanism .
-     @placeholder@
-     }`,
+     }
+`,
+queryStr2:`
+             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+             PREFIX ontochem: 
+<https://como.cheng.cam.ac.uk/kb/ontochem.owl#>
+             SELECT ?uri
+             WHERE {
+                    { ?uri rdf:type ontochem:ReactionMechanism .}
+                         @placeholder@
+             }
 
+`,
 UnionImport:`
-  UNION{?a system:hasIRI ?uri;}
+  UNION{?a owl:imports ?uri;}
 `
 };
+
+
+
 
 
 //todo: add function to add extra query on the fly
@@ -75,24 +85,41 @@ owlProcessor.doConnect = function(address, level) {
             me.linkCounter--;
             console.log('linkcounter');
             console.log(me.linkCounter);
-        	console.log('try connecting: '+address)
-
+        	console.log('tried connecting: '+address)
+            address = me.diskLoc2Uri(address);//resolve address inconsistency
+            address = me.equalHost(address);
             if(result&&result.length>0){
 				let iset = new Set();
-				
-                result.forEach(target=>{
-                    if(typeof  target !=='string'&& 'target' in target && 'address' in target){//
-                        target = result['target']
-                        address = result['address']
+				console.log('found result: '+result.length);
+                result.forEach(item=>{
+                    let parent = null,label = '';
+                    if(typeof item === 'object'){
+                        if('uri' in item && 'parent' in item ){
+                        parent = item['parent']?item['parent']:address;//if parent iri is null, just use address
+                        label = item['label']?item['label']:'';
+                        level = item['level']?item['level']:level;
+                        item = item['uri'];
+
+                        }
+                    } else {
+                        parent = address;
+                          label = item;
                     }
-                    target = me.normalAddr(target);
-					if(!iset.has(target)){
-						iset.add(target);
-						address = me.root2baseUri(address);
-                    if(level>=2 && ! (target in this.parentMap)) {//
-                        me.parentMap[target] = address in me.parentMap ? me.parentMap[address] : address;
+
+                    if(!item){
+                        console.log('Empty Item');
+                        return;//skip null 
                     }
-                    me.result.push({'source':address, 'target':target, 'level':level})
+
+                    //item = me.normalAddr(item);
+                    item = me.equalHost(item);
+                       
+					if(!iset.has(item)){
+						iset.add(item);
+                    if(level>=2 && !(item in me.parentMap) && (parent!==item)) {
+                        me.parentMap[item] = parent in me.parentMap ? me.parentMap[parent] : parent;
+                    }
+                    me.result.push({'source':parent, 'target':item, 'label': label ,'level':level})
 					}
                     //todo: cluster result on the fly
                 })
@@ -133,6 +160,10 @@ owlProcessor.doConnect = function(address, level) {
 
 }
 
+owlProcessor.doCluster = function (result) {
+    //get all level 0
+    
+};
 
 /***
  * async connect to an address and query it to get inter file links
@@ -160,8 +191,9 @@ owlProcessor.connectPromise = function (address, level) {
                 //todo: run endpoint
                 console.log('check endpoint')
                 me.queryPromise(address, 'endpoint',level).then(result =>{
-                    console.log('ep result:');
+                    console.log('ep result connect p:');
                     console.log(result)
+                    //!!!!!return result
                    resolve(result)
                 }).catch((err)=>{
 					reject(err)
@@ -169,6 +201,7 @@ owlProcessor.connectPromise = function (address, level) {
 
             } else {//query the file
                 me.xmlstreamParser(instream, level).then(result => {
+                    //!!!!!return result
                   resolve(result)
                 }).catch((err)=>{
 					reject(err)
@@ -184,7 +217,9 @@ owlProcessor.connectPromise = function (address, level) {
 
 
 owlProcessor.normalAddr = function(loc){
-	
+	if(loc.charAt(loc.length-1)==='\/'){
+        loc = loc.slice(0,loc.length-1);
+    }
 	let locs = loc.split('#');
 	return locs&&locs.length>0? locs[0] : loc;
 }
@@ -227,20 +262,22 @@ owlProcessor.urlPromise = function (loc) {
 owlProcessor.xmlstreamParser = function (instream, level) {
 	
     const me = this;
+     console.log(me.mPredicate);
     return new Promise((resolve, reject) => {
 		console.log('start stream parser');
-        const PREDICATE = this.PREDICATE;
         let parser = new Parser();
         let flagOuter =false, flag = false, result = [];
         parser.on('opentag', (name, attrs) => {
             if(me.OUTER && name === me.OUTER){
                 flagOuter = true;
             }
-            if((!me.OUTER || flagOuter) && PREDICATE.includes(name)){
+            if((!me.OUTER || flagOuter) && me.mPredicate.includes(name)){
+                console.log(name)
                 flag = true;
-				if(name.includes('hasSubsystem')){//get rdf:resource//todo:hard code for now
+				if(name.includes('hasSubsystem') ||name.includes('owl:imports')|| name.includes('hasIRI')){//get rdf:resource//todo:hard code for now
 					let text = attrs['rdf:resource'];
 					if(text){
+                        console.log(text);
 					result.push(text);
 					if(me.buffer &&!me.buffer.isPaused()) {me.buffer.push(text+'@'+(level))};
 					flag = false;
@@ -312,7 +349,7 @@ owlProcessor.checkFile = function (loc) {
         resolve(null)
     });
     
-        let res = request.get(loc, {timeout: 10000, agent: false}).on('error', function (err) {
+        let res = request.get(loc, {timeout: 30000, agent: false}).on('error', function (err) {
             reject(err)//don't throw
         });
         res.pipe(parser)
@@ -329,7 +366,7 @@ owlProcessor.checkFile = function (loc) {
  * @returns {promise for query result}
  */
 owlProcessor.queryPromise = function (loc, type, level) {
-    console.log('query lvel: '+level)
+    //console.log('query lvel: '+level)
     const self = this;
     switch(type){
         case 'endpoint':
@@ -338,23 +375,39 @@ owlProcessor.queryPromise = function (loc, type, level) {
             return new Promise((resolve, reject)=>{
                 //run query against endpoint
 				console.log(loc);
-                request.get(loc, {qs:{'query':self.queryStr2,'output':'json'},timeout: 1500, agent: false}, function (err, res, body) {
-                    console.log('endpoint resquest result')
-                    if (err||!body||body===undefined||body.includes('<!doctype html>')||body.includes('<?xml version="1.0" encoding="utf-8"?>')) {
-						console.log('no result from endpoint, reject')
-						reject(err);
-						return;
-						};//don't throw
-                    //unwrap query
-                    console.log("body:"+body)
-    
-                    body = JSON.parse(body)
-                    let links = RdfParser.unwrapResult(body, ['source','target']);
-                    //console.log(uri)
-                    //let tobuffer = uri.map((text)=> {return text+'@'+(level+1)}).join(';')
-                    //self.buffer.push(tobuffer);
-                         resolve(links)
-                })
+                //toodo: this is blasphemy, fix the endpoibt then delete this
+                if(typeof self.queryStrC === 'string'){
+                 self.queryStrC = [self.queryStrC];
+                }    
+                console.log('lenght of query'+self.queryStrC.length);
+                async.map(self.queryStrC, self.singleEpQ(loc), function(err, resultArr){
+
+                   if(err){
+                    reject(err);
+                    return;
+                   }
+                                   console.log('lenght of result'+resultArr.length);
+                                   console.log(resultArr);
+
+                     for(let idx = 0; idx< resultArr.length; idx++){
+                        if(!resultArr[idx]){
+                            continue;
+                        }
+                        for(let item of resultArr[idx]){
+                            if(!'level'  in item){
+                            item['level'] = idx+1;
+                            console.log(item['level']);
+                        }
+                        }
+                     }  
+
+                    console.log('packed resulut:');
+                    console.log([].concat.apply([], resultArr));
+                  resolve([].concat.apply([], resultArr));
+                } )
+               
+
+
             });
             
             break;
@@ -370,6 +423,76 @@ owlProcessor.queryPromise = function (loc, type, level) {
     
 
 }
+
+owlProcessor.singleEpQ = function(loc){
+
+    let q = function(qr, callback){
+
+                    console.log(qr)
+                    let qStr = typeof qr === 'string'? qr:qr['qStr'];
+                    console.log('query')
+                    console.log(qStr);
+                   request.get(loc, {qs:{'query':qStr,'output':'json'},timeout: 150000, agent: false}, function (err, res, body) {
+                    console.log('endpoint resquest result');
+                                      //  console.log("body:"+body);
+
+                    if (err||!body||body===undefined||body.toLowerCase().includes('doctype')||body.includes('<?xml version="1.0" encoding="utf-8"?>')) {
+                        console.log('no result from endpoint, reject')
+                        callback(err);
+                        return;
+                        };//don't throw
+                    //unwrap query
+                   
+                    
+                   //body = self.parsePseudoJson(body);
+                   body = JSON.parse(body);
+                   //todo: rewrite unwrap
+                    let items = RdfParser.unwrapResult(body, 'item');
+                     if(!items){
+                        callback(new Error('empty query result'));
+                     }
+
+                        for(let item of items){
+                            item['level'] = typeof qr === 'string'? qr:qr['level'];
+                            console.log(item['level']);
+                        
+                        }
+                   // let uri = items.map(item=>item.uri);
+                    //console.log(uri)
+                    //let tobuffer = uri.map((text)=> {return text+'@'+(level+1)}).join(';')
+                    //self.buffer.push(tobuffer);
+                         callback(null, items)
+                })
+               };
+
+return q;
+}
+
+owlProcessor.checkJson = function(body){
+    try{
+    JSON.parse(body)
+    return body
+} catch(e){
+    console.log(e)
+    if(e){
+    var re = /^(\{.*\})(.?)$/, re2=  /^(\[.*\])(.?)$/;
+let formated = body.match(re)?body.match(re):body.match(re2);
+return formated[1]
+    }
+}
+}
+
+owlProcessor.parsePseudoJson = function(body){
+    let strs = body.split('\n');
+    console.log(strs.length);
+    strs =strs.filter((item)=>{return !(item.includes('[') || item.includes(']')||item.includes('{')||item.includes('}')) })
+    .map(item=> '{'+item+'}');
+    return JSON.parse('['+strs.join(',')+']');
+
+
+
+}
+
 
 
 /**
@@ -408,21 +531,33 @@ owlProcessor.fileStreamPromise = function (loc) {
         this.loc = options.topnode;
 		this.unpack = options.unpack?options.unpack:false;
         //modify query
-        let extraQ = options.supQuery?options.supQuery:'';
+        let extraQ = options.extraQuery?options.extraQuery:'';
         let extraP = options.extraPredicate?options.extraPredicate:'';
         let showImport = options.showImport || false; // if showServiceOnly is chosen, will not show Import
-        
-        
+        this.mPredicate =  owlProcessor.PREDICATE.slice();
         if(showImport){
-            owlProcessor.PREDICATE.push("owl:imports");
-            extraQ = extraQ.query + self.UnionImport;
+            console.log('show import')
+            this.mPredicate.push("owl:imports");
+            console.log(this.mPredicate);
+            extraQ = extraQ + this.UnionImport;
         }
-        this.queryStr = this.queryStr.replace('@placeholder@', extraQ);
-        this.queryStr2 = this.queryStr2.replace('@placeholder@', extraQ);
-    
-        if(extraP){owlProcessor.PREDICATE.push(extraP);}
+        console.log(extraQ)
+
+        this.queryStrC = this.queryStr.replace('@placeholder@', extraQ);
+                this.queryStr2C = this.queryStr2.replace('@placeholder@', extraQ);
+
+        if(extraP){this.mPredicate.push(extraP);}
+
+        if(options.supQuery){
+            this.queryStrC = options.supQuery;
+        }
+
+        if(options.supPredicate){
+            this.mPredicate = options.supPredicate;
+        }
+
         this.OUTER = options.outer?options.outer:null;
-        console.log(this.queryStr)
+        console.log(this.queryStrC);
     
         //process variable init
         this.processed = new Set();
@@ -436,21 +571,34 @@ owlProcessor.packIntoClusterData = function (rawconn) {
     let self = this
     let firstl = [], subconnections = {};
 	console.log(self.parentMap);
+                let orphan = [];
+                let foster= null;
+
     rawconn.forEach((link)=>{
 		console.log(link)
-        if(link.level == 1){
+        if(link.level === 1){
             firstl.push(link)
         } else{
-            let parent = self.parentMap[link.target];
-            if (parent in subconnections){
+            if(!(link.target in self.parentMap) ){
+                    orphan.push(link)
+            }
+            else {
+                            let parent = self.parentMap[link.target];
+
+                if (parent in subconnections){
                 subconnections[parent].connections.push(link)
             } else {
+                if(!foster){foster = parent;}
                 subconnections[parent] = {connections:[]}
 			subconnections[parent].connections.push(link)
 
             }
         }
+        }
     })
+    console.log('orphans:')
+     console.log(orphan);
+    //subconnections[foster].connections = subconnections[foster].connections.concat(orphan);
     //pack into relative subconnctions
     return {connections:firstl, subconnections:subconnections}
 }
@@ -463,10 +611,11 @@ owlProcessor.process = function (options) {
         //let loc ='http://www.theworldavatar.com/SemakauBuildingLayer.owl'
     /*init paramters*/
         let self = this
-        this.init(options);
-        console.log(self.root2baseUri(this.loc));
-        this.doConnect(this.loc, 1);
-        this.buffer = new Readable({read() {}});
+    this.init(options);
+    this.doConnect(this.loc, 1);
+    this.buffer = new Readable({read() {}});
+	
+		self.processed.add(self.diskLoc2Uri(this.loc));
 
       return new Promise((resolve, reject)=>{
           /*buffer logic**/
@@ -482,7 +631,7 @@ owlProcessor.process = function (options) {
 					  console.log('after split:'+uri);
 					  let auri = self.normalAddr(uri);
 					  console.log('normailized: '+auri);
-                      if(auri&&!self.processed.has(auri)){
+                      if(auri&&!self.processed.has(auri) ){
                           self.processed.add(auri);
                           self.doConnect(auri, parseInt(level)+1);//if find new uri, do connect
                       }
@@ -514,14 +663,16 @@ owlProcessor.process = function (options) {
       
     };
 
+owlProcessor.processSingle = function (options) {
+    this.init(options);
+    return this.doConnect(this.loc, options.level);
+}
+
 owlProcessor.diskLoc2Uri = function(disk){
 	return disk.replace('C:\\TOMCAT\\webapps\\ROOT\\', 'http://www.theworldavatar.com/').replace(new RegExp( '\\\\','g'), '/');
 }
-
-owlProcessor.root2baseUri = function(disk){
-    console.log(disk);
-    console.log(config.root);
-    return disk.replace(config.root, config.baseUri);
+owlProcessor.equalHost = function(url){
+	return url.replace('http://www.jparksimulator.com/', 'http://www.theworldavatar.com/');
 }
 
 owlProcessor.uriList2DiskLoc = function (uriArr, diskroot) {
@@ -529,25 +680,25 @@ owlProcessor.uriList2DiskLoc = function (uriArr, diskroot) {
     return uriArr.map(function (item) {
         // logger.debug("map:"+item)
         let diskLoc = item.replace("http://www.theworldavatar.com",diskroot);
-        //diskLoc = diskLoc.replace("http://www.jparksimulator.com",diskroot);
+        diskLoc = diskLoc.replace("http://www.jparksimulator.com",diskroot);
         diskLoc = diskLoc.split('#')[0]
         return {uri:item, diskLoc:diskLoc}
     });
 };
+    
 
-
-//C:\Users\Shaocong\WORK\webJPSGit\irp3-WebJPS-git\CO2WEB\testFiles
+    
 //test
 //console.time('conn')
    // owlProcessor.doConnect(loc)
 /**
 var a = Object.create(owlProcessor)
-    a.process( {topnode:"http://www.theworldavatar.com/SemakauBuildingLayer.owl"}).then((res)=>{
+    a.processSingle( {topnode:"http://www.theworldavatar.com/kb/sgp/jurongisland/JurongIsland.owl", level: 1}).then((res)=>{
         console.log('print results')
         console.log((res))});
-var b = Object.create(owlProcessor)
+ ***/
 //b.process( {topnode:"http://www.theworldavatar.com/SemakauIsland.owl"}).then((res)=>{
   //  console.log('print')
     //console.log((res))});
-**/
+
 module.exports = owlProcessor;

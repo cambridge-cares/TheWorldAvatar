@@ -192,11 +192,17 @@ owlProcessor.getChildrenRecur = function(options, callback) {
                }
            }
 
-          // logger.debug("current node map: ")
-          // logger.debug(nodeMap)
+          console.log("current node map: ")
+          console.log(nodeMap)
            children = children.filter(function (childUri) {
                return !(nodeMap.has(childUri));
            });
+           
+           children.forEach((child)=>{
+            nodeMap.add(child);
+           })   
+           
+
            if (children.length < 1) { // no children is found, including devices and services and call callback
                logger.debug(myUri + " is a leaf node return");
                callback(null, {connections: connectionParent, geoCoords: geoCoordsParent, serviceUrls: serviceUrlsParent});
@@ -388,18 +394,22 @@ owlProcessor.getChildren = function(root) {
     namespaceOb['owl'] = "http://www.w3.org/2002/07/owl#";
     namespaceOb['Eco-industrialPark'] = "http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#";
     namespaceOb['system'] = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#";
+
     //find all node with hasIRI property
     var uris = root.find("//Eco-industrialPark:hasIRI", namespaceOb);
-    console.log("found node Eco-industrialPark:hasIRI:" + uris.length);
-    for (let curi of uris) {
+    console.log("found node 001 Eco-industrialPark:hasIRI:" + uris.length);
+	console.log('----------- root  ------------')
+	console.log(root)
+	console.log('------------------------------')
+	for (let curi of uris) {
         // logger.debug(curi.name());
 		console.log('attr')
 		console.log(curi.attrs())
         if(curi.text().trim()!==""){
-            children.push(curi.text().trim());//push to targets list
+          //  children.push(curi.text().trim());//push to targets list
 		
         } else if(curi.attr("resource")&&curi.attr("resource").value()){
-            children.push(curi.attr("resource").value());//push to targets list
+            //children.push(curi.attr("resource").value());//push to targets list
         }
 
 
@@ -409,14 +419,23 @@ owlProcessor.getChildren = function(root) {
     //logger.debug("found node system:hasIRI:"+urisS.length);
     for(let curi of urisS){
         //    logger.debug(curi.name());
-        children.push(curi.text().trim());//push to targets list
+        //children.push(curi.text().trim());//push to targets list
     }
     let urisSs = root.find("//system:hasSubsystem", namespaceOb);
+	    console.log("found node 002 Eco-system:hasSubsystem" + urisSs.length);
+		
+		console.log('urisSs')
+		console.log('----------------- urisss -----------------')
+		console.log(urisSs)
+		console.log('==========================================')
+
     //logger.debug("found node system:hasIRI:"+urisS.length);
     for(let curi of urisSs){
         //    logger.debug(curi.name());
         if(curi.attr("resource")&&curi.attr("resource").value()){
             children.push(curi.attr("resource").value());//push to targets list
+                console.log(curi.attr("resource").value())
+
         }    }
        
     //delete # (location part)

@@ -12,8 +12,10 @@ var config = {};
 
 config.baseUri = "http://www.theworldavatar.com"
 
-configDevelop();
-//configDeploy();
+config.crebase = "http://localhost/damecoolquestion/ontochem"
+//configDevelop();
+configDeploy();
+config.agentShowcaseNode = path.join(config.root , "kb/subsetWorld.owl");
 config.worldNode = path.join(config.root , "kb/TheWorld.owl");
 config.ppNode = path.join(config.root , "kb/powerplants/WorldPowerPlants.owl");
 config.jurongNode = path.join(config.root ,"kb/sgp/jurongisland/JurongIsland.owl");
@@ -26,8 +28,8 @@ config.bmsFolder = path.join(config.root , "BMS");
 config.bmsNode = path.join(config.bmsFolder , "CARES_Lab.owl");
 config.bmsplotnode = path.join(config.bmsFolder, "BCA_RT_sensor1.owl");
 config.semakauNode = path.join(config.root , "kb/sgp/semakauisland/SemakauIsland.owl");
-config.landLotNode=path.join(config.root , "JParkLandLots.owl");
-config.ontochemNode=path.join(config.root , "ontochemkb.owl");
+config.landLotNode=path.join(config.root , "kb/sgp/jurongisland/JParkLandLots.owl");
+config.ontochemNode= config.crebase + '/query';
 
 //TODO: this later should be wrapped in owl file
 config.heatWasteScript = path.join(__dirname, "agents/WHR_network_optimization_trim.py")

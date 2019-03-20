@@ -46,7 +46,12 @@ function runPython(filename, args, cb) {
         console.log(dataStr)
       //TODO:　needtrim? j-format validation?
         if(dataStr.length > 0){
+            try{
             cb(null, JSON.parse(dataStr));
+
+            }catch(err){
+              cb(err);
+            }
 
         } else {
             cb(new Error("got no datastr from py exe:"+filename))

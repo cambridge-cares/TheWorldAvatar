@@ -193,32 +193,51 @@ RdfParser.RdfParser.prototype =  {
 };
 
 
-RdfParser.unwrapResult = function (result, varNames) {
+RdfParser.unwrapResult = function (result, type) {
     if(!('head' in result) || !('results' in result) || !('bindings' in result['results']) || result['results']['bindings'].length === 0){
+        console.log('wrong format')
         return null
     }
     let unwrapped = {}
+
+   let varNames = result['head']['vars'];
     
+  if(type!=='item'){
+
     for(let varname of varNames){
         console.log(result['head']['vars'])
         console.log(varname)
         if(!(result['head']['vars'].includes(varname))){
             return null
         }
+    unwrapped[varname] = []
     }
+} else {
+    unwrapped = [];
+}
+      
     //unwrap
     console.log('upwrap')
-    unwrapped = []
-    
+    console.log(unwrapped)
     for(let line of result['results']['bindings']){
-        let item = [];
+        let item = {};
         for(let varname of varNames){
-            item[varname] = line[varname]['value'];
+let value = varname in line?  line[varname]['value']:'';
+            if(type==='item')
+            {
+         item[varname] = value;
+            }
+            else
+            {
+        
+         unwrapped[varname].push(value);
+            }
         }
-        unwrapped.push(item)
+        if(type==='item'){
+                     unwrapped.push(item);
+        }
     }
-    console.log('unwrap endpoint return')
-   console.log(unwrapped)
+    
     return unwrapped;//return unwrapped result
 }
 module.exports = RdfParser;

@@ -25,6 +25,7 @@ var visualizeSemakau =require("./routes/visualizeSemakau.js");
 var visualizeJurong =require("./routes/visualizeJurong.js");
 var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
 var visualizeOntoChem = require("./routes/visualizeOntoChem.js");
+var visualizeAgent = require("./routes/visualizeAgent.js");
 
 
  var showCO2 = require("./routes/showCO2");
@@ -34,7 +35,8 @@ var getSpecAttr =require("./routes/getSpecificLiteralAttrCached");
 //var MAU = require("./routes/runMAU")
 var MAUPlot = require("./routes/plotMAU")
 var HW =require("./routes/runHeatWasteNetworkMap")
-var PPCO2 = require("./routes/powerplantCO2Cached");
+//var PPCO2 = require("./routes/powerplantCO2Cached");
+var PPCO2 = require("./routes/powerplantCO2");
 
 var ppMap = require('./routes/mapPowerPlant');
 
@@ -77,6 +79,7 @@ function acHeader(res){
 	  res.setHeader('Access-Control-Allow-Origin', 'http://www.theworldavatar.com:80');
 
 }
+app.use('/visualizeAgent', visualizeAgent);
 
 app.use('/visualizeWorld', visualizeWorld);
 app.use('/visualizeBMS', visualizeBMS);
