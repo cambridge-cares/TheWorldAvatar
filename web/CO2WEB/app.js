@@ -26,6 +26,7 @@ var visualizeJurong =require("./routes/visualizeJurong.js");
 var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
 var visualizeOntoChem = require("./routes/visualizeOntoChem.js");
 var visualizeAgent = require("./routes/visualizeAgent.js");
+var visualizeOntokin= require("./routes/visualizeOntokin.js");
 
 
  var showCO2 = require("./routes/showCO2");
@@ -91,6 +92,7 @@ app.use('/ppalt', ppalt);
 app.use('/JurongIsland.owl/showCO2', showCO2);
 app.use('/visualizeOntoEN',visualizeOntoEN);
 app.use('/visualizeOntoChem',visualizeOntoChem);
+app.use('/visualizeOntokin',visualizeOntokin);
 
 app.use('/getChildrenSingle',getChildrenSingle);
 
