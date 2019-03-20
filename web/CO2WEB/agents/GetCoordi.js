@@ -15,7 +15,7 @@ function  getCoordi(topnode, callback) {
     /***
      *
      */
-    logger.debug("getB3Coordi")
+    console.log("getB3Coordi")
     xmlProcessor.getChildrenRecur({topnode}, function (err, results) {
 
         if(err){
@@ -26,7 +26,7 @@ function  getCoordi(topnode, callback) {
 
 
         logger.debug("!!!!!!!!!!!!!!!!!!!!!!!")
-        logger.debug(JSON.stringify(results.geoCoords))
+        console.log(JSON.stringify(results.geoCoords))
 
         callback(null, format(results.geoCoords));
 

@@ -193,12 +193,17 @@ RdfParser.RdfParser.prototype =  {
 };
 
 
-RdfParser.unwrapResult = function (result, varNames) {
+RdfParser.unwrapResult = function (result, type) {
     if(!('head' in result) || !('results' in result) || !('bindings' in result['results']) || result['results']['bindings'].length === 0){
+        console.log('wrong format')
         return null
     }
     let unwrapped = {}
+
+   let varNames = result['head']['vars'];
     
+  if(type!=='item'){
+
     for(let varname of varNames){
         console.log(result['head']['vars'])
         console.log(varname)
@@ -207,12 +212,29 @@ RdfParser.unwrapResult = function (result, varNames) {
         }
     unwrapped[varname] = []
     }
+} else {
+    unwrapped = [];
+}
+      
     //unwrap
     console.log('upwrap')
     console.log(unwrapped)
     for(let line of result['results']['bindings']){
+        let item = {};
         for(let varname of varNames){
-         unwrapped[varname].push(line[varname]['value']);
+let value = varname in line?  line[varname]['value']:'';
+            if(type==='item')
+            {
+         item[varname] = value;
+            }
+            else
+            {
+        
+         unwrapped[varname].push(value);
+            }
+        }
+        if(type==='item'){
+                     unwrapped.push(item);
         }
     }
     
