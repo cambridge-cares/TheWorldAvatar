@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
@@ -36,11 +35,10 @@ import com.opencsv.CSVWriter;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 
-
-
-
 @WebServlet("/NuclearAgent")
 public class Nuclear extends HttpServlet {
+	
+	private static final long serialVersionUID = -4199209974912271432L;
 	
 	public static String csvFile = "D:/JPS/JParkSimulator-git/JPS_POWSYS/testres/Landlots.csv";
 	public static String csvFile2 = "D:/JPS/JParkSimulator-git/JPS_POWSYS/testres/Loadpoints.csv";
@@ -60,33 +58,28 @@ public class Nuclear extends HttpServlet {
 	}
 	
 	public void runGAMS() {
-		 System.out.println("Start");
-         String[] cmdArray = new String[5];
-         cmdArray[0] = "C:/GAMS/win64/24.3/" + File.separator + "gams.exe";
-         cmdArray[1] = "C:/JPS_DATA/workingdir/JPS_POWSYS/gams/" + File.separator + "final.gms";
-         //cmdArray[2] = "C:/JPS_DATA/workingdir/JPS_POWSYS/gams/" + File.separator + "tmp";
-         cmdArray[2] = "C:/JPS_DATA/workingdir/JPS_POWSYS/gams/" + File.separator + "gams";
-         cmdArray[3] = "LO=3";
-         try {
-                Process p = Runtime.getRuntime().exec(cmdArray);
-                BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                String s = null;
-                while((s=stdInput.readLine()) !=null){
-                   System.out.println(s);
-                }
-                p.waitFor();
-         }
-         catch (java.io.IOException e )
-         {
-                System.err.println(">>>>" + e.getMessage() );
-                e.printStackTrace();
-         }
-         catch (InterruptedException e )
-         {
-                System.err.println(">>>>" + e.getMessage() );
-                e.printStackTrace();
-         }
-         System.out.println("Done");
+        System.out.println("Start");
+        String[] cmdArray = new String[5];
+        cmdArray[0] = "C:\\GAMS/win64/24.3" + File.separator + "gams";
+        cmdArray[1] = "C:\\JPS_DATA/workingdir/JPS_POWSYS/gams" + File.separator + "final.gms";
+        cmdArray[2] = "WDIR=C:\\\\JPS_DATA/workingdir/JPS_POWSYS/gams" + File.separator + "TMP";
+        cmdArray[3] = "SCRDIR=C:\\JPS_DATA/workingdir/JPS_POWSYS/gams" + File.separator + "TMP";
+        cmdArray[4] = "LO=2";
+        try {
+               Process p = Runtime.getRuntime().exec(cmdArray);
+               p.waitFor();
+        }
+        catch (java.io.IOException e )
+        {
+               System.err.println(">>>>" + e.getMessage() );
+               e.printStackTrace();
+        }
+        catch (InterruptedException e )
+        {
+               System.err.println(">>>>" + e.getMessage() );
+               e.printStackTrace();
+        }
+        System.out.println("Done");
 	}
 	
 	/*public void createCSV(String csvFileref,ArrayList<String[]>lotinfo,String csvFileout) throws IOException {
@@ -156,16 +149,13 @@ public class Nuclear extends HttpServlet {
             	}
             	linereader++;
             }
-//            System.out.println("taken size="+taken.size());
-//            System.out.println("first data="+taken.get(0).getmaindata());
-//            System.out.println("first data index="+taken.get(0).getindex());
         } catch (IOException e) {
             e.printStackTrace();
         }
     	return taken;
 	}
 	
-	public void createNewCSV(String csvFileref,ArrayList<String[]>lotinfo,String csvFileout, String indexseparatorcsv,String indexseparatorowl) throws IOException {
+	public void createNewCSV(String csvFileref,ArrayList<String[]>lotinfo,String csvFileout, String indexseparator) throws IOException {
 		
 		CSVWriter writer = new CSVWriter(new FileWriter(csvFileout));
 		String line = "";
@@ -173,12 +163,17 @@ public class Nuclear extends HttpServlet {
         int linereader=0;
         
     	try (BufferedReader br = new BufferedReader(new FileReader(csvFileref))) {
-    		 
+//    		String[]header= {"id","ys","xs","as","dcs"};
+//    		writer.writeNext(header,false);
+    		
             while ((line = br.readLine()) != null) {
             	//System.out.println("linereader= "+linereader);
-            	
+            	String[] iri = line.split(cvsSplitBy);
             	if(linereader==0) {
             		System.out.println("skipped because it's header");
+            		String[]header= {iri[0],iri[1],iri[2],iri[3],iri[4]};
+            		writer.writeNext(header,false);
+            		
             	}
             	
             	else {
@@ -187,16 +182,18 @@ public class Nuclear extends HttpServlet {
                     for(int count=0;count<elementperlineincsv-1;count++){
                     	 entries2[count]=lotinfo.get(linereader-1)[count];
                     }
-              		int numbofdata=readCSV(csvFileref,indexseparatorcsv).size();
+              		int numbofdata=readCSV(csvFileref,indexseparator).size();
               		
               		for(int a=0;a<numbofdata;a++) {
-              			if(Integer.valueOf(entries2[0].split(indexseparatorowl)[1].split(".owl")[0])==(readCSV(csvFileref,indexseparatorcsv).get(a).getindex())){
-              				entries2[elementperlineincsv-1]=readCSV(csvFileref,indexseparatorcsv).get(a).getmaindata();
+              			 //System.out.println(entries2[0]);             			
+              			if(Integer.valueOf(entries2[0].split(indexseparator)[1].split(".owl")[0])==(readCSV(csvFileref,indexseparator).get(a).getindex())){
+              				entries2[elementperlineincsv-1]=readCSV(csvFileref,indexseparator).get(a).getmaindata();
               			}
               		}
               		            		
               		
-              		writer.writeNext(entries2);
+              		writer.writeNext(entries2,false);
+
               		//System.out.println("written");
             	}
             	linereader++;
@@ -234,14 +231,40 @@ public class Nuclear extends HttpServlet {
 			
 		}
 		
-		prepareCSVLandlot(lotiri);
+		String inputlotdir=prepareCSVLandlot(lotiri);
     
 //-----------------------------------------1st input file finished-------------------------------------------------------------------	
     
-    prepareCSVLoad(iriofnetwork);
+    String inputloaddir=prepareCSVLoad(iriofnetwork);
 		
     //-----------------------------------------2nd input file finished-------------------------------------------------------------------		
 	
+	String parameterfile="";
+    //readfromparametercsvfile
+    String line = "";
+    String cvsSplitBy = ",";
+    int linereader=0;
+//	try (BufferedReader br = new BufferedReader(new FileReader(parameterfile))) {
+//		
+//        while ((line = br.readLine()) != null) {
+//        	
+//        	if(linereader==0) {
+//        		//System.out.println("skipped because it's header");
+//        	}
+//        	
+//        	else {
+//                String[] iri = line.split(cvsSplitBy);
+//                CSVdata ind=new CSVdata(iri[4]);
+//                //System.out.println(iri[0]);
+//                ind.setindex(Integer.valueOf(iri[0].split(separatorforindex)[1]));
+//                taken.add(ind);
+//        	}
+//        	linereader++;
+//        }
+//
+//    } catch (IOException e) {
+//        e.printStackTrace();
+//    }
     
     
     
@@ -250,11 +273,12 @@ public class Nuclear extends HttpServlet {
 	
 	
 	String csvfileoutputgams="";
+
     
 //   recreate the nuclear powerplant on flight
 	NuclearKBCreator in= new NuclearKBCreator();
 	try {
-		in.startConversion(csvfileoutputgams);
+		in.startConversion(csvfileoutputgams,inputlotdir);
 	} catch (URISyntaxException e) {
 		logger.error(e.getMessage());
 	}
@@ -262,11 +286,11 @@ public class Nuclear extends HttpServlet {
 	
 	}
 
-	public void prepareCSVLandlot(String lotiri) throws IOException {
+	public String prepareCSVLandlot(String lotiri) throws IOException {
 		jenaOwlModel = ModelFactory.createOntologyModel();	
 		jenaOwlModel.read(lotiri, null);
 		
-		
+		String outputdir="C:/JPS_DATA/workingdir/JPS_POWSYS/inputlandlots.csv";
 
 		String lotsInfo= "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> " 
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -301,7 +325,7 @@ public class Nuclear extends HttpServlet {
     while(rs_landlot.hasNext()) {
     	QuerySolution qs_p = rs_landlot.nextSolution();
 		Resource name = qs_p.getResource("entity") ;     //extract the lots name 
-	    String stName = name.toString();  
+	    String stName = name.toString().split("ID")[1];  
 	    Literal x = qs_p.getLiteral("xvalue") ;     //extract the x centre
 	    String stx = x.getString();   
 	    Literal y = qs_p.getLiteral("yvalue") ;     //extract the y centre
@@ -317,12 +341,30 @@ public class Nuclear extends HttpServlet {
 	    
 	    totallotresult.add(queryresult);
     }
+    int number=totallotresult.size();
+	
+	//ordering process
+	ArrayList<String[]> totallotresultordered= new ArrayList<String[]>();
+	int init=1;
+	while(totallotresultordered.size()<number) {
+		for(int r=0;r<number;r++) {
+			if(totallotresult.get(r)[0].split("s")[1].contentEquals(String.valueOf(init))) {
+				totallotresultordered.add(totallotresult.get(r));					
+			}
+		}
+		init++;
+	}
 	
     //make csv file for the landlots
-    createNewCSV(csvFile,totallotresult,"C:/JPS_DATA/workingdir/JPS_POWSYS/inputlandlots.csv","s","-IDs");
+    createNewCSV(csvFile,totallotresultordered,outputdir,"s");
+    
+    return outputdir;
 	}
 
-	public void prepareCSVLoad(String iriofnetwork) throws IOException {
+	public String prepareCSVLoad(String iriofnetwork) throws IOException {
+		
+		String outputdir="C:/JPS_DATA/workingdir/JPS_POWSYS/inputloadpoints.csv";
+		
 		String electricalnodeInfo= "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> " 
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "SELECT ?component "
@@ -378,16 +420,13 @@ public class Nuclear extends HttpServlet {
 		ArrayList<String[]> totalnodebusresult= new ArrayList<String[]>();
 		for(int t=0;t<numberofiri;t++) {
 			OntModel jenaOwlModel3  = ModelFactory.createOntologyModel();	
-			//System.out.println("iri chosen= "+totalnodeelectricresult.get(t));
+			
 			jenaOwlModel3.read(totalnodeelectricresult.get(t), null); 
 			ResultSet rs_busnode = Nuclear.queryFromOWLFile(busInfo,jenaOwlModel3);
-			
-			System.out.println("query ok");
-			System.out.println("iri chosen= "+totalnodeelectricresult.get(t));
 		    while(rs_busnode.hasNext()) {
 		    	QuerySolution qs_p = rs_busnode.nextSolution();
 		    	Resource iriofbusnode = qs_p.getResource("entity");
-			    String stiriofbusnode = iriofbusnode.toString();
+			    String stiriofbusnode = "p"+Integer.valueOf(iriofbusnode.toString().split("EBus-")[2]);
 			    Literal xvalue=qs_p.getLiteral("xvalue");
 			    String stxvalue = xvalue.toString();
 			    Literal yvalue=qs_p.getLiteral("yvalue");
@@ -402,11 +441,26 @@ public class Nuclear extends HttpServlet {
 			    queryresult[3]=stPdvalue;
 			    
 			    totalnodebusresult.add(queryresult);
-			    System.out.println("adding success");
 		    }
 		}
+		int number=totalnodebusresult.size();
+	
+		//ordering process
+		ArrayList<String[]> totalnodebusresultordered= new ArrayList<String[]>();
+		int init=1;
+		while(totalnodebusresultordered.size()<number) {
+			System.out.println("size0= "+totalnodebusresultordered.size());
+			for(int r=0;r<number;r++) {
+				if(totalnodebusresult.get(r)[0].split("p")[1].contentEquals(String.valueOf(init))) {
+					totalnodebusresultordered.add(totalnodebusresult.get(r));					
+				}
+			}
+			init++;
+		}
+
+		createNewCSV(csvFile2,totalnodebusresultordered,outputdir,"p");
 		
-		createNewCSV(csvFile2,totalnodebusresult,"C:/JPS_DATA/workingdir/JPS_POWSYS/inputloadpoints.csv","p","-");
+		return outputdir;
 	}
 
 }

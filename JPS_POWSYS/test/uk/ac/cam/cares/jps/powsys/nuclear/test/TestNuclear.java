@@ -11,13 +11,17 @@ public class TestNuclear extends TestCase{
 	public void testPrepareCSVLoad() throws IOException {
 		String irinetwork="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 		Nuclear b=new Nuclear();
-		b.prepareCSVLoad(irinetwork);
+		
+		String diroutput= b.prepareCSVLoad(irinetwork);
+		assertEquals("C:/JPS_DATA/workingdir/JPS_POWSYS/inputloadpoints.csv", diroutput);
 	}
 	
 	public void testPrepareCSVLots() throws IOException {
 		String lotiri="http://www.theworldavatar.com/kb/sgp/jurongisland/JurongIslandLandlots.owl";
 		Nuclear b=new Nuclear();
-		b.prepareCSVLandlot(lotiri);
+		
+		String diroutput= b.prepareCSVLandlot(lotiri);
+		assertEquals("C:/JPS_DATA/workingdir/JPS_POWSYS/inputlandlots.csv", diroutput);
 		
 	}
 	

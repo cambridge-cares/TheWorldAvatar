@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
@@ -29,7 +30,7 @@ public class NuclearKBCreator {
 	static Individual xaxis;
 	static Individual yaxis;
 		
-	private OntClass powerplantclass = null;
+	private OntClass nuclearpowerplantclass = null;
 	private OntClass organizationclass = null;
 	private OntClass coordinateclass = null;
 	private OntClass coordinatesystemclass = null;
@@ -37,6 +38,8 @@ public class NuclearKBCreator {
 	private OntClass scalarvalueclass = null;
 
 	private OntClass designcapacityclass = null;
+	private OntClass generatedactivepowerclass=null;
+	private OntClass nucleargeneratorclass = null;
 
 
 	private ObjectProperty hasdimension = null;
@@ -57,17 +60,23 @@ public class NuclearKBCreator {
 	private ObjectProperty hascosts = null;
 	private ObjectProperty hasannualgeneration = null;
 	private ObjectProperty usesgenerationtechnology = null;
+	
+	private ObjectProperty hasSubsystem = null;
+	private ObjectProperty hasActivepowergenerated=null;
 
 	private DatatypeProperty numval = null;
 	private DatatypeProperty hasname = null;
+	private BufferedReader br;
 	
 	public void initOWLClasses(OntModel jenaOwlModel) {
-		powerplantclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerPlant");
+		nuclearpowerplantclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant");
+		nucleargeneratorclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearGenerator");
 		coordinateclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate");
 		coordinatesystemclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#ProjectedCoordinateSystem");
 		valueclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue");
 		scalarvalueclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue");
 		designcapacityclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#DesignCapacity");
+		generatedactivepowerclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#GeneratedActivePower");
 		
 		consumesprimaryfuel = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#consumesPrimaryFuel");
 		hasdimension = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension");
@@ -78,6 +87,7 @@ public class NuclearKBCreator {
 		hasvalue = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue");
 		hasunit = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure");
 		designcapacity = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#designCapacity");
+		hasActivepowergenerated=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasActivePowerGenerated");
 		
 		numval = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 		nuclear = jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Nuclear");
@@ -88,10 +98,12 @@ public class NuclearKBCreator {
 		yaxis=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#y-axis");
 	}
 	
-	public void startConversion(String csvfile) throws URISyntaxException {
+	public void startConversion(String csvfileoutput, String csvfileinput) throws URISyntaxException {
 		  String line = "";
 	        String cvsSplitBy = ",";
-		try (BufferedReader br = new BufferedReader(new FileReader(csvfile))) {
+	        
+	        //reading from output file and put that to owl file
+		try (BufferedReader br = new BufferedReader(new FileReader(csvfileoutput))) {
 
 			while ((line = br.readLine()) != null) {
 				String[] data = line.split(cvsSplitBy);
@@ -99,7 +111,7 @@ public class NuclearKBCreator {
 				// System.out.println("Country [code= " + country[4] + " , name=" + country[5] +
 				// "]");
 
-				String filePath = baseURL + "planttemplatekb2.owl"; // the empty owl file
+				String filePath = baseURL + "plantgeneratortemplate.owl"; // the empty owl file
 
 				// System.out.println("data8= "+data[8]);
 
@@ -114,8 +126,7 @@ public class NuclearKBCreator {
 
 				initOWLClasses(jenaOwlModel);
 
-				doConversion(jenaOwlModel, data[8], data[0], data[11], data[2], data[3], data[10], data[9], "0", "0",
-						data[6], data[1], data[4]); // plant,country,owner,fuel,tech,x,y,emission,cost,anngen,capa,age
+				doConversion(jenaOwlModel, data[0], data[1], data[2],data[3],data[4]); // plant,fuel,x,y,capa
 
 				/** save the updated model file */
 				LandlotsKB ins = new LandlotsKB();
@@ -127,17 +138,69 @@ public class NuclearKBCreator {
 		}
 	}
 	
-	public void doConversion(OntModel jenaOwlModel, String plantname ,String countryname,String ownername,String fueltype,String tech,String xnumval,String ynumval,String emissionnumval,String costnumval,String anngennumval,String capanumval,String agenumval){
-		Individual plant = powerplantclass.createIndividual("http://www.theworldavatar.com/kb/powerplants/" + plantname + ".owl#"+plantname);
+	
+	public void gatherInformation(String csvfileoutput, String csvfileinputlandlot, String inputparameter) throws NumberFormatException, IOException {
+		String line = "";
+        String cvsSplitBy = ",";
+        int linereader=0;
+        ArrayList<LandlotObject> lotlisted= new ArrayList<LandlotObject>();
+        br = new BufferedReader(new FileReader(csvfileinputlandlot));
+			while ((line = br.readLine()) != null) {
+				if(linereader==0) {
+	        		//System.out.println("skipped because it's header");
+	        	}
+				else {
+				String[] data = line.split(cvsSplitBy);
+				System.out.println("data8= "+data[8]);
+				LandlotObject lots= new LandlotObject(data[0]);
+				lots.setx(Double.valueOf(data[2]));
+				lots.sety(Double.valueOf(data[1]));
+				lotlisted.add(lots);
+				}
+				linereader++;
+				
+			}
+			System.out.println("lots info are captured");
+			
+//			ArrayList<NuclearPlantType> nuclearlisted= new ArrayList<NuclearPlantType>();
+//			linereader=0;
+//	        br = new BufferedReader(new FileReader(inputparameter));
+//				while ((line = br.readLine()) != null) {
+//					if(linereader==0) {
+//		        		//System.out.println("skipped because it's header");
+//		        	}
+//					else {
+//					String[] data = line.split(cvsSplitBy);
+//					System.out.println("data8= "+data[8]);
+//					NuclearPlantType nuclear= new NuclearPlantType(data[0]);
+//					nuclear.setcapacitya(Double.valueOf(data[2]));
+//					nuclear.setcapacityb(Double.valueOf(data[1]));
+//					nuclearlisted.add(nuclear);
+//					}
+//					linereader++;
+//					
+//				}
+			
+			
+			
+
+        
+	}
+	
+	public void doConversion(OntModel jenaOwlModel, String plantname ,String fueltype,String xnumval,String ynumval,String capanumval){
+		String nuclearplantgeneratoriri="http://www.theworldavatar.com/kb/sgp/jurongisland/nuclearpowerplants/";
+		String generatorname=""; //temporary
 		
-		Individual plantcoordinate = coordinatesystemclass.createIndividual("http://www.theworldavatar.com/kb/powerplants/" + plantname + ".owl#CoordinateSystem_of_"+plantname);
-		Individual xcoordinate = coordinateclass.createIndividual("http://www.theworldavatar.com/kb/powerplants/" + plantname + ".owl#x_coordinate_of_"+plantname);
-		Individual ycoordinate = coordinateclass.createIndividual("http://www.theworldavatar.com/kb/powerplants/" + plantname + ".owl#y_coordinate_of_"+plantname);
-		Individual xcoordinatevalue = valueclass.createIndividual("http://www.theworldavatar.com/kb/powerplants/" + plantname + ".owl#v_x_coordinate_of_"+plantname);
-		Individual ycoordinatevalue = valueclass.createIndividual("http://www.theworldavatar.com/kb/powerplants/" + plantname + ".owl#v_y_coordinate_of_"+plantname);
+		Individual plant = nuclearpowerplantclass.createIndividual(nuclearplantgeneratoriri + plantname + ".owl#"+plantname);
 		
-		Individual capa = designcapacityclass.createIndividual("http://www.theworldavatar.com/kb/powerplants/" + plantname + ".owl#capa_of_"+plantname);
-		Individual capavalue = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/powerplants/" + plantname + ".owl#v_capa_of_"+plantname);
+		Individual plantcoordinate = coordinatesystemclass.createIndividual(nuclearplantgeneratoriri + plantname + ".owl#CoordinateSystem_of_"+plantname);
+		Individual xcoordinate = coordinateclass.createIndividual(nuclearplantgeneratoriri + plantname + ".owl#x_coordinate_of_"+plantname);
+		Individual ycoordinate = coordinateclass.createIndividual(nuclearplantgeneratoriri + plantname + ".owl#y_coordinate_of_"+plantname);
+		Individual xcoordinatevalue = valueclass.createIndividual(nuclearplantgeneratoriri + plantname + ".owl#v_x_coordinate_of_"+plantname);
+		Individual ycoordinatevalue = valueclass.createIndividual(nuclearplantgeneratoriri + plantname + ".owl#v_y_coordinate_of_"+plantname);
+		
+		Individual capa = designcapacityclass.createIndividual(nuclearplantgeneratoriri + plantname + ".owl#capa_of_"+plantname);
+		Individual capavalue = scalarvalueclass.createIndividual(nuclearplantgeneratoriri + plantname + ".owl#v_capa_of_"+plantname);
 		
 		Individual powergeneration = jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NuclearGeneration");
 		
@@ -157,13 +220,49 @@ public class NuclearKBCreator {
 		ycoordinatevalue.addProperty(numval, jenaOwlModel.createTypedLiteral(ynumval));
 		ycoordinatevalue.addProperty(hasunit, degree);
 		
-		plant.setPropertyValue(designcapacity, capa);
-		capa.setPropertyValue(hasvalue, capavalue);
+		plant.addProperty(designcapacity, capa);
+		capa.addProperty(hasvalue, capavalue);
 		capavalue.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(capanumval));
-		capavalue.setPropertyValue(hasunit, MW);
+		capavalue.addProperty(hasunit, MW);
 		
 		plant.setPropertyValue(realizes, powergeneration);
 		powergeneration.setPropertyValue(consumesprimaryfuel, nuclear);
+		
+		int numberofreactor=5;
+		for(int f=0; f<numberofreactor;f++){
+			Individual generator=nucleargeneratorclass.createIndividual(nuclearplantgeneratoriri + generatorname + ".owl#"+generatorname);
+			Individual capagen = generatedactivepowerclass.createIndividual(nuclearplantgeneratoriri + generatorname + ".owl#GeneratedActivePower_"+generatorname);
+			Individual capagenvalue = scalarvalueclass.createIndividual(nuclearplantgeneratoriri + generatorname + ".owl#V_GeneratedActivePower_"+generatorname);
+			
+			plant.addProperty(hasSubsystem, generator);
+			Individual gencoordinate = coordinatesystemclass.createIndividual(nuclearplantgeneratoriri + generatorname + ".owl#CoordinateSystem_of_"+generatorname);
+			Individual xgencoordinate = coordinateclass.createIndividual(nuclearplantgeneratoriri + generatorname + ".owl#x_coordinate_of_"+generatorname);
+			Individual ygencoordinate = coordinateclass.createIndividual(nuclearplantgeneratoriri + generatorname+ ".owl#y_coordinate_of_"+generatorname);
+			Individual xgencoordinatevalue = valueclass.createIndividual(nuclearplantgeneratoriri + generatorname + ".owl#v_x_coordinate_of_"+generatorname);
+			Individual ygencoordinatevalue = valueclass.createIndividual(nuclearplantgeneratoriri + generatorname + ".owl#v_y_coordinate_of_"+generatorname);
+			
+			generator.addProperty(hascoordinatesystem, gencoordinate);
+			
+			gencoordinate.addProperty(hasx, xgencoordinate);
+			xgencoordinate.addProperty(hasvalue, xgencoordinatevalue);
+			xgencoordinate.addProperty(referto, xaxis);
+			xgencoordinate.addProperty(hasdimension, length);
+			xgencoordinatevalue.addProperty(numval, jenaOwlModel.createTypedLiteral(xnumval));
+			xgencoordinatevalue.addProperty(hasunit, degree);
+			
+			gencoordinate.addProperty(hasy, ygencoordinate);
+			ygencoordinate.addProperty(hasvalue, ygencoordinatevalue);
+			ygencoordinate.addProperty(referto, yaxis);
+			ygencoordinate.addProperty(hasdimension, length);
+			ygencoordinatevalue.addProperty(numval, jenaOwlModel.createTypedLiteral(ynumval));
+			ygencoordinatevalue.addProperty(hasunit, degree);
+			
+			generator.addProperty(hasActivepowergenerated, capagen);
+			capagen.addProperty(hasvalue, capagenvalue);
+			capagenvalue.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(capanumval));
+			capagenvalue.addProperty(hasunit, MW);
+		}
+		
 		
 	}
 
