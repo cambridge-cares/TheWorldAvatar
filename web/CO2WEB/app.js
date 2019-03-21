@@ -26,13 +26,14 @@ var visualizeJurong =require("./routes/visualizeJurong.js");
 var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
 var visualizeOntoChem = require("./routes/visualizeOntoChem.js");
 var visualizeAgent = require("./routes/visualizeAgent.js");
+var visualizeOntokin= require("./routes/visualizeOntokin.js");
 
 
  var showCO2 = require("./routes/showCO2");
 var bmsplot= require("./routes/plotBMSCached.js");
 var getAttrList =require("./routes/getAttrList");
 var getSpecAttr =require("./routes/getSpecificLiteralAttrCached");
-var MAU = require("./routes/runMAU")
+//var MAU = require("./routes/runMAU")
 var MAUPlot = require("./routes/plotMAU")
 var HW =require("./routes/runHeatWasteNetworkMap")
 //var PPCO2 = require("./routes/powerplantCO2Cached");
@@ -91,6 +92,7 @@ app.use('/ppalt', ppalt);
 app.use('/JurongIsland.owl/showCO2', showCO2);
 app.use('/visualizeOntoEN',visualizeOntoEN);
 app.use('/visualizeOntoChem',visualizeOntoChem);
+app.use('/visualizeOntokin',visualizeOntokin);
 
 app.use('/getChildrenSingle',getChildrenSingle);
 
@@ -105,7 +107,7 @@ app.use('/b2map', b2Map)
 app.use("/mauplot", MAUPlot);
 app.use("/getAttrList", getAttrList);
 app.use("/getSpecAttr", getSpecAttr);
-app.use("/MAU", MAU);
+//app.use("/MAU", MAU);
 
 
 
@@ -150,6 +152,7 @@ ev.on('change', function (data) {
 /*socket io***/
 
 io.on('connection', function(socket){
+    
 
 socket.on('join', function (uriSubscribeList) {
     //May be do some authorization
@@ -165,7 +168,7 @@ socket.on('join', function (uriSubscribeList) {
         let affix = uri2Sub.withData? "_data" :"_nodata";
         diskLoc = path.normalize(diskLoc)
         socket.join(diskLoc+affix);
-		       console.log(socket.id, "joined", diskLoc+affix);
+		      // console.log(socket.id, "joined", diskLoc+affix);
 
 		
 

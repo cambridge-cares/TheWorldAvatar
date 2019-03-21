@@ -12,7 +12,9 @@ var config = {};
 
 config.baseUri = "http://www.theworldavatar.com"
 
-config.crebase = "http://localhost/damecoolquestion/ontochem"
+config.crebase = "http://www.theworldavatar.com/damecoolquestion/ontochem"
+config.ontokinbase = "http://www.theworldavatar.com/damecoolquestion/ontokin"
+
 //configDevelop();
 configDeploy();
 config.agentShowcaseNode = path.join(config.root , "kb/subsetWorld.owl");
@@ -30,6 +32,7 @@ config.bmsplotnode = path.join(config.bmsFolder, "BCA_RT_sensor1.owl");
 config.semakauNode = path.join(config.root , "kb/sgp/semakauisland/SemakauIsland.owl");
 config.landLotNode=path.join(config.root , "kb/sgp/jurongisland/JParkLandLots.owl");
 config.ontochemNode= config.crebase + '/query';
+config.ontokinNode= config.ontokinbase + '/query';
 
 //TODO: this later should be wrapped in owl file
 config.heatWasteScript = path.join(__dirname, "agents/WHR_network_optimization_trim.py")

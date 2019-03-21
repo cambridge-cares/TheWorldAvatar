@@ -99,8 +99,8 @@ function groupwatcher(dir, informIndi){
                 dataPromise.then(function (promisedData) {
                     //TODO: merge instead of explicit declare
                     Object.assign(withChangeData, changedFilenames, promisedData);
-                    console.log("groupChangeWatcher: sent update data: ")
-                    console.log(withChangeData.data);
+                   // console.log("groupChangeWatcher: sent update data: ")
+                   // console.log(withChangeData.data);
                     loopInform();
                 })
             } else{

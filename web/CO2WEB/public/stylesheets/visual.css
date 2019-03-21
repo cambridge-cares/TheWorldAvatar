@@ -18,6 +18,18 @@ body {
     opacity: 0.5;
 
 }
+.agl{
+     stroke: #96fa5a;
+     stroke-width: 5px;
+     opacity: 0.5;
+
+ }
+.link.agl{
+    stroke: #96fa5a;
+    stroke-width: 5px;
+    opacity: 0.5;
+
+}
 
 .link.resolved {
     stroke-dasharray: 0,2 1;

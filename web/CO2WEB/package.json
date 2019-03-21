@@ -34,17 +34,19 @@
     "readdirp": "^2.1.0",
     "redis": "^2.8.0",
     "request": "^2.88.0",
+    "safe-buffer": "^5.1.2",
     "serve-favicon": "^2.5.0",
     "socket.io": "^2.1.1"
   },
-  "configurations": [{
-        "type": "node",
-        "request": "launch",
-        "name": "Launch  Script",
-        "program": "\\app.js",
-        "runtimeArgs": [
-            "--max-old-space-size=4096"
-        ]
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch  Script",
+      "program": "\\app.js",
+      "runtimeArgs": [
+        "--max-old-space-size=4096"
+      ]
     }
-]
+  ]
 }

@@ -90,11 +90,11 @@ owlProcessor.doConnect = function(address, level) {
             address = me.equalHost(address);
             if(result&&result.length>0){
 				let iset = new Set();
-				console.log('found result: '+result.length);
+				console.log('found result: '+JSON.stringify(result));
                 result.forEach(item=>{
                     let parent = null,label = '';
                     if(typeof item === 'object'){
-                        if('uri' in item && 'parent' in item ){
+                        if('uri' in item ){
                         parent = item['parent']?item['parent']:address;//if parent iri is null, just use address
                         label = item['label']?item['label']:'';
                         level = item['level']?item['level']:level;
@@ -111,16 +111,21 @@ owlProcessor.doConnect = function(address, level) {
                         return;//skip null 
                     }
 
-                    //item = me.normalAddr(item);
+                    item = me.normalAddr(item);
                     item = me.equalHost(item);
+                    console.log(item)
                        
 					if(!iset.has(item)){
+                        console.log('add')
 						iset.add(item);
                     if(level>=2 && !(item in me.parentMap) && (parent!==item)) {
                         me.parentMap[item] = parent in me.parentMap ? me.parentMap[parent] : parent;
                     }
-                    me.result.push({'source':parent, 'target':item, 'label': label ,'level':level})
-					}
+                    me.result.push({'source':parent, 'target':item, 'label': label ,'level':level});
+                    console.log({'source':parent, 'target':item, 'label': label ,'level':level})
+                    
+                    
+                    }
                     //todo: cluster result on the fly
                 })
             }
@@ -426,10 +431,8 @@ owlProcessor.queryPromise = function (loc, type, level) {
 
 owlProcessor.singleEpQ = function(loc){
 
-    let q = function(qr, callback){
-
-                    console.log(qr)
-                    let qStr = typeof qr === 'string'? qr:qr['qStr'];
+    let q = function(qStr, callback){
+         
                     console.log('query')
                     console.log(qStr);
                    request.get(loc, {qs:{'query':qStr,'output':'json'},timeout: 150000, agent: false}, function (err, res, body) {
@@ -450,13 +453,9 @@ owlProcessor.singleEpQ = function(loc){
                     let items = RdfParser.unwrapResult(body, 'item');
                      if(!items){
                         callback(new Error('empty query result'));
+                        return;
                      }
-
-                        for(let item of items){
-                            item['level'] = typeof qr === 'string'? qr:qr['level'];
-                            console.log(item['level']);
-                        
-                        }
+                     
                    // let uri = items.map(item=>item.uri);
                     //console.log(uri)
                     //let tobuffer = uri.map((text)=> {return text+'@'+(level+1)}).join(';')
@@ -665,14 +664,14 @@ owlProcessor.process = function (options) {
 
 owlProcessor.processSingle = function (options) {
     this.init(options);
-    return this.doConnect(this.loc, options.level);
+    return this.doConnect(this.loc, 1);
 }
 
 owlProcessor.diskLoc2Uri = function(disk){
-	return disk.replace('C:\\TOMCAT\\webapps\\ROOT\\', 'http://www.theworldavatar.com/').replace(new RegExp( '\\\\','g'), '/');
+	return disk?disk.replace('C:\\TOMCAT\\webapps\\ROOT\\', 'http://www.theworldavatar.com/').replace(new RegExp( '\\\\','g'), '/'):null;
 }
 owlProcessor.equalHost = function(url){
-	return url.replace('http://www.jparksimulator.com/', 'http://www.theworldavatar.com/');
+	return url?url.replace('http://www.jparksimulator.com/', 'http://www.theworldavatar.com/'):null;
 }
 
 owlProcessor.uriList2DiskLoc = function (uriArr, diskroot) {
@@ -691,12 +690,12 @@ owlProcessor.uriList2DiskLoc = function (uriArr, diskroot) {
 //test
 //console.time('conn')
    // owlProcessor.doConnect(loc)
-/**
+
 var a = Object.create(owlProcessor)
-    a.processSingle( {topnode:"http://www.theworldavatar.com/kb/sgp/jurongisland/JurongIsland.owl", level: 1}).then((res)=>{
+    a.processSingle( {topnode:"http://localhost/damecoolquestion/ontochem/query", level: 1}).then((res)=>{
         console.log('print results')
         console.log((res))});
- ***/
+
 //b.process( {topnode:"http://www.theworldavatar.com/SemakauIsland.owl"}).then((res)=>{
   //  console.log('print')
     //console.log((res))});
