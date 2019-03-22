@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
@@ -36,7 +37,7 @@ import com.opencsv.CSVWriter;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 
 @WebServlet("/NuclearAgent")
-public class Nuclear extends HttpServlet {
+public class NuclearAgent extends HttpServlet {
 	
 	private static final long serialVersionUID = -4199209974912271432L;
 	
@@ -46,7 +47,7 @@ public class Nuclear extends HttpServlet {
 	OntModel jenaOwlModel = null;
 	OntModel jenaOwlModel2 = null;
 	
-	private Logger logger = LoggerFactory.getLogger(Nuclear.class);
+	private Logger logger = LoggerFactory.getLogger(NuclearAgent.class);
 	
 	public static synchronized ResultSet queryFromOWLFile(String sparql, OntModel model) {
 		Query query = QueryFactory.create(sparql);
@@ -57,15 +58,29 @@ public class Nuclear extends HttpServlet {
 		return results;
 	}
 	
+	public static void copyFile(String from, String to) throws IOException{ 
+		File source = new File(from);//sample="H:\\work-temp\\file"
+		File dest = new File(to);//sample="H:\\work-temp\\file2"
+		try {
+		    FileUtils.copyDirectory(source, dest);
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
+		}
+
+
+	
 	public void runGAMS() {
         System.out.println("Start");
+        System.out.println("separator= "+File.separator);
         String[] cmdArray = new String[5];
         cmdArray[0] = "C:\\GAMS/win64/24.3" + File.separator + "gams";
         cmdArray[1] = "C:\\JPS_DATA/workingdir/JPS_POWSYS/gams" + File.separator + "final.gms";
-        cmdArray[2] = "WDIR=C:\\\\JPS_DATA/workingdir/JPS_POWSYS/gams" + File.separator + "TMP";
+        cmdArray[2] = "WDIR=C:\\JPS_DATA/workingdir/JPS_POWSYS/gams" + File.separator + "TMP";
         cmdArray[3] = "SCRDIR=C:\\JPS_DATA/workingdir/JPS_POWSYS/gams" + File.separator + "TMP";
         cmdArray[4] = "LO=2";
         try {
+        	System.out.println("goinghere= "+File.separator);
                Process p = Runtime.getRuntime().exec(cmdArray);
                p.waitFor();
         }
@@ -124,12 +139,12 @@ public class Nuclear extends HttpServlet {
 
 	}*/
 	
-	public ArrayList<CSVdata> readCSV(String csvFileref,String separatorforindex) throws IOException {
+	public ArrayList<CSVdataType> readCSV(String csvFileref,String separatorforindex) throws IOException {
 		
 		String line = "";
         String cvsSplitBy = ",";
         int linereader=0;
-        ArrayList<CSVdata> taken= new ArrayList<CSVdata>();
+        ArrayList<CSVdataType> taken= new ArrayList<CSVdataType>();
     	try (BufferedReader br = new BufferedReader(new FileReader(csvFileref))) {
     		
     		
@@ -142,7 +157,7 @@ public class Nuclear extends HttpServlet {
             	
             	else {
                     String[] iri = line.split(cvsSplitBy);
-                    CSVdata ind=new CSVdata(iri[4]);
+                    CSVdataType ind=new CSVdataType(iri[4]);
                     //System.out.println(iri[0]);
                     ind.setindex(Integer.valueOf(iri[0].split(separatorforindex)[1]));
                     taken.add(ind);
@@ -231,42 +246,21 @@ public class Nuclear extends HttpServlet {
 			
 		}
 		
-		String inputlotdir=prepareCSVLandlot(lotiri);
+		String inputlotdir=prepareCSVLandlot(lotiri); //used to create csv
     
 //-----------------------------------------1st input file finished-------------------------------------------------------------------	
     
-    String inputloaddir=prepareCSVLoad(iriofnetwork);
+        String inputloaddir=prepareCSVLoad(iriofnetwork); //used to create csv
 		
     //-----------------------------------------2nd input file finished-------------------------------------------------------------------		
 	
-	String parameterfile="";
-    //readfromparametercsvfile
-    String line = "";
-    String cvsSplitBy = ",";
-    int linereader=0;
-//	try (BufferedReader br = new BufferedReader(new FileReader(parameterfile))) {
-//		
-//        while ((line = br.readLine()) != null) {
-//        	
-//        	if(linereader==0) {
-//        		//System.out.println("skipped because it's header");
-//        	}
-//        	
-//        	else {
-//                String[] iri = line.split(cvsSplitBy);
-//                CSVdata ind=new CSVdata(iri[4]);
-//                //System.out.println(iri[0]);
-//                ind.setindex(Integer.valueOf(iri[0].split(separatorforindex)[1]));
-//                taken.add(ind);
-//        	}
-//        	linereader++;
-//        }
-//
-//    } catch (IOException e) {
-//        e.printStackTrace();
-//    }
+
+    copyFile("D:\\JPS\\JParkSimulator-git\\JPS_POWSYS\\testres\\constants_req.csv","C:\\JPS_DATA\\workingdir\\JPS_POWSYS\\constants_req.csv");
+  //-----------------------------------------3rd input file finished-------------------------------------------------------------------
     
-    
+   
+    copyFile("D:\\JPS\\JParkSimulator-git\\JPS_POWSYS\\testres\\parameters_req.csv","C:\\JPS_DATA\\workingdir\\JPS_POWSYS\\parameters_req.csv");
+    //-----------------------------------------4th input file finished-------------------------------------------------------------------
     
     runGAMS();
 	
@@ -278,7 +272,7 @@ public class Nuclear extends HttpServlet {
 //   recreate the nuclear powerplant on flight
 	NuclearKBCreator in= new NuclearKBCreator();
 	try {
-		in.startConversion(csvfileoutputgams,inputlotdir);
+		in.startConversion(csvfileoutputgams);
 	} catch (URISyntaxException e) {
 		logger.error(e.getMessage());
 	}
@@ -318,7 +312,7 @@ public class Nuclear extends HttpServlet {
 								
 				+ "}";
 		
-	ResultSet rs_landlot = Nuclear.queryFromOWLFile(lotsInfo,jenaOwlModel); 
+	ResultSet rs_landlot = NuclearAgent.queryFromOWLFile(lotsInfo,jenaOwlModel); 
 
 	ArrayList<String[]> totallotresult= new ArrayList<String[]>();
 	
@@ -375,7 +369,7 @@ public class Nuclear extends HttpServlet {
 		
 		jenaOwlModel2 = ModelFactory.createOntologyModel();	
 		jenaOwlModel2.read(iriofnetwork, null); 
-		ResultSet rs_electricalnode = Nuclear.queryFromOWLFile(electricalnodeInfo,jenaOwlModel2); 	
+		ResultSet rs_electricalnode = NuclearAgent.queryFromOWLFile(electricalnodeInfo,jenaOwlModel2); 	
 		
 		ArrayList<String> totalnodeelectricresult= new ArrayList<String>();
 		
@@ -422,7 +416,7 @@ public class Nuclear extends HttpServlet {
 			OntModel jenaOwlModel3  = ModelFactory.createOntologyModel();	
 			
 			jenaOwlModel3.read(totalnodeelectricresult.get(t), null); 
-			ResultSet rs_busnode = Nuclear.queryFromOWLFile(busInfo,jenaOwlModel3);
+			ResultSet rs_busnode = NuclearAgent.queryFromOWLFile(busInfo,jenaOwlModel3);
 		    while(rs_busnode.hasNext()) {
 		    	QuerySolution qs_p = rs_busnode.nextSolution();
 		    	Resource iriofbusnode = qs_p.getResource("entity");

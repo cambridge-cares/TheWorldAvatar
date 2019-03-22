@@ -1,11 +1,11 @@
 package uk.ac.cam.cares.jps.powsys.nuclear;
 
-public class LandlotObject {
+public class LandlotObjectType {
 	private String Landlot="";
 	private double x = 0;
 	private double y = 0;
 	
-	public LandlotObject(String Landlot) {
+	public LandlotObjectType(String Landlot) {
 		this.Landlot = Landlot;
 	}
 	

@@ -2,8 +2,7 @@ package uk.ac.cam.cares.jps.powsys.nuclear;
 
 public class NuclearPlantType {
 	private String nuclearplanttype = "";
-	private double capacitya = 0;
-	private double capacityb = 0;
+	private double capacity = 0;
 	private int numberreactora=0;
 	private int numberreactorb=0;
 	private double x = 0;
@@ -17,18 +16,12 @@ public class NuclearPlantType {
 		return nuclearplanttype;
 	}
 	
-	public double getcapacitya() {
-		return capacitya;
-	}
-	public double getcapacityb() {
-		return capacityb;
+	public double getcapacity() {
+		return capacity;
 	}
 	
-	public void setcapacitya(double capacitya) {
-		this.capacitya = capacitya;
-	}
-	public void setcapacityb(double capacityb) {
-		this.capacityb = capacityb;
+	public void setcapacity(double capacity) {
+		this.capacity = capacity;
 	}
 	
 	public int getnumberreactora() {
