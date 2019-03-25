@@ -5,7 +5,6 @@
 	<artifactId>JPS_ARBITRAGE</artifactId>
 	<version>1.0.0</version>
 
-
 	<packaging>war</packaging>
 
 	<build>
@@ -116,8 +115,7 @@
 		</dependency>
 		
 		<dependency>
-		<!-- com.cmclinnovations.mods.api.MoDSAPI -->
-			<groupId>com.cmclinnovations.mods.api.MoDSAPI</groupId>
+			<groupId>com.cmclinnovations.mods</groupId>
 			<artifactId>MoDS_Java_API</artifactId>
 			<version>0.3.3</version>
 		</dependency>
