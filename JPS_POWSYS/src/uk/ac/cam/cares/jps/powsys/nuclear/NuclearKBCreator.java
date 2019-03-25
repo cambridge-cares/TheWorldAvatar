@@ -99,9 +99,12 @@ public class NuclearKBCreator {
 		yaxis=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#y-axis");
 	}
 	
-	public void startConversion(String csvfileoutput) throws URISyntaxException {
+	public ArrayList<String> startConversion(String csvfileoutput) throws URISyntaxException {
 		  String line = "";
 	        String cvsSplitBy = ",";
+	        
+	        ArrayList<String>iriofplant= new ArrayList<String>();
+	        String iriprefix="http://www.theworldavatar.com/kb/sgp/jurongisland/nuclearpowerplants/";
 	        
 	        //reading from output file and put that to owl file
 		try (BufferedReader br = new BufferedReader(new FileReader(csvfileoutput))) {
@@ -127,16 +130,22 @@ public class NuclearKBCreator {
 
 				initOWLClasses(jenaOwlModel);
 
-				doConversion(jenaOwlModel, "NucPP_"+UUID.randomUUID(), Integer.valueOf(data[1]),Integer.valueOf(data[2]), data[3],data[4]); // plant,nreactora,nreactorb,x,y
+				doConversion(jenaOwlModel,iriprefix, "NucPP_"+UUID.randomUUID(), Integer.valueOf(data[1]),Integer.valueOf(data[2]), data[3],data[4]); // plant,nreactora,nreactorb,x,y
 
 				/** save the updated model file */
 				LandlotsKB ins = new LandlotsKB();
 				ins.savefile(jenaOwlModel, filePath2);
+				
+				iriofplant.add("iriprefix"+"NucPP_"+UUID.randomUUID()+".owl#"+"NucPP_"+UUID.randomUUID());
+				
+			
+				
 			}
-
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return iriofplant;
 	}
 	
 	
@@ -201,7 +210,7 @@ public class NuclearKBCreator {
 	}
 
 	
-	public void doConversion(OntModel jenaOwlModel, String plantname ,int numberofreactorA,int numberofreactorB,String xnumval,String ynumval) throws NumberFormatException, IOException{
+	public void doConversion(OntModel jenaOwlModel,String iriprefix, String plantname ,int numberofreactorA,int numberofreactorB,String xnumval,String ynumval) throws NumberFormatException, IOException{
 		
 		ArrayList<NuclearGenType> generatortype=extractInformationForGen("D:\\JPS/JParkSimulator-git/JPS_POWSYS/testres/parameters_req.csv", "0","3");
 		double capacityA=0.0;
@@ -224,18 +233,18 @@ public class NuclearKBCreator {
 		double totalcapacity=totalcapacityA+totalcapacityB;
 		
 		
-		String nuclearplantgeneratoriri="http://www.theworldavatar.com/kb/sgp/jurongisland/nuclearpowerplants/";
 		
-		Individual plant = nuclearpowerplantclass.createIndividual(nuclearplantgeneratoriri + plantname + ".owl#"+plantname);
 		
-		Individual plantcoordinate = coordinatesystemclass.createIndividual(nuclearplantgeneratoriri + plantname + ".owl#CoordinateSystem_of_"+plantname);
-		Individual xcoordinate = coordinateclass.createIndividual(nuclearplantgeneratoriri + plantname + ".owl#x_coordinate_of_"+plantname);
-		Individual ycoordinate = coordinateclass.createIndividual(nuclearplantgeneratoriri + plantname + ".owl#y_coordinate_of_"+plantname);
-		Individual xcoordinatevalue = valueclass.createIndividual(nuclearplantgeneratoriri + plantname + ".owl#v_x_coordinate_of_"+plantname);
-		Individual ycoordinatevalue = valueclass.createIndividual(nuclearplantgeneratoriri + plantname + ".owl#v_y_coordinate_of_"+plantname);
+		Individual plant = nuclearpowerplantclass.createIndividual(iriprefix + plantname + ".owl#"+plantname);
 		
-		Individual capa = designcapacityclass.createIndividual(nuclearplantgeneratoriri + plantname + ".owl#capa_of_"+plantname);
-		Individual capavalue = scalarvalueclass.createIndividual(nuclearplantgeneratoriri + plantname + ".owl#v_capa_of_"+plantname);
+		Individual plantcoordinate = coordinatesystemclass.createIndividual(iriprefix + plantname + ".owl#CoordinateSystem_of_"+plantname);
+		Individual xcoordinate = coordinateclass.createIndividual(iriprefix + plantname + ".owl#x_coordinate_of_"+plantname);
+		Individual ycoordinate = coordinateclass.createIndividual(iriprefix + plantname + ".owl#y_coordinate_of_"+plantname);
+		Individual xcoordinatevalue = valueclass.createIndividual(iriprefix + plantname + ".owl#v_x_coordinate_of_"+plantname);
+		Individual ycoordinatevalue = valueclass.createIndividual(iriprefix + plantname + ".owl#v_y_coordinate_of_"+plantname);
+		
+		Individual capa = designcapacityclass.createIndividual(iriprefix + plantname + ".owl#capa_of_"+plantname);
+		Individual capavalue = scalarvalueclass.createIndividual(iriprefix + plantname + ".owl#v_capa_of_"+plantname);
 		
 		Individual powergeneration = jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NuclearGeneration");
 		
@@ -269,16 +278,16 @@ public class NuclearKBCreator {
 		
 		for(int f=0; f<numberofreactorA;f++){
 			String generatorname="NucGenerator_"+UUID.randomUUID();
-			Individual generator=nucleargeneratorclass.createIndividual(nuclearplantgeneratoriri + generatorname + ".owl#"+generatorname);
-			Individual capagen = generatedactivepowerclass.createIndividual(nuclearplantgeneratoriri + generatorname + ".owl#GeneratedActivePower_"+generatorname);
-			Individual capagenvalue = scalarvalueclass.createIndividual(nuclearplantgeneratoriri + generatorname + ".owl#V_GeneratedActivePower_"+generatorname);
+			Individual generator=nucleargeneratorclass.createIndividual(iriprefix + generatorname + ".owl#"+generatorname);
+			Individual capagen = generatedactivepowerclass.createIndividual(iriprefix + generatorname + ".owl#GeneratedActivePower_"+generatorname);
+			Individual capagenvalue = scalarvalueclass.createIndividual(iriprefix + generatorname + ".owl#V_GeneratedActivePower_"+generatorname);
 			
 			plant.addProperty(hasSubsystem, generator);
-			Individual gencoordinate = coordinatesystemclass.createIndividual(nuclearplantgeneratoriri + generatorname + ".owl#CoordinateSystem_of_"+generatorname);
-			Individual xgencoordinate = coordinateclass.createIndividual(nuclearplantgeneratoriri + generatorname + ".owl#x_coordinate_of_"+generatorname);
-			Individual ygencoordinate = coordinateclass.createIndividual(nuclearplantgeneratoriri + generatorname+ ".owl#y_coordinate_of_"+generatorname);
-			Individual xgencoordinatevalue = valueclass.createIndividual(nuclearplantgeneratoriri + generatorname + ".owl#v_x_coordinate_of_"+generatorname);
-			Individual ygencoordinatevalue = valueclass.createIndividual(nuclearplantgeneratoriri + generatorname + ".owl#v_y_coordinate_of_"+generatorname);
+			Individual gencoordinate = coordinatesystemclass.createIndividual(iriprefix + generatorname + ".owl#CoordinateSystem_of_"+generatorname);
+			Individual xgencoordinate = coordinateclass.createIndividual(iriprefix + generatorname + ".owl#x_coordinate_of_"+generatorname);
+			Individual ygencoordinate = coordinateclass.createIndividual(iriprefix + generatorname+ ".owl#y_coordinate_of_"+generatorname);
+			Individual xgencoordinatevalue = valueclass.createIndividual(iriprefix + generatorname + ".owl#v_x_coordinate_of_"+generatorname);
+			Individual ygencoordinatevalue = valueclass.createIndividual(iriprefix + generatorname + ".owl#v_y_coordinate_of_"+generatorname);
 			
 			generator.addProperty(hascoordinatesystem, gencoordinate);
 			
@@ -304,16 +313,16 @@ public class NuclearKBCreator {
 		
 		for(int f=0; f<numberofreactorB;f++){
 			String generatorname="NucGenerator_"+UUID.randomUUID();
-			Individual generator=nucleargeneratorclass.createIndividual(nuclearplantgeneratoriri + generatorname + ".owl#"+generatorname);
-			Individual capagen = generatedactivepowerclass.createIndividual(nuclearplantgeneratoriri + generatorname + ".owl#GeneratedActivePower_"+generatorname);
-			Individual capagenvalue = scalarvalueclass.createIndividual(nuclearplantgeneratoriri + generatorname + ".owl#V_GeneratedActivePower_"+generatorname);
+			Individual generator=nucleargeneratorclass.createIndividual(iriprefix + generatorname + ".owl#"+generatorname);
+			Individual capagen = generatedactivepowerclass.createIndividual(iriprefix + generatorname + ".owl#GeneratedActivePower_"+generatorname);
+			Individual capagenvalue = scalarvalueclass.createIndividual(iriprefix + generatorname + ".owl#V_GeneratedActivePower_"+generatorname);
 			
 			plant.addProperty(hasSubsystem, generator);
-			Individual gencoordinate = coordinatesystemclass.createIndividual(nuclearplantgeneratoriri + generatorname + ".owl#CoordinateSystem_of_"+generatorname);
-			Individual xgencoordinate = coordinateclass.createIndividual(nuclearplantgeneratoriri + generatorname + ".owl#x_coordinate_of_"+generatorname);
-			Individual ygencoordinate = coordinateclass.createIndividual(nuclearplantgeneratoriri + generatorname+ ".owl#y_coordinate_of_"+generatorname);
-			Individual xgencoordinatevalue = valueclass.createIndividual(nuclearplantgeneratoriri + generatorname + ".owl#v_x_coordinate_of_"+generatorname);
-			Individual ygencoordinatevalue = valueclass.createIndividual(nuclearplantgeneratoriri + generatorname + ".owl#v_y_coordinate_of_"+generatorname);
+			Individual gencoordinate = coordinatesystemclass.createIndividual(iriprefix + generatorname + ".owl#CoordinateSystem_of_"+generatorname);
+			Individual xgencoordinate = coordinateclass.createIndividual(iriprefix + generatorname + ".owl#x_coordinate_of_"+generatorname);
+			Individual ygencoordinate = coordinateclass.createIndividual(iriprefix + generatorname+ ".owl#y_coordinate_of_"+generatorname);
+			Individual xgencoordinatevalue = valueclass.createIndividual(iriprefix + generatorname + ".owl#v_x_coordinate_of_"+generatorname);
+			Individual ygencoordinatevalue = valueclass.createIndividual(iriprefix + generatorname + ".owl#v_y_coordinate_of_"+generatorname);
 			
 			generator.addProperty(hascoordinatesystem, gencoordinate);
 			

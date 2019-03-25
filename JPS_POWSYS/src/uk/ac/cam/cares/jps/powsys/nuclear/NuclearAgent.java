@@ -269,13 +269,17 @@ public class NuclearAgent extends HttpServlet {
 	String csvfileoutputgams="";
 
     
-//   recreate the nuclear powerplant on flight
-	NuclearKBCreator in= new NuclearKBCreator();
-	try {
-		in.startConversion(csvfileoutputgams);
-	} catch (URISyntaxException e) {
-		logger.error(e.getMessage());
-	}
+	//   recreate the nuclear powerplant on flight
+		NuclearKBCreator in= new NuclearKBCreator();
+		ArrayList<String> result =new ArrayList<String>(); 
+		try {
+			result=in.startConversion(csvfileoutputgams);
+			JSONObject resultjson = new JSONObject().put("plantirilist", result);
+			AgentCaller.printToResponse(resultjson.toString(), response);	
+		
+		} catch (URISyntaxException e) {
+			logger.error(e.getMessage());
+		}
 	
 	
 	}
