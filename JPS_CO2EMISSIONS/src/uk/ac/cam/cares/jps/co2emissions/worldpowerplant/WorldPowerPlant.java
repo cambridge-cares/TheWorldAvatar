@@ -230,7 +230,8 @@ public class WorldPowerPlant extends HttpServlet {
 		
 		ConnectionFactory factory = new ConnectionFactory();
 		factory.setHost("www.theworldavatar.com");
-		factory.setPort(83);
+		//factory.setPort(83);//change because it is used for bms server port
+		factory.setPort(5672);
 		
 		try {
 			Connection connection = factory.newConnection();
