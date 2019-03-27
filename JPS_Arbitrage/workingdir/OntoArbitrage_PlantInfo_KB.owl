@@ -21,482 +21,19 @@
   <owl:Ontology rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15">
     <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoarbitrage/OntoArbitragePlantInfo.owl"/>
   </owl:Ontology>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#BiodieselOutput_001">
+  <j.3:CoreProduct rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#BiodieselOutput_001">
     <chemical_process_system:refersToGeneralizedAmount>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#GeneralizedAmount_BiodieselOutput_001">
+      <j.0:GeneralizedAmount rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#GeneralizedAmount_BiodieselOutput_001">
         <system:hasSubsystem>
-          <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MaterialAmount_BiodieselOutput_001">
+          <j.0:ContinuousMaterialAmount rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MaterialAmount_BiodieselOutput_001">
             <system:hasProperty>
-              <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#massF_BiodieselOutput_001">
+              <j.0:ConvectiveMassFlowrate rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#massF_BiodieselOutput_001">
                 <system:hasValue>
-                  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_massF_BiodieselOutput_001">
+                  <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_massF_BiodieselOutput_001">
+                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
                     <system:numericalValue>24334.4343</system:numericalValue>
-                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
-                    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-                  </owl:NamedIndividual>
-                </system:hasValue>
-                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
-              </owl:NamedIndividual>
-            </system:hasProperty>
-            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
-          </owl:NamedIndividual>
-        </system:hasSubsystem>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
-      </owl:NamedIndividual>
-    </chemical_process_system:refersToGeneralizedAmount>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#CoreProduct"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_NaturalGasInput_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_NaturalGasInput_001">
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-        >1</system:numericalValue>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#RawMaterialCosts"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_FuelGas_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_FuelGas_001">
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-        >1</system:numericalValue>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#UtilityCosts"/>
-  </owl:NamedIndividual>
-  <j.4:UtilityCosts rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_ProcessWater_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_ProcessWater_001">
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-        >1</system:numericalValue>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </j.4:UtilityCosts>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Earnings_BiodieselOutput_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Earnings_BiodieselOutput_001">
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-        >1</system:numericalValue>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#ProductEarnings"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_Transport_SEA-SC_Biodiesel_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_Transport_SEA-SC_Biodiesel_001">
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
-        >40.0</system:numericalValue>
-        <system:hasUnitOfMeasure>
-          <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/ton">
-            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-          </owl:NamedIndividual>
-        </system:hasUnitOfMeasure>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#TransportPrice"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#ton/s">
-    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_NaturalGasInput_001">
-    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#RawMaterialPrice"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_Transport_SG-SC_Methanol_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_Transport_SG-SC_Methanol_001">
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-        >1</system:numericalValue>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#TransportCosts"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_Storage_NaturalGas_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_Storage_NaturalGas_001">
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-        >1</system:numericalValue>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#StorageCosts"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_Storage_Biodiesel_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_Storage_Biodiesel_001">
-        <system:hasUnitOfMeasure>
-          <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/ton/month">
-            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-          </owl:NamedIndividual>
-        </system:hasUnitOfMeasure>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
-        >0.2075</system:numericalValue>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#StoragePrice"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_Transport_USGC-NEA_NaturalGas_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_Transport_USGC-NEA_NaturalGas_001">
-        <system:hasUnitOfMeasure>
-          <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/mmBTU">
-            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-          </owl:NamedIndividual>
-        </system:hasUnitOfMeasure>
-        <system:numericalValue>6.571428571_1.142857143</system:numericalValue>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#TransportPrice"/>
-  </owl:NamedIndividual>
-  <j.4:UtilityCosts rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_CoolingWater_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_CoolingWater_001">
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-        >1</system:numericalValue>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </j.4:UtilityCosts>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_Transport_Malaysia-SG_CrudePalmOil_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_Transport_Malaysia-SG_CrudePalmOil_001">
-        <system:hasUnitOfMeasure rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/ton"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
-        >5.0</system:numericalValue>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#TransportPrice"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_Electricity_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_Electricity_001">
-        <system:numericalValue>0.0000385833</system:numericalValue>
-        <system:hasUnitOfMeasure>
-          <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#SGD/kJ">
-            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-          </owl:NamedIndividual>
-        </system:hasUnitOfMeasure>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#UtilityPrice"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_Storage_NaturalGas_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_Storage_NaturalGas_001">
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
-        >0.11104</system:numericalValue>
-        <system:hasUnitOfMeasure>
-          <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/mmBTU/month">
-            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-          </owl:NamedIndividual>
-        </system:hasUnitOfMeasure>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#StoragePrice"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Electricity_001">
-    <chemical_process_system:refersToGeneralizedAmount>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#GeneralizedAmount_Electricity_001">
-        <system:hasSubsystem>
-          <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#energyF_Electricity_001">
-            <system:hasValue>
-              <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_energyF_Electricity_001">
-                <system:numericalValue>4.45842243</system:numericalValue>
-                <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kW"/>
-                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-              </owl:NamedIndividual>
-            </system:hasValue>
-            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveEnergyFlowrate"/>
-          </owl:NamedIndividual>
-        </system:hasSubsystem>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
-      </owl:NamedIndividual>
-    </chemical_process_system:refersToGeneralizedAmount>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_Storage_CrudePalmOil_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_Storage_CrudePalmOil_001">
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
-        >0.2075</system:numericalValue>
-        <system:hasUnitOfMeasure rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/ton/month"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#StoragePrice"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#cbm/s">
-    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_FuelGas_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_FuelGas_001">
-        <system:hasUnitOfMeasure rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/mmBTU"/>
-        <system:numericalValue>9.8</system:numericalValue>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#UtilityPrice"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD_to_CNY">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_USD_to_CNY">
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double"
-        >6.712698</system:numericalValue>
-        <system:hasUnitOfMeasure>
-          <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/CNY">
-            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-          </owl:NamedIndividual>
-        </system:hasUnitOfMeasure>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#ExchangeRate"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#CoolingWater_001">
-    <chemical_process_system:refersToGeneralizedAmount>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#GeneralizedAmount_CoolingWater_001">
-        <system:hasSubsystem>
-          <j.0:ContinuousMaterialAmount rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MaterialAmount_CoolingWater_001">
-            <system:hasProperty>
-              <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#massF_CoolingWater_001">
-                <system:hasValue>
-                  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_massF_CoolingWater_001">
-                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
-                    <system:numericalValue>29191.6114</system:numericalValue>
-                    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-                  </owl:NamedIndividual>
-                </system:hasValue>
-                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
-              </owl:NamedIndividual>
-            </system:hasProperty>
-            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-          </j.0:ContinuousMaterialAmount>
-        </system:hasSubsystem>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
-      </owl:NamedIndividual>
-    </chemical_process_system:refersToGeneralizedAmount>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
-  </owl:NamedIndividual>
-  <j.4:UtilityCosts rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_MediumPressureSteam_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_MediumPressureSteam_001">
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-        >1</system:numericalValue>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </j.4:UtilityCosts>
-  <j.5:UtilityPrice rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_HighPressureSteam_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_HighPressureSteam_001">
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
-        >0.00349</system:numericalValue>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_kg"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </j.5:UtilityPrice>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#SGD">
-    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_Transport_SG-SC_Methanol_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_Transport_SG-SC_Methanol_001">
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
-        >22.9</system:numericalValue>
-        <system:hasUnitOfMeasure rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/ton"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#TransportPrice"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MediumPressureSteam_001">
-    <chemical_process_system:refersToGeneralizedAmount>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#GeneralizedAmount_MediumPressureSteam_001">
-        <system:hasSubsystem>
-          <j.0:ContinuousMaterialAmount rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MaterialAmount_MediumPressureSteam_001">
-            <system:hasProperty>
-              <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#massF_MediumPressureSteam_001">
-                <system:hasValue>
-                  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_massF_MediumPressureSteam_001">
-                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
-                    <system:numericalValue>10034.3268</system:numericalValue>
-                    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-                  </owl:NamedIndividual>
-                </system:hasValue>
-                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
-              </owl:NamedIndividual>
-            </system:hasProperty>
-            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-          </j.0:ContinuousMaterialAmount>
-        </system:hasSubsystem>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
-      </owl:NamedIndividual>
-    </chemical_process_system:refersToGeneralizedAmount>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#kJ/hr">
-    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-  </owl:NamedIndividual>
-  <owl:AnnotationProperty rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#refersToGeneralizedAmount"/>
-  <owl:AnnotationProperty rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasValue"/>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD_to_SGD">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_USD_to_SGD">
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double"
-        >1.35179</system:numericalValue>
-        <system:hasUnitOfMeasure>
-          <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/SGD">
-            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-          </owl:NamedIndividual>
-        </system:hasUnitOfMeasure>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#ExchangeRate"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_Transport_Malaysia-SG_CrudePalmOil_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_Transport_Malaysia-SG_CrudePalmOil_001">
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-        >1</system:numericalValue>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#TransportCosts"/>
-  </owl:NamedIndividual>
-  <j.5:UtilityPrice rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_LowPressureSteam_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_LowPressureSteam_001">
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_kg"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
-        >0.002</system:numericalValue>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </j.5:UtilityPrice>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_CrudePalmOilInput_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_CrudePalmOilInput_001">
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-        >1</system:numericalValue>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#RawMaterialCosts"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#LowPressureSteam_001">
-    <chemical_process_system:refersToGeneralizedAmount>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#GeneralizedAmount_LowPressureSteam_001">
-        <system:hasSubsystem>
-          <j.0:ContinuousMaterialAmount rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MaterialAmount_LowPressureSteam_001">
-            <system:hasProperty>
-              <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#massF_LowPressureSteam_001">
-                <system:hasValue>
-                  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_massF_LowPressureSteam_001">
-                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
-                    <system:numericalValue>0</system:numericalValue>
-                    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-                  </owl:NamedIndividual>
-                </system:hasValue>
-                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
-              </owl:NamedIndividual>
-            </system:hasProperty>
-            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-          </j.0:ContinuousMaterialAmount>
-        </system:hasSubsystem>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
-      </owl:NamedIndividual>
-    </chemical_process_system:refersToGeneralizedAmount>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
-  </owl:NamedIndividual>
-  <owl:AnnotationProperty rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasSubsystem"/>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_HighPressureSteam_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_HighPressureSteam_001">
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-        >1</system:numericalValue>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#UtilityCosts"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#FuelGas_001">
-    <chemical_process_system:refersToGeneralizedAmount>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#GeneralizedAmount_FuelGas_001">
-        <system:hasSubsystem>
-          <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MaterialAmount_FuelGas_001">
-            <system:hasProperty>
-              <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#moleF_FuelGas_001">
-                <system:hasValue>
-                  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_moleF_FuelGas_001">
-                    <system:numericalValue>22.2967893</system:numericalValue>
-                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
-                    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-                  </owl:NamedIndividual>
-                </system:hasValue>
-                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
-              </owl:NamedIndividual>
-            </system:hasProperty>
-            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
-          </owl:NamedIndividual>
-        </system:hasSubsystem>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
-      </owl:NamedIndividual>
-    </chemical_process_system:refersToGeneralizedAmount>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
-  </owl:NamedIndividual>
-  <j.4:UtilityCosts rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_LowPressureSteam_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_LowPressureSteam_001">
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-        >1</system:numericalValue>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </j.4:UtilityCosts>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MethanolOutput_001">
-    <chemical_process_system:refersToGeneralizedAmount>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#GeneralizedAmount_MethanolOutput_001">
-        <system:hasSubsystem>
-          <j.0:ContinuousMaterialAmount rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MaterialAmount_MethanolOutput_001">
-            <system:hasProperty>
-              <j.0:ConvectiveMassFlowrate rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#massF_MethanolOutput_001">
-                <system:hasValue>
-                  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_massF_MethanolOutput_001">
-                    <system:numericalValue>2</system:numericalValue>
-                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/s"/>
-                    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-                  </owl:NamedIndividual>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                  </j.1:ScalarValue>
                 </system:hasValue>
                 <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
               </j.0:ConvectiveMassFlowrate>
@@ -504,236 +41,699 @@
             <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
           </j.0:ContinuousMaterialAmount>
         </system:hasSubsystem>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
-      </owl:NamedIndividual>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.0:GeneralizedAmount>
     </chemical_process_system:refersToGeneralizedAmount>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#CoreProduct"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_CrudePalmOilInput_001">
-    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#RawMaterialPrice"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_ProcessWater_001">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.3:CoreProduct>
+  <j.4:RawMaterialCosts rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_NaturalGasInput_001">
     <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_ProcessWater_001">
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
-        >0.00033</system:numericalValue>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_kg"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#UtilityPrice"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_Storage_Methanol_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_Storage_Methanol_001">
-        <system:hasUnitOfMeasure rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/ton/month"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
-        >0.2075</system:numericalValue>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#StoragePrice"/>
-  </owl:NamedIndividual>
-  <j.5:StorageCosts rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_Storage_CrudePalmOil_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_Storage_CrudePalmOil_001">
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_NaturalGasInput_001">
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
         >1</system:numericalValue>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
     </system:hasValue>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </j.5:StorageCosts>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_Electricity_001">
+  </j.4:RawMaterialCosts>
+  <j.4:UtilityCosts rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_FuelGas_001">
     <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_Electricity_001">
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_FuelGas_001">
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
         >1</system:numericalValue>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.4:UtilityCosts>
+  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_ProcessWater_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_ProcessWater_001">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
     </system:hasValue>
     <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#UtilityCosts"/>
   </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_Transport_SEA-SC_Biodiesel_001">
+  <j.4:ProductEarnings rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Earnings_BiodieselOutput_001">
     <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_Transport_SEA-SC_Biodiesel_001">
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Earnings_BiodieselOutput_001">
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
         >1</system:numericalValue>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
     </system:hasValue>
-    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#TransportCosts"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#NaturalGasInput_001">
-    <chemical_process_system:refersToGeneralizedAmount>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#GeneralizedAmount_NaturalGasInput_001">
-        <system:hasSubsystem>
-          <j.0:ContinuousMaterialAmount rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MaterialAmount_NaturalGasInput_001">
-            <system:hasProperty>
-              <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#moleF_NaturalGasInput_001">
-                <system:hasValue>
-                  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_moleF_NaturalGasInput_001">
-                    <system:numericalValue>0.5527777778</system:numericalValue>
-                    <system:hasUnitOfMeasure>
-                      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#kmol/s">
-                        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-                      </owl:NamedIndividual>
-                    </system:hasUnitOfMeasure>
-                    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-                  </owl:NamedIndividual>
-                </system:hasValue>
-                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
-              </owl:NamedIndividual>
-            </system:hasProperty>
-            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-          </j.0:ContinuousMaterialAmount>
-        </system:hasSubsystem>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
-      </owl:NamedIndividual>
-    </chemical_process_system:refersToGeneralizedAmount>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#RawMaterial"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_Transport_USGC-NEA_NaturalGas_001">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.4:ProductEarnings>
+  <j.6:TransportPrice rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_Transport_SEA-SC_Biodiesel_001">
     <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_Transport_USGC-NEA_NaturalGas_001">
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_Transport_SEA-SC_Biodiesel_001">
+        <system:hasUnitOfMeasure>
+          <j.2:SI_DerivedUnit rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/ton">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+          </j.2:SI_DerivedUnit>
+        </system:hasUnitOfMeasure>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+        >40.0</system:numericalValue>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.6:TransportPrice>
+  <j.2:SI_DerivedUnit rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#ton/s">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.2:SI_DerivedUnit>
+  <j.6:RawMaterialPrice rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_NaturalGasInput_001">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.6:RawMaterialPrice>
+  <j.6:TransportCosts rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_Transport_SG-SC_Methanol_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_Transport_SG-SC_Methanol_001">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.6:TransportCosts>
+  <j.6:StorageCosts rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_Storage_NaturalGas_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_Storage_NaturalGas_001">
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
         >1</system:numericalValue>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
     </system:hasValue>
-    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#TransportCosts"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_CoolingWater_001">
-    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_kg"/>
-    <system:numericalValue>0.00174</system:numericalValue>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-  </owl:NamedIndividual>
-  <j.3:Utility rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#HighPressureSteam_001">
-    <chemical_process_system:refersToGeneralizedAmount>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#GeneralizedAmount_HighPressureSteam_001">
-        <system:hasSubsystem>
-          <j.0:ContinuousMaterialAmount rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MaterialAmount_HighPressureSteam_001">
-            <system:hasProperty>
-              <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#massF_HighPressureSteam_001">
-                <system:hasValue>
-                  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_massF_HighPressureSteam_001">
-                    <system:numericalValue>0</system:numericalValue>
-                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
-                    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-                  </owl:NamedIndividual>
-                </system:hasValue>
-                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
-              </owl:NamedIndividual>
-            </system:hasProperty>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.6:StorageCosts>
+  <j.6:StoragePrice rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_Storage_Biodiesel_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_Storage_Biodiesel_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+        >0.2075</system:numericalValue>
+        <system:hasUnitOfMeasure>
+          <j.2:SI_DerivedUnit rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/ton/month">
             <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-          </j.0:ContinuousMaterialAmount>
+          </j.2:SI_DerivedUnit>
+        </system:hasUnitOfMeasure>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.6:StoragePrice>
+  <j.6:TransportPrice rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_Transport_USGC-NEA_NaturalGas_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_Transport_USGC-NEA_NaturalGas_001">
+        <system:numericalValue>6.571428571_1.142857143</system:numericalValue>
+        <system:hasUnitOfMeasure>
+          <j.2:SI_DerivedUnit rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/mmBTU">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+          </j.2:SI_DerivedUnit>
+        </system:hasUnitOfMeasure>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.6:TransportPrice>
+  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_CoolingWater_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_CoolingWater_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#UtilityCosts"/>
+  </owl:NamedIndividual>
+  <j.6:TransportPrice rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_Transport_Malaysia-SG_CrudePalmOil_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_Transport_Malaysia-SG_CrudePalmOil_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+        >5.0</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/ton"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.6:TransportPrice>
+  <j.6:UtilityPrice rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_Electricity_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_Electricity_001">
+        <system:hasUnitOfMeasure>
+          <j.2:SI_DerivedUnit rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#SGD/kJ">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+          </j.2:SI_DerivedUnit>
+        </system:hasUnitOfMeasure>
+        <system:numericalValue>0.0000385833</system:numericalValue>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.6:UtilityPrice>
+  <j.6:StoragePrice rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_Storage_NaturalGas_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_Storage_NaturalGas_001">
+        <system:hasUnitOfMeasure>
+          <j.2:SI_DerivedUnit rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/mmBTU/month">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+          </j.2:SI_DerivedUnit>
+        </system:hasUnitOfMeasure>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+        >0.11104</system:numericalValue>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.6:StoragePrice>
+  <j.3:Utility rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Electricity_001">
+    <chemical_process_system:refersToGeneralizedAmount>
+      <j.0:GeneralizedAmount rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#GeneralizedAmount_Electricity_001">
+        <system:hasSubsystem>
+          <j.0:ConvectiveEnergyFlowrate rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#energyF_Electricity_001">
+            <system:hasValue>
+              <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_energyF_Electricity_001">
+                <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kW"/>
+                <system:numericalValue>4.45842243</system:numericalValue>
+                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+              </j.1:ScalarValue>
+            </system:hasValue>
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+          </j.0:ConvectiveEnergyFlowrate>
         </system:hasSubsystem>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
-      </owl:NamedIndividual>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.0:GeneralizedAmount>
     </chemical_process_system:refersToGeneralizedAmount>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   </j.3:Utility>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#ProcessWater_001">
+  <j.6:StoragePrice rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_Storage_CrudePalmOil_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_Storage_CrudePalmOil_001">
+        <system:hasUnitOfMeasure rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/ton/month"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+        >0.2075</system:numericalValue>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.6:StoragePrice>
+  <j.2:SI_DerivedUnit rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#cbm/s">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.2:SI_DerivedUnit>
+  <j.6:UtilityPrice rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_FuelGas_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_FuelGas_001">
+        <system:numericalValue>9.8</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/mmBTU"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.6:UtilityPrice>
+  <j.6:ExchangeRate rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD_to_CNY">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_USD_to_CNY">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double"
+        >6.7059</system:numericalValue>
+        <system:hasUnitOfMeasure>
+          <j.2:SI_DerivedUnit rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/CNY">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+          </j.2:SI_DerivedUnit>
+        </system:hasUnitOfMeasure>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.6:ExchangeRate>
+  <j.3:Utility rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#CoolingWater_001">
     <chemical_process_system:refersToGeneralizedAmount>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#GeneralizedAmount_ProcessWater_001">
+      <j.0:GeneralizedAmount rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#GeneralizedAmount_CoolingWater_001">
         <system:hasSubsystem>
-          <j.0:ContinuousMaterialAmount rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MaterialAmount_ProcessWater_001">
+          <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MaterialAmount_CoolingWater_001">
             <system:hasProperty>
-              <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#massF_ProcessWater_001">
+              <j.0:ConvectiveMassFlowrate rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#massF_CoolingWater_001">
                 <system:hasValue>
-                  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_massF_ProcessWater_001">
+                  <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_massF_CoolingWater_001">
+                    <system:numericalValue>29191.6114</system:numericalValue>
                     <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
-                    <system:numericalValue>3062.5976</system:numericalValue>
-                    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-                  </owl:NamedIndividual>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                  </j.1:ScalarValue>
                 </system:hasValue>
-                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
-              </owl:NamedIndividual>
+                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+              </j.0:ConvectiveMassFlowrate>
+            </system:hasProperty>
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+          </owl:NamedIndividual>
+        </system:hasSubsystem>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.0:GeneralizedAmount>
+    </chemical_process_system:refersToGeneralizedAmount>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.3:Utility>
+  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_MediumPressureSteam_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_MediumPressureSteam_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#UtilityCosts"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_HighPressureSteam_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_HighPressureSteam_001">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_kg"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+        >0.00349</system:numericalValue>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoarbitrage/OntoArbitragePlantInfo.owl#UtilityPrice"/>
+  </owl:NamedIndividual>
+  <j.2:SI_DerivedUnit rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#SGD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.2:SI_DerivedUnit>
+  <j.6:TransportPrice rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_Transport_SG-SC_Methanol_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_Transport_SG-SC_Methanol_001">
+        <system:hasUnitOfMeasure rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/ton"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+        >22.9</system:numericalValue>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.6:TransportPrice>
+  <j.3:Utility rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MediumPressureSteam_001">
+    <chemical_process_system:refersToGeneralizedAmount>
+      <j.0:GeneralizedAmount rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#GeneralizedAmount_MediumPressureSteam_001">
+        <system:hasSubsystem>
+          <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MaterialAmount_MediumPressureSteam_001">
+            <system:hasProperty>
+              <j.0:ConvectiveMassFlowrate rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#massF_MediumPressureSteam_001">
+                <system:hasValue>
+                  <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_massF_MediumPressureSteam_001">
+                    <system:numericalValue>10034.3268</system:numericalValue>
+                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                  </j.1:ScalarValue>
+                </system:hasValue>
+                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+              </j.0:ConvectiveMassFlowrate>
+            </system:hasProperty>
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+          </owl:NamedIndividual>
+        </system:hasSubsystem>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.0:GeneralizedAmount>
+    </chemical_process_system:refersToGeneralizedAmount>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.3:Utility>
+  <j.2:SI_DerivedUnit rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#kJ/hr">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.2:SI_DerivedUnit>
+  <owl:AnnotationProperty rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#refersToGeneralizedAmount"/>
+  <owl:AnnotationProperty rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasValue"/>
+  <j.6:ExchangeRate rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD_to_SGD">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_USD_to_SGD">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double"
+        >1.349398</system:numericalValue>
+        <system:hasUnitOfMeasure>
+          <j.2:SI_DerivedUnit rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/SGD">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+          </j.2:SI_DerivedUnit>
+        </system:hasUnitOfMeasure>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.6:ExchangeRate>
+  <j.6:TransportCosts rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_Transport_Malaysia-SG_CrudePalmOil_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_Transport_Malaysia-SG_CrudePalmOil_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.6:TransportCosts>
+  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_LowPressureSteam_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_LowPressureSteam_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+        >0.002</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_kg"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoarbitrage/OntoArbitragePlantInfo.owl#UtilityPrice"/>
+  </owl:NamedIndividual>
+  <j.4:RawMaterialCosts rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_CrudePalmOilInput_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_CrudePalmOilInput_001">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.4:RawMaterialCosts>
+  <j.3:Utility rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#LowPressureSteam_001">
+    <chemical_process_system:refersToGeneralizedAmount>
+      <j.0:GeneralizedAmount rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#GeneralizedAmount_LowPressureSteam_001">
+        <system:hasSubsystem>
+          <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MaterialAmount_LowPressureSteam_001">
+            <system:hasProperty>
+              <j.0:ConvectiveMassFlowrate rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#massF_LowPressureSteam_001">
+                <system:hasValue>
+                  <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_massF_LowPressureSteam_001">
+                    <system:numericalValue>0</system:numericalValue>
+                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                  </j.1:ScalarValue>
+                </system:hasValue>
+                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+              </j.0:ConvectiveMassFlowrate>
+            </system:hasProperty>
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+          </owl:NamedIndividual>
+        </system:hasSubsystem>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.0:GeneralizedAmount>
+    </chemical_process_system:refersToGeneralizedAmount>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.3:Utility>
+  <owl:AnnotationProperty rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasSubsystem"/>
+  <j.4:UtilityCosts rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_HighPressureSteam_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_HighPressureSteam_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.4:UtilityCosts>
+  <j.3:Utility rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#FuelGas_001">
+    <chemical_process_system:refersToGeneralizedAmount>
+      <j.0:GeneralizedAmount rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#GeneralizedAmount_FuelGas_001">
+        <system:hasSubsystem>
+          <j.0:ContinuousMaterialAmount rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MaterialAmount_FuelGas_001">
+            <system:hasProperty>
+              <j.0:ConvectiveMolarFlowRate rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#moleF_FuelGas_001">
+                <system:hasValue>
+                  <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_moleF_FuelGas_001">
+                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
+                    <system:numericalValue>22.2967893</system:numericalValue>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                  </j.1:ScalarValue>
+                </system:hasValue>
+                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+              </j.0:ConvectiveMolarFlowRate>
             </system:hasProperty>
             <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
           </j.0:ContinuousMaterialAmount>
         </system:hasSubsystem>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
-      </owl:NamedIndividual>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.0:GeneralizedAmount>
+    </chemical_process_system:refersToGeneralizedAmount>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.3:Utility>
+  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_LowPressureSteam_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_LowPressureSteam_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#UtilityCosts"/>
+  </owl:NamedIndividual>
+  <j.3:CoreProduct rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MethanolOutput_001">
+    <chemical_process_system:refersToGeneralizedAmount>
+      <j.0:GeneralizedAmount rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#GeneralizedAmount_MethanolOutput_001">
+        <system:hasSubsystem>
+          <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MaterialAmount_MethanolOutput_001">
+            <system:hasProperty>
+              <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#massF_MethanolOutput_001">
+                <system:hasValue>
+                  <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_massF_MethanolOutput_001">
+                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/s"/>
+                    <system:numericalValue>2</system:numericalValue>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                  </j.1:ScalarValue>
+                </system:hasValue>
+                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+              </owl:NamedIndividual>
+            </system:hasProperty>
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+          </owl:NamedIndividual>
+        </system:hasSubsystem>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.0:GeneralizedAmount>
+    </chemical_process_system:refersToGeneralizedAmount>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.3:CoreProduct>
+  <j.6:RawMaterialPrice rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_CrudePalmOilInput_001">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.6:RawMaterialPrice>
+  <j.6:UtilityPrice rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_ProcessWater_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_ProcessWater_001">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_kg"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+        >0.00033</system:numericalValue>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.6:UtilityPrice>
+  <j.6:StoragePrice rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_Storage_Methanol_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_Storage_Methanol_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+        >0.2075</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/ton/month"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.6:StoragePrice>
+  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_Storage_CrudePalmOil_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_Storage_CrudePalmOil_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoarbitrage/OntoArbitragePlantInfo.owl#StorageCosts"/>
+  </owl:NamedIndividual>
+  <j.4:UtilityCosts rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_Electricity_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_Electricity_001">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.4:UtilityCosts>
+  <j.6:TransportCosts rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_Transport_SEA-SC_Biodiesel_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_Transport_SEA-SC_Biodiesel_001">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.6:TransportCosts>
+  <j.3:RawMaterial rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#NaturalGasInput_001">
+    <chemical_process_system:refersToGeneralizedAmount>
+      <j.0:GeneralizedAmount rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#GeneralizedAmount_NaturalGasInput_001">
+        <system:hasSubsystem>
+          <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MaterialAmount_NaturalGasInput_001">
+            <system:hasProperty>
+              <j.0:ConvectiveMassFlowrate rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#moleF_NaturalGasInput_001">
+                <system:hasValue>
+                  <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_moleF_NaturalGasInput_001">
+                    <system:hasUnitOfMeasure>
+                      <j.2:SI_DerivedUnit rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#kmol/s">
+                        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                      </j.2:SI_DerivedUnit>
+                    </system:hasUnitOfMeasure>
+                    <system:numericalValue>0.5527777778</system:numericalValue>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                  </j.1:ScalarValue>
+                </system:hasValue>
+                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+              </j.0:ConvectiveMassFlowrate>
+            </system:hasProperty>
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+          </owl:NamedIndividual>
+        </system:hasSubsystem>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.0:GeneralizedAmount>
+    </chemical_process_system:refersToGeneralizedAmount>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.3:RawMaterial>
+  <j.6:TransportCosts rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_Transport_USGC-NEA_NaturalGas_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_Transport_USGC-NEA_NaturalGas_001">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.6:TransportCosts>
+  <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_CoolingWater_001">
+    <system:numericalValue>0.00174</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_kg"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.1:ScalarValue>
+  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#HighPressureSteam_001">
+    <chemical_process_system:refersToGeneralizedAmount>
+      <j.0:GeneralizedAmount rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#GeneralizedAmount_HighPressureSteam_001">
+        <system:hasSubsystem>
+          <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MaterialAmount_HighPressureSteam_001">
+            <system:hasProperty>
+              <j.0:ConvectiveMassFlowrate rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#massF_HighPressureSteam_001">
+                <system:hasValue>
+                  <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_massF_HighPressureSteam_001">
+                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+                    <system:numericalValue>0</system:numericalValue>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                  </j.1:ScalarValue>
+                </system:hasValue>
+                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+              </j.0:ConvectiveMassFlowrate>
+            </system:hasProperty>
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+          </owl:NamedIndividual>
+        </system:hasSubsystem>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.0:GeneralizedAmount>
     </chemical_process_system:refersToGeneralizedAmount>
     <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
   </owl:NamedIndividual>
-  <j.5:UtilityPrice rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_MediumPressureSteam_001">
+  <j.3:Utility rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#ProcessWater_001">
+    <chemical_process_system:refersToGeneralizedAmount>
+      <j.0:GeneralizedAmount rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#GeneralizedAmount_ProcessWater_001">
+        <system:hasSubsystem>
+          <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MaterialAmount_ProcessWater_001">
+            <system:hasProperty>
+              <j.0:ConvectiveMassFlowrate rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#massF_ProcessWater_001">
+                <system:hasValue>
+                  <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_massF_ProcessWater_001">
+                    <system:numericalValue>3062.5976</system:numericalValue>
+                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                  </j.1:ScalarValue>
+                </system:hasValue>
+                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+              </j.0:ConvectiveMassFlowrate>
+            </system:hasProperty>
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+          </owl:NamedIndividual>
+        </system:hasSubsystem>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.0:GeneralizedAmount>
+    </chemical_process_system:refersToGeneralizedAmount>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </j.3:Utility>
+  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_MediumPressureSteam_001">
     <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_MediumPressureSteam_001">
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Price_MediumPressureSteam_001">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_kg"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
         >0.01264</system:numericalValue>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_kg"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoarbitrage/OntoArbitragePlantInfo.owl#UtilityPrice"/>
+  </owl:NamedIndividual>
+  <j.4:ProductEarnings rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Earnings_MethanolOutput_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Earnings_MethanolOutput_001">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
     </system:hasValue>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </j.5:UtilityPrice>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Earnings_MethanolOutput_001">
+  </j.4:ProductEarnings>
+  <j.6:StorageCosts rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_Storage_Biodiesel_001">
     <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Earnings_MethanolOutput_001">
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_Storage_Biodiesel_001">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
         >1</system:numericalValue>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_performance/economic_performance.owl#ProductEarnings"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_Storage_Biodiesel_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_Storage_Biodiesel_001">
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-        >1</system:numericalValue>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-14#StorageCosts"/>
-  </owl:NamedIndividual>
-  <j.5:StorageCosts rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_Storage_Methanol_001">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_Storage_Methanol_001">
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-        >1</system:numericalValue>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-      </owl:NamedIndividual>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
     </system:hasValue>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </j.5:StorageCosts>
+  </j.6:StorageCosts>
+  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Costs_Storage_Methanol_001">
+    <system:hasValue>
+      <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_Costs_Storage_Methanol_001">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</system:numericalValue>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.1:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoarbitrage/OntoArbitragePlantInfo.owl#StorageCosts"/>
+  </owl:NamedIndividual>
   <owl:AnnotationProperty rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasProperty"/>
-  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#CrudePalmOilInput_001">
+  <j.3:RawMaterial rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#CrudePalmOilInput_001">
     <chemical_process_system:refersToGeneralizedAmount>
-      <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#GeneralizedAmount_CrudePalmOilInput_001">
+      <j.0:GeneralizedAmount rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#GeneralizedAmount_CrudePalmOilInput_001">
         <system:hasSubsystem>
-          <j.0:ContinuousMaterialAmount rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MaterialAmount_CrudePalmOilInput_001">
+          <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#MaterialAmount_CrudePalmOilInput_001">
             <system:hasProperty>
-              <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#massF_CrudePalmOilInput_001">
+              <j.0:ConvectiveMassFlowrate rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#massF_CrudePalmOilInput_001">
                 <system:hasValue>
-                  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_massF_CrudePalmOilInput_001">
-                    <system:numericalValue>24220.0656</system:numericalValue>
+                  <j.1:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_massF_CrudePalmOilInput_001">
                     <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/s"/>
-                    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
-                  </owl:NamedIndividual>
+                    <system:numericalValue>24220.0656</system:numericalValue>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                  </j.1:ScalarValue>
                 </system:hasValue>
-                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
-              </owl:NamedIndividual>
+                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+              </j.0:ConvectiveMassFlowrate>
             </system:hasProperty>
-            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-          </j.0:ContinuousMaterialAmount>
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+          </owl:NamedIndividual>
         </system:hasSubsystem>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
-      </owl:NamedIndividual>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </j.0:GeneralizedAmount>
     </chemical_process_system:refersToGeneralizedAmount>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#RawMaterial"/>
-  </owl:NamedIndividual>
-  <j.5:UtilityPrice rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_CoolingWater_001">
-    <system:hasValue rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_CoolingWater_001"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </j.5:UtilityPrice>
+  </j.3:RawMaterial>
+  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_CoolingWater_001">
+    <system:hasValue rdf:resource="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#Price_CoolingWater_001"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoarbitrage/OntoArbitragePlantInfo.owl#UtilityPrice"/>
+  </owl:NamedIndividual>
 </rdf:RDF>

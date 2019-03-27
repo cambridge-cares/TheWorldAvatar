@@ -238,16 +238,7 @@ import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgent;
 					+ "?angmin  j2:hasValue ?vangmin ."
 					+ "?vangmin   j2:numericalValue ?angleminvalue ." //anglemin
 										
-					+ "}";
-			
-			
-			
-			
-			
-			
-			
-			
-			
+					+ "}";			
 		}
 
 

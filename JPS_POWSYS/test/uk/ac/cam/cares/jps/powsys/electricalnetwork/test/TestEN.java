@@ -1,5 +1,14 @@
 package uk.ac.cam.cares.jps.powsys.electricalnetwork.test;
 
-public class TestEN {
+import junit.framework.TestCase;
+
+public class TestEN extends TestCase {
+	
+	public void testloadinfogathering () {
+		
+		
+		
+		
+	}
 
 }

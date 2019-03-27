@@ -9,23 +9,23 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgent;
 
-public class TestNuclear extends TestCase{
+public class TestNuclear extends TestCase {
 
 	
 	public void testPrepareCSVLoad() throws IOException {
 		String irinetwork="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 		NuclearAgent b=new NuclearAgent();
+		String outputdir="C:/JPS_DATA/workingdir/JPS_POWSYS/inputloadpoints.csv";
+		b.prepareCSVLoad(irinetwork,outputdir);
 		
-		String diroutput= b.prepareCSVLoad(irinetwork);
-		assertEquals("C:/JPS_DATA/workingdir/JPS_POWSYS/inputloadpoints.csv", diroutput);
 	}
 	
 	public void testPrepareCSVLots() throws IOException {
 		String lotiri="http://www.theworldavatar.com/kb/sgp/jurongisland/JurongIslandLandlots.owl";
 		NuclearAgent b=new NuclearAgent();
+		String outputdir2="C:/JPS_DATA/workingdir/JPS_POWSYS/inputlandlots.csv";
+		b.prepareCSVLandlot(lotiri,outputdir2);
 		
-		String diroutput= b.prepareCSVLandlot(lotiri);
-		assertEquals("C:/JPS_DATA/workingdir/JPS_POWSYS/inputlandlots.csv", diroutput);
 		
 	}
 	
@@ -49,8 +49,8 @@ public class TestNuclear extends TestCase{
 		System.out.println ("jsonoverall= "+jo.toString());
 		String resultAsString = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS//NuclearAgent", jo.toString());
 	
+		System.out.println("result overall= "+resultAsString);
 		
-		JSONObject result = new JSONObject(resultAsString);
 
 			//result should be the list of iri for the nuclear power plant in json
 	}

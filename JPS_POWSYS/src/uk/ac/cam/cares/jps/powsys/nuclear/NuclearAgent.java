@@ -59,13 +59,10 @@ public class NuclearAgent extends HttpServlet {
 	}
 	
 	public static void copyFile(String from, String to) throws IOException{ 
-		File source = new File(from);//sample="H:\\work-temp\\file"
-		File dest = new File(to);//sample="H:\\work-temp\\file2"
-		try {
-		    FileUtils.copyDirectory(source, dest);
-		} catch (IOException e) {
-		    e.printStackTrace();
-		}
+	    File original=new File(from);
+		File copied = new File(
+	    	      to);
+	    	    FileUtils.copyFile(original, copied);
 		}
 
 
@@ -246,11 +243,12 @@ public class NuclearAgent extends HttpServlet {
 			
 		}
 		
-		String inputlotdir=prepareCSVLandlot(lotiri); //used to create csv
+		String outputdir="C:/JPS_DATA/workingdir/JPS_POWSYS/inputlandlots.csv";
+		prepareCSVLandlot(lotiri,outputdir); //used to create csv
     
 //-----------------------------------------1st input file finished-------------------------------------------------------------------	
-    
-        String inputloaddir=prepareCSVLoad(iriofnetwork); //used to create csv
+		String outputdir2="C:/JPS_DATA/workingdir/JPS_POWSYS/inputloadpoints.csv";
+        prepareCSVLoad(iriofnetwork,outputdir2); //used to create csv
 		
     //-----------------------------------------2nd input file finished-------------------------------------------------------------------		
 	
@@ -262,17 +260,19 @@ public class NuclearAgent extends HttpServlet {
     copyFile("D:\\JPS\\JParkSimulator-git\\JPS_POWSYS\\testres\\parameters_req.csv","C:\\JPS_DATA\\workingdir\\JPS_POWSYS\\parameters_req.csv");
     //-----------------------------------------4th input file finished-------------------------------------------------------------------
     
-    runGAMS();
+    //temporary unused
+    //runGAMS();
 	
 	
 	
-	String csvfileoutputgams="";
+	String csvfileoutputgams="C:\\JPS_DATA\\workingdir\\JPS_POWSYS\\results.csv";
 
     
 	//   recreate the nuclear powerplant on flight
 		NuclearKBCreator in= new NuclearKBCreator();
 		ArrayList<String> result =new ArrayList<String>(); 
 		try {
+			System.out.println("starting conversion to owl file");
 			result=in.startConversion(csvfileoutputgams);
 			JSONObject resultjson = new JSONObject().put("plantirilist", result);
 			AgentCaller.printToResponse(resultjson.toString(), response);	
@@ -284,11 +284,11 @@ public class NuclearAgent extends HttpServlet {
 	
 	}
 
-	public String prepareCSVLandlot(String lotiri) throws IOException {
+	public void prepareCSVLandlot(String lotiri,String outputdir) throws IOException {
 		jenaOwlModel = ModelFactory.createOntologyModel();	
 		jenaOwlModel.read(lotiri, null);
 		
-		String outputdir="C:/JPS_DATA/workingdir/JPS_POWSYS/inputlandlots.csv";
+		
 
 		String lotsInfo= "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> " 
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -355,13 +355,13 @@ public class NuclearAgent extends HttpServlet {
 	
     //make csv file for the landlots
     createNewCSV(csvFile,totallotresultordered,outputdir,"s");
+    System.out.println("landlots input ok");
     
-    return outputdir;
 	}
 
-	public String prepareCSVLoad(String iriofnetwork) throws IOException {
+	public String prepareCSVLoad(String iriofnetwork,String outputdir) throws IOException {
 		
-		String outputdir="C:/JPS_DATA/workingdir/JPS_POWSYS/inputloadpoints.csv";
+		
 		
 		String electricalnodeInfo= "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> " 
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -447,7 +447,7 @@ public class NuclearAgent extends HttpServlet {
 		ArrayList<String[]> totalnodebusresultordered= new ArrayList<String[]>();
 		int init=1;
 		while(totalnodebusresultordered.size()<number) {
-			System.out.println("size0= "+totalnodebusresultordered.size());
+			//System.out.println("size0= "+totalnodebusresultordered.size());
 			for(int r=0;r<number;r++) {
 				if(totalnodebusresult.get(r)[0].split("p")[1].contentEquals(String.valueOf(init))) {
 					totalnodebusresultordered.add(totalnodebusresult.get(r));					
@@ -457,7 +457,7 @@ public class NuclearAgent extends HttpServlet {
 		}
 
 		createNewCSV(csvFile2,totalnodebusresultordered,outputdir,"p");
-		
+		System.out.println("bus input ok");
 		return outputdir;
 	}
 
