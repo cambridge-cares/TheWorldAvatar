@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.powsys.electricalnetwork;
 
+//TODO : deleted dependency on csv, remove unnecessary part of mapping
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;

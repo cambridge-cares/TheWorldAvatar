@@ -27,6 +27,7 @@ public class LandlotsKB {
 	private ObjectProperty hasValue = null;
 	private ObjectProperty hascoordinatesystem = null;
 	private ObjectProperty hasx = null;
+	private ObjectProperty hasdistance = null;
 	private ObjectProperty hasy = null;
 	private ObjectProperty hasunit = null;
 	private ObjectProperty hasarea = null;
@@ -34,7 +35,7 @@ public class LandlotsKB {
 	private OntClass particleclass = null;
 	private OntClass flowclass = null;
 	private OntClass scalarvalueclass = null;
-	private OntClass moleculargroupclass = null;
+	private OntClass scalarquantityclass = null;
 	private OntClass coordinatevalueclass = null;
 	private OntClass coordinateclass = null;
 	private OntClass coordinatesystemclass = null;
@@ -79,12 +80,14 @@ public class LandlotsKB {
 		coordinatesystemclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#ProjectedCoordinateSystem");
 		coordinateclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#AngularCoordinate"); 
 		coordinatevalueclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue");
-		LandLotsclass = jenaOwlModel.getOntClass("http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#Landlot"); //need modif
+		LandLotsclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#Landlot"); //need modif
 		areaclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#SurfaceArea"); //need modif
 		degree=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree");
 		m=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m");
 		m2=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#m.m");
 		 kg_per_m3=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_cubic_m");
+		 scalarquantityclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity");
+		 hasdistance = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#hasDistanceToClosestWaterSources");
 	}
 	
 	public void startConversion() throws Exception {
@@ -122,16 +125,16 @@ public class LandlotsKB {
                 // use comma as separator
                 String[] iri = line.split(cvsSplitBy);
                 System.out.println("content1= "+iri[0]);
-                Individual lotsid = LandLotsclass.createIndividual("http://www.theworldavatar.com/kb/sgp/jurongisland/"+filename+".owl#Lots-ID"+iri[0]);
+                Individual lotsid = LandLotsclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#Lots-ID"+iri[0]);
                 
-                Individual lotcoorsys=coordinatesystemclass.createIndividual("http://www.theworldavatar.com/kb/sgp/jurongisland/"+filename+".owl#CoordinateSystemofLots-ID"+iri[0]);
+                Individual lotcoorsys=coordinatesystemclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#CoordinateSystemofLots-ID"+iri[0]);
             	lotsid.addProperty(hascoordinatesystem, lotcoorsys);
-            	Individual lotx = coordinateclass.createIndividual("http://www.theworldavatar.com/kb/sgp/jurongisland/"+filename+".owl#X_Lots-ID"+iri[0]);
-            	Individual loty=coordinateclass.createIndividual("http://www.theworldavatar.com/kb/sgp/jurongisland/"+filename+".owl#Y_Lots-ID"+iri[0]);
+            	Individual lotx = coordinateclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#X_Lots-ID"+iri[0]);
+            	Individual loty=coordinateclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#Y_Lots-ID"+iri[0]);
             	lotcoorsys.addProperty(hasx,lotx);
             	lotcoorsys.addProperty(hasy,loty);
-            	Individual valuelotx = coordinatevalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/jurongisland/"+filename+".owl#V_X_Lots-ID"+iri[0]);
-            	Individual valueloty=coordinatevalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/jurongisland/"+filename+".owl#V_Y_Lots-ID"+iri[0]);
+            	Individual valuelotx = coordinatevalueclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#V_X_Lots-ID"+iri[0]);
+            	Individual valueloty=coordinatevalueclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#V_Y_Lots-ID"+iri[0]);
             	lotx.addProperty(hasValue,valuelotx);
             	loty.addProperty(hasValue,valueloty);
             	valuelotx.addProperty(hasunit,degree);
@@ -139,17 +142,23 @@ public class LandlotsKB {
             	valuelotx.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(iri[2])));
             	valueloty.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(iri[1])));
             	
-            	Individual lotsurface=surfaceclass.createIndividual("http://www.theworldavatar.com/kb/sgp/jurongisland/"+filename+".owl#SurfaceofLots-ID"+iri[0]);
+            	Individual lotsurface=surfaceclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#SurfaceofLots-ID"+iri[0]);
             	lotsid.addProperty(hassurfacegeometry, lotsurface);
-            	Individual lotarea=areaclass.createIndividual("http://www.theworldavatar.com/kb/sgp/jurongisland/"+filename+".owl#SurfaceAreaofLots-ID"+iri[0]);
+            	Individual lotarea=areaclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#SurfaceAreaofLots-ID"+iri[0]);
             	lotsurface.addProperty(hasarea, lotarea);
-            	Individual valuelotarea = scalarvalueclass.createIndividual("http://www.theworldavatar.com/kb/sgp/jurongisland/"+filename+".owl#V_SurfaceAreaofLots-ID"+iri[0]);
+            	Individual valuelotarea = scalarvalueclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#V_SurfaceAreaofLots-ID"+iri[0]);
             	lotarea.addProperty(hasValue, valuelotarea);
             	valuelotarea.addProperty(hasunit, m2);
             	valuelotarea.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(iri[3])));
             	
             	//TODO: add for the distance to the closest cooling water sources
-            
+            	Individual distance=scalarquantityclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#WaterSourceClosestDistanceOfLots-ID"+iri[0]);
+            	lotsid.addProperty(hasdistance, distance);
+            	Individual vdistance=scalarvalueclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#V_WaterSourceClosestDistanceOfLots-ID"+iri[0]);
+            	distance.addProperty(hasValue, vdistance);
+            	vdistance.addProperty(hasunit,m);
+            	vdistance.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(iri[4])));
+            	
             	}              	
             	linereader++;
             }

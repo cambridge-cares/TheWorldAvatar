@@ -1,12 +1,11 @@
 package uk.ac.cam.cares.jps.powsys.nuclear;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -94,134 +93,28 @@ public class NuclearAgent extends HttpServlet {
         System.out.println("Done");
 	}
 	
-	/*public void createCSV(String csvFileref,ArrayList<String[]>lotinfo,String csvFileout) throws IOException {
-		
-		CSVWriter writer = new CSVWriter(new FileWriter(csvFileout));
-		String line = "";
-        String cvsSplitBy = ",";
-        int linereader=0;
-        
-    	try (BufferedReader br = new BufferedReader(new FileReader(csvFileref))) {
-    		 
-            while ((line = br.readLine()) != null) {
-            	//System.out.println("linereader= "+linereader);
-            	
-            	if(linereader==0) {
-            		System.out.println("skipped because it's header");
-            	}
-            	
-            	else {
-            		int elementperlineincsv=5; //assume the element in every line has 5
-            		String[] entries2= new String[elementperlineincsv];
-                    String[] iri = line.split(cvsSplitBy);
-                    //System.out.println("content1= "+iri[0]);
-
-                    for(int count=0;count<elementperlineincsv-1;count++){
-                    	 entries2[count]=lotinfo.get(linereader-1)[count];
-                    }
-              		
-                    entries2[elementperlineincsv-1]=iri[elementperlineincsv-1]; //last element of csv should be the distance for lot and rho for bus node 
-            		  
-              		
-              		writer.writeNext(entries2);
-            	}
-            	linereader++;
-            }
-   	    
-            writer.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-	}*/
 	
-	public ArrayList<CSVdataType> readCSV(String csvFileref,String separatorforindex) throws IOException {
+	public void createNewCSV2(ArrayList<String[]>lotinfo, String csvFileout ,String flag) throws IOException {
+		CSVWriter writer = new CSVWriter(new FileWriter(csvFileout));
+		int numberofinfo=lotinfo.size();
+		if(flag.contentEquals("landlot")) {
+			String[]header= {"id","ys","xs","as","dcs"}; //for landlot
+			writer.writeNext(header,false);
+		}
+		else if(flag.contentEquals("bus")){
+			String[]header= {"id","yp","xp","Dp","rhop"}; //for bus
+			writer.writeNext(header,false);	
+		}
 		
-		String line = "";
-        String cvsSplitBy = ",";
-        int linereader=0;
-        ArrayList<CSVdataType> taken= new ArrayList<CSVdataType>();
-    	try (BufferedReader br = new BufferedReader(new FileReader(csvFileref))) {
-    		
-    		
-    		
-            while ((line = br.readLine()) != null) {
-            	
-            	if(linereader==0) {
-            		//System.out.println("skipped because it's header");
-            	}
-            	
-            	else {
-                    String[] iri = line.split(cvsSplitBy);
-                    CSVdataType ind=new CSVdataType(iri[4]);
-                    //System.out.println(iri[0]);
-                    ind.setindex(Integer.valueOf(iri[0].split(separatorforindex)[1]));
-                    taken.add(ind);
-            	}
-            	linereader++;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    	return taken;
+		for(int a=0;a<numberofinfo;a++) {
+			String[]content= {lotinfo.get(a)[0],lotinfo.get(a)[1],lotinfo.get(a)[2],lotinfo.get(a)[3],lotinfo.get(a)[4]};
+    		writer.writeNext(content,false);
+			
+		}
+		writer.close();
+		
 	}
 	
-	public void createNewCSV(String csvFileref,ArrayList<String[]>lotinfo,String csvFileout, String indexseparator) throws IOException {
-		
-		CSVWriter writer = new CSVWriter(new FileWriter(csvFileout));
-		String line = "";
-        String cvsSplitBy = ",";
-        int linereader=0;
-        
-    	try (BufferedReader br = new BufferedReader(new FileReader(csvFileref))) {
-//    		String[]header= {"id","ys","xs","as","dcs"};
-//    		writer.writeNext(header,false);
-    		
-            while ((line = br.readLine()) != null) {
-            	//System.out.println("linereader= "+linereader);
-            	String[] iri = line.split(cvsSplitBy);
-            	if(linereader==0) {
-            		System.out.println("skipped because it's header");
-            		String[]header= {iri[0],iri[1],iri[2],iri[3],iri[4]};
-            		writer.writeNext(header,false);
-            		
-            	}
-            	
-            	else {
-            		int elementperlineincsv=5; //assume the element in every line has 5
-            		String[] entries2= new String[elementperlineincsv];
-                    for(int count=0;count<elementperlineincsv-1;count++){
-                    	 entries2[count]=lotinfo.get(linereader-1)[count];
-                    }
-              		int numbofdata=readCSV(csvFileref,indexseparator).size();
-              		
-              		for(int a=0;a<numbofdata;a++) {
-              			 //System.out.println(entries2[0]);             			
-              			if(Integer.valueOf(entries2[0].split(indexseparator)[1].split(".owl")[0])==(readCSV(csvFileref,indexseparator).get(a).getindex())){
-              				entries2[elementperlineincsv-1]=readCSV(csvFileref,indexseparator).get(a).getmaindata();
-              			}
-              		}
-              		            		
-              		
-              		writer.writeNext(entries2,false);
-
-              		//System.out.println("written");
-            	}
-            	linereader++;
-            }
-   	    
-            writer.close();
-
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-
-	     //System.out.println(entries[0]);
-
-	    // System.out.println("done");
-
-	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -242,6 +135,7 @@ public class NuclearAgent extends HttpServlet {
 			
 			
 		}
+		
 		
 		String outputdir="C:/JPS_DATA/workingdir/JPS_POWSYS/inputlandlots.csv";
 		prepareCSVLandlot(lotiri,outputdir); //used to create csv
@@ -267,6 +161,7 @@ public class NuclearAgent extends HttpServlet {
 	
 	String csvfileoutputgams="C:\\JPS_DATA\\workingdir\\JPS_POWSYS\\results.csv";
 
+
     
 	//   recreate the nuclear powerplant on flight
 		NuclearKBCreator in= new NuclearKBCreator();
@@ -290,7 +185,7 @@ public class NuclearAgent extends HttpServlet {
 		
 		
 
-		String lotsInfo= "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> " 
+		String lotsInfo= "PREFIX j1:<http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#> " 
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
@@ -298,7 +193,7 @@ public class NuclearAgent extends HttpServlet {
 				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
 				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-				+ "SELECT ?entity ?xvalue ?yvalue ?areavalue "
+				+ "SELECT ?entity ?xvalue ?yvalue ?areavalue ?distancevalue "
 				
 				+ "WHERE {?entity  a  j1:Landlot  ." 
 				+ "?entity   j5:hasSurfaceGeometry ?sur ."
@@ -313,6 +208,10 @@ public class NuclearAgent extends HttpServlet {
 				+ "?coorsys   j7:hasProjectedCoordinate_y ?y ."
 				+ "?y   j2:hasValue ?yval ."
 				+ "?yval   j2:numericalValue ?yvalue ."
+				
+				+ "?entity   j1:hasDistanceToClosestWaterSources ?distance ."
+				+ "?distance   j2:hasValue ?distval ."
+				+ "?distval   j2:numericalValue ?distancevalue ."
 								
 				+ "}";
 		
@@ -320,41 +219,58 @@ public class NuclearAgent extends HttpServlet {
 
 	ArrayList<String[]> totallotresult= new ArrayList<String[]>();
 	
+	IriMapper mapper= new IriMapper();
+	int index=1;
     while(rs_landlot.hasNext()) {
     	QuerySolution qs_p = rs_landlot.nextSolution();
 		Resource name = qs_p.getResource("entity") ;     //extract the lots name 
-	    String stName = name.toString().split("ID")[1];  
+	    //String stName = name.toString().split("ID")[1];
+	    
+	    String iri = name.toString();
+	    mapper.add(iri, ""+"s"+index, "lot");
+	    
+	    
 	    Literal x = qs_p.getLiteral("xvalue") ;     //extract the x centre
 	    String stx = x.getString();   
 	    Literal y = qs_p.getLiteral("yvalue") ;     //extract the y centre
 	    String sty = y.getString(); 
 	    Literal area = qs_p.getLiteral("areavalue") ;     //extract the area
 	    String areast = area.getString();
+	    Literal distance = qs_p.getLiteral("distancevalue") ;     //extract the area
+	    String distancest = distance.getString();
 	    
-	    String [] queryresult= new String[4];
-	    queryresult[0]=stName;
+	    String [] queryresult= new String[5];
+	    //queryresult[0]=stName;
+	    queryresult[0]="s"+index;
 	    queryresult[1]=sty;
 	    queryresult[2]=stx;
 	    queryresult[3]=areast;
+	    queryresult[4]=distancest;
 	    
 	    totallotresult.add(queryresult);
+	    index++;
     }
-    int number=totallotresult.size();
+   
+    
+//    int number=totallotresult.size();
+//	
+//	//ordering process
+//	ArrayList<String[]> totallotresultordered= new ArrayList<String[]>();
+//	int init=1;
+//	while(totallotresultordered.size()<number) {
+//		for(int r=0;r<number;r++) {
+//			if(totallotresult.get(r)[0].split("s")[1].contentEquals(String.valueOf(init))) {
+//				totallotresultordered.add(totallotresult.get(r));					
+//			}
+//		}
+//		init++;
+//	}
 	
-	//ordering process
-	ArrayList<String[]> totallotresultordered= new ArrayList<String[]>();
-	int init=1;
-	while(totallotresultordered.size()<number) {
-		for(int r=0;r<number;r++) {
-			if(totallotresult.get(r)[0].split("s")[1].contentEquals(String.valueOf(init))) {
-				totallotresultordered.add(totallotresult.get(r));					
-			}
-		}
-		init++;
-	}
-	
+    mapper.serialize("C:/JPS_DATA/workingdir/JPS_POWSYS/mappingforlot.csv");
+    
     //make csv file for the landlots
-    createNewCSV(csvFile,totallotresultordered,outputdir,"s");
+
+    createNewCSV2(totallotresult,outputdir,"landlot");
     System.out.println("landlots input ok");
     
 	}
@@ -363,7 +279,7 @@ public class NuclearAgent extends HttpServlet {
 		
 		
 		
-		String electricalnodeInfo= "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> " 
+		String electricalnodeInfo= "PREFIX j1:<http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#> " 
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "SELECT ?component "
 				
@@ -414,17 +330,32 @@ public class NuclearAgent extends HttpServlet {
 				+ "}";
 		
 		int numberofiri=totalnodeelectricresult.size();
-   
+   	
 		ArrayList<String[]> totalnodebusresult= new ArrayList<String[]>();
-		for(int t=0;t<numberofiri;t++) {
+		
+		IriMapper mapper= new IriMapper();
+		
+		double mean = 0.0079;
+		double variance = 0.004;
+		double stddev = Math.sqrt(variance);
+		int idcounter=1;
+		for(int t=1;t<=numberofiri;t++) {
 			OntModel jenaOwlModel3  = ModelFactory.createOntologyModel();	
 			
-			jenaOwlModel3.read(totalnodeelectricresult.get(t), null); 
+			jenaOwlModel3.read(totalnodeelectricresult.get(t-1), null); 
 			ResultSet rs_busnode = NuclearAgent.queryFromOWLFile(busInfo,jenaOwlModel3);
+			
+			
 		    while(rs_busnode.hasNext()) {
 		    	QuerySolution qs_p = rs_busnode.nextSolution();
 		    	Resource iriofbusnode = qs_p.getResource("entity");
-			    String stiriofbusnode = "p"+Integer.valueOf(iriofbusnode.toString().split("EBus-")[2]);
+			    //String stiriofbusnode = "p"+Integer.valueOf(iriofbusnode.toString().split("EBus-")[2]);
+			    
+			    
+			    
+			    String iri = iriofbusnode.toString();
+			    mapper.add(iri, ""+"p"+idcounter, "bus");
+			    
 			    Literal xvalue=qs_p.getLiteral("xvalue");
 			    String stxvalue = xvalue.toString();
 			    Literal yvalue=qs_p.getLiteral("yvalue");
@@ -432,18 +363,33 @@ public class NuclearAgent extends HttpServlet {
 			    Literal Pdvalue=qs_p.getLiteral("activepowervalue");
 			    String stPdvalue = Pdvalue.toString().replace("^^","@").split("@")[0];
 			    
-			    String [] queryresult= new String[4];
-			    queryresult[0]=stiriofbusnode;
+			    String [] queryresult= new String[5];
+			    queryresult[0]="p"+idcounter;
 			    queryresult[1]=styvalue;
 			    queryresult[2]=stxvalue;
 			    queryresult[3]=stPdvalue;
 			    
+			    boolean popDensityFound = false;
+				while (!popDensityFound) {
+
+					double popDensity = stddev * new Random().nextGaussian() + mean;
+					if (popDensity > 0) {
+					      popDensityFound = true;
+					      queryresult[4]=String.valueOf(popDensity);
+					}
+				}
+			    
 			    totalnodebusresult.add(queryresult);
+			    idcounter++;
 		    }
+		   
 		}
-		int number=totalnodebusresult.size();
-	
+
+
+		
+		/**
 		//ordering process
+		int number=totalnodebusresult.size();
 		ArrayList<String[]> totalnodebusresultordered= new ArrayList<String[]>();
 		int init=1;
 		while(totalnodebusresultordered.size()<number) {
@@ -454,9 +400,14 @@ public class NuclearAgent extends HttpServlet {
 				}
 			}
 			init++;
-		}
-
-		createNewCSV(csvFile2,totalnodebusresultordered,outputdir,"p");
+		}**/
+		
+		
+		
+		 mapper.serialize("C:/JPS_DATA/workingdir/JPS_POWSYS/mappingforbus.csv");
+		
+		createNewCSV2(totalnodebusresult,outputdir,"bus");
+		
 		System.out.println("bus input ok");
 		return outputdir;
 	}

@@ -29,11 +29,6 @@ public class TestNuclear extends TestCase {
 		
 	}
 	
-	public void testreadcsv() throws IOException {
-		String oldcsv="D:/JPS/JParkSimulator-git/JPS_POWSYS/testres/Landlots.csv";
-		NuclearAgent b=new NuclearAgent();
-		b.readCSV(oldcsv,"s");
-	}
 	
 	public void testrunGAMS() {
 		NuclearAgent b=new NuclearAgent();
