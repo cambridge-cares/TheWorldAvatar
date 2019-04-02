@@ -30,7 +30,7 @@ public class TestNuclear extends TestCase {
 	}
 	
 	
-	public void testrunGAMS() {
+	public void testrunGAMS() throws IOException, InterruptedException {
 		NuclearAgent b=new NuclearAgent();
 		b.runGAMS();
 	}
@@ -42,11 +42,26 @@ public class TestNuclear extends TestCase {
 		jo.put("electricalnetwork", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
 
 		System.out.println ("jsonoverall= "+jo.toString());
-		String resultAsString = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS//NuclearAgent", jo.toString());
-	
+		String resultAsString = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/startsimulation", jo.toString());
+
+
 		System.out.println("result overall= "+resultAsString);
 		
 
 			//result should be the list of iri for the nuclear power plant in json
+	}
+	
+	public void testProcessResult() {
+		
+		
+		String url = "http://www.theworldavatar.com/NuclearAgent/processresult";
+		String json  = null;
+		
+		//test for web jps use this:
+		//String result = AgentCaller.executeGetWithURLAndJSON(url, json);
+		
+		//test for local use this:
+		String resultAsString = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/processresult", json);
+		
 	}
 }

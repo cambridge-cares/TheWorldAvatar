@@ -80,4 +80,32 @@ public class CommandHelper {
 		logger.info("=== Result (only the first 200 characters) === :" + resultString.substring(0, min));
 		return resultString; 
 	}
+	
+	public static String executeAsyncSingleCommand(String targetFolder , String command) 
+	{  
+	 
+		logger.info("In folder: " + targetFolder + " Excuted: " + command);
+		Runtime rt = Runtime.getRuntime();
+		Process pr = null;
+		try {
+
+			pr = rt.exec("start "+command, null, new File(targetFolder)); // IMPORTANT: By specifying targetFolder, all the cmds will be executed within such folder.
+		} catch (IOException e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		}
+		
+				 
+		BufferedReader bfr = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+		String line = "";
+		String resultString = "";
+		try {
+			while((line = bfr.readLine()) != null) {
+				resultString += line;
+			}
+		} catch (IOException e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		}
+		
+		return resultString; 
+	}
 }

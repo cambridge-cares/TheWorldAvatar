@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import javax.servlet.ServletException;
@@ -34,8 +35,10 @@ import org.slf4j.LoggerFactory;
 import com.opencsv.CSVWriter;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
 
-@WebServlet("/NuclearAgent")
+@WebServlet(urlPatterns = {"/NuclearAgent/startsimulation", "/NuclearAgent/processresult"})
 public class NuclearAgent extends HttpServlet {
 	
 	private static final long serialVersionUID = -4199209974912271432L;
@@ -66,31 +69,40 @@ public class NuclearAgent extends HttpServlet {
 
 
 	
-	public void runGAMS() {
+	public void runGAMS() throws IOException, InterruptedException {
         System.out.println("Start");
         System.out.println("separator= "+File.separator);
+        String executablelocation ="C:/GAMS/win64/26.1/gams.exe";
+        //String folderlocation ="D:/Users/KADIT01/Documents/gamsdir/projdir/";
+        String folderlocation ="C:/JPS_DATA/workingdir/JPS_POWSYS/";
         String[] cmdArray = new String[5];
-        cmdArray[0] = "C:\\GAMS/win64/24.3" + File.separator + "gams";
-        cmdArray[1] = "C:\\JPS_DATA/workingdir/JPS_POWSYS/gams" + File.separator + "final.gms";
-        cmdArray[2] = "WDIR=C:\\JPS_DATA/workingdir/JPS_POWSYS/gams" + File.separator + "TMP";
-        cmdArray[3] = "SCRDIR=C:\\JPS_DATA/workingdir/JPS_POWSYS/gams" + File.separator + "TMP";
+        
+        cmdArray[0] = executablelocation;
+        cmdArray[1] = folderlocation + "final.gms";
+        cmdArray[2] = "WDIR="+folderlocation;
+        cmdArray[3] = "SCRDIR="+folderlocation;
         cmdArray[4] = "LO=2";
-        try {
-        	System.out.println("goinghere= "+File.separator);
-               Process p = Runtime.getRuntime().exec(cmdArray);
-               p.waitFor();
-        }
-        catch (java.io.IOException e )
-        {
-               System.err.println(">>>>" + e.getMessage() );
-               e.printStackTrace();
-        }
-        catch (InterruptedException e )
-        {
-               System.err.println(">>>>" + e.getMessage() );
-               e.printStackTrace();
-        }
+//      cmdArray[2] = "WDIR="+folderlocation + "TMP";
+//      cmdArray[3] = "SCRDIR="+folderlocation + "TMP";
+        
+        String cmdArrayinstring=cmdArray[0]+" "+cmdArray[1]+","+cmdArray[2]+","+cmdArray[3]+" "+cmdArray[4];
+        
+		//System.out.println(cmdArrayinstring);
+        //Process p = Runtime.getRuntime().exec(cmdArray);
+		   //p.waitFor();
+		String startbatCommand ="C:/JPS_DATA/workingdir/JPS_POWSYS/gamsexecute.bat";
+		
+		ArrayList<String> groupcommand= new ArrayList<String>();
+		groupcommand.add("start");
+		groupcommand.add("C:/JPS_DATA/workingdir/JPS_POWSYS/gamsexecute.bat");
+		
+		
+        
+		CommandHelper.executeSingleCommand(folderlocation,startbatCommand);
+//		CommandHelper.executeCommands(folderlocation, groupcommand);   
         System.out.println("Done");
+        
+
 	}
 	
 	
@@ -119,64 +131,72 @@ public class NuclearAgent extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
-		JSONObject jofornuc = AgentCaller.readJsonParameter(request);
+		String path = request.getServletPath();
+		System.out.println("path= "+path);
+		if ("/NuclearAgent/startsimulation".equals(path)) {
 		
-		String lotiri = null;
-		String iriofnetwork = null;
-
-		try {
-			lotiri = jofornuc.getString("landlot");
-			iriofnetwork = jofornuc.getString("electricalnetwork");
-
-
-		} catch (JSONException e1) {
-			logger.error(e1.getMessage(), e1);
-			e1.printStackTrace();
+			JSONObject jofornuc = AgentCaller.readJsonParameter(request);
+			
+			String lotiri = null;
+			String iriofnetwork = null;
+	
+			try {
+				lotiri = jofornuc.getString("landlot");
+				iriofnetwork = jofornuc.getString("electricalnetwork");
+				System.out.println("it's going here");
+				startSimulation(lotiri, iriofnetwork);
+			} catch (JSONException | InterruptedException e1) {
+				System.out.println("some error happen");
+				logger.error(e1.getMessage(), e1);
+				e1.printStackTrace();
+			}
 			
 			
-		}
+		} else if ("/NuclearAgent/processresult".equals(path)) {
+			
+			try {
+				List<String> result = processSimulationResult();
+				JSONObject resultjson = new JSONObject().put("plantirilist", result);
+				AgentCaller.printToResponse(resultjson.toString(), response);	
+			} catch (NumberFormatException | URISyntaxException e) {
+				logger.error(e.getMessage(), e);
+				throw new JPSRuntimeException(e.getMessage(), e);
+			}
+		}	
+	}
+	
+	public void startSimulation(String lotiri, String iriofnetwork) throws IOException, InterruptedException {
 		
 		
 		String outputdir="C:/JPS_DATA/workingdir/JPS_POWSYS/inputlandlots.csv";
 		prepareCSVLandlot(lotiri,outputdir); //used to create csv
     
-//-----------------------------------------1st input file finished-------------------------------------------------------------------	
+		//-----------------------------------------1st input file finished-------------------------------------------------------------------	
 		String outputdir2="C:/JPS_DATA/workingdir/JPS_POWSYS/inputloadpoints.csv";
         prepareCSVLoad(iriofnetwork,outputdir2); //used to create csv
 		
-    //-----------------------------------------2nd input file finished-------------------------------------------------------------------		
+        //-----------------------------------------2nd input file finished-------------------------------------------------------------------		
 	
 
-    copyFile("D:\\JPS\\JParkSimulator-git\\JPS_POWSYS\\testres\\constants_req.csv","C:\\JPS_DATA\\workingdir\\JPS_POWSYS\\constants_req.csv");
-  //-----------------------------------------3rd input file finished-------------------------------------------------------------------
+        copyFile("D:\\JPS\\JParkSimulator-git\\JPS_POWSYS\\testres\\constants_req.csv","C:\\JPS_DATA\\workingdir\\JPS_POWSYS\\constants_req.csv");
+        //-----------------------------------------3rd input file finished-------------------------------------------------------------------
     
    
-    copyFile("D:\\JPS\\JParkSimulator-git\\JPS_POWSYS\\testres\\parameters_req.csv","C:\\JPS_DATA\\workingdir\\JPS_POWSYS\\parameters_req.csv");
-    //-----------------------------------------4th input file finished-------------------------------------------------------------------
+        copyFile("D:\\JPS\\JParkSimulator-git\\JPS_POWSYS\\testres\\parameters_req.csv","C:\\JPS_DATA\\workingdir\\JPS_POWSYS\\parameters_req.csv");
+        //-----------------------------------------4th input file finished-------------------------------------------------------------------
     
-    //temporary unused
-    //runGAMS();
+        //temporary unused
+        runGAMS();
+	}
 	
+	public List<String> processSimulationResult() throws NumberFormatException, IOException, URISyntaxException {
 	
-	
-	String csvfileoutputgams="C:\\JPS_DATA\\workingdir\\JPS_POWSYS\\results.csv";
-
-
-    
-	//   recreate the nuclear powerplant on flight
+		String csvfileoutputgams="C:\\JPS_DATA\\workingdir\\JPS_POWSYS\\results.csv";
+		//   recreate the nuclear powerplant on flight
 		NuclearKBCreator in= new NuclearKBCreator();
-		ArrayList<String> result =new ArrayList<String>(); 
-		try {
-			System.out.println("starting conversion to owl file");
-			result=in.startConversion(csvfileoutputgams);
-			JSONObject resultjson = new JSONObject().put("plantirilist", result);
-			AgentCaller.printToResponse(resultjson.toString(), response);	
-		
-		} catch (URISyntaxException e) {
-			logger.error(e.getMessage());
-		}
-	
-	
+		System.out.println("starting conversion to owl file");
+		ArrayList<String> result=in.startConversion(csvfileoutputgams);
+		return result;
 	}
 
 	public void prepareCSVLandlot(String lotiri,String outputdir) throws IOException {
