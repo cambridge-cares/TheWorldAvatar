@@ -22,6 +22,8 @@ import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 
 public class QueryBroker {
 	
+	// TODO-AE SC 20190321 all methods should be extended in such a way that scenario url might passed
+	// directly as a parameter (instead of using the super class JPSHttpServlet and ThreadContext)
 	public String readFile(String urlOrPath) {
 		
 		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	

@@ -15,7 +15,7 @@ public class TestHttp extends TestCase {
 		System.out.println("number HTTP requests - integer > 0");
 		System.out.println("query value size - integer >= 0, size of the String value in query component of HTTP request");
 		System.out.println("write to disk - Booelan true or false; if true the requested servlet writes the query value to a file on disk");
-		
+		System.out.println("print to console - Booelan true or false; if true the requested servlet writes the query value to console output");
 	}
 	
 	public void start(String[] args) throws IOException {
