@@ -1,138 +1,184 @@
 package citygmlkb;
 
 import java.io.BufferedReader;
-import java.io.File;
+
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URI;
+
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+//import javax.xml.parsers.ParserConfigurationException;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
-import com.hp.hpl.jena.util.FileUtils;
 
-import edu.stanford.smi.protegex.owl.ProtegeOWL;
-import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
-import edu.stanford.smi.protegex.owl.model.RDFIndividual;
-import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
 
-import org.json.JSONArray;
+
+import org.apache.jena.ontology.DatatypeProperty;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.ObjectProperty;
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.rdf.model.ModelFactory;
+
+//import edu.stanford.smi.protegex.owl.ProtegeOWL;
+//import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+//import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
+//import edu.stanford.smi.protegex.owl.model.OntClass;
+//import edu.stanford.smi.protegex.OntClassctProperty;
+//import edu.stanford.smi.protegex.owl.model.RDFIndividual;
+//import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xml.sax.SAXException;
 
 
 public class CityGMLkbfromgeojson {
 	static String datacoordinate;
-	static RDFIndividual groundins;
-	static RDFIndividual wallins;
-	static RDFIndividual roofins;
-	static RDFIndividual compositesurface;
+	static Individual groundins;
+	static Individual wallins;
+	static Individual roofins;
+	static Individual compositesurface;
 
-	private OWLNamedClass buildingclass = null;
-	private OWLNamedClass buildingpartclass = null;
-	private OWLNamedClass roofclass = null;
-	private OWLNamedClass groundclass = null;
-	private OWLNamedClass wallclass = null;
-	private OWLNamedClass solidclass = null;
-	private OWLNamedClass compositesurfaceclass = null;
-	private OWLNamedClass polygonclass = null;
-	private OWLNamedClass ringclass = null;
-	private OWLNamedClass pointclass = null;
-	private OWLNamedClass multisurfaceclass = null;
-	private OWLNamedClass citymodelclass = null;
-	private OWLNamedClass envelopeclass = null;
-	private OWLNamedClass lengthclass = null;
-	private OWLNamedClass angleclass = null;
-	private OWLNamedClass rooftypeclass = null;
-	private OWLNamedClass multicurveclass = null;
-	private OWLNamedClass linestringclass = null;
-	private OWLNamedClass appearanceclass = null;
-	private OWLNamedClass x3dclass = null;
-	private OWLNamedClass color = null;
-	private OWLNamedClass double0and1 = null;
-	private OWLNamedClass doubleattributetype = null;
-	private OWLNamedClass coordinateclass = null;
-	private OWLNamedClass coordinatesystemclass = null;
-	private OWLNamedClass valueclass = null;
-	private OWLNamedClass scalarvalueclass = null;
-	private OWLNamedClass Diskclass = null;
-	private OWLNamedClass Rectangleclass = null;
+	private OntClass buildingclass = null;
+	private OntClass buildingpartclass = null;
+	private OntClass roofclass = null;
+	private OntClass groundclass = null;
+	private OntClass wallclass = null;
+	private OntClass solidclass = null;
+	private OntClass compositesurfaceclass = null;
+	private OntClass polygonclass = null;
+	private OntClass ringclass = null;
+	private OntClass pointclass = null;
+	private OntClass multisurfaceclass = null;
+	private OntClass citymodelclass = null;
+	private OntClass envelopeclass = null;
+	private OntClass lengthclass = null;
+	private OntClass angleclass = null;
+	private OntClass rooftypeclass = null;
+	private OntClass multicurveclass = null;
+	private OntClass linestringclass = null;
+	private OntClass appearanceclass = null;
+	private OntClass x3dclass = null;
+	private OntClass color = null;
+	private OntClass double0and1 = null;
+	private OntClass doubleattributetype = null;
+	private OntClass coordinateclass = null;
+	private OntClass coordinatesystemclass = null;
+	private OntClass valueclass = null;
+	private OntClass scalarvalueclass = null;
+	private OntClass Diskclass = null;
+	private OntClass Rectangleclass = null;
 
-	private OWLObjectProperty hascoordinatesystem = null;
-	private OWLObjectProperty hasx = null;
-	private OWLObjectProperty hasy = null;
-	private OWLObjectProperty hasz = null;
-	private OWLObjectProperty hassurfacegeometry = null;
-	private OWLObjectProperty cityobjectmember = null;
-	private OWLObjectProperty boundedBy = null;
-	private OWLObjectProperty lod2Solid = null;
-	private OWLObjectProperty lod2MultiSurface = null;
-	private OWLObjectProperty surfaceMember = null;
-	private OWLObjectProperty curveMember = null;
-	private OWLObjectProperty exterior = null;
-	private OWLObjectProperty interior = null;
-	private OWLObjectProperty consistsofbuildingpart = null;
-	private OWLObjectProperty measuredHeight = null;
-	private OWLObjectProperty hasangle = null;
-	private OWLObjectProperty roofTyperelation = null;
-	private OWLObjectProperty lowercorner = null;
-	private OWLObjectProperty uppercorner = null;
-	private OWLObjectProperty lod2TerrainIntersection = null;
-	private OWLObjectProperty appearancerelation = null;
-	private OWLObjectProperty diffuseColor = null;
-	private OWLObjectProperty ambientintensity = null;
-	private OWLObjectProperty surfacedatamemberrelation = null;
-	private OWLObjectProperty doubleattribute = null;
-	private OWLObjectProperty contains = null;
-	private OWLObjectProperty hasvalue = null;
-	private OWLObjectProperty hasunit = null;
-	private OWLObjectProperty haslength = null;
+	private ObjectProperty hascoordinatesystem = null;
+	private ObjectProperty hasx = null;
+	private ObjectProperty hasy = null;
+	private ObjectProperty hasz = null;
+	private ObjectProperty hassurfacegeometry = null;
+	private ObjectProperty cityobjectmember = null;
+	private ObjectProperty boundedBy = null;
+	private ObjectProperty lod2Solid = null;
+	private ObjectProperty lod2MultiSurface = null;
+	private ObjectProperty surfaceMember = null;
+	private ObjectProperty curveMember = null;
+	private ObjectProperty exterior = null;
+	private ObjectProperty interior = null;
+	private ObjectProperty consistsofbuildingpart = null;
+	private ObjectProperty measuredHeight = null;
+	private ObjectProperty hasangle = null;
+	private ObjectProperty roofTyperelation = null;
+	private ObjectProperty lowercorner = null;
+	private ObjectProperty uppercorner = null;
+	private ObjectProperty lod2TerrainIntersection = null;
+	private ObjectProperty appearancerelation = null;
+	private ObjectProperty diffuseColor = null;
+	private ObjectProperty ambientintensity = null;
+	private ObjectProperty surfacedatamemberrelation = null;
+	private ObjectProperty doubleattribute = null;
+	private ObjectProperty contains = null;
+	private ObjectProperty hasvalue = null;
+	private ObjectProperty lowerHeight = null;
+	private ObjectProperty hasunit = null;
+	private ObjectProperty haslength = null;
 
-	private OWLDatatypeProperty numval = null;
-	private OWLDatatypeProperty srsname = null;
-	private OWLDatatypeProperty id = null;
-	private OWLDatatypeProperty value = null;
-	private OWLDatatypeProperty target = null;
-	private OWLDatatypeProperty name = null;
+	private DatatypeProperty numval = null;
+	private DatatypeProperty srsname = null;
+	private DatatypeProperty id = null;
+	private DatatypeProperty value = null;
+	private DatatypeProperty target = null;
+	private DatatypeProperty name = null;
 
-	private RDFIndividual m = null;
+	static Individual m;
+	static Individual degree;
 
-	private RDFSDatatype xsdDouble = null;
+
 	
 	public static String baseURL = "D:\\citygmllearn/";
 
 	public static String baseURL2 = "D:\\citygmllearn/hkbuilding/";
 
-	public void savefile(JenaOWLModel jenaOwlModel, String filePath2) throws URISyntaxException {
+	public void savefile(OntModel jenaOwlModel, String filePath2) throws URISyntaxException, FileNotFoundException {
 
 		Collection errors = new ArrayList();
-		jenaOwlModel.save(new URI("file:////" + filePath2.replace("\\", "/")), FileUtils.langXMLAbbrev, errors,
-				jenaOwlModel.getOntModel());
+		
+		FileOutputStream out = new FileOutputStream(filePath2);
+		
+		jenaOwlModel.write(out, "RDF/XML-ABBREV");
 		System.out.println("File saved with " + errors.size() + " errors.");
+	}
+	
+	public static double[] centroid(ArrayList<String> xvalueground, ArrayList<String> yvalueground) {
+		int totvertices = xvalueground.size();
+		double[] x = new double[totvertices];
+		double[] y = new double[totvertices];
+		double result = 0;
+		double Cx = 0;
+		double Cy = 0;
+
+		// Converting arraylist of strings to arraylist of doubles
+		for (int a = 0; a < totvertices; a++) {
+			x[a] = Double.parseDouble(xvalueground.get(a));
+			y[a] = Double.parseDouble(yvalueground.get(a));
+		}
+		// calculation of the A
+		for (int a = 0; a < (totvertices - 1); a++) {
+			result += x[a] * y[a + 1] - x[a + 1] * y[a];
+		}
+
+		double A = 0.5 * result;
+
+		// calculation of the Cx
+		for (int a = 0; a < totvertices - 1; a++) {
+			Cx += (x[a] + x[a + 1]) * (x[a] * y[a + 1] - x[a + 1] * y[a]) / 6 / A;
+		}
+		// calculation of the Cy
+		for (int a = 0; a < totvertices - 1; a++) {
+			Cy += (y[a] + y[a + 1]) * (x[a] * y[a + 1] - x[a + 1] * y[a]) / 6 / A;
+
+		}
+		/*
+		 * System.out.println("total point=" + totvertices); System.out.println(
+		 * "x centroid=" + Cx); System.out.println("y centroid=" + Cy);
+		 */
+		
+		return new double[] { Cx, Cy, A };
 	}
 	
 	public void startConversion() throws Exception {
 
 
-			 String source= "C:/Users/kevin/Downloads/hkbuild.json";
-			 String kbname= "hkbuildjson.owl";
+			 //String source= "D:/Users/KADIT01/Downloads/GEOJSON_MARINA_BAY.json";
+		String source= "D:/Users/KADIT01/Downloads/sample2.json";
+			 String kbname= "HongkongDistrict02.owl";
+			 //String kbname= "hkbuildjson.owl";
 //		 String source= "C:/Users/kevin/Downloads/sgbuildupdate/sgbuild.geojson";
 //		 String kbname= "sgbuildjson.owl";
 
@@ -143,7 +189,8 @@ public class CityGMLkbfromgeojson {
 			System.out.println(filePath);
 			FileInputStream inFile = new FileInputStream(filePath);
 			Reader in = new InputStreamReader(inFile, "UTF-8");
-			JenaOWLModel jenaOwlModel = ProtegeOWL.createJenaOWLModelFromReader(in);
+			OntModel jenaOwlModel = ModelFactory.createOntologyModel();
+        	jenaOwlModel.read(in, null);
 
 			initOWLClasses(jenaOwlModel);
 
@@ -155,120 +202,124 @@ public class CityGMLkbfromgeojson {
 		
 	}
 
-	public void initOWLClasses(JenaOWLModel jenaOwlModel) {
-		buildingclass = jenaOwlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType");
+	public void initOWLClasses(OntModel jenaOwlModel) {
+		buildingclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType");
 		buildingpartclass = jenaOwlModel
-				.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingPartType");
-		roofclass = jenaOwlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#RoofSurfaceType");
+				.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingPartType");
+		roofclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#RoofSurfaceType");
 		groundclass = jenaOwlModel
-				.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#GroundSurfaceType");
-		wallclass = jenaOwlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#WallSurfaceType");
-		solidclass = jenaOwlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#SolidType");
+				.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#GroundSurfaceType");
+		wallclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#WallSurfaceType");
+		solidclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#SolidType");
 		compositesurfaceclass = jenaOwlModel
-				.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#CompositeSurfaceType");
-		polygonclass = jenaOwlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#PolygonType");
-		ringclass = jenaOwlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#LinearRingType");
-		pointclass = jenaOwlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#PointType");
+				.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#CompositeSurfaceType");
+		polygonclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#PolygonType");
+		ringclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#LinearRingType");
+		pointclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#PointType");
 		multisurfaceclass = jenaOwlModel
-				.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#MultiSurfaceType");
+				.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#MultiSurfaceType");
 		citymodelclass = jenaOwlModel
-				.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#CityModelType");
-		envelopeclass = jenaOwlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType");
-		lengthclass = jenaOwlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#LengthType");
-		angleclass = jenaOwlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#AngleType");
-		rooftypeclass = jenaOwlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#RoofTypeType");
+				.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#CityModelType");
+		envelopeclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType");
+		lengthclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#LengthType");
+		angleclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#AngleType");
+		rooftypeclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#RoofTypeType");
 		multicurveclass = jenaOwlModel
-				.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#MultiCurveType");
+				.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#MultiCurveType");
 		linestringclass = jenaOwlModel
-				.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#LineStringType");
+				.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#LineStringType");
 		appearanceclass = jenaOwlModel
-				.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#AppearanceType");
-		x3dclass = jenaOwlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#X3DMaterialType");
-		color = jenaOwlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#Color");
+				.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#AppearanceType");
+		x3dclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#X3DMaterialType");
+		color = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#Color");
 		double0and1 = jenaOwlModel
-				.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#doubleBetween0and1");
+				.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#doubleBetween0and1");
 		doubleattributetype = jenaOwlModel
-				.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#DoubleAttributeType");
-		coordinateclass = jenaOwlModel.getOWLNamedClass(
+				.getOntClass("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#DoubleAttributeType");
+		coordinateclass = jenaOwlModel.getOntClass(
 				"http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate");
-		coordinatesystemclass = jenaOwlModel.getOWLNamedClass(
+		coordinatesystemclass = jenaOwlModel.getOntClass(
 				"http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#ProjectedCoordinateSystem");
-		valueclass = jenaOwlModel.getOWLNamedClass(
+		valueclass = jenaOwlModel.getOntClass(
 				"http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue");
 		scalarvalueclass = jenaOwlModel
-				.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue");
-		Diskclass = jenaOwlModel.getOWLNamedClass(
+				.getOntClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue");
+		Diskclass = jenaOwlModel.getOntClass(
 				"http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#Disk");
-		Rectangleclass = jenaOwlModel.getOWLNamedClass(
+		Rectangleclass = jenaOwlModel.getOntClass(
 				"http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#Rectangle");
 
-		hascoordinatesystem = jenaOwlModel.getOWLObjectProperty(
+		hascoordinatesystem = jenaOwlModel.getObjectProperty(
 				"http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#hasGISCoordinateSystem");
-		hasx = jenaOwlModel.getOWLObjectProperty(
+		hasx = jenaOwlModel.getObjectProperty(
 				"http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#hasProjectedCoordinate_x");
-		hasy = jenaOwlModel.getOWLObjectProperty(
+		hasy = jenaOwlModel.getObjectProperty(
 				"http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#hasProjectedCoordinate_y");
-		hasz = jenaOwlModel.getOWLObjectProperty(
+		hasz = jenaOwlModel.getObjectProperty(
 				"http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#hasProjectedCoordinate_z");
-		hassurfacegeometry = jenaOwlModel.getOWLObjectProperty(
+		hassurfacegeometry = jenaOwlModel.getObjectProperty(
 				"http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#hasSurfaceGeometry");
 		cityobjectmember = jenaOwlModel
-				.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#cityObjectMember");
-		boundedBy = jenaOwlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#boundedBy");
-		lod2Solid = jenaOwlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#lod2Solid");
+				.getObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#cityObjectMember");
+		boundedBy = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#boundedBy");
+		lod2Solid = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#lod2Solid");
 		lod2MultiSurface = jenaOwlModel
-				.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#lod2MultiSurface");
+				.getObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#lod2MultiSurface");
 		surfaceMember = jenaOwlModel
-				.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#surfaceMember");
+				.getObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#surfaceMember");
 		curveMember = jenaOwlModel
-				.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#curveMember");
-		exterior = jenaOwlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#exterior");
-		interior = jenaOwlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#interior");
+				.getObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#curveMember");
+		exterior = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#exterior");
+		interior = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#interior");
 		consistsofbuildingpart = jenaOwlModel
-				.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#consistsOfBuildingPart");
+				.getObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#consistsOfBuildingPart");
 		measuredHeight = jenaOwlModel
-				.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#measuredHeight");
-		hasangle = jenaOwlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#angle");
+				.getObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#measuredHeight");
+		hasangle = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#angle");
 		roofTyperelation = jenaOwlModel
-				.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#roofType");
+				.getObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#roofType");
 		lowercorner = jenaOwlModel
-				.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#lowerCornerPoint");
+				.getObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#lowerCornerPoint");
 		uppercorner = jenaOwlModel
-				.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#upperCornerPoint");
+				.getObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#upperCornerPoint");
 		lod2TerrainIntersection = jenaOwlModel
-				.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#lod2TerrainIntersection");
+				.getObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#lod2TerrainIntersection");
 		appearancerelation = jenaOwlModel
-				.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#Appearance");
+				.getObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#Appearance");
 		diffuseColor = jenaOwlModel
-				.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#diffuseColor");
+				.getObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#diffuseColor");
 		ambientintensity = jenaOwlModel
-				.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#ambientIntensity");
+				.getObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#ambientIntensity");
 		surfacedatamemberrelation = jenaOwlModel
-				.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#surfaceDataMember");
+				.getObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#surfaceDataMember");
 		doubleattribute = jenaOwlModel
-				.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#doubleAttribute");
+				.getObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#doubleAttribute");
+		lowerHeight=jenaOwlModel
+				.getObjectProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#lowerHeight");
 
-		contains = jenaOwlModel.getOWLObjectProperty(
+		contains = jenaOwlModel.getObjectProperty(
 				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains");
-		hasvalue = jenaOwlModel.getOWLObjectProperty(
+		hasvalue = jenaOwlModel.getObjectProperty(
 				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue");
-		hasunit = jenaOwlModel.getOWLObjectProperty(
+		hasunit = jenaOwlModel.getObjectProperty(
 				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure");
-		numval = jenaOwlModel.getOWLDatatypeProperty(
+		numval = jenaOwlModel.getDatatypeProperty(
 				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
-		haslength = jenaOwlModel.getOWLObjectProperty(
+		haslength = jenaOwlModel.getObjectProperty(
 				"http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#has_length");
 
-		srsname = jenaOwlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#srsname");
-		id = jenaOwlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#id");
-		value = jenaOwlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#value");
-		target = jenaOwlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#targetID");
-		name = jenaOwlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#name");
+		srsname = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#srsname");
+		id = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#id");
+		value = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#value");
+		target = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#targetID");
+		name = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#name");
+		degree=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree");
+		m=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m");
+		//System.out.println("degree0= "+ degree.getURI());
 
-		m = jenaOwlModel.getRDFIndividual(
-				"http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m");
+		System.out.println("degree2= "+ degree.toString());
 
-		xsdDouble = jenaOwlModel.getRDFSDatatypeByName("xsd:double");
+		//xsdDouble = jenaOwlModel.getRDFSDatatypeByName("xsd:double");
 	}
 
 	public static String readFile(String filename) {
@@ -282,100 +333,181 @@ public class CityGMLkbfromgeojson {
 	            line = br.readLine();
 	        }
 	        result = sb.toString();
+	        
 	    } catch(Exception e) {
 	        e.printStackTrace();
 	    }
+
+
 	    return result;
 	}
 	
-	public void doConversion(JenaOWLModel jenaOwlModel, String source, String kbname)
-			throws URISyntaxException, ParserConfigurationException, SAXException, IOException, JSONException {
+	public void doConversion(OntModel jenaOwlModel, String source, String kbname)
+			throws URISyntaxException, SAXException, IOException, JSONException {
+		
+		String prefix="http://www.theworldavatar.com/kb/hkg/hongkong/buildings/";
 
 
 	    String jsonData = readFile(source);
 	    JSONObject jobj = new JSONObject(jsonData);
-		RDFIndividual citymodel = citymodelclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/" + kbname + "#CityModel001");
+	    int numberofbuilding= jobj.getJSONArray("features").length();
+		Individual citymodel = citymodelclass.createIndividual(prefix + kbname + "#CityModel001");
+		Individual envelope=envelopeclass.createIndividual(prefix + kbname + "#Envelope001");
+		citymodel.addProperty(boundedBy, envelope);
+		envelope.setPropertyValue(srsname, jenaOwlModel.createTypedLiteral("EPSG:4326"));
 		
+		Individual uppoint=pointclass.createIndividual(prefix + kbname + "#UpperPointBoundary");
+		envelope.addProperty(uppercorner, uppoint);
+		Individual uppointcoordinates=coordinatesystemclass.createIndividual(prefix + kbname + "#UpperPointBoundary_Coordinates");
+		uppoint.addProperty(hascoordinatesystem, uppointcoordinates);
 		
-		for (int o=0;o<32;o++) //41 for singapore, 32 for hongkong
+		Individual xpointsup = coordinateclass.createIndividual(prefix + kbname + "#x_UpperPointBoundary");
+		
+		Individual ypointsup = coordinateclass.createIndividual(prefix + kbname + "#y_UpperPointBoundary");
+		
+		Individual zpointsup = coordinateclass.createIndividual(prefix + kbname + "#z_UpperPointBoundary");
+		
+		uppointcoordinates.addProperty(hasx, xpointsup);
+		uppointcoordinates.addProperty(hasy, ypointsup);
+		uppointcoordinates.addProperty(hasz, zpointsup);
+		
+		Individual vxpointsup = valueclass.createIndividual(prefix + kbname + "#V_x_UpperPointBoundary");
+		Individual vypointsup = valueclass.createIndividual(prefix + kbname + "#V_y_UpperPointBoundary");
+		Individual vzpointsup = valueclass.createIndividual(prefix + kbname + "#V_z_upperPointBoundary");
+		xpointsup.addProperty(hasvalue, vxpointsup);
+		ypointsup.addProperty(hasvalue, vypointsup);
+		zpointsup.addProperty(hasvalue, vzpointsup);
+		
+		vxpointsup.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(jobj.getDouble("xmax")));
+		vypointsup.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(jobj.getDouble("ymax")));
+		vzpointsup.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(jobj.optString("zmax", "0.0")));
+		
+		System.out.println(hasunit.getLocalName());
+		vxpointsup.addProperty(hasunit, degree);
+		vypointsup.addProperty(hasunit, degree);
+		vzpointsup.addProperty(hasunit, degree);
+		
+		Individual lowpoint=pointclass.createIndividual(prefix + kbname + "#LowerPointBoundary");
+		envelope.addProperty(lowercorner, lowpoint);
+		Individual lowpointcoordinates=coordinatesystemclass.createIndividual(prefix + kbname + "#LowerPointBoundary_Coordinates");
+		lowpoint.addProperty(hascoordinatesystem, lowpointcoordinates);
+		
+			Individual xpointslow = coordinateclass.createIndividual(prefix + kbname + "#x_LowerPointBoundary");
+			
+			Individual ypointslow = coordinateclass.createIndividual(prefix + kbname + "#y_LowerPointBoundary");
+			
+			Individual zpointslow = coordinateclass.createIndividual(prefix + kbname + "#z_LowerPointBoundary");
+		
+			
+			lowpointcoordinates.addProperty(hasx, xpointslow);
+			lowpointcoordinates.addProperty(hasy, ypointslow);
+			lowpointcoordinates.addProperty(hasz, zpointslow);
+			
+			Individual vxpointslow = valueclass.createIndividual(prefix + kbname + "#V_x_LowerPointBoundary");
+			Individual vypointslow = valueclass.createIndividual(prefix + kbname + "#V_y_LowerPointBoundary");
+			Individual vzpointslow = valueclass.createIndividual(prefix + kbname + "#V_z_LowerPointBoundary");
+			
+			xpointslow.addProperty(hasvalue, vxpointslow);
+			ypointslow.addProperty(hasvalue, vypointslow);
+			zpointslow.addProperty(hasvalue, vzpointslow);
+			
+			vxpointslow.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(jobj.getDouble("xmin")));
+			vypointslow.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(jobj.getDouble("ymin")));
+			vzpointslow.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(jobj.optString("zmin","0.0")));
+			
+			vxpointslow.addProperty(hasunit, degree);
+			vypointslow.addProperty(hasunit, degree);
+			vzpointslow.addProperty(hasunit, degree);
+			
+		for (int o=0;o<numberofbuilding;o++) //41 for singapore, 32 for hongkong 55 for mbs
 		{
 			String iriidentifier = "B"+UUID.randomUUID();
 			
-			RDFIndividual buildingentity = buildingclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/" + kbname + "#Building" + iriidentifier);
-			buildingentity.setPropertyValue(id, jenaOwlModel.createRDFSLiteral(String.valueOf(o), xsdDouble));
-			citymodel.addPropertyValue(cityobjectmember, buildingentity);
+			Individual buildingentity = buildingclass.createIndividual(prefix + kbname + "#Building" + iriidentifier);
+
 			
-			RDFIndividual groundins = groundclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/" + kbname	+ "#GroundSurfaceOfBuilding_"+ iriidentifier);
-			buildingentity.setPropertyValue(boundedBy, groundins);
+			citymodel.addProperty(cityobjectmember, buildingentity);
+			
+			Individual groundins = groundclass.createIndividual(prefix + kbname	+ "#GroundSurfaceOfBuilding_"+ iriidentifier);
+			buildingentity.addProperty(boundedBy, groundins);
 			
 			
-			RDFIndividual surfaceins = multisurfaceclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/" + kbname	+ "#MultiSurfaceGroundOfBuilding_"+ iriidentifier);
-			groundins.setPropertyValue(lod2MultiSurface, surfaceins);
+			Individual surfaceins = multisurfaceclass.createIndividual(prefix + kbname	+ "#MultiSurfaceGroundOfBuilding_"+ iriidentifier);
+			groundins.addProperty(lod2MultiSurface, surfaceins);
 			
-			RDFIndividual polygonins = polygonclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/" + kbname	+ "#PolygonSurfaceGroundOfBuilding_"+ iriidentifier);
-			surfaceins.setPropertyValue(surfaceMember, polygonins);
+			Individual polygonins = polygonclass.createIndividual(prefix + kbname	+ "#PolygonSurfaceGroundOfBuilding_"+ iriidentifier);
+			surfaceins.addProperty(surfaceMember, polygonins);
 			
-			RDFIndividual linearringins = ringclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/" + kbname	+ "#LinearRingOfGroundOfBuilding_"+ iriidentifier);
-			polygonins.setPropertyValue(exterior, linearringins);
+			Individual linearringins = ringclass.createIndividual(prefix + kbname	+ "#LinearRingOfGroundOfBuilding_"+ iriidentifier);
+			polygonins.addProperty(exterior, linearringins);
 			
 
 			String building = jobj.getJSONArray("features").getString(o);
 			JSONObject buildingobj = new JSONObject(building);
+			buildingentity.setPropertyValue(id, jenaOwlModel.createTypedLiteral(buildingobj.getString("id")));
 			String coordinates=buildingobj.getJSONObject("geometry").getString("coordinates");
 			System.out.println("coordinates obtained= "+coordinates);
 			String clearresult= coordinates.replace("[","").replace("]","").trim();
 			System.out.println("clear coordinates obtained= "+clearresult);
 			int amountdata=clearresult.split(",").length;
 			
-		//	for (int count=1;count<=amountdata/2;count++)
-		//	{
-		//		System.out.println("ccccccc used= "+count);
-				int i=0;
-//			RDFIndividual pointins = pointclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/" + kbname	+ "#GroundOfBuilding_"+ iriidentifier+"_Points"+count);
-//			linearringins.setPropertyValue(contains, pointins);
-//			RDFIndividual pointscoordinate = coordinatesystemclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/" + kbname + "#GroundOfBuilding_" + iriidentifier + "Point_"+ count + "_Coordinates");
+			ArrayList<String> xvalueground = new ArrayList<String>();
+			ArrayList<String> yvalueground = new ArrayList<String>();
+			for(int a=0;a<amountdata;a+=2)
+			{
+				xvalueground.add(clearresult.split(",")[a]);
+				yvalueground.add(clearresult.split(",")[a+1]);
+			}
 			
+			Double xcenter=centroid(xvalueground,yvalueground)[0];
+			Double ycenter=centroid(xvalueground,yvalueground)[1];
+			
+			
+			
+
+				int i=0;
+				
 			System.out.println("amount of data= "+amountdata);
 				for (int d = 0; d < amountdata/2; d ++) {
-					RDFIndividual pointins = pointclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/" + kbname	+ "#GroundOfBuilding_"+ iriidentifier+"_Points"+d);
-					linearringins.addPropertyValue(contains, pointins);
-					RDFIndividual pointscoordinate = coordinatesystemclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/" + kbname + "#GroundOfBuilding_" + iriidentifier + "Point_"+ d + "_Coordinates");
+					Individual pointins = pointclass.createIndividual(prefix + kbname	+ "#GroundOfBuilding_"+ iriidentifier+"_Points"+String.format("%02d", d));
+					linearringins.addProperty(contains, pointins);
+					Individual pointscoordinate = coordinatesystemclass.createIndividual(prefix + kbname + "#GroundOfBuilding_" + iriidentifier + "Point_"+ String.format("%02d", d) + "_Coordinates");
 
 					System.out.println("dddddddd used= "+d);
 				String x = clearresult.split(",")[1+d+i-1];
 				int xindex=1+d+i-1;
 				System.out.println("index x used= "+xindex);
 				System.out.println("making xpoints= "+i);
-				RDFIndividual xpoints = coordinateclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/" + kbname + "#"+ iriidentifier + "x_Point_" + i);
+				Individual xpoints = coordinateclass.createIndividual(prefix + kbname + "#"+ iriidentifier + "x_Point_" + String.format("%02d", i));
 				System.out.println("xpoints made= "+i);
-				RDFIndividual xvalpoints = valueclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/" + kbname+ "#V_" + iriidentifier + "x_Point_" + i);
-				xpoints.setPropertyValue(hasvalue, xvalpoints);
-				xvalpoints.addPropertyValue(numval, jenaOwlModel.createRDFSLiteral(x, xsdDouble));
-				xvalpoints.setPropertyValue(hasunit, m);
+				Individual xvalpoints = valueclass.createIndividual(prefix + kbname+ "#V_" + iriidentifier + "x_Point_" + String.format("%02d", i));
+				xpoints.addProperty(hasvalue, xvalpoints);
+				xvalpoints.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(x)));
+				xvalpoints.addProperty(hasunit, degree);
 
 				String y = clearresult.split(",")[1+d+i];
 				int yindex=1+d+i;
 				System.out.println("index y used= "+yindex);
 				System.out.println("making ypoints= "+i);
-				RDFIndividual ypoints = coordinateclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/" + kbname + "#"	+ iriidentifier + "y_Point_" + i);
+				Individual ypoints = coordinateclass.createIndividual(prefix + kbname + "#"	+ iriidentifier + "y_Point_" + String.format("%02d", i));
 				System.out.println("ypoints made= "+i);
-				RDFIndividual yvalpoints = valueclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/" + kbname+ "#V_" + iriidentifier + "y_Point_" + i);
-				ypoints.setPropertyValue(hasvalue, yvalpoints);
-				yvalpoints.addPropertyValue(numval, jenaOwlModel.createRDFSLiteral(y, xsdDouble));
-				yvalpoints.setPropertyValue(hasunit, m);
+				Individual yvalpoints = valueclass.createIndividual(prefix + kbname+ "#V_" + iriidentifier + "y_Point_" + String.format("%02d", i));
+				ypoints.addProperty(hasvalue, yvalpoints);
+				yvalpoints.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(y)));
+				yvalpoints.addProperty(hasunit, degree);
 				
-				RDFIndividual zpoints = coordinateclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/" + kbname + "#"	+ iriidentifier + "z_Point_" + i);
-				RDFIndividual zvalpoints = valueclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/" + kbname+ "#V_" + iriidentifier + "z_Point_" + i);
-				zpoints.setPropertyValue(hasvalue, zvalpoints);
-				zvalpoints.addPropertyValue(numval, jenaOwlModel.createRDFSLiteral("0", xsdDouble));
-				zvalpoints.setPropertyValue(hasunit, m);
+				Individual zpoints = coordinateclass.createIndividual(prefix + kbname + "#"	+ iriidentifier + "z_Point_" + String.format("%02d", i));
+				Individual zvalpoints = valueclass.createIndividual(prefix + kbname+ "#V_" + iriidentifier + "z_Point_" + String.format("%02d", i));
+				zpoints.addProperty(hasvalue, zvalpoints);
+				zvalpoints.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double("0")));
+				zvalpoints.addProperty(hasunit,degree);
 				
 				i++;
 				
-				pointins.addPropertyValue(hascoordinatesystem, pointscoordinate);
-				pointscoordinate.addPropertyValue(hasx, xpoints);
-				pointscoordinate.addPropertyValue(hasy, ypoints);
-				pointscoordinate.addPropertyValue(hasz, zpoints);
+				pointins.addProperty(hascoordinatesystem, pointscoordinate);
+				pointscoordinate.addProperty(hasx, xpoints);
+				pointscoordinate.addProperty(hasy, ypoints);
+				pointscoordinate.addProperty(hasz, zpoints);
 				System.out.println("======================================================");
 				System.out.println("1point finished");
 				System.out.println("======================================================");
@@ -383,35 +515,47 @@ public class CityGMLkbfromgeojson {
 		
 			//}
 			
-				RDFIndividual buildingcoordins = coordinatesystemclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/" + kbname	+ "#CoordinateSystemOfBuilding_"+ iriidentifier);
-				buildingentity.setPropertyValue(hascoordinatesystem, buildingcoordins);
+				Individual buildingcoordins = coordinatesystemclass.createIndividual(prefix + kbname	+ "#CoordinateSystemOfBuilding_"+ iriidentifier);
+				buildingentity.addProperty(hascoordinatesystem, buildingcoordins);
 				
-				RDFIndividual buildingcoordx = coordinateclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/" + kbname	+ "#x_Building_"+ iriidentifier);
-				buildingcoordins.addPropertyValue(hasx, buildingcoordx);
+				Individual buildingcoordx = coordinateclass.createIndividual(prefix + kbname	+ "#x_Building_"+ iriidentifier);
+				buildingcoordins.addProperty(hasx, buildingcoordx);
 				
-				RDFIndividual buildingcoordy = coordinateclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/" + kbname	+ "#y_Building_"+ iriidentifier);
-				buildingcoordins.addPropertyValue(hasy, buildingcoordy);
+				Individual buildingcoordy = coordinateclass.createIndividual(prefix + kbname	+ "#y_Building_"+ iriidentifier);
+				buildingcoordins.addProperty(hasy, buildingcoordy);
 				
-				RDFIndividual buildingcoordxvalue = valueclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/" + kbname	+ "#V_x_Building_"+ iriidentifier);
-				buildingcoordx.setPropertyValue(hasvalue, buildingcoordxvalue);
-				String xcentre = buildingobj.getJSONObject("properties").getString("xcenter");
-				buildingcoordxvalue.addPropertyValue(numval, jenaOwlModel.createRDFSLiteral(xcentre, xsdDouble));
-				buildingcoordxvalue.setPropertyValue(hasunit, m);
+				Individual buildingcoordxvalue = valueclass.createIndividual(prefix + kbname	+ "#V_x_Building_"+ iriidentifier);
+				buildingcoordx.addProperty(hasvalue, buildingcoordxvalue);
+				String xcentre = buildingobj.getJSONObject("properties").optString("xcenter",String.valueOf(xcenter));
+				buildingcoordxvalue.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(xcentre)));
+				buildingcoordxvalue.addProperty(hasunit, degree);
 				
-				RDFIndividual buildingcoordyvalue = valueclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/" + kbname	+ "#V_y_Building_"+ iriidentifier);
-				buildingcoordy.setPropertyValue(hasvalue, buildingcoordyvalue);
-				String ycentre = buildingobj.getJSONObject("properties").getString("ycenter");
-				buildingcoordyvalue.addPropertyValue(numval, jenaOwlModel.createRDFSLiteral(ycentre, xsdDouble));
-				buildingcoordyvalue.setPropertyValue(hasunit, m);
+				Individual buildingcoordyvalue = valueclass.createIndividual(prefix + kbname	+ "#V_y_Building_"+ iriidentifier);
+				buildingcoordy.addProperty(hasvalue, buildingcoordyvalue);
+				String ycentre = buildingobj.getJSONObject("properties").optString("ycenter",String.valueOf(ycenter));
+				buildingcoordyvalue.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double (ycentre)));
+				buildingcoordyvalue.addProperty(hasunit, degree);
 				
-				String height = buildingobj.getJSONObject("properties").getString("height");
-				RDFIndividual heightofbuilding = lengthclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/"+ kbname + "#EstimatedHeight_Building_" + iriidentifier);
-				RDFIndividual heightval = scalarvalueclass.createRDFIndividual("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/"	+ kbname + "#V_EstimatedHeight_Building_" + iriidentifier);
-				buildingentity.setPropertyValue(measuredHeight, heightofbuilding);
-				heightofbuilding.setPropertyValue(hasvalue, heightval);
-				heightval.setPropertyValue(hasunit, m);
-				heightval.addPropertyValue(numval, jenaOwlModel.createRDFSLiteral(height, xsdDouble));
-					
+				Individual minheightofbuilding = lengthclass.createIndividual(prefix+ kbname + "#MinHeight_Building_" + iriidentifier);
+				Individual minheightval = scalarvalueclass.createIndividual(prefix	+ kbname + "#V_MinHeight_Building_" + iriidentifier);
+				buildingentity.addProperty(lowerHeight, minheightofbuilding);
+				minheightofbuilding.addProperty(hasvalue, minheightval);
+				minheightval.addProperty(hasunit, m);
+				
+				//String lowerheightnumber = buildingobj.getJSONObject("properties").optString("minHeight", "0");
+				String lowerheightnumber = buildingobj.getJSONObject("properties").optString("levels", "0");
+				minheightval.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double (lowerheightnumber)));
+				
+				Individual heightofbuilding = lengthclass.createIndividual(prefix+ kbname + "#EstimatedHeight_Building_" + iriidentifier);
+				Individual heightval = scalarvalueclass.createIndividual(prefix	+ kbname + "#V_EstimatedHeight_Building_" + iriidentifier);
+				buildingentity.addProperty(measuredHeight, heightofbuilding);
+				heightofbuilding.addProperty(hasvalue, heightval);
+				heightval.addProperty(hasunit, m);
+				
+				
+				String height = buildingobj.getJSONObject("properties").optString("height", "40");
+				heightval.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(height)));			
+				
 				System.out.println("======================================================");
 				System.out.println("1building finished");
 				System.out.println("======================================================");
