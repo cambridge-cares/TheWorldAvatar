@@ -1,116 +1,136 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- This is updated version of ontochem_rdf.xsl where the following URI is used: http://www.theworldavatar.com/kb/{$folder_name}.owl# -->
+<!-- This is updated version of ontochem_rdf.xsl where the following URI 
+	is used: http://www.theworldavatar.com/kb/{$folder_name}.owl# -->
 <!-- Date: February 12th, 2019. -->
 
-<!--
-	Author: Nenad B. Krdzavac, e-mail: nk510(at)cam.ac.uk
-	
-	
-	
-	    Copyright: Department of Chemical Engineering and Biotechnology, University 
-	    of Cambrdige, United Kingdom, 2018.
+<!-- Author: Nenad B. Krdzavac, e-mail: nk510(at)cam.ac.uk Copyright: Department 
+	of Chemical Engineering and Biotechnology, University of Cambrdige, United 
+	Kingdom, 2018. This xslt transforms from CompChem XML files to rdf graph 
+	as instance of CompChem ontology (An extension of Gainesville Core Ontology 
+	(GNVC) ver 0.7.). At the moment it covers the transformation of the following 
+	features: 1. Empirical formula (Formula name), 2. Atom counts, 3. Atom element 
+	type, 4. Frequencies - Frequency unit, - Frequency values, - Frequency size, 
+	5. Rotational symmetry number, 6. Rotational constants - Rotational constants 
+	value, - Rotational constants units, - Rotational constants size, 7. Geometry 
+	type, 8. Spin multiplicity, 9. Atomic mass for each atom - Atomic mass value 
+	- Atomic mass unit 10. Basis set, 11. Level of theory, 12. Program name, 
+	13. Program version, 14. Run date, 15. Geometry - Coordinates X, Y, Z, 16. 
+	Formal charge. -->
 
-	This xslt transforms from CompChem XML files to rdf graph as instance 
-		of CompChem ontology (An extension of Gainesville Core Ontology (GNVC) ver 0.7.). At the moment it covers the 
-		transformation of the following features:
-		
-		1.  Empirical formula (Formula name),
-		2.  Atom counts,
-		3.  Atom element type, 
-		4.  Frequencies 
-		    - Frequency unit,
-		    - Frequency values, 
-		    - Frequency size,
-		5.  Rotational symmetry number, 
-		6.  Rotational constants 
-		    - Rotational constants value,
-		    - Rotational constants units,
-		    - Rotational constants size,
-		7. Geometry type, 
-		8. Spin multiplicity, 
-		9. Atomic mass for each atom
-		    - Atomic mass value
-		    - Atomic mass unit
-		10. Basis set,
-		11. Level of theory,
-		12. Program name,
-		13. Program version,
-		14. Run date,	
-		15. Geometry
-		    - Coordinates X, Y, Z,
-		16. Formal charge. 
--->
+<xsl:transform version="2.0"
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	xmlns:s="http://www.xml-cml.org/schema"
+	xmlns:owl="http://www.w3.org/2002/07/owl#"
+	xmlns:convention="http://www.xml-cml.org/convention"
+	xmlns:cc="http://www.xml-cml.org/dictionary/compchem"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:nonSi="http://www.xml-cml.org/unit/nonSi"
+	xmlns:si="http://www.xml-cml.org/unit/si"
+	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+	xmlns:ontocompchem="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#"
+	xmlns:gc="http://purl.org/gc/"
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:fn="http://www.w3.org/2005/xpath-functions"
+	xmlns:uuid="java.util.UUID" xmlns:math="java.lang.Math"
+	exclude-result-prefixes="math uuid convention cc xsd nonSi si s">
 
-<xsl:transform version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-    xmlns:s="http://www.xml-cml.org/schema"
-    xmlns:owl="http://www.w3.org/2002/07/owl#"
-    xmlns:convention="http://www.xml-cml.org/convention" xmlns:cc="http://www.xml-cml.org/dictionary/compchem" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi" xmlns:si="http://www.xml-cml.org/unit/si"
-	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"  xmlns:ontocompchem="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#" xmlns:compchem="https://como.cheng.cam.ac.uk/kb/compchem.owl#"
-	xmlns:gc="http://purl.org/gc/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:fn="http://www.w3.org/2005/xpath-functions"
-	xmlns:uuid="java.util.UUID" xmlns:math="java.lang.Math" exclude-result-prefixes="math uuid convention cc xsd nonSi si s">
-	
-    <xsl:output method="xml" indent="yes"/>
+	<xsl:output method="xml" indent="yes" />
 
 	<!-- Applying all templates xmlns:xd="http://www.pnp-software.com/XSLTdoc" -->
 
 	<xsl:template match="/">
-     
-		<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-			xmlns:unit="http://data.nasa.gov/qudt/owl/unit#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-			xmlns:ontocompchem="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#" xmlns:spin="http://spinrdf.org/spin#"
-			xmlns:compchem="https://como.cheng.cam.ac.uk/kb/compchem.owl#"			
-			xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:gc="http://purl.org/gc/"
-			xmlns:qudt="http://data.nasa.gov/qudt/owl/qudt#" 			
+
+		<rdf:RDF
+			xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+			xmlns:unit="http://data.nasa.gov/qudt/owl/unit#"
+			xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+			xmlns:ontocompchem="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#"
+			xmlns:owl="http://www.w3.org/2002/07/owl#"
+			xmlns:gc="http://purl.org/gc/"
+			xmlns:qudt="http://data.nasa.gov/qudt/owl/qudt#"
 			xmlns:table="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#">
 
+			<!-- the following uri is removed from namespace list: xmlns:compchem="https://como.cheng.cam.ac.uk/kb/compchem.owl#" -->
+
 			<owl:Ontology rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#">
-			<owl:versionInfo>Generated by CompChem XSLT transformation</owl:versionInfo>	
+				<owl:versionInfo>Generated by compchem XSLT transformation
+				</owl:versionInfo>
+				<owl:imports
+					rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl" />
 			</owl:Ontology>
 
-			<xsl:apply-templates select="s:module/s:module/*[local-name() = 'module']"/>
-			<xsl:apply-templates select="s:module/s:module/s:module/*[local-name() = 'module']"/>
-		
+			<xsl:apply-templates
+				select="s:module/s:module/*[local-name() = 'module']" />
+			<xsl:apply-templates
+				select="s:module/s:module/s:module/*[local-name() = 'module']" />
+
 		</rdf:RDF>
-		    
+
 	</xsl:template>
 
 	<xsl:variable name="id">
-		<xsl:value-of select="(math:random()*100000)  + 1"/>
-	</xsl:variable>	
-	
-	<!-- Randomly generated UUID used as id for each G09-->
-		
-	<xsl:variable name="uuidVar">
-	<xsl:value-of select="uuid:randomUUID()"/>
-	</xsl:variable>	
-	
+		<xsl:value-of select="(math:random()*100000)  + 1" />
+	</xsl:variable>
 
-    <!-- Folder name that has the same name as folder created where we store g09, xml and owl files.  -->
-	<xsl:param name="xmlFolderName"/>
-	
-	<xsl:variable name="folder_name">
-	<xsl:value-of select="$xmlFolderName"/>
+	<!-- Randomly generated UUID used as id for each G09 -->
+
+	<xsl:variable name="uuidVar">
+		<xsl:value-of select="uuid:randomUUID()" />
 	</xsl:variable>
 
 
-		        
-	<!-- 
-	This template matches nodes that has cc:jobList and cc:job attributes 
-	value. It creates root and its child rdf nodes for molecular system by using 
-	current node name and dirctRef attribute value of current node. 
-	-->
-	
-	<xsl:template match="s:module/s:module/*[local-name() = 'module']">
+	<!-- Folder name that has the same name as folder created where we store 
+		g09, xml and owl files. -->
+	<xsl:param name="xmlFolderName" />
+
+	<xsl:variable name="folder_name">
+		<xsl:value-of select="$xmlFolderName" />
+	</xsl:variable>
+
+ <xsl:variable name="program_name">
+        
+        <xsl:for-each select="s:module/s:module/s:module/s:module/s:parameterList/s:parameter/s:scalar">
+        
+        <xsl:if test="../@dictRef='cc:program'">
+        
+        	<xsl:value-of select="."/>
+        
+        </xsl:if>
+        
+        </xsl:for-each>
+        
+        </xsl:variable>
+					
+					
+		<xsl:variable name="program_version">
+		
+        <xsl:for-each select="s:module/s:module/s:module/s:module/s:parameterList/s:parameter/s:scalar">
+        
+        <xsl:if test="../@dictRef='cc:programVersion'">
+        
+        <xsl:value-of select="."/>
+        
+        </xsl:if>
+        
+        </xsl:for-each>
+        
+        </xsl:variable>
+        	
+	<!-- This template matches nodes that has cc:jobList and cc:job attributes 
+		value. It creates root and its child rdf nodes for molecular system by using 
+		current node name and dirctRef attribute value of current node. -->
+
+	<xsl:template	match="s:module/s:module/*[local-name() = 'module']">
 
 		<xsl:variable name="vmodule">
-			<xsl:value-of select="local-name()"/>
+			<xsl:value-of select="local-name()" />
 		</xsl:variable>
 
 		<xsl:variable name="vdictRef">
 			<xsl:value-of select="@dictRef" />
 		</xsl:variable>
 		<xsl:variable name="vdictRef_no_namespace">
-			<xsl:value-of select="substring-after($vdictRef,'cc:')"/>
+			<xsl:value-of select="substring-after($vdictRef,'cc:')" />
 		</xsl:variable>
 
 		<xsl:variable name="vdictRef_parent">
@@ -118,156 +138,195 @@
 		</xsl:variable>
 
 		<xsl:variable name="vdictRef_parent_no_namespace">
-			<xsl:value-of select="substring-after($vdictRef_parent,'cc:')"/>
+			<xsl:value-of
+				select="substring-after($vdictRef_parent,'cc:')" />
 		</xsl:variable>
 
-        <xsl:variable name="folder" select="@href" />
+		<xsl:variable name="folder" select="@href" />
+
+		<xsl:variable name="formula_name">
+			<xsl:value-of
+				select="s:module/s:molecule/*[local-name() = 'formula']/@concise" />
+		</xsl:variable>		       
         
-        <xsl:variable name ="formula_name">	
-    	<xsl:value-of select="s:module/s:molecule/*[local-name() = 'formula']/@concise" />
-        </xsl:variable>
+		<!-- Creates root rdf node that is instance of 'G09' ontology class. It 
+			also creates property relation between root node and node that has a tree 
+			structure of information stored in initialization module. -->
+
+		<!-- <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_no_namespace}_{$vmodule}_molecular_methоdology_{$id}"> -->
+
+        <xsl:if test="$program_name='Gaussian'">
+         
+         <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G{$program_version}">
+         
+         <rdfs:subClassOf>
+         
+         <owl:Class rdf:about="http://purl.org/gc/Gaussian-n"/>
+         
+         </rdfs:subClassOf>   
+         
+         </owl:Class>
+         
+         </xsl:if>
+
+		<owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$folder_name}">
 			
-		<!-- 		
-		Creates root rdf node that is instance of 'G09' ontology class. It 
-		also creates property relation between root node and node that has a tree 
-		structure of information stored in initialization module. 		
-		-->
-		
-<!--   <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_no_namespace}_{$vmodule}_molecular_methоdology_{$id}">-->
-            
-            <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$folder_name}">
-			<rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09"/>
+	<!-- <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09"/> -->
+	
+	        <xsl:if test="$program_name='Gaussian'">
+			
+			<rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G{$program_version}"/>
+			
+			</xsl:if>
+			
 			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
 
 			<ontocompchem:hasInitialization rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_initilization_module_{$id}"/>
-				
-		    <ontocompchem:hasEnvironment rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_environment_module_{$id}"/>
-		    
-		    <!--<gc:hasFile><xsl:value-of select="date()" disable-output-escaping="yes"/></gc:hasFile>-->
-		    
-		    <!-- Mapping between name of species and unique URI for each species specified  in species ontology.-->
-		    
-		    <!-- begin -->
-		    
-		    <!--  edited date: 2019-02-04  -->
-		    <xsl:if test="$formula_name='Ar 1 '">
-		    <compchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_10"/>
-		    </xsl:if>
 
-            <xsl:if test="$formula_name='H 1 '">
-		    <compchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_6"/>
-		    </xsl:if>
-		    
-		    <xsl:if test="$formula_name='H 2 '">
-		    <compchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_9"/>
-		    </xsl:if>
-		    
-		    <xsl:if test="$formula_name='H 2 O 1 '">
-		    <compchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_7"/>
-		    </xsl:if>
-		    
-		    <xsl:if test="$formula_name='H 2 O 2 '">
-		    <compchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_8"/>
-		    </xsl:if>
+			<ontocompchem:hasEnvironment rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_environment_module_{$id}"/>
 
-	        <xsl:if test="$formula_name='H 1 O 2 '">
-		    <compchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_5"/>
-		    </xsl:if>		    
-		    
-		    <xsl:if test="$formula_name='N 2 '">
-		    <compchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_4"/>
-		    </xsl:if>
-		    
-		    <xsl:if test="$formula_name='O 1 '">
-		    <compchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_2"/>
-		    </xsl:if>
-		    
-		    <xsl:if test="$formula_name='O 2 '">
-		    <compchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_3"/>
-		    </xsl:if>
-		    
-		    <xsl:if test="$formula_name='H 1 O 1 '">
-		    <compchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_1"/>
-		    </xsl:if>
-		    
-		    </owl:NamedIndividual>
-		    
-		    <xsl:if test="$formula_name='Ar 1 '">
-		    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_10">
-			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+			<!--<gc:hasFile><xsl:value-of select="date()" disable-output-escaping="yes"/></gc:hasFile> -->
+
+			<!-- Mapping between name of species and unique URI for each species specified in species ontology. -->
+
+			<!-- begin -->
+
+			<!-- edited date: 2019-02-04 -->
+			<xsl:if test="$formula_name='Ar 1 '">
+				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_10" />
+			</xsl:if>
+
+			<xsl:if test="$formula_name='H 1 '">
+				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_6" />
+			</xsl:if>
+
+			<xsl:if test="$formula_name='H 2 '">
+				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_9" />
+			</xsl:if>
+
+			<xsl:if test="$formula_name='H 2 O 1 '">
+				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_7" />
+			</xsl:if>
+
+			<xsl:if test="$formula_name='H 2 O 2 '">
+				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_8" />
+			</xsl:if>
+
+			<xsl:if test="$formula_name='H 1 O 2 '">
+				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_5" />
+			</xsl:if>
+
+			<xsl:if test="$formula_name='N 2 '">
+				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_4" />
+			</xsl:if>
+
+			<xsl:if test="$formula_name='O 1 '">
+				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_2" />
+			</xsl:if>
+
+			<xsl:if test="$formula_name='O 2 '">
+				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_3" />
+			</xsl:if>
+
+			<xsl:if test="$formula_name='H 1 O 1 '">
+				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_1" />
+			</xsl:if>
+
+		</owl:NamedIndividual>
+
+		<xsl:if test="$formula_name='Ar 1 '">
+			<owl:NamedIndividual
+				rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_10">
+				<rdf:type
+					rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 			</owl:NamedIndividual>
-		    </xsl:if>
-		    
-		    <xsl:if test="$formula_name='H 1 '">
-		    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_6">
-			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+		</xsl:if>
+
+		<xsl:if test="$formula_name='H 1 '">
+			<owl:NamedIndividual
+				rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_6">
+				<rdf:type
+					rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 			</owl:NamedIndividual>
-		    </xsl:if>
-		    
-		    <xsl:if test="$formula_name='H 2 '">
-		    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_9">
-			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+		</xsl:if>
+
+		<xsl:if test="$formula_name='H 2 '">
+			<owl:NamedIndividual
+				rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_9">
+				<rdf:type
+					rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 			</owl:NamedIndividual>
-		    </xsl:if>
-		    
-		    <xsl:if test="$formula_name='H 2 O 1 '">
-		    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_7">
-			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+		</xsl:if>
+
+		<xsl:if test="$formula_name='H 2 O 1 '">
+			<owl:NamedIndividual
+				rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_7">
+				<rdf:type
+					rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 			</owl:NamedIndividual>
-		    </xsl:if>
-		    
-		    <xsl:if test="$formula_name='H 2 O 2 '">
-		    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_8">
-			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+		</xsl:if>
+
+		<xsl:if test="$formula_name='H 2 O 2 '">
+			<owl:NamedIndividual
+				rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_8">
+				<rdf:type
+					rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 			</owl:NamedIndividual>
-		    </xsl:if>
-		    
-		    <xsl:if test="$formula_name='H 1 O 2 '">
-		    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_5">
-			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+		</xsl:if>
+
+		<xsl:if test="$formula_name='H 1 O 2 '">
+			<owl:NamedIndividual
+				rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_5">
+				<rdf:type
+					rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 			</owl:NamedIndividual>
-		    </xsl:if>
-		    
-		    <xsl:if test="$formula_name='N 2 '">
-		    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_4">
-			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+		</xsl:if>
+
+		<xsl:if test="$formula_name='N 2 '">
+			<owl:NamedIndividual
+				rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_4">
+				<rdf:type
+					rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 			</owl:NamedIndividual>
-		    </xsl:if>
-		    
-		    <xsl:if test="$formula_name='O 1 '">
-		    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_2">
-			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+		</xsl:if>
+
+		<xsl:if test="$formula_name='O 1 '">
+			<owl:NamedIndividual
+				rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_2">
+				<rdf:type
+					rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 			</owl:NamedIndividual>
-		    </xsl:if>
-		    
-		    <xsl:if test="$formula_name='O 2 '">
-		    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_3">
-			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+		</xsl:if>
+
+		<xsl:if test="$formula_name='O 2 '">
+			<owl:NamedIndividual
+				rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_3">
+				<rdf:type
+					rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 			</owl:NamedIndividual>
-		    </xsl:if>
-		    
-		    <xsl:if test="$formula_name='H 1 O 1 '">
-		    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_1">
-			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+		</xsl:if>
+
+		<xsl:if test="$formula_name='H 1 O 1 '">
+			<owl:NamedIndividual
+				rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_1">
+				<rdf:type
+					rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 			</owl:NamedIndividual>
-		    </xsl:if>
-		    		    
-		    <!-- end -->
+		</xsl:if>
+
+		<!-- end -->
 
 	</xsl:template>
 
-	<!-- 
-	This template transforms all information that are available in initialization 
-	and finalization modules of CompChem xml files. 
-	-->
+	<!-- This template transforms all information that are available in initialization 
+		and finalization modules of CompChem xml files. -->
 
-	<xsl:template match="s:module/s:module/s:module/*[local-name() = 'module']">
+	<xsl:template
+		match="s:module/s:module/s:module/*[local-name() = 'module']">
 
-		<!--
-		Definitions of all variable used during xslt transformation. These 
-		variables are used in creating rdf nodes. 
-		-->
-			
+		<!-- Definitions of all variable used during xslt transformation. These 
+			variables are used in creating rdf nodes. -->
+
 		<xsl:variable name="module_type">
 			<xsl:apply-templates select="@dictRef" />
 		</xsl:variable>
@@ -289,130 +348,183 @@
 		</xsl:variable>
 
 		<xsl:variable name="vdictRef_parent_no_namespace">
-			<xsl:value-of select="substring-after($vdictRef_parent,'cc:')" />
+			<xsl:value-of
+				select="substring-after($vdictRef_parent,'cc:')" />
 		</xsl:variable>
 
 		<xsl:variable name="vdictRef_parent_of_parent">
 			<xsl:value-of select="../../@dictRef" />
 		</xsl:variable>
 
-		<xsl:variable name="vdictRef_parent_of_parent_no_namespace">
-			<xsl:value-of select="substring-after($vdictRef_parent_of_parent,'cc:')" />
+		<xsl:variable
+			name="vdictRef_parent_of_parent_no_namespace">
+			<xsl:value-of
+				select="substring-after($vdictRef_parent_of_parent,'cc:')" />
 		</xsl:variable>
 
 		<xsl:choose>
-		    	
-            <xsl:when test="$module_type='cc:environment'">
-            		    
-			<xsl:for-each select="s:parameterList/s:parameter/*[local-name() = 'scalar']">
-			
-			<xsl:if test="../@dictRef='cc:program'">
-			<owl:NamedIndividual
-					rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_parent_no_namespace}_{$vmodule}_has_environment_module_{$id}">
-			<rdf:type rdf:resource="http://purl.org/gc/SourcePackage"/>
-			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-			<ontocompchem:hasProgram><xsl:value-of select="."/></ontocompchem:hasProgram>		
-		    </owl:NamedIndividual>
-			</xsl:if>
-			
-			<xsl:if test="../@dictRef='cc:programVersion'">
-			<owl:NamedIndividual
-					rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_parent_no_namespace}_{$vmodule}_has_environment_module_{$id}">
-			<rdf:type rdf:resource="http://purl.org/gc/SourcePackage"/>
-			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-			<ontocompchem:hasProgramVersion><xsl:value-of select="."/></ontocompchem:hasProgramVersion>		
-		    </owl:NamedIndividual>
-			</xsl:if>
-			
-			<xsl:if test="../@dictRef='cc:runDate'">
-			<owl:NamedIndividual
-					rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_parent_no_namespace}_{$vmodule}_has_environment_module_{$id}">
-			<rdf:type rdf:resource="http://purl.org/gc/SourcePackage"/>
-			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-			<ontocompchem:hasRunDate><xsl:value-of select="."/></ontocompchem:hasRunDate>		
-		    </owl:NamedIndividual>
-			</xsl:if>
-			
-			
-			</xsl:for-each>
-			
-			
+
+			<xsl:when test="$module_type='cc:environment'">
+
+				<xsl:for-each
+					select="s:parameterList/s:parameter/*[local-name() = 'scalar']">
+
+					<xsl:if test="../@dictRef='cc:program'">
+						<owl:NamedIndividual
+							rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_parent_no_namespace}_{$vmodule}_has_environment_module_{$id}">
+							<rdf:type rdf:resource="http://purl.org/gc/SourcePackage" />
+							<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+							<ontocompchem:hasProgram> <xsl:value-of select="." /> </ontocompchem:hasProgram>
+						</owl:NamedIndividual>
+					</xsl:if>
+
+					<xsl:if test="../@dictRef='cc:programVersion'">
+						<owl:NamedIndividual
+							rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_parent_no_namespace}_{$vmodule}_has_environment_module_{$id}">
+							<rdf:type rdf:resource="http://purl.org/gc/SourcePackage" />
+							<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+							<ontocompchem:hasProgramVersion> <xsl:value-of select="." /> </ontocompchem:hasProgramVersion>
+						</owl:NamedIndividual>
+					</xsl:if>
+
+					<xsl:if test="../@dictRef='cc:runDate'">
+						<owl:NamedIndividual
+							rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_parent_no_namespace}_{$vmodule}_has_environment_module_{$id}">
+							<rdf:type rdf:resource="http://purl.org/gc/SourcePackage"/>
+							<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+							<ontocompchem:hasRunDate> <xsl:value-of select="."/> </ontocompchem:hasRunDate>
+						</owl:NamedIndividual>
+					</xsl:if>
+
+				</xsl:for-each>
+				
+				<!--  reference to generated (g09, xml, png) files from Gaussian files -->
+				
+				<owl:NamedIndividual
+							rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_parent_no_namespace}_{$vmodule}_has_environment_module_{$id}">
+							<rdf:type rdf:resource="http://purl.org/gc/SourcePackage"/>
+							<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+							<gc:hasOutputFile rdf:resource="http://www.theworldavatar.com/data/ontocompchem/{$folder_name}/{$folder_name}.g09"/>
+			   </owl:NamedIndividual>
+						
+			   <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_parent_no_namespace}_{$vmodule}_has_environment_module_{$id}">
+							<rdf:type rdf:resource="http://purl.org/gc/SourcePackage"/>
+							<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+							<gc:hasOutputFile rdf:resource="http://www.theworldavatar.com/data/ontocompchem/{$folder_name}/{$folder_name}.xml"/>
+			   </owl:NamedIndividual>
+
+			   <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_parent_no_namespace}_{$vmodule}_has_environment_module_{$id}">
+							<rdf:type rdf:resource="http://purl.org/gc/SourcePackage"/>
+							<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+							<gc:hasOutputFile rdf:resource="http://www.theworldavatar.com/data/ontocompchem/{$folder_name}/{$folder_name}.png"/>
+			   </owl:NamedIndividual>
+			   
+			   <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/data/ontocompchem/{$folder_name}/{$folder_name}.g09">
+			   <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#OutputSource"/>
+			   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+			   </owl:NamedIndividual>
+			   
+			   <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/data/ontocompchem/{$folder_name}/{$folder_name}.xml">
+			   <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#OutputSource"/>
+			   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+			   </owl:NamedIndividual>
+			   
+			   <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/data/ontocompchem/{$folder_name}/{$folder_name}.png">
+			   <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#OutputSource"/>
+			   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+			   </owl:NamedIndividual>
+
 			</xsl:when>
-			
- 
+
+
 			<!-- Transformation of information about molecule stored in initialization 
 				module of CompChem xml file. -->
 
 			<xsl:when test="$module_type='cc:initialization'">
-							
+
 				<owl:NamedIndividual
 					rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_parent_no_namespace}_{$vmodule}_has_initilization_module_{$id}">
-					<rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#InitializationModule"/>
-					
-					<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+					<rdf:type
+						rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#InitializationModule" />
+
+					<rdf:type
+						rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 
 					<gc:hasMoleculeProperty
-						rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_molecule_property_{$id}"/>
+						rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_molecule_property_{$id}" />
 
 				</owl:NamedIndividual>
 
 				<rdf:Description
 					rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_molecule_property_{$id}">
-					<rdf:type rdf:resource="http://purl.org/gc/MoleculeProperty" />
-					<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+					<rdf:type
+						rdf:resource="http://purl.org/gc/MoleculeProperty" />
+					<rdf:type
+						rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 				</rdf:Description>
-				
-				
-				<xsl:for-each select="s:parameterList/s:parameter/*[local-name() = 'scalar']">
-				
-				<xsl:if test="../@dictRef='cc:method'">
-				<owl:NamedIndividual
-					rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_parent_no_namespace}_{$vmodule}_has_initilization_module_{$id}">
-				<gc:hasParameter rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_level_of_theory_parameter_{$id}"/>	
-				</owl:NamedIndividual>
-			    <owl:NamedIndividual
-					rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_level_of_theory_parameter_{$id}">
-				<rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#LevelOfTheory"/>
-				<rdf:type rdf:resource="http://purl.org/gc/MethodologyFeature"/>
-				<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-				
-				<ontocompchem:hasLevelOfTheory><xsl:value-of select="."/></ontocompchem:hasLevelOfTheory>
-			    		
-		        </owl:NamedIndividual>
-			    </xsl:if>
-				
-				<xsl:if test="../@dictRef='cc:basis'">
-				
-			    <xsl:variable name="vbasis_set">
-			    <xsl:value-of select="." />
-		        </xsl:variable>
-		
-		        <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_parent_no_namespace}_{$vmodule}_has_initilization_module_{$id}">
-				<gc:hasParameter rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_basis_set_parameter_{$id}"/>	
-				</owl:NamedIndividual>
-					    
-			    <owl:NamedIndividual
-				rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_basis_set_parameter_{$id}">
-				<xsl:if test="$vbasis_set='6-311+G(d,p)'">	
-				<rdf:type rdf:resource="http://purl.org/gc/6-311pGS"/>
-				</xsl:if>
-				<rdf:type rdf:resource="http://purl.org/gc/BasisSet"/>
-				<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-				<gc:hasBasisSet><xsl:value-of select="."/></gc:hasBasisSet>
-		        </owl:NamedIndividual>
-			    </xsl:if>
-			    
-				</xsl:for-each>
-				
-				<!-- 
-				Read value of 'count' and 'elementType' attributes for a molecule 
-				as attribute values of tag 'atom' and creates rdf graph for each atom by 
-				using Periodic Table ontology. 
-				-->
-				
-				
 
-				<xsl:for-each select="s:molecule/s:atomArray/*[local-name() = 'atom']">
+
+				<xsl:for-each
+					select="s:parameterList/s:parameter/*[local-name() = 'scalar']">
+
+					<xsl:if test="../@dictRef='cc:method'">
+						<owl:NamedIndividual
+							rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_parent_no_namespace}_{$vmodule}_has_initilization_module_{$id}">
+							<gc:hasParameter
+								rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_level_of_theory_parameter_{$id}" />
+						</owl:NamedIndividual>
+						<owl:NamedIndividual
+							rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_level_of_theory_parameter_{$id}">
+							<rdf:type
+								rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#LevelOfTheory" />
+							<rdf:type
+								rdf:resource="http://purl.org/gc/MethodologyFeature" />
+							<rdf:type
+								rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+
+							<ontocompchem:hasLevelOfTheory>
+								<xsl:value-of select="." />
+							</ontocompchem:hasLevelOfTheory>
+
+						</owl:NamedIndividual>
+					</xsl:if>
+
+					<xsl:if test="../@dictRef='cc:basis'">
+
+						<xsl:variable name="vbasis_set">
+							<xsl:value-of select="." />
+						</xsl:variable>
+
+						<owl:NamedIndividual
+							rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_parent_no_namespace}_{$vmodule}_has_initilization_module_{$id}">
+							<gc:hasParameter
+								rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_basis_set_parameter_{$id}" />
+						</owl:NamedIndividual>
+
+						<owl:NamedIndividual
+							rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_basis_set_parameter_{$id}">
+							<xsl:if test="$vbasis_set='6-311+G(d,p)'">
+								<rdf:type rdf:resource="http://purl.org/gc/6-311pGS" />
+							</xsl:if>
+							<rdf:type rdf:resource="http://purl.org/gc/BasisSet" />
+							<rdf:type
+								rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+							<gc:hasBasisSet>
+								<xsl:value-of select="." />
+							</gc:hasBasisSet>
+						</owl:NamedIndividual>
+					</xsl:if>
+
+				</xsl:for-each>
+
+				<!-- Read value of 'count' and 'elementType' attributes for a molecule 
+					as attribute values of tag 'atom' and creates rdf graph for each atom by 
+					using Periodic Table ontology. -->
+
+
+
+				<xsl:for-each
+					select="s:molecule/s:atomArray/*[local-name() = 'atom']">
 
 					<xsl:variable name="velementType">
 						<xsl:value-of select="@elementType" />
@@ -425,18 +537,20 @@
 
 					<owl:NamedIndividual
 						rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_molecule_property_{$id}">
-						<rdf:type rdf:resource="http://purl.org/gc/MoleculeProperty"/>
+						<rdf:type
+							rdf:resource="http://purl.org/gc/MoleculeProperty" />
 
 						<gc:hasMolecule
-							rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_molecule_{$velementType}{$atom_count}_{generate-id()}_{$id}"/>
+							rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_molecule_{$velementType}{$atom_count}_{generate-id()}_{$id}" />
 
 					</owl:NamedIndividual>
 
-                     
+
 					<owl:NamedIndividual
 						rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_molecule_{$velementType}{$atom_count}_{generate-id()}_{$id}">
 						<rdf:type rdf:resource="http://purl.org/gc/Molecule" />
-						<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+						<rdf:type
+							rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 
 						<!-- URI for chemical elements implemented in Periodic table ontology 
 							are not available on the web. For example: http://http://daml.org/2003/01/periodictable/PeriodicTable#Ti 
@@ -454,7 +568,8 @@
 					<owl:NamedIndividual
 						rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#atom_{$velementType}{$atom_count}_{generate-id()}_{$id}">
 						<rdf:type rdf:resource="http://purl.org/gc/Atom" />
-						<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+						<rdf:type
+							rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 
 						<gc:isElement
 							rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#{$velementType}" />
@@ -465,7 +580,8 @@
 						rdf:about="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#{$velementType}">
 						<rdf:type
 							rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Element" />
-						<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+						<rdf:type
+							rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 					</owl:NamedIndividual>
 
 				</xsl:for-each>
@@ -473,12 +589,15 @@
 				<!-- Transformation of formula name available as 'concise' attribute 
 					value in CompChem xml file. -->
 
-				<xsl:for-each select="s:molecule/*[local-name() = 'formula']">
+				<xsl:for-each
+					select="s:molecule/*[local-name() = 'formula']">
 
 					<owl:NamedIndividual
 						rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_molecule_property_{$id}">
-						<rdf:type rdf:resource="http://purl.org/gc/MoleculeProperty" />
-						<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+						<rdf:type
+							rdf:resource="http://purl.org/gc/MoleculeProperty" />
+						<rdf:type
+							rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 
 						<gc:hasName>
 							<xsl:value-of select="@concise" />
@@ -495,7 +614,8 @@
 				<!-- Iterates over each property (vibrations, rotational constants, etc) 
 					and transforms xml into Abox assertions -->
 
-				<xsl:for-each select="s:propertyList/*[local-name() = 'property']">
+				<xsl:for-each
+					select="s:propertyList/*[local-name() = 'property']">
 
 					<!-- Transformation of vibrations data -->
 
@@ -506,7 +626,8 @@
 						</xsl:variable>
 
 						<xsl:variable name="vdictRef_value_no_namespace">
-							<xsl:value-of select="substring-after($vdictRef_value,'cc:')" />
+							<xsl:value-of
+								select="substring-after($vdictRef_value,'cc:')" />
 						</xsl:variable>
 
 						<xsl:for-each select="*[local-name()='array']">
@@ -516,7 +637,8 @@
 							</xsl:variable>
 
 							<xsl:variable name="fdictRef_value_no_namespace">
-								<xsl:value-of select="substring-after($fdictRef_value,'cc:')" />
+								<xsl:value-of
+									select="substring-after($fdictRef_value,'cc:')" />
 							</xsl:variable>
 
 							<xsl:variable name="frequencies_size">
@@ -534,9 +656,18 @@
 
 							<xsl:if test="$fdictRef_value='cc:frequencies'">
 
-								<!-- <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_of_parent_no_namespace}_{$vmodule}_molecular_methоdology_{$id}">-->
-								<owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$folder_name}">
-									<rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09" />
+								<!-- <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_of_parent_no_namespace}_{$vmodule}_molecular_methоdology_{$id}"> -->
+								<owl:NamedIndividual
+									rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$folder_name}">
+									
+									<!-- <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09" /> -->
+									
+									<xsl:if test="$program_name='Gaussian'">
+			
+			                        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G{$program_version}"/>
+			                        
+			                        </xsl:if>						
+									
 									<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 
 									<gc:isCalculationOn
@@ -547,36 +678,42 @@
 								<owl:NamedIndividual
 									rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_{$vdictRef_value_no_namespace}_{generate-id()}_{$id}">
 
-									<rdf:type rdf:resource="http://purl.org/gc/VibrationalAnalysis"/>
-									<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+									<rdf:type
+										rdf:resource="http://purl.org/gc/VibrationalAnalysis" />
+									<rdf:type
+										rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 
 									<gc:hasResult
-										rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_{$vdictRef_value_no_namespace}_{$fdictRef_value_no_namespace}_{generate-id()}_{$id}"/>
+										rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_{$vdictRef_value_no_namespace}_{$fdictRef_value_no_namespace}_{generate-id()}_{$id}" />
 
 								</owl:NamedIndividual>
 
 								<owl:NamedIndividual
 									rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_{$vdictRef_value_no_namespace}_{$fdictRef_value_no_namespace}_{generate-id()}_{$id}">
 
-									<rdf:type rdf:resource="http://purl.org/gc/Frequency"/>
-									<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+									<rdf:type rdf:resource="http://purl.org/gc/Frequency" />
+									<rdf:type
+										rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 
 									<ontocompchem:hasFrequencies>
-										<xsl:value-of select="."/>
+										<xsl:value-of select="." />
 									</ontocompchem:hasFrequencies>
 
-									<gc:hasUnit rdf:resource="http://purl.org/gc/{$funit_value_no_namespace}"/>
+									<gc:hasUnit
+										rdf:resource="http://purl.org/gc/{$funit_value_no_namespace}" />
 
 									<gc:hasVibrationCount>
-										<xsl:value-of select="$frequencies_size"/>
+										<xsl:value-of select="$frequencies_size" />
 									</gc:hasVibrationCount>
 
 								</owl:NamedIndividual>
 
 								<owl:NamedIndividual
 									rdf:about="http://purl.org/gc/{$funit_value_no_namespace}">
-									<rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#FrequencyUnit"/>
-									<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+									<rdf:type
+										rdf:resource="http://data.nasa.gov/qudt/owl/qudt#FrequencyUnit" />
+									<rdf:type
+										rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 								</owl:NamedIndividual>
 
 							</xsl:if>
@@ -594,28 +731,44 @@
 						</xsl:variable>
 
 						<xsl:variable name="gdictRef_value_no_namespace">
-							<xsl:value-of select="substring-after($gdictRef_value,'cc:')" />
+							<xsl:value-of
+								select="substring-after($gdictRef_value,'cc:')" />
 						</xsl:variable>
-						
-						<xsl:variable name="geometry_type_value">
-							<xsl:value-of select="substring-after($gdictRef_value,'cc:')" />
-						</xsl:variable>
-						
 
-						<!--<owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_of_parent_no_namespace}_{$vmodule}_molecular_methоdology_{$id}">-->
-						<owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$folder_name}">
-							<rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09" />
+						<xsl:variable name="geometry_type_value">
+							<xsl:value-of
+								select="substring-after($gdictRef_value,'cc:')" />
+						</xsl:variable>
+
+
+						<!--<owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_of_parent_no_namespace}_{$vmodule}_molecular_methоdology_{$id}"> -->
+						<owl:NamedIndividual
+							rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$folder_name}">
+							
+							<!--<rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09" />-->
+							
+							<xsl:if test="$program_name='Gaussian'">
+			
+			                <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G{$program_version}"/>
+			                
+			                </xsl:if>
+							
 							<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 
 							<gc:isCalculationOn
-								rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_{$gdictRef_value_no_namespace}_{generate-id()}_{$id}"/>
+								rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_{$gdictRef_value_no_namespace}_{generate-id()}_{$id}" />
 						</owl:NamedIndividual>
 
 						<owl:NamedIndividual
 							rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_{$gdictRef_value_no_namespace}_{generate-id()}_{$id}">
-							<rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#GeometryType" />
-							<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-							<ontocompchem:hasGeometryType><xsl:apply-templates select="*[local-name() = 'scalar']"/></ontocompchem:hasGeometryType>
+							<rdf:type
+								rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#GeometryType" />
+							<rdf:type
+								rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+							<ontocompchem:hasGeometryType>
+								<xsl:apply-templates
+									select="*[local-name() = 'scalar']" />
+							</ontocompchem:hasGeometryType>
 						</owl:NamedIndividual>
 
 					</xsl:if>
@@ -629,7 +782,8 @@
 						</xsl:variable>
 
 						<xsl:variable name="rsdictRef_value_no_namespace">
-							<xsl:value-of select="substring-after($rsdictRef_value,'cc:')" />
+							<xsl:value-of
+								select="substring-after($rsdictRef_value,'cc:')" />
 						</xsl:variable>
 
 						<!-- Iterates over scalar tag inside property tag. Transforms attributes 
@@ -645,9 +799,18 @@
 							</xsl:variable>
 
 
-							<!--<owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_of_parent_no_namespace}_{$vmodule}_molecular_methоdology_{$id}">-->
-                                <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$folder_name}">
-								<rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09" />
+							<!--<owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_of_parent_no_namespace}_{$vmodule}_molecular_methоdology_{$id}"> -->
+							<owl:NamedIndividual
+								rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$folder_name}">
+								
+								<!-- <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09" />-->
+								
+								<xsl:if test="$program_name='Gaussian'">
+			
+			                    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G{$program_version}"/>
+			
+                    			</xsl:if>
+								
 								<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 
 								<gc:isCalculationOn
@@ -659,7 +822,8 @@
 								rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_{$rsdictRef_value_no_namespace}_{generate-id()}_{$id}">
 								<rdf:type
 									rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#RotationalSymmetry" />
-								<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+								<rdf:type
+									rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 								<ontocompchem:hasRotationalSymmetryNumber>
 									<xsl:value-of select="." />
 								</ontocompchem:hasRotationalSymmetryNumber>
@@ -667,7 +831,8 @@
 								<!--if value of unit is 'none' then do not transform it into Abox 
 									assertion -->
 								<xsl:if test="$rsunit_value_no_namespace!='none'">
-									<gc:hasUnit rdf:resource="http://purl.org/gc/{$rsunit_value_no_namespace}" />
+									<gc:hasUnit
+										rdf:resource="http://purl.org/gc/{$rsunit_value_no_namespace}" />
 								</xsl:if>
 
 							</owl:NamedIndividual>
@@ -678,8 +843,10 @@
 							<xsl:if test="$rsunit_value_no_namespace!='none'">
 								<owl:NamedIndividual
 									rdf:about="http://purl.org/gc/{$rsunit_value_no_namespace}">
-									<rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Unit" />
-									<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+									<rdf:type
+										rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Unit" />
+									<rdf:type
+										rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 								</owl:NamedIndividual>
 							</xsl:if>
 
@@ -696,7 +863,8 @@
 						</xsl:variable>
 
 						<xsl:variable name="rcdictRef_value_no_namespace">
-							<xsl:value-of select="substring-after($rcdictRef_value,'cc:')" />
+							<xsl:value-of
+								select="substring-after($rcdictRef_value,'cc:')" />
 						</xsl:variable>
 
 						<xsl:for-each select="*[local-name()='array']">
@@ -706,31 +874,42 @@
 							</xsl:variable>
 
 							<xsl:variable name="rconst_unit_value_no_namespace">
-								<xsl:value-of select="substring-after($rconst_unit,':')" />
+								<xsl:value-of
+									select="substring-after($rconst_unit,':')" />
 							</xsl:variable>
 
 							<xsl:variable name="rotational_constants_size">
 								<xsl:value-of select="@size" />
 							</xsl:variable>
 
-							<!--<owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_of_parent_no_namespace}_{$vmodule}_molecular_methоdology_{$id}">-->
-                            <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$folder_name}">
-								<rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09"/>
-								<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+							<!--<owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_of_parent_no_namespace}_{$vmodule}_molecular_methоdology_{$id}"> -->
+							<owl:NamedIndividual
+								rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$folder_name}">
+								
+								<!--<rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09" />-->
+								
+								<xsl:if test="$program_name='Gaussian'">
+			
+			                    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G{$program_version}"/>
+			
+	 		                    </xsl:if>
+			
+								<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 
 								<gc:isCalculationOn
-									rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_{$rcdictRef_value_no_namespace}_{generate-id()}_{$id}"/>
+									rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_{$rcdictRef_value_no_namespace}_{generate-id()}_{$id}" />
 
 							</owl:NamedIndividual>
 
 							<owl:NamedIndividual
 								rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_{$rcdictRef_value_no_namespace}_{generate-id()}_{$id}">
 								<rdf:type
-									rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#RotationalConstants"/>
-								<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+									rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#RotationalConstants" />
+								<rdf:type
+									rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 
 								<ontocompchem:hasRotationalConstants>
-									<xsl:value-of select="."/>
+									<xsl:value-of select="." />
 								</ontocompchem:hasRotationalConstants>
 
 								<ontocompchem:hasRotationalConstantsCount>
@@ -738,7 +917,8 @@
 								</ontocompchem:hasRotationalConstantsCount>
 
 								<xsl:if test="$rconst_unit_value_no_namespace='GHZ'">
-									<gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#GigaHertz"/>
+									<gc:hasUnit
+										rdf:resource="http://data.nasa.gov/qudt/owl/unit#GigaHertz" />
 								</xsl:if>
 
 							</owl:NamedIndividual>
@@ -752,15 +932,17 @@
 				<!-- Definition of variable for spinMultiplicity by applying template. -->
 
 				<xsl:variable name="spin_multiplicity_variable">
-					<xsl:apply-templates select="*[local-name() = 'molecule']" />
+					<xsl:apply-templates
+						select="*[local-name() = 'molecule']" />
 				</xsl:variable>
 
-                <!-- Definition of variable for formalCharge. -->
+				<!-- Definition of variable for formalCharge. -->
 
 				<xsl:variable name="formal_charge_variable">
-					<xsl:value-of select="*[local-name() = 'molecule']/@formalCharge"/>
+					<xsl:value-of
+						select="*[local-name() = 'molecule']/@formalCharge" />
 				</xsl:variable>
-				
+
 				<!-- Transformation of the geometry of the molecule -->
 
 				<xsl:if test="*[local-name()='molecule']">
@@ -769,10 +951,20 @@
 						<xsl:value-of select="@id" />
 					</xsl:variable>
 
-					<!--<owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_of_parent_no_namespace}_{$vmodule}_molecular_methоdology_{$id}">-->
-					<owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$folder_name}">
-						<rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09" />
-						<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+					<!--<owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_of_parent_no_namespace}_{$vmodule}_molecular_methоdology_{$id}"> -->
+					<owl:NamedIndividual
+						rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$folder_name}">
+						
+						<!-- <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09" />-->
+						
+						<xsl:if test="$program_name='Gaussian'">
+			
+			                    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G{$program_version}"/>
+			
+	 		            </xsl:if>
+						
+						<rdf:type
+							rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 
 						<gc:isCalculationOn
 							rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_geometry_optimization_{generate-id()}_{$id}" />
@@ -781,64 +973,72 @@
 
 					<owl:NamedIndividual
 						rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_geometry_optimization_{generate-id()}_{$id}">
-						<rdf:type rdf:resource="http://purl.org/gc/GeometryOptimization" />
-						<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+						<rdf:type
+							rdf:resource="http://purl.org/gc/GeometryOptimization" />
+						<rdf:type
+							rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 						<gc:hasMolecule
 							rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_molecule_{$id}" />
 					</owl:NamedIndividual>
 
-					<!-- 
-					Creates rdf node that is instance of gc:Molecule class. The node 
-					contains spin multiplicity value over data type property relation 'hasSpinMultiplicity'. 
-					-->
-					
+					<!-- Creates rdf node that is instance of gc:Molecule class. The node 
+						contains spin multiplicity value over data type property relation 'hasSpinMultiplicity'. -->
+
 					<xsl:choose>
-                    <xsl:when test="string-length($spin_multiplicity_variable)>0">
-					<owl:NamedIndividual
-						rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_molecule_{$id}">
-						<rdf:type rdf:resource="http://purl.org/gc/Molecule" />
-						<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
-						<ontocompchem:hasSpinMultiplicity>
-							<xsl:value-of select="$spin_multiplicity_variable" /></ontocompchem:hasSpinMultiplicity>
-					</owl:NamedIndividual>
-					</xsl:when>
-					
+						<xsl:when
+							test="string-length($spin_multiplicity_variable)>0">
+							<owl:NamedIndividual
+								rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_molecule_{$id}">
+								<rdf:type rdf:resource="http://purl.org/gc/Molecule" />
+								<rdf:type
+									rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+								<ontocompchem:hasSpinMultiplicity>
+									<xsl:value-of select="$spin_multiplicity_variable" />
+								</ontocompchem:hasSpinMultiplicity>
+							</owl:NamedIndividual>
+						</xsl:when>
+
 					</xsl:choose>
 
-                    <!-- 
-					Creates rdf node that is instance of gc:Molecule class. The node 
-					contains formal charge value over data type property relation 'hasFormalCharge'. 
-					-->
-					
-                    <xsl:choose>
-                    
-                    <xsl:when test="string-length($formal_charge_variable)>0">
+					<!-- Creates rdf node that is instance of gc:Molecule class. The node 
+						contains formal charge value over data type property relation 'hasFormalCharge'. -->
 
-					<owl:NamedIndividual
-						rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_molecule_{$id}">
-						<rdf:type rdf:resource="http://purl.org/gc/Molecule"/>
-						<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-						<gc:hasFormalCharge resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_molecule_formal_charge_{$id}"/>							
-					</owl:NamedIndividual>
-					
-					<owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_molecule_formal_charge_{$id}">
-					<rdf:type rdf:resource="http://purl.org/gc/IntegerValue"/>
-					<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-					<gc:hasValue>
-					<xsl:value-of select="$formal_charge_variable" />
-					</gc:hasValue>
-					<gc:hasUnit rdf:resource="http://purl.org/gc/atomicUnit"/>
-					</owl:NamedIndividual>
-					
-					</xsl:when>
-					
+					<xsl:choose>
+
+						<xsl:when test="string-length($formal_charge_variable)>0">
+
+							<owl:NamedIndividual
+								rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_molecule_{$id}">
+								<rdf:type rdf:resource="http://purl.org/gc/Molecule" />
+								<rdf:type
+									rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+								<gc:hasFormalCharge
+									resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_molecule_formal_charge_{$id}" />
+							</owl:NamedIndividual>
+
+							<owl:NamedIndividual
+								rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_molecule_formal_charge_{$id}">
+								<rdf:type
+									rdf:resource="http://purl.org/gc/IntegerValue" />
+								<rdf:type
+									rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+								<gc:hasValue>
+									<xsl:value-of select="$formal_charge_variable" />
+								</gc:hasValue>
+								<gc:hasUnit
+									rdf:resource="http://purl.org/gc/atomicUnit" />
+							</owl:NamedIndividual>
+
+						</xsl:when>
+
 					</xsl:choose>
-					
+
 
 					<!-- Iterates over atom tags in order to transform atom's attribute 
 						value such as z3, y3, x3, id, elementType. -->
 
-					<xsl:for-each select="s:molecule/s:atomArray/*[local-name() = 'atom']">
+					<xsl:for-each
+						select="s:molecule/s:atomArray/*[local-name() = 'atom']">
 
 						<xsl:variable name="vid">
 							<xsl:value-of select="@id" />
@@ -855,11 +1055,11 @@
 						<xsl:variable name="z3">
 							<xsl:value-of select="@z3" />
 						</xsl:variable>
-						
+
 						<xsl:variable name="atomicMass">
 							<xsl:value-of select="@atomicMass" />
 						</xsl:variable>
-						
+
 						<owl:NamedIndividual
 							rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_molecule_{$id}">
 							<gc:hasAtom
@@ -867,12 +1067,13 @@
 
 						</owl:NamedIndividual>
 
-						<!--Created rdf node that is instance of gc:Atom class.-->
+						<!--Created rdf node that is instance of gc:Atom class. -->
 
 						<owl:NamedIndividual
 							rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_atom_{$velementType}{$vid}_{generate-id()}_{$id}">
 							<rdf:type rdf:resource="http://purl.org/gc/Atom" />
-							<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+							<rdf:type
+								rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 							<gc:isElement
 								rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#{$velementType}" />
 							<gc:hasAtomCoordinateX
@@ -881,27 +1082,31 @@
 								rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_coordinate_y3_{$velementType}{$vid}_{generate-id()}_{$id}" />
 							<gc:hasAtomCoordinateZ
 								rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_coordinate_z3_{$velementType}{$vid}_{generate-id()}_{$id}" />
-							
-							<gc:hasMass rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_mass_{$velementType}{$vid}_{generate-id()}_{$id}"/>
-							
+
+							<gc:hasMass
+								rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_mass_{$velementType}{$vid}_{generate-id()}_{$id}" />
+
 						</owl:NamedIndividual>
-						
-						
+
+
 						<owl:NamedIndividual
 							rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_mass_{$velementType}{$vid}_{generate-id()}_{$id}">
 							<rdf:type rdf:resource="http://purl.org/gc/FloatValue" />
-							<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+							<rdf:type
+								rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 							<gc:hasValue>
-								<xsl:value-of select="$atomicMass"/>
+								<xsl:value-of select="$atomicMass" />
 							</gc:hasValue>
-							<gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Dalton"/>
+							<gc:hasUnit
+								rdf:resource="http://data.nasa.gov/qudt/owl/unit#Dalton" />
 						</owl:NamedIndividual>
-						
+
 
 						<owl:NamedIndividual
 							rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_coordinate_x3_{$velementType}{$vid}_{generate-id()}_{$id}">
 							<rdf:type rdf:resource="http://purl.org/gc/FloatValue" />
-							<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+							<rdf:type
+								rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 							<gc:hasValue>
 								<xsl:value-of select="$x3" />
 							</gc:hasValue>
@@ -910,7 +1115,8 @@
 						<owl:NamedIndividual
 							rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_coordinate_y3_{$velementType}{$vid}_{generate-id()}_{$id}">
 							<rdf:type rdf:resource="http://purl.org/gc/FloatValue" />
-							<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+							<rdf:type
+								rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 							<gc:hasValue>
 								<xsl:value-of select="$y3" />
 							</gc:hasValue>
@@ -919,7 +1125,8 @@
 						<owl:NamedIndividual
 							rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_coordinate_z3_{$velementType}{$vid}_{generate-id()}_{$id}">
 							<rdf:type rdf:resource="http://purl.org/gc/FloatValue" />
-							<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+							<rdf:type
+								rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 							<gc:hasValue>
 								<xsl:value-of select="$z3" />
 							</gc:hasValue>
@@ -929,7 +1136,8 @@
 							rdf:about="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#{$velementType}">
 							<rdf:type
 								rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Element" />
-							<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+							<rdf:type
+								rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 						</owl:NamedIndividual>
 
 					</xsl:for-each>
@@ -952,8 +1160,8 @@
 		<xsl:value-of select="@spinMultiplicity" />
 	</xsl:template>
 
-    <xsl:template match="*[local-name() = 'scalar']">
+	<xsl:template match="*[local-name() = 'scalar']">
 		<xsl:value-of select="." />
 	</xsl:template>
-		
+
 </xsl:transform>
