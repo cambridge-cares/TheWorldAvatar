@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.powsys.electricalnetwork.test;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import junit.framework.TestCase;
@@ -139,6 +140,11 @@ public class TestEN extends TestCase {
 	public void testreading() throws IOException {
 		ENAgent b= new ENAgent ();
 		b.readResult("C:/JPS_DATA/workingdir/JPS_POWSYS/gen.txt", 21);
+	}
+	
+	public void testdoconversion() throws IOException, URISyntaxException {
+		ENAgent b= new ENAgent ();
+		b.doConversion("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
 	}
 
 }
