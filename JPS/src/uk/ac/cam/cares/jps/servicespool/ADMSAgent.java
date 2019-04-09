@@ -118,7 +118,9 @@ public class ADMSAgent extends HttpServlet {
 				sourceXY = getPlantXY(plantIRI); 				
 			}
 			
-			String newBuildingData = retrieveBuildingDataInJSON(cityIRI, sourceXY[0], sourceXY[1], lowerx, lowery, upperx, uppery);
+//			String newBuildingData = retrieveBuildingDataInJSON(cityIRI, sourceXY[0], sourceXY[1], lowerx, lowery, upperx, uppery);
+//			newBuildingData = newBuildingData.replace('\"', '\'');
+			String newBuildingData = retrieveBuildingDataInJSON(input);
 			newBuildingData = newBuildingData.replace('\"', '\'');
 			
 			String srsname = region.getString("srsname");
@@ -297,13 +299,30 @@ public class ADMSAgent extends HttpServlet {
 		} 
 	}
 	
-	private String retrieveBuildingDataInJSON(String city, double plantx, double planty, double lowerx, double lowery, double upperx, double uppery) {
+//	private String retrieveBuildingDataInJSON(String city, double plantx, double planty, double lowerx, double lowery, double upperx, double uppery) {
+//		
+//		logger.info("retrieveBuildingDataInJSON, city=" + city + ", plantx=" + plantx + ", planty=" + planty
+//				+ ", lowerx=" + lowerx + ", lowery=" + lowery + ", upperx=" + upperx + ", uppery=" + uppery);
+//		
+//		List<String> buildingIRIs = new BuildingQueryPerformer().performQueryClosestBuildingsFromRegion(city, plantx, planty, 25, lowerx, lowery, upperx, uppery);
+//		logger.info("building iris in ADMS Agent: " + buildingIRIs.toString());
+//		SimpleBuildingData result = new BuildingQueryPerformer().performQuerySimpleBuildingData(city, buildingIRIs);
+//		String argument = new Gson().toJson(result);
+//		return argument;
+//	}
+	
+	private String retrieveBuildingDataInJSON(JSONObject input) {
 		
-		logger.info("retrieveBuildingDataInJSON, city=" + city + ", plantx=" + plantx + ", planty=" + planty
-				+ ", lowerx=" + lowerx + ", lowery=" + lowery + ", upperx=" + upperx + ", uppery=" + uppery);
+		String city=input.getString("city");
+		int buildingnum=input.getJSONArray("building").length();
+		List<String> buildingIRIs = new ArrayList<String>();
+		for(int a=0;a<buildingnum;a++) {
+			buildingIRIs.add(input.getJSONArray("building").getString(a));
+		}
 		
-		List<String> buildingIRIs = new BuildingQueryPerformer().performQueryClosestBuildingsFromRegion(city, plantx, planty, 25, lowerx, lowery, upperx, uppery);
-		logger.info("building iris in ADMS Agent: " + buildingIRIs.toString());
+		String buildinglist=String.valueOf(input.getJSONArray("building").length());
+		System.out.println("what is building list??? "+buildinglist);
+		System.out.println("element-0??? "+buildingIRIs.get(0));
 		SimpleBuildingData result = new BuildingQueryPerformer().performQuerySimpleBuildingData(city, buildingIRIs);
 		String argument = new Gson().toJson(result);
 		return argument;

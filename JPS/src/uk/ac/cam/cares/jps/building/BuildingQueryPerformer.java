@@ -100,7 +100,8 @@ public class BuildingQueryPerformer implements SparqlConstants {
 	}
 	
 	public List<String> performQueryClosestBuildingsFromRegion(String cityIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
-		
+		//To-DO : later need to connect this to query for the height of plant
+		double plh = 20.0; 
 		double plx = plantx;
 		double ply = planty;
 		double lx = lowerx;
@@ -127,6 +128,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {upperx, uppery});
 			ux = p[0];
 			uy = p[1];
+			
 		} else {
 			if (!DEFAULT_CRS_NAME.equals(targetCRSName)) {
 				
@@ -148,7 +150,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			}
 		}
 
-		String query = getQueryClosestBuildingsFromRegion(200, lx, ly, ux, uy);
+		String query = getQueryClosestBuildingsFromRegion(350, lx, ly, ux, uy);
 		//logger.info("BEFORE performQuery");
 		String result = performQuery(cityIRI, query);
 		//logger.info("AFTER performQuery");
@@ -158,32 +160,83 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		//system.out.println("============================================");
 		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		
-		return selectClosestBuilding(plx, ply, buildingLimit, map);
+		return selectClosestBuilding(plx, ply, buildingLimit, map, plh);
 	}
 	
-	public List<String> selectClosestBuilding(double centerx, double centery, int buildingLimit, Map<String, List<String>> map) {
+	
+	
+	public List<String> selectClosestBuilding(double centerx, double centery, int buildingLimit, Map<String, List<String>> map, double sourceheight) {
 		
 		List<String> result = new ArrayList<String>();
 		
 		class DistanceBuildingPair {
 			double distance;
 			String buildingIRI;
+			double height;
+
 		}
+		
+		
 		
 		int size = map.get("bdn").size();
 		DistanceBuildingPair[] pairs = new DistanceBuildingPair[size];
+		System.out.println("pairsize= "+size);
 		for (int i=0; i<size; i++) {
 	
 			double x = Double.valueOf(map.get("x").get(i));
 			double y = Double.valueOf(map.get("y").get(i));
+			
+			
 			Point2d diff = new Point2dImpl(x,y).minus(new Point2dImpl(centerx, centery));
 			double distance = PolygonUtil.length(diff);
 			
 			DistanceBuildingPair newPair = new DistanceBuildingPair();
 			newPair.distance = distance;
 			newPair.buildingIRI = map.get("bdn").get(i);
+			newPair.height=Double.valueOf(map.get("h").get(i));
 			pairs[i] = newPair;
+			
+			
+			//score = constant1*(1/distance+1) + height;
 		}
+		
+		
+
+		
+		Comparator<DistanceBuildingPair> comparator2 = new Comparator<DistanceBuildingPair>() {
+
+			@Override
+			public int compare(DistanceBuildingPair o1, DistanceBuildingPair o2) {
+				if (o1.height == o2.height) {
+					return 0;
+				}
+				if (o1.height > o2.height) {
+					return -1;
+				}
+				return 1;
+			}
+		};
+		
+
+		
+		Arrays.sort(pairs, comparator2);
+		
+		DistanceBuildingPair[] newpairs2 = new DistanceBuildingPair[size];
+
+		int sizepair=pairs.length;
+
+		double selectionnumber2=0.25*new Double(sizepair);
+		int selectionnumber=(int) selectionnumber2;
+		
+		if(selectionnumber<25) {
+			selectionnumber=sizepair;
+		}
+		for(int a=0;a<selectionnumber;a++) {
+			newpairs2[a]=pairs[a];
+			newpairs2[a].distance=pairs[a].distance;
+			newpairs2[a].buildingIRI=pairs[a].buildingIRI;
+		}
+			
 		
 		Comparator<DistanceBuildingPair> comparator = new Comparator<DistanceBuildingPair>() {
 
@@ -198,12 +251,19 @@ public class BuildingQueryPerformer implements SparqlConstants {
 				return 1;
 			}
 		};
+		Arrays.sort(pairs, comparator); //test
 		
-		Arrays.sort(pairs, comparator);
-		
-		int min = Math.min(size, buildingLimit);
-		for (int i=0; i<min; i++) {
-			result.add(pairs[i].buildingIRI);
+		int min = Math.min(size, buildingLimit);    //buildinglimit=25
+//		for (int i=0; i<min; i++) {
+//			result.add(pairs[i].buildingIRI);
+//		}
+		int i=0;
+		while (result.size()<min){
+			//if(newpairs2[i].height>sourceheight/3) {  //temporarily not considering the height of plant yet
+			result.add(newpairs2[i].buildingIRI);
+			System.out.println("the height of building picked= "+newpairs2[i].height);
+			//}
+			i++;
 		}
 		
 		return result;
@@ -212,15 +272,21 @@ public class BuildingQueryPerformer implements SparqlConstants {
 	public String getQueryClosestBuildingsFromRegion(int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
 		
 		String query = PREFIX_ONTOCAPE_SYS + PREFIX_ONTOCAPE_SPACE_AND_TIME_EXTENDED + PREFIX_CITYGML + PREFIX_XSD +
-			"SELECT distinct ?bdn ?x ?y\n" + 
+			"SELECT distinct ?bdn ?x ?y ?h \n" + 
 			"WHERE {\n" + 
 			"?bdn a citygml:BuildingType .\n" + 
 			"?bdn space_and_time_extended:hasGISCoordinateSystem ?coordinates .\n" + 
 			CITYGML_HASCOORDINATES_XY +
+			"?bdn a citygml:BuildingType .\n" + 
+			"?bdn citygml:measuredHeight ?hgt .\n" +
+			"?hgt sys:hasValue ?vhgt .\n" + 
+			"?vhgt sys:numericalValue ?h .\n" + 
+			
 			"Filter(xsd:double(?x) > \"%f\"^^xsd:double && xsd:double(?y) > \"%f\"^^xsd:double && xsd:double(?x) < \"%f\"^^xsd:double && xsd:double(?y) < \"%f\"^^xsd:double) \n" + 	
 			"}\n" + 
 			"LIMIT %d";
 
+		//add the format for the height
 		return format(query, lowerx, lowery, upperx, uppery, buildingLimit);
 	}
 	

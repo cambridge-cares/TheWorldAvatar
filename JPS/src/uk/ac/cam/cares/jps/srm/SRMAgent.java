@@ -427,8 +427,7 @@ public class SRMAgent extends HttpServlet  {
 				startSRM("C:/Program Files/Kinetics and SRM Engine Suite");
 				
 				String jsonFiledir = AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/OutputCase00001Cyc0001ADMS.json";
-//				JSONObject json = dojsonmodif(jsonFiledir);
-				JSONObject json = new JSONObject(jsonFiledir);
+				JSONObject json = dojsonmodif(jsonFiledir);
 				AgentCaller.writeJsonParameter(response, json);
 		
 		

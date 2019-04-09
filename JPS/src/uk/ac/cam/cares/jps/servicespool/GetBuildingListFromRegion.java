@@ -49,8 +49,18 @@ public class GetBuildingListFromRegion extends HttpServlet {
 			double plantx = coords[2][0];
 			double planty = coords[2][1];
 			
+			if(city.toLowerCase().contains("singapore")||city.toLowerCase().contains("hong")) {
+				upperx=Double.parseDouble(""+input.getJSONObject("region").getJSONObject("uppercorner").get("upperx"));
+				lowerx=Double.parseDouble(""+input.getJSONObject("region").getJSONObject("lowercorner").get("lowerx"));
+				uppery = Double.parseDouble(""+input.getJSONObject("region").getJSONObject("uppercorner").get("uppery"));
+				lowery=Double.parseDouble(""+input.getJSONObject("region").getJSONObject("lowercorner").get("lowery"));
+				double[] sourceXY = new double[] {(lowerx + upperx)/2, (lowery + uppery)/2};	
+				plantx=sourceXY[0];
+				planty=sourceXY[1];
+			}
+			
 //			System.out.println(lowerx + " | " + lowery + " | " + upperx + " | " + uppery +  " | " + plantx + " | " + planty);
-			logger.debug(lowerx + " | " + lowery + " | " + upperx + " | " + uppery +  " | " + plantx + " | " + planty);
+			logger.info(lowerx + " || " + lowery + " || " + upperx + " || " + uppery +  " || " + plantx + " || " + planty);
 			
 			BuildingQueryPerformer performer = new BuildingQueryPerformer();
 			List<String> buildingIRIs = performer.performQueryClosestBuildingsFromRegion(city.trim(), plantx, planty, 25, 
