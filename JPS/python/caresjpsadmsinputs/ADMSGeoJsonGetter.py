@@ -219,7 +219,8 @@ def return_buildings():
         sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/mbs/sparql"
     elif cityiri == "http://dbpedia.org/resource/Hong_Kong":
         owlCRS = Proj(init='epsg:4326')
-        sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/hongkongbuildingsrealdata/sparql"
+        #sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/hongkongbuildingsrealdata/sparql"
+        sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/hongkongbuildings/sparql"
 
     if listOfIRIs == []:
         raise ValueError("EMPTY ARRAY")
