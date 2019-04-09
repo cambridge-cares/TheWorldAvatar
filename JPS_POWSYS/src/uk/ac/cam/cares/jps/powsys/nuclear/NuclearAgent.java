@@ -93,13 +93,15 @@ public class NuclearAgent extends HttpServlet {
 		String startbatCommand ="C:/JPS_DATA/workingdir/JPS_POWSYS/gamsexecute.bat";
 		
 		ArrayList<String> groupcommand= new ArrayList<String>();
-		groupcommand.add("start");
-		groupcommand.add("C:/JPS_DATA/workingdir/JPS_POWSYS/gamsexecute.bat");
-		
+		//groupcommand.add("start");
+		//groupcommand.add("C:/JPS_DATA/workingdir/JPS_POWSYS/gamsexecute.bat");
+		//groupcommand.add("C:/GAMS/win64/26.1/gams.exe");
+		//groupcommand.add("C:/JPS_DATA/workingdir/JPS_POWSYS/final.gms,WDIR=C:/JPS_DATA/workingdir/JPS_POWSYS/,SCRDIR=C:/JPS_DATA/workingdir/JPS_POWSYS/");
+		//groupcommand.add("LO=2");
 		
         
-		CommandHelper.executeSingleCommand(folderlocation,startbatCommand);
-//		CommandHelper.executeCommands(folderlocation, groupcommand);   
+	CommandHelper.executeSingleCommand(folderlocation,startbatCommand);
+		//CommandHelper.executeCommands(folderlocation, groupcommand);   
         System.out.println("Done");
         
 
@@ -191,7 +193,8 @@ public class NuclearAgent extends HttpServlet {
 	
 	public List<String> processSimulationResult() throws NumberFormatException, IOException, URISyntaxException {
 	
-		String csvfileoutputgams="C:\\JPS_DATA\\workingdir\\JPS_POWSYS\\results.csv";
+		//String csvfileoutputgams="C:\\JPS_DATA\\workingdir\\JPS_POWSYS\\results.csv";
+		String csvfileoutputgams="C:\\JPS_DATA\\workingdir\\JPS_POWSYS\\resultsex.csv"; //just for temporary before the model runs
 		//   recreate the nuclear powerplant on flight
 		NuclearKBCreator in= new NuclearKBCreator();
 		System.out.println("starting conversion to owl file");

@@ -1,11 +1,16 @@
 package uk.ac.cam.cares.jps.powsys.electricalnetwork;
 
-//TODO : deleted dependency on csv, remove unnecessary part of mapping
-import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,40 +18,49 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jena.ontology.DatatypeProperty;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.json.JSONObject;
 
+import com.opencsv.CSVReader;
+
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.util.PythonHelper;
+import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper;
+import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
+import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgent;
 
 	@WebServlet("/ENAgent")
 	public class ENAgent extends HttpServlet{
 		private static final long serialVersionUID = -4199209974912271432L;
 		OntModel jenaOwlModel2 = null;
+		private DatatypeProperty numval = null;
+		private OntClass scalarvalueclass = null;
+		
+		
+		public void initOWLClasses(OntModel jenaOwlModel) {
+
+			scalarvalueclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue");
+			
+			numval = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
+			
+		}
 		
 		
 		protected void doGet(HttpServletRequest request, HttpServletResponse response)
 				throws ServletException, IOException {
+						
+			JSONObject joforEN = AgentCaller.readJsonParameter(request);
 			
-			try(BufferedReader br = new BufferedReader(new FileReader("bus.txt"))) {
-			    StringBuilder sb = new StringBuilder();
-			    String line = br.readLine();
-
-			    while (line != null) {
-			        sb.append(line);
-			        sb.append(System.lineSeparator());
-			        line = br.readLine();
-			    }
-			    String everything = sb.toString();
-			}
-			
-			String iriofnetwork="";
-			
-			extractBusOWLinArray(iriofnetwork);
-			
-			
+			String iriofnetwork=joforEN.getString("electricalnetwork");
+						
 			String genInfo= "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> " 
 					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 					+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
@@ -55,7 +69,7 @@ import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgent;
 					+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
 					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 					+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-					+ "SELECT ?BusNumbervalue ?activepowervalue ?reactivepowervalue ?Qmaxvalue ?Qminvalue ?Vgvalue ?mBasevalue ?Statusvalue ?Pmaxvalue ?Pminvalue ?Pc1value ?Pc2value ?Qc1minvalue ?Qc2minvalue ?Qc1maxvalue ?Qc2maxvalue ?Rampagcvalue ?Ramp10value ?Ramp30value ?Rampqvalue ?apfvalue "
+					+ "SELECT ?entity ?BusNumbervalue ?activepowervalue ?reactivepowervalue ?Qmaxvalue ?Qminvalue ?Vgvalue ?mBasevalue ?Statusvalue ?Pmaxvalue ?Pminvalue ?Pc1value ?Pc2value ?Qc1minvalue ?Qc2minvalue ?Qc1maxvalue ?Qc2maxvalue ?Rampagcvalue ?Ramp10value ?Ramp30value ?Rampqvalue ?apfvalue "
 					
 					+ "WHERE {?entity  a  j1:PowerGenerator  ." 
 					+ "?entity   j2:isModeledBy ?model ."
@@ -167,6 +181,54 @@ import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgent;
 					
 					+ "}";
 			
+			String genInfocost= "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> " 
+					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+					+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+					+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+					+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+					+ "SELECT ?entity ?formatvalue ?startupcostvalue ?shutdowncostvalue ?gencostnvalue ?gencostn-1value ?gencostn-2value ?gencostcvalue "
+					+ "WHERE {?entity  a  j1:PowerGenerator  ." 
+					+ "?entity   j2:isModeledBy ?model ."
+										
+					+ "?model   j5:hasModelVariable ?format ."
+					+ "?format  a  j3:CostModel  ."
+					+ "?format  j2:hasValue ?vformat ."
+					+ "?vformat  j2:numericalValue ?formatvalue ." 
+					
+					+ "?model   j5:hasModelVariable ?startup ."
+					+ "?startup  a  j3:StartCost  ."
+					+ "?startup  j2:hasValue ?vstartup ."
+					+ "?vstartup   j2:numericalValue ?startupcostvalue ." 
+					
+					+ "?model   j5:hasModelVariable ?shutdown ."
+					+ "?shutdown  a  j3:StopCost  ."
+					+ "?shutdown  j2:hasValue ?vshutdown ."
+					+ "?vshutdown   j2:numericalValue ?shutdowncostvalue ."
+					
+					+ "?model   j5:hasModelVariable ?gencostn ."
+					+ "?gencostn  a  j3:genCostn  ."
+					+ "?gencostn  j2:hasValue ?vgencostn ."
+					+ "?vgencostn   j2:numericalValue ?gencostnvalue ." 
+					
+					+ "?model   j5:hasModelVariable ?gencostn-1 ."
+					+ "?gencostn-1  a  j3:genCostcn-1  ."
+					+ "?gencostn-1  j2:hasValue ?vgencostn-1 ."
+					+ "?vgencostn-1   j2:numericalValue ?gencostn-1value ." 
+					
+					+ "?model   j5:hasModelVariable ?gencostn-2 ."
+					+ "?gencostn-2  a  j3:genCostcn-2  ."
+					+ "?gencostn-2  j2:hasValue ?vgencostn-2 ."
+					+ "?vgencostn-2   j2:numericalValue ?gencostn-2value ." 
+					
+					+ "?model   j5:hasModelVariable ?gencostc ."
+					+ "?gencostc  a  j3:genCostc0  ."
+					+ "?gencostc  j2:hasValue ?vgencostc ."
+					+ "?vgencostc   j2:numericalValue ?gencostcvalue ." 					
+					+ "}";
+			
 			String branchInfo= "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> " 
 					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 					+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
@@ -239,11 +301,8 @@ import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgent;
 					+ "?angmin  j2:hasValue ?vangmin ."
 					+ "?vangmin   j2:numericalValue ?angleminvalue ." //anglemin
 										
-					+ "}";			
-		}
-
-
-		public ArrayList<String[]> extractBusOWLinArray(String iriofnetwork) {
+					+ "}";	
+			
 			String busInfo= "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> " 
 					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 					+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
@@ -324,6 +383,35 @@ import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgent;
 													
 					+ "}";
 			
+			ArrayList<String[]>buslist=extractOWLinArray(iriofnetwork,busInfo,13,"bus");
+			createNewTSV(buslist, "C:/JPS_DATA/workingdir/JPS_POWSYS/bus.txt","C:/JPS_DATA/workingdir/JPS_POWSYS/mappingforENBus.csv");
+			
+			ArrayList<String[]>gencostlist=extractOWLinArray(iriofnetwork,genInfocost,8,"generatorcost");
+			createNewTSV(gencostlist, "C:/JPS_DATA/workingdir/JPS_POWSYS/genCost.txt","C:/JPS_DATA/workingdir/JPS_POWSYS/mappingforENGenCost.csv");
+			
+			ArrayList<String[]>genlist=extractOWLinArray(iriofnetwork,genInfo,22,"generator");
+			createNewTSV(genlist, "C:/JPS_DATA/workingdir/JPS_POWSYS/gen.txt","C:/JPS_DATA/workingdir/JPS_POWSYS/mappingforENGen.csv");
+			
+			ArrayList<String[]>branchlist=extractOWLinArray(iriofnetwork,branchInfo,13,"branch");
+			createNewTSV(branchlist, "C:/JPS_DATA/workingdir/JPS_POWSYS/branch.txt","C:/JPS_DATA/workingdir/JPS_POWSYS/mappingforENBranch.csv");
+		
+		
+		runModel();
+		
+		try {
+			doConversion(iriofnetwork);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		}
+		
+		
+		
+		public ArrayList<String[]> extractOWLinArray(String iriofnetwork, String busInfo, int numberofvar,String context) throws IOException {
+			
+			
 			String electricalnodeInfo= "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> " 
 					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 					+ "SELECT ?component "
@@ -349,6 +437,8 @@ import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgent;
 			int numberofiri=totalnodeelectricresult.size();
 			   
 			ArrayList<String[]> totalnodebusresult= new ArrayList<String[]>();
+			IriMapper mapper= new IriMapper();
+			int index=1;
 			for(int t=0;t<numberofiri;t++) {
 				OntModel jenaOwlModel3  = ModelFactory.createOntologyModel();	
 				
@@ -359,39 +449,330 @@ import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgent;
 			    	QuerySolution qs_p = rs_busnode.nextSolution();
 			    	
 					Iterator<String> varNames = qs_p.varNames();
-					int numberofvar=13;
+					
 					String [] queryresult= new String[numberofvar];
 					int counter=0;
 					for (; varNames.hasNext();) {
 
 						String varName = varNames.next();
-					    queryresult[counter] = qs_p.getLiteral(varName).toString();
+						if(qs_p.get(varName).isResource()) {
+							queryresult[counter] = qs_p.getResource(varName).toString();
+							System.out.println("index included= "+index);
+							mapper.add(queryresult[counter], ""+index, context);
+							index++;
+						}
+						else {							
+					    queryresult[counter] = qs_p.getLiteral(varName).getString();
+					    //System.out.println("prop= "+queryresult[counter]);
+						}
 						counter++;	
 					}
 				    totalnodebusresult.add(queryresult);
+				    
 			    }
 			}
 			int number=totalnodebusresult.size();
-		
-			//ordering process
-			ArrayList<String[]> totalnodebusresultordered= new ArrayList<String[]>();
-			int init=1;
-			while(totalnodebusresultordered.size()<number) {
-				System.out.println("size0= "+totalnodebusresultordered.size());
-				for(int r=0;r<number;r++) {
-					if(totalnodebusresult.get(r)[0].contentEquals(String.valueOf(init))) {
-						totalnodebusresultordered.add(totalnodebusresult.get(r));					
-					}
-				}
-				init++;
+			if(context.contains("bus")) {
+		    mapper.serialize("C:/JPS_DATA/workingdir/JPS_POWSYS/mappingforENBus.csv");
 			}
+			else if(context.contains("generator")) {
+				mapper.serialize("C:/JPS_DATA/workingdir/JPS_POWSYS/mappingforENGen.csv");
+			}
+			else if(context.contains("branch")) {
+				mapper.serialize("C:/JPS_DATA/workingdir/JPS_POWSYS/mappingforENBranch.csv");
+			}
+			System.out.println("amount= "+number);
+
 			
-			return totalnodebusresultordered;
+			return totalnodebusresult;
+
+		}
+		
+		public void createNewTSV(ArrayList<String[]>componentlist, String tsvFileout,String mapdir) throws IOException {
+			try (BufferedWriter bw = new BufferedWriter(new FileWriter(tsvFileout))) {
+
+				int line=componentlist.size();
+		    	IriMapper map2=new IriMapper();
+		    	List<IriMapping> original=map2.deserialize(mapdir);
+				for(int x=0;x<line;x++) {
+					int element=componentlist.get(x).length;
+					for (int e=0;e<element;e++) {
+						
+						if(mapdir.contentEquals("C:/JPS_DATA/workingdir/JPS_POWSYS/mappingforENBus.csv")&&e==0) {
+							String content=componentlist.get(x)[e];
+							String content2=null;
+							int a=0;
+							while(a<original.size()) {
+							if(original.get(a).iri.contentEquals(content)) {
+								content2=original.get(a).id+"\t";
+							}
+								
+								a++;	
+							}
+							bw.write(content2);
+						}
+						else if(!mapdir.contentEquals("C:/JPS_DATA/workingdir/JPS_POWSYS/mappingforENBus.csv")&&e==0) {
+
+						}
+						
+						else if(e==element-1) {
+							String content=componentlist.get(x)[e]+"\n";
+							bw.write(content);
+						}
+						else {
+						//String content = "This is the content to write into file\n";
+						String content=componentlist.get(x)[e]+"\t";
+						bw.write(content);
+						}
+	
+					}
+							
+				}
+							
+				// no need to close it.
+				//bw.close();
+
+				System.out.println("Done");
+
+			} catch (IOException e) {
+
+				e.printStackTrace();
+
+			}
+		}
+		
+		public void runModel() throws IOException {
+			
+			String result = PythonHelper.callPython("PyPower-PF-OPF-JA-8.py",null, this);
 		}
 		
 		
+		public ArrayList<String[]> readResult(String outputfiledir,int colnum) throws IOException {
+			ArrayList<String[]> entryinstance= new ArrayList<String[]> ();
+			 CSVReader reader = new CSVReader(new FileReader(outputfiledir), '\t');
+		        String[] record;
+		        int entry=0;
+		        while ((record = reader.readNext()) != null) {
+		        	int element=0;
+		        	String[]entityline=new String[colnum];
+		        	System.out.println ("entry of "+entry);
+		            for (String value : record) {
+		            	
+		                System.out.println("element value of "+element+" is= "+value); // Debug only
+		                entityline[element]=value;
+		                element++;
+		            }
+		            entryinstance.add(entityline);
+		            entry++;
+		        }   
+			return entryinstance;
+		}
 		
-		
+		public void doConversion(String iriofnetwork) throws URISyntaxException, IOException {
+
+						
+			
+			String genoutputInfo= "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> " 
+					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+					+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+					+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+					+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+					+ "SELECT ?entity ?vpg ?vqg "
+					
+					+ "WHERE {?entity  a  j1:PowerGenerator  ." 
+					+ "?entity   j2:isModeledBy ?model ."
+					+ "?model   j5:hasModelVariable ?Pg ."
+					+ "?Pg  a  j3:Pg  ."
+					+ "?Pg  j2:hasValue ?vpg ."//pg
+					
+					+ "?model   j5:hasModelVariable ?Qg ."
+					+ "?Qg  a  j3:Qg  ."
+					+ "?Qg  j2:hasValue ?vqg ."//qg
+										
+					+ "}";
+			
+			String busoutputInfo= "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> " 
+					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+					+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+					+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+					+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+					+ "SELECT ?BusNumbervalue ?vpdbus ?vgdbus ?vpdgen ?vgdgen ?vVM ?vVA  "
+					
+					+ "WHERE {?entity  a  j1:BusNode  ." 
+					+ "?entity   j2:isModeledBy ?model ."
+					+ "?model   j5:hasModelVariable ?num ."
+					+ "?num  a  j3:BusNumber  ."
+					+ "?num  j2:hasValue ?vnum ."
+					+ "?vnum   j2:numericalValue ?BusNumbervalue ."  //number
+
+					+ "?model   j5:hasModelVariable ?Pd ."
+					+ "?Pd  a  j3:PdBus  ."
+					+ "?Pd  j2:hasValue ?vpdbus ."  //pd
+					
+					+ "?model   j5:hasModelVariable ?Gd ."
+					+ "?Gd  a  j3:GdBus  ."
+					+ "?Gd  j2:hasValue ?vgdbus ." //Gd
+
+					+ "?model   j5:hasModelVariable ?Pdgen ."
+					+ "?Pdgen  a  j3:PdGen  ."
+					+ "?Pdgen  j2:hasValue ?vpdgen ."  //pdgen
+					
+					+ "?model   j5:hasModelVariable ?Gdgen ."
+					+ "?Gdgen  a  j3:GdGen  ."
+					+ "?Gdgen  j2:hasValue ?vgdgen ." //Gd
+					
+					+ "?model   j5:hasModelVariable ?VM ."
+					+ "?VM  a  j3:Vm  ."
+					+ "?VM  j2:hasValue ?vVM ."//Vm
+					
+					+ "?model   j5:hasModelVariable ?VA ."
+					+ "?VA  a  j3:Va  ."
+					+ "?VA  j2:hasValue ?vVA ."//Va												
+					+ "}";
+			
+			String branchoutputInfo= "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> " 
+					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+					+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+					+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+					+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+					+ "SELECT ?entity ?vploss ?vqloss ?vpave ?vqave ?vsave "
+					
+					+ "WHERE {?entity  a  j1:UndergroundCable  ." 
+					+ "?entity   j2:isModeledBy ?model ."
+					+ "?model   j5:hasModelVariable ?ploss ."
+					+ "?ploss  a  j3:PLoss  ."
+					+ "?ploss  j2:hasValue ?vploss ."  //ploss
+					
+					+ "?model   j5:hasModelVariable ?qloss ."
+					+ "?qloss  a  j3:QLoss  ."
+					+ "?qloss  j2:hasValue ?vqloss ."  //qloss
+					
+					+ "?model   j5:hasModelVariable ?pave ."
+					+ "?pave  a  j3:PAverage  ."
+					+ "?pave  j2:hasValue ?vpave ."  //pave
+					
+					+ "?model   j5:hasModelVariable ?qave ."
+					+ "?qave  a  j3:QAverage  ."
+					+ "?qave  j2:hasValue ?vqave ."  //qave
+					
+					+ "?model   j5:hasModelVariable ?save ."
+					+ "?save  a  j3:SAverage  ."
+					+ "?save  j2:hasValue ?vsave ."  //save
+					
+					+ "}";	
+			
+			ArrayList<String[]>branchoutputlist=extractOWLinArray(iriofnetwork,branchoutputInfo,6,"output");
+			ArrayList<String[]>genoutputlist=extractOWLinArray(iriofnetwork,genoutputInfo,3,"output");
+			ArrayList<String[]>busoutputlist=extractOWLinArray(iriofnetwork,busoutputInfo,7,"output");
+			
+			ArrayList<String[]> resultfrommodelgen=readResult("C:/JPS_DATA/workingdir/JPS_POWSYS/outputGenPF.txt", 3);
+			ArrayList<String[]> resultfrommodelbus=readResult("C:/JPS_DATA/workingdir/JPS_POWSYS/outputBusPF.txt", 7);
+			ArrayList<String[]> resultfrommodelbranch=readResult("C:/JPS_DATA/workingdir/JPS_POWSYS/outputBranchPF.txt", 6);
+			
+			int amountofgen=genoutputlist.size();
+			for (int a=0;a<amountofgen;a++) {
+				String filePath= genoutputlist.get(a)[1].replaceAll("http://www.theworldavatar.com/kb", "C:/TOMCAT/webapps/ROOT/kb").split("#")[0]; //update the file locally
+				
+				FileInputStream inFile = new FileInputStream(filePath);
+				Reader in = new InputStreamReader(inFile, "UTF-8");
+
+				OntModel jenaOwlModel2 = ModelFactory.createOntologyModel();
+				jenaOwlModel2.read(in, null);
+
+				initOWLClasses(jenaOwlModel2);
+			
+			
+			Individual vpout=jenaOwlModel2.getIndividual(genoutputlist.get(a)[1]);
+			vpout.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(resultfrommodelgen.get(a)[1]));  //TODO:checking for the mapping position !!!!
+			
+			Individual vqout=jenaOwlModel2.getIndividual(genoutputlist.get(a)[2]);
+			vqout.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(resultfrommodelgen.get(a)[2]));  //TODO:checking for the mapping position !!!!
+			
+			/** save the updated model file*/ 
+			LandlotsKB ins2 = new LandlotsKB();
+			ins2.savefile(jenaOwlModel2, filePath);
+			}
+			
+			int amountofbus=busoutputlist.size();
+			for (int a=0;a<amountofbus;a++) {
+				String filePath= busoutputlist.get(a)[1].replaceAll("http://www.theworldavatar.com/kb", "C:/TOMCAT/webapps/ROOT/kb").split("#")[0]; //update the file locally
+				
+				FileInputStream inFile = new FileInputStream(filePath);
+				Reader in = new InputStreamReader(inFile, "UTF-8");
+
+				OntModel jenaOwlModel2 = ModelFactory.createOntologyModel();
+				jenaOwlModel2.read(in, null);
+
+				initOWLClasses(jenaOwlModel2);
+			
+			
+			Individual vpdbusout=jenaOwlModel2.getIndividual(busoutputlist.get(a)[1]);
+			vpdbusout.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(resultfrommodelbus.get(a)[5]));  //TODO:checking for the mapping position !!!!
+			
+			Individual vgdbusout=jenaOwlModel2.getIndividual(busoutputlist.get(a)[2]);
+			vgdbusout.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(resultfrommodelbus.get(a)[6]));  //TODO:checking for the mapping position !!!!
+			
+			Individual vpdgenout=jenaOwlModel2.getIndividual(busoutputlist.get(a)[3]);
+			vpdgenout.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(resultfrommodelbus.get(a)[3]));  //TODO:checking for the mapping position !!!!
+			
+			Individual vgdgenout=jenaOwlModel2.getIndividual(busoutputlist.get(a)[4]);
+			vgdgenout.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(resultfrommodelbus.get(a)[4]));  //TODO:checking for the mapping position !!!!
+			
+			Individual vVmout=jenaOwlModel2.getIndividual(busoutputlist.get(a)[5]);
+			vVmout.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(resultfrommodelbus.get(a)[1]));  //TODO:checking for the mapping position !!!!
+			
+			Individual vVaout=jenaOwlModel2.getIndividual(busoutputlist.get(a)[6]);
+			vVaout.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(resultfrommodelbus.get(a)[2]));  //TODO:checking for the mapping position !!!!
+			
+			/** save the updated model file*/ 
+			LandlotsKB ins2 = new LandlotsKB();
+			ins2.savefile(jenaOwlModel2, filePath);
+			}
+			
+
+			int amountofbranch=branchoutputlist.size();
+			for (int a=0;a<amountofbranch;a++) {
+				String filePath= branchoutputlist.get(a)[1].replaceAll("http://www.theworldavatar.com/kb", "C:/TOMCAT/webapps/ROOT/kb").split("#")[0]; //update the file locally
+				
+				FileInputStream inFile = new FileInputStream(filePath);
+				Reader in = new InputStreamReader(inFile, "UTF-8");
+
+				OntModel jenaOwlModel2 = ModelFactory.createOntologyModel();
+				jenaOwlModel2.read(in, null);
+
+				initOWLClasses(jenaOwlModel2);
+			
+			
+			Individual vploss=jenaOwlModel2.getIndividual(branchoutputlist.get(a)[1]);
+			vploss.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(resultfrommodelbranch.get(a)[1]));  //TODO:checking for the mapping position !!!!
+			
+			Individual vqloss=jenaOwlModel2.getIndividual(branchoutputlist.get(a)[2]);
+			vqloss.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(resultfrommodelbranch.get(a)[2]));  //TODO:checking for the mapping position !!!!
+			
+			Individual vpave=jenaOwlModel2.getIndividual(branchoutputlist.get(a)[3]);
+			vpave.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(resultfrommodelbranch.get(a)[3]));  //TODO:checking for the mapping position !!!!
+			
+			Individual vqave=jenaOwlModel2.getIndividual(branchoutputlist.get(a)[4]);
+			vqave.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(resultfrommodelbranch.get(a)[4]));  //TODO:checking for the mapping position !!!!
+			
+			Individual vsave=jenaOwlModel2.getIndividual(branchoutputlist.get(a)[5]);
+			vsave.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(resultfrommodelbranch.get(a)[5]));  //TODO:checking for the mapping position !!!!
+			
+			
+			/** save the updated model file*/ 
+			LandlotsKB ins2 = new LandlotsKB();
+			ins2.savefile(jenaOwlModel2, filePath);
+			}
+		}
 		
 		
 	}
