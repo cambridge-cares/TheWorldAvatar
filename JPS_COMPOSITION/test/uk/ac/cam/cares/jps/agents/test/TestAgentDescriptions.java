@@ -55,6 +55,8 @@ public class TestAgentDescriptions extends TestCase {
 		backAndforthAndWrite(service, "_FactorModel");
 		service = createDescrForSurrogateModel();
 		backAndforthAndWrite(service, "_SurrogateModel");
+		service = createDescrForAgentNuclearPP();
+		backAndforthAndWrite(service, "_NuclearAgent_startsimulation");
 	}
 	
 	public static void backAndforthAndWrite(Service service, String name) throws URISyntaxException, FileNotFoundException {
@@ -82,6 +84,7 @@ public class TestAgentDescriptions extends TestCase {
 			.output("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", true, "plant", true)
 			.build();
 	}
+	
 	
 	private Service createDescrForAgentWeather() {
 		ServiceBuilder builder = new ServiceBuilder().operation(null, JPS_COMPOSITION + "/CityToWeather")
@@ -119,7 +122,7 @@ public class TestAgentDescriptions extends TestCase {
 			.output("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
 			.build();
 	}
-	
+		
 	private Service createDescrForAgentBuildingQuery() {
 		return addInputRegion(new ServiceBuilder().operation(null, JPS + "/GetBuildingListFromRegion"))
 			.input("http://dbpedia.org/ontology/city", "city")
@@ -190,6 +193,16 @@ public class TestAgentDescriptions extends TestCase {
 			.operation(null, JPS_BASE + "/EmissionTestAgent/change")
 			.input("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl", "plant")
 			.input("http://www.w3.org/2001/XMLSchema#string", "formula")		
+			.build();
+	}
+	
+	private Service createDescrForAgentNuclearPP() {
+		return new ServiceBuilder()
+			.operation(null, JPS + "/NuclearAgent/startsimulation")
+			.input("http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#Landlot", "landlot")
+			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+			.operation(null, JPS + "/NuclearAgent/processresult")
+			.output("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant",true,"plantirilist",true)
 			.build();
 	}
 	
