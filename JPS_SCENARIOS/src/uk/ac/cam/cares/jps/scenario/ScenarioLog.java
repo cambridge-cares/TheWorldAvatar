@@ -10,7 +10,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 public class ScenarioLog {
 
@@ -50,7 +50,7 @@ public class ScenarioLog {
 	}
 	
 	private void read() {
-		String content = new QueryBroker().readFile(filePath);	
+		String content = FileUtil.readFileLocally(filePath);	
 		JSONObject jo = new JSONObject(content);
 		JSONArray joarray = jo.getJSONArray("entries");
 		for (int i=0; i<joarray.length(); i++) {
@@ -74,7 +74,7 @@ public class ScenarioLog {
 	private void write() {
 		if (filePath != null) {
 			String content = toJson().toString();
-			QueryBroker.writeFileLocally2(filePath, content);
+			FileUtil.writeFileLocally2(filePath, content);
 		}
 	}
 	

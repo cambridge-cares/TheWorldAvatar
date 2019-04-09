@@ -70,4 +70,48 @@ public class MatrixConverter {
 		}
 		return result;
 	}
-}
+	
+	public static String fromArraytoCsv(List<String[]> rows) {
+		
+		StringBuffer b = new StringBuffer();
+		for (String[] current : rows) {
+			appendRow(b, current);
+		}
+		return b.toString();
+	}
+	
+	private static void appendRow(StringBuffer b, String[] row) {
+		int length = row.length;
+		for (int i=0; i<length; i++) {
+			b.append(row[i]);
+			if (i<length-1) {
+				b.append(",");
+			} else {
+				b.append("\r\n");
+			}
+		}
+	}
+	
+	public static List<String[]> fromCsvToArray(String s) {
+		
+		List<String[]> result = new ArrayList<String[]>();
+		
+		String sClean = s.replace("\r", "");
+		StringTokenizer tokenizer = new StringTokenizer(sClean, "\n");
+		
+		while (tokenizer.hasMoreTokens()) {
+			String[] row = asArray(fromCsvRow(tokenizer.nextToken()));
+			result.add(row);
+		}
+		
+		return result;
+	}
+	
+	public static String[] asArray(List<String> l) {
+		String[] a = new String[l.size()];
+		for (int i=0; i<l.size(); i++) {
+			a[i] = l.get(i);
+		}
+		return a;
+ 	}
+} 

@@ -32,4 +32,12 @@ public class KeyValueManager {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		}
 	}
+	
+	public static String getServerAddress() {
+		String port = get(IKeys.PORT);
+		if ((port == null) || port.isEmpty() || (Integer.valueOf(port) == 80)) {
+			return "http://" + get(IKeys.HOST);
+		}
+		return "http://" + get(IKeys.HOST) + ":" + get(IKeys.PORT);
+	}
 }

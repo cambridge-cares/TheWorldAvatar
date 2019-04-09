@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.base.query;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetFormatter;
@@ -91,6 +93,34 @@ public class JenaResultSetFormatter {
 			joarray.put(simplifiedRow);
 		}
 	
+		return result;
+	}
+	
+	/**
+	 * Each String array in the result list represents the values of a single result row. The values in an array are ordered according
+	 * to the input parameter keys. If a key is not found then the value <code>null</code> is set in the array.
+	 * 
+	 * @param resultJSONW3CStandard
+	 * @param keys
+	 * @return
+	 */
+	public static List<String[]> convertToListofStringArrays(String resultJSONW3CStandard, String... keys) {
+		
+		List<String[]> result = new ArrayList<String[]>();
+		
+		JSONObject jo = JenaResultSetFormatter.convertToSimplifiedList(resultJSONW3CStandard);
+		JSONArray ja = jo.getJSONArray("results");
+		
+		for (int i=0; i<ja.length(); i++) {
+			String[] array = new String[keys.length];
+			JSONObject row = ja.getJSONObject(i);
+			for (int j=0; j<keys.length; j++) {
+				String value = row.optString(keys[j], null);
+				array[j] = value;
+			}
+			result.add(array);
+		}
+		
 		return result;
 	}
 	

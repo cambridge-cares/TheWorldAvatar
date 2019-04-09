@@ -16,7 +16,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -30,10 +29,7 @@ public class ScenarioManagementAgent extends HttpServlet {
 	private static Logger logger = LoggerFactory.getLogger(ScenarioManagementAgent.class);
 	// TODO-AE SC 20190220 move key to JPS_BASE
 	public static final String COPY_ON_READ = "copyonread";
-	
-	public static String getWorkingDir() {
-		return ScenarioHelper.getWorkingDir();
-	}
+
 	
 //	public static String getScenarioDescriptionName(String scenarioName) {
 //		return getWorkingDir() + "/" + scenarioName + ".owl";
@@ -42,22 +38,18 @@ public class ScenarioManagementAgent extends HttpServlet {
 	
 	
 	public static String getScenarioLogPath(String scenarioName) {
-		return getWorkingDir() + "/" + scenarioName + "/" + scenarioName + ".json";
+		return ScenarioHelper.getScenarioWorkingDir() + "/" + scenarioName + "/" + scenarioName + ".json";
 	}
 	
 	public static String getScenarioIRI(String scenarioName) {
-		return getServerAddress() + ScenarioHelper.getScenarioPath(scenarioName) + ".owl#Service";
-	}
-	
-	public static String getServerAddress() {
-		return "http://" + KeyValueManager.get(IKeys.HOST) + ":" + KeyValueManager.get(IKeys.PORT);
+		return KeyValueManager.getServerAddress() + ScenarioHelper.getScenarioPath(scenarioName) + ".owl#Service";
 	}
 	
 	public static String getScenarioUrl(String scenarioName) {
 		// TODO-AE SC URGENT localhost 8080
 		//return "http://localhost:8080/JPS_SCENARIO/scenario/" + scenarioName;
 		// return getServerAddress() + "/JPS_SCENARIO/scenario/" + scenarioName;
-		return getServerAddress() + ScenarioHelper.getScenarioPath(scenarioName);
+		return KeyValueManager.getServerAddress() + ScenarioHelper.getScenarioPath(scenarioName);
 	}
 	
 	public static String getLatestMockedAgent(ScenarioLog log) {
@@ -186,7 +178,7 @@ public class ScenarioManagementAgent extends HttpServlet {
 	public List<String> getScenarioNames() {
 		List<String> result = new ArrayList<String>();
 		
-		File dir = new File(getWorkingDir());
+		File dir = new File(ScenarioHelper.getScenarioWorkingDir());
 		for (File current : dir.listFiles()) {
 			if (current.isDirectory()) {
 				String scenarioName = current.getName();
@@ -200,7 +192,7 @@ public class ScenarioManagementAgent extends HttpServlet {
 	public List<String> getScenarioIRIsOLD() {
 		List<String> result = new ArrayList<String>();
 		
-		File dir = new File(getWorkingDir());
+		File dir = new File(ScenarioHelper.getScenarioWorkingDir());
 		for (File current : dir.listFiles()) {
 			if (current.isFile() && current.getName().endsWith(".owl")) {
 				String iri = getScenarioIRI(current.getName());

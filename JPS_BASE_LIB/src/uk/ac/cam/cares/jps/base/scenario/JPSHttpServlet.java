@@ -53,6 +53,10 @@ public abstract class JPSHttpServlet extends HttpServlet {
 		}
 	}
 	
+	public static void enableScenario(String scenarioUrl) {
+		ThreadContext.put(JPSConstants.SCENARIO_URL, scenarioUrl);
+	}
+	
 	/**
 	 * Removes the scenariourl. This is important for the case that Tomcat (or any other server) might reuse the threads 
 	 * which would have the consequence that other agents run wrongly in the same scenario. For this reason, this method
