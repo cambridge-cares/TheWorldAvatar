@@ -265,7 +265,7 @@ $(function(){
             osmb.setZoom(14.5);
             osmb.setTilt(20.6);
             osmb.setRotation(-45.6);
-        } else if (location === "Singapore_2") {
+        } else if (location === "Singapore_2") { //singapore 2 is unused
         	osmb.setPosition({
                 latitude: 1.262008,
                 longitude: 103.850973
@@ -283,10 +283,14 @@ $(function(){
                 longitude: 114.1491155592187,
                 latitude: 22.28911086466781
             });
-            $("#xlower").val("12706653.262");
-            $("#xupper").val("12708695.125");
+//            $("#xlower").val("12706653.262");
+//            $("#xupper").val("12708695.125");
+//            $("#ylower").val("2545539.172");
+//            $("#yupper").val("2546838.028"); (changed to make it more city centred)
+            $("#xlower").val("12706630.262");
+            $("#xupper").val("12708200.45");
             $("#ylower").val("2545539.172");
-            $("#yupper").val("2546838.028");
+            $("#yupper").val("2546850.028");
             
             osmb.setZoom(14.5);
             osmb.setTilt(14.5);

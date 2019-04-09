@@ -170,12 +170,12 @@ $(function(){
 				//"srsname": "EPSG:4326",
 				"srsname": "EPSG:28992",
 				"lowercorner": {
-					lowerx,
-					lowery
+					lowerx:xmin,
+					lowery:ymin
 				},
 				"uppercorner": {
-					upperx,
-					uppery
+					upperx:xmax,
+					uppery:ymax
 				}
 			},
         	plant,
