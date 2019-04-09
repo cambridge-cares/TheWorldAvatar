@@ -123,7 +123,8 @@ $(function(){
 
     $('#start').click(function(){
     	//$('#start').attr("disabled", true);
-    	
+    	$('#inputFields').append('<img id="myProgressBar" style="width:100px;height:100px;" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/>'
+);
         
         let xmax = parseInt($('#xupper').val());
         let xmin = parseInt($('#xlower').val());
@@ -216,7 +217,7 @@ $(function(){
             		
 			var buildingIRIs = coordResult.building;
 			console.log("buildingIRIs = " + buildingIRIs);
-			
+			$("#myProgressBar").remove()
         	initadms3dmap(buildingIRIs, [xmin, xmax, ymin, ymax], osmb, location, coordinatesMid, locationIRI);
         });
 
