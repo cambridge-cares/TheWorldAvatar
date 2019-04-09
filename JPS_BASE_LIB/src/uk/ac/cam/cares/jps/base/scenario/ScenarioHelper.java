@@ -8,19 +8,24 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class ScenarioHelper {
 	
-	private static final String WORKING_DIR = AgentLocator.getPathToJpsWorkingDir() + "/JPS_SCENARIO";
-
-	public static String getWorkingDir() {
-		return WORKING_DIR;
+	private static final String JPS_WORKING_DIR = AgentLocator.getPathToJpsWorkingDir();
+	public static final String SCENARIO_COMP_URL = "/JPS_SCENARIO/scenario";
+	
+	public static String getJpsWorkingDir() {
+		return JPS_WORKING_DIR;
+	}
+	
+	public static String getScenarioWorkingDir() {
+		return JPS_WORKING_DIR + SCENARIO_COMP_URL;
 	}
 	
 	public static String getScenarioPath(String scenarioName) {
-		return "/JPS_SCENARIO/scenario/" + scenarioName;
+		return SCENARIO_COMP_URL + "/" + scenarioName;
 	}
 	
 	public static String getScenarioBucket(String scenarioName) {
 		
-		String scenarioBucket = getWorkingDir() + "/" + scenarioName;
+		String scenarioBucket = getJpsWorkingDir() + getScenarioPath(scenarioName);
 		// TODO-AE SC URGENT copy-on-write not yet implemented
 		// so far only copy-on-read is implemented and thus this method returns always the scenario file
 		// for copy-on-write we can create the bucket later (instead of checking always whether the bucket already exists) - at least for read and query
@@ -33,13 +38,15 @@ public class ScenarioHelper {
 	    return scenarioBucket;
 	}
 	
-	public static String getFileNameWithinBucket(String resource, String scenarioBucket) {
-		
+	public static String getHashedResource(String resource) {
 		String resourceWithoutHash = cutHash(resource);
 	    int i = resourceWithoutHash.lastIndexOf("/");
 	    int hashForPath = resourceWithoutHash.substring(0, i).hashCode();
-		String fileNameWithinBucket = hashForPath + "_" + resourceWithoutHash.substring(i+1);
-		return scenarioBucket + "/" + fileNameWithinBucket;
+		return hashForPath + "_" + resourceWithoutHash.substring(i+1);
+	}
+	
+	public static String getFileNameWithinBucket(String resource, String scenarioBucket) {
+		return scenarioBucket + "/" + getHashedResource(resource);
 	}
 	
 	/**

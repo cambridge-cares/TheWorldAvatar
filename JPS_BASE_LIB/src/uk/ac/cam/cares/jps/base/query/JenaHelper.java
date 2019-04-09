@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.base.query;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -142,6 +143,12 @@ public class JenaHelper {
 		} catch (FileNotFoundException e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		}
-		model.write(fos, "RDF/XML");
+		model.write(fos, "RDF/XML-ABBREV");
+	}
+	
+	public static String writeToString(Model model) {
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		model.write(os, "RDF/XML-ABBREV");
+		return new String(os.toByteArray());
 	}
 }

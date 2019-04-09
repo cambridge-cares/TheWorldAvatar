@@ -19,6 +19,7 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
+import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 @WebServlet(urlPatterns = {"/scenario/*"})
 public class ScenarioAgent extends HttpServlet {
@@ -56,6 +57,11 @@ public class ScenarioAgent extends HttpServlet {
 			// do nothing, the scenario log file has been already created above
 			
 			//result = getScenarioFile(scenarioName);
+		
+		} else if (operation.startsWith("/data") || operation.startsWith("/kb")) {
+			
+			String localPath = ScenarioHelper.getScenarioBucket(scenarioName) + operation;
+			result = FileUtil.readFileLocally(localPath);
 			
 		} else if ("/option".equals(operation)) {
 			
@@ -179,7 +185,7 @@ public class ScenarioAgent extends HttpServlet {
 	    	return completePathWithinBucket;
 	    } else if (copyToBucket) {
 	    	String content = new QueryBroker().readFile(resource);
-	    	QueryBroker.writeFileLocally2(completePathWithinBucket, content);
+	    	FileUtil.writeFileLocally2(completePathWithinBucket, content);
 	    	return completePathWithinBucket;
 	    }  
 

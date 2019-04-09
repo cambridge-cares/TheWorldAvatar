@@ -1,5 +1,8 @@
 package uk.ac.cam.cares.jps.base.query.test;
 
+import java.util.List;
+import java.util.Locale;
+
 import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -9,16 +12,18 @@ import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.test.EmissionTestAgent;
+import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 public class TestQuery extends TestCase implements ITestConstants{
 	
 	private void copyPowerPlantAfg() {
 		String sourceFile = ResourcePathConverter.convertToLocalPath(POWER_PLANT_AFG_FILE_ORIGINAL);
 		String targetFile = ResourcePathConverter.convertToLocalPath(POWER_PLANT_AFG_FILE);
-		QueryBroker broker = new QueryBroker();
-		String content = broker.readFileLocally(sourceFile);
-		QueryBroker.writeFileLocally(targetFile, content);
+		String content = FileUtil.readFileLocally(sourceFile);
+		FileUtil.writeFileLocally(targetFile, content);
 	}
 	
 	public void setUp() {
@@ -77,6 +82,19 @@ public class TestQuery extends TestCase implements ITestConstants{
 		assertEquals(1, list.length());
 	}
 	
+	public void testResultSetFormatterconvertToListofStringArrays() {
+		String plantFile = ResourcePathConverter.convertToLocalPath(POWER_PLANT_AFG_FILE);		
+		ResultSet resultSet = JenaHelper.queryFile(plantFile, EmissionTestAgent.SPARQL_PLANT_QUERY_EMISSION);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		
+		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, "emissionvaluenum", "generation");
+		for (String[] current : resultList) {
+			System.out.println(current[0] + ", " + current[1]);
+		}
+		
+		assertEquals(1, resultList.size());
+	}
+	
 	public void testQueryBrokerReadWithConversion() {
 		String result = new QueryBroker().readFile(POWER_PLANT_AFG_FILE);
 		assertTrue(result.startsWith("<rdf:RDF"));
@@ -101,6 +119,26 @@ public class TestQuery extends TestCase implements ITestConstants{
 		assertEquals("15.75", list.getJSONObject(0).get("emissionvaluenum"));
 	}
 	
+	public void testQueryBrokerQueryFilesGreedy() {
+		String urlOrPath = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
+		String greedySparqlQuery = "PREFIX sys:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "SELECT ?component "
+				+ "WHERE {?entity a sys:CompositeSystem . " 
+				+ "?entity sys:hasSubsystem ?component . "								
+				+ "}";
+		String secondSparqlQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> " 
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "SELECT ?entity "
+				+ "WHERE { ?entity a j1:BusNode . ?entity j2:isModeledBy ?model . }";
+		
+		String result = new QueryBroker().queryFilesGreedy(urlOrPath, greedySparqlQuery, secondSparqlQuery);
+	
+		System.out.println(result);
+		
+		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, "entity");
+		assertEquals(208, resultList.size());
+	}
+	
 	private void assertEmissionValue(String path, double expected) {
 		String result = new QueryBroker().queryFile(path, EmissionTestAgent.SPARQL_PLANT_QUERY_EMISSION);
 		JSONArray list = JenaResultSetFormatter.convertToSimplifiedList(result).getJSONArray("results");
@@ -115,11 +153,58 @@ public class TestQuery extends TestCase implements ITestConstants{
 		// update
 		String plantIri = POWER_PLANT_AFG_IRI;
 		double newEmissionValue = 255.55;
-		String query = String.format(EmissionTestAgent.SPARQL_PLANT_UPDATE_EMISSION, newEmissionValue, plantIri);
+		Locale locale = Locale.ENGLISH;
+		String query = String.format(locale, EmissionTestAgent.SPARQL_PLANT_UPDATE_EMISSION, newEmissionValue, plantIri);
 		new QueryBroker().updateFile(plantIri, query);
 		
 		// check updated value
 		String localFile = ResourcePathConverter.convertToLocalPath(POWER_PLANT_AFG_FILE);
 		assertEmissionValue(localFile, newEmissionValue);
+	}
+	
+	public void testQueryBrokerPutForBaseScenario() {
+
+		String scenarioUrl = QueryBroker.getUniqueTaggedDataScenarioUrl("test");
+		
+		assertTrue(scenarioUrl.contains("/base/data/test/"));
+		
+		String url = scenarioUrl + "/myfile1.txt";
+		String content = "some content 1";
+		QueryBroker broker = new QueryBroker();
+		broker.put(url, content);
+		
+		assertEquals(content, broker.readFile(url));
+		
+		url = scenarioUrl + "/myfile2.txt";
+		content = "some content 2";
+		broker.put(url, content);
+		
+		assertEquals(content, broker.readFile(url));
+	}
+	
+	public void testQueryBrokerPutForNonBaseScenario() {
+
+		String scenarioUrl = BucketHelper.getScenarioUrl("scenariotest");
+		JPSHttpServlet.enableScenario(scenarioUrl);		
+		try {
+			scenarioUrl = QueryBroker.getUniqueTaggedDataScenarioUrl("test");
+			
+			assertTrue(scenarioUrl.contains("/scenariotest/data/test/"));
+			
+			String url = scenarioUrl + "/myfile1.txt";
+			String content = "some content 1";
+			QueryBroker broker = new QueryBroker();
+			broker.put(url, content);
+			
+			assertEquals(content, broker.readFile(url));
+			
+			url = scenarioUrl + "/myfile2.txt";
+			content = "some content 2";
+			broker.put(url, content);
+			
+			assertEquals(content, broker.readFile(url));
+		} finally {
+			JPSHttpServlet.disableScenario();
+		}
 	}
 }
