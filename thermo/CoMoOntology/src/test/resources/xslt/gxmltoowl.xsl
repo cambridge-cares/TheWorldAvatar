@@ -398,7 +398,7 @@
 
 				</xsl:for-each>
 				
-				<!--  reference to generated (g09, xml, png) files from Gaussian files -->
+				<!--  reference to generated (g09, xml, png) files from OWL files -->
 				
 				<owl:NamedIndividual
 							rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_parent_no_namespace}_{$vmodule}_has_environment_module_{$id}">
@@ -436,31 +436,24 @@
 
 			</xsl:when>
 
-
 			<!-- Transformation of information about molecule stored in initialization 
 				module of CompChem xml file. -->
 
 			<xsl:when test="$module_type='cc:initialization'">
 
-				<owl:NamedIndividual
-					rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_parent_no_namespace}_{$vmodule}_has_initilization_module_{$id}">
-					<rdf:type
-						rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#InitializationModule" />
+				<owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_parent_no_namespace}_{$vmodule}_has_initilization_module_{$id}">
+					
+					<rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#InitializationModule" />
 
-					<rdf:type
-						rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+					<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 
-					<gc:hasMoleculeProperty
-						rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_molecule_property_{$id}" />
+					<gc:hasMoleculeProperty rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_molecule_property_{$id}" />
 
 				</owl:NamedIndividual>
 
-				<rdf:Description
-					rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_molecule_property_{$id}">
-					<rdf:type
-						rdf:resource="http://purl.org/gc/MoleculeProperty" />
-					<rdf:type
-						rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+				<rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_molecule_property_{$id}">
+					<rdf:type rdf:resource="http://purl.org/gc/MoleculeProperty" />
+					<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 				</rdf:Description>
 
 
@@ -473,14 +466,11 @@
 							<gc:hasParameter
 								rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_level_of_theory_parameter_{$id}" />
 						</owl:NamedIndividual>
-						<owl:NamedIndividual
-							rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_level_of_theory_parameter_{$id}">
-							<rdf:type
-								rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#LevelOfTheory" />
-							<rdf:type
-								rdf:resource="http://purl.org/gc/MethodologyFeature" />
-							<rdf:type
-								rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+						
+						<owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_level_of_theory_parameter_{$id}">
+							<rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#LevelOfTheory" />
+							<rdf:type rdf:resource="http://purl.org/gc/MethodologyFeature" />
+							<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 
 							<ontocompchem:hasLevelOfTheory>
 								<xsl:value-of select="." />
