@@ -8,13 +8,13 @@ import java.io.File;
 import org.junit.Test;
 import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 // TODO: Auto-generated Javadoc
 /**
+ * 
  * The Class ConsistencyTest.
  *
  * @author nk510
@@ -28,6 +28,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
  * 
  *         Ontology is available in folder:
  *         /CoMoOntology/src/test/resources/ontology/ </p>
+ *         
  */
 
 public class ConsistencyTest {
@@ -36,24 +37,27 @@ public class ConsistencyTest {
 	static OWLOntologyManager model = OWLManager.createOWLOntologyManager();
 
 	/**
+	 * 
 	 * Check consistency.
 	 *
 	 * @author nk510
 	 * @throws OWLOntologyCreationException <p>This file path shows that ontologies are stored in
 	 *         CoMoOnotology project folder: '/src/test/resources/ontology/compchem_ontology/'.</p>
+	 *         
 	 */
 
 	@Test
     public void checkConsistency() throws OWLOntologyCreationException {
+
 		/**
 		 * @author nk510 
 		 * <p>Line below creates HermiT's object variable.It creates an
 		 *         instance of the Reasoner class in the package 'org.semanticweb.HermiT'.</p>
 		 */
 
-		Reasoner hermit = new Reasoner(getOntology(new File("src/test/resources/ontology/compchem_ontology/compchem.spin.rdf")));
+		Reasoner hermit = new Reasoner(getOntology(new File("src/test/resources/ontology/compchem_ontology/ontocompchem.rdf")));
 
-		System.out.println("Compchem ontology consistecy: " + hermit.isConsistent());
+		System.out.println("OntoCompchem ontology consistecy: " + hermit.isConsistent());
 
 	}
 	

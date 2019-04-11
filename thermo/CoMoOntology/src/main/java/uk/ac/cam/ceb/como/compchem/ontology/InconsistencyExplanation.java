@@ -41,7 +41,9 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
 public class InconsistencyExplanation {	
 	
 	/** File path to generated ontologies (Abox of Compchem ontology). */
-	static String compchemFilePath = "src/test/resources/ontology/compchem_abox/"; //ontokin_h2
+    static String compchemFilePath = "src/test/resources/compchem_abox/"; //ontokin compchem_abox  compchem_abox
+	
+	
 	
 	/**
 	 * The main method.
