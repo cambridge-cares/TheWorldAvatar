@@ -23,7 +23,7 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
  * @author <p>nk510 This class implements methods for xslt transformations from
  *         compchem XML files to RDF graph as Abox assertions of CoMo compchem
  *         ontology ver 0.1.</p>
- *         
+ *
  */ 
 
 public class Transformation {
@@ -46,7 +46,6 @@ public class Transformation {
 //	static String xsltPath = "src/test/resources/xslt/ontochem_rdf.xsl"; //this version of xslt uses http://como.cheng.cam.ac.uk/molhub/compchem/ URI
 
 	static String xsltPath = "src/test/resources/xslt/gxmltoowl.xsl";
-
 	
 	/**
 	 * The main method.
@@ -112,6 +111,7 @@ public class Transformation {
 	}
 
 	/**
+	 * 
 	 * Trasnformation.
 	 *
 	 * @author nk510
@@ -123,6 +123,7 @@ public class Transformation {
 	 * @throws TransformerException             <p>This method implements transformation from compchem XML files to
 	 *             RDF files by using Java 8 @see {@link https://docs.oracle.com/javase/7/docs/api/javax/xml/transform/TransformerFactory.html}
 	 *             class.</p>
+	 *             
 	 */
 
 	public static void trasnformation(String xmlFolderName, InputStream XmlSource, FileOutputStream outputStream, StreamSource xsltSource)
