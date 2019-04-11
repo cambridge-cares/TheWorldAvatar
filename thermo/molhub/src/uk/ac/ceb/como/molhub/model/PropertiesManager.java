@@ -30,20 +30,21 @@ public class PropertiesManager {
 			properties.load(inputStream);
 
 		} catch (IOException ex) {
-			
+
 			ex.printStackTrace();
-		
+
 		} finally {
-		
+
 			if (inputStream != null) {
+
 				try {
-					
+
 					inputStream.close();
-					
+
 				} catch (IOException e) {
-					
+
 					e.printStackTrace();
-					
+
 				}
 			}
 		}

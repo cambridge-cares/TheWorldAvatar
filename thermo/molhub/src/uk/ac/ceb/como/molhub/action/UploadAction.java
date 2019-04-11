@@ -58,8 +58,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	 *         Xslt file path. Xsd file path. Jmol data file path, that is used to
 	 *         generated png file.
 	 */
-	Properties molhubPropreties = PropertiesManager
-			.loadProperties(UploadAction.class.getClassLoader().getResourceAsStream("molhub.management.properties"));
+	Properties molhubPropreties = PropertiesManager.loadProperties(UploadAction.class.getClassLoader().getResourceAsStream("molhub.management.properties"));
 
 	private String dataFolderPath = molhubPropreties.getProperty("data.folder.path").toString();
 
@@ -72,10 +71,11 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	private String jmolDataJarFilePath = molhubPropreties.getProperty("jmol.data.jar.file.path").toString();
 
 	/**
+	 * 
 	 * @author NK510 Adds kb properties such as: OntoCompChem URI, RDF4J server URL.
+	 * 
 	 */
-	Properties kbProperties = PropertiesManager.loadProperties(
-			UploadAction.class.getClassLoader().getResourceAsStream("kb.ontocompchem.management.properties"));
+	Properties kbProperties = PropertiesManager.loadProperties(UploadAction.class.getClassLoader().getResourceAsStream("kb.ontocompchem.management.properties"));
 
 	private String ontoCompChemUri = kbProperties.getProperty("ontocompchem.kb.tbox.uri").toString();
 
@@ -101,7 +101,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	 *
 	 * @author nk510
 	 *         <p>
-	 *         List of comun names in table that reports about uploading process of
+	 *         List of column names in table that reports about uploading process of
 	 *         Gaussina file. Columns are named as (uuid, file name, XML validation,
 	 *         OWL consistency).
 	 *         </p>
@@ -114,15 +114,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 
 	/** The upload report list. */
 	private List<GaussianUploadReport> uploadReportList = new ArrayList<GaussianUploadReport>();
-
-	/** The uri for compchem ontology. */
-//	private String compchemUri = "http://como.cheng.cam.ac.uk/molhub/compchem/";
-
-//	private String serverUrl = "http://localhost:8080/rdf4j-server/repositories/compchemkb";
-
-	/** Remote rdf4j server url. */
-//	private String serverUrl = "http://172.24.155.69:8080/rdf4j-server/repositories/compchemkb";
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -175,13 +167,13 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 			 *         XML file, OWL file, and PNG file.
 			 *         </p>
 			 */
-
-//			String folderName = FolderManager.generateUniqueFolderName(f.getName(), catalinaFolderPath);
-
+			
 			String uuidFolderName = FolderManager.generateUniqueFolderName(f.getName());
 
-			File inputG09File = new File(dataFolderPath + "/" + uuidFolderName + "/" + uploadFileName[fileNumber]);
+//			File inputG09File = new File(dataFolderPath + "/" + uuidFolderName + "/" + uploadFileName[fileNumber].replaceAll(".log", "") + ".g09");
 
+			File inputG09File = new File(dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".g09");
+			
 			/**
 			 * 
 			 * @author NK510
@@ -190,15 +182,12 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 			 *         </p>
 			 * 
 			 */
-//			String fileExtension = FilenameUtils.getExtension(uuidFolderName + "/" + uploadFileName[fileNumber]);
+			
+//			File outputXMLFile = new File(dataFolderPath + "/" + uuidFolderName + "/" + uploadFileName[fileNumber].replaceAll(".g09", "") + ".xml");
+			
+			File outputXMLFile = new File(dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".xml");
 
-//			logger.info("File extension: " + fileExtension);
-
-			File outputXMLFile = new File(dataFolderPath + "/" + uuidFolderName + "/"
-					+ uploadFileName[fileNumber].replaceAll(".g09", "") + ".xml");
-
-			String outputOwlFile = kbFolderPath + "/" + uuidFolderName + "/"
-					+ uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".owl";
+			String outputOwlFile = kbFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".owl";
 
 			final File owlFile = new File(outputOwlFile);
 

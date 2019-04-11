@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.struts2.dispatcher.SessionMap;
@@ -26,7 +25,6 @@ import uk.ac.cam.ceb.como.chem.periodictable.Element;
 import uk.ac.cam.ceb.como.chem.periodictable.PeriodicTable;
 import uk.ac.ceb.como.molhub.bean.MoleculeProperty;
 import uk.ac.ceb.como.molhub.bean.Term;
-import uk.ac.ceb.como.molhub.model.PropertiesManager;
 import uk.ac.ceb.como.molhub.model.QueryManager;
 import uk.ac.ceb.como.molhub.model.SentenceManager;
 
@@ -77,18 +75,11 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 	/** The session. */
 	private Map<String, Object> session = new HashMap<String, Object>();
 	
-	 Properties kbProperties = PropertiesManager.loadProperties(TermValidationAction.class.getClassLoader().getResourceAsStream("kb.management.properties"));
-	 
-//	 private String ontoCompChemUri = kbProperties.getProperty("ontocompchem.kb.tbox.uri").toString(); 
-	 
-//	 private String aboxCompChemUri = kbProperties.getProperty("ontocompchem.kb.abox.uri").toString();
-	
-//	 private String ontoCompChemNameSpace = kbProperties.getProperty("ontocompchem.kb.tbox.namespace").toString();
-
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see com.opensymphony.xwork2.ActionSupport#execute()
+	 * 
 	 */
 	@Override
 	public String execute() throws Exception {
@@ -108,8 +99,7 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 		/**
 		 * @author nk510
 		 *         <p>
-		 * 		This part of code is executing when a user presses button "Molhub
-		 *         Search".
+		 * 		This part of code is executing when a user presses button "Molhub Search".
 		 *         </p>
 		 */
 		if ((term.getName().length() == 0) || (term == null)) {
@@ -178,6 +168,7 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 								+ ") does not match the naming of input query string.");
 
 						return ERROR;
+						
 					} else {
 
 						/**
@@ -236,7 +227,7 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 
 					queryResultString = new HashSet<String>();
 
-					queryResultString = QueryManager.performSPARQLQueryOnQueryString(sentence);
+					queryResultString =  QueryManager.performSPARQLQueryOnQueryString(sentence);
 
 					for (String mpp : queryResultString) {
 

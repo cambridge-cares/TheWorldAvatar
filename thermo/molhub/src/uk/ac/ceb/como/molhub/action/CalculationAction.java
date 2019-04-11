@@ -40,8 +40,6 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 	 */
 	
 	Map<String, Object> session;
-
-//	String catalinaFolderPath = System.getProperty("catalina.home");
 	
 	Properties molhubProperties = PropertiesManager
 			.loadProperties(CalculationAction.class.getClassLoader().getResourceAsStream("molhub.management.properties"));
@@ -52,9 +50,7 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 	 *         name (uuid), and stores sparql results in json file in the same folder
 	 *         (uuid).</p>
 	 */
-
-	//	String sparql = catalinaFolderPath + "/conf/Catalina/sparql_query/query_all.sparql";
-
+	
 	private String sparql = molhubProperties.getProperty("sparql.file.path").toString();	
 
 	private String pythonScriptFilePath = molhubProperties.getProperty("python.file.path").toString();
@@ -94,7 +90,7 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 
 
 			String speciesFolder = owlFolderPath +  mp.getKey().toString() + "/";
-//			String speciesFolder = catalinaFolderPath + "/webapps/ROOT/kb/" + mp.getKey().toString() + "/";
+
 			
 			String jsonFolderPath = dataFolderPath + mp.getKey().toString() + "/";
 
@@ -112,8 +108,6 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 
 			}
 			
-//			List<File> jsonFiles = utility.getArrayFileList(speciesFolder, ".json");
-			
 			List<File> jsonFiles = utility.getArrayFileList(jsonFolderPath, ".json");
 
 			for (int i = 0; i < jsonFiles.size(); i++) {
@@ -125,9 +119,7 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 				 * @author nk510 <p>Runs Python script for thermodynamic calculations. Python script is implemented by {@author danieln@cmclinnovations.com} 
 				 * 
 				 */
-
-//				String pyscript = catalinaFolderPath + "/conf/Catalina/c4e-dln22-TDC/Source/thermoDriver.py";
-			
+				
 				String pyscript =pythonScriptFilePath;
 				
 				/**

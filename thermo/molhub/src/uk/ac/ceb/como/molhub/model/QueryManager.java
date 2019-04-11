@@ -37,8 +37,7 @@ import uk.ac.ceb.como.molhub.bean.RotationalConstant;
  *
  * @author nk510
  *         <p>
- *         The Class QueryManager. Implements methods for query remote RDF4J
- *         repository.
+ *         The Class QueryManager. Implements methods for query remote RDF4J triple store.
  *         </p>
  * 
  */
@@ -47,21 +46,10 @@ public class QueryManager {
 
 	/** The Constant logger. */
 	final static Logger logger = Logger.getLogger(QueryManager.class.getName());
-
-	Properties kbProperties = PropertiesManager
-			.loadProperties(QueryManager.class.getClassLoader().getResourceAsStream("kb.management.properties"));
-
-//	static String serverUrl = new String(kbProperties.getProperty("ontocompchem.kb.local.rdf4j.server.url"));
-
-//	static String ontoCompChemUri = kbProperties.getProperty("ontocompchem.kb.tbox.uri").toString(); 
-//	static String aboxCompChemUri = kbProperties.getProperty("ontocompchem.kb.abox.uri").toString();
-
-//	static String ontoCompChemNameSpace = kbProperties.getProperty("ontocompchem.kb.tbox.namespace").toString();
-
-	/** The server url. */
-	static String serverUrl = "http://localhost:8080/rdf4j-server/repositories/ontocompchem";
-//	static String serverUrl =    "http://172.24.155.69:8080/rdf4j-server/repositories/ontocompchem";
-
+	
+	private static Properties kbProperties = PropertiesManager.loadProperties(QueryManager.class.getClassLoader().getResourceAsStream("kb.ontocompchem.management.properties"));
+	private static String serverUrl = kbProperties.getProperty("ontocompchem.kb.local.rdf4j.server.url");
+	
 	/**
 	 * <p>
 	 * Runs SPARQL query.
@@ -73,12 +61,14 @@ public class QueryManager {
 	 *                 literal in this query string contains atom name and number of
 	 *                 atoms.
 	 *                 </p>
-	 * @return a list of molecule names as a result of sparql queries RDF4J triple
-	 *         store triple store.
+	 * @return a list of molecule names as a result of sparql queries on RDF4J triple store
+	 *
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static Set<String> performSPARQLQueryOnQueryString(Sentence sentence) throws IOException {
 
+		
+		
 		/**
 		 * @author nk510
 		 *         <p>

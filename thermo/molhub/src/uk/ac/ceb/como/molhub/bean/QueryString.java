@@ -1,5 +1,10 @@
 package uk.ac.ceb.como.molhub.bean;
 
+import java.util.Properties;
+
+import uk.ac.ceb.como.molhub.model.PropertiesManager;
+import uk.ac.ceb.como.molhub.model.QueryManager;
+
 /**
  * The Class QueryString.
  *
@@ -8,6 +13,12 @@ package uk.ac.ceb.como.molhub.bean;
  */
 public class QueryString {	
 	
+	
+	private static Properties kbProperties = PropertiesManager.loadProperties(QueryManager.class.getClassLoader().getResourceAsStream("kb.ontocompchem.management.properties"));
+	
+	private static String ontoCompChemUri = kbProperties.getProperty("ontocompchem.kb.tbox.uri");
+	private static String ontoCompChemAboxBaseUri = kbProperties.getProperty("ontocompchem.kb.abox.base.uri");
+	private static String ontoCompChemNS = kbProperties.getProperty("ontocompchem.kb.tbox.ns");
 	
 	/**
 	 * Gets the all triples for positive literal.
@@ -27,14 +38,21 @@ public class QueryString {
 
 	public static String getAllTriplesForPositiveLiteral(String atomName, int atomNumber) {
 
-		String query = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" + "PREFIX gc: <http://purl.org/gc/>"
-				+ "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>"
+		String query = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" 
+		        + "PREFIX gc: <http://purl.org/gc/>"
+				+ "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
 //				+ "SELECT (strafter(str(?s), 'compchem/') AS ?uuid) ?name " + "WHERE { "
-				+ "SELECT (strafter(str(?s), '.owl#') AS ?uuid) ?name " + "WHERE { "
-				+ "?s ontocompchem:hasInitialization ?in . " + "?in gc:hasMoleculeProperty ?mp . "
-				+ "?mp gc:hasName ?name ." + "?mp gc:hasMolecule ?molecule ." + "?molecule gc:hasAtom ?atom. "
+				+ "SELECT (strafter(str(?s), '.owl#') AS ?uuid) ?name " 
+                + "WHERE { "
+				+ "?s "+ontoCompChemNS+":hasInitialization ?in . " 
+				+ "?in gc:hasMoleculeProperty ?mp . "
+				+ "?mp gc:hasName ?name ." 
+				+ "?mp gc:hasMolecule ?molecule ." 
+				+ "?molecule gc:hasAtom ?atom. "
 				+ "?atom gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#" + atomName + ">."
-				+ "?molecule gc:hasNumberOfAtoms ?n ." + "FILTER(str(?n)='" + atomNumber + "') ." + "}";
+				+ "?molecule gc:hasNumberOfAtoms ?n ." 
+				+ "FILTER(str(?n)='" + atomNumber + "') ." 
+				+ "}";
 
 		return query;
 	}
@@ -57,16 +75,23 @@ public class QueryString {
 
 	public static String getAllTriplesForNegativeLiteral(String atomName, int atomNumber) {
 
-		String query = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" + "PREFIX gc: <http://purl.org/gc/>"
-				+ "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>"
+		String query = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" 
+		        + "PREFIX gc: <http://purl.org/gc/>"
+				+ "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
 //				+ "SELECT (strafter(str(?s), 'compchem/') AS ?uuid) ?name " + "WHERE { "
-                + "SELECT (strafter(str(?s), '.owl#') AS ?uuid) ?name " + "WHERE { "
-				+ "?s ontocompchem:hasInitialization ?in . " + "?in gc:hasMoleculeProperty ?mp . "
-				+ "?mp gc:hasName ?name . " + "MINUS {" + "?mp gc:hasMolecule ?molecule . "
-				+ "?molecule gc:hasAtom ?atom. " + "?molecule gc:hasNumberOfAtoms '" + atomNumber + "'^^xsd:string . "
+                + "SELECT (strafter(str(?s), '.owl#') AS ?uuid) ?name " 
+                + "WHERE { "
+				+ "?s "+ontoCompChemNS+":hasInitialization ?in . " 
+                + "?in gc:hasMoleculeProperty ?mp . "
+				+ "?mp gc:hasName ?name . " 
+                + "MINUS {" 
+				+ "?mp gc:hasMolecule ?molecule . "
+				+ "?molecule gc:hasAtom ?atom. " 
+				+ "?molecule gc:hasNumberOfAtoms '" + atomNumber + "'^^xsd:string . "				
 				+ "?atom gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#" + atomName + ">. "
 				// + "FILTER(str(?n) ='" + atomNumber + "') ."
-				+ "}" + "}";
+				+ "}" 
+				+ "}";
 
 		return query;
 	}
@@ -86,21 +111,21 @@ public class QueryString {
 
 	public static String getAllTriplesMoleculeProperty(String moleculeName) {
 
-		String query = "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>"
-				+ "PREFIX gc: <http://purl.org/gc/>" + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+		String query =  "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
+				+ "PREFIX gc: <http://purl.org/gc/>" 
+				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
 				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
-//				+ "SELECT DISTINCT (strafter(str(?g09), 'compchem/') AS ?uuid) ?levelOfTheory ?basisSetValue "
 				+ "SELECT DISTINCT (strafter(str(?g09), '.owl#') AS ?uuid) ?levelOfTheory ?basisSetValue "
-				+ "WHERE {" + "?g09 ontocompchem:hasInitialization ?mn0 ." 
+				+ "WHERE {" 
+				+ "?g09 "+ontoCompChemNS+":hasInitialization ?mn0 ." 
 				+ "?mn0 gc:hasMoleculeProperty ?mp0 ."
-				+ "?mp0 gc:hasName " + moleculeName + "." 
-//				+ "?g09 compchemkb:hasInitialization ?mn0 ."
+				+ "?mp0 gc:hasName  "+ moleculeName +" ." 
 				+ "?mn0 gc:hasParameter ?p1 ."
-				+ "?p1  rdf:type <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#LevelOfTheory> ."
-				+ "?p1  ontocompchem:hasLevelOfTheory ?levelOfTheory ." 
+				+ "?p1  rdf:type <"+ontoCompChemUri+"LevelOfTheory> ."
+				+ "?p1  "+ontoCompChemNS+":hasLevelOfTheory ?levelOfTheory ." 
 				+ "?mn0 gc:hasParameter ?p2 ."
 				+ "?p2  rdf:type <http://purl.org/gc/BasisSet> ." 
-				+ "?p2  gc:hasBasisSet ?basisSetValue ." 
+				+ "?p2  gc:hasBasisSet ?basisSetValue ."				
 				+ "}";
 
 		return query;
@@ -119,25 +144,25 @@ public class QueryString {
 	 */
 	public static String geNonCompositetMoleculeProperties(String uuid) {
 
-		String query = "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>"
+		String query = "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
 				+ "PREFIX gc: <http://purl.org/gc/>" + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
 				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
-				+ "SELECT ?moleculeName ?levelOfTheory ?basisSetValue ?geometryTypeValue " + "WHERE {"
-//				+ "<http://como.cheng.cam.ac.uk/molhub/compchem/" + uuid + "> compchemkb:hasInitialization ?mn0 ."
-				+ "<http://www.theworldavatar.com/kb/ontocompchem/"+uuid+"/"+uuid+".owl#"+ uuid + "> ontocompchem:hasInitialization ?mn0 ."
-				+ "?mn0 gc:hasMoleculeProperty ?mp0 ." + "?mp0 gc:hasName ?moleculeName ."
-//				+ "<http://como.cheng.cam.ac.uk/molhub/compchem/" + uuid + "> compchemkb:hasInitialization ?mn0 ."
-				+ "<http://www.theworldavatar.com/kb/ontocompchem/"+ uuid+"/" +uuid+".owl#"+ uuid + "> ontocompchem:hasInitialization ?mn0 ."
+				+ "SELECT ?moleculeName ?levelOfTheory ?basisSetValue ?geometryTypeValue " 
+				+ "WHERE {"
+				+ "<"+ontoCompChemAboxBaseUri+uuid+"/"+uuid+".owl#"+ uuid + "> "+ontoCompChemNS+":hasInitialization ?mn0 ."
+				+ "?mn0 gc:hasMoleculeProperty ?mp0 ." 
+				+ "?mp0 gc:hasName ?moleculeName ."
+				+ "<"+ontoCompChemAboxBaseUri+uuid+"/" +uuid+".owl#"+ uuid + "> "+ontoCompChemNS+":hasInitialization ?mn0 ."
 				+ "?mn0 gc:hasParameter ?p1 ."
-				+ "?p1  rdf:type <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#LevelOfTheory> ."
-				+ "?p1  ontocompchem:hasLevelOfTheory ?levelOfTheory ."
-//				+ "<http://como.cheng.cam.ac.uk/molhub/compchem/" + uuid + "> compchemkb:hasInitialization ?mn2 ."
-				+ "<http://www.theworldavatar.com/kb/ontocompchem/"+ uuid+"/" +uuid+".owl#"+ uuid + ">  ontocompchem:hasInitialization ?mn2 ."
+				+ "?p1  rdf:type "+ontoCompChemNS+":LevelOfTheory ."
+				+ "?p1  <"+ontoCompChemUri+"hasLevelOfTheory> ?levelOfTheory ."
+				+ "<"+ontoCompChemAboxBaseUri+uuid+"/" +uuid+".owl#"+ uuid + ">  "+ontoCompChemNS+":hasInitialization ?mn2 ."
 				+ "?mn2 gc:hasParameter ?p2 ." + "?p2  rdf:type <http://purl.org/gc/BasisSet> ."
 				+ "?p2  gc:hasBasisSet ?basisSetValue ." 
-//				+ "<http://como.cheng.cam.ac.uk/molhub/compchem/" + uuid + "> gc:isCalculationOn ?c1. " + "?c1 a compchemkb:GeometryType ."
-				+ "<http://www.theworldavatar.com/kb/ontocompchem/"+ uuid+"/" +uuid+".owl#"+ uuid + "> gc:isCalculationOn ?c1. " + "?c1 a ontocompchem:GeometryType ."
-				+ "?c1 ontocompchem:hasGeometryType ?geometryTypeValue ." + "}";
+				+ "<"+ontoCompChemAboxBaseUri+uuid+"/" +uuid+".owl#"+ uuid + "> gc:isCalculationOn ?c1. " 
+                + "?c1 a <"+ontoCompChemUri+"GeometryType> ."
+				+ "?c1 "+ontoCompChemNS+":hasGeometryType ?geometryTypeValue ." 
+                + "}";
 
 		return query;
 	}
@@ -155,15 +180,19 @@ public class QueryString {
 	 */
 	public static String geFrequency(String uuid) {
 
-		String query = "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>"
+		String query = "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
 				+ "PREFIX gc: <http://purl.org/gc/>" + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
 				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
 				+ "SELECT ?frequenciesSize ?frequenciesValue ?frequenciesUnit " + "WHERE {"
 //				+ "<http://como.cheng.cam.ac.uk/molhub/compchem/" + uuid + ">  gc:isCalculationOn ?fc1 ."
-				+ "<http://www.theworldavatar.com/kb/ontocompchem/"+ uuid+"/" +uuid+".owl#"+ uuid + ">  gc:isCalculationOn ?fc1 ."
-				+ "?fc1 rdf:type gc:VibrationalAnalysis." + "?fc1 gc:hasResult ?r ." + "?r rdf:type gc:Frequency ."
-				+ "?r gc:hasVibrationCount ?frequenciesSize ." + "?r ontocompchem:hasFrequencies ?frequenciesValue ."
-				+ "?r gc:hasUnit ?frequenciesUnit ." + "}";
+				+ "<"+ontoCompChemAboxBaseUri+ uuid+"/" +uuid+".owl#"+ uuid + ">  gc:isCalculationOn ?fc1 ."
+				+ "?fc1 rdf:type gc:VibrationalAnalysis." 
+				+ "?fc1 gc:hasResult ?r ." 
+				+ "?r rdf:type gc:Frequency ."
+				+ "?r gc:hasVibrationCount ?frequenciesSize ." 
+				+ "?r "+ontoCompChemNS+":hasFrequencies ?frequenciesValue ."
+				+ "?r gc:hasUnit ?frequenciesUnit ." 
+				+ "}";
 
 		return query;
 	}
@@ -181,15 +210,22 @@ public class QueryString {
 	 */
 	public static String getAtomicMass(String uuid) {
 
-		String query = "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>"
-				+ "PREFIX gc: <http://purl.org/gc/>" + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+		String query = "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
+				+ "PREFIX gc: <http://purl.org/gc/>" 
+				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
 				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
-				+ "SELECT (strafter(str(?atomName), '#') AS ?atomicName) ?massValue ?massUnit " + "WHERE {"
+				+ "SELECT (strafter(str(?atomName), '#') AS ?atomicName) ?massValue ?massUnit " 
+				+ "WHERE {"
 //				+ "<http://como.cheng.cam.ac.uk/molhub/compchem/" + uuid + ">  gc:isCalculationOn ?go ."
-				+ "<http://www.theworldavatar.com/kb/ontocompchem/" +uuid+".owl#"+ uuid +">  gc:isCalculationOn ?go ."
-				+ "?go rdf:type gc:GeometryOptimization ." + "?go gc:hasMolecule ?mol1. " + "?mol1 gc:hasAtom ?at1 ."
-				+ "?at1 gc:isElement ?atomName ." + "?at1 gc:hasMass ?mass ." + "?mass gc:hasValue ?massValue . "
-				+ "?mass gc:hasUnit ?massUnit . " + "}";
+				+ "<"+ontoCompChemAboxBaseUri+uuid+"/" +uuid+".owl#"+ uuid +">  gc:isCalculationOn ?go ."
+				+ "?go rdf:type gc:GeometryOptimization ." 
+				+ "?go gc:hasMolecule ?mol1. " 
+				+ "?mol1 gc:hasAtom ?at1 ."
+				+ "?at1 gc:isElement ?atomName ." 
+				+ "?at1 gc:hasMass ?mass ." 
+				+ "?mass gc:hasValue ?massValue . "
+				+ "?mass gc:hasUnit ?massUnit . " 
+				+ "}";
 
 		return query;
 	}
@@ -207,15 +243,17 @@ public class QueryString {
 	
 	public static String getSpinMultiplicity(String uuid) {
 
-		String query = "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>"
-				+ "PREFIX gc: <http://purl.org/gc/>" + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
-				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>" + "SELECT ?spinMultiplicityValue "
+		String query = "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
+				+ "PREFIX gc: <http://purl.org/gc/>" 
+				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>" 
+				+ "SELECT ?spinMultiplicityValue "
 //				+ "WHERE {" + "<http://como.cheng.cam.ac.uk/molhub/compchem/" + uuid + ">   gc:isCalculationOn ?go1 . "
 				+ "WHERE {" 
-                + "<http://www.theworldavatar.com/kb/ontocompchem/" +uuid+".owl#"+ uuid +">   gc:isCalculationOn ?go1 . "				
+                + "<"+ontoCompChemAboxBaseUri+ uuid+"/" +uuid+".owl#"+ uuid +">   gc:isCalculationOn ?go1 . "				
 				+ "?go1 rdf:type gc:GeometryOptimization ." 
                 + "?go1 gc:hasMolecule ?mol2."
-				+ "?mol2 ontocompchem:hasSpinMultiplicity ?spinMultiplicityValue ." 
+				+ "?mol2 "+ontoCompChemNS+":hasSpinMultiplicity ?spinMultiplicityValue ." 
                 + "}";
 
 		return query;
@@ -231,14 +269,16 @@ public class QueryString {
 
 	public static String getFormalCharge(String uuid) {
 
-		String query = "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>"
-				+ "PREFIX gc: <http://purl.org/gc/>" + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+		String query = "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
+				+ "PREFIX gc: <http://purl.org/gc/>" 
+				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
 				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>" 
 				+ "SELECT ?formalChargeValue  ?formalChargeUnit "
 				+ "WHERE {" 
 //				+ "<http://como.cheng.cam.ac.uk/molhub/compchem/" + uuid + ">   gc:isCalculationOn ?go1 . "
-				+ "<http://www.theworldavatar.com/kb/ontocompchem/"+uuid+"/" +uuid+".owl#"+ uuid +">   gc:isCalculationOn ?go1 . "
-				+ "?go1 rdf:type gc:GeometryOptimization ." + "?go1 gc:hasMolecule ?mol2."
+				+ "<"+ontoCompChemAboxBaseUri+uuid+"/" +uuid+".owl#"+ uuid +">   gc:isCalculationOn ?go1 . "
+				+ "?go1 rdf:type gc:GeometryOptimization ." 
+				+ "?go1 gc:hasMolecule ?mol2."
 				+ "?mol2 gc:hasFormalCharge ?formalCharge ."
 				+ "?formalCharge rdf:type <http://purl.org/gc/IntegerValue> . "
 				+ "?formalCharge gc:hasValue  ?formalChargeValue . "
@@ -249,27 +289,28 @@ public class QueryString {
 	}
 	
 	/**
-	 * Gets the rotational symmerty number.
+	 * Gets the rotational symmetry number.
 	 *
 	 * @param uuid
 	 *            the uuid
 	 * @return the string.
 	 *         <p>
-	 * 		Query as a string. Result of that query should be the rotational
-	 *         symmetry number.
+	 * 		Query as a string. Result of that query should be the rotational symmetry number.
+	 *         
 	 *         </p>
 	 */
 	public static String getRotationalSymmertyNumber(String uuid) {
 
-		String query = "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>"
-				+ "PREFIX gc: <http://purl.org/gc/>" + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+		String query = "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
+				+ "PREFIX gc: <http://purl.org/gc/>" 
+				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
 				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
 				+ "SELECT DISTINCT ?rotationalSymmetryNumber " 
 				+ "WHERE {"
 //				+ "<http://como.cheng.cam.ac.uk/molhub/compchem/" + uuid + ">   gc:isCalculationOn ?go5 ."
-				+ "<http://www.theworldavatar.com/kb/ontocompchem/"+ uuid +"/" +uuid+".owl#"+ uuid +">   gc:isCalculationOn ?go5 ."
-				+ "?go5 rdf:type ontocompchem:RotationalSymmetry ."
-				+ "?go5 ontocompchem:hasRotationalSymmetryNumber ?rotationalSymmetryNumber . " + "}";
+				+ "<"+ontoCompChemAboxBaseUri+ uuid +"/" +uuid+".owl#"+ uuid +">   gc:isCalculationOn ?go5 ."
+				+ "?go5 rdf:type "+ontoCompChemNS+":RotationalSymmetry ."
+				+ "?go5 "+ontoCompChemNS+":hasRotationalSymmetryNumber ?rotationalSymmetryNumber . " + "}";
 
 		return query;
 	}
@@ -288,17 +329,18 @@ public class QueryString {
 	 */
 	public static String getRotationalConstant(String uuid) {
 
-		String query = "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>"
-				+ "PREFIX gc: <http://purl.org/gc/>" + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+		String query = "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
+				+ "PREFIX gc: <http://purl.org/gc/>" 
+				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
 				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
 				+ "SELECT DISTINCT ?rotationalConstantsSize  ?rotationalConstantsValue ?rotationalConstantsUnit "
 //				+ "WHERE {" + "<http://como.cheng.cam.ac.uk/molhub/compchem/" + uuid + ">   gc:isCalculationOn ?go4 ."
 				+ "WHERE {" 
-                + "<http://www.theworldavatar.com/kb/ontocompchem/"+ uuid+"/"+uuid+".owl#"+ uuid +">   gc:isCalculationOn ?go4 ."
-				+ "?go4 rdf:type ontocompchem:RotationalConstants ."
-				+ "?go4 ontocompchem:hasRotationalConstants ?rotationalConstantsValue ."
+                + "<"+ontoCompChemAboxBaseUri+ uuid+"/"+uuid+".owl#"+ uuid +">   gc:isCalculationOn ?go4 ."
+				+ "?go4 rdf:type "+ontoCompChemNS+":RotationalConstants ."
+				+ "?go4 "+ontoCompChemNS+":hasRotationalConstants ?rotationalConstantsValue ."
 				+ "?go4 gc:hasUnit ?rotationalConstantsUnit ."
-				+ "?go ontocompchem:hasRotationalConstantsCount ?rotationalConstantsSize ." + "}";
+				+ "?go "+ontoCompChemNS+":hasRotationalConstantsCount ?rotationalConstantsSize ." + "}";
 
 		return query;
 	}

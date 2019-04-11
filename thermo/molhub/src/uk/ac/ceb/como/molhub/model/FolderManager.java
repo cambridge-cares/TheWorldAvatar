@@ -5,11 +5,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,15 +32,12 @@ public class FolderManager {
 	 *
 	 * @author nk510
 	 * @param fileName Name of Gaussian file
-	 * @param catalinaFolderPath A path where folder will be created.
-	 * @return A unique folder name.
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
+	 * 
 	 */
-	public static String generateUniqueFolderName(String fileName, String catalinaFolderPath)
+	public static String generateUniqueFolderName(String fileName)
 			throws UnsupportedEncodingException {
 		
-		String folderName = "";
-
 		long milliseconds = System.currentTimeMillis();
 
 		String datetime = new Date().toString();
@@ -62,12 +57,8 @@ public class FolderManager {
 		byte[] bytes = source.getBytes("UTF-8");
 
 		UUID uuid = UUID.nameUUIDFromBytes(bytes);
-
-//		folderName = catalinaFolderPath + "/webapps/ROOT/" + uuid.toString();
 		
-		folderName = catalinaFolderPath + "/webapps/ROOT/kb/" + uuid.toString();
-
-		return folderName;
+		return uuid.toString();
 
 	}
 
@@ -84,7 +75,9 @@ public class FolderManager {
 		if (!Files.exists(folderPath)) {
 
 			try {
+				
 				Files.createDirectories(folderPath);
+				
 			} catch (IOException e) {
 
 				e.printStackTrace();
@@ -135,21 +128,35 @@ public class FolderManager {
 	
 	/**
 	 * Gets the file name.
-	 *
+	 * 
 	 * @author nk510
-	 * @param uuid the uuid
-	 * @param catalinaFolderPath the catalina folder path
-	 * @param format the format
-	 * @return file name saved in given folder name (uuid).
+	 * @param uuid the unique identifier
+	 * @param kbFolderPath folder where owl files are stored.
+	 * @param dataFolderPath folder where Gaussian, xml, and png files are stored.
+	 * @param format the format of file.
+	 * @return
 	 */
-	public String getFileName(String uuid,  String catalinaFolderPath, String format) {
+//	public String getFileName(String uuid,  String catalinaFolderPath, String format) {
+	public String getFileName(String uuid,  String kbFolderPath, String dataFolderPath, String format) {
 		
 		String fileName=null;
 		
-//		In earlier version of molhub all files were generated and stored in Tomcat's ROOT folder.
-//		String folderName = catalinaFolderPath + "/webapps/ROOT/" + uuid.toString();
+		String folderName = null;
 		
-		String folderName = catalinaFolderPath + "/webapps/ROOT/kb/" + uuid.toString();
+		if(format.endsWith(".owl")) {
+		
+//			folderName = catalinaFolderPath + "/webapps/ROOT/kb/ontocompchem/" + uuid.toString();
+			folderName =kbFolderPath + uuid.toString();
+		
+		}
+		else {
+			
+//			folderName = catalinaFolderPath + "/webapps/ROOT/data/ontocompchem/" + uuid.toString();
+			folderName= dataFolderPath + uuid.toString();
+			
+		}
+		
+//		String folderName = folderPath + uuid.toString();
 		File file = new File(folderName);
 
 		for(File f : file.listFiles()) {

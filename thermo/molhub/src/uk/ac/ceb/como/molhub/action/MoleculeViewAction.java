@@ -42,28 +42,16 @@ public class MoleculeViewAction extends ActionSupport {
 	
 	/** The formal charge. */
 	List<FormalCharge> formalChargeList;
+	
+	/** 
+	 * Reads folders path from properties, where generated ontologies are defined, as well as folder where Gaussian, XML and png files are stored. 
+	 */
+	Properties molhubPropreties = PropertiesManager.loadProperties(UploadAction.class.getClassLoader().getResourceAsStream("molhub.management.properties"));
+	
+	private String dataFolderPath = molhubPropreties.getProperty("data.folder.path").toString();
 
-	/** The catalina folder path. */
-	private String catalinaFolderPath = System.getProperty("catalina.home");
-
-//	Properties molhubProperties = PropertiesManager
-//			.loadProperties(MoleculeViewAction.class.getClassLoader().getResourceAsStream("molhub.management.properties"));
+	private String kbFolderPath = molhubPropreties.getProperty("kb.folder.path").toString();
 	
-//	private String dataFolderPath = molhubProperties.getProperty("data.folder.path");
-	
-	
-//	private String kbFolderPath = molhubProperties.getProperty("kb.folder.path");
-	
-
-	 Properties kbProperties = PropertiesManager
-			.loadProperties(MoleculeViewAction.class.getClassLoader().getResourceAsStream("kb.management.properties"));
-	
-//	 private String ontoCompChemUri = kbProperties.getProperty("ontocompchem.kb.tbox.uri").toString(); 
-	 
-//	 private String aboxCompChemUri = kbProperties.getProperty("ontocompchem.kb.abox.uri").toString();
-	 
-//	 private String ontoCompChemNameSpace = kbProperties.getProperty("ontocompchem.kb.tbox.namespace").toString();
-	 
 	/**
 	 * The uuid is used as unique identifier for query all properties of a digital
 	 * entity and showing results on new page.
@@ -71,16 +59,16 @@ public class MoleculeViewAction extends ActionSupport {
 	private String uuid = ServletActionContext.getRequest().getParameter("uuidName");
 
 	/** The gaussian file name. */
-	private String gaussianFileName = folderManager.getFileName(getUuid(), catalinaFolderPath, ".g09");
+	private String gaussianFileName = folderManager.getFileName(getUuid(), kbFolderPath, dataFolderPath, ".g09");
 
 	/** The xml file name. */
-	private String xmlFileName = folderManager.getFileName(getUuid(), catalinaFolderPath, ".xml");
+	private String xmlFileName = folderManager.getFileName(getUuid(), kbFolderPath,dataFolderPath, ".xml");
 
 	/** The owl file name. */
-	private String owlFileName = folderManager.getFileName(getUuid(), catalinaFolderPath, ".owl");
+	private String owlFileName = folderManager.getFileName(getUuid(), kbFolderPath,dataFolderPath, ".owl");
 
 	/** The nasa file name. */
-	private String nasaFileName = folderManager.getFileName(getUuid(), catalinaFolderPath, "nasa.json");
+	private String nasaFileName = folderManager.getFileName(getUuid(), kbFolderPath,dataFolderPath, "nasa.json");
 
 	/** The molecule property list. */
 	List<MoleculeProperty> moleculePropertyList = new ArrayList<MoleculeProperty>();
@@ -98,14 +86,14 @@ public class MoleculeViewAction extends ActionSupport {
 	 * (non-Javadoc)
 	 * 
 	 * @see com.opensymphony.xwork2.ActionSupport#execute()
+	 * 
 	 */
+	@Override
 	public String execute() {
-
 		
 		/**
 		 * @author nk510 <p>SPARQL returns a list of frequencies for given uuid.</p>
 		 */
-//		frequencyList = QueryManager.getAllFrequencies(getUuid(), aboxCompChemUri, ontoCompChemNameSpace, ontoCompChemUri);
 		frequencyList = QueryManager.getAllFrequencies(getUuid());
 
 		/**
@@ -113,7 +101,6 @@ public class MoleculeViewAction extends ActionSupport {
 		 *         basis set value, level of theory, and geometry type value.</p>
 		 */
 
-//		moleculePropertyList = QueryManager.getAllNonCompositetMoleculeProperties(getUuid(), ontoCompChemUri, ontoCompChemNameSpace, aboxCompChemUri);
 		moleculePropertyList = QueryManager.getAllNonCompositetMoleculeProperties(getUuid());
 
 		/**
@@ -121,7 +108,6 @@ public class MoleculeViewAction extends ActionSupport {
 		 *         for given uuid.</p>
 		 */
 
-//		rotationalSymmetryNumber = QueryManager.getAllRotationalSymmertyNumber(getUuid(),  aboxCompChemUri, ontoCompChemNameSpace, ontoCompChemUri);
 		rotationalSymmetryNumber = QueryManager.getAllRotationalSymmertyNumber(getUuid());
 
 		/**
@@ -129,14 +115,13 @@ public class MoleculeViewAction extends ActionSupport {
 		 *         for given uuid.</p>
 		 */
 
-//		spinMultiplicityValue = QueryManager.getAllSpinMultiplicity(getUuid(),  aboxCompChemUri, ontoCompChemNameSpace, ontoCompChemUri);
 		spinMultiplicityValue = QueryManager.getAllSpinMultiplicity(getUuid());
 
 		/**
 		 * @author nk510 <p>Remembers atomic masses for each atom appearing in a molecule (species) based on uuid. It
 		 *         includes atomic mass value, atomic mass unit, and atom name.</p>
 		 */
-//		atomicMassList = QueryManager.getAllAtomicMass(getUuid(),aboxCompChemUri, ontoCompChemNameSpace, ontoCompChemUri);
+
 		atomicMassList = QueryManager.getAllAtomicMass(getUuid());
 		
 		/**
@@ -145,15 +130,13 @@ public class MoleculeViewAction extends ActionSupport {
 	     *         constant value, rotational constant unit).</p> 
 		 */
 
-//		rotationalConstantList = QueryManager.getAllRotationalConstant(getUuid(),aboxCompChemUri, ontoCompChemNameSpace, ontoCompChemUri);
 		rotationalConstantList = QueryManager.getAllRotationalConstant(getUuid());
 
 		/**
 		 * @author nk510 <p>SPARQL returns List<FormalCharge> that remembers formal charge value and formal charge unit
 		 *         for given uuid.</p>
-		 */
-		
-//		formalChargeList = QueryManager.getAllFormalCharge(getUuid(),aboxCompChemUri, ontoCompChemNameSpace, ontoCompChemUri);
+		 */	
+
 		formalChargeList = QueryManager.getAllFormalCharge(getUuid());
 		
 		
@@ -376,4 +359,5 @@ public class MoleculeViewAction extends ActionSupport {
 	public void setFormalChargeList(List<FormalCharge> formalChargeList) {
 		this.formalChargeList = formalChargeList;
 	}
+	
 }
