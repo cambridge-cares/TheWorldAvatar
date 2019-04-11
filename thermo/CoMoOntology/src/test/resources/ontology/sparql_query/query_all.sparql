@@ -1,21 +1,21 @@
-PREFIX compchemkb: <https://como.cheng.cam.ac.uk/kb/compchem.owl#>
+PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>
 PREFIX gc: <http://purl.org/gc/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 SELECT ?g09 ?speciesIRI ?moleculeName ?atomName ?atomNumber ?levelOfTheory ?basisSetValue ?frequenciesSize ?frequenciesValue ?frequenciesUnit ?spinMultiplicityValue  ?coordinateX ?coordinateY ?coordinateZ ?massValue ?massUnit ?geometryTypeValue ?rotationalConstantsSize ?rotationalConstantsUnit ?rotationalConstantsValue ?rotationalSymmetryNumber ?programName ?programVersion ?runDate 
 WHERE { 
 {
-?g09 compchemkb:hasInitialization ?mn0 . 
+?g09 ontocompchem:hasInitialization ?mn0 . 
 ?mn0 gc:hasMoleculeProperty ?mp0 . 
 ?mp0 gc:hasName ?moleculeName . 
 }
 UNION
 {
-?g09 compchemkb:hasUniqueSpeciesIRI ?speciesIRI .
+?g09 ontocompchem:hasUniqueSpeciesIRI ?speciesIRI .
 }
 UNION
 {
-?g09 compchemkb:hasInitialization ?mn1 . 
+?g09 ontocompchem:hasInitialization ?mn1 . 
 ?mn1 gc:hasMoleculeProperty ?mp1 .  
 ?mp1 gc:hasMolecule ?mol0 .
 ?mol0 gc:hasNumberOfAtoms ?atomNumber.
@@ -24,10 +24,10 @@ UNION
 }
 UNION
 {
-?g09 compchemkb:hasInitialization ?mn2 .
+?g09 ontocompchem:hasInitialization ?mn2 .
 ?mn2 gc:hasParameter ?p1 .
-?p1 rdf:type <https://como.cheng.cam.ac.uk/kb/compchem.owl#LevelOfTheory> .
-?p1 compchemkb:hasLevelOfTheory ?levelOfTheory .
+?p1 rdf:type <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl##LevelOfTheory> .
+?p1 ontocompchem:hasLevelOfTheory ?levelOfTheory .
 ?mn2 gc:hasParameter ?p2 .
 ?p2 rdf:type <http://purl.org/gc/BasisSet> .
 ?p2 gc:hasBasisSet ?basisSetValue .
@@ -50,7 +50,7 @@ UNION
 ?g09 gc:isCalculationOn ?go1. 
 ?go1 rdf:type gc:GeometryOptimization .
 ?go1 gc:hasMolecule ?mol2.
-?mol2 compchemkb:hasSpinMultiplicity ?spinMultiplicityValue .
+?mol2 ontocompchem:hasSpinMultiplicity ?spinMultiplicityValue .
 }
 UNION
 {
@@ -59,36 +59,36 @@ UNION
 ?go2 gc:hasResult ?r .
 ?r rdf:type gc:Frequency .
 ?r gc:hasVibrationCount ?frequenciesSize .
-#?r compchemkb:hasFrequenciesValue ?frequenciesValue .
-?r compchemkb:hasFrequencies ?frequenciesValue .
+#?r ontocompchem:hasFrequenciesValue ?frequenciesValue .
+?r ontocompchem:hasFrequencies ?frequenciesValue .
 ?r gc:hasUnit ?frequenciesUnit.
 }
 UNION
 {
 ?g09 gc:isCalculationOn ?go3. 
-?go3 a compchemkb:GeometryType .
-#?go3 compchemkb:hasGeometryTypeValue ?geometryTypeValue.
-?go3 compchemkb:hasGeometryType ?geometryTypeValue.
+?go3 a ontocompchem:GeometryType .
+#?go3 ontocompchem:hasGeometryTypeValue ?geometryTypeValue.
+?go3 ontocompchem:hasGeometryType ?geometryTypeValue.
  }
  UNION
  {
  ?g09 gc:isCalculationOn ?go4.
-?go4 rdf:type compchemkb:RotationalConstants .
-?go4 compchemkb:hasRotationalConstants ?rotationalConstantsValue .
+?go4 rdf:type ontocompchem:RotationalConstants .
+?go4 ontocompchem:hasRotationalConstants ?rotationalConstantsValue .
 ?go4 gc:hasUnit ?rotationalConstantsUnit . 
-?go compchemkb:hasRotationalConstantsCount ?rotationalConstantsSize .
+?go ontocompchem:hasRotationalConstantsCount ?rotationalConstantsSize .
 }
 UNION
 {
 ?g09 gc:isCalculationOn ?go5.
-?go5 rdf:type compchemkb:RotationalSymmetry .
-?go5 compchemkb:hasRotationalSymmetryNumber ?rotationalSymmetryNumber .
+?go5 rdf:type ontocompchem:RotationalSymmetry .
+?go5 ontocompchem:hasRotationalSymmetryNumber ?rotationalSymmetryNumber .
 }
 UNION
 {
-?g09 compchemkb:hasEnvironment ?env .
-?env compchemkb:hasProgram ?programName . 
-?env compchemkb:hasProgramVersion ?programVersion .
-?env compchemkb:hasRunDate ?runDate .
+?g09 ontocompchem:hasEnvironment ?env .
+?env ontocompchem:hasProgram ?programName . 
+?env ontocompchem:hasProgramVersion ?programVersion .
+?env ontocompchem:hasRunDate ?runDate .
 }
 }
