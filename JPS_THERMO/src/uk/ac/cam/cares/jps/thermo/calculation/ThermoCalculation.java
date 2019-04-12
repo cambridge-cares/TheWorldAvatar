@@ -39,6 +39,8 @@ public class ThermoCalculation {
 		
 		File outputFile = new File(jsonOutputFilePath);
 		
+		
+		
 		if(!outputFile.exists()) {
 			
 			outputFile.createNewFile();
