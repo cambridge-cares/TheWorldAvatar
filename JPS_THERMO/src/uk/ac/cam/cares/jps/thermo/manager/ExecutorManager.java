@@ -29,6 +29,7 @@ public class ExecutorManager {
 
 			executorService.shutdownNow();
 
+			
 			Thread.currentThread().interrupt();
 		}
 	}

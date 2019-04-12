@@ -23,6 +23,7 @@ public class PropertiesManager {
 
 		try {
 
+			
 			if (inputStream == null) {
 
 				return properties;

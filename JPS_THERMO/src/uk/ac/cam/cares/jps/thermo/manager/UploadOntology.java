@@ -36,6 +36,7 @@ public class UploadOntology {
 				 * @param serverUrl remote ontokin sparql endpoint.
 				 * 
 				 */				
+				
 				Repository repository = new HTTPRepository(serverUrl);
 
 				repository.initialize();
