@@ -29,11 +29,9 @@ public class ThermoCalculation {
 	 */	
 	
 	 public void runThermoCalculation (String jsonInputFilePath, String jsonOutputFilePath) throws IOException {
-		
 		 
-		 /**
-		  * 
-		  */
+		 
+		 
 		/**
 		 * @author NK510
 		 * 
