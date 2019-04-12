@@ -25,22 +25,17 @@ public class UploadOntology {
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 
 		Thread threadTask = new Thread(new Runnable() {
-
-			 
 			
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
 				
 				/**
-				 * @author nk510 Gets the repository connection.
-				 * @param serverUrl
-				 *            remote ontokin sparql endpoint.
 				 * 
-				 */
-
-				
-				
+				 * @author nk510 Gets the repository connection.
+				 * @param serverUrl remote ontokin sparql endpoint.
+				 * 
+				 */				
 				Repository repository = new HTTPRepository(serverUrl);
 
 				repository.initialize();
@@ -75,6 +70,7 @@ public class UploadOntology {
 					} catch (RepositoryException e) {
 
 						/**
+						 * 
 						 * @author nk510
 						 *         <p>
 						 *         If something is wrong during the transaction, it will return a

@@ -1,8 +1,10 @@
 package uk.ac.cam.cares.jps.thermo.servlet;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,6 +20,7 @@ import uk.ac.cam.cares.jps.thermo.calculation.ThermoCalculation;
 import uk.ac.cam.cares.jps.thermo.json.parser.JsonToJsonConverter;
 import uk.ac.cam.cares.jps.thermo.json.parser.JsonToOwlConverter;
 import uk.ac.cam.cares.jps.thermo.manager.FolderManager;
+import uk.ac.cam.cares.jps.thermo.manager.PropertiesManager;
 import uk.ac.cam.cares.jps.thermo.manager.SPARQLManager;
 import uk.ac.cam.cares.jps.thermo.manager.UploadOntology;
 
@@ -41,32 +44,26 @@ import uk.ac.cam.cares.jps.thermo.manager.UploadOntology;
 public class CompChemRdf4JServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
-
-//	Properties jpsThermoProperties = PropertiesManager.loadProperties(CompChemRdf4JServlet.class.getClassLoader().getResourceAsStream("jps_thermo.management.properties"));
 	
 	/** The Constant logger. */
 	public static Logger logger = Logger.getLogger(CompChemRdf4JServlet.class.getName());
-
-	public static String catalinaFolderPath = System.getProperty("catalina.home");
-
-	String compchemServerUrl = "http://localhost:8080/rdf4j-server/repositories/ontocompchem";
 	
-	String ontokinServerUrl = "http://localhost:8080/rdf4j-server/repositories/ontokin";
+    private Properties jpsThermoProperties = PropertiesManager.loadProperties(CompChemRdf4JServlet.class.getClassLoader().getResourceAsStream("jps_thermo.management.properties"));
 	
-	/** The uri for ontokin ontology instances. */
-	private String aboxOntokinUri = "http://theworldavatar.com/kb/ontokin/";
+	private String compchemServerUrl = jpsThermoProperties.getProperty("ontocompchem.kb.local.rdf4j.server.url");
+	private String ontokinServerUrl = jpsThermoProperties.getProperty("ontokin.kb.local.rdf4j.server.url");
+	
+	private String aboxOntokinUri = jpsThermoProperties.getProperty("abox.ontokin.uri");
 	
 	/**
 	 * 
 	 * @author NK510 Root folder inside Apache Tomcat.
 	 * 
 	 */
-//	public static final String RESULT_FOLDER = catalinaFolderPath + "/webapps/ROOT/kb/";
-	public static final String RESULT_FOLDER = catalinaFolderPath + "/webapps/ROOT/data/ontocompchem/";
 	
-	public static final String RESULT_ONTOKIN_FOLDER = catalinaFolderPath + "/webapps/ROOT/kb/ontokin/";
+	private final String RESULT_ONTOCOMPCHEM_FOLDER = jpsThermoProperties.getProperty("result.ontocompchem.folder");
 	
-//	String RESULT_FOLDER = jpsThermoProperties.getProperty("data.folder.path").toString();
+	private final String RESULT_ONTOKIN_FOLDER = jpsThermoProperties.getProperty("result.ontokin.folder");
 	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -103,11 +100,11 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		 * @author NK510 Name of Json file that contains results of thermo calculations.
 		 * 
 		 */
-		String jsonSPARQLOutputFilePath = RESULT_FOLDER + folderName + "/" + folderName + ".json";
+		String jsonSPARQLOutputFilePath = RESULT_ONTOCOMPCHEM_FOLDER + folderName + "/" + folderName + ".json";
 
-		String jsonOutputFilePath = RESULT_FOLDER + folderName + "/" + folderName + "_nasa" + ".json";
+		String jsonOutputFilePath = RESULT_ONTOCOMPCHEM_FOLDER + folderName + "/" + folderName + "_nasa" + ".json";
 		
-		String updatedJsonOutputFilePath = RESULT_FOLDER + folderName + "/" + folderName + "_updated_nasa" + ".json";
+		String updatedJsonOutputFilePath = RESULT_ONTOCOMPCHEM_FOLDER + folderName + "/" + folderName + "_updated_nasa" + ".json";
 		
 		/**
 		 * @author NK510 Querying CompChem remote RDF4J repository.
@@ -124,7 +121,7 @@ public class CompChemRdf4JServlet extends HttpServlet {
 
 		ThermoCalculation thermoCalculation = new ThermoCalculation();
 
-		thermoCalculation.runThermoCalculation(jsonSPARQLOutputFilePath, jsonOutputFilePath, catalinaFolderPath);		
+		thermoCalculation.runThermoCalculation(jsonSPARQLOutputFilePath, jsonOutputFilePath);		
 
 		JsonToJsonConverter jsonConverter = new JsonToJsonConverter();
 
@@ -137,11 +134,11 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		 * Waits 2 second to complete thermo calculation.
 		 * 
 		 */
-		 try {
+		try {
 			 
 			Thread.sleep(2000);
 		
-		 } catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 			
 			e.printStackTrace();
 		}
@@ -171,11 +168,11 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		 * Waits 2 second to complete thermo calculation.
 		 * 
 		 */
-		 try {
+		try {
 			 
 			Thread.sleep(2000);
 		
-		 } catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 			
 			e.printStackTrace();
 		}
@@ -197,7 +194,7 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		 * 
 		 */
 		 try {
-			 
+			  
 			Thread.sleep(2000);
 		
 		 } catch (InterruptedException e) {
@@ -210,11 +207,21 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		 * Upload generated Ontokin individual assertions (owl file) into RDF4J repository.
 		 */
 		UploadOntology uploadOntology = new UploadOntology();
-		
-		
-		
-//		uploadOntology.uploadOntoKin(new FolderManager().getOwlFilePath(RESULT_ONTOKIN_FOLDER + folderName +"/kb/"), ontokinServerUrl, aboxOntokinUri);
+
 		uploadOntology.uploadOntoKin(new FolderManager().getOwlFilePath(RESULT_ONTOKIN_FOLDER+folderName+"/"), ontokinServerUrl, aboxOntokinUri);
+		
+		FolderManager folderManager = new FolderManager();
+		
+		String owlFileName = new FolderManager().getOwlFile(RESULT_ONTOKIN_FOLDER+folderName+"/").getName();
+		
+		File sourceFile = new File(new FolderManager().getOwlFile(RESULT_ONTOKIN_FOLDER+folderName+"/").getAbsolutePath());
+		
+		File desinationFile = new File (RESULT_ONTOKIN_FOLDER + owlFileName);
+		
+		logger.info("sourceFile: " + sourceFile.getAbsolutePath() + "file exists: " + sourceFile.exists());
+		logger.info("desinationFile: " + desinationFile.getAbsolutePath());	
+		
+		folderManager.copyFileToAnotherDestination(sourceFile, desinationFile);		
 		
 	}
 
