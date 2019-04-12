@@ -30,6 +30,7 @@ public class FolderManager {
 			
 			String folderName = "";
 
+			
 			long milliseconds = System.currentTimeMillis();
 
 			String datetime = new Date().toString();

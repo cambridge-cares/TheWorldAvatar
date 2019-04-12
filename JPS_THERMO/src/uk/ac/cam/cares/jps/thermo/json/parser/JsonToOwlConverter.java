@@ -42,6 +42,7 @@ public class JsonToOwlConverter {
 
 		ArrayList<String> sourceFiles = new ArrayList<String>();
 
+		
 		sourceFiles.add(jsonFilePath);
 
 		if (sourceFiles != null) {

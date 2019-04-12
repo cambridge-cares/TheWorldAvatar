@@ -41,7 +41,8 @@ public class SPARQLManager {
 		 * Connection to RDF4J triple store and query 'compchem' repository.
 		 * 
 		 */			
-				Repository repository =   new HTTPRepository(serverUrl);
+				
+		Repository repository =   new HTTPRepository(serverUrl);
 				
 				repository.initialize();
 					

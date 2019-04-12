@@ -54,6 +54,7 @@ public class CompChemOWLFileServlet extends HttpServlet {
 
 	public static final String RESULT_FOLDER = catalinaFolderPath + "/webapps/ROOT/temp/JPS_THERMO/";
 	
+	
 	/**
 	 * 
 	 * @see HttpServlet#HttpServlet()

@@ -61,6 +61,7 @@ public class CompChemRdf4JServlet extends HttpServlet {
 	 * 
 	 */
 	
+	
 	private final String RESULT_ONTOCOMPCHEM_FOLDER = jpsThermoProperties.getProperty("result.ontocompchem.folder");
 	
 	private final String RESULT_ONTOKIN_FOLDER = jpsThermoProperties.getProperty("result.ontokin.folder");
