@@ -11,9 +11,11 @@ public class PropertiesManager {
 	}
 
 	/**
+	 * 
 	 * @author NK510
 	 * @param inputStream
-	 * @return Properties (key, value) given in .properties file of molhub project
+	 * @return Properties (key, value) given in .properties file of JPS_THERMO project
+	 * 
 	 */
 	public static Properties loadProperties(InputStream inputStream) {
 

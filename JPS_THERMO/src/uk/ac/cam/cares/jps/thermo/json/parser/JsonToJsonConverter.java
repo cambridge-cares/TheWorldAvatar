@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,6 +21,8 @@ import org.eclipse.rdf4j.query.resultio.helpers.QueryResultCollector;
 import org.eclipse.rdf4j.query.resultio.sparqljson.SPARQLResultsJSONParser;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.thermo.manager.PropertiesManager;
+
 
 /**
  * 
@@ -30,7 +33,12 @@ import org.json.JSONObject;
 public class JsonToJsonConverter {
 
 	/** The Constant logger. */
-	final static Logger logger = Logger.getLogger(JsonToJsonConverter.class.getName());
+	final static Logger logger = Logger.getLogger(JsonToJsonConverter.class.getName());	
+
+	private Properties jpsThermoProperties = PropertiesManager.loadProperties(JsonToJsonConverter.class.getClassLoader().getResourceAsStream("jps_thermo.management.properties"));
+	
+	private String jpsThermoAgentUri = jpsThermoProperties.getProperty("jps.thermo.agent.uri");
+	
 
 	/**
 	 * 
@@ -137,7 +145,9 @@ public class JsonToJsonConverter {
 		
 		jsonObject.append("massUnit", massUnit);
 
-		jsonObject.append("ThermoAgentIRI", "http://www.theworldavatar.com/kb/agents/Service__calculation.owl#Service");
+//		jsonObject.append("ThermoAgentIRI", "http://www.theworldavatar.com/kb/agents/Service__calculation.owl#Service");
+		
+		jsonObject.append("ThermoAgentIRI", jpsThermoAgentUri);
 		
 		String updatedJsonContent = jsonObject.toString();
 
