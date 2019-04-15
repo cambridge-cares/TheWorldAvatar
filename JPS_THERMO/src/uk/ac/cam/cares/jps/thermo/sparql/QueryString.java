@@ -114,8 +114,7 @@ public class QueryString {
 				+"} "
 				+ "FILTER(str(?g09)='"+uuid+"')"
 				+ "}";
-
+		
 		return query;
 	}
-	
 }
