@@ -2,10 +2,12 @@ package uk.ac.cam.cares.jps.base.query;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.update.UpdateAction;
@@ -23,6 +25,7 @@ import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
+
 
 public class QueryBroker {
 	
@@ -68,6 +71,55 @@ public class QueryBroker {
 		}
 	}
 
+	public ArrayList<String> queryKey(String urlOrPath, String sparqlQuery) {		
+		urlOrPath = ResourcePathConverter.convert(urlOrPath);
+		
+		ResultSet resultSet = null;
+		if (urlOrPath.startsWith("http")) {
+			resultSet = JenaHelper.queryUrl(urlOrPath, sparqlQuery);
+		} else {
+			String localFile = ScenarioHelper.cutHash(urlOrPath);
+			resultSet = JenaHelper.queryFile(localFile, sparqlQuery);
+		}
+		
+		return getKeyListFromQuery(resultSet);
+	}
+	
+	public ArrayList<String> queryKeyGreedy(String urlOrPath, String greedySparqlQuery, String secondSparqlQuery) {
+	
+		
+		String greedyResult = queryFile(urlOrPath, greedySparqlQuery);
+		JSONObject jo = JenaResultSetFormatter.convertToSimplifiedList(greedyResult);
+		JSONArray ja = jo.getJSONArray("results");
+		
+		List<String> nodesToVisit = new ArrayList<String>();
+		for (int i=0; i<ja.length(); i++) {
+			JSONObject row = ja.getJSONObject(i);
+			for (String current : row.keySet()) {
+				String potentialIri =  row.getString(current);
+				if (potentialIri.startsWith("http")) {
+					int index = potentialIri.lastIndexOf("#");
+					if (index > 0) {
+						potentialIri = potentialIri.substring(0, index);
+					}
+					if (!nodesToVisit.contains(potentialIri)) {
+						nodesToVisit.add(potentialIri);
+					} 
+				}
+			}
+		}
+		
+		
+		OntModel model = ModelFactory.createOntologyModel();
+		for (String current : nodesToVisit) {
+			model.read(current, null); 
+		}
+		
+		ResultSet result = JenaHelper.query(model, secondSparqlQuery);
+		return getKeyListFromQuery(result);
+	}
+	
+	
 	public String queryFile(String urlOrPath, String sparqlQuery) {
 		
 		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	
@@ -98,6 +150,20 @@ public class QueryBroker {
 		}
 		
 		return JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+	}
+	
+	public ArrayList<String> getKeyListFromQuery(ResultSet resultSet){
+		ArrayList<String>varnameslist=new ArrayList<String>();
+		//while(resultSet.hasNext()) {
+    	QuerySolution qs_p = resultSet.nextSolution();
+		Iterator<String> varNames = qs_p.varNames();
+		for (; varNames.hasNext();) {
+
+			String varName = varNames.next();
+			varnameslist.add(varName);		
+		}   
+    //}
+		return varnameslist;
 	}
 	
 	public String queryFilesGreedy(String urlOrPath, String greedySparqlQuery, String secondSparqlQuery) {
@@ -137,6 +203,8 @@ public class QueryBroker {
 		}
 		
 		ResultSet result = JenaHelper.query(model, secondSparqlQuery);
+		
+		
 		return JenaResultSetFormatter.convertToJSONW3CStandard(result);
 	}
 	
