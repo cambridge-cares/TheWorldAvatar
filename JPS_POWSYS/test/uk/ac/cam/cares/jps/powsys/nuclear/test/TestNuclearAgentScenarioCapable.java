@@ -19,7 +19,9 @@ import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgentScenarioCapable;
 public class TestNuclearAgentScenarioCapable extends TestCase {
 
 	public void testStartSimulationAndProcessResultDirectCallForBaseScenario() throws NumberFormatException, IOException, URISyntaxException, InterruptedException {
-
+		//why need to convert to localhost instead of twa??
+		//small scenario is auto generated
+		
 		NuclearAgentScenarioCapable agent = new NuclearAgentScenarioCapable();
 		
 		String lotiri = "http://www.theworldavatar.com/kb/sgp/jurongisland/JurongIslandLandlots.owl";

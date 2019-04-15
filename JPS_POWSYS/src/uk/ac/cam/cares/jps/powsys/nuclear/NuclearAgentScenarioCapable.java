@@ -219,7 +219,7 @@ public class NuclearAgentScenarioCapable extends JPSHttpServlet {
 			String[] current = resultList.get(i);
 			String id = "s"+(i+1);
 			mapper.add(current[0], id, "lot");
-			current[0]=id;
+			current[0]=id; //what is this for???? TODO
 		}
     
 		String csv = mapper.serialize();
@@ -286,7 +286,7 @@ public class NuclearAgentScenarioCapable extends JPSHttpServlet {
 			String id = "p"+(i+1);
 			mapper.add(current[0], id, "bus");
 			current[0]=id;
-		    // TODO-AE 2090304 why replace and split?
+		    // TODO-AE 2090304 why replace and split? BECAUSE IT IS INTEGER AND HAS ^^iNTEGER
 		    String stPdvalue = current[3].replace("^^","@").split("@")[0];
 		    current[3] = stPdvalue;
 		    

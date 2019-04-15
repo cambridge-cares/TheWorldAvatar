@@ -74,9 +74,9 @@ public class IriMapper {
 	    readpath.close();
 	    csvReader.close();
 	    int size=listofcontent.size();
-	    System.out.println(size);
+	    //System.out.println(size);
 	    for(int b=0;b<size;b++) {
-	    	System.out.println("iri= "+listofcontent.get(b)[0]);
+	    	//System.out.println("iri= "+listofcontent.get(b)[0]);
 	    	IriMapping a= new IriMapping ();
 	    	a.iri=listofcontent.get(b)[0];
 	    	a.id=listofcontent.get(b)[1];
