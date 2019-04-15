@@ -202,7 +202,7 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 					+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
 					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 					+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-					+ "SELECT ?entity ?formatvalue ?startupcostvalue ?shutdowncostvalue ?gencostnvalue ?gencostn-1value ?gencostn-2value ?gencostcvalue "
+					+ "SELECT ?entity ?formatvalue ?startupcostvalue ?shutdowncostvalue ?gencostnvalue ?gencostn1value ?gencostn2value ?gencostcvalue "
 					+ "WHERE {?entity  a  j1:PowerGenerator  ." 
 					+ "?entity   j2:isModeledBy ?model ."
 										
@@ -226,15 +226,15 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 					+ "?gencostn  j2:hasValue ?vgencostn ."
 					+ "?vgencostn   j2:numericalValue ?gencostnvalue ." 
 					
-					+ "?model   j5:hasModelVariable ?gencostn-1 ."
-					+ "?gencostn-1  a  j3:genCostcn-1  ."
-					+ "?gencostn-1  j2:hasValue ?vgencostn-1 ."
-					+ "?vgencostn-1   j2:numericalValue ?gencostn-1value ." 
+					+ "?model   j5:hasModelVariable ?gencostn1 ."
+					+ "?gencostn1  a  j3:genCostcn-1  ."
+					+ "?gencostn1  j2:hasValue ?vgencostn1 ."
+					+ "?vgencostn1   j2:numericalValue ?gencostn1value ." 
 					
-					+ "?model   j5:hasModelVariable ?gencostn-2 ."
-					+ "?gencostn-2  a  j3:genCostcn-2  ."
-					+ "?gencostn-2  j2:hasValue ?vgencostn-2 ."
-					+ "?vgencostn-2   j2:numericalValue ?gencostn-2value ." 
+					+ "?model   j5:hasModelVariable ?gencostn2 ."
+					+ "?gencostn2  a  j3:genCostcn-2  ."
+					+ "?gencostn2  j2:hasValue ?vgencostn2 ."
+					+ "?vgencostn2   j2:numericalValue ?gencostn2value ." 
 					
 					+ "?model   j5:hasModelVariable ?gencostc ."
 					+ "?gencostc  a  j3:genCostc0  ."
@@ -407,7 +407,7 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 			List<String[]>genlist=extractOWLinArray(iriofnetwork,genInfo,"generator",baseUrl);
 			createNewTSV(genlist, baseUrl+"/gen.txt",baseUrl+"/mappingforgenerator.csv",baseUrl+"/mappingforbus.csv");
 			
-			List<String[]>gencostlist=extractOWLinArray(iriofnetwork,genInfocost,"generatorcost",baseUrl);
+			List<String[]>gencostlist=extractOWLinArray(iriofnetwork,genInfocost,"generator",baseUrl);
 			createNewTSV(gencostlist, baseUrl+"/genCost.txt",baseUrl+"/mappingforgenerator.csv",baseUrl+"/mappingforbus.csv");
 			
 			List<String[]>branchlist=extractOWLinArray(iriofnetwork,branchInfo,"branch",baseUrl);
@@ -455,7 +455,7 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 			for (int t=0;t<keyofname.size();t++) {
 				keys[t]=keyofname.get(t);
 			}
-			//String[] keys = new String[] {"BusNumbervalue","typevalue","activepowervalue","reactivepowervalue","Gsvalue","Bsvalue","areavalue","VoltMagvalue","VoltAnglevalue","BaseKVvalue","Zonevalue","VMaxvalue","VMinvalue"};
+			//for bus, String[] keys = new String[] {"BusNumbervalue","typevalue","activepowervalue","reactivepowervalue","Gsvalue","Bsvalue","areavalue","VoltMagvalue","VoltAnglevalue","BaseKVvalue","Zonevalue","VMaxvalue","VMinvalue"};
 			
 			List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 			if(!context.toLowerCase().contains("gencost")) {
@@ -697,9 +697,9 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 					+ "}";	
 			
 			//this 3 only extract the value instance to be updated for the value
-			List<String[]>branchoutputlist=extractOWLinArray(iriofnetwork,branchoutputInfo,"outputbranch",baseUrl);
-			List<String[]>genoutputlist=extractOWLinArray(iriofnetwork,genoutputInfo,"outputgen",baseUrl);
-			List<String[]>busoutputlist=extractOWLinArray(iriofnetwork,busoutputInfo,"outputbus",baseUrl);
+			List<String[]>branchoutputlist=extractOWLinArray(iriofnetwork,branchoutputInfo,"output",baseUrl);
+			List<String[]>genoutputlist=extractOWLinArray(iriofnetwork,genoutputInfo,"output",baseUrl);
+			List<String[]>busoutputlist=extractOWLinArray(iriofnetwork,busoutputInfo,"output",baseUrl);
 			
 			//this extract the value read from the text 
 			ArrayList<String[]> resultfrommodelgen=readResult("C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys/outputGenPF.txt", 3);

@@ -356,18 +356,19 @@ public class TestEN extends TestCase {
 		
 		
 		ENAgent b= new ENAgent ();
-		String baseurl="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of powsys";
-	
+		
+	String baseurl="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys";
+	String busmapurl="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys/mappingforbus.csv";
 		//List<String[]>list=b.extractOWLinArray(iriofnetwork,busInfo,"bus",baseurl);
-		List<String[]>list=b.extractOWLinArray(iriofnetwork,genInfo,"generator",baseurl);
-		//List<String[]>list=b.extractOWLinArray(iriofnetwork,genInfocost,"generatorcost",baseurl);
+	//List<String[]>list=b.extractOWLinArray(iriofnetwork,genInfo,"generator",baseurl);
+		List<String[]>list=b.extractOWLinArray(iriofnetwork,genInfocost,"generator",baseurl);
 		
 		//List<String[]>list=b.extractOWLinArray(iriofnetwork,branchInfo,"branch",baseurl);
 		
-		//b.createNewTSV(list, baseurl+"/bus.txt",baseurl+"/mappingforbus.csv",baseurl);
-		b.createNewTSV(list, baseurl+"/gen.txt",baseurl+"/mappingforgenerator.csv",baseurl);
-//		b.createNewTSV(list, baseurl+"/branch.txt",baseurl+"/mappingforbranch.csv",baseurl);
-		//b.createNewTSV(list, baseurl+"/genCost.txt",baseurl+"/mappingforgenerator.csv",baseurl);
+		//b.createNewTSV(list, baseurl+"/bus.txt",baseurl+"/mappingforbus.csv",busmapurl);
+		//b.createNewTSV(list, baseurl+"/gen.txt",baseurl+"/mappingforgenerator.csv",busmapurl);
+//		b.createNewTSV(list, baseurl+"/branch.txt",baseurl+"/mappingforbranch.csv",busmapurl);
+		b.createNewTSV(list, baseurl+"/genCost.txt",baseurl+"/mappingforgenerator.csv",busmapurl);
 	}
 	
 	public void testreading() throws IOException {
@@ -378,6 +379,26 @@ public class TestEN extends TestCase {
 	public void testdoconversion() throws IOException, URISyntaxException {
 		ENAgent b= new ENAgent ();
 		b.doConversion("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork","C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of powsys");
+	}
+	
+	public void testrunmodel() throws IOException {
+		ENAgent agent = new ENAgent();
+		agent.runModel();
+		
+	}
+	
+	public void testStartSimulationCalling() throws IOException  {
+		//why need to convert to localhost instead of twa??
+		//small scenario is auto generated
+		
+		ENAgent agent = new ENAgent();
+		
+		
+		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
+		//String baseUrl = QueryBroker.getUniqueTaggedDataScenarioUrl("test_JPS_POWSYS_npp");
+		String baseUrl="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys";
+		agent.startSimulation(iriofnetwork, baseUrl);
+		
 	}
 	
 
