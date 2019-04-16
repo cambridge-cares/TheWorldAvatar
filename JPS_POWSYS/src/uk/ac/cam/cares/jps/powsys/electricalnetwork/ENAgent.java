@@ -32,7 +32,7 @@ import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.util.PythonHelper;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapperScenarioCapable;
@@ -58,13 +58,14 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 						
 			JSONObject joforEN = AgentCaller.readJsonParameter(request);
 			String iriofnetwork=joforEN.getString("electricalnetwork");
+			String modeltype=joforEN.getString("model");// PF or OPF
 			String baseUrl = joforEN .optString("baseUrl");
 			if (baseUrl == null) {
 				baseUrl = QueryBroker.getUniqueTaggedDataScenarioUrl("JPS_POWSYS_EN");
-				startSimulation(iriofnetwork, baseUrl);
+				startSimulation(iriofnetwork, baseUrl,modeltype);
 			} else {
 				// test only without starting GAMS
-				startSimulation(iriofnetwork, baseUrl);
+				startSimulation(iriofnetwork, baseUrl,modeltype);
 			}
 			
 			
@@ -72,7 +73,7 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 		
 		//assume baseUrl="C:/JPS_DATA/workingdir/JPS_POWSYS"
 		
-		public void startSimulation(String iriofnetwork, String baseUrl) throws IOException {
+		public void startSimulation(String iriofnetwork, String baseUrl,String modeltype) throws IOException {
 			
 			String genInfo= "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> " 
 					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -422,7 +423,7 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 		runModel();
 		
 		try {
-			doConversion(iriofnetwork,baseUrl);
+			doConversion(iriofnetwork,baseUrl,modeltype);
 		} catch (URISyntaxException e) {
 			logger.error(e.getMessage(),e);
 		}
@@ -494,7 +495,7 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 							int a=0;
 							while(a<original.size()) {
 							if(original.get(a).iri.contentEquals(content)) {
-								content2=original.get(a).iri+"\t";
+								content2=original.get(a).id+"\t";
 							}
 								
 								a++;	
@@ -566,7 +567,15 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 		
 		public void runModel() throws IOException {
 			
-			String result = PythonHelper.callPython("PyPower-PF-OPF-JA-8.py",null, this);
+			//String result = PythonHelper.callPython("PyPower-PF-OPF-JA-8.py",null, this);
+			
+			String targetFolder = AgentLocator.getNewPathToPythonScript("model", this);
+
+			ArrayList<String> args = new ArrayList<String>();
+			args.add("python");
+			args.add("PyPower-PF-OPF-JA-8.py"); 
+
+			String result = CommandHelper.executeCommands(targetFolder, args);
 		}
 		
 		
@@ -588,7 +597,7 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 			return entryinstance;
 		}
 		
-		public void doConversion(String iriofnetwork,String baseUrl) throws URISyntaxException, IOException {
+		public void doConversion(String iriofnetwork,String baseUrl,String modeltype) throws URISyntaxException, IOException {
 
 						
 			
@@ -702,9 +711,9 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 			List<String[]>busoutputlist=extractOWLinArray(iriofnetwork,busoutputInfo,"output",baseUrl);
 			
 			//this extract the value read from the text 
-			ArrayList<String[]> resultfrommodelgen=readResult("C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys/outputGenPF.txt", 3);
-			ArrayList<String[]> resultfrommodelbus=readResult("C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys/outputBusPF.txt", 7);
-			ArrayList<String[]> resultfrommodelbranch=readResult("C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys/outputBranchPF.txt", 6);			
+			ArrayList<String[]> resultfrommodelgen=readResult("C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys/outputGen"+modeltype.toUpperCase()+".txt", 3);
+			ArrayList<String[]> resultfrommodelbus=readResult("C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys/outputBus"+modeltype.toUpperCase()+".txt", 7);
+			ArrayList<String[]> resultfrommodelbranch=readResult("C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys/outputBranch"+modeltype.toUpperCase()+".txt", 6);			
 			
 			int amountofbus=busoutputlist.size();
 			for (int a=0;a<amountofbus;a++) {
