@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.base.scenario;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.UUID;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
@@ -38,11 +40,29 @@ public class ScenarioHelper {
 	    return scenarioBucket;
 	}
 	
+	/**
+	 * Calculates the hash code of the host name (without consideration of scheme and port) and adds the path of the URL without
+	 * the fragment part
+	 * 
+	 * @param resource
+	 * @return
+	 */
 	public static String getHashedResource(String resource) {
 		String resourceWithoutHash = cutHash(resource);
-	    int i = resourceWithoutHash.lastIndexOf("/");
-	    int hashForPath = resourceWithoutHash.substring(0, i).hashCode();
-		return hashForPath + "_" + resourceWithoutHash.substring(i+1);
+		
+	    // flat structure
+		// int i = resourceWithoutHash.lastIndexOf("/");
+	    // int hashForPath = resourceWithoutHash.substring(0, i).hashCode();
+		// return hashForPath + "_" + resourceWithoutHash.substring(i+1);
+		
+	   URI uri;
+	   try {
+		   uri = new URI(resourceWithoutHash);
+	   } catch (URISyntaxException e) {
+		   throw new JPSRuntimeException(e.getMessage(), e);
+	   }
+	   int hashedHost = uri.getHost().hashCode();
+	   return "" + hashedHost + uri.getPath();
 	}
 	
 	public static String getFileNameWithinBucket(String resource, String scenarioBucket) {

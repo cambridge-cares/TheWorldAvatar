@@ -111,14 +111,14 @@ public class NuclearKBCreator {
 	        
 	        ArrayList<String>iriofplant= new ArrayList<String>();
 	        String iriprefix="http://www.theworldavatar.com/kb/sgp/jurongisland/nuclearpowerplants/";
-	    	ArrayList<NuclearGenType> generatortype=extractInformationForGen("D:\\JPS/JParkSimulator-git/JPS_POWSYS/testres/parameters_req.csv", "0","3");
+	    	ArrayList<NuclearGenType> generatortype=extractInformationForGen(csvfileoutput + "\\parameters_req.csv", "0","3");
 	    	
 //	    	IriMapper map2=new IriMapper();
 //	    	List<IriMapping> original=map2.deserialize(csvfileoutput);
 	    	
 	    	
 	        //reading from output file and put that to owl file
-		try (BufferedReader br = new BufferedReader(new FileReader(csvfileoutput))) {
+		try (BufferedReader br = new BufferedReader(new FileReader(csvfileoutput + "\\results.csv"))) {
 
 			while ((line = br.readLine()) != null) {
 				if(linereader==0) {

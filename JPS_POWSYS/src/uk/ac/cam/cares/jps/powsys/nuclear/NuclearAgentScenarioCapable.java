@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
@@ -34,6 +35,7 @@ public class NuclearAgentScenarioCapable extends JPSHttpServlet {
 	
 	private static final long serialVersionUID = -4199209974912271432L;
 	private Logger logger = LoggerFactory.getLogger(NuclearAgentScenarioCapable.class);
+	public static final String AGENT_TAG = "GAMS_NuclearAgent";
 	
 	public void runGAMS() throws IOException, InterruptedException {
         System.out.println("Start");
@@ -80,16 +82,14 @@ public class NuclearAgentScenarioCapable extends JPSHttpServlet {
 			try {
 				String lotiri = jofornuc.getString("landlot");
 				String iriofnetwork = jofornuc.getString("electricalnetwork");
-				System.out.println("it's going here");
-				
-				String baseUrl = jofornuc.optString("baseUrl");
-				if (baseUrl == null) {
-					baseUrl = QueryBroker.getUniqueTaggedDataScenarioUrl("JPS_POWSYS_npp");
-					startSimulation(lotiri, iriofnetwork, baseUrl, true);
-				} else {
-					// test only without starting GAMS
-					startSimulation(lotiri, iriofnetwork, baseUrl, false);
+				boolean runGams = true;
+				if (!jofornuc.isNull(JPSConstants.RUN_SIMULATION)) {
+					runGams = jofornuc.getBoolean(JPSConstants.RUN_SIMULATION);
 				}
+				
+				String dataPath = QueryBroker.getLocalDataPath();
+				startSimulation(lotiri, iriofnetwork, dataPath, runGams);
+				
 			} catch (JSONException | InterruptedException e) {
 				logger.error(e.getMessage(), e);
 				throw new JPSRuntimeException(e.getMessage(), e);
@@ -97,11 +97,9 @@ public class NuclearAgentScenarioCapable extends JPSHttpServlet {
 					
 		} else if ("/NuclearAgent/processresult".equals(path)) {
 			
-			JSONObject jo = AgentCaller.readJsonParameter(request);
-			
 			try {
-				String baseUrl = jo.getString("baseUrl");
-				List<String> result = processSimulationResult(baseUrl);
+				String dataPath = QueryBroker.getLocalDataPath();
+				List<String> result = processSimulationResult(dataPath);
 				JSONObject resultjson = new JSONObject().put("plantirilist", result);
 				AgentCaller.printToResponse(resultjson.toString(), response);	
 			} catch (NumberFormatException | URISyntaxException e) {
@@ -111,7 +109,9 @@ public class NuclearAgentScenarioCapable extends JPSHttpServlet {
 		}	
 	}
 	
-	public void startSimulation(String lotiri, String iriofnetwork, String baseUrl, boolean runGams) throws IOException, InterruptedException {
+	public void startSimulation(String lotiri, String iriofnetwork, String dataPath, boolean runGams) throws IOException, InterruptedException {
+		
+		String baseUrl = dataPath + "/" + AGENT_TAG;
 		
 		logger.info("starting simulation for baseUrl=" + baseUrl);
 		
@@ -145,11 +145,14 @@ public class NuclearAgentScenarioCapable extends JPSHttpServlet {
 		return AgentLocator.getCurrentJpsAppDirectory(thisObject) + "/testres";
 	}
 	
-	public List<String> processSimulationResult(String baseUrl) throws NumberFormatException, IOException, URISyntaxException {
+	public List<String> processSimulationResult(String dataPath) throws NumberFormatException, IOException, URISyntaxException {
 	
+		String baseUrl = dataPath + "/" + AGENT_TAG;
+		
+		logger.info("processing simulation result for baseUrl=" + baseUrl);
+		
 		//   recreate the nuclear powerplant on flight
 		NuclearKBCreatorScenarioCapable in= new NuclearKBCreatorScenarioCapable();
-		System.out.println("starting conversion to owl file");
 		Map<String, OntModel> mapIri2Model = in.startConversion(baseUrl);
 		storeModels(mapIri2Model);
 		
@@ -219,7 +222,7 @@ public class NuclearAgentScenarioCapable extends JPSHttpServlet {
 			String[] current = resultList.get(i);
 			String id = "s"+(i+1);
 			mapper.add(current[0], id, "lot");
-			current[0]=id; //what is this for???? TODO
+			current[0]=id;
 		}
     
 		String csv = mapper.serialize();
@@ -286,7 +289,8 @@ public class NuclearAgentScenarioCapable extends JPSHttpServlet {
 			String id = "p"+(i+1);
 			mapper.add(current[0], id, "bus");
 			current[0]=id;
-		    // TODO-AE 2090304 why replace and split? BECAUSE IT IS INTEGER AND HAS ^^iNTEGER
+			// TODO-AE 2090304 why replace and split? BECAUSE IT IS INTEGER AND HAS ^^iNTEGER
+			
 		    String stPdvalue = current[3].replace("^^","@").split("@")[0];
 		    current[3] = stPdvalue;
 		    

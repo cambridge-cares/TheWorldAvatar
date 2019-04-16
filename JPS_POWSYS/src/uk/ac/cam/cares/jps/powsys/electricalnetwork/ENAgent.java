@@ -61,7 +61,8 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 			String modeltype=joforEN.getString("model");// PF or OPF
 			String baseUrl = joforEN .optString("baseUrl");
 			if (baseUrl == null) {
-				baseUrl = QueryBroker.getUniqueTaggedDataScenarioUrl("JPS_POWSYS_EN");
+				//baseUrl = QueryBroker.getUniqueTaggedDataScenarioUrl("JPS_POWSYS_EN");
+				baseUrl = QueryBroker.getLocalDataPath() + "/JPS_POWSYS_EN";
 				startSimulation(iriofnetwork, baseUrl,modeltype);
 			} else {
 				// test only without starting GAMS

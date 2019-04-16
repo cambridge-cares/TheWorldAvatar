@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -27,8 +28,7 @@ public class ScenarioManagementAgent extends HttpServlet {
 
 	private static final long serialVersionUID = 1733142247564226760L;
 	private static Logger logger = LoggerFactory.getLogger(ScenarioManagementAgent.class);
-	// TODO-AE SC 20190220 move key to JPS_BASE
-	public static final String COPY_ON_READ = "copyonread";
+
 
 	
 //	public static String getScenarioDescriptionName(String scenarioName) {
@@ -68,10 +68,10 @@ public class ScenarioManagementAgent extends HttpServlet {
 	 * @return
 	 */
 	public static boolean getCopyOnRead(ScenarioLog log) {
-		List<ScenarioLogEntry> entries = log.search(COPY_ON_READ, null);
+		List<ScenarioLogEntry> entries = log.search(JPSConstants.SCENARIO_OPTION_COPY_ON_READ, null);
 		if (entries.size() > 0) {
 			ScenarioLogEntry latestEntry = entries.get(entries.size()-1);
-			return latestEntry.message.getBoolean(COPY_ON_READ);
+			return latestEntry.message.getBoolean(JPSConstants.SCENARIO_OPTION_COPY_ON_READ);
 		}
 		
 		return false;

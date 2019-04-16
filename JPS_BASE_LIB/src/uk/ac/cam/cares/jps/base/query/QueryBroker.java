@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.QuerySolution;
@@ -23,9 +22,9 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
-
 
 public class QueryBroker {
 	
@@ -33,20 +32,20 @@ public class QueryBroker {
 	// directly as a parameter (instead of using the super class JPSHttpServlet and ThreadContext)
 	public String readFile(String urlOrPath) {
 		
-		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	
-		JPSBaseLogger.info(this, "reading file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
+		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
+		JPSBaseLogger.info(this, "reading file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioUrl);
+		
+		// TODO-AE SC 20190416 this is just a hack to read local file, refactor this method
+		if (! urlOrPath.startsWith("http")) {
+			String localFile = ScenarioHelper.cutHash(urlOrPath);
+			return FileUtil.readFileLocally(localFile);
+		}
 		
 		// call the scenario agent if a scenario url is set in the input
 		// the scenario agent has to be called even for copy-on-write since in the past
 		// another agent might have updated the file within the same scenario 
-		if (scenarioURL != null) {
-			String url = scenarioURL + "/read";
-			
-			String json = new JSONStringer().object()
-					.key(JPSConstants.SCENARIO_RESOURCE).value(urlOrPath)
-					.endObject().toString();
-			
-			return AgentCaller.executeGetWithURLAndJSON(url, json);
+		if (scenarioUrl != null) {
+			new ScenarioClient().read(scenarioUrl, urlOrPath);
 		}
 		
 		urlOrPath = ResourcePathConverter.convert(urlOrPath);
@@ -70,7 +69,7 @@ public class QueryBroker {
 			return FileUtil.readFileLocally(localFile);
 		}
 	}
-
+	
 	public ArrayList<String> queryKey(String urlOrPath, String sparqlQuery) {		
 		urlOrPath = ResourcePathConverter.convert(urlOrPath);
 		
@@ -119,7 +118,20 @@ public class QueryBroker {
 		return getKeyListFromQuery(result);
 	}
 	
-	
+	public ArrayList<String> getKeyListFromQuery(ResultSet resultSet){
+		ArrayList<String>varnameslist=new ArrayList<String>();
+		//while(resultSet.hasNext()) {
+    	QuerySolution qs_p = resultSet.nextSolution();
+		Iterator<String> varNames = qs_p.varNames();
+		for (; varNames.hasNext();) {
+
+			String varName = varNames.next();
+			varnameslist.add(varName);		
+		}   
+    //}
+		return varnameslist;
+	}	
+
 	public String queryFile(String urlOrPath, String sparqlQuery) {
 		
 		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	
@@ -152,20 +164,6 @@ public class QueryBroker {
 		return JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
 	}
 	
-	public ArrayList<String> getKeyListFromQuery(ResultSet resultSet){
-		ArrayList<String>varnameslist=new ArrayList<String>();
-		//while(resultSet.hasNext()) {
-    	QuerySolution qs_p = resultSet.nextSolution();
-		Iterator<String> varNames = qs_p.varNames();
-		for (; varNames.hasNext();) {
-
-			String varName = varNames.next();
-			varnameslist.add(varName);		
-		}   
-    //}
-		return varnameslist;
-	}
-	
 	public String queryFilesGreedy(String urlOrPath, String greedySparqlQuery, String secondSparqlQuery) {
 		//TODO-AE SC URGENT 20190304 make queryFilesGreedy scenario capable
 		
@@ -192,7 +190,8 @@ public class QueryBroker {
 		
 		JPSBaseLogger.info(this, "number of nodes to visit for greedy sparql query = " + nodesToVisit.size());
 		
-		OntModel model = ModelFactory.createOntologyModel();
+		//OntModel model = ModelFactory.createOntologyModel();
+		OntModel model = JenaHelper.createModel();
 		int count=0;
 		for (String current : nodesToVisit) {
 			count++;
@@ -203,8 +202,6 @@ public class QueryBroker {
 		}
 		
 		ResultSet result = JenaHelper.query(model, secondSparqlQuery);
-		
-		
 		return JenaResultSetFormatter.convertToJSONW3CStandard(result);
 	}
 	
@@ -324,13 +321,16 @@ public class QueryBroker {
 //		JenaHelper.writeAsFile(updatedModel, localFile);
 	}
 	
-	public static String getUniqueTaggedDataScenarioUrl(String tag) {
-		
-		String scenarioUrl = BucketHelper.getScenarioUrl();
-		if (tag == null) {
-			tag = "tmp";
-		}
-		String uuid = UUID.randomUUID().toString();
-		return scenarioUrl + "/data/" + tag + "/" + uuid;
+	// TODO AE SC 20190415 remove
+	public static String getUniqueTaggedDataUsecaseUrl(String tag) {
+		return BucketHelper.getUniqueTaggedDataUsecaseUrl(tag);
+	}
+	
+	public static String getIriPrefix() {
+		return BucketHelper.getIriPrefix();
+	}
+	
+	public static String getLocalDataPath() {
+		return BucketHelper.getLocalDataPath();
 	}
 }

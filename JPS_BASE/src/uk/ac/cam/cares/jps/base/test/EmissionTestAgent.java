@@ -21,6 +21,7 @@ import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
 @WebServlet(urlPatterns = {"/EmissionTestAgent/*"}) 
 public class EmissionTestAgent extends JPSHttpServlet {
@@ -154,7 +155,7 @@ public class EmissionTestAgent extends JPSHttpServlet {
 	
 	private void setEmission(String powerplant, double emission) {
 		JPSBaseLogger.info(this, "setting emission value to " + emission);
-		String query = String.format(EmissionTestAgent.SPARQL_PLANT_UPDATE_EMISSION, emission, powerplant);
+		String query = MiscUtil.format(EmissionTestAgent.SPARQL_PLANT_UPDATE_EMISSION, emission, powerplant);
 		new QueryBroker().updateFile(powerplant, query);
 	}
 	

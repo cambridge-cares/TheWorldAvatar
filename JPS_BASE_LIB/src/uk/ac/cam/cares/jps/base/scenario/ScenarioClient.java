@@ -1,49 +1,71 @@
 package uk.ac.cam.cares.jps.base.scenario;
 
+import java.net.URI;
+
 import org.json.JSONObject;
+import org.json.JSONStringer;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 
 public class ScenarioClient {
 	
-	public String call(String scenarioName, String scenarioAgentOperation, String jsonInputParams) {
+	public String call(String scenarioNameOrUrl, String scenarioAgentOperation, String jsonInputParams) {
 		
-		String path = ScenarioHelper.getScenarioPath(scenarioName) + "/call";
-				
 		JSONObject jo = new JSONObject(jsonInputParams);
 		jo.put(JPSConstants.SCENARIO_AGENT_OPERATION, scenarioAgentOperation);
 		String json = jo.toString();
 		
+		if (scenarioNameOrUrl.startsWith("http")) {
+			String url = scenarioNameOrUrl + "/call";
+			return AgentCaller.executeGetWithURLAndJSON(url, json);
+		}	
+	
+		String path = ScenarioHelper.getScenarioPath(scenarioNameOrUrl) + "/call";
 		return AgentCaller.executeGetWithJsonParameter(path, json);
 	}
 	
-	public void mock(String scenarioName, String scenarioAgent) {
-		String path = ScenarioHelper.getScenarioPath(scenarioName) + "/mock";
+	public String read(String scenarioNameOrUrl, String resourceUrl) {
 		
-//		JSONObject jo = new JSONObject(jsonInputParams);
-//		jo.put(ScenarioKeys.SCENARIO_AGENT, scenarioAgent);
-//		jo.put(ScenarioKeys.SCENARIO_AGENT_OPERATION, scenarioAgentOperation);
-//		String json = jo.toString();
-//		
-//		
-//		// TODO-AE SC 20190218 return subscenario hash key?
-//		String result = AgentCaller.executeGetWithJsonParameter(path, json);
+		String json = new JSONStringer().object()
+				.key(JPSConstants.SCENARIO_RESOURCE).value(resourceUrl)
+				.endObject().toString();
+		
+		if (scenarioNameOrUrl.startsWith("http")) {
+			String url = scenarioNameOrUrl + "/read";
+			return AgentCaller.executeGetWithURLAndJSON(url, json);
+		}	
+	
+		String path = ScenarioHelper.getScenarioPath(scenarioNameOrUrl) + "/read";
+		return AgentCaller.executeGetWithJsonParameter(path, json);
 	}
 	
-	// TODO-AE SC 20190218 remove prepareRecordering if not needed
-	public void prepareRecording(String scenarioName, String scenarioAgent, String scenarioAgentOperation, String jsonInputParams) {
+	public String setOptionCopyOnRead(String scenarioNameOrUrl, boolean value) {
+		return option(scenarioNameOrUrl, JPSConstants.SCENARIO_OPTION_COPY_ON_READ, value);
+	}
+	
+	private String option(String scenarioNameOrUrl, String key, Object value) {
 		
-		String path = ScenarioHelper.getScenarioPath(scenarioName) + "/preparerecording";
+		String json = new JSONStringer().object()
+				.key(key).value(value)
+				.endObject().toString();
 		
-		JSONObject jo = new JSONObject(jsonInputParams);
-		jo.put(JPSConstants.SCENARIO_AGENT, scenarioAgent);
-		jo.put(JPSConstants.SCENARIO_AGENT_OPERATION, scenarioAgentOperation);
-		String json = jo.toString();
+		if (scenarioNameOrUrl.startsWith("http")) {
+			String url = scenarioNameOrUrl + "/option";
+			return AgentCaller.executeGetWithURLAndJSON(url, json);
+		}	
+	
+		String path = ScenarioHelper.getScenarioPath(scenarioNameOrUrl) + "/option";
+		return AgentCaller.executeGetWithJsonParameter(path, json);
+	}
+	
+	public URI getReadUrl(String scenarioUrl, String resourceUrl) {
 		
-		
-		// TODO-AE SC 20190218 return subscenario hash key?
-		String result = AgentCaller.executeGetWithJsonParameter(path, json);
-		
+		String json = new JSONStringer().object()
+				.key(JPSConstants.SCENARIO_RESOURCE).value(resourceUrl)
+				.endObject().toString();
+	
+		String url = scenarioUrl + "/read";
+		return AgentCaller.createURIWithURLandJSON(url, json);
 	}
 }
