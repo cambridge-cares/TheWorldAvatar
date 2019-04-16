@@ -51,6 +51,7 @@ public class CompChemRdf4JServlet extends HttpServlet {
     private Properties jpsThermoProperties = PropertiesManager.loadProperties(CompChemRdf4JServlet.class.getClassLoader().getResourceAsStream("jps_thermo.management.properties"));
 	
 	private String compchemServerUrl = jpsThermoProperties.getProperty("ontocompchem.kb.local.rdf4j.server.url");
+	
 	private String ontokinServerUrl = jpsThermoProperties.getProperty("ontokin.kb.local.rdf4j.server.url");
 	
 	private String aboxOntokinUri = jpsThermoProperties.getProperty("abox.ontokin.uri");
