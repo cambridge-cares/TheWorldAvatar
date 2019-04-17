@@ -256,7 +256,12 @@ def mainJAPowerFlow(baseMVAName, busName, genName, branchName, splitCharacter, o
         f = open(outputBranchName, 'w')
         i = 0
         while (i < branchCount):
-            f.write(str(i+1) + splitCharacter + str(absDiff(r['branch'][i][15], r['branch'][i][13])) + splitCharacter + str(absDiff(r['branch'][i][16], r['branch'][i][14])) + '\n')
+		    #P, Q and S (average)
+            PAve = (r['branch'][i][15] + r['branch'][i][13])/2.0
+            QAve = (r['branch'][i][14] + r['branch'][i][16])/2.0
+            SAve = numpy.sqrt(((PAve * PAve) + (QAve * QAve)))
+            #Print P loss, Q loss, aveP, aveQ and aveS.
+            f.write(str(i+1) + splitCharacter + str(absDiff(r['branch'][i][15], r['branch'][i][13])) + splitCharacter + str(absDiff(r['branch'][i][16], r['branch'][i][14])) + splitCharacter + str(PAve) + splitCharacter + str(QAve) + splitCharacter + str(SAve) + '\n')
             i += 1
         f.close()
     
@@ -307,7 +312,7 @@ def mainJAPowerFlow(baseMVAName, busName, genName, branchName, splitCharacter, o
 #MAIN
 #Run the main function here (all variables after the 'optimal' 0/1 are only needed for the optimal power flow analysis, but some unused input is still required). 
 mainJAPowerFlow("baseMVA.txt", "bus.txt", "gen.txt", "branch.txt", '	', "outputBusPF.txt", "outputBranchPF.txt", "outputGenPF.txt", 1, 0, "areas.txt", "genCost.txt")
-#mainJAPowerFlow("baseMVA.txt", "bus.txt", "gen.txt", "branch.txt", '	', "outputBusOPF.txt", "outputBranchOPF.txt", "outputGenOPF.txt", 1, 1, "areas.txt", "genCost.txt")
+mainJAPowerFlow("baseMVA.txt", "bus.txt", "gen.txt", "branch.txt", '	', "outputBusOPF.txt", "outputBranchOPF.txt", "outputGenOPF.txt", 1, 1, "areas.txt", "genCost.txt")
 #mainJAPowerFlow("baseMVA.txt", "bus.txt", "gen.txt", "branch.txt", '	', "outputBus.txt", "outputBranch.txt", "outputGen.txt", 0, 0, "areas.txt", "genCost.txt")
 sys.exit()
 

@@ -33,10 +33,9 @@ public class NuclearKBCreatorScenarioCapable {
 	static Individual degree;
 	static Individual MW;
 	static Individual length;
-	// TODO-AE SC URGENT 20190415 the individual xaxis and yaxis have been removed from
-	// time_and_space.owl in OntoCape. Discuss with Kevin what has to be done now. 
-	//static Individual xaxis;
-	//static Individual yaxis;
+ 
+	static Individual xaxis;
+	static Individual yaxis;
 		
 	private OntClass nuclearpowerplantclass = null;
 	private OntClass organizationclass = null;
@@ -104,8 +103,8 @@ public class NuclearKBCreatorScenarioCapable {
 		MW=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW");
 		degree=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree");
 		length=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length");
-		//xaxis=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#x-axis");
-		//yaxis=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#y-axis");
+		xaxis=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#x-axis");
+		yaxis=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#y-axis");
 	}
 	
 	public Map<String, OntModel> startConversion(String baseUrl) throws URISyntaxException, NumberFormatException, IOException {
@@ -252,14 +251,14 @@ public class NuclearKBCreatorScenarioCapable {
 		
 		gencoordinate.addProperty(hasx, xgencoordinate);
 		xgencoordinate.addProperty(hasvalue, xgencoordinatevalue);
-		//xgencoordinate.addProperty(referto, xaxis);
+		xgencoordinate.addProperty(referto, xaxis);
 		xgencoordinate.addProperty(hasdimension, length);
 		xgencoordinatevalue.addProperty(numval, jenaOwlModel2.createTypedLiteral(xnumval));
 		xgencoordinatevalue.addProperty(hasunit, degree);
 		
 		gencoordinate.addProperty(hasy, ygencoordinate);
 		ygencoordinate.addProperty(hasvalue, ygencoordinatevalue);
-		//ygencoordinate.addProperty(referto, yaxis);
+		ygencoordinate.addProperty(referto, yaxis);
 		ygencoordinate.addProperty(hasdimension, length);
 		ygencoordinatevalue.addProperty(numval, jenaOwlModel2.createTypedLiteral(ynumval));
 		ygencoordinatevalue.addProperty(hasunit, degree);
@@ -311,14 +310,14 @@ public class NuclearKBCreatorScenarioCapable {
 		
 		plantcoordinate.addProperty(hasx, xcoordinate);
 		xcoordinate.addProperty(hasvalue, xcoordinatevalue);
-		//xcoordinate.addProperty(referto, xaxis);
+		xcoordinate.addProperty(referto, xaxis);
 		xcoordinate.addProperty(hasdimension, length);
 		xcoordinatevalue.addProperty(numval, jenaOwlModel.createTypedLiteral(xnumval));
 		xcoordinatevalue.addProperty(hasunit, degree);
 		
 		plantcoordinate.addProperty(hasy, ycoordinate);
 		ycoordinate.addProperty(hasvalue, ycoordinatevalue);
-		//ycoordinate.addProperty(referto, yaxis);
+		ycoordinate.addProperty(referto, yaxis);
 		ycoordinate.addProperty(hasdimension, length);
 		ycoordinatevalue.addProperty(numval, jenaOwlModel.createTypedLiteral(ynumval));
 		ycoordinatevalue.addProperty(hasunit, degree);

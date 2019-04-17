@@ -5,9 +5,13 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 
 public class TestEN extends TestCase {
+	
+	String dataPath = QueryBroker.getLocalDataPath();
+	String baseUrl=dataPath+"/JPS_POWSYS_EN";
 	
 	String genInfocost= "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> " 
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -342,13 +346,13 @@ public class TestEN extends TestCase {
 	
 	public void testextractOWLinArray() throws IOException, URISyntaxException {
 		//String baseurl="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of powsys";
-		String baseurl="D:/JPS/JParkSimulator-git/JPS_POWSYS/python/model";
+		//String baseurl="D:/JPS/JParkSimulator-git/JPS_POWSYS/python/model";
 
 		ENAgent b= new ENAgent ();
-		//List<String[]>buslist= b.extractOWLinArray("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork",genInfo,baseurl);
-		 // List<String[]>buslist=  b.extractOWLinArray("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork",branchInfo,"branch",baseurl);
-		   List<String[]>buslist=b.extractOWLinArray("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork",busInfo,"bus",baseurl);
-		   //  List<String[]>buslist=  b.extractOWLinArray("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork",genInfocost,"gencost",baseurl);
+		//List<String[]>buslist= b.extractOWLinArray("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork",genInfo,baseUrl);
+		 // List<String[]>buslist=  b.extractOWLinArray("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork",branchInfo,"branch",baseUrl);
+		   List<String[]>buslist=b.extractOWLinArray("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork",busInfo,"bus",baseUrl);
+//		     List<String[]>buslist=  b.extractOWLinArray("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork",genInfocost,"gencost",baseUrl);
 	      System.out.println(buslist.size());
 	}
 	
@@ -357,42 +361,51 @@ public class TestEN extends TestCase {
 	public void testgeninfogathering () throws IOException {
 		String iriofnetwork="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 		
-		
 		ENAgent b= new ENAgent ();
 		
 	//String baseurl="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys";
-	String baseurl="D:/JPS/JParkSimulator-git/JPS_POWSYS/python/model";
-	String busmapurl=baseurl+"/mappingforbus.csv";
-		List<String[]>list=b.extractOWLinArray(iriofnetwork,busInfo,"bus",baseurl);
-	List<String[]>list2=b.extractOWLinArray(iriofnetwork,genInfo,"generator",baseurl);
-	List<String[]>list3=b.extractOWLinArray(iriofnetwork,genInfocost,"generator",baseurl);
+	//String baseurl="D:/JPS/JParkSimulator-git/JPS_POWSYS/python/model";
+
+	String busmapurl=baseUrl+"/mappingforbus.csv";
+		List<String[]>list=b.extractOWLinArray(iriofnetwork,busInfo,"bus",baseUrl);
+	List<String[]>list2=b.extractOWLinArray(iriofnetwork,genInfo,"generator",baseUrl);
+	List<String[]>list3=b.extractOWLinArray(iriofnetwork,genInfocost,"generator",baseUrl);
 		
-		List<String[]>list4=b.extractOWLinArray(iriofnetwork,branchInfo,"branch",baseurl);
+		List<String[]>list4=b.extractOWLinArray(iriofnetwork,branchInfo,"branch",baseUrl);
+		QueryBroker broker = new QueryBroker();
 		
-		b.createNewTSV(list, baseurl+"/bus.txt",baseurl+"/mappingforbus.csv",busmapurl);
-//		b.createNewTSV(list2, baseurl+"/gen.txt",baseurl+"/mappingforgenerator.csv",busmapurl);
-//		b.createNewTSV(list4, baseurl+"/branch.txt",baseurl+"/mappingforbranch.csv",busmapurl);
-//		b.createNewTSV(list3, baseurl+"/genCost.txt",baseurl+"/mappingforgenerator.csv",busmapurl);
+		
+		String content=b.createNewTSV(list,baseUrl+"/mappingforbus.csv",busmapurl);
+		broker.put(baseUrl+"/bus.txt", content);
+		
+		content=b.createNewTSV(list2,baseUrl+"/mappingforgenerator.csv",busmapurl);
+		broker.put(baseUrl+"/gen.txt", content);
+		
+		content=b.createNewTSV(list4, baseUrl+"/mappingforbranch.csv",busmapurl);
+		broker.put(baseUrl+"/branch.txt", content);
+		
+		content=b.createNewTSV(list3, baseUrl+"/mappingforgenerator.csv",busmapurl);
+		broker.put(baseUrl+"/genCost.txt", content);
 	}
 	
 	public void testreading() throws IOException {
 		ENAgent b= new ENAgent ();
-		b.readResult("C:/JPS_DATA/workingdir/JPS_POWSYS/gen.txt", 21);
+		b.readResult(baseUrl+"/gen.txt", 21);
 	}
 	
 	public void testdoconversion() throws IOException, URISyntaxException {
 		ENAgent b= new ENAgent ();
 		String iriofnetwork="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 		//String baseurl="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys";
-		String baseurl="D:/JPS/JParkSimulator-git/JPS_POWSYS/python/model";
-		
-			List<String[]>list=b.extractOWLinArray(iriofnetwork,busInfo,"bus",baseurl);
-		b.doConversion("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork",baseurl,"PF",list);
+		//String baseurl="D:/JPS/JParkSimulator-git/JPS_POWSYS/python/model";
+
+			List<String[]>list=b.extractOWLinArray(iriofnetwork,busInfo,"bus",baseUrl);
+		b.doConversion("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork",baseUrl,"PF",list);
 	}
 	
 	public void testrunmodel() throws IOException {
 		ENAgent agent = new ENAgent();
-		agent.runModel();
+		agent.runModel(baseUrl);
 		
 	}
 	
@@ -404,9 +417,8 @@ public class TestEN extends TestCase {
 		
 		
 		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
-		//String baseUrl = QueryBroker.getUniqueTaggedDataScenarioUrl("test_JPS_POWSYS_npp");
 //		String baseUrl="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys";
-		String baseUrl="D:/JPS/JParkSimulator-git/JPS_POWSYS/python/model";
+		//String baseUrl="D:/JPS/JParkSimulator-git/JPS_POWSYS/python/model";
 		agent.startSimulation(iriofnetwork, baseUrl,"PF");
 		
 	}
