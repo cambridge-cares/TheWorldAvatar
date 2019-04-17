@@ -164,9 +164,7 @@ public class QueryBroker {
 		return JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
 	}
 	
-	public String queryFilesGreedy(String urlOrPath, String greedySparqlQuery, String secondSparqlQuery) {
-		//TODO-AE SC URGENT 20190304 make queryFilesGreedy scenario capable
-		
+	public OntModel readModelGreedy(String urlOrPath, String greedySparqlQuery) {
 		String greedyResult = queryFile(urlOrPath, greedySparqlQuery);
 		JSONObject jo = JenaResultSetFormatter.convertToSimplifiedList(greedyResult);
 		JSONArray ja = jo.getJSONArray("results");
@@ -201,6 +199,12 @@ public class QueryBroker {
 			model.read(current, null); 
 		}
 		
+		return model;
+	}
+	
+	public String queryFilesGreedy(String urlOrPath, String greedySparqlQuery, String secondSparqlQuery) {
+		//TODO-AE SC URGENT 20190304 make queryFilesGreedy scenario capable
+		OntModel model = readModelGreedy(urlOrPath, greedySparqlQuery);
 		ResultSet result = JenaHelper.query(model, secondSparqlQuery);
 		return JenaResultSetFormatter.convertToJSONW3CStandard(result);
 	}
@@ -321,11 +325,12 @@ public class QueryBroker {
 //		JenaHelper.writeAsFile(updatedModel, localFile);
 	}
 	
-	// TODO AE SC 20190415 remove
-	public static String getUniqueTaggedDataUsecaseUrl(String tag) {
-		return BucketHelper.getUniqueTaggedDataUsecaseUrl(tag);
-	}
-	
+	/**
+	 * return something like "http://www.theworldavatar.com/jps/kb/<uuid>" or 
+	 * "http://localhost:8080/jps/kb/<uuid>"
+	 * 
+	 * @return
+	 */
 	public static String getIriPrefix() {
 		return BucketHelper.getIriPrefix();
 	}

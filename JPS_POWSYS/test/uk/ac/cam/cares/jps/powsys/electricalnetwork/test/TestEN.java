@@ -7,6 +7,7 @@ import java.util.List;
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
+import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgentScenarioCapable;
 
 public class TestEN extends TestCase {
 	
@@ -413,8 +414,8 @@ public class TestEN extends TestCase {
 		//why need to convert to localhost instead of twa??
 		//small scenario is auto generated
 		
-		ENAgent agent = new ENAgent();
-		
+		//ENAgent agent = new ENAgent();
+		ENAgentScenarioCapable agent = new ENAgentScenarioCapable();
 		
 		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 //		String baseUrl="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys";

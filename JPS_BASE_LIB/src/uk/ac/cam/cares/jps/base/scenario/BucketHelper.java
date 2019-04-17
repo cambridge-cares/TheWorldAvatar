@@ -58,17 +58,6 @@ public class BucketHelper {
 		String usecaseUrl = BucketHelper.getUsecaseUrl();
 		return usecaseUrl.replace(SLASH_KB, SLASH_DATA);
 	}
-	
-	public static String getUniqueTaggedDataUsecaseUrl(String tag) {
-		
-		if ((tag == null) || tag.isEmpty()) {
-			tag = "tmp";
-		}
-		
-		String usecaseUrl = BucketHelper.getUsecaseUrl();
-		usecaseUrl = usecaseUrl.replace(SLASH_KB, SLASH_DATA);
-		return usecaseUrl + "/" + tag;
-	}
 
 	public static String getKbScenarioUrl() {
 		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
