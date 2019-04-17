@@ -38,7 +38,9 @@ import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapperScenarioCapable;
 import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 
-	@WebServlet("/ENAgent")
+	//@WebServlet("/ENAgent")
+
+@WebServlet(urlPatterns = {"/ENAgent/startsimulationPF", "/NuclearAgent/startsimulationOPF"})
 	public class ENAgent extends HttpServlet{
 		private static final long serialVersionUID = -4199209974912271432L;
 		OntModel jenaOwlModel2 = null;
@@ -58,7 +60,18 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 						
 			JSONObject joforEN = AgentCaller.readJsonParameter(request);
 			String iriofnetwork=joforEN.getString("electricalnetwork");
-			String modeltype=joforEN.getString("model");// PF or OPF
+			String modeltype=null;
+			
+			String path = request.getServletPath();
+			System.out.println("path= "+path);
+			
+			if ("/ENAgent/startsimulationPF".equals(path)) {
+				modeltype="PF";// PF or OPF
+			}
+			else if("/ENAgent/startsimulationOPF".equals(path)) {
+				modeltype="OPF";
+			}
+			
 			String baseUrl = joforEN .optString("baseUrl");
 			if (baseUrl == null) {
 				baseUrl = QueryBroker.getUniqueTaggedDataScenarioUrl("JPS_POWSYS_EN");
@@ -423,7 +436,7 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 		runModel();
 		
 		try {
-			doConversion(iriofnetwork,baseUrl,modeltype);
+			doConversion(iriofnetwork,baseUrl,modeltype,buslist);
 		} catch (URISyntaxException e) {
 			logger.error(e.getMessage(),e);
 		}
@@ -468,7 +481,7 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 					String[] current = resultList.get(i);
 					String id = ""+(i+1);
 					mapper.add(current[0], id, context);
-					//current[0]=id;// ??? why
+					//current[0]=id;// ??? no need to be there because it is not written in the tsv
 				}
 		    
 				String csv = mapper.serialize();
@@ -543,6 +556,18 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 								}
 								bw.write(mappedori);
 									}
+							else if(mapdir.contains("bus")&&e==7) {
+								double pu=Double.valueOf(componentlist.get(x)[e]);
+								
+								if(pu>1.00000) {
+									String basekv=componentlist.get(x)[9];
+									pu=Double.valueOf(componentlist.get(x)[e])/Double.valueOf(basekv);
+								}
+								System.out.println("pu= "+pu);
+								String content=pu+"\t";
+								bw.write(content);
+								
+							}
 							else { //the rest  normal condition
 								String content=componentlist.get(x)[e]+"\t";
 								bw.write(content);
@@ -597,7 +622,7 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 			return entryinstance;
 		}
 		
-		public void doConversion(String iriofnetwork,String baseUrl,String modeltype) throws URISyntaxException, IOException {
+		public void doConversion(String iriofnetwork,String baseUrl,String modeltype,List<String[]>buslist) throws URISyntaxException, IOException {
 
 						
 			
@@ -711,9 +736,9 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 			List<String[]>busoutputlist=extractOWLinArray(iriofnetwork,busoutputInfo,"output",baseUrl);
 			
 			//this extract the value read from the text 
-			ArrayList<String[]> resultfrommodelgen=readResult("C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys/outputGen"+modeltype.toUpperCase()+".txt", 3);
-			ArrayList<String[]> resultfrommodelbus=readResult("C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys/outputBus"+modeltype.toUpperCase()+".txt", 7);
-			ArrayList<String[]> resultfrommodelbranch=readResult("C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys/outputBranch"+modeltype.toUpperCase()+".txt", 6);			
+			ArrayList<String[]> resultfrommodelgen=readResult(baseUrl+"/outputGen"+modeltype.toUpperCase()+".txt", 3);
+			ArrayList<String[]> resultfrommodelbus=readResult(baseUrl+"/outputBus"+modeltype.toUpperCase()+".txt", 7);
+			ArrayList<String[]> resultfrommodelbranch=readResult(baseUrl+"/outputBranch"+modeltype.toUpperCase()+".txt", 6);			
 			
 			int amountofbus=busoutputlist.size();
 			for (int a=0;a<amountofbus;a++) {
@@ -736,12 +761,12 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 			int an=0;
 			int amod=0;
 			System.out.println(baseUrl+"/mappingforbus.csv");
-			System.out.println("ori1= "+originalforbus.get(6).iri);
-			System.out.println("ori2= "+originalforbus.get(6).id);
+//			System.out.println("ori1= "+originalforbus.get(6).iri);
+//			System.out.println("ori2= "+originalforbus.get(6).id);
 			while(an<originalforbus.size()) {
 				
 			if(originalforbus.get(an).iri.contentEquals(keymapper)) {
-				System.out.println("IT GOES GOES HERE");
+				//System.out.println("IT GOES GOES HERE");
 				mappedori=originalforbus.get(an).id;
 				amod=Integer.valueOf(mappedori);
 			}
@@ -751,7 +776,7 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 			
 			Individual vpdbusout=jenaOwlModel4.getIndividual(busoutputlist.get(a)[1]);
 			vpdbusout.setPropertyValue(numval, jenaOwlModel4.createTypedLiteral(resultfrommodelbus.get(amod-1)[5]));
-			System.out.println("value Of "+busoutputlist.get(a)[1]+" is= "+resultfrommodelbus.get(amod-1)[5]);
+			//System.out.println("value Of "+busoutputlist.get(a)[1]+" is= "+resultfrommodelbus.get(amod-1)[5]);
 			
 			Individual vgdbusout=jenaOwlModel4.getIndividual(busoutputlist.get(a)[2]);
 			vgdbusout.setPropertyValue(numval, jenaOwlModel4.createTypedLiteral(resultfrommodelbus.get(amod-1)[6])); 
@@ -763,7 +788,12 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 			vgdgenout.setPropertyValue(numval, jenaOwlModel4.createTypedLiteral(resultfrommodelbus.get(amod-1)[4]));
 			
 			Individual vVmout=jenaOwlModel4.getIndividual(busoutputlist.get(a)[5]);
-			vVmout.setPropertyValue(numval, jenaOwlModel4.createTypedLiteral(resultfrommodelbus.get(amod-1)[1]));
+			double basekv=Double.valueOf(buslist.get(amod-1)[9]);
+			System.out.println("basekv= "+basekv);
+			System.out.println("pukv= "+resultfrommodelbus.get(amod-1)[1]);
+			double originalv=basekv*Double.valueOf(resultfrommodelbus.get(amod-1)[1]);
+			vVmout.setPropertyValue(numval, jenaOwlModel4.createTypedLiteral(originalv));
+			System.out.println("value Of "+busoutputlist.get(a)[5]+" is= "+originalv);
 			
 			Individual vVaout=jenaOwlModel4.getIndividual(busoutputlist.get(a)[6]);
 			vVaout.setPropertyValue(numval, jenaOwlModel4.createTypedLiteral(resultfrommodelbus.get(amod-1)[2]));
@@ -792,11 +822,11 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 				String mappedori;
 				int an=0;
 				int amod=0;
-				System.out.println(baseUrl+"/mappingforgenerator.csv");
+				//System.out.println(baseUrl+"/mappingforgenerator.csv");
 				while(an<originalforgen.size()) {
 					
 				if(originalforgen.get(an).iri.contentEquals(keymapper)) {
-					System.out.println("IT GOES GOES HERE");
+					
 					mappedori=originalforgen.get(an).id;
 					amod=Integer.valueOf(mappedori);	
 				}
@@ -808,7 +838,7 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 		
 			Individual vqout=jenaOwlModel2.getIndividual(genoutputlist.get(a)[2]);
 			vqout.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(resultfrommodelgen.get(amod-1)[2])); 
-			System.out.println("value Of "+genoutputlist.get(a)[2]+" is= "+resultfrommodelgen.get(amod-1)[2]);
+			//System.out.println("value Of "+genoutputlist.get(a)[2]+" is= "+resultfrommodelgen.get(amod-1)[2]);
 			
 			/** save the updated model file*/ 
 			LandlotsKB ins2 = new LandlotsKB();
@@ -823,7 +853,7 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 				filePath= branchoutputlist.get(a)[1].replaceAll("http://www.jparksimulator.com/kb", "C:/TOMCAT/webapps/ROOT/kb").split("#")[0]; //update the file locally
 				FileInputStream inFile = new FileInputStream(filePath);
 				Reader in = new InputStreamReader(inFile, "UTF-8");
-				System.out.println("filepath= "+filePath);
+				//System.out.println("filepath= "+filePath);
 				OntModel jenaOwlModel3 = ModelFactory.createOntologyModel();
 				jenaOwlModel3.read(in, null);
 
@@ -836,11 +866,11 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 				String mappedori;
 				int an=0;
 				int amod=0;
-				System.out.println(baseUrl+"/mappingforbranch.csv");
+				//System.out.println(baseUrl+"/mappingforbranch.csv");
 				while(an<originalforbranch.size()) {
 					
 				if(originalforbranch.get(an).iri.contentEquals(keymapper)) {
-					System.out.println("IT GOES GOES HERE");
+					//System.out.println("IT GOES GOES HERE");
 					mappedori=originalforbranch.get(an).id;
 					amod=Integer.valueOf(mappedori);
 				}
@@ -849,7 +879,7 @@ import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 			
 				Individual vploss=jenaOwlModel3.getIndividual(branchoutputlist.get(a)[1]);
 				vploss.setPropertyValue(numval, jenaOwlModel3.createTypedLiteral(resultfrommodelbranch.get(amod-1)[1])); 
-				System.out.println("value Of "+branchoutputlist.get(a)[1]+" is= "+resultfrommodelbranch.get(amod-1)[1]);
+				//System.out.println("value Of "+branchoutputlist.get(a)[1]+" is= "+resultfrommodelbranch.get(amod-1)[1]);
 			
 			Individual vqloss=jenaOwlModel3.getIndividual(branchoutputlist.get(a)[2]);
 			vqloss.setPropertyValue(numval, jenaOwlModel3.createTypedLiteral(resultfrommodelbranch.get(amod-1)[2]));  
