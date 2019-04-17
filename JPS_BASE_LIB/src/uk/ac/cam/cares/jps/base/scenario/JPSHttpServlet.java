@@ -51,10 +51,19 @@ public abstract class JPSHttpServlet extends HttpServlet {
 			String scenarioURL = jo.getString(JPSConstants.SCENARIO_URL);
 			ThreadContext.put(JPSConstants.SCENARIO_URL, scenarioURL);
 		}
+		if (!jo.isNull(JPSConstants.SCENARIO_USE_CASE_URL)) {
+			String scenarioURL = jo.getString(JPSConstants.SCENARIO_USE_CASE_URL);
+			ThreadContext.put(JPSConstants.SCENARIO_USE_CASE_URL, scenarioURL);
+		}
 	}
 	
 	public static void enableScenario(String scenarioUrl) {
 		ThreadContext.put(JPSConstants.SCENARIO_URL, scenarioUrl);
+	}
+	
+	public static void enableScenario(String scenarioUrl, String usecaseUrl) {
+		ThreadContext.put(JPSConstants.SCENARIO_URL, scenarioUrl);
+		ThreadContext.put(JPSConstants.SCENARIO_USE_CASE_URL, usecaseUrl);
 	}
 	
 	/**
@@ -64,9 +73,6 @@ public abstract class JPSHttpServlet extends HttpServlet {
 	 */
 	public static void disableScenario() {
 		ThreadContext.remove(JPSConstants.SCENARIO_URL);
-	}
-	
-	public static String getScenarioName() {
-		 return ThreadContext.get(JPSConstants.SCENARIO_URL);
+		ThreadContext.remove(JPSConstants.SCENARIO_USE_CASE_URL);
 	}
 }

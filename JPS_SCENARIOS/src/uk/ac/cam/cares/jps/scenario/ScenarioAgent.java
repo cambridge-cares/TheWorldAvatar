@@ -58,11 +58,6 @@ public class ScenarioAgent extends HttpServlet {
 			
 			//result = getScenarioFile(scenarioName);
 		
-		} else if (operation.startsWith("/data") || operation.startsWith("/kb")) {
-			
-			String localPath = ScenarioHelper.getScenarioBucket(scenarioName) + operation;
-			result = FileUtil.readFileLocally(localPath);
-			
 		} else if ("/option".equals(operation)) {
 			
 			setOptions(jo, scenarioName, log);
@@ -101,7 +96,14 @@ public class ScenarioAgent extends HttpServlet {
 			
 		} else {
 			
-			result = executeOperationOfMockedAgent(jo, scenarioName, operation, log);
+			if (operation.startsWith("/" + JPSConstants.SCENARIO_SUBDIR_DATA + "/") 
+					|| operation.startsWith("/" + JPSConstants.SCENARIO_SUBDIR_KB + "/")) {
+				String localPath = ScenarioHelper.getScenarioBucket(scenarioName) + operation;
+				result = FileUtil.readFileLocally(localPath);
+			} else {
+				
+				result = executeOperationOfMockedAgent(jo, scenarioName, operation, log);
+			}
 		}
 		
 		AgentCaller.printToResponse(result, response);
@@ -117,8 +119,8 @@ public class ScenarioAgent extends HttpServlet {
 		
 		JSONObject message = new JSONObject().put("operation", "option");
 		
-		if (jo.has(ScenarioManagementAgent.COPY_ON_READ)) {
-			message.put(ScenarioManagementAgent.COPY_ON_READ, jo.getBoolean(ScenarioManagementAgent.COPY_ON_READ));
+		if (jo.has(JPSConstants.SCENARIO_OPTION_COPY_ON_READ)) {
+			message.put(JPSConstants.SCENARIO_OPTION_COPY_ON_READ, jo.getBoolean(JPSConstants.SCENARIO_OPTION_COPY_ON_READ));
 		}
 		
 		log.logMessage(scenarioName, message);
@@ -185,7 +187,7 @@ public class ScenarioAgent extends HttpServlet {
 	    	return completePathWithinBucket;
 	    } else if (copyToBucket) {
 	    	String content = new QueryBroker().readFile(resource);
-	    	FileUtil.writeFileLocally2(completePathWithinBucket, content);
+	    	FileUtil.writeFileLocally(completePathWithinBucket, content);
 	    	return completePathWithinBucket;
 	    }  
 

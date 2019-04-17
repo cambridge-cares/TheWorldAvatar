@@ -1,8 +1,10 @@
 package uk.ac.cam.cares.jps.base.query.test;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
-import java.util.Locale;
 
+import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -14,8 +16,10 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.test.EmissionTestAgent;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
+import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
 public class TestQuery extends TestCase implements ITestConstants{
 	
@@ -82,7 +86,7 @@ public class TestQuery extends TestCase implements ITestConstants{
 		assertEquals(1, list.length());
 	}
 	
-	public void testResultSetFormatterconvertToListofStringArrays() {
+	public void testJenaResultSetFormatterconvertToListofStringArrays() {
 		String plantFile = ResourcePathConverter.convertToLocalPath(POWER_PLANT_AFG_FILE);		
 		ResultSet resultSet = JenaHelper.queryFile(plantFile, EmissionTestAgent.SPARQL_PLANT_QUERY_EMISSION);
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
@@ -93,6 +97,27 @@ public class TestQuery extends TestCase implements ITestConstants{
 		}
 		
 		assertEquals(1, resultList.size());
+	}
+	
+	public void testJenaReadHook() throws MalformedURLException {
+		try {
+			String scenarioUrl = BucketHelper.getScenarioUrl("testscenariojenareadhook");
+			new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
+			JPSHttpServlet.enableScenario(scenarioUrl);		
+			
+			OntModel model = JenaHelper.createModel();	
+			String url = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
+			//String url = "http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork/EBus-175.owl#EBus-175";
+			JenaHelper.readFromUrl(new URL(url), model);
+			long size = model.listImportedOntologyURIs().size();
+			System.out.println("size imports=" + size);
+			assertEquals(5, size);
+			size = model.size();
+			System.out.println("size triples=" + size);
+			assertEquals(7728, size);
+		} finally {
+			JPSHttpServlet.disableScenario();
+		}
 	}
 	
 	public void testQueryBrokerReadWithConversion() {
@@ -139,6 +164,36 @@ public class TestQuery extends TestCase implements ITestConstants{
 		assertEquals(208, resultList.size());
 	}
 	
+	public void xxxtestQueryBrokerQueryFilesGreedyForNonBaseScenarioWithCopyOnRead() {
+		
+		String urlOrPath = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
+		String greedySparqlQuery = "PREFIX sys:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "SELECT ?component "
+				+ "WHERE {?entity a sys:CompositeSystem . " 
+				+ "?entity sys:hasSubsystem ?component . "								
+				+ "}";
+		String secondSparqlQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> " 
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "SELECT ?entity "
+				+ "WHERE { ?entity a j1:BusNode . ?entity j2:isModeledBy ?model . }";
+		
+		try {
+			String scenarioUrl = BucketHelper.getScenarioUrl("testgreedy");
+			new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
+			JPSHttpServlet.enableScenario(scenarioUrl);		
+			
+			String result = new QueryBroker().queryFilesGreedy(urlOrPath, greedySparqlQuery, secondSparqlQuery);
+			
+			System.out.println(result);
+			
+			List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, "entity");
+			assertEquals(208, resultList.size());
+			
+		} finally {
+			JPSHttpServlet.disableScenario();
+		}
+	}
+	
 	private void assertEmissionValue(String path, double expected) {
 		String result = new QueryBroker().queryFile(path, EmissionTestAgent.SPARQL_PLANT_QUERY_EMISSION);
 		JSONArray list = JenaResultSetFormatter.convertToSimplifiedList(result).getJSONArray("results");
@@ -153,58 +208,11 @@ public class TestQuery extends TestCase implements ITestConstants{
 		// update
 		String plantIri = POWER_PLANT_AFG_IRI;
 		double newEmissionValue = 255.55;
-		Locale locale = Locale.ENGLISH;
-		String query = String.format(locale, EmissionTestAgent.SPARQL_PLANT_UPDATE_EMISSION, newEmissionValue, plantIri);
+		String query = MiscUtil.format(EmissionTestAgent.SPARQL_PLANT_UPDATE_EMISSION, newEmissionValue, plantIri);
 		new QueryBroker().updateFile(plantIri, query);
 		
 		// check updated value
 		String localFile = ResourcePathConverter.convertToLocalPath(POWER_PLANT_AFG_FILE);
 		assertEmissionValue(localFile, newEmissionValue);
-	}
-	
-	public void testQueryBrokerPutForBaseScenario() {
-
-		String scenarioUrl = QueryBroker.getUniqueTaggedDataScenarioUrl("test");
-		
-		assertTrue(scenarioUrl.contains("/base/data/test/"));
-		
-		String url = scenarioUrl + "/myfile1.txt";
-		String content = "some content 1";
-		QueryBroker broker = new QueryBroker();
-		broker.put(url, content);
-		
-		assertEquals(content, broker.readFile(url));
-		
-		url = scenarioUrl + "/myfile2.txt";
-		content = "some content 2";
-		broker.put(url, content);
-		
-		assertEquals(content, broker.readFile(url));
-	}
-	
-	public void testQueryBrokerPutForNonBaseScenario() {
-
-		String scenarioUrl = BucketHelper.getScenarioUrl("scenariotest");
-		JPSHttpServlet.enableScenario(scenarioUrl);		
-		try {
-			scenarioUrl = QueryBroker.getUniqueTaggedDataScenarioUrl("test");
-			
-			assertTrue(scenarioUrl.contains("/scenariotest/data/test/"));
-			
-			String url = scenarioUrl + "/myfile1.txt";
-			String content = "some content 1";
-			QueryBroker broker = new QueryBroker();
-			broker.put(url, content);
-			
-			assertEquals(content, broker.readFile(url));
-			
-			url = scenarioUrl + "/myfile2.txt";
-			content = "some content 2";
-			broker.put(url, content);
-			
-			assertEquals(content, broker.readFile(url));
-		} finally {
-			JPSHttpServlet.disableScenario();
-		}
 	}
 }

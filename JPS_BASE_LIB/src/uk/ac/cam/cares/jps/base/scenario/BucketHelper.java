@@ -1,5 +1,9 @@
 package uk.ac.cam.cares.jps.base.scenario;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.UUID;
+
 import org.apache.logging.log4j.ThreadContext;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
@@ -8,6 +12,9 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
 
 public class BucketHelper {
+	
+	private static final String SLASH_KB = "/" + JPSConstants.SCENARIO_SUBDIR_KB + "/";
+	private static final String SLASH_DATA = "/" + JPSConstants.SCENARIO_SUBDIR_DATA + "/";
 	
 	public static String getScenarioUrl(String scenarioName) {
 		return KeyValueManager.getServerAddress() + ScenarioHelper.SCENARIO_COMP_URL + "/" + scenarioName;
@@ -23,48 +30,142 @@ public class BucketHelper {
 		return scenarioUrl;
 	}
 	
-	public static String getHashedScenarioUrl(String url) {
-		String hashed = ScenarioHelper.getHashedResource(url);
-		return getKbScenarioUrl() + "/" + hashed;
+	public static String getScenarioName (String scenarioUrl) {
+		int i = scenarioUrl.indexOf(ScenarioHelper.SCENARIO_COMP_URL);
+		return scenarioUrl.substring(i + ScenarioHelper.SCENARIO_COMP_URL.length() + 1);
 	}
 	
+	public static String getIriPrefix() {
+		String usecaseUrl = getUsecaseUrl();
+		int iHostEnd = usecaseUrl.indexOf(ScenarioHelper.SCENARIO_COMP_URL);
+		int iKbBegin = usecaseUrl.indexOf(SLASH_KB);
+		String prefix = usecaseUrl.substring(0, iHostEnd) + "/jps" + usecaseUrl.substring(iKbBegin);
+		return prefix;
+	}
+	
+	public static String getUsecaseUrl() {
+
+		String usecaseUrl = ThreadContext.get(JPSConstants.SCENARIO_USE_CASE_URL);	
+		if (usecaseUrl == null) {
+			usecaseUrl = getScenarioUrl() + SLASH_KB + UUID.randomUUID().toString();
+			ThreadContext.put(JPSConstants.SCENARIO_USE_CASE_URL, usecaseUrl);
+		}
+		
+		return usecaseUrl;
+	}
+	
+	public static String getUsecaseUrlForData() {
+		String usecaseUrl = BucketHelper.getUsecaseUrl();
+		return usecaseUrl.replace(SLASH_KB, SLASH_DATA);
+	}
+	
+	public static String getUniqueTaggedDataUsecaseUrl(String tag) {
+		
+		if ((tag == null) || tag.isEmpty()) {
+			tag = "tmp";
+		}
+		
+		String usecaseUrl = BucketHelper.getUsecaseUrl();
+		usecaseUrl = usecaseUrl.replace(SLASH_KB, SLASH_DATA);
+		return usecaseUrl + "/" + tag;
+	}
+
 	public static String getKbScenarioUrl() {
 		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
 		if (scenarioUrl == null) {
 			throw new JPSRuntimeException("can't create a scenario kb url for the base scenario");
 		} 
 		
-		return getScenarioUrl() + "/kb";
+		return getScenarioUrl() + "/" + JPSConstants.SCENARIO_SUBDIR_KB;
 	}
-	
-
 
 	public static boolean isScenarioUrl(String url) {
 		return (url.indexOf(ScenarioHelper.SCENARIO_COMP_URL) >= 0);
 	}
 	
+	public static boolean isBaseScenario(String url) {
+		if (url == null) {
+			return true;
+		}
+		String scenarioName = getScenarioName(url);
+		return JPSConstants.SCENARIO_NAME_BASE.equals(scenarioName);
+	}
+	
+	public static String getLocalDataPath() {
+		String usecaseUrl = getUsecaseUrlForData();
+		return getLocalPath(usecaseUrl, getScenarioUrl());
+	}
+	
 	public static String getLocalPath(String url) {
-		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
+		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);
 		return getLocalPath(url, scenarioUrl);
 	}
 	
 	public static String getLocalPath(String url, String scenarioUrl) {
 
-		int i = url.indexOf(ScenarioHelper.SCENARIO_COMP_URL);
-		if (i >= 0) { 
-			// i.e. url is already scenario url
-			return ScenarioHelper.getJpsWorkingDir() + url.substring(i);
-		}
-		
 		if (scenarioUrl == null) {
-			// OWL files for the base scenario are stored in Tomcat's root directory
-			return ResourcePathConverter.convertToLocalPath(url);
+			scenarioUrl = getScenarioUrl(JPSConstants.SCENARIO_NAME_BASE);
+		}
+		String scenarioName = getScenarioName(scenarioUrl);
+		String scenarioBucket = ScenarioHelper.getScenarioBucket(scenarioName);
+		
+		// this method is idempotent
+		if (url.startsWith(scenarioBucket)) {
+			return url;
 		}
 		
-		i = scenarioUrl.indexOf(ScenarioHelper.SCENARIO_COMP_URL);
-		String scenarioName = scenarioUrl.substring(i + ScenarioHelper.SCENARIO_COMP_URL.length() + 1);
-		String hashed = ScenarioHelper.getHashedResource(url);
-		String path = ScenarioHelper.getScenarioBucket(scenarioName) + "/kb/" + hashed;
-		return path;
+		URI uri;
+		try {
+			uri = new URI(url);			
+		} catch (URISyntaxException e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		}
+		String mapped = "/" + mapHost(uri);
+		
+		String path = uri.getPath();
+		if (path.startsWith(ScenarioHelper.SCENARIO_COMP_URL)) {
+			// insert the host name between scenario name and /data/ or /kb/
+			String relativePath = path;
+			int i = path.indexOf(SLASH_DATA);
+			if (i>0) {
+				relativePath = path.replace(SLASH_DATA, mapped + SLASH_DATA);
+			} else {
+				i = path.indexOf(SLASH_KB);
+				if (i>0) {
+					relativePath = path.replace(SLASH_KB, mapped + SLASH_KB);
+				} 
+			}
+			
+			return ScenarioHelper.getJpsWorkingDir() + relativePath;
+		}
+		
+
+		if (JPSConstants.SCENARIO_NAME_BASE.equals(scenarioName) && !path.startsWith("/jps/")) {
+			
+			//if (!(url.contains(SLASH_KB) || url.contains(SLASH_DATA))) {
+				
+				// OWL files for the base scenario are stored in Tomcat's root directory
+				return ResourcePathConverter.convertToLocalPath(url);
+			//} 
+			// else:
+			// these files are usually auto-generated by agents and are stored for the base scenario 
+			// in the same way as for other scenarios, see the code below
+		}
+
+		String relativePath = path;
+		if (relativePath.startsWith("/jps/")) {
+			relativePath = relativePath.substring(4);
+		}
+
+		return scenarioBucket + mapped + relativePath;
+	}
+	
+	private static String mapHost(URI uri) {
+		String mapped = uri.getHost().replace(".", "_");
+		int port = uri.getPort();
+		if (port > 0) {
+			mapped = mapped + "_" + port;
+		}
+		return mapped;
 	}
 }

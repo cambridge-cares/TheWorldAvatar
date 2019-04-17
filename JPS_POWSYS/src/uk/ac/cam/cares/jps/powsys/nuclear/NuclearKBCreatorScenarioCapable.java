@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
@@ -26,7 +25,6 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 public class NuclearKBCreatorScenarioCapable {
 
-	public static final String WORKING_DIR = "C:/JPS_DATA/workingdir/JPS_POWSYS";
 	String plantname=null;
 	
 	static Individual nuclear;
@@ -35,8 +33,10 @@ public class NuclearKBCreatorScenarioCapable {
 	static Individual degree;
 	static Individual MW;
 	static Individual length;
-	static Individual xaxis;
-	static Individual yaxis;
+	// TODO-AE SC URGENT 20190415 the individual xaxis and yaxis have been removed from
+	// time_and_space.owl in OntoCape. Discuss with Kevin what has to be done now. 
+	//static Individual xaxis;
+	//static Individual yaxis;
 		
 	private OntClass nuclearpowerplantclass = null;
 	private OntClass organizationclass = null;
@@ -104,15 +104,17 @@ public class NuclearKBCreatorScenarioCapable {
 		MW=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW");
 		degree=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree");
 		length=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length");
-		xaxis=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#x-axis");
-		yaxis=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#y-axis");
+		//xaxis=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#x-axis");
+		//yaxis=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#y-axis");
 	}
 	
 	public Map<String, OntModel> startConversion(String baseUrl) throws URISyntaxException, NumberFormatException, IOException {
 		
 		Map<String, OntModel> mapIri2Model = new HashMap<String, OntModel>();
-		
-        String iriprefix="http://www.theworldavatar.com/kb/sgp/jurongisland/nuclearpowerplants/";
+	
+        //String iriprefix="http://www.theworldavatar.com/kbs/sgp/jurongisland/nuclearpowerplants/";
+        String iriprefix = QueryBroker.getIriPrefix() + "/nuclearpowerplants/";
+        
     	ArrayList<NuclearGenType> generatortype=extractInformationForGen(baseUrl + "/parameters_req.csv", "0","3");
 	    
 		String csvfileoutput = baseUrl + "/results.csv";
@@ -143,12 +145,12 @@ public class NuclearKBCreatorScenarioCapable {
 			initOWLClasses(jenaOwlModel);
 			
 			//assume 1 line is 1 nuclear power plant and 1 nuclear powerplant is a plant with uniform type of reactor in 1 area	
-			String plantName = "NucPP_"+UUID.randomUUID();
+			String plantName = "NucPP_" + i;
 			if(data[1].equals("t1")) {
-				doConversion(mapIri2Model, jenaOwlModel, iriprefix, plantName, Integer.valueOf(data[2]),0, data[5],data[4],generatortype); // plant,iriprefix,nreactora,nreactorb,x,y
+				doConversion(mapIri2Model, jenaOwlModel, iriprefix, plantName, Integer.valueOf(data[2]),0, data[5],data[4],generatortype, i); // plant,iriprefix,nreactora,nreactorb,x,y
 			}
 			else if(data[1].equals("t2")) {
-				doConversion(mapIri2Model, jenaOwlModel, iriprefix, plantName, 0,Integer.valueOf(data[2]), data[5],data[4],generatortype); // plant,iriprefix,nreactora,nreactorb,x,y
+				doConversion(mapIri2Model, jenaOwlModel, iriprefix, plantName, 0,Integer.valueOf(data[2]), data[5],data[4],generatortype, i); // plant,iriprefix,nreactora,nreactorb,x,y
 			}		
 			
 			String plantIri = iriprefix + plantName + ".owl#" + plantName;
@@ -250,14 +252,14 @@ public class NuclearKBCreatorScenarioCapable {
 		
 		gencoordinate.addProperty(hasx, xgencoordinate);
 		xgencoordinate.addProperty(hasvalue, xgencoordinatevalue);
-		xgencoordinate.addProperty(referto, xaxis);
+		//xgencoordinate.addProperty(referto, xaxis);
 		xgencoordinate.addProperty(hasdimension, length);
 		xgencoordinatevalue.addProperty(numval, jenaOwlModel2.createTypedLiteral(xnumval));
 		xgencoordinatevalue.addProperty(hasunit, degree);
 		
 		gencoordinate.addProperty(hasy, ygencoordinate);
 		ygencoordinate.addProperty(hasvalue, ygencoordinatevalue);
-		ygencoordinate.addProperty(referto, yaxis);
+		//ygencoordinate.addProperty(referto, yaxis);
 		ygencoordinate.addProperty(hasdimension, length);
 		ygencoordinatevalue.addProperty(numval, jenaOwlModel2.createTypedLiteral(ynumval));
 		ygencoordinatevalue.addProperty(hasunit, degree);
@@ -270,7 +272,7 @@ public class NuclearKBCreatorScenarioCapable {
 		return jenaOwlModel2;
 	}
 	
-	public void doConversion(Map<String, OntModel> mapIri2Model, OntModel jenaOwlModel,String iriprefix, String plantname ,int numberofreactorA,int numberofreactorB,String xnumval,String ynumval,ArrayList<NuclearGenType> generatortype) throws NumberFormatException, IOException, URISyntaxException{
+	public void doConversion(Map<String, OntModel> mapIri2Model, OntModel jenaOwlModel,String iriprefix, String plantname ,int numberofreactorA,int numberofreactorB,String xnumval,String ynumval,ArrayList<NuclearGenType> generatortype, int plantnumber) throws NumberFormatException, IOException, URISyntaxException{
 		
 		
 		double capacityA=0.0;
@@ -309,14 +311,14 @@ public class NuclearKBCreatorScenarioCapable {
 		
 		plantcoordinate.addProperty(hasx, xcoordinate);
 		xcoordinate.addProperty(hasvalue, xcoordinatevalue);
-		xcoordinate.addProperty(referto, xaxis);
+		//xcoordinate.addProperty(referto, xaxis);
 		xcoordinate.addProperty(hasdimension, length);
 		xcoordinatevalue.addProperty(numval, jenaOwlModel.createTypedLiteral(xnumval));
 		xcoordinatevalue.addProperty(hasunit, degree);
 		
 		plantcoordinate.addProperty(hasy, ycoordinate);
 		ycoordinate.addProperty(hasvalue, ycoordinatevalue);
-		ycoordinate.addProperty(referto, yaxis);
+		//ycoordinate.addProperty(referto, yaxis);
 		ycoordinate.addProperty(hasdimension, length);
 		ycoordinatevalue.addProperty(numval, jenaOwlModel.createTypedLiteral(ynumval));
 		ycoordinatevalue.addProperty(hasunit, degree);
@@ -328,12 +330,9 @@ public class NuclearKBCreatorScenarioCapable {
 		
 		plant.addProperty(realizes, powergeneration);
 		powergeneration.setPropertyValue(consumesprimaryfuel, nuclear);
-		
-		//numberofreactor=5; //temporary
-		
-		
+				
 		for(int f=0; f<numberofreactorA;f++){
-			String generatorname="NucGenerator_"+UUID.randomUUID();
+			String generatorname="NucGenerator_" + plantnumber + "_A" + f;
 			String reactorIri = iriprefix + generatorname + ".owl#" + generatorname;
 			Individual generator=nucleargeneratorclass.createIndividual(reactorIri);
 			plant.addProperty(hasSubsystem, generator);
@@ -341,11 +340,11 @@ public class NuclearKBCreatorScenarioCapable {
 			OntModel reactorModel = doConversionreactor(iriprefix, generatorname, xnumval, ynumval, capacityA);
 			mapIri2Model.put(reactorIri, reactorModel);
 		}
-		
+				
 		for(int f=0; f<numberofreactorB;f++){
-			String generatorname="NucGenerator_"+UUID.randomUUID();
+			String generatorname="NucGenerator_" + plantnumber + "_B" + f;
 			String reactorIri = iriprefix + generatorname + ".owl#" + generatorname;
-			Individual generator=nucleargeneratorclass.createIndividual(iriprefix + generatorname + ".owl#"+generatorname);
+			Individual generator=nucleargeneratorclass.createIndividual(reactorIri);
 			plant.addProperty(hasSubsystem, generator);
 
 			OntModel reactorModel = doConversionreactor(iriprefix, generatorname, xnumval, ynumval, capacityB);

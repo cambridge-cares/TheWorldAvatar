@@ -74,7 +74,7 @@ public class ScenarioLog {
 	private void write() {
 		if (filePath != null) {
 			String content = toJson().toString();
-			FileUtil.writeFileLocally2(filePath, content);
+			FileUtil.writeFileLocally(filePath, content);
 		}
 	}
 	

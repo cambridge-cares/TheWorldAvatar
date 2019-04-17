@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.base.util;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,23 +29,11 @@ public class FileUtil {
 	    try {
 			fileWriter = new FileWriter(file);
 			fileWriter.write(content);
-			fileWriter.close();
-		} catch (IOException e) {
-			throw new JPSRuntimeException(e.getMessage(), e);
-		}   
-	}
-	
-	public static void writeFileLocally2(String path, String content) {
-		FileOutputStream outputStream = null;
-	    try {
-		    outputStream = new FileOutputStream(path);
-		    byte[] strToBytes = content.getBytes();
-			outputStream.write(strToBytes);
 		} catch (IOException e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		} finally {
 			try {
-				outputStream.close();
+				fileWriter.close();
 			} catch (IOException e) {
 				throw new JPSRuntimeException(e.getMessage(), e);
 			}

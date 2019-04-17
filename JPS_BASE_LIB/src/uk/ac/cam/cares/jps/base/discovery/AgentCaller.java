@@ -97,9 +97,13 @@ public class AgentCaller {
 	}
 	
 	public static String executeGetWithURLAndJSON(String url, String json) {
-		URI uri = createURI(url, JSON_PARAMETER_KEY, json);
+		URI uri = createURIWithURLandJSON(url, json);
 		HttpGet request = new HttpGet(uri);
 		return AgentCaller.executeGet(request);
+	}
+	
+	public static URI createURIWithURLandJSON(String url, String json) {
+		return createURI(url, JSON_PARAMETER_KEY, json);
 	}
 	
 	public static URI createURI(String url, String... keyOrValue) {

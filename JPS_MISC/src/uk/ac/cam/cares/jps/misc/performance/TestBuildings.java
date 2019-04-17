@@ -2,12 +2,12 @@ package uk.ac.cam.cares.jps.misc.performance;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.misc.powerplants.performance.SparqlOverHttpService;
 
 public class TestBuildings extends TestCase {
@@ -102,7 +102,7 @@ public class TestBuildings extends TestCase {
 	}
 	
 	public String  performQuery(String query, Object... args) {
-		query = String.format(Locale.ENGLISH, query, args);
+		query = MiscUtil.format(query, args);
 		System.out.println(query);
 		
 		String result = createSparqlOverHttpService().executeGet(query);

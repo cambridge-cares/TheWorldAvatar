@@ -25,6 +25,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.scenario.JenaReadHook;
 
 public class JenaHelper {
 
@@ -41,6 +42,7 @@ public class JenaHelper {
 	}
 	
 	public static OntModel createModel() {
+		JenaReadHook.prepareReadHook();
 		return ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
 	}
 
