@@ -288,7 +288,7 @@ public class NuclearAgent extends HttpServlet {
 //		init++;
 //	}
 	
-    mapper.serialize("C:/JPS_DATA/workingdir/JPS_POWSYS/mappingforlot.csv");
+   // mapper.serialize("C:/JPS_DATA/workingdir/JPS_POWSYS/mappingforlot.csv");
     
     //make csv file for the landlots
 
@@ -426,7 +426,7 @@ public class NuclearAgent extends HttpServlet {
 		
 		
 		
-		 mapper.serialize("C:/JPS_DATA/workingdir/JPS_POWSYS/mappingforbus.csv");
+		// mapper.serialize("C:/JPS_DATA/workingdir/JPS_POWSYS/mappingforbus.csv");
 		
 		createNewCSV2(totalnodebusresult,outputdir,"bus");
 		

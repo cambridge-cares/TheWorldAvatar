@@ -1,14 +1,14 @@
 package uk.ac.cam.cares.jps.powsys.nuclear;
 
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.opencsv.CSVReader;
-import com.opencsv.CSVWriter;
+
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 public class IriMapper {
 	
@@ -59,8 +59,12 @@ public class IriMapper {
 	}
 	
 	
-	public void serialize(String filePath) throws IOException {
-		//create csv in the filePath directory without header, column 1= iri; column 2= id; column3=type
+	/**
+	 * create csv without header, column 1= iri; column 2= id; column3=type
+	 * 
+	 * @return
+	 */
+	public String serialize() {
 		ArrayList<String[]> stringArray= new ArrayList<String[]>();
 		
 		int size=list.size();
@@ -72,17 +76,28 @@ public class IriMapper {
 			stringArray.add(line);
 		}
 		
-		//write to csv file in filepath
-		CSVWriter writer = new CSVWriter(new FileWriter(filePath));
-	    for (String[] array : stringArray) {
-	        writer.writeNext(array);
-	    }
-	     
-	    writer.close();
+		return MatrixConverter.fromArraytoCsv(stringArray);
 	}
 	
 	
 	public List<IriMapping> deserialize(String filePath) throws IOException {
+	    Reader readpath=new FileReader(filePath);
+	    CSVReader csvReader = new CSVReader(readpath);
+	    List<String[]> listofcontent = new ArrayList<>();
+	    listofcontent = csvReader.readAll();
+	    readpath.close();
+	    csvReader.close();
+	    int size=listofcontent.size();
+	    for(int b=0;b<size;b++) {
+	    	list.get(b).iri=listofcontent.get(b)[0];
+	    	list.get(b).id=listofcontent.get(b)[1];
+	    	list.get(b).type=listofcontent.get(b)[2];
+	    }
+	    return list;
+		
+	}
+	
+	public List<IriMapping> deserialize2(String filePath) throws IOException {
 	    Reader readpath=new FileReader(filePath);
 	    CSVReader csvReader = new CSVReader(readpath);
 	    List<String[]> listofcontent = new ArrayList<>();

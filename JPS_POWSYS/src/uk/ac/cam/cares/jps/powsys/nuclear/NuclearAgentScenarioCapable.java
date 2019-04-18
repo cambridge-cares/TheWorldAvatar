@@ -217,7 +217,7 @@ public class NuclearAgentScenarioCapable extends JPSHttpServlet {
     	
 		logger.info("number of queried lot entities = " + resultList.size());
     	
-    	IriMapperScenarioCapable mapper= new IriMapperScenarioCapable();
+    	IriMapper mapper= new IriMapper();
 		for (int i=0; i<resultList.size(); i++) {
 			String[] current = resultList.get(i);
 			String id = "s"+(i+1);
@@ -282,7 +282,7 @@ public class NuclearAgentScenarioCapable extends JPSHttpServlet {
 		double mean = 0.0079;
 		double variance = 0.004;
 		double stddev = Math.sqrt(variance);
-		IriMapperScenarioCapable mapper= new IriMapperScenarioCapable();
+		IriMapper mapper= new IriMapper();
 		
 		for (int i=0; i<resultList.size(); i++) {
 			String[] current = resultList.get(i);

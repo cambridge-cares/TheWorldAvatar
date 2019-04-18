@@ -13,7 +13,8 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgentScenarioCapable;
+import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
+
 
 public class TestEN extends TestCase {
 	
@@ -354,7 +355,7 @@ public class TestEN extends TestCase {
 		//String baseurl="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of powsys";
 		//String baseurl="D:/JPS/JParkSimulator-git/JPS_POWSYS/python/model";
 
-		ENAgentScenarioCapable b= new ENAgentScenarioCapable ();
+		ENAgent b= new ENAgent ();
 		//List<String[]>buslist= b.extractOWLinArray(b.readModelGreedy(iriofnetwork),iriofnetwork,genInfo,baseUrl);
 		 // List<String[]>buslist=  b.extractOWLinArray(b.readModelGreedy(iriofnetwork),iriofnetwork,branchInfo,"branch",baseUrl);
 		   List<String[]>buslist=b.extractOWLinArray(b.readModelGreedy(iriofnetwork),iriofnetwork,busInfo,"bus",baseUrl);
@@ -366,7 +367,7 @@ public class TestEN extends TestCase {
 	public void testgeninfogathering () throws IOException {
 		
 		
-		ENAgentScenarioCapable b= new ENAgentScenarioCapable ();
+		ENAgent b= new ENAgent ();
 		
 	//String baseurl="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys";
 	//String baseurl="D:/JPS/JParkSimulator-git/JPS_POWSYS/python/model";
@@ -396,13 +397,13 @@ public class TestEN extends TestCase {
 
 	//not applicable as the directory will always be changed
 //	public void testreading() throws IOException {
-//		ENAgentScenarioCapable b= new ENAgentScenarioCapable ();
+//		ENAgent b= new ENAgent ();
 //		b.readResult(baseUrl+"/gen.txt", 21);
 //	}
 
 //  not applicable as the directory will always be changed
 //	public void testdoconversion() throws IOException, URISyntaxException {
-//		ENAgentScenarioCapable b= new ENAgentScenarioCapable ();
+//		ENAgent b= new ENAgent ();
 //		OntModel model = b.readModelGreedy(iriofnetwork);
 //		String iriofnetwork="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 //		//String baseurl="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys";
@@ -414,7 +415,7 @@ public class TestEN extends TestCase {
 	
 //  not applicable as the directory will always be changed
 //	public void testrunmodel() throws IOException {
-//		ENAgentScenarioCapable agent = new ENAgentScenarioCapable();
+//		ENAgent agent = new ENAgent();
 //		agent.runModel(baseUrl);
 //		
 //	}
@@ -424,7 +425,7 @@ public class TestEN extends TestCase {
 		//small scenario is auto generated
 		
 		//ENAgent agent = new ENAgent();
-		ENAgentScenarioCapable agent = new ENAgentScenarioCapable();
+		ENAgent agent = new ENAgent();
 		
 		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 //		String baseUrl="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys";

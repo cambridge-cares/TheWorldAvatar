@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -30,17 +32,17 @@ import com.opencsv.CSVReader;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
-import uk.ac.cam.cares.jps.powsys.nuclear.IriMapperScenarioCapable;
 import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
 
 //@WebServlet("/ENAgent")
 
-//@WebServlet(urlPatterns = { "/ENAgent/startsimulationPF", "/NuclearAgent/startsimulationOPF" })
+@WebServlet(urlPatterns = { "/ENAgent/startsimulationPF", "/NuclearAgent/startsimulationOPF" })
 public class ENAgent extends HttpServlet {
 	private static final long serialVersionUID = -4199209974912271432L;
 	OntModel jenaOwlModel2 = null;
@@ -70,20 +72,28 @@ public class ENAgent extends HttpServlet {
 			modeltype = "OPF";
 		}
 
-		String baseUrl = joforEN.optString("baseUrl");
-		if (baseUrl == null) {
-			// baseUrl = QueryBroker.getUniqueTaggedDataScenarioUrl("JPS_POWSYS_EN");
-			baseUrl = QueryBroker.getLocalDataPath() + "/JPS_POWSYS_EN";
-			startSimulation(iriofnetwork, baseUrl, modeltype);
-		} else {
-			// test only without starting GAMS
-			startSimulation(iriofnetwork, baseUrl, modeltype);
-		}
+		String baseUrl = QueryBroker.getLocalDataPath() + "/JPS_POWSYS_EN";
+		startSimulation(iriofnetwork, baseUrl, modeltype);
+
 
 	}
 
 	public void startSimulation(String iriofnetwork, String baseUrl, String modeltype) throws IOException {
+		
+		OntModel model = readModelGreedy(iriofnetwork);
+		
+		List<String[]> buslist = generateInput(model, iriofnetwork, baseUrl, modeltype);
+		
+		runModel(baseUrl);
 
+		try {
+			doConversion(model, iriofnetwork, baseUrl, modeltype, buslist);
+		} catch (URISyntaxException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	public List<String[]> generateInput(OntModel model, String iriofnetwork, String baseUrl, String modeltype) throws IOException {
 		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
@@ -411,19 +421,19 @@ public class ENAgent extends HttpServlet {
 				+ "}";
 		QueryBroker broker = new QueryBroker();
 
-		List<String[]> buslist = extractOWLinArray(iriofnetwork, busInfo, "bus", baseUrl);
+		List<String[]> buslist = extractOWLinArray(model, iriofnetwork, busInfo, "bus", baseUrl);
 		String content = createNewTSV(buslist, baseUrl + "/mappingforbus.csv", baseUrl + "/mappingforbus.csv");
 		broker.put(baseUrl + "/bus.txt", content);
 
-		List<String[]> genlist = extractOWLinArray(iriofnetwork, genInfo, "generator", baseUrl);
+		List<String[]> genlist = extractOWLinArray(model, iriofnetwork, genInfo, "generator", baseUrl);
 		content = createNewTSV(genlist, baseUrl + "/mappingforgenerator.csv", baseUrl + "/mappingforbus.csv");
 		broker.put(baseUrl + "/gen.txt", content);
 
-		List<String[]> gencostlist = extractOWLinArray(iriofnetwork, genInfocost, "generator", baseUrl);
-		content = createNewTSV(gencostlist, baseUrl + "/mappingforgenerator.csv", baseUrl + "/mappingforbus.csv");
+		List<String[]> gencostlist = extractOWLinArray(model, iriofnetwork, genInfocost, "generatorcost", baseUrl);
+		content = createNewTSV(gencostlist, baseUrl + "/mappingforgeneratorcost.csv", baseUrl + "/mappingforbus.csv");
 		broker.put(baseUrl + "/genCost.txt", content);
 
-		List<String[]> branchlist = extractOWLinArray(iriofnetwork, branchInfo, "branch", baseUrl);
+		List<String[]> branchlist = extractOWLinArray(model, iriofnetwork, branchInfo, "branch", baseUrl);
 		content = createNewTSV(branchlist, baseUrl + "/mappingforbranch.csv", baseUrl + "/mappingforbus.csv");
 		broker.put(baseUrl + "/branch.txt", content);
 
@@ -433,23 +443,15 @@ public class ENAgent extends HttpServlet {
 
 		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/PyPower-PF-OPF-JA-8.py");
 		broker.put(baseUrl + "/PyPower-PF-OPF-JA-8.py", file2);
-
-		runModel(baseUrl);
-
-		try {
-			doConversion(iriofnetwork, baseUrl, modeltype, buslist);
-		} catch (URISyntaxException e) {
-			logger.error(e.getMessage(), e);
-		}
+		
+		return buslist;
 	}
 
 	public static String getResourceDir(Object thisObject) {
 		return AgentLocator.getCurrentJpsAppDirectory(thisObject) + "/testres";
 	}
 
-	public List<String[]> extractOWLinArray(String iriofnetwork, String busInfo, String context, String baseUrl)
-			throws IOException {
-
+	public OntModel readModelGreedy(String iriofnetwork) {
 		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "SELECT ?component "
@@ -457,9 +459,34 @@ public class ENAgent extends HttpServlet {
 				+ "WHERE {?entity  a  j2:CompositeSystem  ." + "?entity   j2:hasSubsystem ?component ." + "}";
 
 		QueryBroker broker = new QueryBroker();
-		String result = broker.queryFilesGreedy(iriofnetwork, electricalnodeInfo, busInfo);
+		return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
+	}
+	
+	public ArrayList<String> queryKeysFromModel(OntModel model, String secondSparqlQuery) {	
+		// TODO-AE SC 20190417 URGENT To my mind there is a simple method to retrieve the keys
+		// If that works remove key methods from QueryBroker.
+		
+		ResultSet result = JenaHelper.query(model, secondSparqlQuery);
+		return new QueryBroker().getKeyListFromQuery(result);
+	}
+	
+	public List<String[]> extractOWLinArray(OntModel model, String iriofnetwork, String busInfo, String context, String baseUrl)
+			throws IOException {
+
+//		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
+//				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+//				+ "SELECT ?component "
+//
+//				+ "WHERE {?entity  a  j2:CompositeSystem  ." + "?entity   j2:hasSubsystem ?component ." + "}";
+
+		//QueryBroker broker = new QueryBroker();
+		//String result = broker.queryFilesGreedy(iriofnetwork, electricalnodeInfo, busInfo);
+		ResultSet resultSet = JenaHelper.query(model, busInfo);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		
 		// for bus=
-		ArrayList<String> keyofname = broker.queryKeyGreedy(iriofnetwork, electricalnodeInfo, busInfo);
+		//ArrayList<String> keyofname = broker.queryKeyGreedy(iriofnetwork, electricalnodeInfo, busInfo);
+		ArrayList<String> keyofname = queryKeysFromModel(model, busInfo);
 		System.out.println("keys= " + keyofname.size());
 		System.out.println("keys ele= " + keyofname.get(0));
 		System.out.println("keys ele= " + keyofname.get(2));
@@ -473,12 +500,12 @@ public class ENAgent extends HttpServlet {
 		// {"BusNumbervalue","typevalue","activepowervalue","reactivepowervalue","Gsvalue","Bsvalue","areavalue","VoltMagvalue","VoltAnglevalue","BaseKVvalue","Zonevalue","VMaxvalue","VMinvalue"};
 
 		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-		if (!context.toLowerCase().contains("gencost")) {
+		if (!context.toLowerCase().contains("output")) {
 			/*
 			 * special case 1. for bus, the mapper contains bus number instead of iri case
 			 * 2. for gencost no need mapper as it just read from the gen mapper
 			 */
-			IriMapperScenarioCapable mapper = new IriMapperScenarioCapable();
+			IriMapper mapper = new IriMapper();
 			for (int i = 0; i < resultList.size(); i++) {
 				String[] current = resultList.get(i);
 				String id = "" + (i + 1);
@@ -487,6 +514,7 @@ public class ENAgent extends HttpServlet {
 			}
 
 			String csv = mapper.serialize();
+			QueryBroker broker = new QueryBroker();
 			broker.put(baseUrl + "/mappingfor" + context + ".csv", csv);
 		}
 
@@ -499,8 +527,8 @@ public class ENAgent extends HttpServlet {
 		try (BufferedWriter bw = new BufferedWriter(writer)) {
 			int line = componentlist.size();
 			IriMapper map2 = new IriMapper();
-			List<IriMapping> original = map2.deserialize(mapdir);
-			List<IriMapping> originalforbus = map2.deserialize(mapdirbus);// because the gen and branch input also
+			List<IriMapping> original = map2.deserialize2(mapdir);
+			List<IriMapping> originalforbus = map2.deserialize2(mapdirbus);// because the gen and branch input also
 																			// depends on the bus number
 																			// =baseUrl+"/mappingforbus.csv"
 			for (int x = 0; x < line; x++) {
@@ -511,19 +539,11 @@ public class ENAgent extends HttpServlet {
 															// element of busnumber and use the mapped id to be written
 															// in tsv
 						String content = componentlist.get(x)[e];
-						String content2 = null;
-						int a = 0;
-						while (a < original.size()) {
-							if (original.get(a).iri.contentEquals(content)) {
-								content2 = original.get(a).id + "\t";
-							}
-
-							a++;
-						}
+						String content2 =map2.getIDFromMap(original, content)+"\t";
 						bw.write(content2);
-					} else if (!mapdir.contains("bus") && e == 0) {// condition when the map is not bus, it ignores the
-																	// 1st element ( entities real iri is not to be
-																	// written in tsv)
+					} else if (!mapdir.contains("bus") && e == 0) {
+						// condition when the map is not bus, it ignores the 1st element ( entities real iri is not to be
+						// written in tsv)
 					}
 
 					else if (e == element - 1) {// condition for every type in the last property, it will add the \n to
@@ -532,7 +552,7 @@ public class ENAgent extends HttpServlet {
 						bw.write(content);
 					} else {// the rest element index (not the first and not the last
 
-						if (e == 1 && mapdir.contains("mappingforgenerator.csv")) { // condition that original bus
+						if (e == 1 && mapdir.contains("mappingforgenerator.csv")&& !mapdir.contains("cost.csv")) { // condition that original bus
 																					// number extracted from gen owl
 																					// file need to be mapped to the
 																					// mapped bus number
@@ -542,53 +562,18 @@ public class ENAgent extends HttpServlet {
 																									// from the kb in
 																									// gen in the form
 																									// of string
-							String mappedori = null;
-							int a = 0;
-							while (a < originalforbus.size()) {
-
-								if (originalforbus.get(a).iri.contentEquals(ori)) {
-									mappedori = originalforbus.get(a).id + "\t";
-
-								}
-
-								a++;
-							}
-							bw.write(mappedori);
+							String content2 =map2.getIDFromMap(originalforbus, ori)+"\t";
+							bw.write(content2);
 						}
 
-						else if ((mapdir.contains("branch") && e == 1) || (mapdir.contains("branch") && e == 2)) {// condition
-																													// that
-																													// original
-																													// 2
-																													// bus
-																													// numbers
-																													// extracted
-																													// from
-																													// branch
-																													// owl
-																													// file
-																													// need
-																													// to
-																													// be
-																													// mapped
-																													// to
-																													// the
-																													// mapped
-																													// bus
-																													// number
+						else if ((mapdir.contains("branch") && e == 1) || (mapdir.contains("branch") && e == 2)) {// condition that original 2 bus numbers
+																												//	 extracted from branch owl file need to 
+																												//	 be mapped to the mapped bus number
 
 							String content = componentlist.get(x)[e];
-							String mappedori = null;
-							int a = 0;
-							while (a < originalforbus.size()) {
-								if (originalforbus.get(a).iri.contentEquals(content)) {
-									mappedori = originalforbus.get(a).id + "\t";
+							String content2 =map2.getIDFromMap(originalforbus, content)+"\t";
+							bw.write(content2);
 
-								}
-
-								a++;
-							}
-							bw.write(mappedori);
 						} else if (mapdir.contains("bus") && e == 7) {
 							double pu = Double.valueOf(componentlist.get(x)[e]);
 
@@ -596,7 +581,6 @@ public class ENAgent extends HttpServlet {
 								String basekv = componentlist.get(x)[9];
 								pu = Double.valueOf(componentlist.get(x)[e]) / Double.valueOf(basekv);
 							}
-							System.out.println("pu= " + pu);
 							String content = pu + "\t";
 							bw.write(content);
 
@@ -651,7 +635,7 @@ public class ENAgent extends HttpServlet {
 		return entryinstance;
 	}
 
-	public void doConversion(String iriofnetwork, String baseUrl, String modeltype, List<String[]> buslist)
+	public void doConversion(OntModel model, String iriofnetwork, String baseUrl, String modeltype, List<String[]> buslist)
 			throws URISyntaxException, IOException {
 
 		String genoutputInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
@@ -727,9 +711,9 @@ public class ENAgent extends HttpServlet {
 				+ "}";
 
 		// this 3 only extract the value instance to be updated for the value
-		List<String[]> branchoutputlist = extractOWLinArray(iriofnetwork, branchoutputInfo, "output", baseUrl);
-		List<String[]> genoutputlist = extractOWLinArray(iriofnetwork, genoutputInfo, "output", baseUrl);
-		List<String[]> busoutputlist = extractOWLinArray(iriofnetwork, busoutputInfo, "output", baseUrl);
+		List<String[]> branchoutputlist = extractOWLinArray(model, iriofnetwork, branchoutputInfo, "output", baseUrl);
+		List<String[]> genoutputlist = extractOWLinArray(model, iriofnetwork, genoutputInfo, "output", baseUrl);
+		List<String[]> busoutputlist = extractOWLinArray(model, iriofnetwork, busoutputInfo, "output", baseUrl);
 
 		// this extract the value read from the text
 		ArrayList<String[]> resultfrommodelgen = readResult(baseUrl + "/outputGen" + modeltype.toUpperCase() + ".txt",
@@ -741,7 +725,7 @@ public class ENAgent extends HttpServlet {
 
 		int amountofbus = busoutputlist.size();
 		IriMapper map2 = new IriMapper();
-		List<IriMapping> originalforbus = map2.deserialize(baseUrl + "/mappingforbus.csv");
+		List<IriMapping> originalforbus = map2.deserialize2(baseUrl + "/mappingforbus.csv");
 		for (int a = 0; a < amountofbus; a++) {
 			String filePath = busoutputlist.get(a)[1]
 					.replaceAll("http://www.theworldavatar.com/kb", "C:/TOMCAT/webapps/ROOT/kb").split("#")[0]; // update
@@ -795,7 +779,7 @@ public class ENAgent extends HttpServlet {
 		}
 
 		IriMapper map3 = new IriMapper();
-		List<IriMapping> originalforgen = map3.deserialize(baseUrl + "/mappingforgenerator.csv");
+		List<IriMapping> originalforgen = map3.deserialize2(baseUrl + "/mappingforgenerator.csv");
 		int amountofgen = genoutputlist.size();
 		for (int a = 0; a < amountofgen; a++) {
 			String filePath = genoutputlist.get(a)[1]
@@ -835,7 +819,7 @@ public class ENAgent extends HttpServlet {
 		}
 
 		IriMapper map = new IriMapper();
-		List<IriMapping> originalforbranch = map.deserialize(baseUrl + "/mappingforbranch.csv");
+		List<IriMapping> originalforbranch = map.deserialize2(baseUrl + "/mappingforbranch.csv");
 		int amountofbranch = branchoutputlist.size();
 		for (int a = 0; a < amountofbranch; a++) {
 
@@ -860,6 +844,7 @@ public class ENAgent extends HttpServlet {
 			// mapping from output tab to correct owl file
 			String keymapper = branchoutputlist.get(a)[0];
 			int amod = Integer.valueOf(map.getIDFromMap(originalforbranch, keymapper));
+
 			Individual vploss = jenaOwlModel3.getIndividual(branchoutputlist.get(a)[1]);
 			vploss.setPropertyValue(numval, jenaOwlModel3.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[1]));
 			// System.out.println("value Of "+branchoutputlist.get(a)[1]+" is=
