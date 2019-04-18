@@ -118,9 +118,8 @@ public class ADMSAgent extends HttpServlet {
 				sourceXY = getPlantXY(plantIRI); 				
 			}
 			
-//			String newBuildingData = retrieveBuildingDataInJSON(cityIRI, sourceXY[0], sourceXY[1], lowerx, lowery, upperx, uppery);
-//			newBuildingData = newBuildingData.replace('\"', '\'');
-			String newBuildingData = retrieveBuildingDataInJSON(input);
+			String newBuildingData = retrieveBuildingDataInJSONOLD(cityIRI, sourceXY[0], sourceXY[1], lowerx, lowery, upperx, uppery);
+			//String newBuildingData = retrieveBuildingDataInJSON(input);  //the new version that remove the duplicate query, but the composition must be changed first
 			newBuildingData = newBuildingData.replace('\"', '\'');
 			
 			String srsname = region.getString("srsname");
@@ -299,17 +298,17 @@ public class ADMSAgent extends HttpServlet {
 		} 
 	}
 	
-//	private String retrieveBuildingDataInJSON(String city, double plantx, double planty, double lowerx, double lowery, double upperx, double uppery) {
-//		
-//		logger.info("retrieveBuildingDataInJSON, city=" + city + ", plantx=" + plantx + ", planty=" + planty
-//				+ ", lowerx=" + lowerx + ", lowery=" + lowery + ", upperx=" + upperx + ", uppery=" + uppery);
-//		
-//		List<String> buildingIRIs = new BuildingQueryPerformer().performQueryClosestBuildingsFromRegion(city, plantx, planty, 25, lowerx, lowery, upperx, uppery);
-//		logger.info("building iris in ADMS Agent: " + buildingIRIs.toString());
-//		SimpleBuildingData result = new BuildingQueryPerformer().performQuerySimpleBuildingData(city, buildingIRIs);
-//		String argument = new Gson().toJson(result);
-//		return argument;
-//	}
+	private String retrieveBuildingDataInJSONOLD(String city, double plantx, double planty, double lowerx, double lowery, double upperx, double uppery) {
+		
+		logger.info("retrieveBuildingDataInJSON, city=" + city + ", plantx=" + plantx + ", planty=" + planty
+				+ ", lowerx=" + lowerx + ", lowery=" + lowery + ", upperx=" + upperx + ", uppery=" + uppery);
+		
+		List<String> buildingIRIs = new BuildingQueryPerformer().performQueryClosestBuildingsFromRegion(city, plantx, planty, 25, lowerx, lowery, upperx, uppery);
+		logger.info("building iris in ADMS Agent: " + buildingIRIs.toString());
+		SimpleBuildingData result = new BuildingQueryPerformer().performQuerySimpleBuildingData(city, buildingIRIs);
+		String argument = new Gson().toJson(result);
+		return argument;
+	}
 	
 	private String retrieveBuildingDataInJSON(JSONObject input) {
 		

@@ -26,7 +26,6 @@ public class IriMapperScenarioCapable {
 		newinst.iri=iri;
 		newinst.id=id;
 		newinst.type=type;
-		// TODO
 		list.add(newinst);	
 	}
 	

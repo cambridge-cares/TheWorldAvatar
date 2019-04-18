@@ -26,7 +26,6 @@ public class IriMapper {
 		newinst.iri=iri;
 		newinst.id=id;
 		newinst.type=type;
-		// TODO
 		list.add(newinst);	
 	}
 	

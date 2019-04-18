@@ -151,7 +151,6 @@ public class LandlotsKB {
             	valuelotarea.addProperty(hasunit, m2);
             	valuelotarea.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(iri[3])));
             	
-            	//TODO: add for the distance to the closest cooling water sources
             	Individual distance=scalarquantityclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#WaterSourceClosestDistanceOfLots-ID"+iri[0]);
             	lotsid.addProperty(hasdistance, distance);
             	Individual vdistance=scalarvalueclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"+filename+".owl#V_WaterSourceClosestDistanceOfLots-ID"+iri[0]);
