@@ -42,21 +42,20 @@ public class IriMapperScenarioCapable {
 		return resultiri;
 	}
 	
-	public int getIDFromMap(List<IriMapping> list, String iri) {
-		String mappedori;
-		int an=0;
-		int amod=0;
-		//System.out.println(baseUrl+"/mappingforgenerator.csv");
-		while(an<list.size()) {
-			
-		if(list.get(an).iri.contentEquals(iri)) {
-			
-			mappedori=list.get(an).id;
-			amod=Integer.valueOf(mappedori);	
+	public String getIDFromMap(List<IriMapping> list, String iri) {
+		String mappedori = null;
+		int an = 0;
+		
+		while (an < list.size()) {
+
+			if (list.get(an).iri.contentEquals(iri)) {
+
+				mappedori = list.get(an).id;
+			}
+			an++;
 		}
-			an++;	
-		}
-		return amod;
+
+		return mappedori;
 	}
 	
 	/**

@@ -763,7 +763,7 @@ public class ENAgent extends HttpServlet {
 
 			// mapping from output tab to correct owl file
 			String keymapper = busoutputlist.get(a)[0];
-			int amod = map2.getIDFromMap(originalforbus, keymapper);
+			int amod = Integer.valueOf(map2.getIDFromMap(originalforbus, keymapper));
 			Individual vpdbusout = jenaOwlModel4.getIndividual(busoutputlist.get(a)[1]);
 			vpdbusout.setPropertyValue(numval, jenaOwlModel4.createTypedLiteral(resultfrommodelbus.get(amod - 1)[5]));
 			// System.out.println("value Of "+busoutputlist.get(a)[1]+" is=
@@ -819,7 +819,7 @@ public class ENAgent extends HttpServlet {
 			// mapping from output tab to correct owl file
 			String keymapper = genoutputlist.get(a)[0];
 
-			int amod = map3.getIDFromMap(originalforgen, keymapper);
+			int amod = Integer.valueOf(map3.getIDFromMap(originalforgen, keymapper));
 
 			Individual vpout = jenaOwlModel2.getIndividual(genoutputlist.get(a)[1]);
 			vpout.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(resultfrommodelgen.get(amod - 1)[1]));
@@ -859,8 +859,7 @@ public class ENAgent extends HttpServlet {
 
 			// mapping from output tab to correct owl file
 			String keymapper = branchoutputlist.get(a)[0];
-			int amod = map.getIDFromMap(originalforbranch, keymapper);
-
+			int amod = Integer.valueOf(map.getIDFromMap(originalforbranch, keymapper));
 			Individual vploss = jenaOwlModel3.getIndividual(branchoutputlist.get(a)[1]);
 			vploss.setPropertyValue(numval, jenaOwlModel3.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[1]));
 			// System.out.println("value Of "+branchoutputlist.get(a)[1]+" is=

@@ -73,15 +73,9 @@ public class ENAgentScenarioCapable extends HttpServlet {
 			modeltype = "OPF";
 		}
 
-		String baseUrl = joforEN.optString("baseUrl");
-		if (baseUrl == null) {
-			// baseUrl = QueryBroker.getUniqueTaggedDataScenarioUrl("JPS_POWSYS_EN");
-			baseUrl = QueryBroker.getLocalDataPath() + "/JPS_POWSYS_EN";
-			startSimulation(iriofnetwork, baseUrl, modeltype);
-		} else {
-			// test only without starting GAMS
-			startSimulation(iriofnetwork, baseUrl, modeltype);
-		}
+		String baseUrl = QueryBroker.getLocalDataPath() + "/JPS_POWSYS_EN";
+		startSimulation(iriofnetwork, baseUrl, modeltype);
+
 
 	}
 
@@ -436,8 +430,8 @@ public class ENAgentScenarioCapable extends HttpServlet {
 		content = createNewTSV(genlist, baseUrl + "/mappingforgenerator.csv", baseUrl + "/mappingforbus.csv");
 		broker.put(baseUrl + "/gen.txt", content);
 
-		List<String[]> gencostlist = extractOWLinArray(model, iriofnetwork, genInfocost, "generator", baseUrl);
-		content = createNewTSV(gencostlist, baseUrl + "/mappingforgenerator.csv", baseUrl + "/mappingforbus.csv");
+		List<String[]> gencostlist = extractOWLinArray(model, iriofnetwork, genInfocost, "generatorcost", baseUrl);
+		content = createNewTSV(gencostlist, baseUrl + "/mappingforgeneratorcost.csv", baseUrl + "/mappingforbus.csv");
 		broker.put(baseUrl + "/genCost.txt", content);
 
 		List<String[]> branchlist = extractOWLinArray(model, iriofnetwork, branchInfo, "branch", baseUrl);
@@ -507,7 +501,7 @@ public class ENAgentScenarioCapable extends HttpServlet {
 		// {"BusNumbervalue","typevalue","activepowervalue","reactivepowervalue","Gsvalue","Bsvalue","areavalue","VoltMagvalue","VoltAnglevalue","BaseKVvalue","Zonevalue","VMaxvalue","VMinvalue"};
 
 		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-		if (!context.toLowerCase().contains("gencost")) {
+		if (!context.toLowerCase().contains("output")) {
 			/*
 			 * special case 1. for bus, the mapper contains bus number instead of iri case
 			 * 2. for gencost no need mapper as it just read from the gen mapper
@@ -546,19 +540,11 @@ public class ENAgentScenarioCapable extends HttpServlet {
 															// element of busnumber and use the mapped id to be written
 															// in tsv
 						String content = componentlist.get(x)[e];
-						String content2 = null;
-						int a = 0;
-						while (a < original.size()) {
-							if (original.get(a).iri.contentEquals(content)) {
-								content2 = original.get(a).id + "\t";
-							}
-
-							a++;
-						}
+						String content2 =map2.getIDFromMap(original, content)+"\t";
 						bw.write(content2);
-					} else if (!mapdir.contains("bus") && e == 0) {// condition when the map is not bus, it ignores the
-																	// 1st element ( entities real iri is not to be
-																	// written in tsv)
+					} else if (!mapdir.contains("bus") && e == 0) {
+						// condition when the map is not bus, it ignores the 1st element ( entities real iri is not to be
+						// written in tsv)
 					}
 
 					else if (e == element - 1) {// condition for every type in the last property, it will add the \n to
@@ -567,7 +553,7 @@ public class ENAgentScenarioCapable extends HttpServlet {
 						bw.write(content);
 					} else {// the rest element index (not the first and not the last
 
-						if (e == 1 && mapdir.contains("mappingforgenerator.csv")) { // condition that original bus
+						if (e == 1 && mapdir.contains("mappingforgenerator.csv")&& !mapdir.contains("cost.csv")) { // condition that original bus
 																					// number extracted from gen owl
 																					// file need to be mapped to the
 																					// mapped bus number
@@ -577,53 +563,18 @@ public class ENAgentScenarioCapable extends HttpServlet {
 																									// from the kb in
 																									// gen in the form
 																									// of string
-							String mappedori = null;
-							int a = 0;
-							while (a < originalforbus.size()) {
-
-								if (originalforbus.get(a).iri.contentEquals(ori)) {
-									mappedori = originalforbus.get(a).id + "\t";
-
-								}
-
-								a++;
-							}
-							bw.write(mappedori);
+							String content2 =map2.getIDFromMap(originalforbus, ori)+"\t";
+							bw.write(content2);
 						}
 
-						else if ((mapdir.contains("branch") && e == 1) || (mapdir.contains("branch") && e == 2)) {// condition
-																													// that
-																													// original
-																													// 2
-																													// bus
-																													// numbers
-																													// extracted
-																													// from
-																													// branch
-																													// owl
-																													// file
-																													// need
-																													// to
-																													// be
-																													// mapped
-																													// to
-																													// the
-																													// mapped
-																													// bus
-																													// number
+						else if ((mapdir.contains("branch") && e == 1) || (mapdir.contains("branch") && e == 2)) {// condition that original 2 bus numbers
+																												//	 extracted from branch owl file need to 
+																												//	 be mapped to the mapped bus number
 
 							String content = componentlist.get(x)[e];
-							String mappedori = null;
-							int a = 0;
-							while (a < originalforbus.size()) {
-								if (originalforbus.get(a).iri.contentEquals(content)) {
-									mappedori = originalforbus.get(a).id + "\t";
+							String content2 =map2.getIDFromMap(originalforbus, content)+"\t";
+							bw.write(content2);
 
-								}
-
-								a++;
-							}
-							bw.write(mappedori);
 						} else if (mapdir.contains("bus") && e == 7) {
 							double pu = Double.valueOf(componentlist.get(x)[e]);
 
@@ -631,7 +582,6 @@ public class ENAgentScenarioCapable extends HttpServlet {
 								String basekv = componentlist.get(x)[9];
 								pu = Double.valueOf(componentlist.get(x)[e]) / Double.valueOf(basekv);
 							}
-							System.out.println("pu= " + pu);
 							String content = pu + "\t";
 							bw.write(content);
 
@@ -798,7 +748,7 @@ public class ENAgentScenarioCapable extends HttpServlet {
 
 			// mapping from output tab to correct owl file
 			String keymapper = busoutputlist.get(a)[0];
-			int amod = map2.getIDFromMap(originalforbus, keymapper);
+			int amod = Integer.valueOf(map2.getIDFromMap(originalforbus, keymapper));
 			Individual vpdbusout = jenaOwlModel4.getIndividual(busoutputlist.get(a)[1]);
 			vpdbusout.setPropertyValue(numval, jenaOwlModel4.createTypedLiteral(resultfrommodelbus.get(amod - 1)[5]));
 			// System.out.println("value Of "+busoutputlist.get(a)[1]+" is=
@@ -854,7 +804,7 @@ public class ENAgentScenarioCapable extends HttpServlet {
 			// mapping from output tab to correct owl file
 			String keymapper = genoutputlist.get(a)[0];
 
-			int amod = map3.getIDFromMap(originalforgen, keymapper);
+			int amod = Integer.valueOf(map3.getIDFromMap(originalforgen, keymapper));
 
 			Individual vpout = jenaOwlModel2.getIndividual(genoutputlist.get(a)[1]);
 			vpout.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(resultfrommodelgen.get(amod - 1)[1]));
@@ -894,7 +844,7 @@ public class ENAgentScenarioCapable extends HttpServlet {
 
 			// mapping from output tab to correct owl file
 			String keymapper = branchoutputlist.get(a)[0];
-			int amod = map.getIDFromMap(originalforbranch, keymapper);
+			int amod = Integer.valueOf(map.getIDFromMap(originalforbranch, keymapper));
 
 			Individual vploss = jenaOwlModel3.getIndividual(branchoutputlist.get(a)[1]);
 			vploss.setPropertyValue(numval, jenaOwlModel3.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[1]));
