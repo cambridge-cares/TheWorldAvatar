@@ -430,6 +430,7 @@ public class TestEN extends TestCase {
 		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 //		String baseUrl="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys";
 		//String baseUrl="D:/JPS/JParkSimulator-git/JPS_POWSYS/python/model";
+		baseUrl = null;
 		agent.startSimulation(iriofnetwork, baseUrl,"OPF");
 		
 	}
@@ -454,6 +455,23 @@ public class TestEN extends TestCase {
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationPF", jo.toString());
 	}
 	
+	public void testStartSimulationCallingBaseScenario() throws IOException  {
 
+		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
+		String dataPath = QueryBroker.getLocalDataPath();
+		String baseUrl = dataPath + "/JPS_POWSYS_EN";
+		new ENAgent().startSimulation(iriofnetwork, baseUrl, "OPF");	
+	}
+	
+	public void testStartSimulationCallingNonBaseScenario() throws IOException  {
 
+		String scenarioUrl = BucketHelper.getScenarioUrl("testENScenario");
+		JPSHttpServlet.enableScenario(scenarioUrl);	
+		//new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
+			
+		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
+		String dataPath = QueryBroker.getLocalDataPath();
+		String baseUrl = dataPath + "/JPS_POWSYS_EN";
+		new ENAgent().startSimulation(iriofnetwork, baseUrl, "OPF");
+	}
 }

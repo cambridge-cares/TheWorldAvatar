@@ -14,14 +14,12 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgentScenarioCapable;
 
 public class TestNuclearAgentScenarioCapable extends TestCase {
 
 	public void testStartSimulationAndProcessResultDirectCallForBaseScenario() throws NumberFormatException, IOException, URISyntaxException, InterruptedException {
-		//why need to convert to localhost instead of twa??
-		//small scenario is auto generated
-		
 		NuclearAgentScenarioCapable agent = new NuclearAgentScenarioCapable();
 		
 		String lotiri = "http://www.theworldavatar.com/kb/sgp/jurongisland/JurongIslandLandlots.owl";
@@ -47,6 +45,9 @@ public class TestNuclearAgentScenarioCapable extends TestCase {
 		jo.put("electricalnetwork", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
 		String scenarioUrl = BucketHelper.getScenarioUrl("testStartSimulationAndProcessResultAgentCallForTestScenario"); 
 		JPSHttpServlet.enableScenario(scenarioUrl);	
+		
+		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
+		
 		jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
 		String usecaseUrl = BucketHelper.getUsecaseUrl();
 		//usecaseUrl = "http://localhost:8080/JPS_SCENARIO/scenario/testStartSimulationAndProcessResultAgentCallForTestScenario/kb/d9fbd6f4-9e2f-4c63-9995-9ff88ab8900e";

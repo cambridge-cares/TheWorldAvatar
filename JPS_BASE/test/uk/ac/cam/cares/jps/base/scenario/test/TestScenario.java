@@ -1,11 +1,17 @@
 package uk.ac.cam.cares.jps.base.scenario.test;
 
+import org.apache.jena.ontology.OntModel;
+
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.query.JenaHelper;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 
 public class TestScenario extends TestCase {
@@ -134,6 +140,14 @@ public class TestScenario extends TestCase {
 		}
 	}
 	
+	public void testGetLocalPathOnLocalhost() {
+		JPSHttpServlet.disableScenario();
+		String resource = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EBus-174.owl#V_Pd_EBus-174";
+		String path = BucketHelper.getLocalPath(resource);
+		System.out.println(path);
+		assertTrue(path.contains("ROOT"));
+	}
+	
 	public void testGetIriPrefixBaseScenario() {
 		String prefix = BucketHelper.getIriPrefix();
 		System.out.println(prefix);
@@ -158,5 +172,51 @@ public class TestScenario extends TestCase {
 		String resource = "https://www.jparksimulator.com:8080/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#abctest";
 		String hashedResource = ScenarioHelper.getHashedResource(resource);
 		assertEquals("-1820947590/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl", hashedResource);
+	}
+	
+	public void testJenaReadHook() {
+		
+		String scenarioUrl = BucketHelper.getScenarioUrl("testJenaReadHook");
+		JPSHttpServlet.enableScenario(scenarioUrl);	
+		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
+		
+		// the URL for the OWL file for EBus-174 is transformed into a read call to the scenario agent within 
+		// the call JenaHelper.createMode(url) below
+		String url = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EBus-174.owl#V_Pd_EBus-174";
+		
+		long start = System.currentTimeMillis();
+		OntModel model = JenaHelper.createModel(url);
+		long diff = System.currentTimeMillis() - start;	
+		System.out.println("diff=" + diff);
+	}
+	
+	public void testReadScenarioAgentPerformance() {
+		
+		String scenarioUrl = BucketHelper.getScenarioUrl("testReadScenarioPerformance");
+		JPSHttpServlet.enableScenario(scenarioUrl);	
+		//new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
+		
+		String url = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EBus-034.owl";
+		//String url = "http://localhost:8080/kb/sgp/jurongisland/jurongislandpowernetwork/EBus-034.owl";
+
+		long start = System.currentTimeMillis();
+		for (int i=0; i<10; i++) {
+			new QueryBroker().readFile(url);
+		}
+
+		long diff = System.currentTimeMillis() - start;	
+		System.out.println("diff=" + diff);
+	}
+	
+	public void testPingScenarioAgentPerformance() {
+		
+		String url = "http://localhost:8080/JPS_SCENARIO/scenario/testPingScenarioAgentPerformance/ping";
+		long start = System.currentTimeMillis();
+		for (int i=0; i<10; i++) {
+			String result = AgentCaller.executeGetWithURL(url);
+		}
+		
+		long diff = System.currentTimeMillis() - start;	
+		System.out.println("diff=" + diff);
 	}
 }

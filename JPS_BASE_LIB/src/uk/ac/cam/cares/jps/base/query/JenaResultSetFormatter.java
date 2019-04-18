@@ -110,7 +110,7 @@ public class JenaResultSetFormatter {
 		
 		JSONObject jo = JenaResultSetFormatter.convertToSimplifiedList(resultJSONW3CStandard);
 		JSONArray ja = jo.getJSONArray("results");
-		
+	
 		for (int i=0; i<ja.length(); i++) {
 			String[] array = new String[keys.length];
 			JSONObject row = ja.getJSONObject(i);
@@ -124,4 +124,16 @@ public class JenaResultSetFormatter {
 		return result;
 	}
 	
+	public static String[] getKeys(String resultJSONW3CStandard) {
+		
+		// "head": { "vars": [ "generation" , "emission" , "emissionvalue" , "emissionvaluenum" ] }
+		JSONObject jo = new JSONObject(resultJSONW3CStandard);
+		JSONArray ja = jo.getJSONObject("head").getJSONArray("vars");
+		String[] result = new String[ja.length()];
+		for (int i=0; i<ja.length(); i++) {
+			result[i] = ja.getString(i);
+		}
+		
+		return result;
+	}
 }

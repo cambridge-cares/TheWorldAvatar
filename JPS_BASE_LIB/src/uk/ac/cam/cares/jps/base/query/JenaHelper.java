@@ -25,7 +25,9 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JenaReadHook;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 
 public class JenaHelper {
 
@@ -36,6 +38,12 @@ public class JenaHelper {
 	 * @return
 	 */
 	public static OntModel createModel(String path) {
+
+		if (path.startsWith("http")) {
+			String scenarioUrl = BucketHelper.getScenarioUrl();
+			path = new ScenarioClient().getReadUrl(scenarioUrl, path).toString();
+		}
+			
 		OntModel result = createModel();
 		read(path, result);
 		return result;
