@@ -2,11 +2,8 @@ package uk.ac.cam.cares.jps.powsys.electricalnetwork;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -22,7 +19,6 @@ import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,22 +34,16 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
-import uk.ac.cam.cares.jps.powsys.nuclear.LandlotsKB;
-
-//@WebServlet("/ENAgent")
 
 @WebServlet(urlPatterns = { "/ENAgent/startsimulationPF", "/NuclearAgent/startsimulationOPF" })
 public class ENAgent extends HttpServlet {
+	
 	private static final long serialVersionUID = -4199209974912271432L;
-	OntModel jenaOwlModel2 = null;
-	private DatatypeProperty numval = null;
 	private Logger logger = LoggerFactory.getLogger(ENAgent.class);
 
-	public void initOWLClasses(OntModel jenaOwlModel) {
-
-		numval = jenaOwlModel.getDatatypeProperty(
+	public DatatypeProperty getNumericalValueProperty(OntModel jenaOwlModel) {
+		return jenaOwlModel.getDatatypeProperty(
 				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
-
 	}
 
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
@@ -74,8 +64,6 @@ public class ENAgent extends HttpServlet {
 
 		String baseUrl = QueryBroker.getLocalDataPath() + "/JPS_POWSYS_EN";
 		startSimulation(iriofnetwork, baseUrl, modeltype);
-
-
 	}
 
 	public void startSimulation(String iriofnetwork, String baseUrl, String modeltype) throws IOException {
@@ -90,6 +78,7 @@ public class ENAgent extends HttpServlet {
 			doConversion(model, iriofnetwork, baseUrl, modeltype, buslist);
 		} catch (URISyntaxException e) {
 			logger.error(e.getMessage(), e);
+			throw new JPSRuntimeException(e.getMessage(), e);
 		}
 	}
 
@@ -419,6 +408,7 @@ public class ENAgent extends HttpServlet {
 				+ "?vvminvar   j2:numericalValue ?VMinvalue ." // Vmin
 
 				+ "}";
+		
 		QueryBroker broker = new QueryBroker();
 
 		List<String[]> buslist = extractOWLinArray(model, iriofnetwork, busInfo, "bus", baseUrl);
@@ -462,44 +452,20 @@ public class ENAgent extends HttpServlet {
 		return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
 	}
 	
-	public ArrayList<String> queryKeysFromModel(OntModel model, String secondSparqlQuery) {	
-		// TODO-AE SC 20190417 URGENT To my mind there is a simple method to retrieve the keys
-		// If that works remove key methods from QueryBroker.
-		
-		ResultSet result = JenaHelper.query(model, secondSparqlQuery);
-		return new QueryBroker().getKeyListFromQuery(result);
-	}
-	
 	public List<String[]> extractOWLinArray(OntModel model, String iriofnetwork, String busInfo, String context, String baseUrl)
 			throws IOException {
 
-//		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
-//				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-//				+ "SELECT ?component "
-//
-//				+ "WHERE {?entity  a  j2:CompositeSystem  ." + "?entity   j2:hasSubsystem ?component ." + "}";
-
-		//QueryBroker broker = new QueryBroker();
-		//String result = broker.queryFilesGreedy(iriofnetwork, electricalnodeInfo, busInfo);
 		ResultSet resultSet = JenaHelper.query(model, busInfo);
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-		
-		// for bus=
-		//ArrayList<String> keyofname = broker.queryKeyGreedy(iriofnetwork, electricalnodeInfo, busInfo);
-		ArrayList<String> keyofname = queryKeysFromModel(model, busInfo);
-		System.out.println("keys= " + keyofname.size());
-		System.out.println("keys ele= " + keyofname.get(0));
-		System.out.println("keys ele= " + keyofname.get(2));
-		System.out.println("keys ele= " + keyofname.get(keyofname.size() - 1));
-
-		String[] keys = new String[keyofname.size()];
-		for (int t = 0; t < keyofname.size(); t++) {
-			keys[t] = keyofname.get(t);
-		}
-		// for bus, String[] keys = new String[]
-		// {"BusNumbervalue","typevalue","activepowervalue","reactivepowervalue","Gsvalue","Bsvalue","areavalue","VoltMagvalue","VoltAnglevalue","BaseKVvalue","Zonevalue","VMaxvalue","VMinvalue"};
-
+		String[] keys = JenaResultSetFormatter.getKeys(result);
 		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		
+		StringBuffer b = new StringBuffer("keys= ").append(keys.length);
+		for (String current : keys) {
+			b.append(", ").append(current);
+		}
+		logger.info(b.toString());
+		
 		if (!context.toLowerCase().contains("output")) {
 			/*
 			 * special case 1. for bus, the mapper contains bus number instead of iri case
@@ -619,18 +585,28 @@ public class ENAgent extends HttpServlet {
 
 	public ArrayList<String[]> readResult(String outputfiledir, int colnum) throws IOException {
 		ArrayList<String[]> entryinstance = new ArrayList<String[]>();
-		CSVReader reader = new CSVReader(new FileReader(outputfiledir), '\t');
-		String[] record;
-		while ((record = reader.readNext()) != null) {
-			int element = 0;
-			String[] entityline = new String[colnum];
-			for (String value : record) {
-
-				entityline[element] = value;
-				element++;
+		
+		System.out.println("reading result from " + outputfiledir);
+		String content = new QueryBroker().readFile(outputfiledir);
+		StringReader stringreader = new StringReader(content);
+		CSVReader reader = null;
+		try {
+			reader = new CSVReader(stringreader, '\t');
+			//CSVReader reader = new CSVReader(new FileReader(outputfiledir), '\t');
+			String[] record;
+			while ((record = reader.readNext()) != null) {
+				int element = 0;
+				String[] entityline = new String[colnum];
+				for (String value : record) {
+	
+					entityline[element] = value;
+					element++;
+				}
+				entryinstance.add(entityline);
+	
 			}
-			entryinstance.add(entityline);
-
+		} finally {
+			reader.close();
 		}
 		return entryinstance;
 	}
@@ -723,148 +699,101 @@ public class ENAgent extends HttpServlet {
 		ArrayList<String[]> resultfrommodelbranch = readResult(
 				baseUrl + "/outputBranch" + modeltype.toUpperCase() + ".txt", 6);
 
+		QueryBroker broker = new QueryBroker();
+		
 		int amountofbus = busoutputlist.size();
 		IriMapper map2 = new IriMapper();
 		List<IriMapping> originalforbus = map2.deserialize2(baseUrl + "/mappingforbus.csv");
 		for (int a = 0; a < amountofbus; a++) {
-			String filePath = busoutputlist.get(a)[1]
-					.replaceAll("http://www.theworldavatar.com/kb", "C:/TOMCAT/webapps/ROOT/kb").split("#")[0]; // update
-																												// the
-																												// file
-																												// locally
-			filePath = busoutputlist.get(a)[1]
-					.replaceAll("http://www.jparksimulator.com/kb", "C:/TOMCAT/webapps/ROOT/kb").split("#")[0]; // update
-																												// the
-																												// file
-																												// locally
-			FileInputStream inFile = new FileInputStream(filePath);
-			Reader in = new InputStreamReader(inFile, "UTF-8");
-
-			OntModel jenaOwlModel4 = ModelFactory.createOntologyModel();
-			jenaOwlModel4.read(in, null);
-
-			initOWLClasses(jenaOwlModel4);
+			
+			String currentIri = busoutputlist.get(a)[1];
+			OntModel jenaOwlModel = JenaHelper.createModel(currentIri);
+			DatatypeProperty numval = getNumericalValueProperty(jenaOwlModel);
 
 			// mapping from output tab to correct owl file
 			String keymapper = busoutputlist.get(a)[0];
 			int amod = Integer.valueOf(map2.getIDFromMap(originalforbus, keymapper));
-			Individual vpdbusout = jenaOwlModel4.getIndividual(busoutputlist.get(a)[1]);
-			vpdbusout.setPropertyValue(numval, jenaOwlModel4.createTypedLiteral(resultfrommodelbus.get(amod - 1)[5]));
-			// System.out.println("value Of "+busoutputlist.get(a)[1]+" is=
-			// "+resultfrommodelbus.get(amod-1)[5]);
+			Individual vpdbusout = jenaOwlModel.getIndividual(busoutputlist.get(a)[1]);
+			vpdbusout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbus.get(amod - 1)[5]));
 
-			Individual vgdbusout = jenaOwlModel4.getIndividual(busoutputlist.get(a)[2]);
-			vgdbusout.setPropertyValue(numval, jenaOwlModel4.createTypedLiteral(resultfrommodelbus.get(amod - 1)[6]));
+			Individual vgdbusout = jenaOwlModel.getIndividual(busoutputlist.get(a)[2]);
+			vgdbusout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbus.get(amod - 1)[6]));
 
-			Individual vpdgenout = jenaOwlModel4.getIndividual(busoutputlist.get(a)[3]);
-			vpdgenout.setPropertyValue(numval, jenaOwlModel4.createTypedLiteral(resultfrommodelbus.get(amod - 1)[3]));
+			Individual vpdgenout = jenaOwlModel.getIndividual(busoutputlist.get(a)[3]);
+			vpdgenout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbus.get(amod - 1)[3]));
 
-			Individual vgdgenout = jenaOwlModel4.getIndividual(busoutputlist.get(a)[4]);
-			vgdgenout.setPropertyValue(numval, jenaOwlModel4.createTypedLiteral(resultfrommodelbus.get(amod - 1)[4]));
+			Individual vgdgenout = jenaOwlModel.getIndividual(busoutputlist.get(a)[4]);
+			vgdgenout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbus.get(amod - 1)[4]));
 
-			Individual vVmout = jenaOwlModel4.getIndividual(busoutputlist.get(a)[5]);
+			Individual vVmout = jenaOwlModel.getIndividual(busoutputlist.get(a)[5]);
 			double basekv = Double.valueOf(buslist.get(amod - 1)[9]);
 			System.out.println("basekv= " + basekv);
 			System.out.println("pukv= " + resultfrommodelbus.get(amod - 1)[1]);
 			double originalv = basekv * Double.valueOf(resultfrommodelbus.get(amod - 1)[1]);
-			vVmout.setPropertyValue(numval, jenaOwlModel4.createTypedLiteral(originalv));
+			vVmout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(originalv));
 			System.out.println("value Of " + busoutputlist.get(a)[5] + " is= " + originalv);
 
-			Individual vVaout = jenaOwlModel4.getIndividual(busoutputlist.get(a)[6]);
-			vVaout.setPropertyValue(numval, jenaOwlModel4.createTypedLiteral(resultfrommodelbus.get(amod - 1)[2]));
-
-			/** save the updated model file */
-			LandlotsKB ins2 = new LandlotsKB();
-			ins2.savefile(jenaOwlModel4, filePath);
+			Individual vVaout = jenaOwlModel.getIndividual(busoutputlist.get(a)[6]);
+			vVaout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbus.get(amod - 1)[2]));
+			
+			String content = JenaHelper.writeToString(jenaOwlModel);
+			broker.put(currentIri, content);
 		}
 
 		IriMapper map3 = new IriMapper();
 		List<IriMapping> originalforgen = map3.deserialize2(baseUrl + "/mappingforgenerator.csv");
 		int amountofgen = genoutputlist.size();
 		for (int a = 0; a < amountofgen; a++) {
-			String filePath = genoutputlist.get(a)[1]
-					.replaceAll("http://www.theworldavatar.com/kb", "C:/TOMCAT/webapps/ROOT/kb").split("#")[0]; // update
-																												// the
-																												// file
-																												// locally
-			filePath = genoutputlist.get(a)[1]
-					.replaceAll("http://www.jparksimulator.com/kb", "C:/TOMCAT/webapps/ROOT/kb").split("#")[0]; // update
-																												// the
-																												// file
-																												// locally
-			FileInputStream inFile = new FileInputStream(filePath);
-			Reader in = new InputStreamReader(inFile, "UTF-8");
-
-			OntModel jenaOwlModel2 = ModelFactory.createOntologyModel();
-			jenaOwlModel2.read(in, null);
-
-			initOWLClasses(jenaOwlModel2);
+			
+			String currentIri = genoutputlist.get(a)[1];
+			OntModel jenaOwlModel = JenaHelper.createModel(currentIri);
+			DatatypeProperty numval = getNumericalValueProperty(jenaOwlModel);
 
 			// mapping from output tab to correct owl file
 			String keymapper = genoutputlist.get(a)[0];
 
 			int amod = Integer.valueOf(map3.getIDFromMap(originalforgen, keymapper));
 
-			Individual vpout = jenaOwlModel2.getIndividual(genoutputlist.get(a)[1]);
-			vpout.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(resultfrommodelgen.get(amod - 1)[1]));
+			Individual vpout = jenaOwlModel.getIndividual(genoutputlist.get(a)[1]);
+			vpout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelgen.get(amod - 1)[1]));
 
-			Individual vqout = jenaOwlModel2.getIndividual(genoutputlist.get(a)[2]);
-			vqout.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(resultfrommodelgen.get(amod - 1)[2]));
-			// System.out.println("value Of "+genoutputlist.get(a)[2]+" is=
-			// "+resultfrommodelgen.get(amod-1)[2]);
+			Individual vqout = jenaOwlModel.getIndividual(genoutputlist.get(a)[2]);
+			vqout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelgen.get(amod - 1)[2]));
 
-			/** save the updated model file */
-			LandlotsKB ins2 = new LandlotsKB();
-			ins2.savefile(jenaOwlModel2, filePath);
+			String content = JenaHelper.writeToString(jenaOwlModel);
+			broker.put(currentIri, content);
 		}
 
 		IriMapper map = new IriMapper();
 		List<IriMapping> originalforbranch = map.deserialize2(baseUrl + "/mappingforbranch.csv");
 		int amountofbranch = branchoutputlist.size();
 		for (int a = 0; a < amountofbranch; a++) {
-
-			String filePath = branchoutputlist.get(a)[1]
-					.replaceAll("http://www.theworldavatar.com/kb", "C:/TOMCAT/webapps/ROOT/kb").split("#")[0]; // update
-																												// the
-																												// file
-																												// locally
-			filePath = branchoutputlist.get(a)[1]
-					.replaceAll("http://www.jparksimulator.com/kb", "C:/TOMCAT/webapps/ROOT/kb").split("#")[0]; // update
-																												// the
-																												// file
-																												// locally
-			FileInputStream inFile = new FileInputStream(filePath);
-			Reader in = new InputStreamReader(inFile, "UTF-8");
-			// System.out.println("filepath= "+filePath);
-			OntModel jenaOwlModel3 = ModelFactory.createOntologyModel();
-			jenaOwlModel3.read(in, null);
-
-			initOWLClasses(jenaOwlModel3);
+			
+			String currentIri = branchoutputlist.get(a)[1];
+			OntModel jenaOwlModel = JenaHelper.createModel(currentIri);
+			DatatypeProperty numval = getNumericalValueProperty(jenaOwlModel);
 
 			// mapping from output tab to correct owl file
 			String keymapper = branchoutputlist.get(a)[0];
 			int amod = Integer.valueOf(map.getIDFromMap(originalforbranch, keymapper));
 
-			Individual vploss = jenaOwlModel3.getIndividual(branchoutputlist.get(a)[1]);
-			vploss.setPropertyValue(numval, jenaOwlModel3.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[1]));
-			// System.out.println("value Of "+branchoutputlist.get(a)[1]+" is=
-			// "+resultfrommodelbranch.get(amod-1)[1]);
+			Individual vploss = jenaOwlModel.getIndividual(branchoutputlist.get(a)[1]);
+			vploss.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[1]));
 
-			Individual vqloss = jenaOwlModel3.getIndividual(branchoutputlist.get(a)[2]);
-			vqloss.setPropertyValue(numval, jenaOwlModel3.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[2]));
+			Individual vqloss = jenaOwlModel.getIndividual(branchoutputlist.get(a)[2]);
+			vqloss.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[2]));
 
-			Individual vpave = jenaOwlModel3.getIndividual(branchoutputlist.get(a)[3]);
-			vpave.setPropertyValue(numval, jenaOwlModel3.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[3]));
+			Individual vpave = jenaOwlModel.getIndividual(branchoutputlist.get(a)[3]);
+			vpave.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[3]));
 
-			Individual vqave = jenaOwlModel3.getIndividual(branchoutputlist.get(a)[4]);
-			vqave.setPropertyValue(numval, jenaOwlModel3.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[4]));
+			Individual vqave = jenaOwlModel.getIndividual(branchoutputlist.get(a)[4]);
+			vqave.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[4]));
 
-			Individual vsave = jenaOwlModel3.getIndividual(branchoutputlist.get(a)[5]);
-			vsave.setPropertyValue(numval, jenaOwlModel3.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[5]));
-
-			/** save the updated model file */
-			LandlotsKB ins2 = new LandlotsKB();
-			ins2.savefile(jenaOwlModel3, filePath);
+			Individual vsave = jenaOwlModel.getIndividual(branchoutputlist.get(a)[5]);
+			vsave.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[5]));
+			
+			String content = JenaHelper.writeToString(jenaOwlModel);
+			broker.put(currentIri, content);
 		}
 	}
 }

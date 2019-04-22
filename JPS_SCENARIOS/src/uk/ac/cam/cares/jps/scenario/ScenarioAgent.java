@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.scenario;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,6 +19,7 @@ import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 
@@ -72,15 +74,15 @@ public class ScenarioAgent extends HttpServlet {
 				
 		} else if ("/read".equals(operation)) {
 			
-			result = readFile(jo, scenarioBucket, copyOnRead);
+			result = readFile(jo, scenarioName, copyOnRead);
 			
 		} else if ("/query".equals(operation)) {
 			
-			result = queryFile(jo, scenarioBucket, copyOnRead);
+			result = queryFile(jo, scenarioName, copyOnRead);
 			
 		} else if ("/update".equals(operation)) {
 
-			updateFile(jo, scenarioBucket);
+			updateFile(jo, scenarioName);
 			
 		} else if ("/delete".equals(operation)) {
 			
@@ -93,6 +95,10 @@ public class ScenarioAgent extends HttpServlet {
 		} else if ("/preparerecording".equals(operation)) {
 			
 			result = prepareRecording(jo, scenarioName, log);
+			
+		} else if ("/ping".equals(operation)) {
+			
+			result = new Date().toString();
 			
 		} else {
 			
@@ -176,10 +182,12 @@ public class ScenarioAgent extends HttpServlet {
 	 * @param copyToBucket if true the copy the requested resource to the scenario bucket
 	 * @return the complete path of the scenario resource
 	 */
-	private String getResourcePath(JSONObject jo, String scenarioBucket, boolean copyToBucket) {
+	private String getResourcePath(JSONObject jo, String scenarioName, boolean copyToBucket) {
 			    
 		String resource = jo.getString(JPSConstants.SCENARIO_RESOURCE);
-		String completePathWithinBucket = ScenarioHelper.getFileNameWithinBucket(resource, scenarioBucket);
+		//String completePathWithinBucket = ScenarioHelper.getFileNameWithinBucket(resource, scenarioBucket);
+		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
+		String completePathWithinBucket = BucketHelper.getLocalPath(resource, scenarioUrl);
 		logger.info("get resource path for resource=" + resource + ", in bucket=" + completePathWithinBucket + ", copyToBucket=" + copyToBucket);
 		
 		File fileWithinBucket = new File(completePathWithinBucket);
@@ -203,17 +211,17 @@ public class ScenarioAgent extends HttpServlet {
 	 * @param rdfResource
 	 * @return
 	 */
-	private String readFile(JSONObject jo, String scenarioBucket, boolean copyOnRead) {
+	private String readFile(JSONObject jo, String scenarioName, boolean copyOnRead) {
 		
-		String resource = getResourcePath(jo, scenarioBucket, copyOnRead);
+		String resource = getResourcePath(jo, scenarioName, copyOnRead);
 		// TODO-AE SC the prepare method might create a scenario copy; in this case prepare method already reads the content; i.e. in this case
 		// we read it here a second time --> refactor the code such that this is not required; the same for queryFile
 		return new QueryBroker().readFile(resource);
 	}
 	
-	private String queryFile(JSONObject jo, String scenarioBucket, boolean copyOnRead) {
+	private String queryFile(JSONObject jo, String scenarioName, boolean copyOnRead) {
 		
-		String resource = getResourcePath(jo, scenarioBucket, copyOnRead);
+		String resource = getResourcePath(jo, scenarioName, copyOnRead);
 		String sparqlQuery = jo.getString(JPSConstants.QUERY_SPARQL_QUERY);
 		
 		logger.info("sparqlquery=" + sparqlQuery);
@@ -221,9 +229,9 @@ public class ScenarioAgent extends HttpServlet {
 		return new QueryBroker().queryFile(resource, sparqlQuery);
 	}
 	
-	private void updateFile(JSONObject jo, String scenarioBucket) {
+	private void updateFile(JSONObject jo, String scenarioName) {
 		
-		String resource = getResourcePath(jo, scenarioBucket, true);
+		String resource = getResourcePath(jo, scenarioName, true);
 		String sparqlUpdate = jo.getString(JPSConstants.QUERY_SPARQL_UPDATE);
 		
 		logger.info("sparqlupdate=" + sparqlUpdate);

@@ -35,7 +35,7 @@ public class JenaReadHook implements ReadHook {
 	
 	@Override
 	public String beforeRead(Model model, String source, OntDocumentManager odm) {
-
+		
 		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
 		if (BucketHelper.isBaseScenario(scenarioUrl)) {
 			return originalReadHook.beforeRead(model, source, odm);

@@ -2,13 +2,10 @@ package uk.ac.cam.cares.jps.base.query;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.jena.ontology.OntModel;
-import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
@@ -45,7 +42,7 @@ public class QueryBroker {
 		// the scenario agent has to be called even for copy-on-write since in the past
 		// another agent might have updated the file within the same scenario 
 		if (scenarioUrl != null) {
-			new ScenarioClient().read(scenarioUrl, urlOrPath);
+			return new ScenarioClient().read(scenarioUrl, urlOrPath);
 		}
 		
 		urlOrPath = ResourcePathConverter.convert(urlOrPath);
@@ -69,68 +66,6 @@ public class QueryBroker {
 			return FileUtil.readFileLocally(localFile);
 		}
 	}
-	
-	public ArrayList<String> queryKey(String urlOrPath, String sparqlQuery) {		
-		urlOrPath = ResourcePathConverter.convert(urlOrPath);
-		
-		ResultSet resultSet = null;
-		if (urlOrPath.startsWith("http")) {
-			resultSet = JenaHelper.queryUrl(urlOrPath, sparqlQuery);
-		} else {
-			String localFile = ScenarioHelper.cutHash(urlOrPath);
-			resultSet = JenaHelper.queryFile(localFile, sparqlQuery);
-		}
-		
-		return getKeyListFromQuery(resultSet);
-	}
-	
-	public ArrayList<String> queryKeyGreedy(String urlOrPath, String greedySparqlQuery, String secondSparqlQuery) {
-	
-		
-		String greedyResult = queryFile(urlOrPath, greedySparqlQuery);
-		JSONObject jo = JenaResultSetFormatter.convertToSimplifiedList(greedyResult);
-		JSONArray ja = jo.getJSONArray("results");
-		
-		List<String> nodesToVisit = new ArrayList<String>();
-		for (int i=0; i<ja.length(); i++) {
-			JSONObject row = ja.getJSONObject(i);
-			for (String current : row.keySet()) {
-				String potentialIri =  row.getString(current);
-				if (potentialIri.startsWith("http")) {
-					int index = potentialIri.lastIndexOf("#");
-					if (index > 0) {
-						potentialIri = potentialIri.substring(0, index);
-					}
-					if (!nodesToVisit.contains(potentialIri)) {
-						nodesToVisit.add(potentialIri);
-					} 
-				}
-			}
-		}
-		
-		
-		OntModel model = ModelFactory.createOntologyModel();
-		for (String current : nodesToVisit) {
-			model.read(current, null); 
-		}
-		
-		ResultSet result = JenaHelper.query(model, secondSparqlQuery);
-		return getKeyListFromQuery(result);
-	}
-	
-	public ArrayList<String> getKeyListFromQuery(ResultSet resultSet){
-		ArrayList<String>varnameslist=new ArrayList<String>();
-		//while(resultSet.hasNext()) {
-    	QuerySolution qs_p = resultSet.nextSolution();
-		Iterator<String> varNames = qs_p.varNames();
-		for (; varNames.hasNext();) {
-
-			String varName = varNames.next();
-			varnameslist.add(varName);		
-		}   
-    //}
-		return varnameslist;
-	}	
 
 	public String queryFile(String urlOrPath, String sparqlQuery) {
 		
@@ -247,8 +182,13 @@ public class QueryBroker {
 		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
 		JPSBaseLogger.info(this, "put for destinationUrl=" + destinationUrl + ", scenarioUrl=" + scenarioUrl);
 		
-		String destinationUrlWithoutHash = ScenarioHelper.cutHash(destinationUrl);
-		String path = BucketHelper.getLocalPath(destinationUrlWithoutHash);
+		// TODO-AE SC 20190416 this is just a hack to read local file, refactor this method
+		String path = destinationUrl;
+		if (destinationUrl.startsWith("http")) {
+			String destinationUrlWithoutHash = ScenarioHelper.cutHash(destinationUrl);
+			path = BucketHelper.getLocalPath(destinationUrlWithoutHash);
+		}
+		
 		FileUtil.writeFileLocally(path, content);
 	}
 	
