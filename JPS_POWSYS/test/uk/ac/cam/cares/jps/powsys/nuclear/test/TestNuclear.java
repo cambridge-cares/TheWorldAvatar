@@ -1,67 +1,76 @@
 package uk.ac.cam.cares.jps.powsys.nuclear.test;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgent;
 
 public class TestNuclear extends TestCase {
 
-	
-	public void testPrepareCSVLoad() throws IOException {
-		String irinetwork="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
-		NuclearAgent b=new NuclearAgent();
-		String outputdir="C:/JPS_DATA/workingdir/JPS_POWSYS/inputloadpoints.csv";
-		b.prepareCSVLoad(irinetwork,outputdir);
+	public void testStartSimulationAndProcessResultDirectCallForBaseScenario() throws NumberFormatException, IOException, URISyntaxException, InterruptedException {
+		NuclearAgent agent = new NuclearAgent();
 		
+		String lotiri = "http://www.jparksimulator.com/kb/sgp/jurongisland/JurongIslandLandlots.owl";
+		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
+		String dataPath = QueryBroker.getLocalDataPath();
+		agent.startSimulation(lotiri, iriofnetwork, dataPath, false);
+		
+		// copy existing result file from a previous simulation to the data bucket 
+		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres/results.csv";
+		File file = new File(source);
+		String destinationUrl = dataPath + "/" + NuclearAgent.AGENT_TAG + "/results.csv";
+		new QueryBroker().put(destinationUrl, file);
+		
+		List<String> result = agent.processSimulationResult(dataPath);
+		System.out.println(result);
+		assertEquals(4, result.size());
 	}
 	
-	public void testPrepareCSVLots() throws IOException {
-		String lotiri="http://www.theworldavatar.com/kb/sgp/jurongisland/JurongIslandLandlots.owl";
-		NuclearAgent b=new NuclearAgent();
-		String outputdir2="C:/JPS_DATA/workingdir/JPS_POWSYS/inputlandlots.csv";
-		b.prepareCSVLandlot(lotiri,outputdir2);
-		
-		
-	}
-	
-	
-	public void testrunGAMS() throws IOException, InterruptedException {
-		NuclearAgent b=new NuclearAgent();
-		b.runGAMS();
-	}
-	
-	public void testCallAgent() throws IOException, URISyntaxException {
+	public void testStartSimulationAndProcessResultAgentCallForTestScenario() throws NumberFormatException, IOException, URISyntaxException, InterruptedException {
 		
 		JSONObject jo = new JSONObject();
-		jo.put("landlot", "http://www.theworldavatar.com/kb/sgp/jurongisland/JurongIslandLandlots.owl");
+		jo.put("landlot", "http://www.jparksimulator.com/kb/sgp/jurongisland/JurongIslandLandlots.owl");
 		jo.put("electricalnetwork", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
-
-		System.out.println ("jsonoverall= "+jo.toString());
-		String resultAsString = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/startsimulation", jo.toString());
-
-
-		System.out.println("result overall= "+resultAsString);
+		String scenarioUrl = BucketHelper.getScenarioUrl("testStartSimulationAndProcessResultAgentCallForTestScenario"); 
+		JPSHttpServlet.enableScenario(scenarioUrl);	
 		
-
-			//result should be the list of iri for the nuclear power plant in json
-	}
-	
-	public void testProcessResult() {
+		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 		
+		jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
+		String usecaseUrl = BucketHelper.getUsecaseUrl();
+		//usecaseUrl = "http://localhost:8080/JPS_SCENARIO/scenario/testStartSimulationAndProcessResultAgentCallForTestScenario/kb/d9fbd6f4-9e2f-4c63-9995-9ff88ab8900e";
+		jo.put(JPSConstants.SCENARIO_USE_CASE_URL,  usecaseUrl);
+		jo.put(JPSConstants.RUN_SIMULATION, false);
+		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);	
 		
-		String url = "http://www.theworldavatar.com/NuclearAgent/processresult";
-		String json  = null;
+		System.out.println("json input parameter=" + jo);
+		// start simulation (since parameter JPSConstants.SCENARIO_USE_CASE_URL is set, GAMS is not started)
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/startsimulation", jo.toString());
+		System.out.println("result from startsimulation=" + resultStart);
 		
-		//test for web jps use this:
-		//String result = AgentCaller.executeGetWithURLAndJSON(url, json);
+		// copy existing result file from a previous simulation to the data bucket 
+		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres/results.csv";
+		File file = new File(source);
+		String destinationUrl = QueryBroker.getLocalDataPath() + "/" + NuclearAgent.AGENT_TAG + "/results.csv";
+		new QueryBroker().put(destinationUrl, file);
 		
-		//test for local use this:
-		String resultAsString = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/processresult", json);
-		
+		// process the simulation result
+		jo = new JSONObject();
+		jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
+		jo.put(JPSConstants.SCENARIO_USE_CASE_URL,  usecaseUrl);	
+		String resultProcess = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/processresult", jo.toString());
+		System.out.println("result from processsimulationresult=" + resultProcess);
 	}
 }

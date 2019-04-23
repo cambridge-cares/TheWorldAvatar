@@ -3,14 +3,15 @@ package uk.ac.cam.cares.jps.powsys.nuclear;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.UUID;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
@@ -19,10 +20,11 @@ import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.ModelFactory;
 
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+
 public class NuclearKBCreator {
-//	public static String baseURL2 = "D:\\KBDev-git/irp3-JPS-KBDev-git/Server Ontology Configuration Root/kb/powerplants/";
-	public static String baseURL = "D:\\JPS/JParkSimulator-git/JPS_POWSYS/testres/";
-	public static String baseURL2 = "C:\\JPS_DATA/workingdir/JPS_POWSYS/";
+
 	String plantname=null;
 	
 	static Individual nuclear;
@@ -31,6 +33,7 @@ public class NuclearKBCreator {
 	static Individual degree;
 	static Individual MW;
 	static Individual length;
+ 
 	static Individual xaxis;
 	static Individual yaxis;
 		
@@ -104,62 +107,67 @@ public class NuclearKBCreator {
 		yaxis=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#y-axis");
 	}
 	
-	public ArrayList<String> startConversion(String csvfileoutput) throws URISyntaxException, NumberFormatException, IOException {
-		String line = "";
-	        String cvsSplitBy = ",";
-	        int linereader=0;
-	        
-	        ArrayList<String>iriofplant= new ArrayList<String>();
-	        String iriprefix="http://www.theworldavatar.com/kb/sgp/jurongisland/nuclearpowerplants/";
-	    	ArrayList<NuclearGenType> generatortype=extractInformationForGen(csvfileoutput + "\\parameters_req.csv", "0","3");
+	public Map<String, OntModel> startConversion(String baseUrl) throws URISyntaxException, NumberFormatException, IOException {
+		
+		Map<String, OntModel> mapIri2Model = new HashMap<String, OntModel>();
+	
+        //String iriprefix="http://www.theworldavatar.com/kbs/sgp/jurongisland/nuclearpowerplants/";
+        String iriprefix = QueryBroker.getIriPrefix() + "/nuclearpowerplants/";
+        
+    	ArrayList<NuclearGenType> generatortype=extractInformationForGen(baseUrl + "/parameters_req.csv", "0","3");
+	    
+		String csvfileoutput = baseUrl + "/results.csv";
+//	   	IriMapper map2=new IriMapper();
+//	    List<IriMapping> original=map2.deserialize(csvfileoutput);
 	    	
-//	    	IriMapper map2=new IriMapper();
-//	    	List<IriMapping> original=map2.deserialize(csvfileoutput);
-	    	
-	    	
-	        //reading from output file and put that to owl file
-		try (BufferedReader br = new BufferedReader(new FileReader(csvfileoutput + "\\results.csv"))) {
-
-			while ((line = br.readLine()) != null) {
-				if(linereader==0) {
-	        		System.out.println("skipped because it's header in reading csv output");
-	        	}
-				else {
-					String[] data = line.split(cvsSplitBy);
-
-					String filePath = baseURL + "plantgeneratortemplate.owl"; // the empty owl file
-	
-	
-	
-					//String filePath2 = baseURL2 + "NucPP_"+UUID.randomUUID() + ".owl"; // the result of written owl file
-	
-					 //System.out.println("filepath created= "+filePath2);
-					FileInputStream inFile = new FileInputStream(filePath);
-					Reader in = new InputStreamReader(inFile, "UTF-8");
-	
-					OntModel jenaOwlModel = ModelFactory.createOntologyModel();
-					jenaOwlModel.read(in, null);
-	
-					initOWLClasses(jenaOwlModel);
-					
-					
-					//assume 1 line is 1 nuclear power plant and 1 nuclear powerplant is a plant with uniform type of reactor in 1 area					
-					if(data[1].contentEquals("t1")) {
-						doConversion(jenaOwlModel,iriprefix, "NucPP_"+UUID.randomUUID(), Integer.valueOf(data[2]),0, data[5],data[4],generatortype); // plant,iriprefix,nreactora,nreactorb,x,y
-					}
-					else if(data[1].contentEquals("t2")) {
-						doConversion(jenaOwlModel,iriprefix, "NucPP_"+UUID.randomUUID(), 0,Integer.valueOf(data[2]), data[5],data[4],generatortype); // plant,iriprefix,nreactora,nreactorb,x,y
-					}					
-					iriofplant.add(iriprefix+"NucPP_"+UUID.randomUUID()+".owl#"+"NucPP_"+UUID.randomUUID());
-				
-				}
-				linereader++;
-			}
+	    //reading from output file and put that to owl file
+		String csv = new QueryBroker().readFile(csvfileoutput);
+		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
+    	
+    	for (int i=1; i<simulationResult.size(); i++) {
+    		String[] dataWithQuotes = simulationResult.get(i);
 			
-		} catch (IOException e) {
-			e.printStackTrace();
+			String[] data = new String[dataWithQuotes.length];
+			for (int j=0; j<dataWithQuotes.length; j++) {
+				data[j] = unquote(dataWithQuotes[j]);
+			}
+
+			String resourceDir = NuclearAgent.getResourceDir(this);
+			String filePath = resourceDir + "/plantgeneratortemplate.owl"; // the empty owl file
+
+			FileInputStream inFile = new FileInputStream(filePath);
+			Reader in = new InputStreamReader(inFile, "UTF-8");
+
+			OntModel jenaOwlModel = ModelFactory.createOntologyModel();
+			jenaOwlModel.read(in, null);
+
+			initOWLClasses(jenaOwlModel);
+			
+			//assume 1 line is 1 nuclear power plant and 1 nuclear powerplant is a plant with uniform type of reactor in 1 area	
+			String plantName = "NucPP_" + i;
+			if(data[1].equals("t1")) {
+				doConversion(mapIri2Model, jenaOwlModel, iriprefix, plantName, Integer.valueOf(data[2]),0, data[5],data[4],generatortype, i); // plant,iriprefix,nreactora,nreactorb,x,y
+			}
+			else if(data[1].equals("t2")) {
+				doConversion(mapIri2Model, jenaOwlModel, iriprefix, plantName, 0,Integer.valueOf(data[2]), data[5],data[4],generatortype, i); // plant,iriprefix,nreactora,nreactorb,x,y
+			}		
+			
+			String plantIri = iriprefix + plantName + ".owl#" + plantName;
+			mapIri2Model.put(plantIri, jenaOwlModel);
 		}
-		return iriofplant;
+
+		return mapIri2Model;
+	}
+	
+	public static String unquote(String s) {
+		String result = s;
+		if (result.startsWith("\"")) {
+			result = result.substring(1);
+		}
+		if (result.endsWith("\"")) {
+			result = result.substring(0, result.length()-1);
+		}
+		return result;
 	}
 	
 	
@@ -201,33 +209,26 @@ public class NuclearKBCreator {
 		*FP= probability of reactor failure
 		*Hu= value of human life ($)
 		*/
-		String line = "";
-        String cvsSplitBy = ",";
-        int linereader=0;
-        ArrayList<NuclearGenType> nucleargeneratorlisted= new ArrayList<NuclearGenType>();
-        br = new BufferedReader(new FileReader(csvfileinputparam));
-			while ((line = br.readLine()) != null) {
-				if(linereader==0) {
-	        		System.out.println("skipped because it's header");
-	        	}
-				else {
-					String[] data = line.split(cvsSplitBy);
-					NuclearGenType nuclear= new NuclearGenType(data[Integer.valueOf(indexinput1)]);//should be 0
-					nuclear.setcapacity(Double.valueOf(data[Integer.valueOf(indexinput2)]));//should be 3
-					nucleargeneratorlisted.add(nuclear);
-				}
-				linereader++;
-				
-			}
-			System.out.println("generators info are captured");
-			return nucleargeneratorlisted;
+		
+        ArrayList<NuclearGenType> nucleargeneratorlisted = new ArrayList<NuclearGenType>();
+        
+		String csv = new QueryBroker().readFile(csvfileinputparam);
+		List<String[]> genTypes = MatrixConverter.fromCsvToArray(csv);
+		for (int i=1; i<genTypes.size(); i++) {
+			String[] data = genTypes.get(i);
+			NuclearGenType nuclear= new NuclearGenType(data[Integer.valueOf(indexinput1)]);//should be 0
+			nuclear.setcapacity(Double.valueOf(data[Integer.valueOf(indexinput2)]));//should be 3
+			nucleargeneratorlisted.add(nuclear);
+		}
+        
+		System.out.println("generators info are captured");
+		return nucleargeneratorlisted;
 	}
 
+	public OntModel doConversionreactor(String iriprefix,String generatorname,String xnumval,String ynumval,double capacity) throws FileNotFoundException, UnsupportedEncodingException, URISyntaxException {
 
-	
-	
-	public void doConversionreactor(String iriprefix,String generatorname,String xnumval,String ynumval,double capacity) throws FileNotFoundException, UnsupportedEncodingException, URISyntaxException {
-		String filePath = baseURL + "plantgeneratortemplate.owl"; // the empty owl file
+		String resourceDir = NuclearAgent.getResourceDir(this);
+		String filePath = resourceDir + "/plantgeneratortemplate.owl"; // the empty owl file
 		FileInputStream inFile = new FileInputStream(filePath);
 		Reader in = new InputStreamReader(inFile, "UTF-8");
 
@@ -236,8 +237,6 @@ public class NuclearKBCreator {
 
 		initOWLClasses(jenaOwlModel2);
 		
-		
-		String filePathname = baseURL2 + generatorname + ".owl"; // the result of written owl file
 		Individual capagen = generatedactivepowerclass.createIndividual(iriprefix + generatorname + ".owl#GeneratedActivePower_"+generatorname);
 		Individual capagenvalue = scalarvalueclass.createIndividual(iriprefix + generatorname + ".owl#V_GeneratedActivePower_"+generatorname);
 		
@@ -268,14 +267,11 @@ public class NuclearKBCreator {
 		capagen.addProperty(hasvalue, capagenvalue);
 		capagenvalue.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(new Double(capacity)));
 		capagenvalue.addProperty(hasunit, MW);
-
-		/** save the updated model file*/ 
-		LandlotsKB ins2 = new LandlotsKB();
-		ins2.savefile(jenaOwlModel2, filePathname);
 		
+		return jenaOwlModel2;
 	}
 	
-	public void doConversion(OntModel jenaOwlModel,String iriprefix, String plantname ,int numberofreactorA,int numberofreactorB,String xnumval,String ynumval,ArrayList<NuclearGenType> generatortype) throws NumberFormatException, IOException, URISyntaxException{
+	public void doConversion(Map<String, OntModel> mapIri2Model, OntModel jenaOwlModel,String iriprefix, String plantname ,int numberofreactorA,int numberofreactorB,String xnumval,String ynumval,ArrayList<NuclearGenType> generatortype, int plantnumber) throws NumberFormatException, IOException, URISyntaxException{
 		
 		
 		double capacityA=0.0;
@@ -296,10 +292,6 @@ public class NuclearKBCreator {
 		double totalcapacityA=numberofreactorA*capacityA;
 		double totalcapacityB=numberofreactorB*capacityB;
 		double totalcapacity=totalcapacityA+totalcapacityB;
-		
-		
-		
-		String filePath2 = baseURL2 + plantname + ".owl"; // the result of written owl file
 		
 		Individual plant = nuclearpowerplantclass.createIndividual(iriprefix + plantname + ".owl#"+plantname);
 		
@@ -337,36 +329,25 @@ public class NuclearKBCreator {
 		
 		plant.addProperty(realizes, powergeneration);
 		powergeneration.setPropertyValue(consumesprimaryfuel, nuclear);
-		
-		//numberofreactor=5; //temporary
-		
-
-		
+				
 		for(int f=0; f<numberofreactorA;f++){
-			String generatorname="NucGenerator_"+UUID.randomUUID();
-			
-			Individual generator=nucleargeneratorclass.createIndividual(iriprefix + generatorname + ".owl#"+generatorname);
+			String generatorname="NucGenerator_" + plantnumber + "_A" + f;
+			String reactorIri = iriprefix + generatorname + ".owl#" + generatorname;
+			Individual generator=nucleargeneratorclass.createIndividual(reactorIri);
 			plant.addProperty(hasSubsystem, generator);
 			
-			doConversionreactor(iriprefix, generatorname, xnumval, ynumval, capacityA);
-
+			OntModel reactorModel = doConversionreactor(iriprefix, generatorname, xnumval, ynumval, capacityA);
+			mapIri2Model.put(reactorIri, reactorModel);
 		}
-		
+				
 		for(int f=0; f<numberofreactorB;f++){
-			String generatorname="NucGenerator_"+UUID.randomUUID();
-			Individual generator=nucleargeneratorclass.createIndividual(iriprefix + generatorname + ".owl#"+generatorname);
+			String generatorname="NucGenerator_" + plantnumber + "_B" + f;
+			String reactorIri = iriprefix + generatorname + ".owl#" + generatorname;
+			Individual generator=nucleargeneratorclass.createIndividual(reactorIri);
 			plant.addProperty(hasSubsystem, generator);
 
-			doConversionreactor(iriprefix, generatorname, xnumval, ynumval, capacityB);
-			
-
-		}
-
-		/** save the updated model file */
-		LandlotsKB ins2 = new LandlotsKB();
-		ins2.savefile(jenaOwlModel, filePath2);
-		
-		
+			OntModel reactorModel = doConversionreactor(iriprefix, generatorname, xnumval, ynumval, capacityB);
+			mapIri2Model.put(reactorIri, reactorModel);
+		}	
 	}
-
 }
