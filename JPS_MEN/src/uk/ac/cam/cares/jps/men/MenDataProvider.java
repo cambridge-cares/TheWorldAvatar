@@ -7,14 +7,12 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.logging.log4j.ThreadContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
+import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.men.entity.FeasibleConnection;
 import uk.ac.cam.cares.jps.men.entity.INamed;
@@ -471,7 +469,7 @@ public class MenDataProvider {
 		}
 		
 		OntModel model = JenaHelper.createModel(fileLocat); 		
-		return JenaHelper.query(sparql, model);
+		return JenaHelper.query(model,sparql);
 	}
 
 
