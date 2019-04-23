@@ -393,48 +393,7 @@ public class TestEN extends TestCase {
 		
 		content=b.createNewTSV(list3, baseUrl+"/mappingforgeneratorcost.csv",busmapurl);
 		broker.put(baseUrl+"/genCost.txt", content);
-	}
-
-	//not applicable as the directory will always be changed
-//	public void testreading() throws IOException {
-//		ENAgent b= new ENAgent ();
-//		b.readResult(baseUrl+"/gen.txt", 21);
-//	}
-
-//  not applicable as the directory will always be changed
-//	public void testdoconversion() throws IOException, URISyntaxException {
-//		ENAgent b= new ENAgent ();
-//		OntModel model = b.readModelGreedy(iriofnetwork);
-//		String iriofnetwork="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
-//		//String baseurl="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys";
-//		//String baseurl="D:/JPS/JParkSimulator-git/JPS_POWSYS/python/model";
-//
-//			List<String[]>list=b.extractOWLinArray(model,iriofnetwork,busInfo,"bus",baseUrl);
-//		b.doConversion(model,iriofnetwork,baseUrl,"PF",list);
-//	}
-	
-//  not applicable as the directory will always be changed
-//	public void testrunmodel() throws IOException {
-//		ENAgent agent = new ENAgent();
-//		agent.runModel(baseUrl);
-//		
-//	}
-	
-	public void testStartSimulationCalling() throws IOException  {
-		//why need to convert to localhost instead of twa??
-		//small scenario is auto generated
-		
-		//ENAgent agent = new ENAgent();
-		ENAgent agent = new ENAgent();
-		
-		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
-//		String baseUrl="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys";
-		//String baseUrl="D:/JPS/JParkSimulator-git/JPS_POWSYS/python/model";
-		baseUrl = null;
-		agent.startSimulation(iriofnetwork, baseUrl,"OPF");
-		
-	}
-	
+	}	
 	
 	//still not completed yet
 	public void testStartSimulationCallingWithScenarioCase() throws IOException  {
@@ -460,13 +419,14 @@ public class TestEN extends TestCase {
 		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 		String dataPath = QueryBroker.getLocalDataPath();
 		String baseUrl = dataPath + "/JPS_POWSYS_EN";
-		new ENAgent().startSimulation(iriofnetwork, baseUrl, "OPF");	
+		new ENAgent().startSimulation(iriofnetwork, baseUrl, "PF");	
 	}
 	
 	public void testStartSimulationCallingNonBaseScenario() throws IOException  {
 
 		String scenarioUrl = BucketHelper.getScenarioUrl("testENScenario");
-		JPSHttpServlet.enableScenario(scenarioUrl);	
+		JPSHttpServlet.enableScenario(scenarioUrl);
+		//function to copy all the owl file involved ???
 		//new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 			
 		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
@@ -474,4 +434,5 @@ public class TestEN extends TestCase {
 		String baseUrl = dataPath + "/JPS_POWSYS_EN";
 		new ENAgent().startSimulation(iriofnetwork, baseUrl, "OPF");
 	}
+
 }

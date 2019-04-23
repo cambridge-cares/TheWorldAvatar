@@ -83,6 +83,7 @@ public class ENAgent extends HttpServlet {
 	}
 
 	public List<String[]> generateInput(OntModel model, String iriofnetwork, String baseUrl, String modeltype) throws IOException {
+		
 		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
@@ -624,10 +625,14 @@ public class ENAgent extends HttpServlet {
 				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
 				+ "SELECT ?entity ?vpg ?vqg "
 
-				+ "WHERE {?entity  a  j1:PowerGenerator  ." + "?entity   j2:isModeledBy ?model ."
-				+ "?model   j5:hasModelVariable ?Pg ." + "?Pg  a  j3:Pg  ." + "?Pg  j2:hasValue ?vpg ."// pg
+				+ "WHERE {?entity  a  j1:PowerGenerator  ." 
+				+ "?entity   j2:isModeledBy ?model ."
+				+ "?model   j5:hasModelVariable ?Pg ." 
+				+ "?Pg  a  j3:Pg  ." + "?Pg  j2:hasValue ?vpg ."// pg
 
-				+ "?model   j5:hasModelVariable ?Qg ." + "?Qg  a  j3:Qg  ." + "?Qg  j2:hasValue ?vqg ."// qg
+				+ "?model   j5:hasModelVariable ?Qg ." 
+				+ "?Qg  a  j3:Qg  ." 
+				+ "?Qg  j2:hasValue ?vqg ."// qg
 
 				+ "}";
 
@@ -641,27 +646,42 @@ public class ENAgent extends HttpServlet {
 				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
 				+ "SELECT ?BusNumbervalue ?vpdbus ?vgdbus ?vpdgen ?vgdgen ?vVM ?vVA  "
 
-				+ "WHERE {?entity  a  j1:BusNode  ." + "?entity   j2:isModeledBy ?model ."
-				+ "?model   j5:hasModelVariable ?num ." + "?num  a  j3:BusNumber  ." + "?num  j2:hasValue ?vnum ."
+				+ "WHERE {?entity  a  j1:BusNode  ." 
+				+ "?entity   j2:isModeledBy ?model ."
+				+ "?model   j5:hasModelVariable ?num ." 
+				+ "?num  a  j3:BusNumber  ." + "?num  j2:hasValue ?vnum ."
 				+ "?vnum   j2:numericalValue ?BusNumbervalue ." // number
 
-				+ "?model   j5:hasModelVariable ?Pd ." + "?Pd  a  j3:PdBus  ." + "?Pd  j2:hasValue ?vpdbus ." // pd
+				+ "?model   j5:hasModelVariable ?Pd ." 
+				+ "?Pd  a  j3:PdBus  ." 
+				+ "?Pd  j2:hasValue ?vpdbus ." // pd
 				+ "?vpdbus  a  j5:ModelVariableSpecification  ."
 
-				+ "?model   j5:hasModelVariable ?Gd ." + "?Gd  a  j3:GdBus  ." + "?Gd  j2:hasValue ?vgdbus ." // Gd
+				+ "?model   j5:hasModelVariable ?Gd ." 
+				+ "?Gd  a  j3:GdBus  ." 
+				+ "?Gd  j2:hasValue ?vgdbus ." // Gd
 				+ "?vgdbus  a  j5:ModelVariableSpecification  ."
 
-				+ "?model   j5:hasModelVariable ?Pdgen ." + "?Pdgen  a  j3:PdGen  ." + "?Pdgen  j2:hasValue ?vpdgen ." // pdgen
+				+ "?model   j5:hasModelVariable ?Pdgen ." 
+				+ "?Pdgen  a  j3:PdGen  ." 
+				+ "?Pdgen  j2:hasValue ?vpdgen ." // pdgen
 				+ "?vpdgen  a  j5:ModelVariableSpecification  ."
 
-				+ "?model   j5:hasModelVariable ?Gdgen ." + "?Gdgen  a  j3:GdGen  ." + "?Gdgen  j2:hasValue ?vgdgen ." // Gd
+				+ "?model   j5:hasModelVariable ?Gdgen ." 
+				+ "?Gdgen  a  j3:GdGen  ." 
+				+ "?Gdgen  j2:hasValue ?vgdgen ." // Gd
 				+ "?vgdgen  a  j5:ModelVariableSpecification  ."
 
-				+ "?model   j5:hasModelVariable ?VM ." + "?VM  a  j3:Vm  ." + "?VM  j2:hasValue ?vVM ."// Vm
+				+ "?model   j5:hasModelVariable ?VM ." 
+				+ "?VM  a  j3:Vm  ." 
+				+ "?VM  j2:hasValue ?vVM ."// Vm
 				+ "?vVM  a  j5:ModelVariableSpecification  ."
 
-				+ "?model   j5:hasModelVariable ?VA ." + "?VA  a  j3:Va  ." + "?VA  j2:hasValue ?vVA ."// Va
-				+ "?vVA  a  j5:ModelVariableSpecification  ." + "}";
+				+ "?model   j5:hasModelVariable ?VA ." 
+				+ "?VA  a  j3:Va  ." 
+				+ "?VA  j2:hasValue ?vVA ."// Va
+				+ "?vVA  a  j5:ModelVariableSpecification  ." 
+				+ "}";
 
 		String branchoutputInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -673,16 +693,27 @@ public class ENAgent extends HttpServlet {
 				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
 				+ "SELECT ?entity ?vploss ?vqloss ?vpave ?vqave ?vsave "
 
-				+ "WHERE {?entity  a  j1:UndergroundCable  ." + "?entity   j2:isModeledBy ?model ."
-				+ "?model   j5:hasModelVariable ?ploss ." + "?ploss  a  j3:PLoss  ." + "?ploss  j2:hasValue ?vploss ." // ploss
+				+ "WHERE {?entity  a  j1:UndergroundCable  ." 
+				+ "?entity   j2:isModeledBy ?model ."
+				+ "?model   j5:hasModelVariable ?ploss ." 
+				+ "?ploss  a  j3:PLoss  ." 
+				+ "?ploss  j2:hasValue ?vploss ." // ploss
 
-				+ "?model   j5:hasModelVariable ?qloss ." + "?qloss  a  j3:QLoss  ." + "?qloss  j2:hasValue ?vqloss ." // qloss
+				+ "?model   j5:hasModelVariable ?qloss ." 
+				+ "?qloss  a  j3:QLoss  ." 
+				+ "?qloss  j2:hasValue ?vqloss ." // qloss
 
-				+ "?model   j5:hasModelVariable ?pave ." + "?pave  a  j3:PAverage  ." + "?pave  j2:hasValue ?vpave ." // pave
+				+ "?model   j5:hasModelVariable ?pave ." 
+				+ "?pave  a  j3:PAverage  ." 
+				+ "?pave  j2:hasValue ?vpave ." // pave
 
-				+ "?model   j5:hasModelVariable ?qave ." + "?qave  a  j3:QAverage  ." + "?qave  j2:hasValue ?vqave ." // qave
+				+ "?model   j5:hasModelVariable ?qave ." 
+				+ "?qave  a  j3:QAverage  ." 
+				+ "?qave  j2:hasValue ?vqave ." // qave
 
-				+ "?model   j5:hasModelVariable ?save ." + "?save  a  j3:SAverage  ." + "?save  j2:hasValue ?vsave ." // save
+				+ "?model   j5:hasModelVariable ?save ." 
+				+ "?save  a  j3:SAverage  ." 
+				+ "?save  j2:hasValue ?vsave ." // save
 
 				+ "}";
 
