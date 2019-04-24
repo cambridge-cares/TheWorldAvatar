@@ -333,21 +333,24 @@ public class NuclearKBCreator {
 		for(int f=0; f<numberofreactorA;f++){
 			String generatorname="NucGenerator_" + plantnumber + "_A" + f;
 			String reactorIri = iriprefix + generatorname + ".owl#" + generatorname;
-			Individual generator=nucleargeneratorclass.createIndividual(reactorIri);
-			plant.addProperty(hasSubsystem, generator);
+
 			
 			OntModel reactorModel = doConversionreactor(iriprefix, generatorname, xnumval, ynumval, capacityA);
 			mapIri2Model.put(reactorIri, reactorModel);
+			
+			Individual generator=nucleargeneratorclass.createIndividual(reactorIri);
+			plant.addProperty(hasSubsystem, generator);
 		}
 				
 		for(int f=0; f<numberofreactorB;f++){
 			String generatorname="NucGenerator_" + plantnumber + "_B" + f;
 			String reactorIri = iriprefix + generatorname + ".owl#" + generatorname;
-			Individual generator=nucleargeneratorclass.createIndividual(reactorIri);
-			plant.addProperty(hasSubsystem, generator);
+
 
 			OntModel reactorModel = doConversionreactor(iriprefix, generatorname, xnumval, ynumval, capacityB);
 			mapIri2Model.put(reactorIri, reactorModel);
+			Individual generator=nucleargeneratorclass.createIndividual(reactorIri);
+			plant.addProperty(hasSubsystem, generator);
 		}	
 	}
 }
