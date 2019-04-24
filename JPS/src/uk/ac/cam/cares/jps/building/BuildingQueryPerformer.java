@@ -93,10 +93,10 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		} else if (cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
 			return CRSTransformer.EPSG_28992;
 		} else if (cityIRI.equalsIgnoreCase(SINGAPORE_IRI) || cityIRI.equalsIgnoreCase(HONG_KONG_IRI)) {
-			return CRSTransformer.EPSG_4326;
+			return CRSTransformer.EPSG_4326; 
 		}
 		
-		return DEFAULT_CRS_NAME;
+		return DEFAULT_CRS_NAME; //default crs that is used in building owl file
 	}
 	
 	public List<String> performQueryClosestBuildingsFromRegion(String cityIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
@@ -112,7 +112,8 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		String targetCRSName = getCRSName(cityIRI);
 		String sourceCRSName = null;
 		if (cityIRI.equalsIgnoreCase(BERLIN_IRI) || cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
-			sourceCRSName = DEFAULT_CRS_NAME;
+			//sourceCRSName = DEFAULT_CRS_NAME; //TEMPORARILY CHANGED FOR COORDINATE CHANGE 23/4
+			sourceCRSName = CRSTransformer.EPSG_3857;
 		} else if (cityIRI.equalsIgnoreCase(SINGAPORE_IRI) || cityIRI.equalsIgnoreCase(HONG_KONG_IRI)) {
 			sourceCRSName = CRSTransformer.EPSG_3857; 
 		}
@@ -130,7 +131,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			uy = p[1];
 			
 		} else {
-			if (!DEFAULT_CRS_NAME.equals(targetCRSName)) {
+			//if (!DEFAULT_CRS_NAME.equals(targetCRSName)) {
 				
 				double[] p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {plantx, planty});
 				plx = p[0];
@@ -147,7 +148,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 //					ly = uy;
 //					uy = temp;
 //				}
-			}
+			//}
 		}
 
 		String query = getQueryClosestBuildingsFromRegion(350, lx, ly, ux, uy);
@@ -344,16 +345,16 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			
 			String sourceCRSName = getCRSName(cityIRI);
 			logger.info("sourceCRSName: " + sourceCRSName);
-			
-			if (sourceCRSName.equalsIgnoreCase(CRSTransformer.EPSG_25833)) {
-				logger.info("transforming coordinate from " + sourceCRSName + " to " + DEFAULT_CRS_NAME + " ...");
-				logger.info("map: " + map.toString());
-				map = transformCoordinates(sourceCRSName, DEFAULT_CRS_NAME, map);
-			} else if (!sourceCRSName.equalsIgnoreCase(CRSTransformer.EPSG_28992)) {
+						
+			if (sourceCRSName.equalsIgnoreCase(CRSTransformer.EPSG_4326)) { //or other coordinates system of building that is in degree instead of m
 				logger.info("transforming coordinate from " + sourceCRSName + " to " + CRSTransformer.EPSG_3857 + " ...");
 				logger.info("map: " + map.toString());
 				map = transformCoordinates(sourceCRSName, CRSTransformer.EPSG_3857, map);
 			}
+
+			
+			
+			//add line 359 to 362 TO TEST NEW COORDINATE 23/04
 					
 			List<Polygon> polygons = SimpleShapeConverter.convertTo2DPolygons(map, "groundsurface", "x", "y");
 			//SimpleShape shape = SimpleShapeConverter.simplifyShapes(polygons);
@@ -375,24 +376,40 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			}		
 			result.BldName.add(name);
 			result.BldType.add(shape.shapeType);
+			//BIG CHANGE 23/04 another conversion!!!
+			double []centrePoint=null;
 			if (cityIRI.equalsIgnoreCase(SINGAPORE_IRI)) {
-				double[] centrePoint = CRSTransformer.transform("EPSG:3857", 
+				//need to be converted for the building to match the adms coordinate system!!!!
+				 centrePoint = CRSTransformer.transform("EPSG:3857", 
 						"EPSG:3414", new double[] {shape.centerX, shape.centerY});
 				result.BldX.add(centrePoint[0]);
 				result.BldY.add(centrePoint[1]);
-				logger.info("coordinate x: " + centrePoint[0]);
-				logger.info("coordinate y: " + centrePoint[1]);
 			} else if (cityIRI.equalsIgnoreCase(HONG_KONG_IRI)) {
-				double[] centrePoint = CRSTransformer.transform("EPSG:3857", 
+				
+				//need to be converted for the building to match the adms coordinate system!!!!
+				 centrePoint = CRSTransformer.transform("EPSG:3857", 
 						"EPSG:2326", new double[] {shape.centerX, shape.centerY});
 				result.BldX.add(centrePoint[0]);
 				result.BldY.add(centrePoint[1]);
-				logger.info("coordinate x: " + centrePoint[0]);
-				logger.info("coordinate y: " + centrePoint[1]);
-			} else {
+			} 
+			
+			else if (cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
+				//no need to be converted as the building coordinate system and the adms coordinate system is matched!!!!
+				result.BldX.add(shape.centerX);
+				result.BldY.add(shape.centerY);
+			} 
+			
+			else if (cityIRI.equalsIgnoreCase(BERLIN_IRI)) {
+				//no need to be converted as the building coordinate system and the adms coordinate system is matched!!!!
 				result.BldX.add(shape.centerX);
 				result.BldY.add(shape.centerY);
 			}
+
+//			logger.info("coordinate x: " + centrePoint[0]);
+//			logger.info("coordinate y: " + centrePoint[1]);
+			
+			
+			
 			result.BldLength.add(shape.length);
 			result.BldWidth.add(shape.width);
 			result.BldAngle.add(shape.angle);

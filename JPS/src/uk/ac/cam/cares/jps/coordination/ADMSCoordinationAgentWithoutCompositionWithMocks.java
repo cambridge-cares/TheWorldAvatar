@@ -19,7 +19,7 @@ public class ADMSCoordinationAgentWithoutCompositionWithMocks extends ADMSCoordi
 
 		if ("/JPS/RegionToCity".contentEquals(path)) {
 			
-			double[] xlower = new double[] {79173, 699182, 11560879, 12706653};
+			double[] xlower = new double[] {476584.89, 1493262.39, 11560879, 12706653};
 			String[] cities = new String[] {"http://dbpedia.org/resource/The_Hague", "http://dbpedia.org/resource/Berlin", "http://dbpedia.org/resource/Singapore", "http://dbpedia.org/resource/Hong_Kong"};
 			
 			JSONObject jo = new JSONObject(jsonInput);

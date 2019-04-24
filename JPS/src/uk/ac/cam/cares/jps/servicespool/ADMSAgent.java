@@ -115,22 +115,29 @@ public class ADMSAgent extends HttpServlet {
 			if (cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Singapore") || cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Hong_Kong")) {
 				sourceXY = new double[] {(lowerx + upperx)/2, (lowery + uppery)/2};				
 			} else {
-				sourceXY = getPlantXY(plantIRI); 				
+				//sourceXY = getPlantXY(plantIRI); //CHANGE EASY TEMPORARILY TO SEE IF IT WORKS WITH NEW COORDINATE
+				sourceXY = new double[] {(lowerx + upperx)/2, (lowery + uppery)/2};	
 			}
 			
 			String newBuildingData = retrieveBuildingDataInJSONOLD(cityIRI, sourceXY[0], sourceXY[1], lowerx, lowery, upperx, uppery);
-			//String newBuildingData = retrieveBuildingDataInJSON(input);  //the new version that remove the duplicate query, but the composition must be changed first
+			//String newBuildingData = retrieveBuildingDataInJSON(input);  //23/4 the new version that remove the duplicate query, but the composition must be changed first
 			newBuildingData = newBuildingData.replace('\"', '\'');
 			
 			String srsname = region.getString("srsname");
 			
 			 
 			String targetCRSName = CRSTransformer.EPSG_25833;
-			String sourceCRSName = CRSTransformer.EPSG_4326;
+			String sourceCRSName = CRSTransformer.EPSG_4326; //only for default but not in use currently
 			
-			if (cityIRI.equalsIgnoreCase(BuildingQueryPerformer.BERLIN_IRI) || cityIRI.equalsIgnoreCase(BuildingQueryPerformer.THE_HAGUE_IRI)) {
+			if (cityIRI.equalsIgnoreCase(BuildingQueryPerformer.THE_HAGUE_IRI)) {
+				sourceCRSName = CRSTransformer.EPSG_3857; //added currently 23/4
 				targetCRSName =  CRSTransformer.EPSG_28992;
-			} else if (cityIRI.equalsIgnoreCase(BuildingQueryPerformer.SINGAPORE_IRI)) {
+			} 
+			else if (cityIRI.equalsIgnoreCase(BuildingQueryPerformer.BERLIN_IRI)) {
+				sourceCRSName = CRSTransformer.EPSG_3857; //UNSURE WHETHER IT IS 3857 or 4326 (23/4)
+				targetCRSName = CRSTransformer.EPSG_25833;
+			}
+			else if (cityIRI.equalsIgnoreCase(BuildingQueryPerformer.SINGAPORE_IRI)) {
 				sourceCRSName = CRSTransformer.EPSG_3857;
 				targetCRSName = CRSTransformer.EPSG_3414;
 			}
@@ -142,14 +149,17 @@ public class ADMSAgent extends HttpServlet {
 
 			//system.out.println("============= src name ==============");
 			//system.out.println(srsname);
-			if (srsname.equalsIgnoreCase("EPSG:28992")) {
+			if (srsname.equalsIgnoreCase("EPSG:28992")) { //all source are 3857
 				sourceCRSName = CRSTransformer.EPSG_28992;
 				if (input.has("ship")) {
 					writeAPLFileShip(newBuildingData, plantIRI, region, targetCRSName);
 				} else {
-					writeAPLFile(newBuildingData, plantIRI, region);
+					writeAPLFile(newBuildingData, plantIRI, region, targetCRSName);
 				}
-			} else {
+			} 
+			
+			
+			else {
 				double[] p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {lowerx, lowery});
 				String lx = String.valueOf(p[0]);
 				String ly = String.valueOf(p[1]);
@@ -176,7 +186,7 @@ public class ADMSAgent extends HttpServlet {
 				if (input.has("ship")) {
 					writeAPLFileShip(newBuildingData, plantIRI, newRegion, targetCRSName);
 				} else {
-					writeAPLFile(newBuildingData,plantIRI, newRegion);
+					writeAPLFile(newBuildingData,plantIRI, newRegion, targetCRSName);
 				}
 			}
 
@@ -223,7 +233,7 @@ public class ADMSAgent extends HttpServlet {
 			CommandHelper.executeCommands(targetFolder, args);
 	}
 	
-	public String writeAPLFile(String buildingInString, String plantIRI, JSONObject regionInJSON) {
+	public String writeAPLFile(String buildingInString, String plantIRI, JSONObject regionInJSON,String targetCRSName) {
 		String fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
 		//system.out.println("==================== full path ====================");
 		//system.out.println(fullPath);
@@ -244,6 +254,7 @@ public class ADMSAgent extends HttpServlet {
  		
  		args.add(fullPath);
  		logger.info(fullPath);
+ 		args.add(targetCRSName);
  		// TODO-AE use PythonHelper instead of CommandHelper
   		String result = CommandHelper.executeCommands(targetFolder, args);
   		logger.info("ARGUMENTS");

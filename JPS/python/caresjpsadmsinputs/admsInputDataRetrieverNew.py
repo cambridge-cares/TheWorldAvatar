@@ -48,7 +48,7 @@ class admsInputDataRetriever(object):
         self.pythonLogger = PythonLogger('admsInputDataRetrieverNew.py')
 
     def getRange(self, userrange):
-        return ((userrange['xmin'], userrange['xmax']), (userrange['ymin'],userrange['ymax']))
+        return ((float(userrange['xmin']), float(userrange['xmax'])), (float(userrange['ymin']),float(userrange['ymax'])))
 
 
     def getSrcData(self):
@@ -316,9 +316,12 @@ class admsInputDataRetriever(object):
     def coreBdn2Src(self):
         self.pythonLogger.postInfoToLogServer('calculate main building for each src')
         #compare src coords to each bdn
+        y_midpoint = (self.range[1][0] + self.range[1][1])/2
+        x_midpoint = (self.range[0][0] + self.range[0][1])/2
         for src in self.rawSrc:
             closed, dClosed, first = None, sys.maxsize, True
             #print('find closed bdn for src: '+src.SrcName+" with x: "+str(src.SrcX1) +" y: "+str(src.SrcY1))
+            
             self.pythonLogger.postInfoToLogServer('find closed bdn for src: '+src.SrcName+" with x: "+str(src.SrcX1) +" y: "+str(src.SrcY1) + ", no of buildings=" + str(len(self.rawBdn.BldX)))
             for i in range(len(self.rawBdn.BldX)):
                 
@@ -327,7 +330,8 @@ class admsInputDataRetriever(object):
                 print(type(self.rawBdn.BldX[i]))
                 print(type(src.SrcX1))
 
-                dx, dy = self.rawBdn.BldX[i] - src.SrcX1, self.rawBdn.BldY[i] - src.SrcY1 
+                #dx, dy = self.rawBdn.BldX[i] - src.SrcX1, self.rawBdn.BldY[i] - src.SrcY1 
+                dx, dy = self.rawBdn.BldX[i] - x_midpoint, self.rawBdn.BldY[i] - y_midpoint 
 
                 d = dx * dx + dy * dy
                 if first:
