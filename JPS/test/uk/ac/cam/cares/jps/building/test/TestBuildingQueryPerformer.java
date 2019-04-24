@@ -98,6 +98,24 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		assertEquals(5, polygons.get(0).size());
 	}
 	
+	public void testBERLINOneBuildingOneGroundSurface() {
+		
+		String query = createQueryPerformerForTheHague().getQueryBdnVerticesWithAndWithoutBuildingParts("http://www.theworldavatar.com/kb/deu/berlin/buildings/3920_5819.owl#BuildingBLDG_0003000f0029558f");		
+		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.BERLIN_IRI, query);
+		
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
+		assertEquals(26, map.get("x").size());
+		assertEquals(26, map.get("y").size());
+		assertEquals(26, map.get("z").size());
+		assertEquals("392747.720106856", map.get("x").get(2));
+		assertEquals("5819071.11806408", map.get("y").get(2));
+		assertEquals("35.3300018310547", map.get("z").get(2));
+		
+		List<Polygon> polygons = SimpleShapeConverter.convertTo2DPolygons(map, "groundsurface", "x", "y");
+		assertEquals(4, polygons.size());
+		assertEquals(5, polygons.get(0).size());
+	}
+	
 	public void testTheHaguePlantBuilding() {
 				
 		// old plant IRI from The Hague
