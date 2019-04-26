@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.srm.test;
 
+import java.io.IOException;
+
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
@@ -15,31 +17,34 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.srm.SRMAgent;
 
 public class TestSRMAgent extends TestCase {
 	
 	private String getContextPathForJPSSRMAgent() {
-		return "/JPS/SRMAgent";
+		return "/JPS/SRMAgent"; 
 	}
 	
 	public void testCallAgent () throws JSONException {
 		JSONObject dataSet = new JSONObject();
 		try {
-			dataSet.put("reactionmechanism", "https://como.cheng.cam.ac.uk/kb/Toluene.owl#ReactionMechanism_4631074216281807") ;
+			//dataSet.put("reactionmechanism", "https://como.cheng.cam.ac.uk/kb/Toluene.owl#ReactionMechanism_4631074216281807") ;
+			dataSet.put("reactionmechanism", "https://como.cheng.cam.ac.uk/kb/Reduced_PRF_ERC.owl#ReactionMechanism_4909454516579602") ;
 			dataSet.put("engine", "http://www.theworldavatar.com/kb/deu/berlin/powerplants/DieselEngine-001.owl#DieselEngine-001") ;
 		}
 		catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			e.printStackTrace();
+		}
 		
 		String json = dataSet.toString();
 		String resultjson = AgentCaller.executeGet(getContextPathForJPSSRMAgent(), "query", json);
 		System.out.println ("resultjson= "+resultjson);
 		
-		String srmjsonfile = new JSONObject(resultjson).getString("file");
-		System.out.println("corrected json file= "+srmjsonfile);
+		JSONObject jo = new JSONObject(resultjson);
+		assertTrue(jo.getJSONObject("results").has("mixture"));
+		assertTrue(jo.getJSONObject("results").has("pollutants"));
 	}
 	
 	public static synchronized ResultSet queryFromOWLFile(String sparql, OntModel model) {
@@ -53,7 +58,7 @@ public class TestSRMAgent extends TestCase {
 	}
 	
 	public void testqueryOWLFIle () {
-		OntModel jenaOwlModel = null;
+		OntModel jenaOwlModel = null; 
 		
 		String engineInfo = "PREFIX eng:<http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#> " 
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -75,24 +80,35 @@ public class TestSRMAgent extends TestCase {
 		jenaOwlModel = ModelFactory.createOntologyModel();	
 		jenaOwlModel.read("http://www.theworldavatar.com/kb/deu/berlin/powerplants/DieselEngine-001.owl#DieselEngine-001", null);
 		
-	ResultSet rs_engine = TestSRMAgent.queryFromOWLFile(engineInfo,jenaOwlModel); 
-	String valueiri=null;
-	String valuetype=null;
-	for (; rs_engine.hasNext();) {			
-		QuerySolution qs_p = rs_engine.nextSolution();
-
-		
-			Resource cpiri = qs_p.getResource("OpMode"); // extract the name of the source
-			valueiri = cpiri.toString();
-			System.out.println("query = "+valueiri);
-			if(valueiri.contains("http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#")&&!valueiri.contains("#Engine"))
-			{
-				valuetype=("CI");
-				System.out.println("query result1= "+valuetype);
-			}		
-
-		}
-	assertEquals("CI", valuetype);
+		ResultSet rs_engine = TestSRMAgent.queryFromOWLFile(engineInfo,jenaOwlModel); 
+		String valueiri=null;
+		String valuetype=null;
+		for (; rs_engine.hasNext();) {			
+			QuerySolution qs_p = rs_engine.nextSolution();
+	
+			
+				Resource cpiri = qs_p.getResource("OpMode"); // extract the name of the source
+				valueiri = cpiri.toString();
+				System.out.println("query = "+valueiri);
+				if(valueiri.contains("http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#")&&!valueiri.contains("#Engine"))
+				{
+					valuetype=("CI");
+					System.out.println("query result1= "+valuetype);
+				}		
+	
+			}
+		assertEquals("CI", valuetype);
 	}
 	
+	
+	public void testdojsonmodif() throws IOException {
+		
+		 String jsonFile = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres/OutputCase00001Cyc0001ADMSvalid.txt";
+		//String jsonFile = "D:\\JPS\\JParkSimulator-git\\JPS" + "\\testres\\OutputCase00001Cyc0001ADMS-withParticles.txt";
+		
+		JSONObject result = new SRMAgent().dojsonmodif(jsonFile);
+	
+		assertTrue(result.getJSONObject("results").has("mixture"));
+		assertTrue(result.getJSONObject("results").has("pollutants"));
+	}
 }

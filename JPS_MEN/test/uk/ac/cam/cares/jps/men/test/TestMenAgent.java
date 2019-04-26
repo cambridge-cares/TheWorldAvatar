@@ -32,7 +32,8 @@ public class TestMenAgent extends TestCase {
 	
 	public String getChemicalPlants() {
 		
-		String baseDir = AgentLocator.getProperty("absdir.jps_men");
+//		String baseDir = AgentLocator.getProperty("absdir.jps_men");
+		String baseDir = AgentLocator.getProperty("absdir.jpsdata.workingdir.jps_men");
 		
 		List<String> result = new ArrayList<String>();
 		String result2 = null;
@@ -53,12 +54,12 @@ public class TestMenAgent extends TestCase {
 	
 	
 	private String getCarbonTax() {
-		return "50"; // location of the owl file that contains information for the transportation system
+		return "50.0"; // location of the owl file that contains information for the transportation system
 		
 	}
 	
 	private String getInterestFactor() {
-		return "1"; // location of the owl file that contains information for the transportation system
+		return "1.0"; // location of the owl file that contains information for the transportation system
 	}
 	
 	private String getAnnualCostFactor() {
@@ -84,8 +85,9 @@ public class TestMenAgent extends TestCase {
 		jo.put("annualcostfactor", getAnnualCostFactor());
 		jo.put("internationalmarketpricefactor", getInternationalMarketPriceFactor());
 		jo.put("internationalmarketlowestpriceapplied", getInternationalMarketLowestPrice());
-		
+		System.out.println ("jsonoverall= "+jo.toString());
 		String resultAsString = AgentCaller.executeGetWithJsonParameter(getContextPathForJPSMen(), jo.toString());
+	
 		
 		JSONObject result = new JSONObject(resultAsString);
 		Double ans4 = Double.valueOf(result.getString("totaltransportationcost"));//totalTransportationCost

@@ -25,7 +25,7 @@ import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
 import uk.ac.cam.cares.jps.agents.ontology.JSONConverter;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceReader;
 import uk.ac.cam.cares.jps.base.config.IKeys;
-import uk.ac.cam.cares.jps.base.config.KeyValueServer;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -100,7 +100,7 @@ public class AgentWebAPI extends HttpServlet {
 	public String composeAndExecute(Service compositeAgent, String jsonInputValues) 
 				throws JsonParseException, JsonMappingException, JSONException, URISyntaxException, IOException, Exception {
 	
-		String hostPort = "http://" + KeyValueServer.get(IKeys.HOST) + ":" + KeyValueServer.get(IKeys.PORT);
+		String hostPort = "http://" + KeyValueManager.get(IKeys.HOST) + ":" + KeyValueManager.get(IKeys.PORT);
 		Object[] result = compose(compositeAgent, hostPort);
 		
 		if (result == null) {

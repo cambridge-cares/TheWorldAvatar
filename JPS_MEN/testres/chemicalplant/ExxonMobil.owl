@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <rdf:RDF xmlns="http://www.jparksimulator.com/kb/sgp/jurongisland/ExxonMobil.owl#"
-     xml:base="http://www.jparksimulator.com/kb/sgp/jurongisland/ExxonMobil.owl "
+     xml:base="http://www.jparksimulator.com/kb/sgp/jurongisland/ExxonMobil.owl"
      xmlns:p1="file:/C:/OntoCAPE/meta_model/data_structures/binary_tree.owl#"
      xmlns:p2="file:/C:/OntoCAPE/meta_model/data_structures/array.owl#"
      xmlns:p3="file:/C:/OntoCAPE/meta_model/data_structures/linked_list.owl#"
@@ -39,7 +39,7 @@
      xmlns:p22="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
      xmlns:p24="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <owl:Ontology rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/ExxonMobil.owl ">
+    <owl:Ontology rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/ExxonMobil.owl">
         <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
         <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl"/>
     </owl:Ontology>

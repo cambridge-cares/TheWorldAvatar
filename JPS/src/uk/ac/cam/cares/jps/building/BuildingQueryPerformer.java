@@ -56,7 +56,9 @@ public class BuildingQueryPerformer implements SparqlConstants {
 	public String executeGet(URIBuilder builder) {
 		try {
 			URI uri = builder.build();
-			logger.info(uri.toString());
+			String message = uri.toString();
+			int min = Math.min(message.length(), 100);
+			logger.info(message.substring(0, min));
 			HttpGet request = new HttpGet(uri);
 			request.setHeader(HttpHeaders.ACCEPT, "text/csv");
 			//request.setHeader(HttpHeaders.ACCEPT, "application/json");
@@ -91,14 +93,15 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		} else if (cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
 			return CRSTransformer.EPSG_28992;
 		} else if (cityIRI.equalsIgnoreCase(SINGAPORE_IRI) || cityIRI.equalsIgnoreCase(HONG_KONG_IRI)) {
-			return CRSTransformer.EPSG_4326;
+			return CRSTransformer.EPSG_4326; 
 		}
 		
-		return DEFAULT_CRS_NAME;
+		return DEFAULT_CRS_NAME; //default crs that is used in building owl file
 	}
 	
 	public List<String> performQueryClosestBuildingsFromRegion(String cityIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
-		
+		//To-DO : later need to connect this to query for the height of plant
+		double plh = 20.0; 
 		double plx = plantx;
 		double ply = planty;
 		double lx = lowerx;
@@ -109,7 +112,8 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		String targetCRSName = getCRSName(cityIRI);
 		String sourceCRSName = null;
 		if (cityIRI.equalsIgnoreCase(BERLIN_IRI) || cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
-			sourceCRSName = DEFAULT_CRS_NAME;
+			//sourceCRSName = DEFAULT_CRS_NAME; //TEMPORARILY CHANGED FOR COORDINATE CHANGE 23/4
+			sourceCRSName = CRSTransformer.EPSG_3857;
 		} else if (cityIRI.equalsIgnoreCase(SINGAPORE_IRI) || cityIRI.equalsIgnoreCase(HONG_KONG_IRI)) {
 			sourceCRSName = CRSTransformer.EPSG_3857; 
 		}
@@ -125,8 +129,9 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {upperx, uppery});
 			ux = p[0];
 			uy = p[1];
+			
 		} else {
-			if (!DEFAULT_CRS_NAME.equals(targetCRSName)) {
+			//if (!DEFAULT_CRS_NAME.equals(targetCRSName)) {
 				
 				double[] p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {plantx, planty});
 				plx = p[0];
@@ -143,45 +148,96 @@ public class BuildingQueryPerformer implements SparqlConstants {
 //					ly = uy;
 //					uy = temp;
 //				}
-			}
+			//}
 		}
 
-		String query = getQueryClosestBuildingsFromRegion(200, lx, ly, ux, uy);
-		logger.info("BEFORE performQuery");
+		String query = getQueryClosestBuildingsFromRegion(350, lx, ly, ux, uy);
+		//logger.info("BEFORE performQuery");
 		String result = performQuery(cityIRI, query);
-		logger.info("AFTER performQuery");
+		//logger.info("AFTER performQuery");
 		//system.out.println("=============== query result ===============");
 		//system.out.println("With query:\n" + query);
 		//system.out.println(result);
 		//system.out.println("============================================");
 		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		
-		return selectClosestBuilding(plx, ply, buildingLimit, map);
+		return selectClosestBuilding(plx, ply, buildingLimit, map, plh);
 	}
 	
-	public List<String> selectClosestBuilding(double centerx, double centery, int buildingLimit, Map<String, List<String>> map) {
+	
+	
+	public List<String> selectClosestBuilding(double centerx, double centery, int buildingLimit, Map<String, List<String>> map, double sourceheight) {
 		
 		List<String> result = new ArrayList<String>();
 		
 		class DistanceBuildingPair {
 			double distance;
 			String buildingIRI;
+			double height;
+
 		}
+		
+		
 		
 		int size = map.get("bdn").size();
 		DistanceBuildingPair[] pairs = new DistanceBuildingPair[size];
+		System.out.println("pairsize= "+size);
 		for (int i=0; i<size; i++) {
 	
 			double x = Double.valueOf(map.get("x").get(i));
 			double y = Double.valueOf(map.get("y").get(i));
+			
+			
 			Point2d diff = new Point2dImpl(x,y).minus(new Point2dImpl(centerx, centery));
 			double distance = PolygonUtil.length(diff);
 			
 			DistanceBuildingPair newPair = new DistanceBuildingPair();
 			newPair.distance = distance;
 			newPair.buildingIRI = map.get("bdn").get(i);
+			newPair.height=Double.valueOf(map.get("h").get(i));
 			pairs[i] = newPair;
+			
+			
+			//score = constant1*(1/distance+1) + height;
 		}
+		
+		
+
+		
+		Comparator<DistanceBuildingPair> comparator2 = new Comparator<DistanceBuildingPair>() {
+
+			@Override
+			public int compare(DistanceBuildingPair o1, DistanceBuildingPair o2) {
+				if (o1.height == o2.height) {
+					return 0;
+				}
+				if (o1.height > o2.height) {
+					return -1;
+				}
+				return 1;
+			}
+		};
+		
+
+		
+		Arrays.sort(pairs, comparator2);
+		
+		DistanceBuildingPair[] newpairs2 = new DistanceBuildingPair[size];
+
+		int sizepair=pairs.length;
+
+		double selectionnumber2=0.25*new Double(sizepair);
+		int selectionnumber=(int) selectionnumber2;
+		
+		if(selectionnumber<25) {
+			selectionnumber=sizepair;
+		}
+		for(int a=0;a<selectionnumber;a++) {
+			newpairs2[a]=pairs[a];
+			newpairs2[a].distance=pairs[a].distance;
+			newpairs2[a].buildingIRI=pairs[a].buildingIRI;
+		}
+			
 		
 		Comparator<DistanceBuildingPair> comparator = new Comparator<DistanceBuildingPair>() {
 
@@ -196,12 +252,19 @@ public class BuildingQueryPerformer implements SparqlConstants {
 				return 1;
 			}
 		};
+		Arrays.sort(pairs, comparator); //test
 		
-		Arrays.sort(pairs, comparator);
-		
-		int min = Math.min(size, buildingLimit);
-		for (int i=0; i<min; i++) {
-			result.add(pairs[i].buildingIRI);
+		int min = Math.min(size, buildingLimit);    //buildinglimit=25
+//		for (int i=0; i<min; i++) {
+//			result.add(pairs[i].buildingIRI);
+//		}
+		int i=0;
+		while (result.size()<min){
+			//if(newpairs2[i].height>sourceheight/3) {  //temporarily not considering the height of plant yet
+			result.add(newpairs2[i].buildingIRI);
+			System.out.println("the height of building picked= "+newpairs2[i].height);
+			//}
+			i++;
 		}
 		
 		return result;
@@ -210,15 +273,21 @@ public class BuildingQueryPerformer implements SparqlConstants {
 	public String getQueryClosestBuildingsFromRegion(int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
 		
 		String query = PREFIX_ONTOCAPE_SYS + PREFIX_ONTOCAPE_SPACE_AND_TIME_EXTENDED + PREFIX_CITYGML + PREFIX_XSD +
-			"SELECT distinct ?bdn ?x ?y\n" + 
+			"SELECT distinct ?bdn ?x ?y ?h \n" + 
 			"WHERE {\n" + 
 			"?bdn a citygml:BuildingType .\n" + 
 			"?bdn space_and_time_extended:hasGISCoordinateSystem ?coordinates .\n" + 
 			CITYGML_HASCOORDINATES_XY +
+			"?bdn a citygml:BuildingType .\n" + 
+			"?bdn citygml:measuredHeight ?hgt .\n" +
+			"?hgt sys:hasValue ?vhgt .\n" + 
+			"?vhgt sys:numericalValue ?h .\n" + 
+			
 			"Filter(xsd:double(?x) > \"%f\"^^xsd:double && xsd:double(?y) > \"%f\"^^xsd:double && xsd:double(?x) < \"%f\"^^xsd:double && xsd:double(?y) < \"%f\"^^xsd:double) \n" + 	
 			"}\n" + 
 			"LIMIT %d";
 
+		//add the format for the height
 		return format(query, lowerx, lowery, upperx, uppery, buildingLimit);
 	}
 	
@@ -276,16 +345,16 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			
 			String sourceCRSName = getCRSName(cityIRI);
 			logger.info("sourceCRSName: " + sourceCRSName);
-			
-			if (sourceCRSName.equalsIgnoreCase(CRSTransformer.EPSG_25833)) {
-				logger.info("transforming coordinate from " + sourceCRSName + " to " + DEFAULT_CRS_NAME + " ...");
-				logger.info("map: " + map.toString());
-				map = transformCoordinates(sourceCRSName, DEFAULT_CRS_NAME, map);
-			} else if (!sourceCRSName.equalsIgnoreCase(CRSTransformer.EPSG_28992)) {
+						
+			if (sourceCRSName.equalsIgnoreCase(CRSTransformer.EPSG_4326)) { //or other coordinates system of building that is in degree instead of m
 				logger.info("transforming coordinate from " + sourceCRSName + " to " + CRSTransformer.EPSG_3857 + " ...");
 				logger.info("map: " + map.toString());
 				map = transformCoordinates(sourceCRSName, CRSTransformer.EPSG_3857, map);
 			}
+
+			
+			
+			//add line 359 to 362 TO TEST NEW COORDINATE 23/04
 					
 			List<Polygon> polygons = SimpleShapeConverter.convertTo2DPolygons(map, "groundsurface", "x", "y");
 			//SimpleShape shape = SimpleShapeConverter.simplifyShapes(polygons);
@@ -307,24 +376,40 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			}		
 			result.BldName.add(name);
 			result.BldType.add(shape.shapeType);
+			//BIG CHANGE 23/04 another conversion!!!
+			double []centrePoint=null;
 			if (cityIRI.equalsIgnoreCase(SINGAPORE_IRI)) {
-				double[] centrePoint = CRSTransformer.transform("EPSG:3857", 
+				//need to be converted for the building to match the adms coordinate system!!!!
+				 centrePoint = CRSTransformer.transform("EPSG:3857", 
 						"EPSG:3414", new double[] {shape.centerX, shape.centerY});
 				result.BldX.add(centrePoint[0]);
 				result.BldY.add(centrePoint[1]);
-				logger.info("coordinate x: " + centrePoint[0]);
-				logger.info("coordinate y: " + centrePoint[1]);
 			} else if (cityIRI.equalsIgnoreCase(HONG_KONG_IRI)) {
-				double[] centrePoint = CRSTransformer.transform("EPSG:3857", 
+				
+				//need to be converted for the building to match the adms coordinate system!!!!
+				 centrePoint = CRSTransformer.transform("EPSG:3857", 
 						"EPSG:2326", new double[] {shape.centerX, shape.centerY});
 				result.BldX.add(centrePoint[0]);
 				result.BldY.add(centrePoint[1]);
-				logger.info("coordinate x: " + centrePoint[0]);
-				logger.info("coordinate y: " + centrePoint[1]);
-			} else {
+			} 
+			
+			else if (cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
+				//no need to be converted as the building coordinate system and the adms coordinate system is matched!!!!
+				result.BldX.add(shape.centerX);
+				result.BldY.add(shape.centerY);
+			} 
+			
+			else if (cityIRI.equalsIgnoreCase(BERLIN_IRI)) {
+				//no need to be converted as the building coordinate system and the adms coordinate system is matched!!!!
 				result.BldX.add(shape.centerX);
 				result.BldY.add(shape.centerY);
 			}
+
+//			logger.info("coordinate x: " + centrePoint[0]);
+//			logger.info("coordinate y: " + centrePoint[1]);
+			
+			
+			
 			result.BldLength.add(shape.length);
 			result.BldWidth.add(shape.width);
 			result.BldAngle.add(shape.angle);

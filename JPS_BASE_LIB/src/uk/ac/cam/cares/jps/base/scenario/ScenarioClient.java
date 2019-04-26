@@ -1,0 +1,71 @@
+package uk.ac.cam.cares.jps.base.scenario;
+
+import java.net.URI;
+
+import org.json.JSONObject;
+import org.json.JSONStringer;
+
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+
+public class ScenarioClient {
+	
+	public String call(String scenarioNameOrUrl, String scenarioAgentOperation, String jsonInputParams) {
+		
+		JSONObject jo = new JSONObject(jsonInputParams);
+		jo.put(JPSConstants.SCENARIO_AGENT_OPERATION, scenarioAgentOperation);
+		String json = jo.toString();
+		
+		if (scenarioNameOrUrl.startsWith("http")) {
+			String url = scenarioNameOrUrl + "/call";
+			return AgentCaller.executeGetWithURLAndJSON(url, json);
+		}	
+	
+		String path = ScenarioHelper.getScenarioPath(scenarioNameOrUrl) + "/call";
+		return AgentCaller.executeGetWithJsonParameter(path, json);
+	}
+	
+	public String read(String scenarioNameOrUrl, String resourceUrl) {
+		
+		String json = new JSONStringer().object()
+				.key(JPSConstants.SCENARIO_RESOURCE).value(resourceUrl)
+				.endObject().toString();
+		
+		if (scenarioNameOrUrl.startsWith("http")) {
+			String url = scenarioNameOrUrl + "/read";
+			return AgentCaller.executeGetWithURLAndJSON(url, json);
+		}	
+	
+		String path = ScenarioHelper.getScenarioPath(scenarioNameOrUrl) + "/read";
+		return AgentCaller.executeGetWithJsonParameter(path, json);
+	}
+	
+	public String setOptionCopyOnRead(String scenarioNameOrUrl, boolean value) {
+		return option(scenarioNameOrUrl, JPSConstants.SCENARIO_OPTION_COPY_ON_READ, value);
+	}
+	
+	private String option(String scenarioNameOrUrl, String key, Object value) {
+		
+		String json = new JSONStringer().object()
+				.key(key).value(value)
+				.endObject().toString();
+		
+		if (scenarioNameOrUrl.startsWith("http")) {
+			String url = scenarioNameOrUrl + "/option";
+			return AgentCaller.executeGetWithURLAndJSON(url, json);
+		}	
+	
+		String path = ScenarioHelper.getScenarioPath(scenarioNameOrUrl) + "/option";
+		return AgentCaller.executeGetWithJsonParameter(path, json);
+	}
+	
+	public URI getReadUrl(String scenarioUrl, String resourceUrl) {
+		
+		String json = new JSONStringer().object()
+				.key(JPSConstants.SCENARIO_RESOURCE).value(resourceUrl)
+				.endObject().toString();
+	
+		String url = scenarioUrl + "/read";
+		return AgentCaller.createURIWithURLandJSON(url, json);
+	}
+}

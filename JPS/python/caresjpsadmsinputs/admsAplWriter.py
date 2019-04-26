@@ -753,7 +753,8 @@ class admsAplWriter(object):
             self.writeStr(file,BKGETC)
 
 
-            self.writeCoordSys(file)# a special case, to be unified in future
+            #self.writeCoordSys(file)           # a special case, to be unified in future
+            self.writeCoordSys(file, self.data['CoordiSys'])
             self.writeStr(file,MAP)
             self.writeStr(file,POLD)
             #self.writeTemp(self.data['OPT'])
@@ -809,8 +810,9 @@ class admsAplWriter(object):
         self.writeAttr(file, bdn)
         file.write("/\n")
 
-    def writeCoordSys(self, file, csys = 32648):
-        self.writeTemp(file, '&ADMS_COORDINATESYSTEM\nProjectedEPSG = {0}\n', [28992])
+    def writeCoordSys(self, file, csys = 28992):
+        #self.writeTemp(file, '&ADMS_COORDINATESYSTEM\nProjectedEPSG = {0}\n', [28992])
+        self.writeTemp(file, '&ADMS_COORDINATESYSTEM\nProjectedEPSG = {0}\n', [csys])
         file.write("/\n")
        
     def writeStr(self, file, ori):

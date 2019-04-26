@@ -214,7 +214,7 @@ function makeLegend(selector_id, thresholds, color, thresholdsO) {
        // .attr("transform", "translate(20,20)");
     console.log('addl legend')
     var legend = d3.legendColor()
-        .labelFormat(d3.format("e"))
+        .labelFormat(d3.format(".2e"))
         .labels(d3.legendHelpers.thresholdLabels)
         .scale(thresholdScale)
     

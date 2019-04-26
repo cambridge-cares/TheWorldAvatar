@@ -17,7 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.IKeys;
-import uk.ac.cam.cares.jps.base.config.KeyValueServer;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class ExecutorNew {
@@ -30,8 +30,8 @@ public class ExecutorNew {
 	public JSONObject initialInput;
 	public JSONObject o;
 	public ExecutorNew() {
-		myHost = KeyValueServer.get(IKeys.HOST);
-		myPort = Integer.valueOf(KeyValueServer.get(IKeys.PORT));
+		myHost = KeyValueManager.get(IKeys.HOST);
+		myPort = Integer.valueOf(KeyValueManager.get(IKeys.PORT));
 	}
 	
 	public ExecutorNew(ArrayList<ExecutionLayer> executionChain) {

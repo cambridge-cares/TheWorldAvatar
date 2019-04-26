@@ -38,6 +38,7 @@ public class GetBuildingListFromRegion extends HttpServlet {
 		try {
 			JSONObject input = new JSONObject(value);
 			String city = input.getString("city");
+			logger.info("city from getbuildinglistfromregion: " + city);
 			 
 			double[][] coords = convertCoordinate(input,city);
 //			System.out.println("source point: " + Arrays.deepToString(coords));
@@ -48,8 +49,18 @@ public class GetBuildingListFromRegion extends HttpServlet {
 			double plantx = coords[2][0];
 			double planty = coords[2][1];
 			
+				upperx=Double.parseDouble(""+input.getJSONObject("region").getJSONObject("uppercorner").get("upperx"));
+				lowerx=Double.parseDouble(""+input.getJSONObject("region").getJSONObject("lowercorner").get("lowerx"));
+				uppery = Double.parseDouble(""+input.getJSONObject("region").getJSONObject("uppercorner").get("uppery"));
+				lowery=Double.parseDouble(""+input.getJSONObject("region").getJSONObject("lowercorner").get("lowery"));
+				//assume center point of the scene to pick building is middle point scope instead of the plant
+				double[] sourceXY = new double[] {(lowerx + upperx)/2, (lowery + uppery)/2};	
+				plantx=sourceXY[0];
+				planty=sourceXY[1];
+
+			
 //			System.out.println(lowerx + " | " + lowery + " | " + upperx + " | " + uppery +  " | " + plantx + " | " + planty);
-			logger.debug(lowerx + " | " + lowery + " | " + upperx + " | " + uppery +  " | " + plantx + " | " + planty);
+			logger.info(lowerx + " || " + lowery + " || " + upperx + " || " + uppery +  " || " + plantx + " || " + planty);
 			
 			BuildingQueryPerformer performer = new BuildingQueryPerformer();
 			List<String> buildingIRIs = performer.performQueryClosestBuildingsFromRegion(city.trim(), plantx, planty, 25, 

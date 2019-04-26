@@ -52,7 +52,7 @@ under the License.
 	<profile>
       <id>JpsProfile</id>
       <properties>
-        <tomcatPath>C:/Users/Andreas/Tomcat8_New</tomcatPath>
+        <tomcatPath>C:\Users\nasac\Documents\TOMCAT</tomcatPath>
       </properties>
     </profile>
   </profiles>

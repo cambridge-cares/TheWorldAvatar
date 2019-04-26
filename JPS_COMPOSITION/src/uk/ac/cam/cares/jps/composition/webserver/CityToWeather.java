@@ -312,7 +312,16 @@ public class CityToWeather extends HttpServlet {
 			wind_direction = "";
 		}
 		if (weatherInJSON.has("rain")) {
-			precipitationIntensity = weatherInJSON.getJSONObject("rain").getString("3h");
+			
+			if(weatherInJSON.getJSONObject("rain").has("3h")) {
+				precipitationIntensity = weatherInJSON.getJSONObject("rain").getString("3h");
+			}
+			else if(weatherInJSON.getJSONObject("rain").has("1h")) {
+				precipitationIntensity = weatherInJSON.getJSONObject("rain").optString("1h");
+			}
+			
+			
+			
 		}
 		String result = new JSONStringer().object().
 				key("weatherstate").object()

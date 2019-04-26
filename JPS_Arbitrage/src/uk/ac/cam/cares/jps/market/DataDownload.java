@@ -1,32 +1,27 @@
 package uk.ac.cam.cares.jps.market;
 
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.URI;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.lang.reflect.Type;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.jena.ontology.DatatypeProperty;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.util.FileUtils;
-
-import edu.stanford.smi.protege.exception.OntologyLoadException;
-import edu.stanford.smi.protegex.owl.ProtegeOWL;
-import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.RDFIndividual;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.util.PythonHelper;
-
-import java.lang.reflect.Type;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 public class DataDownload {
 	private static Logger logger = LoggerFactory.getLogger(DataDownload.class);
@@ -49,7 +44,7 @@ public class DataDownload {
 //	public static final String ONTO_PATH_KB_MARKETS = "http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_Market_KB.owl";
 	
 	// URIs of ontologies used to defined KBs in which utilities and exchange rates will be stored
-	public static final String ONTO_PATH_ONTOCAPE = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl";
+	public static final String ONTO_PATH_ONTOCAPE = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl";
 	public static final String ONTO_PATH_KB_UTIL_EXRATES = "http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15";
 //	public static final String ONTO_PATH_KB_UTIL_EXRATES = "http://www.theworldavatar.com/OntoArbitrage/OntoArbitrage_PlantInfo_KB.owl";
 	
@@ -77,7 +72,17 @@ public class DataDownload {
 	public static String downloadHNGMarketData() throws Exception {
 		return downloadMarketData(HNG_DOWNLOAD, HNG_PAGE);
 	}
+	
+	public static void savefile(OntModel jenaOwlModel, String filePath2) throws URISyntaxException, FileNotFoundException {
 
+		FileOutputStream out = new FileOutputStream(filePath2);
+
+		Collection errors = new ArrayList();
+		jenaOwlModel.write(out, "RDF/XML-ABBREV");
+
+		System.out.println("File saved with " + errors.size() + " errors.");
+	}
+	
 
 	
 	/**
@@ -133,32 +138,27 @@ public class DataDownload {
 		 */
 		
 		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload()) + "/OntoArbitrage_Market_KB.owl";
-		FileInputStream inFile = new FileInputStream(filePath);
-		Reader in = new InputStreamReader(inFile, "UTF-8");
-		JenaOWLModel jenaOwlModel = ProtegeOWL.createJenaOWLModelFromReader(in);
+		OntModel jenaOwlModel = ModelFactory.createOntologyModel();
+		jenaOwlModel.read(filePath);
 
+		
+		
+		
 		for (int i = 0; i < addresses.length; i++) {
 			if (results[i] == null) {
 				continue;
 			}
-			RDFProperty property = jenaOwlModel.getRDFProperty(addresses[i][0]);
-			RDFIndividual individual = jenaOwlModel.getRDFIndividual(addresses[i][1]);
+			DatatypeProperty property = jenaOwlModel.getDatatypeProperty(addresses[i][0]);
+			Individual individual = jenaOwlModel.getIndividual(addresses[i][1]);
 			
-			individual.setPropertyValue(property, results[i]);
+			individual.setPropertyValue(property, jenaOwlModel.createTypedLiteral(results[i]));
 		}
 		
 		/**
 		 * save the updated model file; also, any error
 		 * messages are collected and printed
 		 */
-		Collection<Object> errors = new ArrayList<Object>();
-		jenaOwlModel.save(new URI("file:/" + filePath),	 
-				FileUtils.langXMLAbbrev, 
-				errors,
-				jenaOwlModel.getOntModel());
-		logger.info("File saved with " + errors.size() + " errors.");
-		
-//		return results[0];		
+		savefile(jenaOwlModel, filePath);	
 		Gson g = new Gson();
 		return g.toJson(results);
 	}
@@ -213,25 +213,36 @@ public class DataDownload {
 		 * model; rates are stored in KB one by one
 		 */
 		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload()) + "/OntoArbitrage_PlantInfo_KB.owl";
-		FileInputStream inFile = new FileInputStream(filePath);
-		Reader in = new InputStreamReader(inFile, "UTF-8");
-		JenaOWLModel jenaOwlModel = ProtegeOWL.createJenaOWLModelFromReader(in);
+		
+		System.out.println("My filepath = " + filePath);
+		OntModel jenaOwlModel1 = ModelFactory.createOntologyModel();
+		jenaOwlModel1.read(filePath);
+
 
 		for (int i = 0; i < addresses.length; i++) {
-			RDFProperty property = jenaOwlModel.getRDFProperty(addresses[i][0]);
-			RDFIndividual individual = jenaOwlModel.getRDFIndividual(addresses[i][1]);
-			individual.setPropertyValue(property, rates[i]);
+
+			DatatypeProperty property = jenaOwlModel1.getDatatypeProperty(addresses[i][0]);
+			//DatatypeProperty property =jenaOwlModel1.getDatatypeProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue");	
+			Individual individual = jenaOwlModel1.getIndividual(addresses[i][1]);	
+			individual.setPropertyValue(property, jenaOwlModel1.createTypedLiteral(new Double(rates[i])));
+
 		}
+		
+		
+		
+		
+
+		
+		
+		
 
 		/**
 		 * save the updated model file; also, any error
 		 * messages are collected and printed
 		 */
-		Collection<Object> errors = new ArrayList<Object>();
-		jenaOwlModel.save(new URI("file:/" + filePath),
-				FileUtils.langXMLAbbrev, errors,
-				jenaOwlModel.getOntModel());
-		logger.info("File saved with " + errors.size() + " errors.");
+
+		savefile(jenaOwlModel1,filePath);
+		logger.info("File saved");
 
 //		return headers[0];
 		
@@ -277,28 +288,24 @@ public class DataDownload {
 		 * knowledge base from an owl file in a jenaOWL
 		 * model; rates are stored in KB one by one
 		 */
-		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload()) + "/OntoArbitrage_PlantInfo_KB.owl";
-		FileInputStream inFile = new FileInputStream(filePath);
-		Reader in = new InputStreamReader(inFile, "UTF-8");
-		JenaOWLModel jenaOwlModel = ProtegeOWL.createJenaOWLModelFromReader(in);
+		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload()) + "/OntoArbitrage_PlantInfo_KB.owl";	
+		OntModel jenaOwlModel2 = ModelFactory.createOntologyModel();
+		jenaOwlModel2.read(filePath);
 
 		for (int i = 0; i < addresses.length; i++) {
-			RDFProperty property = jenaOwlModel.getRDFProperty(addresses[i][0]);
-			RDFIndividual individual = jenaOwlModel.getRDFIndividual(addresses[i][1]);
-			individual.setPropertyValue(property, data[i]);
+			DatatypeProperty property = jenaOwlModel2.getDatatypeProperty(addresses[i][0]);
+			Individual individual = jenaOwlModel2.getIndividual(addresses[i][1]);
+			individual.setPropertyValue(property, jenaOwlModel2.createTypedLiteral(data[i]));
 		}
 
 		/**
 		 * save the updated model file; also, any error
 		 * messages are collected and printed
 		 */
-		Collection<Object> errors = new ArrayList<Object>();
-		jenaOwlModel.save(new URI("file:/" + filePath),
-				FileUtils.langXMLAbbrev, errors,
-				jenaOwlModel.getOntModel());
-		logger.info("File saved with " + errors.size()
-				+ " errors.");
+
+		savefile(jenaOwlModel2,filePath);
 		
+		System.out.println("result from savingDataInTheKnowledgeBase= "+retrievePrices(headers));
 		return retrievePrices(headers);
 	}
 
@@ -325,32 +332,24 @@ public class DataDownload {
 					ONTO_PATH_KB_UTIL_EXRATES + "#" + headers[i] };
 			logger.info(addresses[i][1]);
 		}
-
+		
+	logger.info("My retreive prices function");
 		/** get model from an owl file */
 		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload()) + "/OntoArbitrage_PlantInfo_KB.owl";
-		OWLModel owlModel = null;
-		try {
-			owlModel = ProtegeOWL.createJenaOWLModelFromURI(
-					"file:/" + filePath);
-		} catch (OntologyLoadException e1) {
-			logger.warn(e1.getMessage());
-		}
+		OntModel jenaOwlModel3 = ModelFactory.createOntologyModel();
+		jenaOwlModel3.read(filePath);
 		
 		
 		Gson objGson = new GsonBuilder().create();
 		Map<String, String> mapHeaderName = new HashMap<>();
 		
+
 		for (int i = 0; i < addresses.length; i++) {
-			RDFIndividual individual = owlModel
-					.getRDFIndividual(addresses[i][1]);
-
-			String name = individual
-					.getPropertyValueLiteral(owlModel.getRDFProperty(addresses[i][0]))
-					.getString();
-
+			Individual individual = jenaOwlModel3.getIndividual(addresses[i][1]);
+			DatatypeProperty prop=jenaOwlModel3.getDatatypeProperty(addresses[i][0]);
+			String name = individual.getPropertyValue(prop).asLiteral().toString(); 
 			mapHeaderName.put(headers[i], name);
 		}
-		
 		return objGson.toJson(mapHeaderName);
 	}
 
@@ -366,19 +365,14 @@ public class DataDownload {
 		String stringProperty = ONTO_PATH_ELEC_MARKETS + "#data";
 
 		/** get model from an owl file */
-		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload())
-				+ "/OntoArbitrage_Market_KB.owl";
-		OWLModel owlModel = null;
+		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload())+ "/OntoArbitrage_Market_KB.owl";
+		
+		OntModel jenaOwlModel4 = ModelFactory.createOntologyModel();
+		jenaOwlModel4.read(filePath);
 
-		try {
-			owlModel = ProtegeOWL.createJenaOWLModelFromURI(
-							"file:/" + filePath);
-		} catch (OntologyLoadException e1) {
-			logger.warn(e1.getMessage());
-		}
-
-		RDFIndividual individual = owlModel.getRDFIndividual(stringIndividual);
-		String name = individual.getPropertyValueLiteral(owlModel.getRDFProperty(stringProperty)).getString();
+		Individual individual = jenaOwlModel4.getIndividual(stringIndividual);
+		//String name = individual.getPropertyValueLiteral(owlModel.getRDFProperty(stringProperty)).getString();
+		String name = individual.getPropertyValue(jenaOwlModel4.getProperty(stringProperty)).asLiteral().getString();
 		return name;
 	}
 	

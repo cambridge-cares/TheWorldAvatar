@@ -52,6 +52,7 @@ try:
 	
 	pythonLogger.postInfoToLogServer('calling admsAplWirter ...')
 	result['Bdn'] = BDN
+	result['CoordiSys'] = sys.argv[5][5:]
 	writer = admsAplWriter(result, workingDir + '/test.apl')
 	writer.write()
 

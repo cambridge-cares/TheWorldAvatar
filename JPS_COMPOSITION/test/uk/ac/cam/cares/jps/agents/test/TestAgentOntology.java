@@ -15,7 +15,7 @@ import uk.ac.cam.cares.jps.agents.ontology.ServiceBuilder;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceReader;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceWriter;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.config.KeyValueServer;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
 import uk.ac.cam.cares.jps.composition.servicemodel.Operation;
@@ -326,8 +326,8 @@ public class TestAgentOntology extends TestCase {
 	public void testServiceDiscoveryByType() throws Exception {
 		
 		String compositionDir = AgentLocator.getCurrentJpsAppDirectory(this);
-		//KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/serviceowlfiles");
-		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithoutWasteProduct");
+		//KeyValueManager.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/serviceowlfiles");
+		KeyValueManager.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithoutWasteProduct");
 		
 		ServiceDiscovery discovery = ServiceDiscovery.getInstance();
 		//List<MessagePart> inputs = createMessageParts("op2inputrefuri1");
@@ -340,7 +340,7 @@ public class TestAgentOntology extends TestCase {
 	public void testServiceDiscoveryByUri() throws Exception {
 		
 		String compositionDir = AgentLocator.getCurrentJpsAppDirectory(this);
-		KeyValueServer.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithoutWasteProduct");
+		KeyValueManager.set(ServiceDiscovery.KEY_DIR_KB_AGENTS, compositionDir + "/testres/admsservicesWithoutWasteProduct");
 		
 		ServiceDiscovery discovery = ServiceDiscovery.getInstance();
 		Service result = discovery.getServiceByUri("http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");

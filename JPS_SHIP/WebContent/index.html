@@ -43,20 +43,16 @@
     <span id="readme-button">?</span>
 
     <span id="readme-text">
-        This agent considers the effect of surrounding buildings and weather data for simulation of atmospheric dispersion for multiple emission sources (represented by black squares).
-        <br/><br/>The pollutants in the emission source are CO<sub>2</sub>, CO and unburned hydrocarbon.
-        The pollutants emission rate has been arbitrarily assigned as 446 g/s for CO, 1970 g/s for CO<sub>2</sub> and 803 g/s for unburned hydrocarbon.
-        <br/><br/> The effects of the closest 25 buildings from the emission source within the selected region and real-time weather data (sourced from <a href="http://www.accuweather.com/en/sg/singapore/300597/current-weather/300597">http://www.accuweather.com/en/sg/singapore/300597/current-weather/300597</a>) on atmospheric dispersion are simulated and visualised in the dispersion profile. 
+		This agent considers the effect of surrounding buildings and weather data for simulation of atmospheric dispersion for some emission sources (ships represented by black dots).
+        <br/><br/>The pollutants in the emission source are CO<sub>2</sub>, CO, NO,NO<sub>2</sub>, particulates and unburned hydrocarbon (depends on which reaction mechanism is used).
+        <br/><br/> The effects of the closest 25 buildings from the emission source within the selected region and real-time weather data (sourced from <a href="https://www.accuweather.com/en/sg/singapore/300597/weather-forecast/300597">https://www.accuweather.com/en/sg/singapore/300597/weather-forecast/300597</a>) on atmospheric dispersion are simulated and visualised in the dispersion profile. 
 		The weather data is updated every time the agent is executed. 
-        <!-- br/><br/>The user can modify the area of interest between Den Haag and Berlin by selecting from the dropdown list and executing the simulation to determine the corresponding dispersion profile.
-        <br/>The emission source in Den Haag was chosen as the Uniper Stadcentrale Den Haag plant, while the emission source in Berlin was chosen as the Heizkraftwerk Mitte plant.
-        <br/>The emission sources have emission heights of 83.6 m in the Den Haag scenario and 99.3 m in the Berlin scenario respectively. !-->
-        <br/><br/>The user can also select the region to focus on for the dispersion profile computation by modifying the coordinates of interest (X lower, X upper, Y lower and Y upper values in coordinate reference system WGS 84 / Pseudo-Mercator (epsg:3857)). 
-        <br/>It is recommended that the selected region approximates a square with length of minimum 400 m.
-		<br/><br/>The selected region has to be inline with the wind direction in order for the dispersion profile to be displayed.
+        <br/><br/>The user can modify the area of interest between Singapore and Hongkong by selecting from the dropdown list and executing the simulation to determine the corresponding dispersion profile.
+        <br/>The emission sources have emission heights of 20 m represents the height of the emission chimney tower for every ships.
+        <br/><br/>It is also shown the focus region for the dispersion profile computation (X lower, X upper, Y lower and Y upper values in coordinate reference system WGS 84 / Pseudo-Mercator (epsg:3857)). 
+        <br/><br/>The selected region has to be inline with the wind direction in order for the dispersion profile to be displayed.
 		The dispersion profile can be viewed at a height of 0 m to 30 m by moving the slider on the left. 
 		<br/><br/>The user can also choose to view the different pollutants’ dispersion profiles by selecting the listed pollutants. 
-		The user should reload the agent before modifying the coordinates of interest. 
 		<!-- The recommended region for the Den Haag scenario is between 79173.323 and 80199.621 for X and between 454193.456 and 455030.337 for Y.</span> !-->
 
 </div>
@@ -66,6 +62,7 @@
     <select id="reaction-select">
         <option value="https://como.cheng.cam.ac.uk/kb/Reduced_PRF_ERC.owl#ReactionMechanism_4909454516579602">Reduced_PRF_ERC-mechanism</option>
         <option value="https://como.cheng.cam.ac.uk/kb/Toluene.owl#ReactionMechanism_4631074216281807">Toluene-mechanism</option>
+        <option value="https://como.cheng.cam.ac.uk/kb/Reduced_PRF_ERC_particle.owl#ReactionMechanism_4909454516579602">Reduced_PRF_ERC_particles-mechanism</option>
     </select>
 
     <h1 id="head1"></h1>
@@ -80,19 +77,19 @@
 
     <label for="xlower">X lower:</label>
     <!--input id="xlower" type="text" value='13728088' readonly/-->
-    <input id="xlower" type="text" value='11558666.37' readonly/>
+    <input id="xlower" type="text" value='11560879.832'>
 
     <label for="xupper">X upper:</label>
     <!-- input id="xupper" type="text" value='13736486' readonly/-->
-    <input id="xupper" type="text" value='11562079.502' readonly/>
+    <input id="xupper" type="text" value='11563323.926' >
 
     <label for="ylower">Y lower:</label>
     <!-- input id="ylower" type="text" value='2281341' readonly/-->
-    <input id="ylower" type="text" value='139186.423' readonly/>
+    <input id="ylower" type="text" value='140107.739' >
 
     <label for="yupper">Y upper:</label>
     <!-- input id="yupper" type="text" value='2286829' readonly/-->
-    <input id="yupper" type="text" value='141908.33' readonly/>
+    <input id="yupper" type="text" value='143305.896' >
 
 
     <!--  select id="compose">
@@ -105,7 +102,8 @@
     </select -->
     
     <!-- input type="checkbox" id="compose" value="compose">use composition<br> temporarily disabled-->
-
+    
+<input type="checkbox" id="mock" value="mock">
     <button id="start">Start simulation</button>
     <ul id="reaction-list">
 

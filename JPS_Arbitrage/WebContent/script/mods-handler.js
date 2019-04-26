@@ -4,6 +4,8 @@ import { downloadAndSaveExchangeRates } from "./exchangerates-handler.js";
 
 const processInputs = (evt) => {
     console.log("Begin processing input");
+	
+	$("#analysis").append('<img id="myProgressBar" style="width:100px;height:100px;" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/>')
 
     let inputPlantSpecificParam = $('input#plantSpecificParam').val();
     let inputPriceCoolingWater = $('input#priceCoolingWater').val();
@@ -40,6 +42,14 @@ const processInputs = (evt) => {
                 let marketData = responseOne[0];
                 processMarketData(marketData);
 
+			
+				
+				console.log('Mission accomplished')
+				
+				$('#myProgressBar').remove()
+				
+				
+				
                 if(choicePlant === "Biodiesel") {
                     $.getJSON('/JPS_ARBITRAGE/runningArbitrageAnalysisUsingMoDSWithMarketDataProvidedByDataDownloadAgent',
                     {

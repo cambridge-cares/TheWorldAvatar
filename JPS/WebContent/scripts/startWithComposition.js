@@ -29,7 +29,9 @@ $(function(){
     });
     //*****************************************************//
 
-    proj4.defs("EPSG:28992","+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.417,50.3319,465.552,-0.398957,0.343988,-1.8774,4.0725 +units=m +no_defs");
+   
+    //proj4.defs("EPSG:28992","+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.417,50.3319,465.552,-0.398957,0.343988,-1.8774,4.0725 +units=m +no_defs");
+    proj4.defs("EPSG:3857","+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs");
     //***************************************************************************
 	// default position of map is set at The Hague
 	const position = {
@@ -90,8 +92,9 @@ $(function(){
 
             if (!isNaN(latitude) && !isNaN(longitude)) {
             	console.log(latitude, longitude);
-                const convertedCoordinates = proj4('EPSG:28992', [parseFloat(longitude), parseFloat(latitude)]);
-
+                //const convertedCoordinates = proj4('EPSG:28992', [parseFloat(longitude), parseFloat(latitude)]);
+            	const convertedCoordinates = proj4('EPSG:3857', [parseFloat(longitude), parseFloat(latitude)]);
+            	
                 coordinatesArray.push(convertedCoordinates[0]); // latitude
                 coordinatesArray.push(convertedCoordinates[1]); // longitude
 
@@ -111,7 +114,9 @@ $(function(){
     // returns an array
     // longitude = array[0], latitude = array[1]
     const getOSMPoint = (x, y) => {
-        return proj4('EPSG:28992', 'EPSG:4326', [x,y])
+        //return proj4('EPSG:28992', 'EPSG:4326', [x,y])
+        return proj4('EPSG:3857', 'EPSG:4326', [x,y])
+        
     };
 
     const getMidPoint = (coordinatesMin, coordinatesMax) => {
@@ -123,7 +128,8 @@ $(function(){
 
     $('#start').click(function(){
     	//$('#start').attr("disabled", true);
-    	
+    	$('#inputFields').append('<img id="myProgressBar" style="width:100px;height:100px;" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/>'
+);
         
         let xmax = parseInt($('#xupper').val());
         let xmin = parseInt($('#xlower').val());
@@ -142,6 +148,7 @@ $(function(){
 //        approximate becasue texture only work on power2(has to be 1:1,1:2,1:4...)
 //        [xmin, xmax, ymin, ymax] = appro2ratio(xmin, xmax, ymin, ymax);
         [xmin, xmax, ymin, ymax, ratio] = appro2ratio(xmin, xmax, ymin, ymax); // 28 Aug 18
+       
         var canvas = $('#drawcanvas'); canvas.width(1024*ratio).height(1024); // 28 Aug 18
         var svg = $('contoursvg');svg.width(1024*ratio).height(1024); // 28 Aug 18
 
@@ -168,14 +175,15 @@ $(function(){
         	agent, 
 			"region": {
 				//"srsname": "EPSG:4326",
-				"srsname": "EPSG:28992",
+				"srsname": "EPSG:3857",
+				//"srsname": "EPSG:28992",
 				"lowercorner": {
-					lowerx,
-					lowery
+					lowerx/*:xmin*/,
+					lowery/*:ymin*/
 				},
 				"uppercorner": {
-					upperx,
-					uppery
+					upperx/*:xmax*/,
+					uppery/*:ymax*/
 				}
 			},
         	plant,
@@ -194,11 +202,19 @@ $(function(){
 //	        				query
 //        				});
 //        	} else {
+        	
+        	
+        	if (document.getElementById("mock").checked) {
+        		result =  $.getJSON('/JPS/ADMSCoordinationAgentWithoutCompositionWithMocks',
+    				{
+        				query
+    				});
+    	   	} else {
         		result =  $.getJSON('/JPS/ADMSCoordinationAgentWithoutComposition',
-        				{
-	        				query
-        				});
-//        	}        	
+        			{
+	        			query
+        			});
+        	}        	
   	
         	return result;
         };
@@ -208,7 +224,7 @@ $(function(){
             		
 			var buildingIRIs = coordResult.building;
 			console.log("buildingIRIs = " + buildingIRIs);
-			
+			$("#myProgressBar").remove()
         	initadms3dmap(buildingIRIs, [xmin, xmax, ymin, ymax], osmb, location, coordinatesMid, locationIRI);
         });
 
@@ -226,19 +242,27 @@ $(function(){
                 latitude: 52.512997,
                 longitude: 13.385423
             });
-            $("#xlower").val("699182");
-            $("#xupper").val("699983");
-            $("#ylower").val("532537");
-            $("#yupper").val("533338");
+//            $("#xlower").val("699182");
+//            $("#xupper").val("699983");
+//            $("#ylower").val("532537");
+//            $("#yupper").val("533338");
+            $("#xlower").val("1493262.39");
+            $("#xupper").val("1494710.67");
+            $("#ylower").val("6892594.98");
+            $("#yupper").val("6894044.12");
         } else if(location === "The Hague"){
             osmb.setPosition({
                 latitude: 52.076146,
                 longitude: 4.309961
             });
-            $("#xlower").val("79173");
-            $("#xupper").val("80199");
-            $("#ylower").val("454193");
-            $("#yupper").val("455030");
+//            $("#xlower").val("79173");
+//            $("#xupper").val("80199");
+//            $("#ylower").val("454193");
+//            $("#yupper").val("455030");
+            $("#xlower").val("476584.89");
+            $("#xupper").val("478230.04");
+            $("#ylower").val("6812941.68");
+            $("#yupper").val("6814587.35");
         }
         osmb.setZoom(10);
         osmb.setTilt(0);

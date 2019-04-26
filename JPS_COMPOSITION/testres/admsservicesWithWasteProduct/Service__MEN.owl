@@ -1,0 +1,55 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:msm="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#">
+  <msm:Service rdf:about="http://www.theworldavatar.com/kb/agents/Service__MEN.owl#Service">
+    <msm:hasOperation>
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__MEN.owl#Operation_3c39e100-817f-41b8-bc88-3775755513ff">
+        <msm:hasOutput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__MEN.owl#MessageContent_b7a1b83e-e718-4704-a1e3-f870616843df">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__MEN.owl#MessagePart_556dea83-f3f3-4ac8-b66f-29a4630e9664">
+                <msm:hasName>totalcost</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/Market.owl#Cost</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasOutput>
+        <msm:hasInput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__MEN.owl#MessageContent_d0545d8e-61f2-4c7d-ac2d-450b215e50d5">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__MEN.owl#MessagePart_8fb57c6a-5a61-4d67-9eac-b32dfe5ae3d6">
+                <msm:hasName>annualcostfactor</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/Market.owl#CostFactor</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__MEN.owl#MessagePart_b8270e57-390a-45ec-b93a-65ca88270158">
+                <msm:hasName>interestfactor</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/Market.owl#InterestFactor</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__MEN.owl#MessagePart_e3d439a4-a723-4de5-b711-0787d9b33114">
+                <msm:hasName>carbontax</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/Market.owl#Price</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__MEN.owl#MessagePart_80aa6267-7431-4f88-9ce2-69b6bfd69e56">
+                <msm:hasName>ecoindustrialpark</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#Eco-industrialPark</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasInput>
+        <msm:hasHttpUrl>http://localhost:8080/JPS_MEN/MENAgent</msm:hasHttpUrl>
+      </msm:Operation>
+    </msm:hasOperation>
+    <msm:isComposed>false</msm:isComposed>
+  </msm:Service>
+</rdf:RDF>
