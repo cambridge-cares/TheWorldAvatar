@@ -13,6 +13,8 @@ import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 /**
  * Servlet implementation class ADMSPowerPlantGetter
+ * Accepts location (Berlin or The Hague) in URL query string
+ * Returns GeoJSON object, representing a selected powerplant in The Hague or Berlin
  */
 @WebServlet("/ADMSPowerPlantGetter")
 public class ADMSPowerPlantGetter extends HttpServlet {

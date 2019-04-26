@@ -1,56 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>RDF4J SPARQL GUI</title>
-    <link rel="stylesheet" href="css/index.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<meta charset="UTF-8">
+<title>RDF4J SPARQL GUI</title>
+<link rel="stylesheet" href="css/index.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <body>
 	<div id="user-interface">
-	    <div class="header">
-	        <p>Query Repository</p>
-	    </div>
-	    
-	    <!--<form class="entry-fields">-->
-	    <div class="row" id="query-language">
-	        <label for="query-language-select">Query Language:</label>
-	        <select id="query-language-select">
-	            <option value="SPARQL">SPARQL</option>
-	        </select>
-	    </div>
-	    
-	    <div class="row" id="query">
-	        <label for="query-string">Query:</label>
-	        <textarea id="query-string" rows="30" cols="120"></textarea>
-	    </div>
-	    
-	    <div class="row" id="actions">
-	        <p>Actions:</p>
-	        <button id="clear">Clear</button>
-	        <button id="execute">Execute</button>
-	        <!--<button>Save query</button>-->
-	    </div>
-	    
-	    <div class="row" id="results">
-	    	<p>Query Result:</p>
-	    	<p id="num-results"></p>
-	    </div>
-	    
+		<div class="header">
+			<p>Query Repository</p>
+		</div>
 
-    </div>
- 	
- 	<div id="table">
- 		<table>
- 			<thead>
-    			<tr class="row-header">
-    			</tr>
-   			</thead>
-   			<tbody id="table-query-results">
-   			</tbody>
-   		</table>
-   	</div>
-    
-    <script src="scripts/index.js"></script>
+		<!--<form class="entry-fields">-->
+		<div class="row" id="query-language">
+			<label for="query-language-select">Query Language:</label> <select
+				id="query-language-select">
+				<option value="SPARQL">SPARQL</option>
+			</select>
+		</div>
+
+		<div class="row" id="query">
+			<label for="query-string">Query:</label>
+			<textarea id="query-string" rows="30" cols="120">
+			PREFIX ontochem: 
+<https://como.cheng.cam.ac.uk/kb/ontochem.owl#>
+SELECT ?x
+WHERE {
+    ?x rdf:type ontochem:ReactionMechanism .
+}
+			
+			</textarea>
+		</div>
+
+		<div class="row" id="actions">
+			<p>Actions:</p>
+			<button id="clear">Clear</button>
+			<button id="execute">Execute</button>
+			<!--<button>Save query</button>-->
+		</div>
+
+		<div class="row" id="results">
+			<p>Query Result:</p>
+			<p id="num-results"></p>
+		</div>
+
+
+	</div>
+
+	<div id="table">
+		<table>
+			<thead>
+				<tr class="row-header">
+				</tr>
+			</thead>
+			<tbody id="table-query-results">
+			</tbody>
+		</table>
+	</div>
+
+	<script src="scripts/index.js"></script>
 </body>
 </html>
