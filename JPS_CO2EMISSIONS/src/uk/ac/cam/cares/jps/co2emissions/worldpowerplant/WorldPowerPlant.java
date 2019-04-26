@@ -47,16 +47,8 @@ import uk.ac.cam.cares.jps.base.util.PythonHelper;
 public class WorldPowerPlant extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final String EXCHANGE_NAME = "jps.agents";
-	private static final String SCENARIO_ID_1 = "1";
-	private static final String SCENARIO_ID_2 = "2";
-	private static final String SCENARIO_ID_3 = "3";
-	private static final String SCENARIO_ID_4 = "4";
-	private static final String SCENARIO_ID_5 = "5";
-	
-	private static final String PATH = "/JPS_CO2EMISSIONS/SurrogateModel";
-	private static final String KEY = "query";
+
 	private static final Gson g = new Gson();
-	private final String WORKINGDIR_ADMS_PATH = AgentLocator.getPathToWorkingDir(this);
        
     public WorldPowerPlant() {
         super();
@@ -65,9 +57,6 @@ public class WorldPowerPlant extends HttpServlet {
     protected void publishMessage(String powerplantIRI, String idScenario, Channel channel, String chosenModel) throws UnsupportedEncodingException, IOException, URISyntaxException {
 		Map<String, String> queryParamsJsonObj = new HashMap<String, String>();
 		queryParamsJsonObj.put("plant", powerplantIRI);
-		
-		// String queryParamPowerplantIRIString = g.toJson(queryParamsJsonObj);		
-		// AgentCaller.executeGet(PATH, KEY, queryParamPowerplantIRIString);
 		
 		String agentIRI = null;
 		
@@ -92,7 +81,6 @@ public class WorldPowerPlant extends HttpServlet {
 		else {
 			URIBuilder builder = new URIBuilder().setScheme("http").setHost("localhost:8000")
 					.setPath("/run-surrogate-model").setParameter("powerplantIRI", powerplantIRI);
-			// .setParameter("workingdir", WORKINGDIR_ADMS_PATH)
 
 			URI uri = builder.build();
 			HttpGet getRequest = new HttpGet(uri);
@@ -151,65 +139,15 @@ public class WorldPowerPlant extends HttpServlet {
 			for (int a=1;a<numSegments;a++)	{
 				if (segmentInitialValue[a-1] + i < segmentInitialValue[a]) {
 					System.out.println(String.format("idx: %d", segmentInitialValue[a-1] + i));
-					//System.out.println("use scenario " + a);
-					// System.out.println(arrayPowerplantIRI[i]);
 					publishMessage(arrayPowerplantIRI[segmentInitialValue[a-1]+i], String.valueOf(a), channel, chosenModel);
 				}
 			}
 
 				if (segmentInitialValue[numSegments-1] + i < numPowerplants) {
 					System.out.println(String.format("idx: %d", segmentInitialValue[numSegments-1] + i));
-					//System.out.println("use scenario "+numSegments);
-					// System.out.println(arrayPowerplantIRI[segmentInitialValue[4]+i]);
 					publishMessage(arrayPowerplantIRI[segmentInitialValue[numSegments-1] + i], String.valueOf(numSegments), channel, chosenModel);
 				}
-			
-			
 		}
-		
-/*		for (int i = 0; i < maxLoop; i++) {
-			
-			if (i < segmentInitialValue[1]) {
-				System.out.println("idx: " + i);
-				System.out.println("use scenario 1 ");
-//				System.out.println(arrayPowerplantIRI[i]);
-				publishMessage(arrayPowerplantIRI[i], SCENARIO_ID_1, channel, chosenModel);
-			}
-			
-			if (segmentInitialValue[1]+i < segmentInitialValue[2]) {
-				System.out.println(String.format("idx: %d", segmentInitialValue[1]+i));
-				System.out.println("use scenario 2");
-//				System.out.println(arrayPowerplantIRI[segmentInitialValue[1]+i]);
-				publishMessage(arrayPowerplantIRI[segmentInitialValue[1]+i], SCENARIO_ID_2, channel, chosenModel);
-			}
-			
-			if (segmentInitialValue[2]+i < segmentInitialValue[3]) {
-				System.out.println(String.format("idx: %d", segmentInitialValue[2]+i));
-				System.out.println("use scenario 3 ");
-//				System.out.println(arrayPowerplantIRI[segmentInitialValue[2]+i]);
-				publishMessage(arrayPowerplantIRI[segmentInitialValue[2]+i], SCENARIO_ID_3, channel, chosenModel);
-			}
-			
-			if (segmentInitialValue[3]+i < segmentInitialValue[4]) {
-				System.out.println(String.format("idx: %d", segmentInitialValue[3]+i));
-				System.out.println("use scenario 4 ");
-//				System.out.println(arrayPowerplantIRI[segmentInitialValue[3]+i]);
-				publishMessage(arrayPowerplantIRI[segmentInitialValue[3]+i], SCENARIO_ID_4, channel, chosenModel);
-			}
-			
-			if (segmentInitialValue[4]+i < numPowerplants) {
-				System.out.println(String.format("idx: %d", segmentInitialValue[4]+i));
-				System.out.println("use scenario 5 ");
-//				System.out.println(arrayPowerplantIRI[segmentInitialValue[4]+i]);
-				publishMessage(arrayPowerplantIRI[segmentInitialValue[4]+i], SCENARIO_ID_5, channel, chosenModel);
-			}
-			
-		}*/
-		
-		
-		
-
-		
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -266,18 +204,6 @@ public class WorldPowerPlant extends HttpServlet {
 			long elapsedTime = stopTime - startTime;
 			System.out.println("the time elapsed is= "+elapsedTime);
 			System.out.println("done");
-			
-//			for(int i = 0; i < arrayOfPowerplantIRI.length; i++) {
-//				
-//				String plant = arrayOfPowerplantIRI[i];
-//				Map<String, String> queryParamsJsonObj = new HashMap<String, String>();
-//				queryParamsJsonObj.put("plant", plant);
-//				
-//				String queryParamsString = g.toJson(queryParamsJsonObj);
-//				channel.basicPublish(EXCHANGE_NAME, "", null, queryParamsString.getBytes("UTF-8"));
-////				TimeUnit.SECONDS.sleep(1);
-//				AgentCaller.executeGet(PATH, KEY, queryParamsString);				
-//			}
 			
 			channel.close();
 			connection.close();			
