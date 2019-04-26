@@ -134,7 +134,7 @@ public class ADMSAgent extends HttpServlet {
 				targetCRSName =  CRSTransformer.EPSG_28992;
 			} 
 			else if (cityIRI.equalsIgnoreCase(BuildingQueryPerformer.BERLIN_IRI)) {
-				sourceCRSName = CRSTransformer.EPSG_3857; //UNSURE WHETHER IT IS 3857 or 4326 (23/4)
+				sourceCRSName = CRSTransformer.EPSG_3857; 
 				targetCRSName = CRSTransformer.EPSG_25833;
 			}
 			else if (cityIRI.equalsIgnoreCase(BuildingQueryPerformer.SINGAPORE_IRI)) {

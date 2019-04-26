@@ -22,7 +22,16 @@
 	    
 	    <div class="row" id="query">
 	        <label for="query-string">Query:</label>
-	        <textarea id="query-string" rows="30" cols="120"></textarea>
+	        <textarea id="query-string" rows="30" cols="120">
+	        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX ontochem: 
+<https://como.cheng.cam.ac.uk/kb/ontochem.owl#>
+SELECT ?x
+WHERE {
+    ?x rdf:type ontochem:ReactionMechanism .
+}
+	        
+	        </textarea>
 	    </div>
 	    
 	    <div class="row" id="actions">

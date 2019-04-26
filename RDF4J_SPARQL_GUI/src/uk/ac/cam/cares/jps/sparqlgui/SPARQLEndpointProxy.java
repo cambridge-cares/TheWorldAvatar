@@ -20,6 +20,16 @@ import org.json.JSONException;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
+//import org.apache.http.HttpHeaders;
+//import org.apache.http.HttpResponse;
+//import org.apache.http.client.methods.HttpGet;
+//import org.apache.http.client.utils.URIBuilder;
+//import org.apache.http.impl.client.HttpClientBuilder;
+//import org.apache.http.util.EntityUtils;
+//import org.json.JSONException;
+//
+//import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+
 /**
  * Servlet implementation class SPARQLEndpointProxy
  */
