@@ -41,7 +41,9 @@ public class JenaHelper {
 
 		if (path.startsWith("http")) {
 			String scenarioUrl = BucketHelper.getScenarioUrl();
-			path = new ScenarioClient().getReadUrl(scenarioUrl, path).toString();
+			if (!BucketHelper.isBaseScenario(scenarioUrl)) {
+				path = new ScenarioClient().getReadUrl(scenarioUrl, path).toString();
+			}
 		}
 			
 		OntModel result = createModel();
