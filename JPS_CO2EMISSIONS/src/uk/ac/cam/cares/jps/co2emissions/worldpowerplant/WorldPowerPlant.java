@@ -32,7 +32,6 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.exception.PythonException;
@@ -42,7 +41,6 @@ import uk.ac.cam.cares.jps.base.util.PythonHelper;
  */
 @WebServlet("/WorldPowerPlant")
 
-//TODO TOMORROW : try to finish the changing of the number of agents involved!!!!
 
 public class WorldPowerPlant extends HttpServlet {
 	private static final long serialVersionUID = 1L;
