@@ -18,6 +18,8 @@ import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 /**
  * Servlet implementation class ADMSHelper
+ * Accepts a list of building iris and city iri
+ * Returns serialized list of GeoJSON objects, each representing a building
  */
 @WebServlet("/ADMSHelper")
 public class ADMSHelper extends HttpServlet {
