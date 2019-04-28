@@ -25,6 +25,20 @@ public class ScenarioClient {
 		return AgentCaller.executeGetWithJsonParameter(path, json);
 	}
 	
+	public String mockedOperation(String scenarioNameOrUrl, String shortOperationName, String jsonInputParams) {
+		
+		JSONObject jo = new JSONObject(jsonInputParams);
+		String json = jo.toString();
+		
+		if (scenarioNameOrUrl.startsWith("http")) {
+			String url = scenarioNameOrUrl + shortOperationName;
+			return AgentCaller.executeGetWithURLAndJSON(url, json);
+		}	
+	
+		String path = ScenarioHelper.getScenarioPath(scenarioNameOrUrl) + shortOperationName;
+		return AgentCaller.executeGetWithJsonParameter(path, json);
+	}
+	
 	public String read(String scenarioNameOrUrl, String resourceUrl) {
 		
 		String json = new JSONStringer().object()
@@ -67,5 +81,16 @@ public class ScenarioClient {
 	
 		String url = scenarioUrl + "/read";
 		return AgentCaller.createURIWithURLandJSON(url, json);
+	}
+	
+	public String query(String scenarioUrl, String resourceUrl, String sparqlQuery) {
+
+		String json = new JSONStringer().object()
+				.key(JPSConstants.SCENARIO_RESOURCE).value(resourceUrl)
+				.key(JPSConstants.QUERY_SPARQL_QUERY).value(sparqlQuery)
+				.endObject().toString();
+		
+		String url = scenarioUrl + "/query";
+		return AgentCaller.executeGetWithURLAndJSON(url, json);
 	}
 }

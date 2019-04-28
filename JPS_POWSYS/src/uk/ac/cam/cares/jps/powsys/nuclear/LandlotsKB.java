@@ -19,6 +19,8 @@ import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.ModelFactory;
 
+import uk.ac.cam.cares.jps.powsys.util.Util;
+
 
 public class LandlotsKB {
 	OntModel jenaOwlModel = null;
@@ -44,9 +46,7 @@ public class LandlotsKB {
 	private OntClass areaclass = null;
 	
 	public static String baseURL2 = "D:\\KBDev-git/irp3-JPS-KBDev-git/Server Ontology Configuration Root/kb/sgp/jurongisland/";
-	public static String baseURL = "D:\\JPS/JParkSimulator-git/JPS_POWSYS/testres/";
 	public static String filename="JurongIslandLandlots";
-	public static String csvFile = "D:/JPS/JParkSimulator-git/JPS_POWSYS/testres/Landlots.csv";
 	
 	static Individual gpers;
 	static Individual m2;
@@ -92,24 +92,28 @@ public class LandlotsKB {
 	
 	public void startConversion() throws Exception {
     	
+		String baseURL = Util.getResourceDir(this);
     	String filePath = baseURL + "LotsTemplate.owl"; // the empty owl file 
-    		FileInputStream inFile = new FileInputStream(filePath);
-        	Reader in = new InputStreamReader(inFile, "UTF-8");
-    	    			
-        	OntModel jenaOwlModel = ModelFactory.createOntologyModel();
-        	jenaOwlModel.read(in, null);
-    		initOWLClasses(jenaOwlModel);
-			
-			String filePath2 = baseURL2 +filename+".owl"; // the result of written owl file
-			
-			doConversion(jenaOwlModel); 
-			
-			/** save the updated model file */
-			savefile(jenaOwlModel, filePath2);
+		FileInputStream inFile = new FileInputStream(filePath);
+    	Reader in = new InputStreamReader(inFile, "UTF-8");
+	    			
+    	OntModel jenaOwlModel = ModelFactory.createOntologyModel();
+    	jenaOwlModel.read(in, null);
+		initOWLClasses(jenaOwlModel);
 		
-    	}  	
+		String filePath2 = baseURL2 +filename+".owl"; // the result of written owl file
+		
+		doConversion(jenaOwlModel); 
+		
+		/** save the updated model file */
+		savefile(jenaOwlModel, filePath2);
+	
+	}  	
 	
 	public void doConversion(OntModel jenaOwlModel) {
+		
+		String csvFile = Util.getResourceDir(this) + "/Landlots.csv";
+		
         String line = "";
         String cvsSplitBy = ",";
         int linereader=0;

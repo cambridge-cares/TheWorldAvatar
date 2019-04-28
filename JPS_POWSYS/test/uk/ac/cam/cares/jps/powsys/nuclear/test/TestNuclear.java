@@ -28,7 +28,7 @@ public class TestNuclear extends TestCase {
 		agent.startSimulation(lotiri, iriofnetwork, dataPath, false);
 		
 		// copy existing result file from a previous simulation to the data bucket 
-		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres/results.csv";
+		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres" + "/results.csv";
 		File file = new File(source);
 		String destinationUrl = dataPath + "/" + NuclearAgent.AGENT_TAG + "/results.csv";
 		new QueryBroker().put(destinationUrl, file);
@@ -61,7 +61,7 @@ public class TestNuclear extends TestCase {
 		System.out.println("result from startsimulation=" + resultStart);
 		
 		// copy existing result file from a previous simulation to the data bucket 
-		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres/results.csv";
+		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres" + "/results.csv";
 		File file = new File(source);
 		String destinationUrl = QueryBroker.getLocalDataPath() + "/" + NuclearAgent.AGENT_TAG + "/results.csv";
 		new QueryBroker().put(destinationUrl, file);

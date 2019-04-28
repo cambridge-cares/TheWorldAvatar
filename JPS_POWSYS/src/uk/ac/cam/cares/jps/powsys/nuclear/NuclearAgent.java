@@ -19,16 +19,17 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import uk.ac.cam.cares.jps.powsys.util.Util;
 
 @WebServlet(urlPatterns = {"/NuclearAgent/startsimulation", "/NuclearAgent/processresult"})
 public class NuclearAgent extends JPSHttpServlet {
@@ -69,6 +70,13 @@ public class NuclearAgent extends JPSHttpServlet {
         System.out.println("Done");
 	}
 	
+	private void pseudoRunGAMS() {
+		String scenarioUrl = BucketHelper.getScenarioUrl();
+		String usecaseUrl = BucketHelper.getUsecaseUrl();
+		logger.info("starting GAMS for simulation for scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
+		logger.info("GAMS started successfully, post processing of GAMS results by callback");
+	}
+	
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
@@ -98,6 +106,10 @@ public class NuclearAgent extends JPSHttpServlet {
 		} else if ("/NuclearAgent/processresult".equals(path)) {
 			
 			try {
+				String scenarioUrl = BucketHelper.getScenarioUrl();
+				String usecaseUrl = BucketHelper.getUsecaseUrl();
+				logger.info("processing result of GAMS simulation for scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
+				
 				String dataPath = QueryBroker.getLocalDataPath();
 				List<String> result = processSimulationResult(dataPath);
 				JSONObject resultjson = new JSONObject().put("plantirilist", result);
@@ -113,7 +125,7 @@ public class NuclearAgent extends JPSHttpServlet {
 		
 		String baseUrl = dataPath + "/" + AGENT_TAG;
 		
-		logger.info("starting simulation for baseUrl=" + baseUrl);
+		logger.info("starting simulation for local path =" + baseUrl);
 		
 		QueryBroker broker = new QueryBroker();
 		
@@ -125,7 +137,7 @@ public class NuclearAgent extends JPSHttpServlet {
 		
         //-----------------------------------------2nd input file finished-------------------------------------------------------------------		
 	
-        String resourceDir = NuclearAgent.getResourceDir(this);
+        String resourceDir = Util.getResourceDir(this);
         File file = new File(resourceDir + "/constants_req.csv");
         broker.put(baseUrl + "/constants_req.csv", file);
 
@@ -135,21 +147,18 @@ public class NuclearAgent extends JPSHttpServlet {
         broker.put(baseUrl + "/parameters_req.csv", file);
  
         //-----------------------------------------4th input file finished-------------------------------------------------------------------
-    
-        if (runGams) {
-        	runGAMS();
-        }
-	}
-	
-	public static String getResourceDir(Object thisObject) {
-		return AgentLocator.getCurrentJpsAppDirectory(thisObject) + "/testres";
+
+        //if (runGams) {
+        //	runGAMS();
+        //}
+        pseudoRunGAMS();
 	}
 	
 	public List<String> processSimulationResult(String dataPath) throws NumberFormatException, IOException, URISyntaxException {
 	
 		String baseUrl = dataPath + "/" + AGENT_TAG;
 		
-		logger.info("processing simulation result for baseUrl=" + baseUrl);
+		logger.info("processing simulation result for local path =" + baseUrl);
 		
 		//   recreate the nuclear powerplant on flight
 		NuclearKBCreator in= new NuclearKBCreator();
