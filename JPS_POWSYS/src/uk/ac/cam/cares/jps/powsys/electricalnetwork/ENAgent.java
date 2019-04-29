@@ -34,6 +34,7 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
+import uk.ac.cam.cares.jps.powsys.util.Util;
 
 @WebServlet(urlPatterns = { "/ENAgent/startsimulationPF", "/NuclearAgent/startsimulationOPF" })
 public class ENAgent extends HttpServlet {
@@ -428,7 +429,7 @@ public class ENAgent extends HttpServlet {
 		content = createNewTSV(branchlist, baseUrl + "/mappingforbranch.csv", baseUrl + "/mappingforbus.csv");
 		broker.put(baseUrl + "/branch.txt", content);
 
-		String resourceDir = ENAgent.getResourceDir(this);
+		String resourceDir = Util.getResourceDir(this);
 		File file = new File(resourceDir + "/baseMVA.txt");
 		broker.put(baseUrl + "/baseMVA.txt", file);
 
@@ -436,10 +437,6 @@ public class ENAgent extends HttpServlet {
 		broker.put(baseUrl + "/PyPower-PF-OPF-JA-8.py", file2);
 		
 		return buslist;
-	}
-
-	public static String getResourceDir(Object thisObject) {
-		return AgentLocator.getCurrentJpsAppDirectory(thisObject) + "/testres";
 	}
 
 	public OntModel readModelGreedy(String iriofnetwork) {

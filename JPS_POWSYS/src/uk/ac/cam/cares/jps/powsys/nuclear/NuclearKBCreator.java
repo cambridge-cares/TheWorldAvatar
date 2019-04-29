@@ -22,6 +22,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import uk.ac.cam.cares.jps.powsys.util.Util;
 
 public class NuclearKBCreator {
 
@@ -132,7 +133,7 @@ public class NuclearKBCreator {
 				data[j] = unquote(dataWithQuotes[j]);
 			}
 
-			String resourceDir = NuclearAgent.getResourceDir(this);
+			String resourceDir = Util.getResourceDir(this);
 			String filePath = resourceDir + "/plantgeneratortemplate.owl"; // the empty owl file
 
 			FileInputStream inFile = new FileInputStream(filePath);
@@ -227,7 +228,7 @@ public class NuclearKBCreator {
 
 	public OntModel doConversionreactor(String iriprefix,String generatorname,String xnumval,String ynumval,double capacity) throws FileNotFoundException, UnsupportedEncodingException, URISyntaxException {
 
-		String resourceDir = NuclearAgent.getResourceDir(this);
+		String resourceDir = Util.getResourceDir(this);
 		String filePath = resourceDir + "/plantgeneratortemplate.owl"; // the empty owl file
 		FileInputStream inFile = new FileInputStream(filePath);
 		Reader in = new InputStreamReader(inFile, "UTF-8");

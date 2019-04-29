@@ -42,8 +42,8 @@
         <configuration>
           <webResources>
 						<resource>
-           					<directory>testres</directory>
-           					<targetPath>testres</targetPath>
+           					<directory>res</directory>
+           					<targetPath>res</targetPath>
            				</resource>
            				<resource>
            					<directory>python</directory>
@@ -99,16 +99,16 @@
 		</dependency>
 		
 		<dependency>
-    <groupId>com.opencsv</groupId>
-    <artifactId>opencsv</artifactId>
-    <version>4.0</version>
-</dependency>
-
-<dependency>
-    <groupId>commons-io</groupId>
-    <artifactId>commons-io</artifactId>
-    <version>2.6</version>
-</dependency>
+		    <groupId>com.opencsv</groupId>
+		    <artifactId>opencsv</artifactId>
+		    <version>4.0</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>commons-io</groupId>
+		    <artifactId>commons-io</artifactId>
+		    <version>2.6</version>
+		</dependency>
 
 	</dependencies>
   

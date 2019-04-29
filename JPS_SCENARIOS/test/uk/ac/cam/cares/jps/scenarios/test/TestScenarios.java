@@ -10,12 +10,13 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
+import uk.ac.cam.cares.jps.scenario.ScenarioAgent;
 
 public class TestScenarios extends TestCase {
 	
 	// TODO-AE SC 20190218 what if the plant file is removed from claudius as OWL file and only triple store are used; find a solution such that test don't fail in future
 	//private static final String PLANT = "http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl";
-	private static final String PLANT = "http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#Northwest_Kabul_Power_Plant_Afghanistan";
+	public static final String PLANT = "http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#Northwest_Kabul_Power_Plant_Afghanistan";
 	
 	
 	private void putToThreadContext() {
@@ -40,7 +41,7 @@ public class TestScenarios extends TestCase {
 		assertEquals("value2", json.get("key2"));
 	}
 	
-	private void assertEmissionValue(String scenario, String plant, double expected) {
+	public static void assertEmissionValue(String scenario, String plant, double expected) {
 		
 		String json = new JSONStringer().object()
 				.key("plant").value(plant)
@@ -55,7 +56,7 @@ public class TestScenarios extends TestCase {
 		assertEquals(expected, actual);
 	}
 	
-	private String setEmissionValue(String scenario, String plant, double emissionValue) {
+	public static String setEmissionValue(String scenario, String plant, double emissionValue) {
 		String json = new JSONStringer().object()
 				.key("plant").value(plant)
 				.key("emission").value(emissionValue)
@@ -176,5 +177,14 @@ public class TestScenarios extends TestCase {
 		System.out.println(result);
 		JSONObject jo = new JSONObject(result);
 		assertTrue(jo.has("weatherstate"));
+	}
+	
+	public void xxxtestMergeScenarios() {
+		
+		String sourceBucket = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\aascmergesource";
+		String destBucket = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\aascmerge";
+		
+		new ScenarioAgent().copyOwlFiles(sourceBucket, destBucket);
+		
 	}
 }

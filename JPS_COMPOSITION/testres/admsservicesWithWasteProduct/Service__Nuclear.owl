@@ -1,0 +1,46 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:msm="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#">
+  <msm:Service rdf:about="http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#Service">
+    <msm:hasOperation>
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#Operation_b1b7b13e-d22b-4da9-bf8a-ce18a8b5b985">
+        <msm:hasOutput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#MessageContent_c109d3a1-54ea-491e-9354-a01290e18293">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#MessagePart_e63bba18-6b96-4585-815b-c893288a7f62">
+                <msm:hasName>plantirilist</msm:hasName>
+                <msm:isArray>true</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasOutput>
+        <msm:hasHttpUrl>http://www.theworldavatar.com/JPS_POWSYS/NuclearAgent/processresult</msm:hasHttpUrl>
+      </msm:Operation>
+    </msm:hasOperation>
+    <msm:hasOperation>
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#Operation_dbe86acf-3bfa-41cd-906f-4226e5a26192">
+        <msm:hasInput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#MessageContent_378357b5-f93a-412a-a47b-e4e71062b2c8">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#MessagePart_c38012d0-f245-411d-ba2e-8ebfb5e161be">
+                <msm:hasName>electricalnetwork</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#MessagePart_8f17f5b2-c840-4a8c-a2e2-4279f37cddf2">
+                <msm:hasName>landlot</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#Landlot</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasInput>
+        <msm:hasHttpUrl>http://www.theworldavatar.com/JPS_POWSYS/NuclearAgent/startsimulation</msm:hasHttpUrl>
+      </msm:Operation>
+    </msm:hasOperation>
+    <msm:isComposed>false</msm:isComposed>
+  </msm:Service>
+</rdf:RDF>

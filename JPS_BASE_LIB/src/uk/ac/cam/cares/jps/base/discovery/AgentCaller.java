@@ -231,6 +231,7 @@ public class AgentCaller {
 			}
 			
 			buf.append(request.getURI().getPath());
+			String requestAsString = buf.toString();
 			String query = request.getURI().getQuery();
 			if (query != null) {
 				int length = query.length();
@@ -248,7 +249,12 @@ public class AgentCaller {
 			if (httpResponse.getStatusLine().getStatusCode() != 200) {
 				String body =  EntityUtils.toString(httpResponse.getEntity());
 				logger.error(body);
-				throw new JPSRuntimeException("HTTP response with error = " + httpResponse.getStatusLine());
+				String message = "original request = " + requestAsString;
+				if (request.getURI().getQuery() != null) {
+					message += "?" + request.getURI().getQuery();
+				}
+				logger.info(message);
+				throw new JPSRuntimeException("HTTP response with error = " + httpResponse.getStatusLine() + ", " + message);
 			}
 		
 			String body =  EntityUtils.toString(httpResponse.getEntity());

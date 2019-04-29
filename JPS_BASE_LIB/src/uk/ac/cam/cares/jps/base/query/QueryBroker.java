@@ -30,7 +30,7 @@ public class QueryBroker {
 	public String readFile(String urlOrPath) {
 		
 		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
-		JPSBaseLogger.info(this, "reading file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioUrl);
+		JPSBaseLogger.info(this, "reading file for urlOrPath=" + urlOrPath + ", scenarioUrl=" + scenarioUrl);
 		
 		// TODO-AE SC 20190416 this is just a hack to read local file, refactor this method
 		if (! urlOrPath.startsWith("http")) {
@@ -69,21 +69,14 @@ public class QueryBroker {
 
 	public String queryFile(String urlOrPath, String sparqlQuery) {
 		
-		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	
-		JPSBaseLogger.info(this, "querying file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
+		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
+		JPSBaseLogger.info(this, "querying file for urlOrPath=" + urlOrPath + ", scenarioUrl=" + scenarioUrl);
 		
 		// call the scenario agent if a scenario url is set in the input
 		// the scenario agent has to be called even for copy-on-write since in the past
 		// another agent might have updated the file within the same scenario 
-		if (scenarioURL != null)  {
-			String url = scenarioURL + "/query";
-			
-			String json = new JSONStringer().object()
-					.key(JPSConstants.SCENARIO_RESOURCE).value(urlOrPath)
-					.key(JPSConstants.QUERY_SPARQL_QUERY).value(sparqlQuery)
-					.endObject().toString();
-			
-			return AgentCaller.executeGetWithURLAndJSON(url, json);
+		if (scenarioUrl != null)  {
+			new ScenarioClient().query(scenarioUrl, urlOrPath, sparqlQuery);
 		}
 		
 		urlOrPath = ResourcePathConverter.convert(urlOrPath);
@@ -151,13 +144,13 @@ public class QueryBroker {
 	 */
 	public String writeFile(String urlOrPath, String content) {
 		
-		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	
-		JPSBaseLogger.info(this, "writing file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
+		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
+		JPSBaseLogger.info(this, "writing file for urlOrPath=" + urlOrPath + ", scenarioUrl=" + scenarioUrl);
 		
-		if (scenarioURL != null) {
+		if (scenarioUrl != null) {
 			
-			int i = scenarioURL.lastIndexOf("/");
-			String scenarioName = scenarioURL.substring(i);
+			int i = scenarioUrl.lastIndexOf("/");
+			String scenarioName = scenarioUrl.substring(i);
 			String scenarioBucket = ScenarioHelper.getScenarioBucket(scenarioName);
 			String path = ScenarioHelper.getFileNameWithinBucket(urlOrPath, scenarioBucket);
 
@@ -218,14 +211,14 @@ public class QueryBroker {
 	 */
 	public void updateFile(String urlOrPath, String sparqlUpdate) {
 		
-		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	
-		JPSBaseLogger.info(this, "updating file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
+		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
+		JPSBaseLogger.info(this, "updating file for urlOrPath=" + urlOrPath + ", scenarioUrl=" + scenarioUrl);
 		
 		
 		// TODO-AE SC 20190218 URGENT
 		// call the scenario agent if a scenario url is set in the input
-		if (scenarioURL != null)  {
-			String url = scenarioURL + "/update";
+		if (scenarioUrl != null)  {
+			String url = scenarioUrl + "/update";
 			
 			String json = new JSONStringer().object()
 					.key(JPSConstants.SCENARIO_RESOURCE).value(urlOrPath)

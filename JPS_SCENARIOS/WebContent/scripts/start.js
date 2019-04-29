@@ -160,8 +160,10 @@ $(function() {
     //$('#tableparams2').DataTable().clear();
     $('#tableparams2').dataTable().fnClearTable(); 
     
+    var numberin = 0;
  	var params = selectedOperation.hasInput;
     for(var i in params) {
+      numberin = numberin + 1;
       var inout = "in";
       var name = params[i].hasName;
       var type = params[i].hasType;
@@ -182,6 +184,17 @@ $(function() {
         value
       ]);
     }
+    
+    // add usecaseurl as input param
+    var type = "http://www.w3.org/2001/XMLSchema#string";
+	var typelink = '<a href="' + type + '">' + type + '</a>';
+	var value =  "<input type=\"text\" id=\"inparamvalue" + numberin + "\">";
+    $('#tableparams2').dataTable().fnAddData( [
+        "in",
+    	"usecaseurl",
+        typelink,
+        value
+     ]);
     
 	var params = selectedOperation.hasOutput;
     for(var i in params) {
@@ -246,9 +259,11 @@ $(function() {
 	  
 	  var urlencoded = url;
 
+	  var json = {}
+	  var numberInParams = 0;
 	  var paramsdata = $('#tableparams2').DataTable().rows().data();
 	  if (selectedOperation.hasInput) {
-		  var json = {}
+		  
 		 
 		  if ((url !== null) && url.endsWith('mock')) {
 			  
@@ -261,7 +276,7 @@ $(function() {
 				  json["agent"] = selectedScenario.id;
 			  } 
 		  
-			  var numberInParams = selectedOperation.hasInput.length;
+			  numberInParams = selectedOperation.hasInput.length;
 			  console.log("no " + numberInParams);
 			  for (i=0; i<numberInParams; i++) {
 				  var paramkey = paramsdata[i][1];
@@ -278,13 +293,28 @@ $(function() {
 				    }
 					  
 				  	json["" + paramkey] = paramvalue;
-			  	}
+			  	  }
 			  }
 		  }
-		  
-		  url += "?query=" + JSON.stringify(json);
-		  urlencoded += "?query=" + encodeURIComponent(JSON.stringify(json));
   	  }
+	  
+	  
+	  // add usecaseurl 
+	  var paramkey = paramsdata[numberInParams][1];
+	  var paramvalue = $('#inparamvalue' + numberInParams).val();
+	  // the next line does not work since it adds "paramkey": "...Berlin" instead of "city": "...Berlin"
+	  //json.paramkey = paramvalue;  
+	  console.log("key=" + paramkey + ", value=" + paramvalue);
+	  if (paramvalue && paramvalue.length > 0) {
+		    try {
+		        paramvalue = JSON.parse(paramvalue);
+		    } catch (e) {
+		    }	  
+		  	json["" + paramkey] = paramvalue;
+	  }
+	  
+	  url += "?query=" + JSON.stringify(json);
+	  urlencoded += "?query=" + encodeURIComponent(JSON.stringify(json));
 
 	  $("#linkforaction").prop('href', urlencoded);
 	  $("#linkforaction").text(url);

@@ -1,0 +1,60 @@
+<rdf:RDF
+    xmlns="http://www.semanticweb.org/kadit01/ontologies/2019/2/untitled-ontology-39#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:terms="http://purl.org/dc/terms/"
+    xmlns:j.0="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#"
+    xmlns:j.1="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#"
+    xmlns:j.2="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:j.3="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#"
+    xmlns:j.4="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:j.5="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
+  <owl:Ontology rdf:about="http://www.semanticweb.org/kadit01/ontologies/2019/2/untitled-ontology-39">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl"/>
+  </owl:Ontology>
+  <j.1:NuclearGenerator rdf:about="http://localhost:8080/jps/kb/3faa7da1-d1e3-407c-a1c8-86641233f205/nuclearpowerplants/NucGenerator_1_B0.owl#NucGenerator_1_B0">
+    <j.5:hasActivePowerGenerated>
+      <j.5:GeneratedActivePower rdf:about="http://localhost:8080/jps/kb/3faa7da1-d1e3-407c-a1c8-86641233f205/nuclearpowerplants/NucGenerator_1_B0.owl#GeneratedActivePower_NucGenerator_1_B0">
+        <j.2:hasValue>
+          <j.2:ScalarValue rdf:about="http://localhost:8080/jps/kb/3faa7da1-d1e3-407c-a1c8-86641233f205/nuclearpowerplants/NucGenerator_1_B0.owl#V_GeneratedActivePower_NucGenerator_1_B0">
+            <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+            <j.2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double"
+            >225.0</j.2:numericalValue>
+          </j.2:ScalarValue>
+        </j.2:hasValue>
+      </j.5:GeneratedActivePower>
+    </j.5:hasActivePowerGenerated>
+    <j.4:hasGISCoordinateSystem>
+      <j.4:ProjectedCoordinateSystem rdf:about="http://localhost:8080/jps/kb/3faa7da1-d1e3-407c-a1c8-86641233f205/nuclearpowerplants/NucGenerator_1_B0.owl#CoordinateSystem_of_NucGenerator_1_B0">
+        <j.4:hasProjectedCoordinate_y>
+          <j.0:StraightCoordinate rdf:about="http://localhost:8080/jps/kb/3faa7da1-d1e3-407c-a1c8-86641233f205/nuclearpowerplants/NucGenerator_1_B0.owl#y_coordinate_of_NucGenerator_1_B0">
+            <j.2:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+            <j.3:refersToAxis rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+            <j.2:hasValue>
+              <j.3:CoordinateValue rdf:about="http://localhost:8080/jps/kb/3faa7da1-d1e3-407c-a1c8-86641233f205/nuclearpowerplants/NucGenerator_1_B0.owl#v_y_coordinate_of_NucGenerator_1_B0">
+                <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree"/>
+                <j.2:numericalValue>103.719167</j.2:numericalValue>
+              </j.3:CoordinateValue>
+            </j.2:hasValue>
+          </j.0:StraightCoordinate>
+        </j.4:hasProjectedCoordinate_y>
+        <j.4:hasProjectedCoordinate_x>
+          <j.0:StraightCoordinate rdf:about="http://localhost:8080/jps/kb/3faa7da1-d1e3-407c-a1c8-86641233f205/nuclearpowerplants/NucGenerator_1_B0.owl#x_coordinate_of_NucGenerator_1_B0">
+            <j.2:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+            <j.3:refersToAxis rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+            <j.2:hasValue>
+              <j.3:CoordinateValue rdf:about="http://localhost:8080/jps/kb/3faa7da1-d1e3-407c-a1c8-86641233f205/nuclearpowerplants/NucGenerator_1_B0.owl#v_x_coordinate_of_NucGenerator_1_B0">
+                <j.2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree"/>
+                <j.2:numericalValue>1.270333</j.2:numericalValue>
+              </j.3:CoordinateValue>
+            </j.2:hasValue>
+          </j.0:StraightCoordinate>
+        </j.4:hasProjectedCoordinate_x>
+      </j.4:ProjectedCoordinateSystem>
+    </j.4:hasGISCoordinateSystem>
+  </j.1:NuclearGenerator>
+</rdf:RDF>

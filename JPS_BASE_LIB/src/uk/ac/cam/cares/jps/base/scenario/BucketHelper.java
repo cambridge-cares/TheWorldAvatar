@@ -47,11 +47,15 @@ public class BucketHelper {
 
 		String usecaseUrl = ThreadContext.get(JPSConstants.SCENARIO_USE_CASE_URL);	
 		if (usecaseUrl == null) {
-			usecaseUrl = getScenarioUrl() + SLASH_KB + UUID.randomUUID().toString();
+			usecaseUrl = getUsecaseUrl(getScenarioUrl());
 			ThreadContext.put(JPSConstants.SCENARIO_USE_CASE_URL, usecaseUrl);
 		}
 		
 		return usecaseUrl;
+	}
+	
+	public static String getUsecaseUrl(String scenarioUrl) {
+		return scenarioUrl + SLASH_KB + UUID.randomUUID().toString();
 	}
 	
 	public static String getUsecaseUrlForData() {

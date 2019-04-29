@@ -214,7 +214,7 @@ public class TestAgentDescriptions extends TestCase {
 				//.input("http://www.w3.org/2001/XMLSchema#string", "scenarioname")
 			.operation(null, JPS_SCENARIO + "/call")
 				.input("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasHttpUrl", "scenarioagentoperation")
-				//.input("http://www.w3.org/2001/XMLSchema#string", "scenarioname")
+				.input("http://www.w3.org/2001/XMLSchema#string", "usecaseurl")
 			.operation(null, JPS_SCENARIO + "/read")
 				.input("http://www.theworldavatar.com/ontology/ontoagent/OntoAgent.owl#Resource", "scenarioresource")
 				//.input("http://www.w3.org/2001/XMLSchema#string", "scenarioname")
@@ -277,11 +277,11 @@ public class TestAgentDescriptions extends TestCase {
 	
 	public void testDescription() throws URISyntaxException, FileNotFoundException {
 		
-		Service service = createDescrForAgentEmissionTest();
+		Service service = createDescrForAgentScenario();
 		
 		String json = new Gson().toJson(service);
 		System.out.println(json);
 		
-		backAndforthAndWrite(service, "_EmissionTestAgent");
+		backAndforthAndWrite(service, "_Nuclear");
 	}
 }

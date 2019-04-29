@@ -101,7 +101,7 @@ public class JenaResultSetFormatter {
 	 * to the input parameter keys. If a key is not found then the value <code>null</code> is set in the array.
 	 * 
 	 * @param resultJSONW3CStandard
-	 * @param keys
+	 * @param keys without ?
 	 * @return
 	 */
 	public static List<String[]> convertToListofStringArrays(String resultJSONW3CStandard, String... keys) {
