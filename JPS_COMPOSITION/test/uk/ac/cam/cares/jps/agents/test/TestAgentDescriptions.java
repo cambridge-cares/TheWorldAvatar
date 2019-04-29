@@ -9,6 +9,7 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceBuilder;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceReader;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceWriter;
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 public class TestAgentDescriptions extends TestCase {
@@ -18,6 +19,7 @@ public class TestAgentDescriptions extends TestCase {
 	private static final String JPS_CO2EMISSIONS = "http://www.theworldavatar.com/JPS_CO2EMISSIONS";
 	private static final String JPS_COMPOSITION = "http://www.theworldavatar.com/JPS_COMPOSITION";
 	private static final String JPS_MEN = "http://www.theworldavatar.com/JPS_MEN";
+	private static final String JPS_POWSYS = "http://www.theworldavatar.com/JPS_POWSYS";
 	private static final String JPS_SCENARIO = "http://www.theworldavatar.com/JPS_SCENARIO";
 	
 	private static final String WEATHER = "https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl";
@@ -55,6 +57,8 @@ public class TestAgentDescriptions extends TestCase {
 		backAndforthAndWrite(service, "_FactorModel");
 		service = createDescrForSurrogateModel();
 		backAndforthAndWrite(service, "_SurrogateModel");
+		service = createDescrForAgentNuclearPP();
+		backAndforthAndWrite(service, "_NuclearAgent_startsimulation");
 	}
 	
 	public static void backAndforthAndWrite(Service service, String name) throws URISyntaxException, FileNotFoundException {
@@ -193,6 +197,16 @@ public class TestAgentDescriptions extends TestCase {
 			.build();
 	}
 	
+	private Service createDescrForAgentNuclearPP() {
+		return new ServiceBuilder()
+			.operation(null, JPS_POWSYS + "/NuclearAgent/startsimulation")
+			.input("http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#Landlot", "landlot")
+			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+			.operation(null, JPS_POWSYS + "/NuclearAgent/processresult")
+			.output("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant",true,"plantirilist",true)
+			.build();
+	}
+
 	private Service createDescrForAgentScenario() {
 		return new ServiceBuilder()
 			.operation(null, JPS_SCENARIO + "/mock")
@@ -200,7 +214,7 @@ public class TestAgentDescriptions extends TestCase {
 				//.input("http://www.w3.org/2001/XMLSchema#string", "scenarioname")
 			.operation(null, JPS_SCENARIO + "/call")
 				.input("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasHttpUrl", "scenarioagentoperation")
-				//.input("http://www.w3.org/2001/XMLSchema#string", "scenarioname")
+				.input("http://www.w3.org/2001/XMLSchema#string", "usecaseurl")
 			.operation(null, JPS_SCENARIO + "/read")
 				.input("http://www.theworldavatar.com/ontology/ontoagent/OntoAgent.owl#Resource", "scenarioresource")
 				//.input("http://www.w3.org/2001/XMLSchema#string", "scenarioname")
@@ -214,7 +228,7 @@ public class TestAgentDescriptions extends TestCase {
 				//.input("http://www.w3.org/2001/XMLSchema#string", "scenarioname")
 				.input("http://www.theworldavatar.com/ontology/ontoagent/OntoAgent.owl#Resource", "scenarioresource")
 			.operation(null, JPS_SCENARIO + "/option")
-				.input("http://www.w3.org/2001/XMLSchema#boolean", "copyonread")
+				.input("http://www.w3.org/2001/XMLSchema#boolean", JPSConstants.SCENARIO_OPTION_COPY_ON_READ)
 			.build();
 	}
 	
@@ -263,11 +277,11 @@ public class TestAgentDescriptions extends TestCase {
 	
 	public void testDescription() throws URISyntaxException, FileNotFoundException {
 		
-		Service service = createDescrForAgentEmissionTest();
+		Service service = createDescrForAgentScenario();
 		
 		String json = new Gson().toJson(service);
 		System.out.println(json);
 		
-		backAndforthAndWrite(service, "_EmissionTestAgent");
+		backAndforthAndWrite(service, "_Nuclear");
 	}
 }

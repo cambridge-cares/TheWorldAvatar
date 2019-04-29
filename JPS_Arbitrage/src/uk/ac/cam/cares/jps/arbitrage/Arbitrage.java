@@ -2,17 +2,19 @@ package uk.ac.cam.cares.jps.arbitrage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.mods.api.MoDSAPI;
+import com.google.gson.Gson;
+
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
-
-import com.google.gson.Gson;
 
 public class Arbitrage {
 	private static Logger logger = LoggerFactory.getLogger(Arbitrage.class);
@@ -65,9 +67,25 @@ public class Arbitrage {
 		String cpoPrices = arrayActual[1];
 		String famePrices = arrayActual[2];
 		
+		JSONObject misccostjobj= new JSONObject(miscCosts);
+		Iterator<String> keys = misccostjobj.keys();
+		while(keys.hasNext()) {
+		    String keyofjson = keys.next();
+		    System.out.println("valuesnotif= "+keyofjson);
+		    System.out.println("values= "+misccostjobj.getString(keyofjson));
+		    if (misccostjobj.getString(keyofjson).contains("^^")) {
+
+		    	String extracted=misccostjobj.getString(keyofjson).replace("^^","-");
+		    	System.out.println("now= "+extracted.split("-")[0]);
+		    	misccostjobj.put(keyofjson, extracted.split("-")[0]);
+		              
+		    }
+		}
+		
 		//path of the pythonscript
 		String CPO_to_FAME_analysis = new String("caresjpsarbitrage/CPO_to_FAME_MoDS2.py");
-		String result1 = PythonHelper.callPython(CPO_to_FAME_analysis, result, g.toJson(miscCosts), g.toJson(cpoPrices), g.toJson(famePrices), new Arbitrage());
+		String result1 = PythonHelper.callPython(CPO_to_FAME_analysis, result, g.toJson(misccostjobj.toString()), g.toJson(cpoPrices), g.toJson(famePrices), new Arbitrage());
+
 		logger.info(result1);
 
 		return result1;
@@ -120,8 +138,18 @@ public class Arbitrage {
 		String hngPrices = arrayActual[1];
 		String zcePrices = arrayActual[2];
 		
+		JSONObject misccostjobj= new JSONObject(miscCosts);
+		Iterator<String> keys = misccostjobj.keys();
+		while(keys.hasNext()) {
+		    String keyofjson = keys.next();
+		    if (misccostjobj.getString(keyofjson).contains("^^")) {
+		    	String extracted=misccostjobj.getString(keyofjson).replace("^^","-");
+		    	misccostjobj.put(keyofjson, extracted.split("-")[0]);          
+		    }
+		}
+		
 		String NG_to_MeOH_analysis = new String("caresjpsarbitrage/NG_to_MeOH_MoDS.py");
-		String result1 = PythonHelper.callPython(NG_to_MeOH_analysis, result, g.toJson(miscCosts), g.toJson(hngPrices), g.toJson(zcePrices), new Arbitrage());
+		String result1 = PythonHelper.callPython(NG_to_MeOH_analysis, result, g.toJson(misccostjobj.toString()), g.toJson(hngPrices), g.toJson(zcePrices), new Arbitrage());
 		logger.info(result1);
 		
 		return result1;

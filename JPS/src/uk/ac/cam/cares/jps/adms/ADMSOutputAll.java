@@ -40,8 +40,8 @@ public class ADMSOutputAll extends HttpServlet {
 		args.add("python");
 		args.add("gstReader.py"); 
 		args.add(outputFile);
-		args.add("4");
-		args.add("5");
+		args.add("4"); //height variation level amount (e.g:0m,10m,20m,30m)
+		args.add("5"); //number of polluttant (e.g:CO2,CO,NO2,..etc)
 		args.add("");
 		
 		String result = CommandHelper.executeCommands(targetFolder, args);

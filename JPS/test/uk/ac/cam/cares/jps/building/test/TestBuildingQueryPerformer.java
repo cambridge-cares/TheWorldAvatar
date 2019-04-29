@@ -98,6 +98,24 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		assertEquals(5, polygons.get(0).size());
 	}
 	
+	public void testBERLINOneBuildingOneGroundSurface() {
+		
+		String query = createQueryPerformerForTheHague().getQueryBdnVerticesWithAndWithoutBuildingParts("http://www.theworldavatar.com/kb/deu/berlin/buildings/3920_5819.owl#BuildingBLDG_0003000f0029558f");		
+		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.BERLIN_IRI, query);
+		
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
+		assertEquals(26, map.get("x").size());
+		assertEquals(26, map.get("y").size());
+		assertEquals(26, map.get("z").size());
+		assertEquals("392747.720106856", map.get("x").get(2));
+		assertEquals("5819071.11806408", map.get("y").get(2));
+		assertEquals("35.3300018310547", map.get("z").get(2));
+		
+		List<Polygon> polygons = SimpleShapeConverter.convertTo2DPolygons(map, "groundsurface", "x", "y");
+		assertEquals(4, polygons.size());
+		assertEquals(5, polygons.get(0).size());
+	}
+	
 	public void testTheHaguePlantBuilding() {
 				
 		// old plant IRI from The Hague
@@ -122,6 +140,9 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		assertEquals(83.607, data.BldHeight.get(0), 0.1);
 	}
 	
+	
+	//temporarily disabled to try the new selection method
+	
 	public void testselectClosestBuilding() {
 		
 		double centerx = 10;
@@ -131,8 +152,9 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		map.put("bdn", Arrays.asList("b1", "b2", "b3", "b4", "b5"));
 		map.put("x", Arrays.asList("9", "5", "9.5", "3", "15"));
 		map.put("y", Arrays.asList("11", "16", "10.5", "4", "1"));
+		map.put("h", Arrays.asList("40", "30", "20.5", "10.3", "10"));
 		
-		List<String> buildingIRIs = createQueryPerformerForTheHague().selectClosestBuilding(centerx, centery, 2, map);
+		List<String> buildingIRIs = createQueryPerformerForTheHague().selectClosestBuilding(centerx, centery, 2, map,20.0);
 		assertEquals(2, buildingIRIs.size());
 		assertEquals("b3", buildingIRIs.get(0));
 		assertEquals("b1", buildingIRIs.get(1));
@@ -295,5 +317,20 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 				BuildingQueryPerformer.BERLIN_IRI, plantx, planty, 25, lowerx, lowery, upperx, uppery);
 				
 		assertEquals(25, buildingIRIs.size());
+	}
+	
+	public void testgetqueryofclosestbuildingandresult() {
+		//int buildingLimit=25;
+		double lx= 1.270664E7;
+		double ly=2545539.0 ;
+		double ux=1.27082E7 ;
+		double uy=2547099.0 ;
+		
+		BuildingQueryPerformer v= new BuildingQueryPerformer();
+		String query = v.getQueryClosestBuildingsFromRegion(200, lx, ly, ux, uy);
+		System.out.println("queryformat= " +query);
+		
+		String queryresult=v.performQuery("http://dbpedia.org/resource/Hong_Kong", query);
+		System.out.println("queryresult= " +queryresult);
 	}
 }

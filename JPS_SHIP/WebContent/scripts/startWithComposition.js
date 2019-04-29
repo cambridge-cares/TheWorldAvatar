@@ -1,3 +1,5 @@
+let osmbGlobal;
+
 $(function(){
 
     //*****************************************************//
@@ -54,7 +56,7 @@ $(function(){
         attribution: '� 3D <a href="https://osmbuildings.org/copyright/">OSM Buildings</a>'
     }).appendTo('map');
     //***************************************************************************
-
+	osmbGlobal = osmb;
 	
     //***************************************************************************
     // buttons to tilt camera angle, rotate the map, and zoom in/out
@@ -128,6 +130,11 @@ $(function(){
     $('#start').click(function(){
     	//$('#start').attr("disabled", true);
     	
+		console.log('button clicked')
+		
+		$('#inputFields').append('<img id="myProgressBar" style="width:100px;height:100px;" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/>'
+);
+		
         
         let xmax = parseInt($('#xupper').val());
         let xmin = parseInt($('#xlower').val());
@@ -161,7 +168,7 @@ $(function(){
 		if (location === "Hong Kong") {
         	locationIRI = "http://dbpedia.org/resource/Hong_Kong";
 //        	plant = "http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl#Plant-001";
-        } else if (location === "Singapore") {
+        } else if (location === "Singapore" || location === "Singapore_2") {
         	locationIRI = "http://dbpedia.org/resource/Singapore";
 //        	plant = "http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002";
         }
@@ -207,11 +214,19 @@ $(function(){
 //	        				query
 //        				});
 //        	} else {
+        	
+        	
+        	if (document.getElementById("mock").checked) {
+    		result =  $.getJSON('/JPS_SHIP/ADMSCoordinationAgentForShipWithoutCompositionWithMocks',
+    				{
+        				query
+    				});
+    	} else {
         		result =  $.getJSON('/JPS_SHIP/ADMSCoordinationAgentForShipWithoutComposition',
         				{
 	        				query
         				});
-//        	}        	
+        	}        	
   	
         	return result;
         };
@@ -225,7 +240,11 @@ $(function(){
 			console.log("buildingIRIs = " + buildingIRIs);
 			console.log("shipIRIs = " + shipIRIs);
 			
+			$("#myProgressBar").remove()
         	initadms3dmap(buildingIRIs, [xmin, xmax, ymin, ymax], osmb, location, coordinatesMid, locationIRI, shipIRIs);
+			
+			
+			
         });
 
     });
@@ -242,10 +261,28 @@ $(function(){
                 latitude: 1.262008,
                 longitude: 103.850973
             });
-            $("#xlower").val("11558666.37");
-            $("#xupper").val("11562079.502");
-            $("#ylower").val("139186.423");
-            $("#yupper").val("141908.33");
+//            $("#xlower").val("11558666.37");
+//            $("#xupper").val("11562079.502");
+//            $("#ylower").val("139186.423");
+//            $("#yupper").val("141908.33");
+        	
+        	$("#xlower").val("11560879.832");
+            $("#xupper").val("11563323.926");
+            $("#ylower").val("140107.739");
+            $("#yupper").val("143305.896");
+            
+            osmb.setZoom(14.5);
+            osmb.setTilt(20.6);
+            osmb.setRotation(-45.6);
+        } else if (location === "Singapore_2") {  //singapore 2 is unused
+        	osmb.setPosition({
+                latitude: 1.262008,
+                longitude: 103.850973
+            });
+            $("#xlower").val("11560879.832");
+            $("#xupper").val("11563323.926");
+            $("#ylower").val("140107.739");
+            $("#yupper").val("143305.896");
             
             osmb.setZoom(14.5);
             osmb.setTilt(20.6);
@@ -255,10 +292,14 @@ $(function(){
                 longitude: 114.1491155592187,
                 latitude: 22.28911086466781
             });
-            $("#xlower").val("12706653.262");
-            $("#xupper").val("12708695.125");
-            $("#ylower").val("2545539.172");
-            $("#yupper").val("2546838.028");
+//          $("#xlower").val("12706653.262");
+//          $("#xupper").val("12708695.125");
+//          $("#ylower").val("2545539.172");
+//          $("#yupper").val("2546838.028"); (changed to make it more city centred)
+          $("#xlower").val("12706630.262");
+          $("#xupper").val("12708200.45");
+          $("#ylower").val("2545539.172");
+          $("#yupper").val("2546850.028");
             
             osmb.setZoom(14.5);
             osmb.setTilt(14.5);

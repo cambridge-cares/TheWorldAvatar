@@ -24,7 +24,7 @@ public class ADMSCoordinationAgentWithoutComposition extends HttpServlet {
 	Logger logger = LoggerFactory.getLogger(ADMSCoordinationAgentWithoutComposition.class);
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	
+
 		String jsonInput = AgentCaller.readJsonParameter(request).toString();		
 		JSONObject result = executeWithoutComposition(jsonInput);
 		AgentCaller.writeJsonParameter(response, result);
@@ -41,7 +41,7 @@ public class ADMSCoordinationAgentWithoutComposition extends HttpServlet {
 //			System.out.println("result from coordination= "+new JSONObject(plantresult).getString("plant"));
 //			jo.put("plant", plant);
 			
-			String wasteresult = AgentCaller.executeGet("/JPS/PowerPlant", "query", jo.toString());
+			String wasteresult = execute("/JPS/PowerPlant", jo.toString());
 			String waste=new JSONObject(wasteresult).getString("waste");
 			jo.put("waste", waste);
 						
@@ -69,7 +69,7 @@ public class ADMSCoordinationAgentWithoutComposition extends HttpServlet {
 		}
 	}
 	
-	private String execute(String path, String jsonInput) {
+	protected String execute(String path, String jsonInput) {
 
 		logger.info("execute for path=" + path + ", json=" + jsonInput);
 		String result = AgentCaller.executeGet(path, "query", jsonInput);

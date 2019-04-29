@@ -16,10 +16,11 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.scenario.ScenarioLog.ScenarioLogEntry;
 
@@ -28,12 +29,8 @@ public class ScenarioManagementAgent extends HttpServlet {
 
 	private static final long serialVersionUID = 1733142247564226760L;
 	private static Logger logger = LoggerFactory.getLogger(ScenarioManagementAgent.class);
-	// TODO-AE SC 20190220 move key to JPS_BASE
-	public static final String COPY_ON_READ = "copyonread";
-	
-	public static String getWorkingDir() {
-		return ScenarioHelper.getWorkingDir();
-	}
+
+
 	
 //	public static String getScenarioDescriptionName(String scenarioName) {
 //		return getWorkingDir() + "/" + scenarioName + ".owl";
@@ -42,31 +39,23 @@ public class ScenarioManagementAgent extends HttpServlet {
 	
 	
 	public static String getScenarioLogPath(String scenarioName) {
-		return getWorkingDir() + "/" + scenarioName + "/" + scenarioName + ".json";
+		return ScenarioHelper.getScenarioWorkingDir() + "/" + scenarioName + "/" + scenarioName + ".json";
+	}
+	
+	public static ScenarioLog getScenarioLog(String scenarioName) {	
+		String path = ScenarioManagementAgent.getScenarioLogPath(scenarioName);
+		return new ScenarioLog(scenarioName, path);
 	}
 	
 	public static String getScenarioIRI(String scenarioName) {
-		return getServerAddress() + ScenarioHelper.getScenarioPath(scenarioName) + ".owl#Service";
-	}
-	
-	public static String getServerAddress() {
-		return "http://" + KeyValueManager.get(IKeys.HOST) + ":" + KeyValueManager.get(IKeys.PORT);
+		return KeyValueManager.getServerAddress() + ScenarioHelper.getScenarioPath(scenarioName) + ".owl#Service";
 	}
 	
 	public static String getScenarioUrl(String scenarioName) {
 		// TODO-AE SC URGENT localhost 8080
 		//return "http://localhost:8080/JPS_SCENARIO/scenario/" + scenarioName;
 		// return getServerAddress() + "/JPS_SCENARIO/scenario/" + scenarioName;
-		return getServerAddress() + ScenarioHelper.getScenarioPath(scenarioName);
-	}
-	
-	public static String getLatestMockedAgent(ScenarioLog log) {
-		List<ScenarioLogEntry> entries = log.search("operation", "mock");
-		if (entries.size() > 0) {
-			ScenarioLogEntry latestEntry = entries.get(entries.size()-1);
-			return latestEntry.message.getString("agent");
-		}
-		return null;
+		return KeyValueManager.getServerAddress() + ScenarioHelper.getScenarioPath(scenarioName);
 	}
 	
 	/**
@@ -76,10 +65,10 @@ public class ScenarioManagementAgent extends HttpServlet {
 	 * @return
 	 */
 	public static boolean getCopyOnRead(ScenarioLog log) {
-		List<ScenarioLogEntry> entries = log.search(COPY_ON_READ, null);
+		List<ScenarioLogEntry> entries = log.search(JPSConstants.SCENARIO_OPTION_COPY_ON_READ, null);
 		if (entries.size() > 0) {
 			ScenarioLogEntry latestEntry = entries.get(entries.size()-1);
-			return latestEntry.message.getBoolean(COPY_ON_READ);
+			return latestEntry.message.getBoolean(JPSConstants.SCENARIO_OPTION_COPY_ON_READ);
 		}
 		
 		return false;
@@ -113,8 +102,7 @@ public class ScenarioManagementAgent extends HttpServlet {
 		List<String> names = getScenarioNames();
 		for (String current : names) {
 			logger.info("adding scenario agent for scenario=" + current);
-			String path = getScenarioLogPath(current);
-			ScenarioLog log = new ScenarioLog(current, path);
+			ScenarioLog log = ScenarioManagementAgent.getScenarioLog(current);
 			JSONObject jo = createScenarioAgent(current, log);
 			if (jo != null) {							
 				joarray.put(jo);
@@ -152,7 +140,7 @@ public class ScenarioManagementAgent extends HttpServlet {
 		}
 		
 		// add operations from the latest mocked agent
-		agent = getLatestMockedAgent(log);
+		agent = ScenarioMockManager.getLatestMockedAgent(log);
 		if (agent != null) {
 			input = new JSONObject().put("agent", agent); 
 			jsondescr = AgentCaller.executeGetWithJsonParameter("/JPS_COMPOSITION/describe", input.toString());
@@ -186,7 +174,7 @@ public class ScenarioManagementAgent extends HttpServlet {
 	public List<String> getScenarioNames() {
 		List<String> result = new ArrayList<String>();
 		
-		File dir = new File(getWorkingDir());
+		File dir = new File(ScenarioHelper.getScenarioWorkingDir());
 		for (File current : dir.listFiles()) {
 			if (current.isDirectory()) {
 				String scenarioName = current.getName();
@@ -200,7 +188,7 @@ public class ScenarioManagementAgent extends HttpServlet {
 	public List<String> getScenarioIRIsOLD() {
 		List<String> result = new ArrayList<String>();
 		
-		File dir = new File(getWorkingDir());
+		File dir = new File(ScenarioHelper.getScenarioWorkingDir());
 		for (File current : dir.listFiles()) {
 			if (current.isFile() && current.getName().endsWith(".owl")) {
 				String iri = getScenarioIRI(current.getName());
@@ -209,5 +197,24 @@ public class ScenarioManagementAgent extends HttpServlet {
 		}
 		
 		return result;
+	}
+	
+	public static String execute(String scenarioName, String httpUrl, JSONObject jo) {
+		addJpsContext(scenarioName, jo);
+		return AgentCaller.executeGetWithURLAndJSON(httpUrl, jo.toString());
+	}
+	
+	public static void addJpsContext(String scenarioName, JSONObject jo) {
+		// set the scenario url as input parameter 
+		// this has the following consequence: if one agent makes a call to access the knowledge graph then its call is redirected
+		// to the scenario agent
+		String scenarioUrl = getScenarioUrl(scenarioName);
+		jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
+		String usecaseUrl = jo.optString(JPSConstants.SCENARIO_USE_CASE_URL);
+		if (usecaseUrl == null) {
+			// create new usecaseUrl
+			usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
+			jo.put(JPSConstants.SCENARIO_USE_CASE_URL, usecaseUrl);
+		}
 	}
 }

@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.base.query;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -24,6 +25,9 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JenaReadHook;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 
 public class JenaHelper {
 
@@ -34,12 +38,21 @@ public class JenaHelper {
 	 * @return
 	 */
 	public static OntModel createModel(String path) {
+
+		if (path.startsWith("http")) {
+			String scenarioUrl = BucketHelper.getScenarioUrl();
+			if (!BucketHelper.isBaseScenario(scenarioUrl)) {
+				path = new ScenarioClient().getReadUrl(scenarioUrl, path).toString();
+			}
+		}
+			
 		OntModel result = createModel();
 		read(path, result);
 		return result;
 	}
 	
 	public static OntModel createModel() {
+		JenaReadHook.prepareReadHook();
 		return ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
 	}
 
@@ -142,6 +155,12 @@ public class JenaHelper {
 		} catch (FileNotFoundException e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		}
-		model.write(fos, "RDF/XML");
+		model.write(fos, "RDF/XML-ABBREV");
+	}
+	
+	public static String writeToString(Model model) {
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		model.write(os, "RDF/XML-ABBREV");
+		return new String(os.toByteArray());
 	}
 }

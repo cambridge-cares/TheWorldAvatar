@@ -13,6 +13,8 @@ import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 /**
  * Servlet implementation class ADMSPowerPlantGetter
+ * Accepts location (Berlin or The Hague) in URL query string
+ * Returns GeoJSON object, representing a selected powerplant in The Hague or Berlin
  */
 @WebServlet("/ADMSPowerPlantGetter")
 public class ADMSPowerPlantGetter extends HttpServlet {
@@ -44,8 +46,8 @@ public class ADMSPowerPlantGetter extends HttpServlet {
 			
 		} else if (location.equals("Berlin")) {
 			powerPlantIRI = "http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002";
-//			epsg = "epsg:25833";
-			epsg = "epsg:28992";
+			epsg = "epsg:25833";
+			//epsg = "epsg:28992"; 23/4 changes
 		}
 		
 		String result;

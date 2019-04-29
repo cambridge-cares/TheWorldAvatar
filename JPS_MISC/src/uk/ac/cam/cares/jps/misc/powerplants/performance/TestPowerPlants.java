@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
 /**
  * The data for this performance test were generated as follows: am Excel table with about 3800 power plants was imported to a database within PostgresSQL. 
@@ -228,7 +229,7 @@ public class TestPowerPlants extends TestCase {
 //			+ "WHERE { <%s> technical_system:realizes ?generation . ?generation system_performance:hasEmission ?emission . ?emission system:hasValue ?emissionvalue . "
 //			+ "?emissionvalue system:numericalValue ?emissionvaluenum . }";
 //		
-//		update = String.format(update, 12.77, IRI_TEST_PLANT);
+//		update = MiscUtil.format(update, 12.77, IRI_TEST_PLANT);
 //		System.out.println(update);
 //		
 //		String urlupdate = createModel().getSparqlServiceURIforUpdate();
@@ -238,7 +239,7 @@ public class TestPowerPlants extends TestCase {
 		
 		String query =  PowerPlantQueries.SPARQL_PREFIXES 
 				+ "SELECT * WHERE { <%s> technical_system:realizes ?generation . ?generation system_performance:hasEmission ?emission . ?emission system:hasValue ?emissionvalue . ?emissionvalue system:numericalValue ?emissionvaluenum . }";
-		query = String.format(query, IRI_TEST_PLANT);
+		query = MiscUtil.format(query, IRI_TEST_PLANT);
 		System.out.println(query);
 		
 		String result = createSparqlOverHttpService().executeGet(query);

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import uk.ac.cam.cares.jps.base.util.MiscUtil;
+
 
 public class PowerPlantQueries {
 	
@@ -68,7 +70,7 @@ public class PowerPlantQueries {
 
 	public double queryEmission(String iri) {
 
-		String query = String.format(SPARQL_PLANT, iri, iri);
+		String query = MiscUtil.format(SPARQL_PLANT, iri, iri);
 
 		//System.out.println(query);
 		
@@ -88,7 +90,7 @@ public class PowerPlantQueries {
 	
 	public void updateEmission(String iri, double emission) {
 		
-		String query = String.format(SPARQL_PLANT_UPDATE_EMISSION, emission, iri);
+		String query = MiscUtil.format(SPARQL_PLANT_UPDATE_EMISSION, emission, iri);
 		//System.out.println(query);
 		
 		getSparqlsService().executePost(query);

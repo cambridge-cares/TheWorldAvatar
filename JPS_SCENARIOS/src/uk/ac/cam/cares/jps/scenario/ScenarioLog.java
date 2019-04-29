@@ -10,14 +10,14 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 public class ScenarioLog {
 
 	public class ScenarioLogEntry implements Comparable {
-		String scenario = null;
-		String timestamp = null;
-		JSONObject message = null;
+		public String scenario = null;
+		public String timestamp = null;
+		public JSONObject message = null;
 		
 		@Override
 		public int compareTo(Object o) {
@@ -39,7 +39,8 @@ public class ScenarioLog {
 		if (!new File(filePath).exists()) {
 			create(scenarioName);
 		} else {
-			read();
+			String content = FileUtil.readFileLocally(filePath);
+			read(content);
 		}
 	}
 	
@@ -49,9 +50,9 @@ public class ScenarioLog {
 		write();
 	}
 	
-	private void read() {
-		String content = new QueryBroker().readFile(filePath);	
-		JSONObject jo = new JSONObject(content);
+	public void read(String json) {	
+		getEntries().clear();
+		JSONObject jo = new JSONObject(json);
 		JSONArray joarray = jo.getJSONArray("entries");
 		for (int i=0; i<joarray.length(); i++) {
 			ScenarioLogEntry entry = new ScenarioLogEntry();
@@ -74,7 +75,7 @@ public class ScenarioLog {
 	private void write() {
 		if (filePath != null) {
 			String content = toJson().toString();
-			QueryBroker.writeFileLocally2(filePath, content);
+			FileUtil.writeFileLocally(filePath, content);
 		}
 	}
 	
@@ -97,6 +98,10 @@ public class ScenarioLog {
 		return jo;
 	}
 	
+	public List<ScenarioLogEntry> getEntries() {
+		return entries;
+	}
+
 	public List<ScenarioLogEntry> search(String key, String value) {
 		List<ScenarioLogEntry> result = new ArrayList<ScenarioLogEntry>();
 		
@@ -111,5 +116,22 @@ public class ScenarioLog {
 		Collections.sort(result);
 		
 		return result;
+	}
+	
+	/**
+	 * Adds and merge entry and copies all entries from sourceLog into the scenario log.
+	 * 
+	 * @param sourceLog
+	 */
+	public void merge(ScenarioLog sourceLog) {
+		JSONObject message = new JSONObject();
+		message.put("operation", "merge");
+		List<ScenarioLogEntry> mergeEntries = sourceLog.getEntries();
+		message.put("mergedscenario", mergeEntries.get(0).scenario);
+		String thisScenario = entries.get(0).scenario;
+		logMessage(thisScenario, message);
+		
+		entries.addAll(mergeEntries);
+		write();
 	}
 }

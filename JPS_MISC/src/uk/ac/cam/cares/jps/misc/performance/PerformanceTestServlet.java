@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 @WebServlet(urlPatterns = {"/testperformance/*"})
 public class PerformanceTestServlet extends HttpServlet {
@@ -38,7 +38,7 @@ public class PerformanceTestServlet extends HttpServlet {
 		if (writetodisk) {
 			String path =  AgentLocator.getPathToJpsWorkingDir() + "/JPS_MISC/test.txt";
 			String value = jo.getString("testkey");
-			QueryBroker.writeFileLocally(path, value);
+			FileUtil.writeFileLocally(path, value);
 		}
 
 		AgentCaller.printToResponse("Success", response);

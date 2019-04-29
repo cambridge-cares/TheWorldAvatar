@@ -12,6 +12,7 @@ import org.openimaj.math.geometry.shape.Polygon;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import uk.ac.cam.cares.jps.building.BuildingQueryPerformer;
 import uk.ac.cam.cares.jps.building.PolygonUtil;
 import uk.ac.cam.cares.jps.building.SimpleShapeConverter;
 import uk.ac.cam.cares.jps.building.SimpleShapeConverter.SimpleShape;
@@ -21,6 +22,10 @@ public class TestPolygonUtil extends TestCase {
 	public static void main(String[] args) {
 		
 		new TestPolygonUtil().testSimpleShapeForSimpleRotatedBox();
+	}
+	
+	public static BuildingQueryPerformer createQueryPerformerForTheHague() {
+		return new BuildingQueryPerformer();
 	}
 	
 	private double area(Polygon p) {
@@ -629,6 +634,43 @@ public class TestPolygonUtil extends TestCase {
 		assertEquals(10.145, shape.length, 0.01);
 		assertEquals(5.119, shape.width, 0.01);
 		assertEquals(145.955, shape.angle, 0.01);
+	}
+	
+	public void testCalculateBERLINBuildingDataForADMS() {
+		
+		String query = createQueryPerformerForTheHague().getQueryBdnVerticesWithAndWithoutBuildingParts("http://www.theworldavatar.com/kb/deu/berlin/buildings/3920_5819.owl#BuildingBLDG_0003000f0029558f");		
+		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.BERLIN_IRI, query);
+		
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
+		Polygon p = SimpleShapeConverter.convertTo2DPolygon(map, "x", "y");
+		
+		System.out.println("original Polygon = " + p);
+		
+		List<Polygon> polygons = Arrays.asList(p);
+		
+		double area = PolygonUtil.area(polygons);	
+		System.out.println("area = " + area);
+		Polygon box = PolygonUtil.createBestShrinkedBox(polygons);
+		System.out.println("box = " + box);
+		
+		//assertEquals(area, area(box), 0.1);
+		
+		SimpleShape shape = SimpleShapeConverter.simplifyShapes(polygons);
+		System.out.println("simple shape result = " + shape);
+		
+		Polygon recreatedBox = SimpleShapeConverter.createPolygon(shape);
+		System.out.println("recreated box = " + recreatedBox);
+		
+		//assertNearlySamePolygons(box, recreatedBox);
+		
+		draw(-79425, -454725, 20, p, recreatedBox);
+		
+		assertEquals(0, shape.shapeType);
+		assertEquals(392757.8125, shape.centerX, 0.1);
+		assertEquals(5819013.0, shape.centerY, 0.1);
+		assertEquals(61.0, shape.length, 0.01);
+		assertEquals(103.23, shape.width, 0.01);
+		assertEquals(22.15, shape.angle, 0.01);
 	}
 	
 	public void testCalculateAngleToYAxis() {

@@ -88,7 +88,8 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet 
 			updateShipCoordinates();
 			
 			// get a serialized JSON array of ship IRIs
-			String jsonArrayOfShipIRI = AgentCaller.executeGet("/JPS_SHIP/GetShipListFromRegion", "query", jsonInput);
+			//String jsonArrayOfShipIRI = AgentCaller.executeGet("/JPS_SHIP/GetShipListFromRegion", "query", jsonInput);
+			String jsonArrayOfShipIRI =execute("/JPS_SHIP/GetShipListFromRegion",jsonInput);
 			
 			JSONObject jsonShipIRIs = new JSONObject(jsonArrayOfShipIRI);
 			JSONArray shipIRIs = jsonShipIRIs.getJSONArray("shipIRIs");
@@ -104,7 +105,8 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet 
 				String shipIRI = shipIRIs.getString(i);
 				jsonReactionShip.put("ship", shipIRI);
 				
-				String wasteResult = AgentCaller.executeGet("/JPS_SHIP/ShipAgent", "query", jsonReactionShip.toString());
+				//String wasteResult = AgentCaller.executeGet("/JPS_SHIP/ShipAgent", "query", jsonReactionShip.toString());
+				String wasteResult = execute("/JPS_SHIP/ShipAgent", jsonReactionShip.toString());
 				String waste = new JSONObject(wasteResult).getString("waste");
 				jo.put("waste", waste);
 			}
@@ -139,7 +141,7 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet 
 		}
 	}
 	
-	private String execute(String path, String jsonInput) {
+	protected String execute(String path, String jsonInput) {
 
 		logger.info("execute for path=" + path + ", json=" + jsonInput);
 		String result = AgentCaller.executeGet(path, "query", jsonInput);

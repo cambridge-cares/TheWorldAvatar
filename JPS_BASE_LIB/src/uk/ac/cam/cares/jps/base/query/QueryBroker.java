@@ -1,10 +1,8 @@
 package uk.ac.cam.cares.jps.base.query;
 
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
@@ -12,32 +10,39 @@ import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 import org.apache.logging.log4j.ThreadContext;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.json.JSONStringer;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
+import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 public class QueryBroker {
 	
+	// TODO-AE SC 20190321 all methods should be extended in such a way that scenario url might passed
+	// directly as a parameter (instead of using the super class JPSHttpServlet and ThreadContext)
 	public String readFile(String urlOrPath) {
 		
-		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	
-		JPSBaseLogger.info(this, "reading file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
+		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
+		JPSBaseLogger.info(this, "reading file for urlOrPath=" + urlOrPath + ", scenarioUrl=" + scenarioUrl);
+		
+		// TODO-AE SC 20190416 this is just a hack to read local file, refactor this method
+		if (! urlOrPath.startsWith("http")) {
+			String localFile = ScenarioHelper.cutHash(urlOrPath);
+			return FileUtil.readFileLocally(localFile);
+		}
 		
 		// call the scenario agent if a scenario url is set in the input
 		// the scenario agent has to be called even for copy-on-write since in the past
 		// another agent might have updated the file within the same scenario 
-		if (scenarioURL != null) {
-			String url = scenarioURL + "/read";
-			
-			String json = new JSONStringer().object()
-					.key(JPSConstants.SCENARIO_RESOURCE).value(urlOrPath)
-					.endObject().toString();
-			
-			return AgentCaller.executeGetWithURLAndJSON(url, json);
+		if (scenarioUrl != null) {
+			return new ScenarioClient().read(scenarioUrl, urlOrPath);
 		}
 		
 		urlOrPath = ResourcePathConverter.convert(urlOrPath);
@@ -58,36 +63,20 @@ public class QueryBroker {
 			return AgentCaller.executeGetWithURL(urlOrPath);
 		} else {
 			String localFile = ScenarioHelper.cutHash(urlOrPath);
-			return readFileLocally(localFile);
+			return FileUtil.readFileLocally(localFile);
 		}
 	}
-	
-	public String readFileLocally(String path) {
-		
-		try {
-			return new String(Files.readAllBytes(Paths.get(path)));
-		} catch (IOException e) {
-			throw new JPSRuntimeException(e.getMessage(), e);
-		}
-	}
-		
+
 	public String queryFile(String urlOrPath, String sparqlQuery) {
 		
-		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	
-		JPSBaseLogger.info(this, "querying file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
+		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
+		JPSBaseLogger.info(this, "querying file for urlOrPath=" + urlOrPath + ", scenarioUrl=" + scenarioUrl);
 		
 		// call the scenario agent if a scenario url is set in the input
 		// the scenario agent has to be called even for copy-on-write since in the past
 		// another agent might have updated the file within the same scenario 
-		if (scenarioURL != null)  {
-			String url = scenarioURL + "/query";
-			
-			String json = new JSONStringer().object()
-					.key(JPSConstants.SCENARIO_RESOURCE).value(urlOrPath)
-					.key(JPSConstants.QUERY_SPARQL_QUERY).value(sparqlQuery)
-					.endObject().toString();
-			
-			return AgentCaller.executeGetWithURLAndJSON(url, json);
+		if (scenarioUrl != null)  {
+			new ScenarioClient().query(scenarioUrl, urlOrPath, sparqlQuery);
 		}
 		
 		urlOrPath = ResourcePathConverter.convert(urlOrPath);
@@ -103,6 +92,51 @@ public class QueryBroker {
 		return JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
 	}
 	
+	public OntModel readModelGreedy(String urlOrPath, String greedySparqlQuery) {
+		String greedyResult = queryFile(urlOrPath, greedySparqlQuery);
+		JSONObject jo = JenaResultSetFormatter.convertToSimplifiedList(greedyResult);
+		JSONArray ja = jo.getJSONArray("results");
+		
+		List<String> nodesToVisit = new ArrayList<String>();
+		for (int i=0; i<ja.length(); i++) {
+			JSONObject row = ja.getJSONObject(i);
+			for (String current : row.keySet()) {
+				String potentialIri =  row.getString(current);
+				if (potentialIri.startsWith("http")) {
+					int index = potentialIri.lastIndexOf("#");
+					if (index > 0) {
+						potentialIri = potentialIri.substring(0, index);
+					}
+					if (!nodesToVisit.contains(potentialIri)) {
+						nodesToVisit.add(potentialIri);
+					} 
+				}
+			}
+		}
+		
+		JPSBaseLogger.info(this, "number of nodes to visit for greedy sparql query = " + nodesToVisit.size());
+		
+		//OntModel model = ModelFactory.createOntologyModel();
+		OntModel model = JenaHelper.createModel();
+		int count=0;
+		for (String current : nodesToVisit) {
+			count++;
+			if (count % 50 == 0) {
+				JPSBaseLogger.info(this, "reading file number=" + count + ", name=" + current);
+			}
+			model.read(current, null); 
+		}
+		
+		return model;
+	}
+	
+	public String queryFilesGreedy(String urlOrPath, String greedySparqlQuery, String secondSparqlQuery) {
+		//TODO-AE SC URGENT 20190304 make queryFilesGreedy scenario capable
+		OntModel model = readModelGreedy(urlOrPath, greedySparqlQuery);
+		ResultSet result = JenaHelper.query(model, secondSparqlQuery);
+		return JenaResultSetFormatter.convertToJSONW3CStandard(result);
+	}
+	
 	/**
 	 * @param urlOrPath
 	 * @param content
@@ -110,20 +144,20 @@ public class QueryBroker {
 	 */
 	public String writeFile(String urlOrPath, String content) {
 		
-		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	
-		JPSBaseLogger.info(this, "writing file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
+		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
+		JPSBaseLogger.info(this, "writing file for urlOrPath=" + urlOrPath + ", scenarioUrl=" + scenarioUrl);
 		
-		if (scenarioURL != null) {
+		if (scenarioUrl != null) {
 			
-			int i = scenarioURL.lastIndexOf("/");
-			String scenarioName = scenarioURL.substring(i);
+			int i = scenarioUrl.lastIndexOf("/");
+			String scenarioName = scenarioUrl.substring(i);
 			String scenarioBucket = ScenarioHelper.getScenarioBucket(scenarioName);
 			String path = ScenarioHelper.getFileNameWithinBucket(urlOrPath, scenarioBucket);
 
 			// Don't use HTTP GET to call the scenario agent as is done in method readFile().
 			// In future, HTTP PUT might be used to call the scenario agent on a different server for writing a file.
 			// However, so far the content is written locally.
-			writeFileLocally(path, content);
+			FileUtil.writeFileLocally(path, content);
 			return path;
 		}
 		
@@ -132,40 +166,31 @@ public class QueryBroker {
 			throw new JPSRuntimeException("writing file via HTTP is not supported yet, urlOrPath=" + urlOrPath);
 		}
 		
-		writeFileLocally(urlOrPath, content);
+		FileUtil.writeFileLocally(urlOrPath, content);
 		return urlOrPath;
 	}
 	
-	public static void writeFileLocally(String path, String content) {
+	public void put(String destinationUrl, String content) {
 		
-	    FileWriter fileWriter = null;
-	    
-	    try {
-			fileWriter = new FileWriter(path);
-			fileWriter.write(content);
-			fileWriter.close();
-		} catch (IOException e) {
-			throw new JPSRuntimeException(e.getMessage(), e);
-		}   
-	}
-	
-	public static void writeFileLocally2(String path, String content) {
-		FileOutputStream outputStream = null;
-	    try {
-		    outputStream = new FileOutputStream(path);
-		    byte[] strToBytes = content.getBytes();
-			outputStream.write(strToBytes);
-		} catch (IOException e) {
-			throw new JPSRuntimeException(e.getMessage(), e);
-		} finally {
-			try {
-				outputStream.close();
-			} catch (IOException e) {
-				throw new JPSRuntimeException(e.getMessage(), e);
-			}
+		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
+		JPSBaseLogger.info(this, "put for destinationUrl=" + destinationUrl + ", scenarioUrl=" + scenarioUrl);
+		
+		// TODO-AE SC 20190416 this is just a hack to read local file, refactor this method
+		String path = destinationUrl;
+		if (destinationUrl.startsWith("http")) {
+			String destinationUrlWithoutHash = ScenarioHelper.cutHash(destinationUrl);
+			path = BucketHelper.getLocalPath(destinationUrlWithoutHash);
 		}
+		
+		FileUtil.writeFileLocally(path, content);
 	}
 	
+	public void put(String destinationUrl, File file) {
+		
+		String content = FileUtil.readFileLocally(file.getAbsolutePath());
+		put(destinationUrl, content);
+	}
+
 	/**
 	 * Useful links for the question how to update with Jena for future purpose:<br>
 	 * <br> 
@@ -186,14 +211,14 @@ public class QueryBroker {
 	 */
 	public void updateFile(String urlOrPath, String sparqlUpdate) {
 		
-		String scenarioURL = ThreadContext.get(JPSConstants.SCENARIO_URL);	
-		JPSBaseLogger.info(this, "updating file for urlOrPath=" + urlOrPath + ", scenarioURL=" + scenarioURL);
+		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
+		JPSBaseLogger.info(this, "updating file for urlOrPath=" + urlOrPath + ", scenarioUrl=" + scenarioUrl);
 		
 		
 		// TODO-AE SC 20190218 URGENT
 		// call the scenario agent if a scenario url is set in the input
-		if (scenarioURL != null)  {
-			String url = scenarioURL + "/update";
+		if (scenarioUrl != null)  {
+			String url = scenarioUrl + "/update";
 			
 			String json = new JSONStringer().object()
 					.key(JPSConstants.SCENARIO_RESOURCE).value(urlOrPath)
@@ -231,5 +256,19 @@ public class QueryBroker {
 //		processor.execute();		
 //		Model updatedModel = dataset.getDefaultModel();
 //		JenaHelper.writeAsFile(updatedModel, localFile);
+	}
+	
+	/**
+	 * return something like "http://www.theworldavatar.com/jps/kb/<uuid>" or 
+	 * "http://localhost:8080/jps/kb/<uuid>"
+	 * 
+	 * @return
+	 */
+	public static String getIriPrefix() {
+		return BucketHelper.getIriPrefix();
+	}
+	
+	public static String getLocalDataPath() {
+		return BucketHelper.getLocalDataPath();
 	}
 }

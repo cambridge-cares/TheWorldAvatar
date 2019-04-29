@@ -28,6 +28,11 @@ $(function(){
     
     $('#start').click(function(){
     	
+			$("#buttonrun").append('<img id="myProgressBar" style="width:100px;height:100px;" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/>')
+
+		
+		
+		
         var carbontax = parseFloat($('#carbontax').val());
         var interestfactor = "1.0";
         var intmarketpricefactor = parseFloat($('#intmarketpricefactor').val());
@@ -59,7 +64,7 @@ $(function(){
                     
                var result = data;
                console.log("data of result= "+JSON.stringify(result)); 
-               
+               $('#myProgressBar').remove()
                var n= $('#timefactor').val().replace("[","").replace("]","").split(","); 
                var totalyear=n.length;
                               

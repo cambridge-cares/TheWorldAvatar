@@ -7,15 +7,10 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.logging.log4j.ThreadContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
-import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.men.entity.FeasibleConnection;
 import uk.ac.cam.cares.jps.men.entity.INamed;
 import uk.ac.cam.cares.jps.men.entity.MenCalculationParameters;
@@ -466,12 +461,14 @@ public class MenDataProvider {
 		//String url = "http://localhost:8080" + ScenarioHelper.getScenarioPath("scMENinternal");
 		//ThreadContext.put(JPSConstants.SCENARIO_URL, url);
 		//new QueryBroker().readFile(fileLocat);
-		if (ThreadContext.containsKey(JPSConstants.SCENARIO_URL)) {
-			new QueryBroker().readFile(fileLocat);
-		}
+		
+//		
+//		if (ThreadContext.containsKey(JPSConstants.SCENARIO_URL)) {
+//			new QueryBroker().readFile(fileLocat);
+//		}
 		
 		OntModel model = JenaHelper.createModel(fileLocat); 		
-		return JenaHelper.query(sparql, model);
+		return JenaHelper.query(model,sparql);
 	}
 
 
