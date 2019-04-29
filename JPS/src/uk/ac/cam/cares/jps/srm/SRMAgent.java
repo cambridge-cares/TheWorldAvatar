@@ -97,15 +97,15 @@ public class SRMAgent extends HttpServlet  {
 
 		String myHost = "www.theworldavatar.com" ;
 		int myPort = 80;
-		String myPath = "/sparqlendpoint/query";
+		String myPath = "/RDF4J_SPARQL_GUI/SPARQLEndpointProxy";
 		// This specific endpoint loads kb of two plants. 
 				
 		URIBuilder builder;
 		builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath(myPath)
-				.setUserInfo("feroz", "password")
-				.setParameter("query", mechanismquery)
-				.setParameter("output", "json");
+				//.setUserInfo("feroz", "password")
+				.setParameter("queryString	", mechanismquery);
+				//.setParameter("output", "json");
 		
 		String result = executeGet(builder);
 		ArrayList <String> urimech= new ArrayList<String>();
@@ -163,6 +163,9 @@ public class SRMAgent extends HttpServlet  {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		
+		System.out.
+		System.out.println(request.getParameter("query"));
 		JSONObject joforrec = AgentCaller.readJsonParameter(request);
 		
 		String iri = null;
