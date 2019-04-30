@@ -22,7 +22,7 @@
 	
 	<Loggers>
 		<Root level="info">
-			<AppenderRef ref="JPSHTTPLOGSERVER"/>
+			<!-- AppenderRef ref="JPSHTTPLOGSERVER"/-->
 			<AppenderRef ref="STDOUT"/>
 		</Root>
 	</Loggers>
