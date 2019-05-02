@@ -76,7 +76,7 @@ public class QueryBroker {
 		// the scenario agent has to be called even for copy-on-write since in the past
 		// another agent might have updated the file within the same scenario 
 		if (scenarioUrl != null)  {
-			new ScenarioClient().query(scenarioUrl, urlOrPath, sparqlQuery);
+			return new ScenarioClient().query(scenarioUrl, urlOrPath, sparqlQuery);
 		}
 		
 		urlOrPath = ResourcePathConverter.convert(urlOrPath);

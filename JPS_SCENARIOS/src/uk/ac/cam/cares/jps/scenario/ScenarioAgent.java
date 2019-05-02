@@ -39,19 +39,20 @@ public class ScenarioAgent extends HttpServlet {
 		JSONObject jo = AgentCaller.readJsonParameter(request);
 		
 		String path = request.getPathInfo();
+		logger.debug("called for path=" + path);
+		
 		String[] parts = ScenarioHelper.dividePath(path);
 		String scenarioName = parts[0];
 		String operation = parts[1];
 		
 		// TODO-AE SC the created scenario url / name  might be part of the response body such that the client can use the scenario in future
-		
-		logger.info("called for path=" + path);
-		logger.info("divided into scenario name=" + scenarioName + ", operation=" + operation);
-		logger.info("with input param=" + jo);
-		logger.info("with query string=" + request.getQueryString());
-		logger.info("with request uri=" + request.getRequestURI());
+
 		String scenariourl = jo.optString(JPSConstants.SCENARIO_URL);
-		logger.info("scenariourl=" + scenariourl + ", usecaseurl=" + jo.optString(JPSConstants.SCENARIO_USE_CASE_URL));
+		String usecaseurl = jo.optString(JPSConstants.SCENARIO_USE_CASE_URL);
+		logger.info("called for scenario name=" + scenarioName + ", operation=" + operation + ", scenariourl=" + scenariourl + ", usecaseurl=" + usecaseurl);
+		//logger.debug("with input param=" + jo);
+		//logger.debug("with query string=" + request.getQueryString());
+		//logger.debug("with request uri=" + request.getRequestURI());
 		
 		// The information of the scenarioUrl in JSON object from the input is redundant when
 		// calling the scenario agent. However, it is needed as soon
@@ -195,7 +196,7 @@ public class ScenarioAgent extends HttpServlet {
 		//String completePathWithinBucket = ScenarioHelper.getFileNameWithinBucket(resource, scenarioBucket);
 		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
 		String completePathWithinBucket = BucketHelper.getLocalPath(resource, scenarioUrl);
-		logger.info("get resource path for resource=" + resource + ", in bucket=" + completePathWithinBucket + ", copyToBucket=" + copyToBucket);
+		logger.debug("get resource path for resource=" + resource + ", in bucket=" + completePathWithinBucket + ", copyToBucket=" + copyToBucket);
 		
 		File fileWithinBucket = new File(completePathWithinBucket);
 	    if (fileWithinBucket.exists()) {
@@ -231,7 +232,7 @@ public class ScenarioAgent extends HttpServlet {
 		String resource = getResourcePath(jo, scenarioName, copyOnRead);
 		String sparqlQuery = jo.getString(JPSConstants.QUERY_SPARQL_QUERY);
 		
-		logger.info("sparqlquery=" + sparqlQuery);
+		logger.debug("sparqlquery=" + sparqlQuery);
 		
 		return new QueryBroker().queryFile(resource, sparqlQuery);
 	}
@@ -241,7 +242,7 @@ public class ScenarioAgent extends HttpServlet {
 		String resource = getResourcePath(jo, scenarioName, true);
 		String sparqlUpdate = jo.getString(JPSConstants.QUERY_SPARQL_UPDATE);
 		
-		logger.info("sparqlupdate=" + sparqlUpdate);
+		logger.debug("sparqlupdate=" + sparqlUpdate);
 		
 		new QueryBroker().updateFile(resource, sparqlUpdate);
 	}
