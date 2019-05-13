@@ -11,7 +11,6 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,13 +30,15 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
+import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
 import uk.ac.cam.cares.jps.powsys.util.Util;
 
 @WebServlet(urlPatterns = { "/ENAgent/startsimulationPF", "/NuclearAgent/startsimulationOPF" })
-public class ENAgent extends HttpServlet {
+public class ENAgent extends JPSHttpServlet {
 	
 	private static final long serialVersionUID = -4199209974912271432L;
 	private Logger logger = LoggerFactory.getLogger(ENAgent.class);
@@ -55,7 +56,6 @@ public class ENAgent extends HttpServlet {
 		String modeltype = null;
 
 		String path = request.getServletPath();
-		System.out.println("path= " + path);
 
 		if ("/ENAgent/startsimulationPF".equals(path)) {
 			modeltype = "PF";// PF or OPF
@@ -64,23 +64,30 @@ public class ENAgent extends HttpServlet {
 		}
 
 		String baseUrl = QueryBroker.getLocalDataPath() + "/JPS_POWSYS_EN";
+		
 		startSimulation(iriofnetwork, baseUrl, modeltype);
 	}
 
 	public void startSimulation(String iriofnetwork, String baseUrl, String modeltype) throws IOException {
 		
+		logger.info("starting simulation for electrical network = " + iriofnetwork + ", modeltype = " + modeltype + ", local data path=" + baseUrl);
+		
 		OntModel model = readModelGreedy(iriofnetwork);
 		
 		List<String[]> buslist = generateInput(model, iriofnetwork, baseUrl, modeltype);
 		
+		logger.info("running PyPower simulation");
 		runModel(baseUrl);
 
 		try {
+			logger.info("converting PyPower results to OWL files");
 			doConversion(model, iriofnetwork, baseUrl, modeltype, buslist);
 		} catch (URISyntaxException e) {
 			logger.error(e.getMessage(), e);
 			throw new JPSRuntimeException(e.getMessage(), e);
 		}
+		
+		logger.info("finished simulation for electrical network = " + iriofnetwork + ", modeltype = " + modeltype + ", local data path=" + baseUrl);
 	}
 
 	public List<String[]> generateInput(OntModel model, String iriofnetwork, String baseUrl, String modeltype) throws IOException {
@@ -420,7 +427,7 @@ public class ENAgent extends HttpServlet {
 		List<String[]> genlist = extractOWLinArray(model, iriofnetwork, genInfo, "generator", baseUrl);
 		content = createNewTSV(genlist, baseUrl + "/mappingforgenerator.csv", baseUrl + "/mappingforbus.csv");
 		broker.put(baseUrl + "/gen.txt", content);
-
+		
 		List<String[]> gencostlist = extractOWLinArray(model, iriofnetwork, genInfocost, "generatorcost", baseUrl);
 		content = createNewTSV(gencostlist, baseUrl + "/mappingforgeneratorcost.csv", baseUrl + "/mappingforbus.csv");
 		broker.put(baseUrl + "/genCost.txt", content);
@@ -439,11 +446,10 @@ public class ENAgent extends HttpServlet {
 		return buslist;
 	}
 
-	public OntModel readModelGreedy(String iriofnetwork) {
+	public static OntModel readModelGreedy(String iriofnetwork) {
 		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "SELECT ?component "
-
 				+ "WHERE {?entity  a  j2:CompositeSystem  ." + "?entity   j2:hasSubsystem ?component ." + "}";
 
 		QueryBroker broker = new QueryBroker();
@@ -458,11 +464,16 @@ public class ENAgent extends HttpServlet {
 		String[] keys = JenaResultSetFormatter.getKeys(result);
 		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 		
-		StringBuffer b = new StringBuffer("keys= ").append(keys.length);
-		for (String current : keys) {
-			b.append(", ").append(current);
-		}
+		String keysConcat = MiscUtil.concat(keys, ", ");
+		StringBuffer b = new StringBuffer("context = ").append(context)
+				.append(", keys = ").append(keys.length).append(", ").append(keysConcat);
 		logger.info(b.toString());
+		
+		if ("generator".equals(context)) {
+			for (String[] current : resultList) {
+				System.out.println(MiscUtil.concat(current, ", "));
+			}
+		}
 		
 		if (!context.toLowerCase().contains("output")) {
 			/*
@@ -584,7 +595,7 @@ public class ENAgent extends HttpServlet {
 	public ArrayList<String[]> readResult(String outputfiledir, int colnum) throws IOException {
 		ArrayList<String[]> entryinstance = new ArrayList<String[]>();
 		
-		System.out.println("reading result from " + outputfiledir);
+		logger.info("reading result from " + outputfiledir);
 		String content = new QueryBroker().readFile(outputfiledir);
 		StringReader stringreader = new StringReader(content);
 		CSVReader reader = null;
@@ -714,21 +725,15 @@ public class ENAgent extends HttpServlet {
 
 				+ "}";
 
-		// this 3 only extract the value instance to be updated for the value
-		List<String[]> branchoutputlist = extractOWLinArray(model, iriofnetwork, branchoutputInfo, "output", baseUrl);
-		List<String[]> genoutputlist = extractOWLinArray(model, iriofnetwork, genoutputInfo, "output", baseUrl);
-		List<String[]> busoutputlist = extractOWLinArray(model, iriofnetwork, busoutputInfo, "output", baseUrl);
 
-		// this extract the value read from the text
-		ArrayList<String[]> resultfrommodelgen = readResult(baseUrl + "/outputGen" + modeltype.toUpperCase() + ".txt",
-				3);
+		
+		QueryBroker broker = new QueryBroker();
+
+		logger.info("extractOWLinArray for bus entities");
+		List<String[]> busoutputlist = extractOWLinArray(model, iriofnetwork, busoutputInfo, "output", baseUrl);
 		ArrayList<String[]> resultfrommodelbus = readResult(baseUrl + "/outputBus" + modeltype.toUpperCase() + ".txt",
 				7);
-		ArrayList<String[]> resultfrommodelbranch = readResult(
-				baseUrl + "/outputBranch" + modeltype.toUpperCase() + ".txt", 6);
 
-		QueryBroker broker = new QueryBroker();
-		
 		int amountofbus = busoutputlist.size();
 		IriMapper map2 = new IriMapper();
 		List<IriMapping> originalforbus = map2.deserialize2(baseUrl + "/mappingforbus.csv");
@@ -755,11 +760,11 @@ public class ENAgent extends HttpServlet {
 
 			Individual vVmout = jenaOwlModel.getIndividual(busoutputlist.get(a)[5]);
 			double basekv = Double.valueOf(buslist.get(amod - 1)[9]);
-			System.out.println("basekv= " + basekv);
-			System.out.println("pukv= " + resultfrommodelbus.get(amod - 1)[1]);
+			//System.out.println("basekv= " + basekv);
+			//System.out.println("pukv= " + resultfrommodelbus.get(amod - 1)[1]);
 			double originalv = basekv * Double.valueOf(resultfrommodelbus.get(amod - 1)[1]);
 			vVmout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(originalv));
-			System.out.println("value Of " + busoutputlist.get(a)[5] + " is= " + originalv);
+			//System.out.println("value Of " + busoutputlist.get(a)[5] + " is= " + originalv);
 
 			Individual vVaout = jenaOwlModel.getIndividual(busoutputlist.get(a)[6]);
 			vVaout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbus.get(amod - 1)[2]));
@@ -767,6 +772,13 @@ public class ENAgent extends HttpServlet {
 			String content = JenaHelper.writeToString(jenaOwlModel);
 			broker.put(currentIri, content);
 		}
+		
+		
+		
+		logger.info("extractOWLinArray for generator entities");
+		List<String[]> genoutputlist = extractOWLinArray(model, iriofnetwork, genoutputInfo, "output", baseUrl);
+		ArrayList<String[]> resultfrommodelgen = readResult(baseUrl + "/outputGen" + modeltype.toUpperCase() + ".txt",
+				3);
 
 		IriMapper map3 = new IriMapper();
 		List<IriMapping> originalforgen = map3.deserialize2(baseUrl + "/mappingforgenerator.csv");
@@ -791,6 +803,12 @@ public class ENAgent extends HttpServlet {
 			String content = JenaHelper.writeToString(jenaOwlModel);
 			broker.put(currentIri, content);
 		}
+		
+		
+		logger.info("extractOWLinArray for branch entities");
+		List<String[]> branchoutputlist = extractOWLinArray(model, iriofnetwork, branchoutputInfo, "output", baseUrl);
+		ArrayList<String[]> resultfrommodelbranch = readResult(
+				baseUrl + "/outputBranch" + modeltype.toUpperCase() + ".txt", 6);
 
 		IriMapper map = new IriMapper();
 		List<IriMapping> originalforbranch = map.deserialize2(baseUrl + "/mappingforbranch.csv");

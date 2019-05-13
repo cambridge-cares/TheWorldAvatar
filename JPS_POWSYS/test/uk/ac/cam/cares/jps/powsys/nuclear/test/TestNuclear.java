@@ -43,7 +43,7 @@ public class TestNuclear extends TestCase {
 		JSONObject jo = new JSONObject();
 		jo.put("landlot", "http://www.jparksimulator.com/kb/sgp/jurongisland/JurongIslandLandlots.owl");
 		jo.put("electricalnetwork", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
-		String scenarioUrl = BucketHelper.getScenarioUrl("testStartSimulationAndProcessResultAgentCallForTestScenario"); 
+		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario"); 
 		JPSHttpServlet.enableScenario(scenarioUrl);	
 		
 		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);

@@ -23,15 +23,16 @@ import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
 public class TestQuery extends TestCase implements ITestConstants{
 	
-	private void copyPowerPlantAfg() {
-		String sourceFile = ResourcePathConverter.convertToLocalPath(POWER_PLANT_AFG_FILE_ORIGINAL);
-		String targetFile = ResourcePathConverter.convertToLocalPath(POWER_PLANT_AFG_FILE);
+	private void copy(String from, String to) {
+		String sourceFile = ResourcePathConverter.convertToLocalPath(from);
+		String targetFile = ResourcePathConverter.convertToLocalPath(to);
 		String content = FileUtil.readFileLocally(sourceFile);
 		FileUtil.writeFileLocally(targetFile, content);
 	}
 	
 	public void setUp() {
-		copyPowerPlantAfg();
+		copy(POWER_PLANT_AFG_FILE_ORIGINAL, POWER_PLANT_AFG_FILE);
+		copy(ELECTRICAL_NETWORK_FILE_ORIGINAL, ELECTRICAL_NETWORK_FILE);
 	}
 	
 	public void testJenaResultSetFormatterConvertToCSV() {
@@ -106,8 +107,7 @@ public class TestQuery extends TestCase implements ITestConstants{
 			JPSHttpServlet.enableScenario(scenarioUrl);		
 			
 			OntModel model = JenaHelper.createModel();	
-			String url = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
-			//String url = "http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork/EBus-175.owl#EBus-175";
+			String url = ELECTRICAL_NETWORK_IRI;
 			JenaHelper.readFromUrl(new URL(url), model);
 			long size = model.listImportedOntologyURIs().size();
 			System.out.println("size imports=" + size);
@@ -145,7 +145,6 @@ public class TestQuery extends TestCase implements ITestConstants{
 	}
 	
 	public void testQueryBrokerQueryFilesGreedy() {
-		String urlOrPath = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 		String greedySparqlQuery = "PREFIX sys:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "SELECT ?component "
 				+ "WHERE {?entity a sys:CompositeSystem . " 
@@ -156,7 +155,7 @@ public class TestQuery extends TestCase implements ITestConstants{
 				+ "SELECT ?entity "
 				+ "WHERE { ?entity a j1:BusNode . ?entity j2:isModeledBy ?model . }";
 		
-		String result = new QueryBroker().queryFilesGreedy(urlOrPath, greedySparqlQuery, secondSparqlQuery);
+		String result = new QueryBroker().queryFilesGreedy(ELECTRICAL_NETWORK_IRI, greedySparqlQuery, secondSparqlQuery);
 	
 		System.out.println(result);
 		
@@ -166,7 +165,6 @@ public class TestQuery extends TestCase implements ITestConstants{
 	
 	public void xxxtestQueryBrokerQueryFilesGreedyForNonBaseScenarioWithCopyOnRead() {
 		
-		String urlOrPath = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 		String greedySparqlQuery = "PREFIX sys:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "SELECT ?component "
 				+ "WHERE {?entity a sys:CompositeSystem . " 
@@ -182,7 +180,7 @@ public class TestQuery extends TestCase implements ITestConstants{
 			new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 			JPSHttpServlet.enableScenario(scenarioUrl);		
 			
-			String result = new QueryBroker().queryFilesGreedy(urlOrPath, greedySparqlQuery, secondSparqlQuery);
+			String result = new QueryBroker().queryFilesGreedy(ELECTRICAL_NETWORK_IRI, greedySparqlQuery, secondSparqlQuery);
 			
 			System.out.println(result);
 			
@@ -214,5 +212,34 @@ public class TestQuery extends TestCase implements ITestConstants{
 		// check updated value
 		String localFile = ResourcePathConverter.convertToLocalPath(POWER_PLANT_AFG_FILE);
 		assertEmissionValue(localFile, newEmissionValue);
+	}
+	
+	public void testQueryBrokerRemoteSparqlDeleteData() {
+		
+		QueryBroker broker = new QueryBroker();
+		String localFile = ResourcePathConverter.convert(ELECTRICAL_NETWORK_FILE);
+		
+		String sparqlQuery = "PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n" + 
+				"SELECT * \r\n" +
+				"WHERE { ?s OCPSYST:hasSubsystem <%s> . } ";
+		sparqlQuery = MiscUtil.format(sparqlQuery, "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-009.owl#EGen-009");
+		System.out.println(sparqlQuery);
+		String result = broker.queryFile(localFile, sparqlQuery);
+		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, "s");
+		// we queried for a specific instance; thus we expect only one result row
+		assertEquals(1, resultList.size());
+		
+		// delete instance
+		String sparqlUpdate =  "PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n" + 
+				"DELETE DATA { <%s> OCPSYST:hasSubsystem <%s> . } \r\n";
+		sparqlUpdate = MiscUtil.format(sparqlUpdate, ELECTRICAL_NETWORK_IRI, "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-009.owl#EGen-009");
+		System.out.println(sparqlUpdate);
+		broker.updateFile(ELECTRICAL_NETWORK_IRI, sparqlUpdate);
+
+		// check whether the triple was deleted
+		result =  broker.queryFile(localFile, sparqlQuery);
+		resultList = JenaResultSetFormatter.convertToListofStringArrays(result, "s");
+		// we queried for a specific instance that was deleted; thus we expect zero result rows
+		assertEquals(0, resultList.size());
 	}
 }

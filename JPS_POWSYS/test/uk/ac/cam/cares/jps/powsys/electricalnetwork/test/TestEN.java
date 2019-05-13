@@ -13,14 +13,15 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 
 
 public class TestEN extends TestCase {
 	
+	public static String ELECTRICAL_NETWORK = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 	String dataPath = QueryBroker.getLocalDataPath();
 	String baseUrl=dataPath+"/JPS_POWSYS_EN";
-	String iriofnetwork="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 	
 	String genInfocost= "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> " 
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -358,7 +359,7 @@ public class TestEN extends TestCase {
 		ENAgent b= new ENAgent ();
 		//List<String[]>buslist= b.extractOWLinArray(b.readModelGreedy(iriofnetwork),iriofnetwork,genInfo,baseUrl);
 		 // List<String[]>buslist=  b.extractOWLinArray(b.readModelGreedy(iriofnetwork),iriofnetwork,branchInfo,"branch",baseUrl);
-		   List<String[]>buslist=b.extractOWLinArray(b.readModelGreedy(iriofnetwork),iriofnetwork,busInfo,"bus",baseUrl);
+		   List<String[]>buslist=b.extractOWLinArray(b.readModelGreedy(ELECTRICAL_NETWORK),ELECTRICAL_NETWORK,busInfo,"bus",baseUrl);
 //		     List<String[]>buslist=  b.extractOWLinArray(b.readModelGreedy(iriofnetwork),iriofnetwork,genInfocost,"generatorcost",baseUrl);
 	      System.out.println(buslist.size());
 	}
@@ -373,12 +374,12 @@ public class TestEN extends TestCase {
 	//String baseurl="D:/JPS/JParkSimulator-git/JPS_POWSYS/python/model";
 
 	String busmapurl=baseUrl+"/mappingforbus.csv";
-	OntModel model = b.readModelGreedy(iriofnetwork);
-		List<String[]>list=b.extractOWLinArray(model,iriofnetwork,busInfo,"bus",baseUrl);
-	List<String[]>list2=b.extractOWLinArray(model,iriofnetwork,genInfo,"generator",baseUrl);
-	List<String[]>list3=b.extractOWLinArray(model,iriofnetwork,genInfocost,"generatorcost",baseUrl);
+	OntModel model = b.readModelGreedy(ELECTRICAL_NETWORK);
+		List<String[]>list=b.extractOWLinArray(model,ELECTRICAL_NETWORK,busInfo,"bus",baseUrl);
+	List<String[]>list2=b.extractOWLinArray(model,ELECTRICAL_NETWORK,genInfo,"generator",baseUrl);
+	List<String[]>list3=b.extractOWLinArray(model,ELECTRICAL_NETWORK,genInfocost,"generatorcost",baseUrl);
 		
-		List<String[]>list4=b.extractOWLinArray(model,iriofnetwork,branchInfo,"branch",baseUrl);
+		List<String[]>list4=b.extractOWLinArray(model,ELECTRICAL_NETWORK,branchInfo,"branch",baseUrl);
 		QueryBroker broker = new QueryBroker();
 		
 		
@@ -399,12 +400,12 @@ public class TestEN extends TestCase {
 	public void testStartSimulationCallingWithScenarioCase() throws IOException  {
 
 		JSONObject jo = new JSONObject();
-		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 		
-		jo.put("electricalnetwork", iriofnetwork);
+		jo.put("electricalnetwork", ELECTRICAL_NETWORK);
 		
 		String scenarioUrl = BucketHelper.getScenarioUrl("testENScenario");
 		JPSHttpServlet.enableScenario(scenarioUrl);	
+		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);		
 		jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
 		
 		String usecaseUrl = BucketHelper.getUsecaseUrl();
@@ -416,23 +417,21 @@ public class TestEN extends TestCase {
 	
 	public void testStartSimulationCallingBaseScenario() throws IOException  {
 
-		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 		String dataPath = QueryBroker.getLocalDataPath();
 		String baseUrl = dataPath + "/JPS_POWSYS_EN";
-		new ENAgent().startSimulation(iriofnetwork, baseUrl, "PF");	
+		new ENAgent().startSimulation(ELECTRICAL_NETWORK, baseUrl, "PF");	
 	}
 	
 	public void testStartSimulationCallingNonBaseScenario() throws IOException  {
 
-		String scenarioUrl = BucketHelper.getScenarioUrl("testENScenario");
-		JPSHttpServlet.enableScenario(scenarioUrl);
+		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSENSimulation");
+		String usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
+		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);
 		//function to copy all the owl file involved ???
-		//new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
+		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 			
-		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 		String dataPath = QueryBroker.getLocalDataPath();
 		String baseUrl = dataPath + "/JPS_POWSYS_EN";
-		new ENAgent().startSimulation(iriofnetwork, baseUrl, "OPF");
+		new ENAgent().startSimulation(ELECTRICAL_NETWORK, baseUrl, "OPF");
 	}
-
 }

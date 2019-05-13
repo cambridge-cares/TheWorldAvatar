@@ -40,4 +40,15 @@ public class MiscUtil {
 	public static String format(String s, Object... args) {
 		return String.format(Locale.ENGLISH, s, args);
 	}
+	
+	public static String concat(String[] a, String separator) {
+		StringBuffer b = new StringBuffer();
+		for (int i=0; i<a.length; i++) {
+			b.append(a[i]);
+			if (i < a.length-1) {
+				b.append(separator);
+			}
+		}
+		return b.toString();
+	}
 }

@@ -13,7 +13,7 @@ import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 import uk.ac.cam.cares.jps.base.query.sparql.QueryBuilder;
 
-public class TestSPARQL extends TestCase implements Prefixes, Paths {
+public class TestSPARQL extends TestCase implements Prefixes, Paths, ITestConstants {
 	
 	public void testPrefixMap() {
 		String prefixUrl = PrefixToUrlMap.getPrefixUrl(OCPSPAC);
