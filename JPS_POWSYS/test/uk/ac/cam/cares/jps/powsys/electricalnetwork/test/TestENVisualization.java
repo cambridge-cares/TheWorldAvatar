@@ -1,9 +1,10 @@
 package uk.ac.cam.cares.jps.powsys.electricalnetwork.test;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.transform.TransformerException;
 
 import org.apache.jena.ontology.OntModel;
 
@@ -15,7 +16,7 @@ import uk.ac.cam.cares.jps.powsys.envisualization.MapPoint;
 
 public class TestENVisualization extends TestCase {
 
-	public void testcreateKML() {
+	public void testcreateKML() throws TransformerException {
 		ENVisualization a=new ENVisualization();
 		ENAgent b= new ENAgent ();
 		OntModel model = b.readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
@@ -46,7 +47,7 @@ public class TestENVisualization extends TestCase {
 		
 		
 		for(int g=0;g<gensmerged.size();g++) {
-			MapPoint c= new MapPoint(Double.valueOf(gensmerged.get(g).gety()),Double.valueOf(gensmerged.get(g).getx()),0.0,"/"+gensmerged.get(g).getnamegen());
+			MapPoint c= new MapPoint(Double.valueOf(gensmerged.get(g).gety()),Double.valueOf(gensmerged.get(g).getx()),0.0,gensmerged.get(g).getnamegen());
 			a.addMark(c,"generator");
 		}
 		
@@ -59,15 +60,18 @@ public class TestENVisualization extends TestCase {
 		a.addMark(c,"bus");
 		}
 		
-		a.writeFile(new File("C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys not needed/test2.kml"));
+		//a.writeFile(new File("C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys not needed/test2.kml"));
+		String res=a.writeFiletoString();
+		System.out.println(res);
+		
 	}
 	
 	public void testcreateLineJS() throws IOException {
 		ENVisualization a=new ENVisualization();
 		ENAgent b= new ENAgent ();
 		OntModel model = b.readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
-		a.createLineJS(model,"C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys not needed/line.js");
-
+		String res=a.createLineJS(model);
+		//prev dir="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys not needed/line.js"
 	}
 	
 	

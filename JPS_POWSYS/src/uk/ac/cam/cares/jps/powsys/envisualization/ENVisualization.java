@@ -1,9 +1,8 @@
 package uk.ac.cam.cares.jps.powsys.envisualization;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,6 +13,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -142,7 +142,7 @@ public class ENVisualization {
 		if(type.contains("bus"))
 			{
 				styleurl.appendChild(doc.createTextNode("#polyStyID_0"));	
-				busconstant=0.0001;
+				busconstant=0.00025;
 			}
 		else if(type.contains("generator")) {
 			styleurl.appendChild(doc.createTextNode("#polyStyID_1"));
@@ -264,21 +264,22 @@ public class ENVisualization {
 	 * Write this KML object to a file.
 	 * @param file
 	 * @return
+	 * @throws TransformerException 
 	 */
-	public  boolean writeFile(File file) {
-		try {
+	public  String writeFiletoString() throws TransformerException {
+		
 			TransformerFactory factory = TransformerFactory.newInstance();
 			Transformer transformer = factory.newTransformer();
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-			DOMSource src = new DOMSource(doc);
-			StreamResult out = new StreamResult(file);
-			transformer.transform(src, out);
-		} catch(Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-		return true;
+			StringWriter writer = new StringWriter();
+			transformer.transform(new DOMSource(doc), new StreamResult(writer));
+			String output = writer.getBuffer().toString();//.replaceAll("\n|\r", "");
+			//DOMSource src = new DOMSource(doc);
+			//StreamResult out = new StreamResult(file);
+			//transformer.transform(src, out);
+		
+		return output;
 	}
 	
 	/**
@@ -322,7 +323,7 @@ public class ENVisualization {
 	return resultList;
 	}
 	
-	public void createLineJS(OntModel model,String file) throws IOException {
+	public String createLineJS(OntModel model) throws IOException {
 		String branchInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
@@ -369,16 +370,11 @@ public class ENVisualization {
 					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 					+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
 					+ "PREFIX j9: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-					+ "SELECT ?VoltMagvalue ?valueofx ?valueofy "
+					+ "SELECT ?VoltMagvalue ?valueofx ?valueofy ?BaseKVvalue "
 					
 					+ "WHERE {"+iri+"  a  j1:BusNode  ." 
 					+ iri+"   j2:isModeledBy ?model ."
-					
-					
-					+ "?model   j5:hasModelVariable ?BKV ." 
-					+ "?BKV  a  j3:baseKV  ." 
-					+ "?BKV  j2:hasValue ?vBKV ."
-					+ "?vBKV   j2:numericalValue ?BaseKVvalue ." // Base KV
+
 					
 					+ "?model   j5:hasModelVariable ?VM ." 
 					+ "?VM  a  j3:Vm  ." 
@@ -392,6 +388,11 @@ public class ENVisualization {
 					+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
 					+ "?y  j2:hasValue ?vy ." 
 					+ "?vy  j2:numericalValue ?valueofy ."
+					
+					+ "?model   j5:hasModelVariable ?BKV ." 
+					+ "?BKV  a  j3:baseKV  ." 
+					+ "?BKV  j2:hasValue ?vBKV ."
+					+ "?vBKV   j2:numericalValue ?BaseKVvalue ." // Base KV1
 
 
 
@@ -404,18 +405,24 @@ public class ENVisualization {
 			busdata.add(resultListbus1.get(0)[0]);
 			busdata.add(resultListbus1.get(0)[1]);
 			busdata.add(resultListbus1.get(0)[2]);
+			busdata.add(resultListbus1.get(0)[3]);
+
 		}
 
 		
 	
 	    int tick=3;
-	    if(Double.valueOf(busdata.get(1))>200||Double.valueOf(busdata.get(5))>200) {
+	    if(Double.valueOf(busdata.get(1))*Double.valueOf(busdata.get(4))>200||Double.valueOf(busdata.get(6))*Double.valueOf(busdata.get(9))>200) {
 	    	tick=6;
 	    }
-	    else if(30>Double.valueOf(busdata.get(1))&&Double.valueOf(busdata.get(5))<30) {
+	    else if(30>Double.valueOf(busdata.get(1))*Double.valueOf(busdata.get(4))&&Double.valueOf(busdata.get(6))*Double.valueOf(busdata.get(9))<30) {
 	    	tick=1;
 	    }
-	    String contentbegin="{coors: [{lat: "+busdata.get(3)+", lng: "+busdata.get(2)+"}, {lat: "+busdata.get(7)+", lng: "+busdata.get(6)+"}], vols: ["+busdata.get(1)+","+busdata.get(5)+"], thickness: "+tick+", type: 'distribute', name: '/"+resultListbranch.get(0)[0].split("#")[1]+".owl'}";
+	    String linetype="distribute";
+	    if(busdata.get(3).contentEquals(busdata.get(8))&&busdata.get(2).contentEquals(busdata.get(7))) {
+	    	linetype="transformer";
+	    }
+	    String contentbegin="{coors: [{lat: "+busdata.get(3)+", lng: "+busdata.get(2)+"}, {lat: "+busdata.get(8)+", lng: "+busdata.get(7)+"}], vols: ["+Double.valueOf(busdata.get(1))*Double.valueOf(busdata.get(4))+","+Double.valueOf(busdata.get(9))*Double.valueOf(busdata.get(6))+"], thickness: "+tick+", type: '"+linetype+"', name: '/"+resultListbranch.get(0)[0].split("#")[1]+".owl'}";
 	    textcomb.add(contentbegin);
 	   
 	    
@@ -439,16 +446,11 @@ public class ENVisualization {
 						+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 						+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
 						+ "PREFIX j9: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-						+ "SELECT ?VoltMagvalue ?valueofx ?valueofy "
+						+ "SELECT ?VoltMagvalue ?valueofx ?valueofy ?BaseKVvalue "
 						
 						+ "WHERE {"+iri+"  a  j1:BusNode  ." 
 						+ iri+"   j2:isModeledBy ?model ."
-						
-						
-						+ "?model   j5:hasModelVariable ?BKV ." 
-						+ "?BKV  a  j3:baseKV  ." 
-						+ "?BKV  j2:hasValue ?vBKV ."
-						+ "?vBKV   j2:numericalValue ?BaseKVvalue ." // Base KV
+
 						
 						+ "?model   j5:hasModelVariable ?VM ." 
 						+ "?VM  a  j3:Vm  ." 
@@ -461,9 +463,12 @@ public class ENVisualization {
 						+ "?vx  j2:numericalValue ?valueofx ."
 						+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
 						+ "?y  j2:hasValue ?vy ." 
-						+ "?vy  j2:numericalValue ?valueofy ."
-
-
+						+ "?vy  j2:numericalValue ?valueofy ."						
+						
+						+ "?model   j5:hasModelVariable ?BKV ." 
+						+ "?BKV  a  j3:baseKV  ." 
+						+ "?BKV  j2:hasValue ?vBKV ."
+						+ "?vBKV   j2:numericalValue ?BaseKVvalue ." // Base KV
 
 						+ "}";
 				ResultSet resultSet2 = JenaHelper.query(model, busInfo);
@@ -474,26 +479,33 @@ public class ENVisualization {
 				busdata.add(resultListbus1.get(0)[0]);
 				busdata.add(resultListbus1.get(0)[1]);
 				busdata.add(resultListbus1.get(0)[2]);
+				busdata.add(resultListbus1.get(0)[3]);
 			}
 			
 			int tick2=3;
-			if(Double.valueOf(busdata.get(1+8*a))>200||Double.valueOf(busdata.get(5+8*a))>200) {
+			if(Double.valueOf(busdata.get(1+10*a))*Double.valueOf(busdata.get(4+10*a))>200||Double.valueOf(busdata.get(6+10*a))*Double.valueOf(busdata.get(9+10*a))>200) {
 		    	tick2=6;
 		    }
-		    else if(30>Double.valueOf(busdata.get(1+8*a))&&30>Double.valueOf(busdata.get(5+8*a))) {
+		    else if(30>Double.valueOf(busdata.get(1+10*a))*Double.valueOf(busdata.get(4+10*a))&&30>Double.valueOf(busdata.get(9+10*a))*Double.valueOf(busdata.get(6+10*a))) {
 		    	tick2=1;
 		    }
-	    	String content="{coors: [{lat: "+busdata.get(3+8*a)+", lng: "+busdata.get(2+8*a)+"}, {lat: "+busdata.get(7+8*a)+", lng: "+busdata.get(6+8*a)+"}], vols: ["+busdata.get(1+8*a)+","+busdata.get(5+8*a)+"], thickness: "+tick2+", type: 'distribute', name: '/"+resultListbranch.get(a)[0].split("#")[1]+".owl'}";
+			linetype="distribute";
+		    if(busdata.get(3+10*a).contentEquals(busdata.get(8+10*a))&&busdata.get(2+10*a).contentEquals(busdata.get(7+10*a))) {
+		    	linetype="transformer";
+		    }
+	    	String content="{coors: [{lat: "+busdata.get(3+10*a)+", lng: "+busdata.get(2+10*a)+"}, {lat: "+busdata.get(8+10*a)+", lng: "+busdata.get(7+10*a)+"}], vols: ["+Double.valueOf(busdata.get(1+10*a))*Double.valueOf(busdata.get(4+10*a))+","+Double.valueOf(busdata.get(6+10*a))*Double.valueOf(busdata.get(9+10*a))+"], thickness: "+tick2+", type: '"+linetype+"', name: '/"+resultListbranch.get(a)[0].split("#")[1]+".owl'}";
 	    	
 	    	textcomb.add(content);
 	    	
 	    }
 	    
 	    
-	    BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-	    writer.write(stropen+textcomb.toString()+strend);
-	     
-	    writer.close();
+//	    BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+//	    writer.write(stropen+textcomb.toString()+strend);
+//	     
+//	    writer.close();
+	    String resultfinal=stropen+textcomb.toString()+strend;
+	    return resultfinal;
 		
 	}
 }

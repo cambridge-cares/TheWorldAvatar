@@ -8,7 +8,6 @@ import org.apache.jena.ontology.OntModel;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
@@ -402,15 +401,6 @@ public class TestEN extends TestCase {
 		JSONObject jo = new JSONObject();
 		
 		jo.put("electricalnetwork", ELECTRICAL_NETWORK);
-		
-		String scenarioUrl = BucketHelper.getScenarioUrl("testENScenario");
-		JPSHttpServlet.enableScenario(scenarioUrl);	
-		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);		
-		jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
-		
-		String usecaseUrl = BucketHelper.getUsecaseUrl();
-		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);	
-		jo.put(JPSConstants.SCENARIO_USE_CASE_URL,  usecaseUrl);
 		
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationPF", jo.toString());
 	}

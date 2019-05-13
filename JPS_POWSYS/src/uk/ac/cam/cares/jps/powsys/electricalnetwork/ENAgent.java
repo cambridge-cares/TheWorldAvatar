@@ -1,8 +1,10 @@
 package uk.ac.cam.cares.jps.powsys.electricalnetwork;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
@@ -13,6 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.transform.TransformerException;
 
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
@@ -31,13 +34,15 @@ import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
+import uk.ac.cam.cares.jps.powsys.envisualization.ENVisualization;
+import uk.ac.cam.cares.jps.powsys.envisualization.ENVisualization.StaticobjectgenClass;
+import uk.ac.cam.cares.jps.powsys.envisualization.MapPoint;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
 import uk.ac.cam.cares.jps.powsys.util.Util;
 
-@WebServlet(urlPatterns = { "/ENAgent/startsimulationPF", "/NuclearAgent/startsimulationOPF" })
+@WebServlet(urlPatterns = { "/ENAgent/startsimulationPF", "/ENAgent/startsimulationOPF" })
 public class ENAgent extends JPSHttpServlet {
 	
 	private static final long serialVersionUID = -4199209974912271432L;
@@ -67,12 +72,100 @@ public class ENAgent extends JPSHttpServlet {
 		
 		startSimulation(iriofnetwork, baseUrl, modeltype);
 	}
+	
+	public String createfinalKML(OntModel model) throws TransformerException {
+		ENVisualization a = new ENVisualization();
+		
+
+		// ------------FOR GENERATORS-----------------
+		List<String[]> generators = a.queryElementCoordinate(model, "PowerGenerator");
+		ArrayList<ENVisualization.StaticobjectgenClass> gensmerged = new ArrayList<ENVisualization.StaticobjectgenClass>();
+		ArrayList<String> coorddata = new ArrayList<String>();
+		for (int e = 0; e < generators.size(); e++) {
+			StaticobjectgenClass gh = a.new StaticobjectgenClass();
+			gh.setnamegen("/" + generators.get(e)[0].split("#")[1] + ".owl");
+			gh.setx(generators.get(e)[1]);
+			gh.sety(generators.get(e)[2]);
+			//System.out.println("/" + generators.get(e)[0].split("#")[1] + ".owl");
+
+			if (coorddata.contains(gh.getx()) && coorddata.contains(gh.gety())) {
+				int index = coorddata.indexOf(gh.getx()) / 2;
+				gensmerged.get(index).setnamegen(gensmerged.get(index).getnamegen() + gh.getnamegen());
+			} else {
+				gensmerged.add(gh);
+				coorddata.add(generators.get(e)[1]);
+				coorddata.add(generators.get(e)[2]);
+			}
+
+		}
+
+		for (int g = 0; g < gensmerged.size(); g++) {
+			MapPoint c = new MapPoint(Double.valueOf(gensmerged.get(g).gety()),
+					Double.valueOf(gensmerged.get(g).getx()), 0.0, gensmerged.get(g).getnamegen());
+			a.addMark(c, "generator");
+		}
+
+		// --------------------------------
+		
+	
+		// ------------FOR BUS-----------------
+		List<String[]> bus = a.queryElementCoordinate(model, "BusNode");
+		ArrayList<ENVisualization.StaticobjectgenClass> bussesmerged = new ArrayList<ENVisualization.StaticobjectgenClass>();
+		ArrayList<String> coorddatabus = new ArrayList<String>();
+		for (int e = 0; e < bus.size(); e++) {
+			StaticobjectgenClass gh = a.new StaticobjectgenClass();
+			gh.setnamegen("/" + bus.get(e)[0].split("#")[1] + ".owl");
+			gh.setx(bus.get(e)[1]);
+			gh.sety(bus.get(e)[2]);
+			//System.out.println("/" + bus.get(e)[0].split("#")[1] + ".owl");
+
+			if (coorddatabus.contains(gh.getx()) && coorddatabus.contains(gh.gety())) {
+				int index = coorddatabus.indexOf(gh.getx()) / 2;
+				bussesmerged.get(index).setnamegen(bussesmerged.get(index).getnamegen() + gh.getnamegen());
+			} else {
+				bussesmerged.add(gh);
+				coorddatabus.add(bus.get(e)[1]);
+				coorddatabus.add(bus.get(e)[2]);
+			}
+
+		}
+
+		for (int g = 0; g < bussesmerged.size(); g++) {
+			MapPoint c = new MapPoint(Double.valueOf(bussesmerged.get(g).gety()),
+					Double.valueOf(bussesmerged.get(g).getx()), 0.0, bussesmerged.get(g).getnamegen());
+			a.addMark(c, "bus");
+		}
+
+		// --------------------------------
+
+		
+//		int size2 = bus.size();
+//		for (int g = 0; g < size2; g++) {
+//			MapPoint c = new MapPoint(Double.valueOf(bus.get(g)[2]), Double.valueOf(bus.get(g)[1]), 0.0,
+//					"/" + bus.get(g)[0].split("#")[1] + ".owl");
+//			a.addMark(c, "bus");
+//		}
+
+		return a.writeFiletoString();
+	}
 
 	public void startSimulation(String iriofnetwork, String baseUrl, String modeltype) throws IOException {
 		
 		logger.info("starting simulation for electrical network = " + iriofnetwork + ", modeltype = " + modeltype + ", local data path=" + baseUrl);
 		
 		OntModel model = readModelGreedy(iriofnetwork);
+		
+		//create line javascript & kml for visualization
+		ENVisualization a=new ENVisualization();
+		QueryBroker broker = new QueryBroker();
+		broker.put(baseUrl + "/line.js", a.createLineJS(model));
+		try {
+			broker.put(baseUrl + "/test2.kml",createfinalKML(model));
+		} catch (TransformerException e1) {
+			logger.error(e1.getMessage(),e1);
+			e1.printStackTrace();
+		}
+		
 		
 		List<String[]> buslist = generateInput(model, iriofnetwork, baseUrl, modeltype);
 		
@@ -443,6 +536,10 @@ public class ENAgent extends JPSHttpServlet {
 		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/PyPower-PF-OPF-JA-8.py");
 		broker.put(baseUrl + "/PyPower-PF-OPF-JA-8.py", file2);
 		
+		File file3 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/runpy.bat");
+		broker.put(baseUrl + "/runpy.bat", file3);
+		
+		
 		return buslist;
 	}
 
@@ -552,7 +649,7 @@ public class ENAgent extends JPSHttpServlet {
 						} else if (mapdir.contains("bus") && e == 7) {
 							double pu = Double.valueOf(componentlist.get(x)[e]);
 
-							if (pu > 1.00000) {
+							if (pu > 1.20000) {
 								String basekv = componentlist.get(x)[9];
 								pu = Double.valueOf(componentlist.get(x)[e]) / Double.valueOf(basekv);
 							}
@@ -578,6 +675,36 @@ public class ENAgent extends JPSHttpServlet {
 		return writer.toString();
 
 	}
+	
+	public String executeSingleCommand(String targetFolder , String command) 
+	{  
+	 
+		logger.info("In folder: " + targetFolder + " Excuted: " + command);
+		Runtime rt = Runtime.getRuntime();
+		Process pr = null;
+		try {
+			pr = rt.exec(command, null, new File(targetFolder)); // IMPORTANT: By specifying targetFolder, all the cmds will be executed within such folder.
+
+		} catch (IOException e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		}
+		
+				 
+		BufferedReader bfr = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+		String line = "";
+		String resultString = "";
+		try {
+			
+			while((line = bfr.readLine()) != null) {
+				resultString += line;
+
+			}
+		} catch (IOException e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		}
+		
+		return resultString; 
+	}
 
 	public void runModel(String baseUrl) throws IOException {
 
@@ -589,7 +716,10 @@ public class ENAgent extends JPSHttpServlet {
 		args.add("python");
 		args.add("PyPower-PF-OPF-JA-8.py");
 
-		String result = CommandHelper.executeCommands(baseUrl, args);
+		//String result = CommandHelper.executeCommands(baseUrl, args);
+		String startbatCommand =baseUrl+"/runpy.bat";
+		String result= executeSingleCommand(baseUrl,startbatCommand);
+		logger.info("final after calling: "+result);
 	}
 
 	public ArrayList<String[]> readResult(String outputfiledir, int colnum) throws IOException {
@@ -763,8 +893,10 @@ public class ENAgent extends JPSHttpServlet {
 			//System.out.println("basekv= " + basekv);
 			//System.out.println("pukv= " + resultfrommodelbus.get(amod - 1)[1]);
 			double originalv = basekv * Double.valueOf(resultfrommodelbus.get(amod - 1)[1]);
-			vVmout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(originalv));
-			//System.out.println("value Of " + busoutputlist.get(a)[5] + " is= " + originalv);
+			
+			//vVmout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(originalv)); //if vm is in kv
+			vVmout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbus.get(amod - 1)[1])); //if vm is in pu
+			
 
 			Individual vVaout = jenaOwlModel.getIndividual(busoutputlist.get(a)[6]);
 			vVaout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbus.get(amod - 1)[2]));
