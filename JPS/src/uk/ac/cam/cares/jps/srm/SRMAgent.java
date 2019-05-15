@@ -72,7 +72,7 @@ public class SRMAgent extends HttpServlet  {
 	
 	private void startbinaryconverter(String batchFolderlocation,String iri) {
 		//system.out.println("starting the binary converter");
-		String startSRMCommand = "C:/JPS_DATA/workingdir/JPS/SRM/ontochemConvertOwlToBin.bat "+iri;
+		String startSRMCommand = "C:/JPS_DATA/workingdir/JPS/SRM/ontokinConvertOwlToBin.bat "+iri;
 		CommandHelper.executeSingleCommand(batchFolderlocation, startSRMCommand);
 	}
 	
@@ -206,7 +206,8 @@ public class SRMAgent extends HttpServlet  {
 			
 		
 			try {
-				rs_mechanism = SRMAgent.queryFromRDF4JServer(mechanismquery,iri);
+				//rs_mechanism = SRMAgent.queryFromRDF4JServer(mechanismquery,iri); not neccessary at moment
+				
 				//system.out.println("result of the total query= "+rs_mechanism);
 			} catch (JSONException e1) {
 
@@ -218,8 +219,8 @@ public class SRMAgent extends HttpServlet  {
 			
 			//second, run using command prompt the owl file iri using the batch file to produce new bin
 			// for PRODUCTION
-			startbinaryconverter(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM",rs_mechanism);
-			
+//			startbinaryconverter(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM",rs_mechanism); try change not using query on 10/5
+			startbinaryconverter(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM",iri);
 			
 			//-------------------------------------------------------------------------------
 			
@@ -444,7 +445,7 @@ public class SRMAgent extends HttpServlet  {
 		File[] listOfFiles = folder.listFiles();
 		
 		for (int i = 0; i < listOfFiles.length; i++) {
-			  if (listOfFiles[i].isFile() && !listOfFiles[i].getName().equals("ontochem.jar")&& !listOfFiles[i].getName().equals("InputParams.xml")&& !listOfFiles[i].getName().equals("InputEngineML.xml")&&!listOfFiles[i].getName().equals("OutputCase00001Cyc0001ADMS-valid_v2.json")&& !listOfFiles[i].getName().equals("convert.exe")&& !listOfFiles[i].getName().equals("ontochemConvertOwlToBin.bat")) {
+			  if (listOfFiles[i].isFile() && !listOfFiles[i].getName().equals("ontokin.jar")&& !listOfFiles[i].getName().equals("InputParams.xml")&& !listOfFiles[i].getName().equals("InputEngineML.xml")&&!listOfFiles[i].getName().equals("OutputCase00001Cyc0001ADMS-valid_v2.json")&& !listOfFiles[i].getName().equals("convert.exe")&& !listOfFiles[i].getName().equals("ontokinConvertOwlToBin.bat")) {
 			
 			   listOfFiles[i].delete();
 			  }

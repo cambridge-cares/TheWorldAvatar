@@ -30,8 +30,8 @@ public class TestSRMAgent extends TestCase {
 	public void testCallAgent () throws JSONException {
 		JSONObject dataSet = new JSONObject();
 		try {
-			//dataSet.put("reactionmechanism", "https://como.cheng.cam.ac.uk/kb/Toluene.owl#ReactionMechanism_4631074216281807") ;
-			dataSet.put("reactionmechanism", "https://como.cheng.cam.ac.uk/kb/Reduced_PRF_ERC.owl#ReactionMechanism_4909454516579602") ;
+			dataSet.put("reactionmechanism", "http://www.theworldavatar.com/kb/ontokin/Reduced_PRF_ERC.owl#ReactionMechanism_184144363244001") ;
+			//dataSet.put("reactionmechanism", "https://como.cheng.cam.ac.uk/kb/Reduced_PRF_ERC.owl#ReactionMechanism_4909454516579602") ;
 			dataSet.put("engine", "http://www.theworldavatar.com/kb/deu/berlin/powerplants/DieselEngine-001.owl#DieselEngine-001") ;
 		}
 		catch (JSONException e) {
