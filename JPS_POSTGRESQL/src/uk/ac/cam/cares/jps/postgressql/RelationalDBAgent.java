@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps;
+package uk.ac.cam.cares.jps.postgressql;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

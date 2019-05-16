@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.crs;
+package uk.ac.cam.cares.jps.crs;
 
 import java.util.HashMap;
 import java.util.Map;
