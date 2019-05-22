@@ -367,7 +367,9 @@ public class MenDataProvider {
 					+ "?valuey   j2:numericalValue ?numvaly ."
 					+ "}" + "ORDER BY ?product DESC(?added)";
 
-			// ResultSet rs_prod = sparql(OKB, sourceInfo);
+			
+			// only for debug:;
+			//System.out.println("name urgent="+plantkb.get(file));
 			ResultSet rs_prod = sparql(plantkb.get(file), sourceInfo); // query product information (product name,
 																		// capacity, price) for the sources
 			//logger.info("filelocat= "+plantkb.get(file));
