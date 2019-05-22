@@ -1,7 +1,11 @@
 package uk.ac.cam.cares.jps.powsys.envisualization;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,6 +13,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -20,17 +28,26 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
-public class ENVisualization {
+@WebServlet(urlPatterns = { "/ENVisualization/createLineJS", "/ENVisualization/createKMLFile/*", "/ENVisualization/getKMLFile/*" })
+public class ENVisualization extends JPSHttpServlet {
 	
 	private Document doc;
 	private Element root;
+	private Logger logger = LoggerFactory.getLogger(ENVisualization.class);
 	
 	/**
 	 * Create a KML object.
@@ -69,6 +86,204 @@ public class ENVisualization {
 		}
 	}
 	
+	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		
+		String path = request.getServletPath();
+		logger.info("path called= "+path);
+		
+
+	
+
+		if ("/ENVisualization/createLineJS".equals(path)) {
+			
+			JSONObject joforEN = AgentCaller.readJsonParameter(request);
+			String iriofnetwork = joforEN.getString("electricalnetwork");
+			OntModel model = readModelGreedy(iriofnetwork);
+			
+			String g=createLineJS(model);
+			AgentCaller.printToResponse(g, response);
+			
+		} else if ("/ENVisualization/createKMLFile".equals(path)) {
+			
+			logger.info("path called here= "+path);
+
+			
+			
+			JSONObject joforEN = AgentCaller.readJsonParameter(request);
+			String iriofnetwork = joforEN.getString("electricalnetwork");
+			String n=joforEN.getString("n");
+			OntModel model = readModelGreedy(iriofnetwork);
+			BufferedWriter bufferedWriter = null;
+			
+			String b = null;
+			try (FileWriter writer = new FileWriter("C:/TOMCAT/webapps/ROOT/OntoEN/testfinal.kml");
+		             BufferedWriter bw = new BufferedWriter(writer)) {
+				b = createfinalKML(model);
+
+	           bw.write(b);
+				
+				
+				if (true) {
+					writeToResponse(response, b,n);
+					return;
+				}
+				
+			} catch (TransformerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			AgentCaller.printToResponse(b, response);
+		}
+		else if ("/ENVisualization/getKMLFile".equals(path)) {
+
+			logger.info("path called here= " + path);
+
+			JSONObject joforEN = AgentCaller.readJsonParameter(request);
+			String iriofnetwork = joforEN.getString("electricalnetwork");
+			String n=joforEN.getString("n");
+			OntModel model = readModelGreedy(iriofnetwork);
+
+			String b = null;
+
+				try {
+					b = createfinalKML(model);
+				} catch (TransformerException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if (true) {
+					writeToResponse(response, b,n);
+					AgentCaller.printToResponse(b, response);
+					return;
+				}
+
+			
+		}
+		
+	}
+	
+	public void writeToResponse(HttpServletResponse response, String content,String n) {
+		try {
+			
+			logger.info("uploading file");
+			
+		    //String fileName = "C:/Users/KADIT01/TOMCAT/webapps/ROOT/test2.kml";
+		    String fileName = "C:/TOMCAT/webapps/ROOT/OntoEN/en.kml";
+		    String fileType = "text/xml; charset=utf-8";
+		    // Find this file id in database to get file name, and file type
+		
+		    // You must tell the browser the file type you are going to send
+		    // for example application/pdf, text/plain, text/html, image/jpg
+		    response.setContentType(fileType);
+		
+		    // Make sure to show the download dialog
+		    response.setHeader("Content-disposition","attachment; filename=en"+n+".kml");
+		
+		    // Assume file name is retrieved from database
+		    // For example D:\\file\\test.pdf
+		
+		    File my_file = new File(fileName);
+		
+		    // This should send the file to browser
+		    OutputStream out = response.getOutputStream();
+		    FileInputStream in = new FileInputStream(my_file);
+		    
+		    //InputStream in = new ByteArrayInputStream(content.getBytes());
+		    
+		    byte[] buffer = new byte[4096];
+		    int length;
+		    while ((length = in.read(buffer)) > 0){
+		       out.write(buffer, 0, length);
+		    }
+		    in.close();
+		    out.flush();
+		    
+		    
+		    logger.info("uploading file successful");
+		    
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new JPSRuntimeException(e.getMessage(), e);
+		}
+	}
+	
+	public String createfinalKML(OntModel model) throws TransformerException {
+		ENVisualization a = new ENVisualization();
+		
+
+		// ------------FOR GENERATORS-----------------
+		List<String[]> generators = a.queryElementCoordinate(model, "PowerGenerator");
+		ArrayList<ENVisualization.StaticobjectgenClass> gensmerged = new ArrayList<ENVisualization.StaticobjectgenClass>();
+		ArrayList<String> coorddata = new ArrayList<String>();
+		for (int e = 0; e < generators.size(); e++) {
+			StaticobjectgenClass gh = a.new StaticobjectgenClass();
+			gh.setnamegen("/" + generators.get(e)[0].split("#")[1] + ".owl");
+			gh.setx(generators.get(e)[1]);
+			gh.sety(generators.get(e)[2]);
+			//System.out.println("/" + generators.get(e)[0].split("#")[1] + ".owl");
+
+			if (coorddata.contains(gh.getx()) && coorddata.contains(gh.gety())) {
+				int index = coorddata.indexOf(gh.getx()) / 2;
+				gensmerged.get(index).setnamegen(gensmerged.get(index).getnamegen() + gh.getnamegen());
+			} else {
+				gensmerged.add(gh);
+				coorddata.add(generators.get(e)[1]);
+				coorddata.add(generators.get(e)[2]);
+			}
+
+		}
+
+		for (int g = 0; g < gensmerged.size(); g++) {
+			MapPoint c = new MapPoint(Double.valueOf(gensmerged.get(g).gety()),
+					Double.valueOf(gensmerged.get(g).getx()), 0.0, gensmerged.get(g).getnamegen());
+			a.addMark(c, "generator");
+		}
+
+		// --------------------------------
+		
+	
+		// ------------FOR BUS-----------------
+		List<String[]> bus = a.queryElementCoordinate(model, "BusNode");
+		ArrayList<ENVisualization.StaticobjectgenClass> bussesmerged = new ArrayList<ENVisualization.StaticobjectgenClass>();
+		ArrayList<String> coorddatabus = new ArrayList<String>();
+		for (int e = 0; e < bus.size(); e++) {
+			StaticobjectgenClass gh = a.new StaticobjectgenClass();
+			gh.setnamegen("/" + bus.get(e)[0].split("#")[1] + ".owl");
+			gh.setx(bus.get(e)[1]);
+			gh.sety(bus.get(e)[2]);
+			//System.out.println("/" + bus.get(e)[0].split("#")[1] + ".owl");
+
+			if (coorddatabus.contains(gh.getx()) && coorddatabus.contains(gh.gety())) {
+				int index = coorddatabus.indexOf(gh.getx()) / 2;
+				bussesmerged.get(index).setnamegen(bussesmerged.get(index).getnamegen() + gh.getnamegen());
+			} else {
+				bussesmerged.add(gh);
+				coorddatabus.add(bus.get(e)[1]);
+				coorddatabus.add(bus.get(e)[2]);
+			}
+
+		}
+
+		for (int g = 0; g < bussesmerged.size(); g++) {
+			MapPoint c = new MapPoint(Double.valueOf(bussesmerged.get(g).gety()),
+					Double.valueOf(bussesmerged.get(g).getx()), 0.0, bussesmerged.get(g).getnamegen());
+			a.addMark(c, "bus");
+		}
+
+		// --------------------------------
+
+		
+//		int size2 = bus.size();
+//		for (int g = 0; g < size2; g++) {
+//			MapPoint c = new MapPoint(Double.valueOf(bus.get(g)[2]), Double.valueOf(bus.get(g)[1]), 0.0,
+//					"/" + bus.get(g)[0].split("#")[1] + ".owl");
+//			a.addMark(c, "bus");
+//		}
+
+		return a.writeFiletoString();
+	}
+	
 	 public class StaticobjectgenClass {
 		private String genname = "";
 		private String x = "0";
@@ -100,6 +315,16 @@ public class ENVisualization {
 		
 	}
 	
+		public static OntModel readModelGreedy(String iriofnetwork) {
+			String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
+					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+					+ "SELECT ?component "
+					+ "WHERE {?entity  a  j2:CompositeSystem  ." + "?entity   j2:hasSubsystem ?component ." + "}";
+
+			QueryBroker broker = new QueryBroker();
+			return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
+		}
+		
 	public ArrayList <Double[]> estimateSquare(double x,double y,double constant){
 		ArrayList<Double[]>squrepoints = new ArrayList<Double[]>();
 		Double [] points1= {x-(0.0002+constant),y,0.0};
@@ -422,7 +647,13 @@ public class ENVisualization {
 	    if(busdata.get(3).contentEquals(busdata.get(8))&&busdata.get(2).contentEquals(busdata.get(7))) {
 	    	linetype="transformer";
 	    }
-	    String contentbegin="{coors: [{lat: "+busdata.get(3)+", lng: "+busdata.get(2)+"}, {lat: "+busdata.get(8)+", lng: "+busdata.get(7)+"}], vols: ["+Double.valueOf(busdata.get(1))*Double.valueOf(busdata.get(4))+","+Double.valueOf(busdata.get(9))*Double.valueOf(busdata.get(6))+"], thickness: "+tick+", type: '"+linetype+"', name: '/"+resultListbranch.get(0)[0].split("#")[1]+".owl'}";
+	    //String contentbegin="{coors: [{lat: "+busdata.get(3)+", lng: "+busdata.get(2)+"}, {lat: "+busdata.get(8)+", lng: "+busdata.get(7)+"}], vols: ["+Double.valueOf(busdata.get(1))*Double.valueOf(busdata.get(4))+","+Double.valueOf(busdata.get(9))*Double.valueOf(busdata.get(6))+"], thickness: "+tick+", type: '"+linetype+"', name: '/"+resultListbranch.get(0)[0].split("#")[1]+".owl'}"; (temp changes to remove line.js
+	    String contentbegin="{\"coors\": [{\"lat\": "+busdata.get(3)+", \"lng\": "+busdata.get(2)+"}, {\"lat\": "+busdata.get(8)+", \"lng\": "+busdata.get(7)+"}], \"vols\": ["+Double.valueOf(busdata.get(1))*Double.valueOf(busdata.get(4))+","+Double.valueOf(busdata.get(9))*Double.valueOf(busdata.get(6))+"], \"thickness\": "+tick+", \"type\": \""+linetype+"\", \"name\": \"/"+resultListbranch.get(0)[0].split("#")[1]+".owl\"}";
+	    if(Double.valueOf(busdata.get(1))*Double.valueOf(busdata.get(4))<Double.valueOf(busdata.get(9))*Double.valueOf(busdata.get(6))) {
+	     contentbegin="{\"coors\": [{\"lat\": "+busdata.get(8)+", \"lng\": "+busdata.get(7)+"}, {\"lat\": "+busdata.get(3)+", \"lng\": "+busdata.get(2)+"}], \"vols\": ["+Double.valueOf(busdata.get(9))*Double.valueOf(busdata.get(6))+","+Double.valueOf(busdata.get(1))*Double.valueOf(busdata.get(4))+"], \"thickness\": "+tick+", \"type\": \""+linetype+"\", \"name\": \"/"+resultListbranch.get(0)[0].split("#")[1]+".owl\"}";
+	    }
+	    
+	    
 	    textcomb.add(contentbegin);
 	   
 	    
@@ -493,9 +724,13 @@ public class ENVisualization {
 		    if(busdata.get(3+10*a).contentEquals(busdata.get(8+10*a))&&busdata.get(2+10*a).contentEquals(busdata.get(7+10*a))) {
 		    	linetype="transformer";
 		    }
-	    	String content="{coors: [{lat: "+busdata.get(3+10*a)+", lng: "+busdata.get(2+10*a)+"}, {lat: "+busdata.get(8+10*a)+", lng: "+busdata.get(7+10*a)+"}], vols: ["+Double.valueOf(busdata.get(1+10*a))*Double.valueOf(busdata.get(4+10*a))+","+Double.valueOf(busdata.get(6+10*a))*Double.valueOf(busdata.get(9+10*a))+"], thickness: "+tick2+", type: '"+linetype+"', name: '/"+resultListbranch.get(a)[0].split("#")[1]+".owl'}";
-	    	
-	    	textcomb.add(content);
+//	    	String content="{coors: [{lat: "+busdata.get(3+10*a)+", lng: "+busdata.get(2+10*a)+"}, {lat: "+busdata.get(8+10*a)+", lng: "+busdata.get(7+10*a)+"}], vols: ["+Double.valueOf(busdata.get(1+10*a))*Double.valueOf(busdata.get(4+10*a))+","+Double.valueOf(busdata.get(6+10*a))*Double.valueOf(busdata.get(9+10*a))+"], thickness: "+tick2+", type: '"+linetype+"', name: '/"+resultListbranch.get(a)[0].split("#")[1]+".owl'}"; temp changed to remove line.js
+		    String content="{\"coors\": [{\"lat\": "+busdata.get(3+10*a)+", \"lng\": "+busdata.get(2+10*a)+"}, {\"lat\": "+busdata.get(8+10*a)+", \"lng\": "+busdata.get(7+10*a)+"}], \"vols\": ["+Double.valueOf(busdata.get(1+10*a))*Double.valueOf(busdata.get(4+10*a))+","+Double.valueOf(busdata.get(6+10*a))*Double.valueOf(busdata.get(9+10*a))+"], \"thickness\": "+tick2+", \"type\": \""+linetype+"\", \"name\": \"/"+resultListbranch.get(a)[0].split("#")[1]+".owl\"}";
+	    	if(Double.valueOf(busdata.get(1+10*a))*Double.valueOf(busdata.get(4+10*a))<Double.valueOf(busdata.get(6+10*a))*Double.valueOf(busdata.get(9+10*a))) {
+	    		content="{\"coors\": [{\"lat\": "+busdata.get(8+10*a)+", \"lng\": "+busdata.get(7+10*a)+"}, {\"lat\": "+busdata.get(3+10*a)+", \"lng\": "+busdata.get(2+10*a)+"}], \"vols\": ["+Double.valueOf(busdata.get(6+10*a))*Double.valueOf(busdata.get(9+10*a))+","+Double.valueOf(busdata.get(1+10*a))*Double.valueOf(busdata.get(4+10*a))+"], \"thickness\": "+tick2+", \"type\": \""+linetype+"\", \"name\": \"/"+resultListbranch.get(a)[0].split("#")[1]+".owl\"}";
+	    	}
+		    
+		    textcomb.add(content);
 	    	
 	    }
 	    
@@ -505,7 +740,11 @@ public class ENVisualization {
 //	     
 //	    writer.close();
 	    String resultfinal=stropen+textcomb.toString()+strend;
-	    return resultfinal;
+	    //return resultfinal; change temporarily for removing line.js
+	    return textcomb.toString();
 		
 	}
+
+
+
 }

@@ -7,8 +7,10 @@ import java.util.List;
 import javax.xml.transform.TransformerException;
 
 import org.apache.jena.ontology.OntModel;
+import org.json.JSONObject;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 import uk.ac.cam.cares.jps.powsys.envisualization.ENVisualization;
 import uk.ac.cam.cares.jps.powsys.envisualization.ENVisualization.StaticobjectgenClass;
@@ -72,6 +74,37 @@ public class TestENVisualization extends TestCase {
 		OntModel model = b.readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
 		String res=a.createLineJS(model);
 		//prev dir="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys not needed/line.js"
+	}
+
+	public void testcallVisualization() throws IOException  {
+
+		JSONObject jo = new JSONObject();
+		
+		jo.put("electricalnetwork", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
+		
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENVisualization/createLineJS", jo.toString());
+		System.out.println("resultStart= "+resultStart);
+	}
+	
+	public void testcallVisualizationKML() throws IOException  {
+
+		JSONObject jo = new JSONObject();
+		
+		jo.put("electricalnetwork", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
+		
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENVisualization/createKMLFile", jo.toString());
+		System.out.println("resultStart= "+resultStart);
+	}
+	
+	
+	public void testKMLFile() {
+		
+		String url = "http://www.theworldavatar.com/OntoEN/test2.kml";
+		
+		String result = AgentCaller.executeGetWithURL(url);
+		
+		System.out.println(result);
+		
 	}
 	
 	
