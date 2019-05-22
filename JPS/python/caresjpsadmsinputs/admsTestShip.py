@@ -85,11 +85,11 @@ try:
             }}
         """.format(ship)
      
-        queryResults = sparqlQueryRead(query_string_coordinates)
-        queryResults = queryResults['results']['bindings']
+        queryResults = graph.query(query_string_coordinates)
+        queryResults = queryResults.bindings
 
-        x_coordinate_value = float(queryResults[0]['coordinateX_value']['value'])
-        y_coordinate_value = float(queryResults[0]['coordinateY_value']['value'])
+        x_coordinate_value = float(queryResults[0]['coordinateX_value'])
+        y_coordinate_value = float(queryResults[0]['coordinateY_value'])
         
 #         query_results = graph.query(query_string_coordinates).bindings
 #         x_coordinate_value = float(query_results[0]['coordinateX_value'].toPython())

@@ -56,4 +56,77 @@ public class TestPOSTGRESQL extends TestCase  {
 
 		   System.out.println("result of the ship= "+result);
 	}
+	
+	public void testcalculation() {
+		int add=501;
+		int xmin=833044;
+		int ymin=816015;
+		int xmax=834498;
+		int ymax=817460;
+		
+		int p=xmax-xmin;
+		int l=ymax-ymin;
+		int area=p*l;
+		double area2=1.1*area;
+//		double centerx=(xmin+xmax)/2;
+//		double centery=(ymin+ymax)/2;
+		int xminnew=(int)xmin-add;
+		//System.out.println(xminnew);
+		int xmaxnew=(int) xmax+add;
+		int yminnew=(int) ymin-add;
+		int ymaxnew=(int) ymax+add;
+		double calc=(xmaxnew-xminnew)*(ymaxnew-yminnew);
+//		System.out.println("calc="+calc);
+//		System.out.println("area="+area2);
+		if(calc>=area2){
+//			System.out.println("xmin= "+xminnew);
+//			System.out.println("ymin= "+yminnew);
+//			System.out.println("xmax= "+xmaxnew);
+//			System.out.println("ymax= "+ymaxnew);
+			int counter=1;
+			int distance=16;
+			
+			for(int b=yminnew;b<=ymaxnew;b+=distance) {
+				for (int a=xminnew;a<=xmaxnew;a+=distance) {
+
+					if(b>816840) {
+						//System.out.println(counter+","+(xminnew+((a-1)*distance))+","+(yminnew+((b)*distance))+","+"0.0");
+					}
+					else {
+						if(b>816600) {
+							System.out.println(counter+","+ a +","+ b +","+"50.0");
+						}
+						else{
+							System.out.println(counter+","+a+","+b+","+"200.0");
+						}
+					}
+					counter++;
+				}
+			}
+//			for(int b=0;b<100;b++) {
+//				for (int a=1;a<=60;a++) {
+//
+//					if(yminnew+((b)*distance)>816840) {
+//						//System.out.println(counter+","+(xminnew+((a-1)*distance))+","+(yminnew+((b)*distance))+","+"0.0");
+//					}
+//					else {
+//						if(yminnew+((b)*distance)>816600) {
+//							System.out.println(counter+","+(xminnew+((a-1)*distance))+","+(yminnew+((b)*distance))+","+"50.0");
+//						}
+//						else{
+//							System.out.println(counter+","+(xminnew+((a-1)*distance))+","+(yminnew+((b)*distance))+","+"200.0");
+//						}
+//					}
+//					counter++;
+//				}
+//			}
+			System.out.println(counter+","+(xmaxnew)+","+(ymaxnew)+","+"0.0");
+			counter++;
+			System.out.println(counter+","+(xminnew)+","+(ymaxnew)+","+"0.0");
+			
+		}
+		
+		
+		
+	}
 }
