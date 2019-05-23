@@ -87,13 +87,9 @@ public class DownloadHTML {
 		}
 
 		for (Map.Entry<String, NISTSpeciesInfo> speciesData : data.entrySet()) {
-
-//        	String key = speciesData.getKey();
 			
 			NISTSpeciesInfo value = speciesData.getValue();
-
-//          System.out.println("key: " + key);
-
+			
 			String formula = value.getFormula().getFormula();
 
 			Collection<String> formulaElements = value.getFormula().getElements();
