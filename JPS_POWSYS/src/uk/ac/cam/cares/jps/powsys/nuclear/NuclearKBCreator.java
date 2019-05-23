@@ -46,8 +46,10 @@ public class NuclearKBCreator {
 	private OntClass scalarvalueclass = null;
 
 	private OntClass designcapacityclass = null;
-	private OntClass generatedactivepowerclass=null;
+	//private OntClass generatedactivepowerclass=null;
 	private OntClass nucleargeneratorclass = null;
+	private OntClass Pgclass = null;
+	private OntClass modelclass = null;
 
 
 	private ObjectProperty hasdimension = null;
@@ -62,6 +64,8 @@ public class NuclearKBCreator {
 	private ObjectProperty designcapacity = null;
 	private ObjectProperty hasyearofbuilt = null;
 	private ObjectProperty realizes = null;
+	private ObjectProperty isModeledby = null;
+	private ObjectProperty hasModelVariable = null;
 	
 	private ObjectProperty consumesprimaryfuel = null;
 	private ObjectProperty hasemission = null;
@@ -70,7 +74,7 @@ public class NuclearKBCreator {
 	private ObjectProperty usesgenerationtechnology = null;
 	
 	private ObjectProperty hasSubsystem = null;
-	private ObjectProperty hasActivepowergenerated=null;
+	//private ObjectProperty hasActivepowergenerated=null;
 
 	private DatatypeProperty numval = null;
 	private DatatypeProperty hasname = null;
@@ -84,7 +88,9 @@ public class NuclearKBCreator {
 		valueclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue");
 		scalarvalueclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue");
 		designcapacityclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#DesignCapacity");
-		generatedactivepowerclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#GeneratedActivePower");
+		//generatedactivepowerclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#GeneratedActivePower");
+		Pgclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Pg");
+		modelclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerFlowModelAgent");
 		
 		consumesprimaryfuel = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#consumesPrimaryFuel");
 		hasdimension = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension");
@@ -95,9 +101,11 @@ public class NuclearKBCreator {
 		hasvalue = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue");
 		hasunit = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure");
 		designcapacity = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#designCapacity");
-		hasActivepowergenerated=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasActivePowerGenerated");
+		//hasActivepowergenerated=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasActivePowerGenerated");
 		realizes=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#realizes");
 		hasSubsystem=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem");
+		isModeledby=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isModeledBy");
+		hasModelVariable=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable");
 		
 		numval = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 		nuclear = jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Nuclear");
@@ -238,16 +246,19 @@ public class NuclearKBCreator {
 
 		initOWLClasses(jenaOwlModel2);
 		
-		Individual capagen = generatedactivepowerclass.createIndividual(iriprefix + generatorname + ".owl#GeneratedActivePower_"+generatorname);
-		Individual capagenvalue = scalarvalueclass.createIndividual(iriprefix + generatorname + ".owl#V_GeneratedActivePower_"+generatorname);
+		Individual Pggen = Pgclass.createIndividual(iriprefix + generatorname + ".owl#Pg_"+generatorname);
+		Individual Pggenvalue = scalarvalueclass.createIndividual(iriprefix + generatorname + ".owl#V_Pg_"+generatorname);
 		
 		Individual generator=nucleargeneratorclass.createIndividual(iriprefix + generatorname + ".owl#"+generatorname);
+		Individual model=modelclass.createIndividual(iriprefix + generatorname + ".owl#ModelOf"+generatorname);
 		Individual gencoordinate = coordinatesystemclass.createIndividual(iriprefix + generatorname + ".owl#CoordinateSystem_of_"+generatorname);
 		Individual xgencoordinate = coordinateclass.createIndividual(iriprefix + generatorname + ".owl#x_coordinate_of_"+generatorname);
 		Individual ygencoordinate = coordinateclass.createIndividual(iriprefix + generatorname+ ".owl#y_coordinate_of_"+generatorname);
 		Individual xgencoordinatevalue = valueclass.createIndividual(iriprefix + generatorname + ".owl#v_x_coordinate_of_"+generatorname);
 		Individual ygencoordinatevalue = valueclass.createIndividual(iriprefix + generatorname + ".owl#v_y_coordinate_of_"+generatorname);
 		
+		generator.addProperty(isModeledby, model);
+		model.addProperty(hasModelVariable, Pggen);
 		generator.addProperty(hascoordinatesystem, gencoordinate);
 		
 		gencoordinate.addProperty(hasx, xgencoordinate);
@@ -264,10 +275,9 @@ public class NuclearKBCreator {
 		ygencoordinatevalue.addProperty(numval, jenaOwlModel2.createTypedLiteral(ynumval));
 		ygencoordinatevalue.addProperty(hasunit, degree);
 		
-		generator.addProperty(hasActivepowergenerated, capagen);
-		capagen.addProperty(hasvalue, capagenvalue);
-		capagenvalue.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(new Double(capacity)));
-		capagenvalue.addProperty(hasunit, MW);
+		Pggen.addProperty(hasvalue, Pggenvalue);
+		Pggenvalue.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(new Double(capacity)));
+		Pggenvalue.addProperty(hasunit, MW);
 		
 		return jenaOwlModel2;
 	}
