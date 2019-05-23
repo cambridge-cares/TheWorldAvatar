@@ -92,16 +92,17 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet 
 			
 			//String jsonArrayOfShipIRI =execute("/JPS_SHIP/GetShipListFromRegion",jsonInput);	
 
-			String jsonArrayOfShipIRI =execute("/JPS_POSTGRESQL/getEntitiesWithinRegion",jsonInput);
+			//String jsonArrayOfShipIRI =execute("/JPS_POSTGRESQL/getEntitiesWithinRegion",jsonInput);
+			logger.info("calling postgres= "+jsonInput);
 
 			String url = KeyValueManager.get(IKeys.URL_POSITIONQUERY);
 			url += "/getEntitiesWithinRegion";
-			AgentCaller.executeGetWithURLAndJSON(url, jsonInput);			
+			String resultship=AgentCaller.executeGetWithURLAndJSON(url, jsonInput);			
 				
-			JSONObject jsonShipIRIs = new JSONObject(jsonArrayOfShipIRI);
+			JSONObject jsonShipIRIs = new JSONObject(resultship);
 			JSONArray shipIRIs = jsonShipIRIs.getJSONArray("shipIRIs");
 			jo.put("ship", shipIRIs);
-//			logger.info("shipIRIs FROM COORDINA
+
 			
 			JSONObject jsonReactionShip = new JSONObject();
 			String reactionMechanism = jo.getString("reactionmechanism");
