@@ -19,7 +19,7 @@ SUP = '''
     SupAddInputPath                = " "
     SupReleaseType                 = 0
     SupModelBuildings              = 1
-    SupModelComplexTerrain         = 0
+    SupModelComplexTerrain         = 1
     SupModelCoastline              = 0
     SupPufType                     = 0
     SupCalcChm                     = 0
@@ -133,7 +133,7 @@ HIL  = r'''
     HilGridSize          = 2
     HilUseTerFile        = 1
     HilUseRoughFile      = 0
-    HilTerrainPath       = "C:\Users\kevin\Downloads\A48\terrain accurate\singaporeterrain.ter"
+    HilTerrainPath       = "D:\Users\KADIT01\Desktop\testforterain\updated.ter"
     HilRoughPath         = " "
     HilCreateFlowField   = 1
     /
