@@ -79,10 +79,10 @@ public class TestPOSTGRESQL extends TestCase  {
 //		System.out.println("calc="+calc);
 //		System.out.println("area="+area2);
 		if(calc>=area2){
-//			System.out.println("xmin= "+xminnew);
-//			System.out.println("ymin= "+yminnew);
-//			System.out.println("xmax= "+xmaxnew);
-//			System.out.println("ymax= "+ymaxnew);
+			System.out.println("xmin= "+xminnew);
+			System.out.println("ymin= "+yminnew);
+			System.out.println("xmax= "+xmaxnew);
+			System.out.println("ymax= "+ymaxnew);
 			int counter=1;
 			int distance=16;
 			
@@ -94,10 +94,10 @@ public class TestPOSTGRESQL extends TestCase  {
 					}
 					else {
 						if(b>816600) {
-							System.out.println(counter+","+ a +","+ b +","+"50.0");
+							//System.out.println(counter+","+ a +","+ b +","+"50.0");
 						}
 						else{
-							System.out.println(counter+","+a+","+b+","+"200.0");
+							//System.out.println(counter+","+a+","+b+","+"200.0");
 						}
 					}
 					counter++;
@@ -120,9 +120,9 @@ public class TestPOSTGRESQL extends TestCase  {
 //					counter++;
 //				}
 //			}
-			System.out.println(counter+","+(xmaxnew)+","+(ymaxnew)+","+"0.0");
+			//System.out.println(counter+","+(xmaxnew)+","+(ymaxnew)+","+"0.0");
 			counter++;
-			System.out.println(counter+","+(xminnew)+","+(ymaxnew)+","+"0.0");
+			//System.out.println(counter+","+(xminnew)+","+(ymaxnew)+","+"0.0");
 			
 		}
 		
