@@ -570,14 +570,14 @@
 				//console.log("label forbidden= "+label);
 				if(name.includes('VoltageMagnitude')|| name.includes('Vm_EBus')) {
 					if (value !== 1){
-						alert('The value of the voltage magnitude for a slack bus should always be 1 kV (in p.u format)')
+						alert('The value of the voltage magnitude and Vm for a slack bus should always be 1 kV (in p.u format)')
 						proceed = false;
 					}
 				}
 				
 				if (name.includes('VoltageAngle')|| name.includes('Va_EBus')){
 					if (value !== 0){
-						alert('The value of the voltage angle for a slack bus should always be 0 degree')
+						alert('The value of the voltage angle and Va for a slack bus should always be 0 degree')
 						proceed = false;
 					}
 				}
@@ -586,7 +586,7 @@
 			//console.log("label forbidden= "+label);
 				if(name.includes('VoltageMagnitude')|| name.includes('Vm_EBus')){
 					if( value > 1.05 || value <= 0.95){
-						alert('The value of the voltage magnitude should be between 0.95 and 1.05 kV (in p.u format)')
+						alert('The value of the voltage magnitude and Vm should be between 0.95 and 1.05 kV (in p.u format)')
 						proceed = false;
 					}
 				}			
