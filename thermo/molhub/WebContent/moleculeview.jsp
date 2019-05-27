@@ -163,9 +163,9 @@ $(document).ready(function(){
 
     <div id="top-nav" class="clearfix">
         <ul class="clearfix">
-            <li class="az"><a id="az" href="http://www.cam.ac.uk/global/az.html">a-z</a></li>
-            <li class="search"><a id="search" href="index.php?Page=Search">search</a></li>
-            <li class="home"><a id="home" href="/">home</a></li>
+            <li class="az"><a id="az" href="http://www.cam.ac.uk/university-a-z">a-z</a></li>
+            <li class="search"><a id="search" href="http://search.cam.ac.uk/">search</a></li>
+            <li class="home"><a id="home" href="http://como.ceb.cam.ac.uk/">home</a></li>
         </ul>
     </div>
 
