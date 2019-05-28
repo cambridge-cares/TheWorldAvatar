@@ -155,10 +155,10 @@ public class NuclearKBCreator {
 			//assume 1 line is 1 nuclear power plant and 1 nuclear powerplant is a plant with uniform type of reactor in 1 area	
 			String plantName = "NucPP_" + i;
 			if(data[1].equals("t1")) {
-				doConversion(mapIri2Model, jenaOwlModel, iriprefix, plantName, Integer.valueOf(data[2]),0, data[5],data[4],generatortype, i); // plant,iriprefix,nreactora,nreactorb,x,y
+				doConversion(mapIri2Model, jenaOwlModel, iriprefix, plantName, Integer.valueOf(data[2]),0, data[4],data[5],generatortype, i); // plant,iriprefix,nreactora,nreactorb,x,y
 			}
 			else if(data[1].equals("t2")) {
-				doConversion(mapIri2Model, jenaOwlModel, iriprefix, plantName, 0,Integer.valueOf(data[2]), data[5],data[4],generatortype, i); // plant,iriprefix,nreactora,nreactorb,x,y
+				doConversion(mapIri2Model, jenaOwlModel, iriprefix, plantName, 0,Integer.valueOf(data[2]), data[4],data[5],generatortype, i); // plant,iriprefix,nreactora,nreactorb,x,y
 			}		
 			
 			String plantIri = iriprefix + plantName + ".owl#" + plantName;
