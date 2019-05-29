@@ -20,8 +20,7 @@ public class TestENVisualization extends TestCase {
 
 	public void testcreateKML() throws TransformerException {
 		ENVisualization a=new ENVisualization();
-		ENAgent b= new ENAgent ();
-		OntModel model = b.readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
+		OntModel model = ENAgent.readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
 		List<String[]> generators=a.queryElementCoordinate(model, "PowerGenerator");
 		
 		
@@ -70,9 +69,9 @@ public class TestENVisualization extends TestCase {
 	
 	public void testcreateLineJS() throws IOException {
 		ENVisualization a=new ENVisualization();
-		ENAgent b= new ENAgent ();
-		OntModel model = b.readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
+		OntModel model = ENAgent.readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
 		String res=a.createLineJS(model);
+		System.out.println("resultjs= "+res);
 		//prev dir="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys not needed/line.js"
 	}
 
