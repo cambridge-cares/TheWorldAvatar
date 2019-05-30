@@ -179,7 +179,7 @@ def getGeoJSON(listBuildingCoordinates, listBuildingHeights, cityiri):
                 'features': [{
                     'type': 'Feature',
                     'properties': {
-                        'height': float(listBuildingHeights[idx]['height'])-float(listBuildingHeights[idx]['minHeight']),
+                        'height': float(listBuildingHeights[idx]['height']),
                         #'minHeight': listBuildingHeights[idx]['minHeight'],
                         'color': 'red',
                         'roofColor': 'red'

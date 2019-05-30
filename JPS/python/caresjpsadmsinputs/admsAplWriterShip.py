@@ -19,7 +19,7 @@ SUP = '''
     SupAddInputPath                = " "
     SupReleaseType                 = 0
     SupModelBuildings              = 1
-    SupModelComplexTerrain         = 0
+    SupModelComplexTerrain         = {0}
     SupModelCoastline              = 0
     SupPufType                     = 0
     SupCalcChm                     = 0
@@ -62,7 +62,7 @@ MET = '''
     &ADMS_PARAMETERS_MET
     MetLatitude               = 1.09e+0
     MetDataSource             = 0
-    MetDataFileWellFormedPath = "{}"
+    MetDataFileWellFormedPath = "{0}"
     MetWindHeight             = 1.0e+1
     MetWindInSectors          = 0
     MetWindSectorSizeDegrees  = 1.0e+1
@@ -133,7 +133,7 @@ HIL  = r'''
     HilGridSize          = 2
     HilUseTerFile        = 1
     HilUseRoughFile      = 0
-    HilTerrainPath       = "D:\Users\KADIT01\Desktop\testforterain\updated.ter"
+    HilTerrainPath       = "C:\JPS_DATA\workingdir\JPS\ADMS\updated.ter"
     HilRoughPath         = " "
     HilCreateFlowField   = 1
     /
@@ -740,8 +740,8 @@ class admsAplWriter(object):
         #if contains this data, execute the corresponding writing function
         with open(self.address, 'w') as file:
             self.writeStr(file, HEADER)
-            self.writeStr(file,SUP)
-            #self.writeTemp(file,SUP,self.data['terrindicator'])
+            #self.writeStr(file,SUP)
+            self.writeTemp(file,SUP,self.data['terrindicator'])
             self.writeTemp(file,MET,[self.data['Met']])
             self.writeBdn(file, self.data['Bdn'])
             self.writeStr(file,HIL)
