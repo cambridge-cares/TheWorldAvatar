@@ -10,10 +10,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 
 /**
@@ -30,10 +32,13 @@ public class ADMSOutputAllForShips extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
-			
+		
+		JSONObject joforEN = AgentCaller.readJsonParameter(request);
+		String folder = joforEN.getString("folder");
+		
 		String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
-		String outputFile = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS/test.levels.gst";
-				
+		//String outputFile = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS/test.levels.gst";
+		String outputFile = folder +"/test.levels.gst";
 		ArrayList<String> args = new ArrayList<String>();
 		System.out.println("================ output file ===============");
 		System.out.println(outputFile);
