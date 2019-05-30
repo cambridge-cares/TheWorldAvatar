@@ -177,7 +177,7 @@ public class ShipAgent extends HttpServlet {
 		double totalparticleemission=0.0;
 		for( int a=0; a<valueoftotalparticlesincluded;a++) {
 			if(jsonObject.getJSONArray("particle").getJSONObject(a).has("emission_rate")) {
-				double valueofparticlerate=jsonObject.getJSONArray("particle").getJSONObject(a).optJSONObject("emission_rate").getDouble("value");
+				double valueofparticlerate=jsonObject.getJSONArray("particle").getJSONObject(a).getJSONObject("emission_rate").getDouble("value");
 				totalparticleemission=totalparticleemission+valueofparticlerate;
 			}
 //			else
@@ -185,7 +185,8 @@ public class ShipAgent extends HttpServlet {
 //				totalparticleemission=0.0;
 //			}
 		}
-		particleratevalue.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(totalparticleemission)); //temporary 1.5 as the json file value is not exist	
+		particleratevalue.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(totalparticleemission)); 
+		logger.info("total mass of particle="+totalparticleemission);
 		//---------------------------------------------------------------------------------------------------------------------------------
 		
 		for( int a=0; a<valueoftotalparticlesincluded;a++) {
@@ -243,6 +244,7 @@ public class ShipAgent extends HttpServlet {
 				
 				massfractionpartialparticulate.addProperty(hasValue, massfractionvaluepartialparticulate);
 				massfractionvaluepartialparticulate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(valueofmassfraction));
+				logger.info("mass fraction= "+valueofmassfraction);
 			}
 		}
 		
