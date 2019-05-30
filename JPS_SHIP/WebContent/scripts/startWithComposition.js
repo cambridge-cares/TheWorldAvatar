@@ -236,12 +236,13 @@ $(function(){
             		
 			var buildingIRIs = coordResult.building;
 			var shipIRIs = coordResult.ship;
+			var folder = coordResult.folder;
 			console.log(coordResult);
 			console.log("buildingIRIs = " + buildingIRIs);
 			console.log("shipIRIs = " + shipIRIs);
 			
 			$("#myProgressBar").remove()
-        	initadms3dmap(buildingIRIs, [xmin, xmax, ymin, ymax], osmb, location, coordinatesMid, locationIRI, shipIRIs);
+        	initadms3dmap(buildingIRIs, [xmin, xmax, ymin, ymax], osmb, location, coordinatesMid, locationIRI, shipIRIs, folder);
 			
 			
 			

@@ -30,7 +30,7 @@ const controlButtonsSetter = osmb => {
 };
 
 
-const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri, shipList) => {
+const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri, shipList, folder) => {
 	
 	for(obj of listGeoJsonAddedToOSMB) {
 		obj.destroy();
@@ -157,7 +157,7 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri, sh
             }]
     };
     
-    getContourMaps('/JPS/ADMSOutputAllForShips').then(dataurls => {
+    getContourMaps('/JPS/ADMSOutputAllForShips',folder).then(dataurls => {
     	
     	var idxSrc = 0, idxH = 0, preObj;
     	$(".radiogroup").change(function(){

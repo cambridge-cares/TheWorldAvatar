@@ -10,13 +10,16 @@ const LEGEND_DIV = 'legendwrapper'
 
 
 
-function getContourMaps(address) {
+function getContourMaps(address,folder) {
     
     return new Promise((resolve, reject) => {
         
         $.ajax({
         	url: address,
-        	dataType: 'text'
+        	data: {
+        		folder: folder
+        	},
+        	dataType: 'json'
         })//todo: change to actual endpoint in future,
         .done(function (d2result) {
                 console.log('get contour data')
