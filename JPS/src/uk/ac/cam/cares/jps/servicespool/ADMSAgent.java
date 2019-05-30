@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -27,6 +26,8 @@ import com.google.gson.Gson;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.building.BuildingQueryPerformer;
 import uk.ac.cam.cares.jps.building.CRSTransformer;
@@ -34,12 +35,12 @@ import uk.ac.cam.cares.jps.building.SimpleBuildingData;
 
 
 @WebServlet("/ADMSAgent")
-public class ADMSAgent extends HttpServlet {
+public class ADMSAgent extends JPSHttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	private Logger logger = LoggerFactory.getLogger(ADMSAgent.class);
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		/*
 		 * This agent takes: region, plantIRI, city, weatherstate and later emission stream 
@@ -149,17 +150,11 @@ public class ADMSAgent extends HttpServlet {
 
 			//system.out.println("============= src name ==============");
 			//system.out.println(srsname);
-			if (srsname.equalsIgnoreCase("EPSG:28992")) { //all source are 3857
-				sourceCRSName = CRSTransformer.EPSG_28992;
-				if (input.has("ship")) {
-					writeAPLFileShip(newBuildingData, plantIRI, region, targetCRSName);
-				} else {
-					writeAPLFile(newBuildingData, plantIRI, region, targetCRSName);
-				}
-			} 
+			
+			String dataPath = QueryBroker.getLocalDataPath();
+			String fullPath = dataPath + "/JPS_ADMS";	//only applies for ship at the moment		
 			
 			
-			else {
 				double[] p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {lowerx, lowery});
 				String lx = String.valueOf(p[0]);
 				String ly = String.valueOf(p[1]);
@@ -184,27 +179,27 @@ public class ADMSAgent extends HttpServlet {
 
 				JSONObject newRegion  = new JSONObject(String.format(regionTemplate, ux,uy,lx,ly));
 				if (input.has("ship")) {
-					writeAPLFileShip(newBuildingData, plantIRI, newRegion, targetCRSName);
+					QueryBroker broker = new QueryBroker();
+					broker.put(fullPath + "/arbitrary.txt", "text to assign something arbitrary");
+					writeAPLFileShip(newBuildingData, plantIRI, newRegion, targetCRSName,fullPath);
+					writeMetFile(weather,fullPath);
 				} else {
 					writeAPLFile(newBuildingData,plantIRI, newRegion, targetCRSName);
+					fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
+					writeMetFile(weather,fullPath);
 				}
-			}
-
-
-			
-			writeMetFile(weather);
 			
 			// =================== Start ADMS when input files are written =======================
 			
 			String targetFolder = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
 			if(request.getServerName().contains("localhost")) {
 				//uncomment if tested in kevin's computer
-				startADMS(targetFolder);
+				startADMS(fullPath);
 			} else {
-				startADMS(targetFolder);
+				startADMS(fullPath);
 			}
 			JSONObject result = new JSONObject();
-			result.put("folder", targetFolder);
+			result.put("folder", fullPath);
 			response.getWriter().write(result.toString()); // TODO: ZXC Read the output file and then return JSON
 			// ====================================================================================
 			
@@ -218,9 +213,9 @@ public class ADMSAgent extends HttpServlet {
 	}
 
 
-	public void writeMetFile(JSONObject weatherInJSON) {
+	public void writeMetFile(JSONObject weatherInJSON,String fullPath) {
 		
-			String fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
+			// fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
 			String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
 			
 			ArrayList<String> args = new ArrayList<String>();
@@ -263,8 +258,10 @@ public class ADMSAgent extends HttpServlet {
 		return result;		
 	}
 	
-	public String writeAPLFileShip (String buildingInString, String plantIRI, JSONObject regionInJSON, String targetCRSName) {
-		String fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
+	public String writeAPLFileShip (String buildingInString, String plantIRI, JSONObject regionInJSON, String targetCRSName,String fullPath) {
+
+		//fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
+		
 		//system.out.println("==================== full path ====================");
 		//system.out.println(fullPath);
 		//system.out.println("===================================================");
@@ -290,7 +287,7 @@ public class ADMSAgent extends HttpServlet {
   		String result = CommandHelper.executeCommands(targetFolder, args);
   		logger.info("ARGUMENTS");
   		logger.info(args.toString());
-  		logger.info(result);
+  		logger.info("APL FOR SHIP WRITTEN= "+result);
 		return result;		
 	}
 
