@@ -151,7 +151,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			//}
 		}
 
-		String query = getQueryClosestBuildingsFromRegion(350, lx, ly, ux, uy);
+		String query = getQueryClosestBuildingsFromRegion(350, lx, ly, ux, uy); //350
 		//logger.info("BEFORE performQuery");
 		String result = performQuery(cityIRI, query);
 		//logger.info("AFTER performQuery");
@@ -267,6 +267,13 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			i++;
 		}
 		
+		//temporary changed for testing 27-5-19 indicating it's hongkong:
+		if(Math.round(centerx)>=113) {
+		System.out.println("need to be removed= "+result.get(0));
+			//result.set(0,"http://www.theworldavatar.com/kb/hkg/hongkong/buildings/HongkongDistrict02.owl#BuildingBc1b4a35c-1e8d-4590-95b0-5ca01c09ae18"); //no 114 line elevation=4.2; height=10.5
+			//result.set(0,"http://www.theworldavatar.com/kb/hkg/hongkong/buildings/HongkongDistrict02.owl#BuildingBb65410b2-1c68-4036-adbe-028efff01fdc"); //no 102 line elevation=36.5; height=9.8
+			//result.set(0,"http://www.theworldavatar.com/kb/hkg/hongkong/buildings/HongkongDistrict02.owl#BuildingBfc718819-92ec-4ffd-89df-8f82620f9936"); //no 130 line elevation=53.3; height=10.1
+		}
 		return result;
 	}
 	
@@ -418,7 +425,14 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			String queryHeightResult = performQuery(cityIRI, queryHeigt);
 			map = MatrixConverter.fromCsv(queryHeightResult);
 			double height = Double.valueOf((String) map.get("h").get(0));
-			result.BldHeight.add(height);
+//			if(currentIRI.contentEquals("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/HongkongDistrict02.owl#BuildingB70e2e09c-a5b6-4679-b0c9-85704b2a774d")){
+//				result.BldHeight.add(15.0);
+//				
+//			}
+			//else {
+				result.BldHeight.add(height);	
+			//}
+			
 		}
 		
 		return result;
