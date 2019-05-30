@@ -139,10 +139,12 @@ try:
     result['Bdn'] = BDN
     result['CoordiSys'] = sys.argv[5][5:]
     
-    #if "2326" in sys.argv[5][5:] :
-    #    result['terrindicator']="1"
-    #else:
-    #    result['terrindicator']="0"
+    result['Met']= workingDir+ '/test.met'
+    
+    if "2326" in sys.argv[5][5:] :
+        result['terrindicator']="1"
+    else:
+        result['terrindicator']="0"
 
 
 #     result['CoordiSys'] = '3857';

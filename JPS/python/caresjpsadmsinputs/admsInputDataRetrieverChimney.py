@@ -394,7 +394,7 @@ class admsInputDataRetriever(object):
         for now we trigger a python script to write the .met file directly
         '''
         #finish writing met
-        metpath = "C://JPS_DATA/workingdir/JPS/ADMS/test.met"
+        metpath = "C://JPS_DATA/workingdir/JPS/ADMS/test.met" #later it will be replaced, just ignored
         self.pythonLogger.postInfoToLogServer('path for adms met file='+metpath)
         return metpath
 

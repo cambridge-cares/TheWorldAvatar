@@ -41,7 +41,7 @@ except:
 	print("ERROR: Invalid Input")
 
 try:
-	metpath = "C://JPS_DATA/workingdir/JPS/ADMS/test.met"
+	metpath = str(fullPath)+"/test.met"
 	with open(metpath, 'w') as file:
 		result =  template%(temperature,windSpeed,windDirection,precitipation,cloudCover)
 		file.write(result)
