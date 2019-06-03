@@ -16,7 +16,7 @@ sourceCRS = Proj(init='epsg:4326')
 # targetCRS = Proj(init='epsg:3857')
 targetCRS = Proj(init=sys.argv[5][:4].lower() + sys.argv[5][4:])
 
-def sparqlQueryRead(queryString):
+def sparqlQueryRead(queryString): #IT IS UNUSED CURRENTLY, REPLACED BY POSTGRESQL (31-5-2019)
     # sparql = SPARQLWrapper("http://www.theworldavatar.com/damecoolquestion/ships/sparql")
     sparql = SPARQLWrapper("http://172.25.182.41/damecoolquestion/ships-persistent/sparql")
     sparql.setQuery(queryString)
