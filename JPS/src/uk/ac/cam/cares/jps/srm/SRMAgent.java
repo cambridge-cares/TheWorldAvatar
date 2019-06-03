@@ -164,8 +164,7 @@ public class SRMAgent extends HttpServlet  {
 			throws ServletException, IOException {
 
 		
-		System.out.
-		System.out.println(request.getParameter("query"));
+ 		System.out.println(request.getParameter("query"));
 		JSONObject joforrec = AgentCaller.readJsonParameter(request);
 		
 		String iri = null;
