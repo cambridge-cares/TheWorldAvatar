@@ -54,11 +54,28 @@ public class MenGamsConverter {
 		// prepare GAMS input data
 		// -----------------------
         
-        prepareGamsParameterForSources(db, sources);
-        prepareGamsParameterForSinks(db, sources, sinks, feasibleConnections, parameters.internationalMarketPriceFactor, parameters.internationalMarketLowestPrice);
+        //prepareGamsParameterForSources(db, sources);
+        //prepareGamsParameterForSinks(db, sources, sinks, feasibleConnections, parameters.internationalMarketPriceFactor, parameters.internationalMarketLowestPrice);
         prepareGamsParameterForTransportation(db, transportations);
-        prepareGamsParameterForConnections(db, sources, sinks, feasibleConnections, transportations);
+        //prepareGamsParameterForConnections(db, sources, sinks, feasibleConnections, transportations);
 		prepareGamsParameterForConstants(db, parameters);
+		
+		
+		
+		
+		String testDirName = AgentLocator.getPathToJpsWorkingDir() + "\\JPS_MEN\\gamsmytest";
+        File testDir = new File(workingDirGams);
+        testDir.mkdir();
+        String fileName = testDirName + "\\test2";
+        
+        System.out.println("MY exporting to " + fileName);
+        
+		db.export(fileName);
+		
+		System.out.println("MY exported");
+		
+		
+		
 		
 		
 		// start GAMS Code
@@ -70,12 +87,28 @@ public class MenGamsConverter {
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 		}
+		
+		
+		System.out.println("My name=" + db.getName());
+		
+		
       
         GAMSJob job = ws.addJobFromString(gamsCode);
         GAMSOptions opt = ws.addOptions();
         opt.defines("gdxincname", db.getName());      
 
+        
+        if (true) return null;
+        
+        
         job.run(opt, db);
+        
+        
+        
+        
+ 
+        
+        
 
         logger.info("parameter= "+parameters);
         

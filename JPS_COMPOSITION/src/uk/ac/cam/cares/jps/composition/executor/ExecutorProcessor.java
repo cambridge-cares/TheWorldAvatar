@@ -1,16 +1,29 @@
 package uk.ac.cam.cares.jps.composition.executor;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
 import uk.ac.cam.cares.jps.agents.discovery.ServiceDiscovery;
+import uk.ac.cam.cares.jps.composition.enginemodel.Edge;
+import uk.ac.cam.cares.jps.composition.enginemodel.Graph;
+import uk.ac.cam.cares.jps.composition.servicemodel.MessageContent;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
+import uk.ac.cam.cares.jps.composition.util.FormatTranslator;
 
 public class ExecutorProcessor {
 
@@ -306,7 +319,38 @@ public class ExecutorProcessor {
 	}
 	
 	
-	
+	private Map<String, Service> make_input_to_agent_map(JSONObject GraphInJSON) throws JsonParseException, JsonMappingException, URISyntaxException, IOException {
+		Graph graph = FormatTranslator.convertGraphJSONTOJavaClass(GraphInJSON.toString());
+		Map<String, Service> agent_map = new HashMap<String, Service>();
+		for (Service service : graph.servicePool) {
+			List<MessageContent> outputs = service.getOperations().get(0).getInputs();
+			Set<String> index_list = new HashSet<String>();
+			for (MessageContent output : outputs) {
+				for(MessagePart part : output.getMandatoryParts()) {
+					for(Edge edge : part.outputEdges) {
+						String key_from_edge = "";
+					 	for(int n : edge.toInput) {
+					 		key_from_edge += String.valueOf(n);
+			        	}
+					 	
+					 	index_list.add(key_from_edge);
+					}
+				}
+			}
+		  
+			if((index_list.contains("120") || index_list.contains("020")) && index_list.size() > 1) {
+				index_list.remove("010");
+			}
+			//System.out.println("index_list" + index_list);
+			if(index_list.size() != 0) {
+				Iterator<String> iter = index_list.iterator();
+				agent_map.put((String) iter.next(), service);
+			}
+		}
+
+		return agent_map;
+	 
+	}
 	
 	public String getHttpUrl(int[] index) throws JSONException {
 		
@@ -324,8 +368,15 @@ public class ExecutorProcessor {
 			serviceIdx = 0;
 		}
 		
-		
-		JSONObject service = layer.getJSONArray("services").getJSONObject(serviceIdx);
+		JSONObject service = new JSONObject();
+		if(layer.getJSONArray("services").length() <= serviceIdx) {
+			layer = this.layers.getJSONObject(index[0] + 1);
+			service = layer.getJSONArray("services").getJSONObject(0);
+		}
+		else {
+			service = layer.getJSONArray("services").getJSONObject(serviceIdx);
+		}
+	
 		JSONArray operation = service.getJSONArray("operations");
 		return operation.getJSONObject(0).getString("httpUrl");
 	}

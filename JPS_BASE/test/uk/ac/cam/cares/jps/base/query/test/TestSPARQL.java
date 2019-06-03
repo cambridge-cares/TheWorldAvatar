@@ -5,7 +5,6 @@ import org.apache.jena.rdf.model.RDFNode;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.sparql.JenaModelWrapper;
 import uk.ac.cam.cares.jps.base.query.sparql.Paths;
@@ -18,16 +17,6 @@ public class TestSPARQL extends TestCase implements Prefixes, Paths, ITestConsta
 	public void testPrefixMap() {
 		String prefixUrl = PrefixToUrlMap.getPrefixUrl(OCPSPAC);
 		assertEquals("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#", prefixUrl);
-	}
-	
-	public void testPrefixMapUnknownPrefixUrl() {
-		boolean exceptionWasThrown = false;
-		try {
-			PrefixToUrlMap.getPrefixUrl("UNKNOWN");
-		} catch (JPSRuntimeException e) {
-			exceptionWasThrown = true;
-		}
-		assertTrue(exceptionWasThrown);
 	}
 	
 	public void testQueryBuilderNppLandlots() {
@@ -121,6 +110,61 @@ public class TestSPARQL extends TestCase implements Prefixes, Paths, ITestConsta
 		
 		o = w.getPropertyValue(startSubject, PGISCOORDX);
 		assertEquals(14.5, o.asLiteral().getDouble());
+	}
+	
+	public void testJenaWrapperUpdatePropertyValueWithBusNumberAndPgAsTypeRestriction() {
+		
+		OntModel m = createModelForEGen();
+		JenaModelWrapper w = new JenaModelWrapper(m, null);
+		String startSubject = "http://www.theworldavatar.com/EGen-001_template.owl#EGen-001";
+		
+		String pathBusNumberIri = PrefixToUrlMap.getPrefixUrl(OPSMODE) + "BusNumber";
+		String[] pathBusNumber = new String[] {OCPSYST, "isModeledBy", OCPMATH, "hasModelVariable", pathBusNumberIri, OCPSYST, "hasValue", OCPSYST, "numericalValue"};
+		
+		String pgIri = PrefixToUrlMap.getPrefixUrl(OPSMODE) + "Pg";
+		String[] pathPg = new String[] {OCPSYST, "isModeledBy", OCPMATH, "hasModelVariable", pgIri, OCPSYST, "hasValue", OCPSYST, "numericalValue"};
+		
+		
+		// check initial values
+		RDFNode o = w.getPropertyValue(startSubject, pathBusNumber);
+		assertEquals(1, o.asLiteral().getInt());
+		
+		o = w.getPropertyValue(startSubject, pathPg);
+		assertEquals(0., o.asLiteral().getDouble());
+		
+		// update values
+		o = w.setPropertyValue(startSubject, 42, pathBusNumber);
+		assertEquals(42, o.asLiteral().getInt());
+		
+		o = w.setPropertyValue(startSubject, 5.67, pathPg);
+		assertEquals(5.67, o.asLiteral().getDouble());
+		
+		// assert updated values
+		o = w.getPropertyValue(startSubject, pathBusNumber);
+		assertEquals(42, o.asLiteral().getInt());
+		
+		o = w.getPropertyValue(startSubject, pathPg);
+		assertEquals(5.67, o.asLiteral().getDouble());		
+	}
+	
+	public void testJenaWrapperUpdatePropertyValueWithBusNumberAsTypeRestriction() {
+		
+		OntModel m = createModelForEGen();
+		JenaModelWrapper w = new JenaModelWrapper(m, null);
+		String startSubject = "http://www.theworldavatar.com/EGen-001_template.owl#EGen-001";
+		
+		String classIri = PrefixToUrlMap.getPrefixUrl(OPSMODE) + "BusNumber";
+		
+		String[] path = new String[] {OCPSYST, "isModeledBy", OCPMATH, "hasModelVariable", classIri, OCPSYST, "hasValue", OCPSYST, "numericalValue"};
+		
+		RDFNode o = w.getPropertyValue(startSubject, path);
+		assertEquals(1, o.asLiteral().getInt());
+		
+		o = w.setPropertyValue(startSubject, 42, path);
+		assertEquals(42, o.asLiteral().getInt());
+		
+		o = w.getPropertyValue(startSubject, path);
+		assertEquals(42, o.asLiteral().getInt());
 	}
 	
 	public void testJenaWrapperRemoveSubtree() {

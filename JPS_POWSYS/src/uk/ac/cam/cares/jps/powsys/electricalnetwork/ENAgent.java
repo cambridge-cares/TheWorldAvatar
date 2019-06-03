@@ -566,11 +566,11 @@ public class ENAgent extends JPSHttpServlet {
 				.append(", keys = ").append(keys.length).append(", ").append(keysConcat);
 		logger.info(b.toString());
 		
-		if ("generator".equals(context)) {
-			for (String[] current : resultList) {
-				System.out.println(MiscUtil.concat(current, ", "));
-			}
-		}
+//		if ("generator".equals(context)) {
+//			for (String[] current : resultList) {
+//				System.out.println(MiscUtil.concat(current, ", "));
+//			}
+//		}
 		
 		if (!context.toLowerCase().contains("output")) {
 			/*

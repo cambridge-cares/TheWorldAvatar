@@ -295,6 +295,11 @@
             <i class="send icon"></i>
             Send to executor
         </button>
+        
+        <button onclick="switch_case()"> Switch Between cases
+		</button>
+        
+        
     </div>
 
     <br/>
@@ -307,6 +312,20 @@
       </textarea> -->
 </div>
 <script>
+
+function switch_case() {
+	console.log(document.getElementById('mySavedModel').innerHTML);
+
+		$.getJSON( "./case.json", function(data) {
+		   console.log(data['withHeatWaste'])
+		   document.getElementById('mySavedModel').innerHTML = data['withHeatWaste']
+		   console.log(myDiagram.model)
+		   myDiagram.model.nodeDataArray = data['withHeatWaste']['nodeDataArray']
+		   myDiagram.model.linkDataArray = data['withHeatWaste']['linkDataArray'] 
+		});
+}
+
+
     function refreshPage() {
         window.location.reload();
     }

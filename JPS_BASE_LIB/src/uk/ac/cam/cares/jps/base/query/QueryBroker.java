@@ -172,8 +172,8 @@ public class QueryBroker {
 	
 	public void put(String destinationUrl, String content) {
 		
-		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
-		JPSBaseLogger.info(this, "put for destinationUrl=" + destinationUrl + ", scenarioUrl=" + scenarioUrl);
+		//String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
+		//JPSBaseLogger.info(this, "put for destinationUrl=" + destinationUrl + ", scenarioUrl=" + scenarioUrl);
 		
 		// TODO-AE SC 20190416 this is just a hack to read local file, refactor this method
 		String path = destinationUrl;
@@ -215,7 +215,7 @@ public class QueryBroker {
 		JPSBaseLogger.info(this, "updating file for urlOrPath=" + urlOrPath + ", scenarioUrl=" + scenarioUrl);
 		
 		
-		// TODO-AE SC 20190218 URGENT
+		// TODO-AE SC URGENT 20190218
 		// call the scenario agent if a scenario url is set in the input
 		if (scenarioUrl != null)  {
 			String url = scenarioUrl + "/update";
