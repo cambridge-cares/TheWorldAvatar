@@ -18,6 +18,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
@@ -85,16 +87,22 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet 
 			
 			JSONObject jo = new JSONObject(jsonInput);
 			
-			updateShipCoordinates();
 			
-			// get a serialized JSON array of ship IRIs
-			//String jsonArrayOfShipIRI = AgentCaller.executeGet("/JPS_SHIP/GetShipListFromRegion", "query", jsonInput);
-			String jsonArrayOfShipIRI =execute("/JPS_SHIP/GetShipListFromRegion",jsonInput);
+			//updateShipCoordinates();
 			
-			JSONObject jsonShipIRIs = new JSONObject(jsonArrayOfShipIRI);
+			//String jsonArrayOfShipIRI =execute("/JPS_SHIP/GetShipListFromRegion",jsonInput);	
+
+			//String jsonArrayOfShipIRI =execute("/JPS_POSTGRESQL/getEntitiesWithinRegion",jsonInput);
+			logger.info("calling postgres= "+jsonInput);
+
+			String url = KeyValueManager.get(IKeys.URL_POSITIONQUERY);
+			url += "/getEntitiesWithinRegion";
+			String resultship=AgentCaller.executeGetWithURLAndJSON(url, jsonInput);			
+				
+			JSONObject jsonShipIRIs = new JSONObject(resultship);
 			JSONArray shipIRIs = jsonShipIRIs.getJSONArray("shipIRIs");
 			jo.put("ship", shipIRIs);
-//			logger.info("shipIRIs FROM COORDINA
+
 			
 			JSONObject jsonReactionShip = new JSONObject();
 			String reactionMechanism = jo.getString("reactionmechanism");

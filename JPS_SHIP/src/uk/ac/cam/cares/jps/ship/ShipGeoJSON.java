@@ -8,13 +8,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetFactory;
 import org.apache.jena.query.ResultSetRewindable;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONStringer;
@@ -76,11 +80,26 @@ public class ShipGeoJSON extends HttpServlet {
 		
 		queryString.setIri("shipIRI", shipIRI);
 		
-		QueryExecution queryExec = QueryExecutionFactory.sparqlService(
-				"http://172.25.182.41/damecoolquestion/ships-persistent/sparql", 
-				queryString.asQuery());
+//		QueryExecution queryExec = QueryExecutionFactory.sparqlService(
+//				"http://172.25.182.41/damecoolquestion/ships-persistent/sparql", 
+//				queryString.asQuery());
+
+		
+		OntModel jenaOwlModel = ModelFactory.createOntologyModel();	
+		jenaOwlModel.read(shipIRI);
+		
+		Query query = QueryFactory.create(queryString.toString());
+		QueryExecution queryExec = QueryExecutionFactory.create(query, jenaOwlModel);
+		
+		
 		ResultSet rs = queryExec.execSelect();   
-		ResultSetRewindable results = ResultSetFactory.copyResults(rs);
+		//reset the cursor, so that the ResultSet can be repeatedly used
+		ResultSetRewindable results = ResultSetFactory.copyResults(rs);    
+		//ResultSetFormatter.out(System.out, results, query); ?? don't know why this is needed to be commented
+		
+
+		
+		
 		JSONStringer shipGeoJSON = new JSONStringer();
 		
 		while (results.hasNext()) {			

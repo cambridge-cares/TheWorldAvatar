@@ -170,29 +170,51 @@ def getBuildingCoordinates(buildingCoordinates, owlCRS, osmCRS):
     return building
 
 # stores each building's data in a Python dictionary in GeoJSON format
-def getGeoJSON(listBuildingCoordinates, listBuildingHeights):
+def getGeoJSON(listBuildingCoordinates, listBuildingHeights, cityiri):
     listBuildingsToTransfer = []
-
-    for idx, building in enumerate(listBuildingCoordinates):
-        python_data = {
-            'type': 'FeatureCollection',
-            'features': [{
-                'type': 'Feature',
-                'properties': {
-                    'height': listBuildingHeights[idx]['height'],
-                    'minHeight': listBuildingHeights[idx]['minHeight'],
-                    'color': 'red',
-                    'roofColor': 'red'
-                },
-                'geometry': {
-                    'type': 'MultiPolygon',
-                    'coordinates': building
-
-                }
-            }]
-        }
-
-        listBuildingsToTransfer.append(python_data)
+    if cityiri == "http://dbpedia.org/resource/Hong_Kong":
+        for idx, building in enumerate(listBuildingCoordinates):
+            python_data = {
+                'type': 'FeatureCollection',
+                'features': [{
+                    'type': 'Feature',
+                    'properties': {
+                        'height': float(listBuildingHeights[idx]['height'])-float(listBuildingHeights[idx]['minHeight']),
+                        #'minHeight': listBuildingHeights[idx]['minHeight'],
+                        'color': 'red',
+                        'roofColor': 'red'
+                    },
+                    'geometry': {
+                        'type': 'MultiPolygon',
+                        'coordinates': building
+    
+                    }
+                }]
+            }
+    
+            listBuildingsToTransfer.append(python_data)
+    else:
+        for idx, building in enumerate(listBuildingCoordinates):
+            python_data = {
+                'type': 'FeatureCollection',
+                'features': [{
+                    'type': 'Feature',
+                    'properties': {
+                        'height': listBuildingHeights[idx]['height'],
+                        'minHeight': listBuildingHeights[idx]['minHeight'],
+                        'color': 'red',
+                        'roofColor': 'red'
+                    },
+                    'geometry': {
+                        'type': 'MultiPolygon',
+                        'coordinates': building
+    
+                    }
+                }]
+            }
+    
+            listBuildingsToTransfer.append(python_data)
+        
 
     return listBuildingsToTransfer
 
@@ -219,8 +241,8 @@ def return_buildings():
         sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/mbs/sparql"
     elif cityiri == "http://dbpedia.org/resource/Hong_Kong":
         owlCRS = Proj(init='epsg:4326')
-        #sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/hongkongbuildingsrealdata/sparql"
-        sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/hongkongbuildings/sparql"
+        sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/hongkongbuildingsrealdata/sparql"
+        #sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/hongkongbuildings/sparql"
 
     if listOfIRIs == []:
         raise ValueError("EMPTY ARRAY")
@@ -242,7 +264,7 @@ def return_buildings():
         listBuildingCoordinates.append(coordinates)
 
 
-    listBuildingsToTransfer = getGeoJSON(listBuildingCoordinates, listBuildingHeights)
+    listBuildingsToTransfer = getGeoJSON(listBuildingCoordinates, listBuildingHeights, cityiri)
 
     return json.dumps(listBuildingsToTransfer)
 

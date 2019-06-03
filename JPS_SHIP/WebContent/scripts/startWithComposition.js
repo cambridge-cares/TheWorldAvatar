@@ -191,7 +191,7 @@ $(function(){
 					uppery
 				}
 			},
-//        	plant,
+        	location,
         	reactionmechanism
         }
         console.log(query);

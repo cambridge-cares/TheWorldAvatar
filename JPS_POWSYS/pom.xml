@@ -49,7 +49,7 @@
            					<directory>python</directory>
            					<targetPath>python</targetPath>
            				</resource>
-						<!--  resource>
+						<resource>
 							<directory>WebContent/css</directory>
 							<targetPath>css</targetPath>
 						</resource>
@@ -67,7 +67,7 @@
 				     			<includes>
                 				<include>*.html</include>
               				</includes>
-            			</resource -->
+            			</resource>
 					</webResources>
                     <warName>${project.artifactId}##${project.version}</warName>
                     <outputDirectory>${tomcatPath}/webapps</outputDirectory>

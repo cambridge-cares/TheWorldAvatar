@@ -85,11 +85,11 @@ try:
             }}
         """.format(ship)
      
-        queryResults = sparqlQueryRead(query_string_coordinates)
-        queryResults = queryResults['results']['bindings']
+        queryResults = graph.query(query_string_coordinates)
+        queryResults = queryResults.bindings
 
-        x_coordinate_value = float(queryResults[0]['coordinateX_value']['value'])
-        y_coordinate_value = float(queryResults[0]['coordinateY_value']['value'])
+        x_coordinate_value = float(queryResults[0]['coordinateX_value'])
+        y_coordinate_value = float(queryResults[0]['coordinateY_value'])
         
 #         query_results = graph.query(query_string_coordinates).bindings
 #         x_coordinate_value = float(query_results[0]['coordinateX_value'].toPython())
@@ -138,6 +138,13 @@ try:
     pythonLogger.postInfoToLogServer('calling admsAplWirter ...')
     result['Bdn'] = BDN
     result['CoordiSys'] = sys.argv[5][5:]
+    
+    #if "2326" in sys.argv[5][5:] :
+    #    result['terrindicator']="1"
+    #else:
+    #    result['terrindicator']="0"
+
+
 #     result['CoordiSys'] = '3857';
     
     for idx in range(len(ship_coordinates_list)):

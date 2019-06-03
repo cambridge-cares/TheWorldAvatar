@@ -133,7 +133,7 @@ HIL  = r'''
     HilGridSize          = 2
     HilUseTerFile        = 1
     HilUseRoughFile      = 0
-    HilTerrainPath       = "C:\Users\kevin\Downloads\A48\terrain accurate\singaporeterrain.ter"
+    HilTerrainPath       = "D:\Users\KADIT01\Desktop\testforterain\updated.ter"
     HilRoughPath         = " "
     HilCreateFlowField   = 1
     /
@@ -741,6 +741,7 @@ class admsAplWriter(object):
         with open(self.address, 'w') as file:
             self.writeStr(file, HEADER)
             self.writeStr(file,SUP)
+            #self.writeTemp(file,SUP,self.data['terrindicator'])
             self.writeTemp(file,MET,[self.data['Met']])
             self.writeBdn(file, self.data['Bdn'])
             self.writeStr(file,HIL)
@@ -816,7 +817,7 @@ class admsAplWriter(object):
         file.write("&ADMS_PARAMETERS_OPT\n")
         self.writeAttr(file, bdn)
         file.write("/\n")
-
+        
     def writeCoordSys(self, file, csys = 28992):
         self.writeTemp(file, '&ADMS_COORDINATESYSTEM\nProjectedEPSG = {0}\n', [csys] )
 #         self.writeTemp(file, '&ADMS_COORDINATESYSTEM\nProjectedEPSG = {0}\n', [28992] )

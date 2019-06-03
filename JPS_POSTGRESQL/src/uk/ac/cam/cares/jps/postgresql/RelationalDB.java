@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps;
+package uk.ac.cam.cares.jps.postgresql;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -10,18 +10,21 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.json.JSONStringer;
 import org.postgresql.copy.CopyManager;
 import org.postgresql.core.BaseConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class RelationalDB {
 	private static final long serialVersionUID = 1L;   
 	   private static final String url = "jdbc:postgresql:adms_ships";
 	   private static final String user = "postgres";
 	   private static final String password = "password";
+	   private static Logger logger = LoggerFactory.getLogger(RelationalDB.class);
 	   
 	   /**
 	    * Connect to the PostgreSQL database
@@ -36,30 +39,33 @@ public class RelationalDB {
 //	       return conn;
 	   }
 	   
-	protected static long populateCoordinates() {
-		   long insertedRows = 0;
-		   
-		   try (Connection conn = connect()) {
-			   insertedRows = new CopyManager((BaseConnection) conn)
-			            .copyIn(
-			                "COPY coordinates FROM STDIN (FORMAT csv, HEADER)", 
+	public static long populateCoordinates() {
+		long insertedRows = 0;
+
+		try (Connection conn = connect()) {
+			insertedRows = new CopyManager((BaseConnection) conn)
+					.copyIn("COPY coordinates FROM STDIN (FORMAT csv, HEADER)",
 //			                new BufferedReader(new FileReader("C:\\Users\\WE\\PycharmProjects\\SPARQL\\ship\\ship-coordinates.csv"))	// in dev environment	
-			                new BufferedReader(new FileReader("C:\\JPS_SHIP\\ship-coordinates.csv"))	// on Claudius
-			                );
-			    System.out.printf("%d row(s) inserted%n", insertedRows);		   
-		   } catch (SQLException ex) {
-			   System.out.println(ex.getMessage());
-		   } catch (ClassNotFoundException e) {
-			   e.printStackTrace();
-		   } catch (FileNotFoundException e) {
-			e.printStackTrace();
+							new BufferedReader(new FileReader("C:\\JPS_SHIP\\ship-coordinates.csv")) // on Claudius
+					);
+			System.out.printf("%d row(s) inserted%n", insertedRows);
+		} catch (SQLException ex) {
+			 logger.error(ex.getMessage(),ex);
+			 throw new JPSRuntimeException(ex.getMessage(), ex);
+		} catch (ClassNotFoundException e) {
+			logger.error(e.getMessage(), e);
+			throw new JPSRuntimeException(e.getMessage(), e);
+		} catch (FileNotFoundException e) {
+			logger.error(e.getMessage(), e);
+			throw new JPSRuntimeException(e.getMessage(), e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
+			throw new JPSRuntimeException(e.getMessage(), e);
 		}
-		   return insertedRows;
-	   }
+		return insertedRows;
+	}
 	   
-	   protected static int deleteCoordinates() {
+	   public static int deleteCoordinates() {
 		   String SQL = "TRUNCATE TABLE coordinates";
 		   int affectedRows = 0;
 		   
@@ -67,14 +73,16 @@ public class RelationalDB {
 				   Statement stmt = conn.createStatement()) {
 			   affectedRows = stmt.executeUpdate(SQL);		   
 		   } catch (SQLException ex) {
-			   System.out.println(ex.getMessage());
+			   logger.error(ex.getMessage(),ex);
+			   throw new JPSRuntimeException(ex.getMessage(), ex);
 		   } catch (ClassNotFoundException e) {
-			   e.printStackTrace();
+			   logger.error(e.getMessage(),e);
+			   throw new JPSRuntimeException(e.getMessage(), e);
 		   }
 		   return affectedRows;
 	   }
 	   
-	   protected static int getNumberOfEntities(int classID) {
+	   public static int getNumberOfEntities(int classID) {
 		   Connection conn = null;
 		   String SQL = "SELECT COUNT(*) FROM coordinates "
 		   		+ "WHERE classid = ?";
@@ -88,22 +96,25 @@ public class RelationalDB {
 	           rs.next();
 	           count = rs.getInt(1);
 	       } catch (SQLException ex) {
-	           System.out.println(ex.getMessage());
+	    	   logger.error(ex.getMessage(),ex);
+	    	   throw new JPSRuntimeException(ex.getMessage(), ex);
 	       } catch (ClassNotFoundException e) {
-	    	   e.printStackTrace();
+	    	   logger.error(e.getMessage(),e);
+	    	   throw new JPSRuntimeException(e.getMessage(), e);
 	       } finally {
 	    	   try {
 	    		   if (conn != null && !conn.isClosed()) {
 	    			   conn.close();
 	    		   }
 	    	   } catch (SQLException ex) {
-	    		   ex.printStackTrace();
+	    		   logger.error(ex.getMessage(),ex);
+	    		   throw new JPSRuntimeException(ex.getMessage(), ex);
 	    	   }
 	       }
 	       return count;
 	   }
 	   
-	   protected static JSONStringer getIRIsOfEntitiesWithinRegion(double xmin, double xmax, double ymin, double ymax) {
+	   public static JSONStringer getIRIsOfEntitiesWithinRegion(double xmin, double xmax, double ymin, double ymax) {
 		   JSONStringer results = new JSONStringer();
 		   results.object()
 	   			.key("shipIRIs").array();
@@ -127,16 +138,19 @@ public class RelationalDB {
 	        	   results.value(rs.getString("instanceiri"));
 	           }
 	       } catch (SQLException ex) {
-	           System.out.println(ex.getMessage());
+	    	   logger.error(ex.getMessage(),ex);
+	    	   throw new JPSRuntimeException(ex.getMessage(), ex);
 	       } catch (ClassNotFoundException e) {
-	    	   e.printStackTrace();
+	    	   logger.error(e.getMessage(),e);
+	    	   throw new JPSRuntimeException(e.getMessage(), e);
 	       } finally {
 	    	   try {
 	    		   if (conn != null && !conn.isClosed()) {
 	    			   conn.close();
 	    		   }
 	    	   } catch (SQLException ex) {
-	    		   ex.printStackTrace();
+	    		   logger.error(ex.getMessage(),ex);
+	    		   throw new JPSRuntimeException(ex.getMessage(), ex);
 	    	   }
 	       }
 	       
@@ -145,3 +159,4 @@ public class RelationalDB {
 		   return results;
 	   }
 }
+
