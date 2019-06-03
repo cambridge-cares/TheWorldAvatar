@@ -3,8 +3,6 @@ package uk.ac.cam.cares.jps.base.query.sparql;
 import java.util.HashMap;
 import java.util.Map;
 
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-
 public class PrefixToUrlMap implements Prefixes {
 
 	private static PrefixToUrlMap instance;
@@ -43,10 +41,6 @@ public class PrefixToUrlMap implements Prefixes {
 	}
 	
 	public static String getPrefixUrl(String prefix) {
-		String url = getInstance().mapPrefixToUrl.get(prefix);
-		if (url == null) {
-			throw new JPSRuntimeException("unknown prefix = " + prefix);
-		}
-		return url;
+		return getInstance().mapPrefixToUrl.get(prefix);
 	}
 }
