@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.base.query.sparql;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.jena.ontology.DatatypeProperty;
@@ -9,11 +11,14 @@ import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntResource;
 import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.NodeIterator;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
+
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class JenaModelWrapper {
 
@@ -31,6 +36,67 @@ public class JenaModelWrapper {
 	}
 	
 	public RDFNode getPropertyValue(String startSubject, String... path) {
+		
+		this.startSubject = startSubject;
+		
+		Individual currentSubject = model.getIndividual(startSubject);
+		Property currentProp = null; 
+		RDFNode currentObject = null;
+		
+		int i = 0;
+		while (i < path.length - 1) {
+		
+			String propAsString = concat(path[i], path[i+1]);
+			
+			// check whether the next string is a class or the next property
+			boolean noClassRestriction = true;
+			String classAsString = null;
+			if (i+2 < path.length) {
+				String prefix = PrefixToUrlMap.getPrefixUrl(path[i+2]);
+				if (prefix == null) {
+					// i.e. no prefix for property but a class URL is given
+					noClassRestriction = false;
+					classAsString = path[i+2];
+				} 
+			}
+	
+			currentProp = model.getProperty(propAsString);
+
+			List<RDFNode> objects = listProperyValues(currentSubject, currentProp);
+			if (objects.isEmpty()) {
+				currentObject = null;
+				break;
+			} 
+			
+			// navigate one property further
+			if (noClassRestriction) {
+				currentObject = objects.get(0);
+			} else {
+				OntClass c = model.getOntClass(classAsString);
+				for (RDFNode current : objects) {
+					if (((OntResource) current).hasRDFType(c)) {
+						currentObject = current;
+						break;
+					}
+				}
+			}
+		
+			if (i < path.length - 2) {
+				// continue navigation
+				currentSubject = ((OntResource) currentObject).asIndividual();
+			} 
+			
+			if (noClassRestriction) {
+				i += 2;
+			} else {
+				i += 3;
+			}
+		}
+		
+		return currentObject;
+	}
+	
+	public RDFNode getPropertyValueWithoutType(String startSubject, String... path) {
 		
 		this.startSubject = startSubject;
 		
@@ -58,6 +124,110 @@ public class JenaModelWrapper {
 		Individual currentSubject = model.getIndividual(startSubject);
 		Property currentProp = null; 
 		
+		int i = 0;
+		while (i < path.length - 1) {
+			
+			String propAsString = concat(path[i], path[i+1]);
+			
+			// check whether the next string is a class or the next property
+			boolean noClassRestriction = true;
+			String classAsString = null;
+			if (i+2 < path.length) {
+				String prefix = PrefixToUrlMap.getPrefixUrl(path[i+2]);
+				if (prefix == null) {
+					// i.e. no prefix for property but a class URL
+					noClassRestriction = false;
+					classAsString = path[i+2];
+				} 
+			}
+			
+			boolean isObjectProp = true;
+			currentProp = model.getObjectProperty(propAsString);
+			if (currentProp == null) {
+				currentProp = model.getDatatypeProperty(propAsString);
+				isObjectProp = false;
+			}
+			
+			if (currentProp == null) {
+				throw new JPSRuntimeException("property not found, property = " + propAsString);
+			}
+			
+			if (i < path.length - 2) {
+				// navigate one property further
+				//RDFNode object = currentSubject.getPropertyValue(currentProp);
+				List<RDFNode> objects = listProperyValues(currentSubject, currentProp);
+				
+				if (!objects.isEmpty()) {
+					
+					RDFNode object = null;
+					if (noClassRestriction) {
+						object = objects.get(0);
+					} else {
+						OntClass c = model.getOntClass(classAsString);
+						for (RDFNode current : objects) {
+							if (((OntResource) current).hasRDFType(c)) {
+								object = current;
+								break;
+							}
+						}
+					}
+				
+					currentSubject = ((OntResource) object).asIndividual();
+				} else {
+					RDFNode newObject = createObject(currentSubject, currentProp, i, path);
+					currentSubject.setPropertyValue(currentProp, newObject);
+					currentSubject = ((OntResource) newObject).asIndividual();
+				}
+			} else {
+				// don't navigate any more but change the object at the end of the entire navigation path
+				currentSubject.removeAll(currentProp);
+				if (isObjectProp) {
+					
+					if (destObject instanceof Individual) {
+						currentSubject.setPropertyValue(currentProp, (Individual) destObject);
+					} else {
+						// destObject must be the URI of an individual
+						OntClass c = ((ObjectProperty) currentProp).getRange().asClass();
+						Individual object = c.createIndividual((String) destObject);
+						currentSubject.setPropertyValue(currentProp, object);
+					}
+					
+				} else {
+					Literal literal = model.createTypedLiteral(destObject);
+					currentSubject.setPropertyValue(currentProp, literal);
+				}
+			}
+			
+			if (noClassRestriction) {
+				i += 2;
+			} else {
+				i += 3;
+			}
+		}
+		
+		return currentSubject.getPropertyValue(currentProp);
+	}
+	
+	private List<RDFNode> listProperyValues(Individual subject, Property property) {
+		
+		List<RDFNode> result = new ArrayList<RDFNode>();
+		
+		NodeIterator it = subject.listPropertyValues(property);
+		while (it.hasNext()) {
+			RDFNode node = it.nextNode();
+			result.add(node);
+		}
+		
+		return result;
+	}
+	
+	public RDFNode setPropertyValueWithoutTypes(String startSubject, Object destObject, String... path) {
+		
+		this.startSubject = startSubject;
+		
+		Individual currentSubject = model.getIndividual(startSubject);
+		Property currentProp = null; 
+		
 		for (int i=0; i<path.length; i=i+2) {
 			String propAsString = concat(path[i], path[i+1]);
 			boolean isObjectProp = true;
@@ -68,7 +238,7 @@ public class JenaModelWrapper {
 			}
 			
 			if (currentProp == null) {
-				// TODO something is wrong, imports are missing? --> exception?
+				throw new JPSRuntimeException("property not found, property = " + propAsString);
 			}
 			
 			if (i < path.length - 2) {

@@ -28,7 +28,6 @@ public class EmissionTestAgent extends JPSHttpServlet {
 	
 	private static final long serialVersionUID = -1180303749059632458L;
 	
-	// TODO-AE SC URGENT reuse other queries and prefixes, replace PREFIX : by keyword BASE
 	public static final String SPARQL_PREFIXES = "PREFIX : <http://www.theworldavatar.com/kb/powerplants/>\r\n"
 			+ "PREFIX powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>\r\n"
 			+ "PREFIX system_v1: <http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#>\r\n"

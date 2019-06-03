@@ -52,9 +52,6 @@ public class ScenarioManagementAgent extends HttpServlet {
 	}
 	
 	public static String getScenarioUrl(String scenarioName) {
-		// TODO-AE SC URGENT localhost 8080
-		//return "http://localhost:8080/JPS_SCENARIO/scenario/" + scenarioName;
-		// return getServerAddress() + "/JPS_SCENARIO/scenario/" + scenarioName;
 		return KeyValueManager.getServerAddress() + ScenarioHelper.getScenarioPath(scenarioName);
 	}
 	
