@@ -6,11 +6,10 @@ import org.json.JSONObject;
 import org.json.JSONStringer;
 import org.json.JSONWriter;
 
-
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 
-public class TestGetShipListFromRegion extends TestCase {
+public class TestGetShipListFromRegion extends TestCase { //unused as the servlet is replaced by postgresql
 	
 	public void testGetShipListFromRegion() throws JSONException {
 		

@@ -19,6 +19,8 @@ import uk.ac.cam.cares.jps.base.util.CommandHelper;
 
 /**
  * Servlet implementation class GetShipListFromRegion
+ * 
+ * IT IS UNUSED ANYMORE, REPLACED BY POSTGRESQL  31/5/19
  */
 @WebServlet("/GetShipListFromRegion")
 public class GetShipListFromRegion extends HttpServlet {
