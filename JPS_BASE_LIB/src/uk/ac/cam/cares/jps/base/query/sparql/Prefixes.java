@@ -5,6 +5,7 @@ public interface Prefixes {
 	// OntoCape
 	String OCPBEHA = "OCPBEHA";
 	String OCPGEOM = "OCPGEOM";
+	String OCPMATE = "OCPMATE";
 	String OCPMATH = "OCPMATH";
 	String OCPPHAS = "OCPPHAS";
 	String OCPSPAC = "OCPSPAC";

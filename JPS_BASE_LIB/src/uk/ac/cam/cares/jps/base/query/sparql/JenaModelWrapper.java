@@ -350,7 +350,7 @@ public class JenaModelWrapper {
 		return path + UUID.randomUUID().toString();
 	}
 	
-	public void removeSubtree(String startSubject, String... path) {
+	public int removeSubtree(String startSubject, String... path) {
 		
 		this.startSubject = startSubject;
 		
@@ -372,15 +372,28 @@ public class JenaModelWrapper {
 		Property lastProp = model.getProperty(lastPropName);
 		
 		// remove the subtree with root lastNode
+		String restrictedToPath = startSubject;
+		int i = startSubject.lastIndexOf("#");
+		if (i >= 0) {
+			restrictedToPath =restrictedToPath.substring(0, i);
+		}
 		RDFNode lastNode = nodeBeforeLast.asResource().getPropertyResourceValue(lastProp); 
-		removeSubtreeRecursively(lastNode, 10);
+		List<Resource> nodesForRemoval = new ArrayList<Resource>();
+		removeSubtreeRecursively(lastNode, 20, restrictedToPath, nodesForRemoval);
+		System.out.println("number of nodes for removal = " + nodesForRemoval.size());
+		for (Resource current : nodesForRemoval) {
+			current.removeProperties();
+		}
 		
 		// remove the property between nodeBeforeLast and lastNode
 		Statement statement = nodeBeforeLast.asResource().getProperty(lastProp);
 		model.remove(statement);
+	
+		return nodesForRemoval.size();
 	}
 	
-	private void removeSubtreeRecursively(RDFNode node, int counter) {
+	
+	private void removeSubtreeRecursively(RDFNode node, int counter, String restrictedToPath, List<Resource> nodesForRemoval) {
 		
 		if (counter < 1) {
 			return;
@@ -392,9 +405,21 @@ public class JenaModelWrapper {
 			while (it.hasNext()) {
 				Statement statement = it.next();
 				RDFNode object = statement.getObject();
-				removeSubtreeRecursively(object, counter - 1);
+				if (object.toString().startsWith(restrictedToPath)) {
+					Property p = statement.getPredicate();
+					//System.out.println("counter = " + counter + ", property = " + p + ", resource = " + object);
+					
+					if (!nodesForRemoval.contains(object)) {
+						removeSubtreeRecursively(object, counter - 1, restrictedToPath, nodesForRemoval);
+					}
+				} else {
+					//System.out.println("SKIPPED counter = " + counter + ", object = " + object);
+				}
+					
 			}
-			r.removeProperties();
+			//System.out.println("add resource to nodes for removal: level = " + counter + ", r = " + r);
+			//r.removeProperties();
+			nodesForRemoval.add(r);
 		}
 	}
 } 

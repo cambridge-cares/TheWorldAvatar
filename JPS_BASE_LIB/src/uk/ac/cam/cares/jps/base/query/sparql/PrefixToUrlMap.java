@@ -24,6 +24,7 @@ public class PrefixToUrlMap implements Prefixes {
 		// prefixes for OntoCape
 		mapPrefixToUrl.put(OCPBEHA, "http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#");
 		mapPrefixToUrl.put(OCPGEOM, "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#");
+		mapPrefixToUrl.put(OCPMATE, "http://www.theworldavatar.com/ontology/ontocape/material/material.owl#");
 		mapPrefixToUrl.put(OCPMATH, "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#");
 		mapPrefixToUrl.put(OCPPHAS, "http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#");
 		mapPrefixToUrl.put(OCPSPAC, "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#");
