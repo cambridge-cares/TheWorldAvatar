@@ -59,6 +59,10 @@ try:
     coordinates['xmax'] = xmax
     coordinates['ymax'] = ymax
     
+    latitudemid=(float(ymin)+float(ymax))/2
+    longitudemid=(float(xmin)+float(xmax))/2
+    xmid,ymid = transform(targetCRS, sourceCRS, longitudemid, latitudemid)
+    
     
 #     pythonLogger.postInfoToLogServer('coordinates=' + str(coordinates))
     ships = json.loads(sys.argv[3])
@@ -140,6 +144,7 @@ try:
     result['CoordiSys'] = sys.argv[5][5:]
     
     result['Met']= workingDir+ '/test.met'
+    result['Lat']= ymid
     
     if "2326" in sys.argv[5][5:] :
         result['terrindicator']="1"
