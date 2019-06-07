@@ -258,6 +258,7 @@ $(function(){
         const location = $("#location option:selected").text();
 
         if (location === "Singapore") {
+        	document.getElementById("optmsg").innerHTML="";
         	osmb.setPosition({
                 latitude: 1.262008,
                 longitude: 103.850973
@@ -289,6 +290,7 @@ $(function(){
             osmb.setTilt(20.6);
             osmb.setRotation(-45.6);
         } else if (location === "Hong Kong") {
+        	document.getElementById("optmsg").innerHTML="Buildings are projected down directly above the ground although elevation is considered in the calculations.";
             osmb.setPosition({
                 longitude: 114.1491155592187,
                 latitude: 22.28911086466781
@@ -301,6 +303,7 @@ $(function(){
           $("#xupper").val("12708200.45");
           $("#ylower").val("2545539.172");
           $("#yupper").val("2546850.028");
+          
             
             osmb.setZoom(14.5);
             osmb.setTilt(14.5);
