@@ -25,6 +25,7 @@ import org.json.JSONStringer;
 
 /**
  * Servlet implementation class ShipGeoJSON
+ * for visualization part which is called by the 3DADMSMap.js
  */
 @WebServlet("/ShipGeoJSON")
 public class ShipGeoJSON extends HttpServlet {
