@@ -19,7 +19,7 @@ function getContourMaps(address,folder) {
         	data: {
         		folder: folder
         	},
-        	dataType: 'json'
+        	dataType: 'text'
         })//todo: change to actual endpoint in future,
         .done(function (d2result) {
                 console.log('get contour data')

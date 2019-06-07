@@ -4,6 +4,7 @@
   <artifactId>JPS_SHIP</artifactId>
   <version>1.0.0</version>
   <packaging>war</packaging>
+  <!--packaging>jar</packaging-->
   <build>
     <sourceDirectory>src</sourceDirectory>
     <testSourceDirectory>test</testSourceDirectory>
@@ -64,6 +65,8 @@
            					<directory>WebContent</directory>
 				     			<includes>
                 				<include>*.html</include>
+                				<include>startprint.bat</include>
+                				<include>testprint.jar</include>
               				</includes>
             			</resource>
 					</webResources>
