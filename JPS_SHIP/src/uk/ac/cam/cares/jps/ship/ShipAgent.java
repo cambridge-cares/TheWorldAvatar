@@ -38,6 +38,8 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.sparql.JenaModelWrapper;
+import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 
 /**
  * Servlet implementation class ShipAgent
@@ -55,6 +57,7 @@ public class ShipAgent extends HttpServlet {
 	private ObjectProperty has_density = null;
 	private ObjectProperty has_length = null;
 	private ObjectProperty hasunit = null;
+	private ObjectProperty intinsicChar=null;
 	private OntClass particleclass = null;
 	private OntClass flowclass = null;
 	private OntClass scalarvalueclass = null;
@@ -101,6 +104,7 @@ public class ShipAgent extends HttpServlet {
 		 has_length=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#has_length");
 		 m=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m");
 		 kg_per_m3=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_cubic_m");
+		 intinsicChar=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/material/material.owl#intrinsicCharacteristics");
 	}
 		
 	
@@ -112,6 +116,10 @@ public class ShipAgent extends HttpServlet {
 	    hmap.put("NO2", "ChemSpecies_Nitrogen__dioxide");
 	    hmap.put("HC", "PseudoComponent_Unburned_Hydrocarbon");
 	    hmap.put("NOx", "PseudoComponent_Nitrogen__oxides");
+	    
+	    JenaModelWrapper c= new JenaModelWrapper(jenaOwlModel, null);
+	    c.removeSubtree("http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Material2_WasteStreamOfChimney-1", Prefixes.OCPMATE, "intrinsicCharacteristics");
+	    //jenaOwlModel=c.getModel();
 	    
 		for (int b = 0; b < hmap.size(); b++) {
 			Individual valueofspeciesemissionrate = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] + "#V_" + hmap.get(hmap.keySet().toArray()[b]) + "_EmissionRate");
@@ -155,7 +163,9 @@ public class ShipAgent extends HttpServlet {
 		
 		if(particulate==null)
 		{
+			Individual material2 = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] +"#Material2_WasteStreamOfChimney-1");
 			particulate = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] +"#Particulate-001",particleclass);//if it is not there	
+			material2.addProperty(intinsicChar, particulate);
 		}
 		Individual particulaterate = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] +"#Particulate-001_EmissionRate");
 		//particleratevalue = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] + "#V_Particulate-001_EmissionRate"); //thereis above
