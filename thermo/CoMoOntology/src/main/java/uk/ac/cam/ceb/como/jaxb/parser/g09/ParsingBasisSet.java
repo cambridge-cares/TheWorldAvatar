@@ -27,7 +27,7 @@ public class ParsingBasisSet {
 	 *
 	 * @param file
 	 *            <p>The Gaussian file</p> 
-	 * @return the basis set <It is an instance of String extracted from the file (G09)</p>
+	 * @return the basis set <p>It is an instance of String extracted from the file (G09)</p>
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred
 	 */

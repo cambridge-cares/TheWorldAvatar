@@ -2,7 +2,6 @@ package uk.ac.cam.ceb.como.jaxb.parser.g09;
 
 import java.io.BufferedReader;
 import java.io.File;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
@@ -26,7 +25,7 @@ public class ParsingLevelOfTheory {
 	 * 
 	 * @param file <p>It denotes Gaussian file.</p>
 	 * @return A String <p>It contains information about level of theory for given Gaussian file. The string starts with "#p" and ends with first appearing "/" character.</p>
-	 * @throws IOException
+	 * @throws IOException input output exception.
 	 */
 	public static String getLevelOfTheoryString(File file) throws IOException {
 		
@@ -76,7 +75,7 @@ public class ParsingLevelOfTheory {
 	 * @param file <p> It represents a Gaussian file. </p>
 	 * @param numberOfAtoms <p>It represents number of atoms.</p>
 	 * @return Jaxb Parametar <p> It contains information about level of theory. Parameter contains one scalar.</p>
-	 * @throws Exception
+	 * @throws Exception the exception. 
 	 */
 	public static Parameter getLevelOfTheryParameter(File file, int numberOfAtoms) throws Exception {
 		

@@ -20,10 +20,10 @@ import uk.ac.cam.ceb.como.io.chem.file.parser.g09.FrequencyParser;
  *
  * @author nk510
  * 
- * <p>This class implements method for generating CompChem XML file
+ * This class implements method for generating CompChem XML file
  *         by parsing 'Frequencies' data from g09 files. Parser class
- *         'FrequencyParser' of {@author pb556} is used to extract 'Frequencies'
- *         data (information).</p>
+ *         'FrequencyParser' of @author{pb556} is used to extract 'Frequencies'
+ *         data (information).
  */
 
 public class ParsingFrequencies {

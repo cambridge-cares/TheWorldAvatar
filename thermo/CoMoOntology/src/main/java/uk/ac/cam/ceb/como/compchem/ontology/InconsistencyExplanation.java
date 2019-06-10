@@ -41,16 +41,17 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
 public class InconsistencyExplanation {	
 	
 	/** File path to generated ontologies (Abox of Compchem ontology). */
-    static String compchemFilePath = "src/test/resources/compchem_abox/"; //ontokin compchem_abox  compchem_abox
-	
-	
-	
+//    static String compchemFilePath = "src/test/resources/compchem_abox"; //ontokin compchem_abox
+      static String compchemFilePath = "C:\\Users\\NK\\git\\thermochemistry\\CoMoOntology\\src\\test\\resources\\ontology\\compchem_abox";
+    
+    
 	/**
 	 * The main method.
 	 *
 	 * @param args the arguments
 	 * @throws OWLOntologyCreationException the OWL ontology creation exception
 	 * @throws IOException Signals that an I/O exception has occurred.
+	 * 
 	 */
 	public static void main(String[] args) throws OWLOntologyCreationException, IOException {
 		
@@ -63,7 +64,7 @@ public class InconsistencyExplanation {
 		 */
 
 		File[] fileList = utility.getFileList(compchemFilePath,".owl", ".rdf", ".ttl");
-
+		
 		/**
 		 * 
 		 * @author nk510 <p>Checks consistency. In case of inconsistency it provides
@@ -71,6 +72,7 @@ public class InconsistencyExplanation {
 		 * 
 		 */
 		
+
 		getReasoningExplanation(fileList);
 
 	}
@@ -83,7 +85,6 @@ public class InconsistencyExplanation {
 	 * @param factory the factory
 	 * @param dataFactory the data factory
 	 * @param ontology the ontology
-	 * @return the inconsistency explanation
 	 * @throws IOException <p>Returns all the explanations for the given unsatisfiable ontology
 	 *             class (owl:Thing). To provide explanation of inconsistencies in
 	 *             Abox one needs to define all individuals to be instance of
@@ -145,7 +146,6 @@ public class InconsistencyExplanation {
 	 * Gets the reasoning explanation.
 	 *
 	 * @param fileList the file list
-	 * @return the reasoning explanation
 	 * @throws OWLOntologyCreationException the OWL ontology creation exception
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
@@ -157,7 +157,7 @@ public class InconsistencyExplanation {
 		 * @author nk510 <p>Iterates over list of files given in folder
 		 *         'src/test/resources/ontology/compchem_ontology' and checks
 		 *         consistency of each ontology.</p>
-		 *         
+		 *
 		 */
 
 		for (File f : fileList) {
@@ -336,8 +336,8 @@ public class InconsistencyExplanation {
 	 * 
 	 * @param aboxOwlFilePath <p>Input owl file (as an Abox set of statement) for which consistency is checked with respect to Compchem ontology file.</p>
 	 * @return true if input owl file is consistent, and false if input owl file is inconsistent.
-	 * @throws OWLOntologyCreationException 
-	 * @throws FileNotFoundException
+	 * @throws OWLOntologyCreationException  creation ontology exception.
+	 * @throws FileNotFoundException throws exception if ontology does not exist, or if there is problem with ontology creation. 
 	 * 
 	 */
 	

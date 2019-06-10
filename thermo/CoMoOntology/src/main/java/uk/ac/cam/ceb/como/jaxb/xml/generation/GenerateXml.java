@@ -5,20 +5,17 @@ import java.io.IOException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
-
 import javax.xml.stream.FactoryConfigurationError;
-
 import javax.xml.stream.XMLStreamException;
+
 import org.eclipse.persistence.exceptions.JAXBException;
 
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.Module;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.Molecule;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.PropertyList;
 import uk.ac.cam.ceb.como.io.chem.file.parser.formula.EmpiricalFormulaParser;
-
 import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingGeometry;
 import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingGeometryType;
-
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.FileUtility;
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.FormulaUtility;
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
@@ -31,7 +28,7 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
  * 		Generates CompChem XML files by parsing Gaussian (g09) files. which
  *         are stored in folder 'src/test/resources/g09/' of CoMoOntology.
  *         project. In CoMoOntology project, we use parser implemented by.
- *         {@author pb556} in CoMoIOChemistry, and CoMoEnthalpyEstimation
+ *         @author{pb556} in CoMoIOChemistry, and CoMoEnthalpyEstimation
  *         projects.
  *         </p>
  */
@@ -54,6 +51,7 @@ public class GenerateXml {
 	 *             the XML stream exception.
 	 * @throws FactoryConfigurationError
 	 *             the factory configuration error.
+	 * @throws javax.xml.bind.JAXBException the JAXBE exception. 
 	 * 
 	 */
 
@@ -128,7 +126,8 @@ public class GenerateXml {
 	 * @author nk510
 	 * @param file
 	 *            the file to be parsed.
-	 * @param rootModule
+	 * @param outputfile the output file.
+	 * @param rootModule the root module.           
 	 *            the root module as instance of class <code>Module</code>.
 	 * @return the module as instance of class
 	 *         <code>{@link uk.ac.cam.ceb.como.io.chem.file.jaxb.Module}</code>.

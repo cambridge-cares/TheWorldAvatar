@@ -24,7 +24,7 @@ import uk.ac.cam.ceb.como.thermo.calculator.rotation.internal.util.IRCompChemWra
  *         <p>
  * 		This class implements methods for generating CompChem XML file by
  *         parsing 'Geometry' data from g09 files. Parser class
- *         'FrequencyParser' of {@author pb556} is used to extract 'Geometry'
+ *         'FrequencyParser' of @author{pb556} is used to extract 'Geometry'
  *         data (information).
  *         </p>
  */
