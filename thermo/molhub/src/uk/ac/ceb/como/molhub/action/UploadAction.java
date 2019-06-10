@@ -334,9 +334,9 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 								 *         Each generated owl file will be stored in RDF4J triple store.
 								 *         </p>
 								 */
-
+								
 								connection.add(owlFile, ontoCompChemUri, RDFFormat.RDFXML);
-
+								
 								connection.commit();
 
 							} catch (RepositoryException e) {

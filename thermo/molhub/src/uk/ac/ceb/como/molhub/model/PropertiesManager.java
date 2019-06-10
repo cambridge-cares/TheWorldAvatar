@@ -12,7 +12,7 @@ public class PropertiesManager {
 
 	/**
 	 * @author NK510
-	 * @param inputStream
+	 * @param inputStream the Input Stream.
 	 * @return Properties (key, value) given in .properties file of molhub project
 	 */
 	public static Properties loadProperties(InputStream inputStream) {

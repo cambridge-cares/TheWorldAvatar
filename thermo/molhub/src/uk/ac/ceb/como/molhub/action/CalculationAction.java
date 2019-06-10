@@ -129,6 +129,8 @@ public class CalculationAction extends ActionSupport implements SessionAware {
                 String[] cmd = { "python", pyscript, "-j", jsonFiles.get(i).getAbsolutePath(), };
 
 				Runtime.getRuntime().exec(cmd);
+				
+				
 			}
 			
 		}

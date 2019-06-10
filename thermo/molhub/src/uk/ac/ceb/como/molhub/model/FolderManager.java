@@ -33,6 +33,7 @@ public class FolderManager {
 	 * @author nk510
 	 * @param fileName Name of Gaussian file
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
+	 * @return uuid the unique identifier used to name folder and files.
 	 * 
 	 */
 	public static String generateUniqueFolderName(String fileName)
@@ -47,8 +48,8 @@ public class FolderManager {
 
 		/**
 		 * 
-		 * @author nk510 <p>Generates source for universally unique identifier (uuid) based
-		 *         on file name, date, time, and cpu milliseconds.</p>
+		 * @author nk510 Generates source for universally unique identifier (uuid) based
+		 *         on file name, date, time, and cpu milliseconds.
 		 * 
 		 */
 
@@ -111,7 +112,7 @@ public class FolderManager {
 	/**
 	 * Gets the upload report list.
 	 *
-	 * @return the upload report list that includes uuid, Gaussian file name, XML validation (true/false), OWL consistency (true/false) </p>
+	 * @return the upload report list that includes uuid, Gaussian file name, XML validation (true/false), OWL consistency (true/false) 
 	 */
 	public List<GaussianUploadReport> getUploadReportList() {
 		return uploadReportList;
@@ -134,7 +135,7 @@ public class FolderManager {
 	 * @param kbFolderPath folder where owl files are stored.
 	 * @param dataFolderPath folder where Gaussian, xml, and png files are stored.
 	 * @param format the format of file.
-	 * @return
+	 * @return the file name
 	 */
 //	public String getFileName(String uuid,  String catalinaFolderPath, String format) {
 	public String getFileName(String uuid,  String kbFolderPath, String dataFolderPath, String format) {
