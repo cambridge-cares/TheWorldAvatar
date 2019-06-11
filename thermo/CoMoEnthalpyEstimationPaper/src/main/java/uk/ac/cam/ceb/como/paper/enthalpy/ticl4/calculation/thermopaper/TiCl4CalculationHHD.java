@@ -55,16 +55,16 @@ public class TiCl4CalculationHHD {
 //        String srcRefPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\reference\\plain-ref_scaled_kJperMols_v8-0p05.csv"; //reference data
 //        String srcSoiPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\ti-o-cl-species\\calc-enthalpy_scaled_kJperMol.csv";  // target species
 //        String destRList = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\publication-validation\\results\\isg\\";
-        
-        
+    	
     	/**
          * Explanation:
-         * Below are given URLs to data used in testing this code. 
+         * Below are given folder paths to data used in testing this code. 
          * srcCompoundsRef: This is a String that refers to a folder with GAussian files for which Hf and EBRs are estimated. Files are available on Vienna folder: /CoMoCommon/Archive/Projects/Preprints/c4e/c4e-180-pb556-TiCl4/Data/other/initial-calculations/thermo/thermo-calculations/esc/combined/g09/
          * srcRefPool: This is a String that refers to reference data (species) based on which this code estimates Hf and EBRs for target species given as  "String srcSoiPool". These data are available on data are available on Vienna folder: /CoMoCommon/Archive/Projects/Preprints/c4e/c4e-180-pb556-TiCl4/Data/other/initial-calculations/thermo/enthalpy/
          * srcSoiPool: This is a String that refers to target data (species) for which this Java code estimates Hf and EBRs. These data are available on data are available on Vienna folder: /CoMoCommon/Archive/Projects/Preprints/c4e/c4e-180-pb556-TiCl4/Data/other/initial-calculations/thermo/enthalpy/
          * destRList: This is a String that refers to destination folder where output of calculations (Hf, EBRs) are  stored.
          */
+    	
         String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\g09\\"; 
         String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\plain-ref_scaled_kJperMols_v8-0p05.csv";  
 //      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-1-species.csv";   //Target 1 species in first raw. Other species from the list belong to reference species.

@@ -58,7 +58,7 @@ public class TiCl4CalculationISG {
         
         /**
          * Explanation:
-         * Below are given URLs to data used in testing this code. 
+         * Below are given folder paths to data used in testing this code. 
          * srcCompoundsRef: This is a String that refers to a folder with GAussian files for which Hf and EBRs are estimated. Files are available on Vienna folder: /CoMoCommon/Archive/Projects/Preprints/c4e/c4e-180-pb556-TiCl4/Data/other/initial-calculations/thermo/thermo-calculations/esc/combined/g09/
          * srcRefPool: This is a String that refers to reference data (species) based on which this code estimates Hf and EBRs for target species given as  "String srcSoiPool". These data are available on data are available on Vienna folder: /CoMoCommon/Archive/Projects/Preprints/c4e/c4e-180-pb556-TiCl4/Data/other/initial-calculations/thermo/enthalpy/
          * srcSoiPool: This is a String that refers to target data (species) for which this Java code estimates Hf and EBRs. These data are available on data are available on Vienna folder: /CoMoCommon/Archive/Projects/Preprints/c4e/c4e-180-pb556-TiCl4/Data/other/initial-calculations/thermo/enthalpy/
