@@ -1,20 +1,18 @@
 
 
 const routerFact = require("./routerFact/mapRouterFact");
-var express= require('express')
-var router = express.Router()
-var runHeatWasteNetwork = require("../agents/RunHeatWasteNetwork")
+const expressRouter = require("express").Router;
+let router = expressRouter();
 
-var config = require('../config')
-var LiteralData = require('../agents/GetLiteralData')
+let config = require("../config");
+const LiteralData = require("../agents/GetLiteralData");
 
- function getHWPPcoordi(cb){
-    cb(null, [{uri:"", location:{lat: 1.260414, lng: 103.676268}},
-        {uri:"", location:{lat: 1.267866, lng: 103.693315}},
-        {uri:"", location:{lat: 1.282279, lng: 103.714007}},
-     {uri:"", location:{lat: 1.263889, lng: 103.668609}},
-         {uri:"", location:{ lat: 1.273710, lng: 103.675132}}
-     ])
+function getHWPPcoordi(cb) {
+    cb(null, [{uri: "", location: {lat: 1.260414, lng: 103.676268}},
+            {uri: "", location: {lat: 1.267866, lng: 103.693315}},
+            {uri: "", location: {lat: 1.282279, lng: 103.714007}},
+            {uri: "", location: {lat: 1.263889, lng: 103.668609}},
+            {uri: "", location: {lat: 1.273710, lng: 103.675132}}]);
  }
 
 router = routerFact(router, getHWPPcoordi, {title:"Powerplant Map", subtitle:"Powerplant Map"}, "mapHW");
@@ -42,8 +40,7 @@ function  getInitialHWData(cb) {
         "SinkPlant2Quantity",
         "SinkPlant3Quantity",
         "SinkPlant4Quantity",
-        "SinkPlant5Quantity",
-
+        "SinkPlant5Quantity"
     ];
 
     LiteralData(function (err, result) {
@@ -66,11 +63,11 @@ router.get("/initial", (req, res, next)=>{
 
     getInitialHWData((err, result)=>{
         if(err) {
-            console.log(err)
-            next(err)
+            console.log(err);
+            next(err);
             return;
         }
-        console.log(result)
+        console.log(result);
 
         let packed = {};
 
@@ -92,20 +89,12 @@ router.get("/initial", (req, res, next)=>{
                 packed.SinkPlantQuantities.push(item.value);
             }
 
-        })
+        });
 
-        console.log(packed)
+        console.log(packed);
         res.json(packed);
     })
-})
-
-
-
-
-
-
-
-
+});
 
 
 //TODO: return simulation result when requested
@@ -123,13 +112,14 @@ router.post("/simulation", (req, res, next)=>{
 
     runHeatWasteNetwork(parsedBody.plantData , (err, result)=>{
         if(err) {
-            console.log(err)
-            next(err)
+            console.log(err);
+            next(err);
             return;
         }
-        console.log(result)
+        console.log(result);
 
         res.json(result);
     })
-})
+});
+
 module.exports = router;
