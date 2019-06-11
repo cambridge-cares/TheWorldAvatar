@@ -2,6 +2,17 @@ package uk.ac.cam.cares.jps.base.query.sparql;
 
 public interface Prefixes {
 	
+	// standard ontologies
+	String DC = "dc";
+	String DCAM = "dcam";
+	String DCTERMS = "dcterms";
+	String OWL = "owl";
+	String RDF = "rdf";
+	String RDFS = "rdfs";
+	String SKOS = "skos";
+	String XSD = "xsd";
+	String TIME = "time";
+	
 	// OntoCape
 	String OCPBEHA = "OCPBEHA";
 	String OCPGEOM = "OCPGEOM";
@@ -17,7 +28,7 @@ public interface Prefixes {
 	String OPSMODE = "OPSMODE";
 	String OPSBEHA = "OPSBEHA";
 	String OPSREAL = "OPSREAL";
-	
-	// other ontologies
+
+	// other JPS ontologies
 	String OXXLAND = "OXXLAND";
 }

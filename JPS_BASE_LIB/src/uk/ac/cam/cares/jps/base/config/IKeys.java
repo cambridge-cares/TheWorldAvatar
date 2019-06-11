@@ -11,4 +11,5 @@ public interface IKeys {
 	public static final String URL_BUILDINGSQUERY_HONGKONG = "url.buildingsquery.hongkong";
 	
 	public static final String URL_POSITIONQUERY = "url.positionquery"; 
+	public static final String URL_RDF_METADATA = "url.rdf.metadata";
 }

@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.misc.powerplants.performance;
+package uk.ac.cam.cares.jps.base.query;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -18,29 +18,47 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class SparqlOverHttpService {
 	
-	enum SparqlStoreType {	
+	public enum RDFStoreType {	
 		FUSEKI,
 		RDF4J,
 		OBDA
 	}
 	
-	private SparqlStoreType type = SparqlStoreType.FUSEKI;
+	private RDFStoreType type = RDFStoreType.FUSEKI;
 	private String sparqlServiceURIForQuery = null;
 	private String sparqlServiceURIForUpdate = null;
 	
 	public SparqlOverHttpService(String datasetUrl) {
 		
 		if (datasetUrl.contains("rdf4j")) {
-			this.type = SparqlStoreType.RDF4J;
+			init(RDFStoreType.RDF4J, datasetUrl);
+		} else {
+			init(RDFStoreType.FUSEKI, datasetUrl);
+		}
+	}
+	
+	public SparqlOverHttpService(RDFStoreType rdfStoreType, String datasetUrl) {
+		init(rdfStoreType, datasetUrl);
+	}
+	
+	public SparqlOverHttpService(RDFStoreType rdfStoreType, String sparqlServiceURIForQuery, String sparqlServiceURIForUpdate) {
+		this.type = rdfStoreType;
+		this.sparqlServiceURIForQuery = sparqlServiceURIForQuery;
+		this.sparqlServiceURIForUpdate = sparqlServiceURIForUpdate;
+	}
+	
+	private void init(RDFStoreType rdfStoreType, String datasetUrl) {
+		if (RDFStoreType.RDF4J == rdfStoreType) {
+			this.type = RDFStoreType.RDF4J;
 			this.sparqlServiceURIForQuery = datasetUrl;
 			this.sparqlServiceURIForUpdate = datasetUrl + "/statements";
-		} else {
-			this.type = SparqlStoreType.FUSEKI;
+		} else if (RDFStoreType.FUSEKI == rdfStoreType){
+			this.type = RDFStoreType.FUSEKI;
 			this.sparqlServiceURIForQuery = datasetUrl + "/query";
 			this.sparqlServiceURIForUpdate = datasetUrl + "/update";
+		} else {
+			throw new JPSRuntimeException("unsupported RDF store type = " + rdfStoreType);
 		}
-		
-		System.out.println(toString());
 	}
 	
 	public String toString() {
@@ -50,19 +68,13 @@ public class SparqlOverHttpService {
 		return b.toString();
 	}
 	
-	public SparqlOverHttpService(SparqlStoreType type, String sparqlServiceURIForQuery, String sparqlServiceURIForUpdate) {
-		this.type = type;
-		this.sparqlServiceURIForQuery = sparqlServiceURIForQuery;
-		this.sparqlServiceURIForUpdate = sparqlServiceURIForUpdate;
-	}
-	
 	public String executePost(String messageBody) {
 
 		URI uri = AgentCaller.createURI(sparqlServiceURIForUpdate);
 		HttpPost request = new HttpPost(uri);
 		//request.setHeader(HttpHeaders.ACCEPT, "text/csv");
 		
-		if (SparqlStoreType.RDF4J.equals(type)) {
+		if (RDFStoreType.RDF4J.equals(type)) {
 			request.setHeader(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
 			messageBody = "update=" + messageBody;
 			//request.setHeader(HttpHeaders.CONTENT_TYPE, "application/sparql-update");
@@ -117,7 +129,7 @@ public class SparqlOverHttpService {
 	public String executeGet(String sparqlQuery) {
 
 		URI uri = null;
-		if (SparqlStoreType.RDF4J.equals(type)) {
+		if (RDFStoreType.RDF4J.equals(type)) {
 			uri = AgentCaller.createURI(sparqlServiceURIForQuery, "query", sparqlQuery, "Accept", "text/csv");
 		} else {
 			uri = AgentCaller.createURI(sparqlServiceURIForQuery, "query", sparqlQuery);

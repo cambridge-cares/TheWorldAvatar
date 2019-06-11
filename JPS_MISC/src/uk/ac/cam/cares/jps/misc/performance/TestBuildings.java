@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
-import uk.ac.cam.cares.jps.misc.powerplants.performance.SparqlOverHttpService;
 
 public class TestBuildings extends TestCase {
 

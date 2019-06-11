@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
 /**
