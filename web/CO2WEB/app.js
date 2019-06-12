@@ -44,7 +44,7 @@ const app = express();
 let port = config.port;
 process.env.UV_THREADPOOL_SIZE = 128;
 
-
+app.set('views', __dirname + '/views');
 app.set('view engine', 'pug');
 app.use(httplogger('dev'));
 
