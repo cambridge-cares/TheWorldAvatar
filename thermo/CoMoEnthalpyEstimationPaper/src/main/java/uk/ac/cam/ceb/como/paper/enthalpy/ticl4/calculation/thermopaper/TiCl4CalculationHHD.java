@@ -68,7 +68,8 @@ public class TiCl4CalculationHHD {
         String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\g09\\"; 
         String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\plain-ref_scaled_kJperMols_v8-0p05.csv";  
 //      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-1-species.csv";   //Target 1 species in first raw. Other species from the list belong to reference species.
-        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-10-species.csv";  //Target 10 species from 1st to 10th raw. Other species from the list belong to reference species.
+//      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-10-species.csv";  //Target 10 species from 1st to 10th raw. Other species from the list belong to reference species.
+        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-no-ref-data.csv"; // There are no reference species that are included in the list of target species.
         String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\hhd\\";
         
 //        String srcCompoundsRef = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\west-recalc\\all-g09\\";

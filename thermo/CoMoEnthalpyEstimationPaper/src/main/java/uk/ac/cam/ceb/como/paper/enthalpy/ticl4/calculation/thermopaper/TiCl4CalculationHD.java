@@ -51,10 +51,10 @@ public class TiCl4CalculationHD {
 	
     public static void main(String[] args) throws Exception {
 
-//        String srcCompoundsRef = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\final-calculations-publication-used\\esc\\combined\\g09\\";
-//        String srcRefPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\reference\\plain-ref_scaled_kJperMols_v8-0p05.csv"; //reference data
-//        String srcSoiPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\ti-o-cl-species\\calc-enthalpy_scaled_kJperMol.csv";  // target species
-//        String destRList = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\publication-validation\\results\\isg\\";
+//      String srcCompoundsRef = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\final-calculations-publication-used\\esc\\combined\\g09\\";
+//      String srcRefPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\reference\\plain-ref_scaled_kJperMols_v8-0p05.csv"; //reference data
+//      String srcSoiPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\ti-o-cl-species\\calc-enthalpy_scaled_kJperMol.csv";  // target species
+//      String destRList = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\publication-validation\\results\\isg\\";
         
         /**
          * Explanation:
@@ -64,33 +64,35 @@ public class TiCl4CalculationHD {
          * srcSoiPool: This is a String that refers to target data (species) for which this Java code estimates Hf and EBRs. These data are available on data are available on Vienna folder: /CoMoCommon/Archive/Projects/Preprints/c4e/c4e-180-pb556-TiCl4/Data/other/initial-calculations/thermo/enthalpy/
          * destRList: This is a String that refers to destination folder where output of calculations (Hf, EBRs) are  stored.
          */
+    	
         String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\g09\\";
         String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\plain-ref_scaled_kJperMols_v8-0p05.csv";
 //      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-1-species.csv";   //Target 1 species in first raw. Other species from the list belong to reference species.
-        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-10-species.csv";  //Target 10 species from 1st to 10th raw. Other species from the list belong to reference species.
+//      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-10-species.csv";  //Target 10 species from 1st to 10th raw. Other species from the list belong to reference species.
+        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-no-ref-data.csv"; // There are no reference species that are included in the list of target species.
         String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\hd\\";
         
-//        String srcCompoundsRef = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\west-recalc\\all-g09\\";
-//        String srcRefPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\reference\\ref_scaled_kJperMols_v8.csv";
-//        String srcSoiPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\west-recalc\\calc-enthalpy_scaled_kJperMol-Ti5.csv";
-//        String destRList = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\west-recalc\\results\\isg\\";
+//      String srcCompoundsRef = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\west-recalc\\all-g09\\";
+//      String srcRefPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\reference\\ref_scaled_kJperMols_v8.csv";
+//      String srcSoiPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\west-recalc\\calc-enthalpy_scaled_kJperMol-Ti5.csv";
+//      String destRList = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\west-recalc\\results\\isg\\";
 
-//        String srcCompoundsRef = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\ti-o-cl-species-missing2\\all-g09\\";
-//        String srcRefPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\reference\\ref_scaled_kJperMols_v8.csv";
-//        String srcSoiPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\ti-o-cl-species-missing2\\calc-enthalpy_scaled_kJperMol.csv";
-//        String destRList = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\ti-o-cl-species-missing2\\results\\isg\\";
-//        String srcCompoundsRef = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\west-recalc\\all-g09\\";
-//        String srcRefPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\reference\\ref_scaled_kJperMols_v8.csv";
-//        String srcSoiPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\west-recalc\\calc-enthalpy_scaled_kJperMol.csv";
-//        String destRList = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\west-recalc\\results\\isg\\";
-//        String srcCompoundsRef = "W:\\projects\\thermo_calcs\\g09\\";
-//        String srcRefPool = "W:\\projects\\thermo_calcs\\references\\new-enthalpy-upd_e_scaled_kJperMols-v2.csv";
-//        String srcSoiPool = "W:\\projects\\thermo_calcs\\iteration_1\\smiles-emp1\\can-sep\\calc-enthalpy_scaled_kJperMol.csv";
-//        String destRList = "W:\\projects\\thermo_calcs\\iteration_1\\smiles-emp1\\can-sep\\calculation\\hco_isg\\";
-//        String srcCompoundsRef = "W:\\projects\\TiCl4_thermo\\esc\\filtered-and-organised\\can-sep\\verify\\freq-success\\g09-combined\\";
-//        String srcRefPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\reference\\ref_scaled_kJperMols_v8.csv";
-//        String srcSoiPool = "W:\\projects\\TiCl4_thermo\\esc\\filtered-and-organised\\can-sep\\verify\\freq-success\\calc-enthalpy_scaled_kJperMol.csv";
-//        String destRList = "W:\\projects\\TiCl4_thermo\\esc\\filtered-and-organised\\can-sep\\verify\\freq-success\\calculation\\hco_isg\\";
+//      String srcCompoundsRef = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\ti-o-cl-species-missing2\\all-g09\\";
+//      String srcRefPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\reference\\ref_scaled_kJperMols_v8.csv";
+//      String srcSoiPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\ti-o-cl-species-missing2\\calc-enthalpy_scaled_kJperMol.csv";
+//      String destRList = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\ti-o-cl-species-missing2\\results\\isg\\";
+//      String srcCompoundsRef = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\west-recalc\\all-g09\\";
+//      String srcRefPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\reference\\ref_scaled_kJperMols_v8.csv";
+//      String srcSoiPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\west-recalc\\calc-enthalpy_scaled_kJperMol.csv";
+//      String destRList = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\west-recalc\\results\\isg\\";
+//      String srcCompoundsRef = "W:\\projects\\thermo_calcs\\g09\\";
+//      String srcRefPool = "W:\\projects\\thermo_calcs\\references\\new-enthalpy-upd_e_scaled_kJperMols-v2.csv";
+//      String srcSoiPool = "W:\\projects\\thermo_calcs\\iteration_1\\smiles-emp1\\can-sep\\calc-enthalpy_scaled_kJperMol.csv";
+//      String destRList = "W:\\projects\\thermo_calcs\\iteration_1\\smiles-emp1\\can-sep\\calculation\\hco_isg\\";
+//      String srcCompoundsRef = "W:\\projects\\TiCl4_thermo\\esc\\filtered-and-organised\\can-sep\\verify\\freq-success\\g09-combined\\";
+//      String srcRefPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\reference\\ref_scaled_kJperMols_v8.csv";
+//      String srcSoiPool = "W:\\projects\\TiCl4_thermo\\esc\\filtered-and-organised\\can-sep\\verify\\freq-success\\calc-enthalpy_scaled_kJperMol.csv";
+//      String destRList = "W:\\projects\\TiCl4_thermo\\esc\\filtered-and-organised\\can-sep\\verify\\freq-success\\calculation\\hco_isg\\";
 
         Map<String, Integer[]> mapElPairing = new HashMap<>();
         

@@ -64,10 +64,12 @@ public class TiCl4CalculationISG {
          * srcSoiPool: This is a String that refers to target data (species) for which this Java code estimates Hf and EBRs. These data are available on data are available on Vienna folder: /CoMoCommon/Archive/Projects/Preprints/c4e/c4e-180-pb556-TiCl4/Data/other/initial-calculations/thermo/enthalpy/
          * destRList: This is a String that refers to destination folder where output of calculations (Hf, EBRs) are  stored.
          */
+    	
         String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\g09\\"; 
         String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\plain-ref_scaled_kJperMols_v8-0p05.csv";  
 //      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-1-species.csv";   //Target 1 species in first raw. Other species from the list belong to reference species.
-        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-10-species.csv";  //Target 10 species from 1st to 10th raw. Other species from the list belong to reference species.
+//      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-10-species.csv";  //Target 10 species from 1st to 10th raw. Other species from the list belong to reference species.
+        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-no-ref-data.csv"; // There are no reference species that are included in the list of target species.
         String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\isg\\";
         
 //        String srcCompoundsRef = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\west-recalc\\all-g09\\";
