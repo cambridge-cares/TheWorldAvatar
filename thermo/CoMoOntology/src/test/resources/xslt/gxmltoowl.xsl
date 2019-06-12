@@ -155,6 +155,7 @@
 
 		<!-- <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_no_namespace}_{$vmodule}_molecular_methоdology_{$id}"> -->
 
+        <!-- 
         <xsl:if test="$program_name='Gaussian'">
          
          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G{$program_version}">
@@ -168,6 +169,7 @@
          </owl:Class>
          
          </xsl:if>
+          -->
 
 		<owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$folder_name}">
 			
