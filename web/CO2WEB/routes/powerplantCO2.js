@@ -6,6 +6,8 @@ var router = express.Router();
 const CO2PPlantSum = require('../agents/CO2PlantAggregation');
 
 let CO2Dataset;
+//@TODO: CHECK THAT WITH ShaoCong
+
 if(!CO2Dataset){
     CO2PPlantSum.getPlantAggregation(function (err, result) {
         if(err){

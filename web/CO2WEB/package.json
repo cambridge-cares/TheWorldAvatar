@@ -18,6 +18,7 @@
     "event-stream": "^3.3.4",
     "express": "^4.16.3",
     "fs-readdir-recursive": "^1.1.0",
+    "graceful-fs": "latest",
     "is-string": "^1.0.4",
     "java": "^0.10.0",
     "libxmljs": "^0.19.5",
@@ -38,14 +39,15 @@
     "serve-favicon": "^2.5.0",
     "socket.io": "^2.1.1"
   },
-  "configurations": [{
-        "type": "node",
-        "request": "launch",
-        "name": "Launch  Script",
-        "program": "\\app.js",
-        "runtimeArgs": [
-            "--max-old-space-size=4096"
-        ]
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch  Script",
+      "program": "\\app.js",
+      "runtimeArgs": [
+        "--max-old-space-size=4096"
+      ]
     }
-]
+  ]
 }

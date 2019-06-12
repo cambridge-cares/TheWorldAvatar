@@ -3,24 +3,17 @@
  
  没有结构性数据，考虑全程用流来做，如果有流的sparqlengine就直接套，不然就流local graph来query
  */
-var log4js = require('log4js');
-var logger = log4js.getLogger();
+const log4js = require('log4js');
+const logger = log4js.getLogger();
 logger.level = 'debug';
 //import
-var path = require('path');
-var libxmljs = require("libxmljs");
-var proj4 = require('proj4');
-
-
-var async = require('async');
-var readdirp = require('readdirp');
-var fs = require('graceful-fs');
-var util = require('util');
-var config = require('../config.js');
-//var folderLocation = config.root;
+const path = require('path');
+const async = require('async');
+const fs = require('graceful-fs');
+const config = require('../config.js');
 let request = require('request');
-let stringtype = require('is-string')
-let Parser = require('node-xml-stream')
+let stringtype = require('is-string');
+let Parser = require('node-xml-stream');
 const RdfParser = require('../agents/rdfParser');
 const { Readable,PassThrough } = require('stream');
 
@@ -31,45 +24,33 @@ const { Readable,PassThrough } = require('stream');
  ****/
 //commented out lazy innitiation
 //var connections = [];
-    //todo: add cluster logic
-    
-var owlProcessor = {
-PREDICATE:['Eco-industrialPark:hasIRI','system:hasIRI','system:hasSubsystem','j.0:hasSubsystem'],
-queryStr:`
-PREFIX Eco-industrialPark: <http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#>
-PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-PREFIX owl: <http://www.w3.org/2002/07/owl#>
+//todo: add cluster logic
+git status
+const owlProcessor = {
+    PREDICATE:['Eco-industrialPark:hasIRI','system:hasIRI','system:hasSubsystem','j.0:hasSubsystem'],
+    queryStr:`PREFIX Eco-industrialPark: <http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#>
+        PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+        PREFIX owl: <http://www.w3.org/2002/07/owl#>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX ontochem: <https://como.cheng.cam.ac.uk/kb/ontochem.owl#>
+        SELECT ?parent  ?uri
+        WHERE {
+              {?parent  system:hasSubsystem ?uri;}
+              UNION {?parent  system:hasIRI ?uri;}
+              UNION {?parent  Eco-industrialPark:hasIRI ?uri;}
+              UNION {?uri rdf:type ontochem:ReactionMechanism .}
+                 @placeholder@
+         }`,
+    queryStr2:`
              PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-             PREFIX ontochem: 
-<https://como.cheng.cam.ac.uk/kb/ontochem.owl#>
-    select ?parent  ?uri
-    where {
-	{?parent  system:hasSubsystem ?uri;}    
-    UNION {?parent  system:hasIRI ?uri;}
-	UNION {?parent  Eco-industrialPark:hasIRI ?uri;}
-	UNION {?uri rdf:type ontochem:ReactionMechanism .}
-     @placeholder@
-     }
-`,
-queryStr2:`
-             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-             PREFIX ontochem: 
-<https://como.cheng.cam.ac.uk/kb/ontochem.owl#>
+             PREFIX ontochem: <https://como.cheng.cam.ac.uk/kb/ontochem.owl#>
              SELECT ?uri
              WHERE {
                     { ?uri rdf:type ontochem:ReactionMechanism .}
                          @placeholder@
-             }
-
-`,
-UnionImport:`
-  UNION{?a owl:imports ?uri;}
-`
+             }`,
+    UnionImport:`UNION{?a owl:imports ?uri;}`
 };
-
-
-
-
 
 //todo: add function to add extra query on the fly
 
@@ -79,7 +60,7 @@ UnionImport:`
 owlProcessor.doConnect = function(address, level) {
     const me = this
     me.linkCounter++;
-    return new Promise((resolve, reject)=>{
+    return new Promise((resolve)=>{
         this.connectPromise(address, level).then(result=>{
 			
             me.linkCounter--;
@@ -173,6 +154,7 @@ owlProcessor.doCluster = function (result) {
 /***
  * async connect to an address and query it to get inter file links
  * @param address: local file, remote file or remote endpoint
+ * @param level
  * @returns {Promise}
  */
 owlProcessor.connectPromise = function (address, level) {
@@ -195,7 +177,7 @@ owlProcessor.connectPromise = function (address, level) {
             if(!instream){//query endpoint
                 //todo: run endpoint
                 console.log('check endpoint')
-                me.queryPromise(address, 'endpoint',level).then(result =>{
+                me.queryPromise(address, 'endpoint').then(result =>{
                     console.log('ep result connect p:');
                     console.log(result)
                     //!!!!!return result
@@ -231,7 +213,7 @@ owlProcessor.normalAddr = function(loc){
 /***
  * test if a url contains a file
  * @param loc
- * @returns {Promise for a null if not a file, a file stream otherwise}
+ * @returns Promise for a null if not a file, a file stream otherwise
  */
 owlProcessor.urlPromise = function (loc) {
     //send request
@@ -262,7 +244,8 @@ owlProcessor.urlPromise = function (loc) {
  * stream xml parse a file to get inter uri links
  * predicates to extract defined in this.PREDICATE
  * @param instream: in stream for parsing
- * @returns {Promise for an array of raw links}
+ * @param level
+ * @returns Promise for an array of raw links
  */
 owlProcessor.xmlstreamParser = function (instream, level) {
 	
@@ -284,7 +267,7 @@ owlProcessor.xmlstreamParser = function (instream, level) {
 					if(text){
                         console.log(text);
 					result.push(text);
-					if(me.buffer &&!me.buffer.isPaused()) {me.buffer.push(text+'@'+(level))};
+					if(me.buffer &&!me.buffer.isPaused()) {me.buffer.push(text+'@'+(level))}
 					flag = false;
 					}
 				}
@@ -295,7 +278,7 @@ owlProcessor.xmlstreamParser = function (instream, level) {
 				if(text){
                 result.push(text);
                 //console.log(text)
-                if(me.buffer &&!me.buffer.isPaused()) {me.buffer.push(text+'@'+(level))};
+                if(me.buffer &&!me.buffer.isPaused()) {me.buffer.push(text+'@'+(level))}
 				}
                 flag = false
             }
@@ -334,7 +317,7 @@ owlProcessor.checkFile = function (loc) {
         let parser = new Parser();
         const clone = new PassThrough();
     
-        parser.on('opentag', (name, attrs) => {
+        parser.on('opentag', (name) => {
         if(name === 'owl:Ontology'){
             //console.log(loc+' pass validation');
             resolve(clone)
@@ -342,7 +325,7 @@ owlProcessor.checkFile = function (loc) {
         }
         
     });
-    parser.on('error', err => {
+    parser.on('error', () => {
         // Handle a parsing error
         console.log('err,we know now it is not valid')
         parser.end()
@@ -366,11 +349,11 @@ owlProcessor.checkFile = function (loc) {
 
 /**
  * return a promise for async parse a sparql query
- * @param data
+ * @param loc
  * @param type
- * @returns {promise for query result}
+ * @returns Error or Promise for query result
  */
-owlProcessor.queryPromise = function (loc, type, level) {
+owlProcessor.queryPromise = function (loc, type) {
     //console.log('query lvel: '+level)
     const self = this;
     switch(type){
@@ -415,8 +398,6 @@ owlProcessor.queryPromise = function (loc, type, level) {
 
             });
             
-            break;
-            
         case 'local':
             //construct local graph then parse
             
@@ -431,40 +412,43 @@ owlProcessor.queryPromise = function (loc, type, level) {
 
 owlProcessor.singleEpQ = function(loc){
 
-    let q = function(qStr, callback){
-         
-                    console.log('query')
-                    console.log(qStr);
-                   request.get(loc, {qs:{'query':qStr,'output':'json'},timeout: 150000, agent: false}, function (err, res, body) {
-                    console.log('endpoint resquest result');
-                                      //  console.log("body:"+body);
+    return function (qStr, callback) {
 
-                    if (err||!body||body===undefined||body.toLowerCase().includes('doctype')||body.includes('<?xml version="1.0" encoding="utf-8"?>')) {
-                        console.log('no result from endpoint, reject')
-                        callback(err);
-                        return;
-                        };//don't throw
-                    //unwrap query
-                   
-                    
-                   //body = self.parsePseudoJson(body);
-                   body = JSON.parse(body);
-                   //todo: rewrite unwrap
-                    let items = RdfParser.unwrapResult(body, 'item');
-                     if(!items){
-                        callback(new Error('empty query result'));
-                        return;
-                     }
-                     
-                   // let uri = items.map(item=>item.uri);
-                    //console.log(uri)
-                    //let tobuffer = uri.map((text)=> {return text+'@'+(level+1)}).join(';')
-                    //self.buffer.push(tobuffer);
-                         callback(null, items)
-                })
-               };
+    console.log('query')
+    console.log(qStr);
+    request.get(loc, {
+        qs: { 'query': qStr, 'output': 'json' },
+        timeout: 150000,
+        agent: false
+    }, function (err, res, body) {
+        console.log('endpoint resquest result');
+        //  console.log("body:"+body);
 
-return q;
+        if (err || !body || body === undefined ||
+          body.toLowerCase().includes('doctype') ||
+          body.includes('<?xml version="1.0" encoding="utf-8"?>')) {
+            console.log('no result from endpoint, reject')
+            callback(err);
+            return;
+        }//don't throw
+        //unwrap query
+
+        //body = self.parsePseudoJson(body);
+        body = JSON.parse(body);
+        //todo: rewrite unwrap
+        let items = RdfParser.unwrapResult(body, 'item');
+        if (!items) {
+            callback(new Error('empty query result'));
+            return;
+        }
+
+        // let uri = items.map(item=>item.uri);
+        //console.log(uri)
+        //let tobuffer = uri.map((text)=> {return text+'@'+(level+1)}).join(';')
+        //self.buffer.push(tobuffer);
+        callback(null, items)
+    })
+};
 }
 
 owlProcessor.checkJson = function(body){
@@ -474,7 +458,7 @@ owlProcessor.checkJson = function(body){
 } catch(e){
     console.log(e)
     if(e){
-    var re = /^(\{.*\})(.?)$/, re2=  /^(\[.*\])(.?)$/;
+    let re = /^(\{.*\})(.?)$/, re2=  /^(\[.*\])(.?)$/;
 let formated = body.match(re)?body.match(re):body.match(re2);
 return formated[1]
     }
@@ -497,7 +481,7 @@ owlProcessor.parsePseudoJson = function(body){
 /**
  * return a promise for async read a locak file
  * @param loc
- * @returns {Promise for file}
+ * @returns Promise for file
  */
 owlProcessor.filePromise = function (loc) {
     return new Promise(function (resolve,reject) {
@@ -511,20 +495,20 @@ owlProcessor.filePromise = function (loc) {
 /**
  * return a promise for async stream read a local file
  * @param loc
- * @returns {Promise for file stream}
+ * @returns Promise for file stream
  */
 owlProcessor.fileStreamPromise = function (loc) {
-    return new Promise(function (resolve,reject) {
+    return new Promise(function (resolve) {
         resolve(fs.createReadStream(loc))
     })
 }
 
-    /***
-     * Utility function: Process href to be actual file uri
-     * If href contains mark char:#, delete it
-     * @param href, href string to be processed
-     * @returns processed href string
-     */
+/***
+ * Utility function: Process href to be actual file uri
+ * If href contains mark char:#, delete it
+ * @returns processed href string
+ * @param options
+ */
 
     owlProcessor.init = function (options) {
         this.loc = options.topnode;
@@ -543,7 +527,6 @@ owlProcessor.fileStreamPromise = function (loc) {
         console.log(extraQ)
 
         this.queryStrC = this.queryStr.replace('@placeholder@', extraQ);
-                this.queryStr2C = this.queryStr2.replace('@placeholder@', extraQ);
 
         if(extraP){this.mPredicate.push(extraP);}
 
@@ -616,7 +599,7 @@ owlProcessor.process = function (options) {
 	
 		self.processed.add(self.diskLoc2Uri(this.loc));
 
-      return new Promise((resolve, reject)=>{
+      return new Promise((resolve)=>{
           /*buffer logic**/
           this.buffer.on('data', (chunk) => {//receive new data:string of uris
               //process to get links
@@ -684,20 +667,5 @@ owlProcessor.uriList2DiskLoc = function (uriArr, diskroot) {
         return {uri:item, diskLoc:diskLoc}
     });
 };
-    
-
-    
-//test
-//console.time('conn')
-   // owlProcessor.doConnect(loc)
-
-var a = Object.create(owlProcessor)
-    a.processSingle( {topnode:"http://localhost/damecoolquestion/ontochem/query", level: 1}).then((res)=>{
-        console.log('print results')
-        console.log((res))});
-
-//b.process( {topnode:"http://www.theworldavatar.com/SemakauIsland.owl"}).then((res)=>{
-  //  console.log('print')
-    //console.log((res))});
 
 module.exports = owlProcessor;
