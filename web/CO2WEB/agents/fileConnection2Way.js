@@ -25,7 +25,7 @@ const { Readable,PassThrough } = require('stream');
 //commented out lazy innitiation
 //var connections = [];
 //todo: add cluster logic
-git status
+
 const owlProcessor = {
     PREDICATE:['Eco-industrialPark:hasIRI','system:hasIRI','system:hasSubsystem','j.0:hasSubsystem'],
     queryStr:`PREFIX Eco-industrialPark: <http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#>
