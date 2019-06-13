@@ -63,7 +63,7 @@
 			</plugin -->			
 
 			<!--  the next plugin generates an executable jar file -->
-			<!--  run it with command "java -jar JPS_MISC-1.0.0-jar-with-dependencies" -->
+			<!--  run it with command "java -jar JPS_MISC-1.0.0-jar-with-dependencies.jar" -->
 			<plugin>
 			    <groupId>org.apache.maven.plugins</groupId>
 			    <artifactId>maven-assembly-plugin</artifactId>
