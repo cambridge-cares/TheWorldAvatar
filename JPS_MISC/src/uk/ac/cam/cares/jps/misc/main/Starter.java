@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.misc.main;
 import java.io.IOException;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.misc.http.HttpGet;
 import uk.ac.cam.cares.jps.misc.performance.TestBuildings;
 import uk.ac.cam.cares.jps.misc.performance.TestHttp;
 import uk.ac.cam.cares.jps.misc.performance.UploadFilesForRDF4J;
@@ -26,7 +27,7 @@ public class Starter extends TestCase {
 		//String[] args = new String[] {"TestBuildings"};
 		//"http://www.theworldavatar.com/Building/01_buildings4.owl#BuildingGUID_75F6C3E1-4D6D-4087-A81B-3E218741173B"
 		//String[] args = new String[] {"TestBuildings", "5", "http://localhost:3030/buildingsthehague", "GUID_75F6C"}; 
-		String[] args = new String[] {"TestBuildings", "1", "http://localhost:8080/rdf4j-server/repositories/buildingsthehague", "GUID_5"}; 
+		//String[] args = new String[] {"TestBuildings", "1", "http://localhost:8080/rdf4j-server/repositories/buildingsthehague", "GUID_5"}; 
 		
 		// Upload files
 		//String url = "http://localhost:8080/rdf4j-server/repositories/buildingsthehague/statements";
@@ -34,6 +35,12 @@ public class Starter extends TestCase {
 		//String[] args = new String[] {"UploadFiles", url, fileName}; 
 		//String dirName = "C:/Users/Andreas/TMP/20190313";
 		//String[] args = new String[] {"UploadFiles", url, dirName}; 
+		
+		
+		// AdmsStarter
+		String[] args = new String[] {"HttpGet", "http://www.theworldavatar.com/JPS_SHIP"}; 
+		//String[] args = new String[] {}; 
+		
 		
 		main(args);
 	}
@@ -62,6 +69,8 @@ public class Starter extends TestCase {
 			new TestBuildings().start(applargs);
 		} else if ("UploadFiles".equals(application)) {
 			new UploadFilesForRDF4J().start(applargs);
+		} else if ("HttpGet".equals(application)) {
+			new HttpGet().start(applargs);
 		} else {
 			System.out.println("\nApplication not found\n");
 			printHelp();
@@ -79,7 +88,8 @@ public class Starter extends TestCase {
 		new TestBuildings().printHelp();
 		System.out.println();
 		new UploadFilesForRDF4J().printHelp();
-
+		System.out.println();
+		new HttpGet().printHelp();
 	}
 	
 	private String[] getApplicationArguments(String[] args) {
