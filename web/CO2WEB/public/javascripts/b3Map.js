@@ -29,7 +29,8 @@ let b3dm  = [
 
 let b2dm  =[
         ["V_molarF_601001",0],
-        ["V_Temperature_601001",0]
+        ["V_Temperature_601001",0],
+		["V_Temperature_601002",0]
 ]     
 
 var dataMaps = [

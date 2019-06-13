@@ -1,6 +1,6 @@
 var RabbitMQ = require('rabbitmq-node');
 
-var rabbitmq = new RabbitMQ({'url':'amqp://guest:guest@www.theworldavatar.com:83'});
+var rabbitmq = new RabbitMQ({'url':'amqp://guest:guest@www.theworldavatar.com:5672'});
 
 var msgWatcher = {};
 

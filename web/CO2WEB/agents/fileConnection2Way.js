@@ -34,7 +34,7 @@ const { Readable,PassThrough } = require('stream');
     //todo: add cluster logic
     
 var owlProcessor = {
-PREDICATE:['Eco-industrialPark:hasIRI','system:hasIRI','system:hasSubsystem','j.0:hasSubsystem'],
+PREDICATE:['Eco-industrialPark:hasIRI','system:hasIRI','system:hasSubsystem','j.0:hasSubsystem', 'topology:hasOutput','topology:hasInput'],
 queryStr:`
 PREFIX Eco-industrialPark: <http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#>
 PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
@@ -279,7 +279,7 @@ owlProcessor.xmlstreamParser = function (instream, level) {
             if((!me.OUTER || flagOuter) && me.mPredicate.includes(name)){
                 console.log(name)
                 flag = true;
-				if(name.includes('hasSubsystem') ||name.includes('owl:imports')|| name.includes('hasIRI')){//get rdf:resource//todo:hard code for now
+				if(name.includes('hasSubsystem') ||name.includes('owl:imports')|| name.includes('hasIRI')|| name.includes('hasOutput')|| name.includes('hasInput')){//get rdf:resource//todo:hard code for now
 					let text = attrs['rdf:resource'];
 					if(text){
                         console.log(text);

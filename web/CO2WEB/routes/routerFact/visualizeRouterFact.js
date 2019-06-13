@@ -61,6 +61,7 @@ var visualizationRouterFactory = function (opts) {
             //res.setHeader('Content-Type', 'application/json');
             // res.json(results);
             res.json(results); //render the view with this value
+        opts['showImport'] = false;
 
 
         });

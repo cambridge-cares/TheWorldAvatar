@@ -297,7 +297,7 @@ PopupMap.prototype = {
 			
 			var highlight = false;
             
-			if(muri === 'http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/E-301.owl'){
+			if(muri === 'http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/E-301.owl'||muri ==='http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant2/E-601008.owl'){
 				highlight = true;
 			}
 			

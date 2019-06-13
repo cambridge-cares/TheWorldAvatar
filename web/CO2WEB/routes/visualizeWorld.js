@@ -1,5 +1,5 @@
 
 var topNode = require("../config").worldNode;
-var router = require("./routerFact/visualizeRouterFact")({topnode:topNode});
+var router = require("./routerFact/visualizeRouterFactExpand")({topnode:topNode,viewName:'visualExN'});
 
 module.exports = router;

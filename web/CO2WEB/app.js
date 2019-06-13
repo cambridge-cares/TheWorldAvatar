@@ -4,7 +4,7 @@
  */
 var log4js = require('log4js');
 log4js.configure({
-  appenders: { defaultLogger: { type: 'file', filename: 'C:/jps/temp/logs/js-server.log' } },
+  appenders: { defaultLogger: { type: 'dateFile', filename: 'C:/jps/temp/logs/js-server.log' , pattern: '.yyyy-MM-dd-hh', compress: true } },
   categories: { default: { appenders: ['defaultLogger'], level: 'error' } }
 });
 var logger = log4js.getLogger('defaultLogger');

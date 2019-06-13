@@ -398,18 +398,15 @@ owlProcessor.getChildren = function(root) {
     //find all node with hasIRI property
     var uris = root.find("//Eco-industrialPark:hasIRI", namespaceOb);
     console.log("found node 001 Eco-industrialPark:hasIRI:" + uris.length);
-	console.log('----------- root  ------------')
-	console.log(root)
-	console.log('------------------------------')
+	console.log('----------- Eco-industrialPark:hasIRI  ------------')
 	for (let curi of uris) {
         // logger.debug(curi.name());
-		console.log('attr')
-		console.log(curi.attrs())
+		console.log(curi)
         if(curi.text().trim()!==""){
-          //  children.push(curi.text().trim());//push to targets list
+           children.push(curi.text().trim());//push to targets list
 		
         } else if(curi.attr("resource")&&curi.attr("resource").value()){
-            //children.push(curi.attr("resource").value());//push to targets list
+            children.push(curi.attr("resource").value());//push to targets list
         }
 
 
@@ -419,14 +416,14 @@ owlProcessor.getChildren = function(root) {
     //logger.debug("found node system:hasIRI:"+urisS.length);
     for(let curi of urisS){
         //    logger.debug(curi.name());
-        //children.push(curi.text().trim());//push to targets list
+        children.push(curi.text().trim());//push to targets list
     }
     let urisSs = root.find("//system:hasSubsystem", namespaceOb);
 	    console.log("found node 002 Eco-system:hasSubsystem" + urisSs.length);
 		
-		console.log('urisSs')
+		console.log('system:hasSubsystem')
 		console.log('----------------- urisss -----------------')
-		console.log(urisSs)
+		console.log(JSON.stringify(urisSs))
 		console.log('==========================================')
 
     //logger.debug("found node system:hasIRI:"+urisS.length);
@@ -469,8 +466,8 @@ owlProcessor.getPPChildren = function (root) {
         //    logger.debug(curi.name());
        //logger.debug(JSON.stringify(curi.path()))
          //children.push(curi.text().trim());//push to targets list
-		 children.push(curi.attr("resource").value().split('#')[0]);
-		 console.log("curi in file connection= "+curi.attr("resource").value().split('#')[0]);
+		 children.push(curi.attr("rdf:resource").value().split('#')[0]);
+		 console.log("curi in file connection= "+curi.attr("rdf:resource").value().split('#')[0]);
     }
 
     return children;
