@@ -42,19 +42,22 @@ public class KeyValueMap {
 		
 		String path = AgentLocator.getJPSBaseDirectory();
 		
+		boolean runningForTest = AgentLocator.isJPSRunningForTest();
+		JPSBaseLogger.info(this, "Tomcat is running for test = " + runningForTest);
 		try {
-			
-			boolean runningForTest = AgentLocator.isJPSRunningForTest();
-			JPSBaseLogger.info(this, "Tomcat is running for test = " + runningForTest);
-			
 			loadProperties(path + "/conf/jps.properties");
-			if (runningForTest)  {
-				// if started on local server then overwrite values from jps.properties
-				loadProperties(path + "/conf/jpstest.properties");
-			}
 		} catch (IOException exc) {
 			JPSBaseLogger.error(this, exc);
 			throw new JPSRuntimeException(exc.getMessage(), exc);
+		}
+		
+		if (runningForTest)  {
+			try {
+				// if started on local server then overwrite values from jps.properties
+				loadProperties(path + "/conf/jpstest.properties");
+			} catch (IOException exc) {
+				JPSBaseLogger.info(this, "jpstest.properties was not found");
+			}
 		}
 	}
 	
