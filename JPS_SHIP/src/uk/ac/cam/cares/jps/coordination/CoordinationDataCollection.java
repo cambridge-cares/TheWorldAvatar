@@ -9,7 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.ship.HKUWeatherRetriever;
 
 @WebServlet("/CollectorCoordination")
@@ -36,6 +38,18 @@ public class CoordinationDataCollection extends HttpServlet {
 	
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		
+		JSONObject jo = new JSONObject();
+		
+		JSONObject inputjo = AgentCaller.readJsonParameter(req);
+		String scenarioUrl = null;
+		String scenarioName = inputjo.optString("scenarioname");
+		if (scenarioName != null) {
+			scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
+			jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
+		}
+		
+		System.out.println("CoordinationDataCollection is called with scenarioUrl = " + scenarioUrl);
+		
 		HKUWeatherRetriever.readWritedata();
 		System.out.println(" finished reading writing data");
 		
@@ -43,7 +57,7 @@ public class CoordinationDataCollection extends HttpServlet {
 		
 		//retrieveShipdata();
 		
-		JSONObject jo = new JSONObject();
+	
 		
 		JSONObject upcorn = new JSONObject();
 		upcorn.put("upperx", "12708200.45");
