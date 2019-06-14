@@ -7,7 +7,7 @@ now=datetime.datetime.now()
 
 
 template = '''VARIABLES:
-9
+10
 STATION DCNN
 YEAR
 TDAY
@@ -17,8 +17,9 @@ U
 PHI
 P
 CL
+RHUM
 DATA:
-4238.0, %s, %s, %s, %s, %s, %s, %s, %s
+4238.0, %s, %s, %s, %s, %s, %s, %s, %s, %s
 '''
 
 hournow= now.hour+1
@@ -52,6 +53,7 @@ try:
 	windSpeed = weatherData['haswind']['hasspeed']
 	precitipation = weatherData['hasprecipation']['hasintensity']
 	temperature = weatherData['hasexteriortemperature']['hasvalue']
+	relativehumidity=weatherData['hashumidity']['hasvalue']
 	
 except:
 	print("ERROR: Invalid Input")
@@ -59,7 +61,7 @@ except:
 try:
 	metpath = str(fullPath)+"/test.met"
 	with open(metpath, 'w') as file:
-		result =  template%(yearnow,tt.tm_yday,hournow,temperature,windSpeed,windDirection,precitipation,cloudCover)
+		result =  template%(yearnow,tt.tm_yday,hournow,temperature,windSpeed,windDirection,precitipation,cloudCover,relativehumidity)
 		file.write(result)
 		file.close()
 	print("SUCCESS: MET File is Created")
