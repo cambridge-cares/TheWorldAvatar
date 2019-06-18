@@ -8,6 +8,7 @@ public class MetaDataQuery implements Prefixes {
 
 	public static String queryResources(String fromTime, String toTime, String iriAgent) {
 		String sparql = getSparqlQueryResources(fromTime, toTime, iriAgent);
+		System.out.println(sparql);
 		SparqlOverHttpService sparqlService =  MetaDataAnnotator.getSparqlService();
 		return sparqlService.executeGet(sparql);
 	}
@@ -26,9 +27,11 @@ public class MetaDataQuery implements Prefixes {
 		if (toTime != null) {
 			sparql.append("FILTER ( ?time <= \"" + toTime + "\"^^xsd:dateTime ) \r\n");
 		}
+		sparql.append("OPTIONAL {?resource dcterms:creator ?agent .}. \r\n");
 		if (iriAgent != null) {
 			sparql.append("?resource dcterms:creator <" + iriAgent + "> . \r\n");
-		}
+		} 
+			
 		sparql.append("} \r\n");
 		sparql.append("LIMIT 1000");	
 		

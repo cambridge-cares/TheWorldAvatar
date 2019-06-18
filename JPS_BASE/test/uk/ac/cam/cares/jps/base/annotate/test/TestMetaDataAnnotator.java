@@ -29,6 +29,7 @@ public class TestMetaDataAnnotator extends TestCase implements Prefixes {
 				"WHERE { ?resource time:hasTime ?t . ?t time:inXSDDateTime ?time . FILTER ( CONTAINS(STR(?resource), \"www.justfortesting.com\") ) . }"; 
 		
 		// before you want to perform the next delete all sparql query, know what you do and make sure you are deleting the right data set
+		// in particular, you have to understand that you are deleting data on claudius !!!
 //		sparql = "PREFIX time:<https://www.w3.org/2006/time#> \r\n" + 
 //				"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> \r\n" + 
 //				"DELETE { ?s ?p ?o . } \r\n" +
@@ -76,9 +77,10 @@ public class TestMetaDataAnnotator extends TestCase implements Prefixes {
 	public void testQueryResourcesWithTime() {
 		
 		String target = "http://www.justfortesting.com/resource";
+		String agent = "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service";
 		MetaDataAnnotator.annotateWithTime(target + "1", "2015-02-05T09:00:00");
 		MetaDataAnnotator.annotateWithTime(target + "2", "2015-02-05T10:11:05");
-		MetaDataAnnotator.annotateWithTime(target + "3", "2015-02-05T11:00:00");
+		MetaDataAnnotator.annotateWithTimeAndAgent(target + "3", "2015-02-05T11:00:00", agent);
 		MetaDataAnnotator.annotateWithTime(target + "4", "2015-02-06T18:12:31");
 		MetaDataAnnotator.annotateWithTime(target + "5", "2015-02-07T22:00:00");
 		
