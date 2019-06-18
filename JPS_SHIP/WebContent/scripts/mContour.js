@@ -116,7 +116,7 @@ function getContourMaps (address, folder) {
       }).fail(function (err) {
         //todo: err handling
         reject(err)
-      },
+      }
     )
 
   })
