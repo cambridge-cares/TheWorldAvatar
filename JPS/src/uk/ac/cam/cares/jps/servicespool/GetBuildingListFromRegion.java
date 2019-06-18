@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.building.BuildingQueryPerformer;
 import uk.ac.cam.cares.jps.building.CRSTransformer;
@@ -36,7 +37,9 @@ public class GetBuildingListFromRegion extends HttpServlet {
 		String value = request.getParameter("query");
 //		System.out.println("QUERY HERE: " + value);
 		try {
-			JSONObject input = new JSONObject(value);
+			//JSONObject input = new JSONObject(value);
+			logger.info("query for building= "+value);
+			JSONObject input=AgentCaller.readJsonParameter(request);
 			String city = input.getString("city");
 			logger.info("city from getbuildinglistfromregion: " + city);
 			 

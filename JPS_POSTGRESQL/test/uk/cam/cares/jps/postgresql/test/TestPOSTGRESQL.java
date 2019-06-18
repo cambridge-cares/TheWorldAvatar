@@ -58,16 +58,23 @@ public class TestPOSTGRESQL extends TestCase  {
 	}
 	
 	public void testcalculation() {
-		int add=501;
+		int add=1500;
 		int xmin=833044;
 		int ymin=816015;
 		int xmax=834498;
 		int ymax=817460;
 		
+		//newset
+		xmin=830302;
+		ymin=813474;
+		xmax=843535;
+		ymax=826707;
+		
+				
 		int p=xmax-xmin;
 		int l=ymax-ymin;
 		int area=p*l;
-		double area2=1.1*area;
+		double area2=1.5*area;
 //		double centerx=(xmin+xmax)/2;
 //		double centery=(ymin+ymax)/2;
 		int xminnew=(int)xmin-add;
@@ -79,10 +86,10 @@ public class TestPOSTGRESQL extends TestCase  {
 //		System.out.println("calc="+calc);
 //		System.out.println("area="+area2);
 		if(calc>=area2){
-			System.out.println("xmin= "+xminnew);
-			System.out.println("ymin= "+yminnew);
-			System.out.println("xmax= "+xmaxnew);
-			System.out.println("ymax= "+ymaxnew);
+			System.out.println("xmin for terrain= "+xminnew);
+			System.out.println("ymin for terrain= "+yminnew);
+			System.out.println("xmax for terrain= "+xmaxnew);
+			System.out.println("ymax for terrain= "+ymaxnew);
 			int counter=1;
 			int distance=16;
 			

@@ -20,12 +20,12 @@ public class TestGetBuildingListFromRegion extends TestCase {
 		String regionInString = new JSONStringer().object().
 				key("region").object()
 					.key("lowercorner").object() //52.508287, 13.415407
-						.key("lowerx").value("13728088") // 699182 / 13.415407 // 13728088
-						.key("lowery").value("2281341").endObject() // 532537 / 52.508287 // 2281341
+						.key("lowerx").value("11560879.832") // 699182 / 13.415407 // 13728088
+						.key("lowery").value("140107.739").endObject() // 532537 / 52.508287 // 2281341
 					.key("uppercorner").object() //52.511112, 13.424336
-						.key("upperx").value("13736486") // 699983 / 13.424336 // 13736486
-						.key("uppery").value("2286829").endObject() // 533338 / 52.511112 // 2286829
-					.key("srsname").value("EPSG:28992") // EPSG:4326
+						.key("upperx").value("11563323.926") // 699983 / 13.424336 // 13736486
+						.key("uppery").value("143305.896").endObject() // 533338 / 52.511112 // 2286829
+					.key("srsname").value("EPSG:3857") // EPSG:4326
 				.endObject()
 				.key("city").value("http://dbpedia.org/resource/Singapore")
 //				.key("city").value("http://dbpedia.org/resource/Berlin")
@@ -59,7 +59,7 @@ public class TestGetBuildingListFromRegion extends TestCase {
 //		URIBuilder builder = new URIBuilder().setScheme("http").setHost("localhost").setPort(8080)
 //				.setPath("/JPS/GetBuildingListFromRegion")
 //				.setParameter("query", bundle.toString());
-		
+		System.out.println("builder= "+builder.toString());
 		String result = executeGet(builder);
 		System.out.println(result);
 	}

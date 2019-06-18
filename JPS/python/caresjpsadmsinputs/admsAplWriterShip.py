@@ -60,7 +60,7 @@ SUP = '''
 ''' 
 MET = '''
     &ADMS_PARAMETERS_MET
-    MetLatitude               = 1.09e+0
+    MetLatitude               = {1}
     MetDataSource             = 0
     MetDataFileWellFormedPath = "{0}"
     MetWindHeight             = 1.0e+1
@@ -79,7 +79,7 @@ MET = '''
     MetUseVerticalProfile     = 0
     MetVerticalProfilePath    = " "
     Met_DS_RoughnessMode      = 1
-    Met_DS_Roughness          = 0.5e+0
+    Met_DS_Roughness          = 1.0e+0
     Met_DS_UseAdvancedMet     = 0
     Met_DS_SurfaceAlbedoMode  = 1
     Met_DS_SurfaceAlbedo      = 2.3e-1
@@ -239,7 +239,7 @@ POLD = '''
       1.000e+3
     PolParMassFraction =
       1.0e+0
-    PolWetWashoutKnown = 1
+    PolWetWashoutKnown = 0
     PolWetWashout      = 0.0e+0
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
@@ -252,7 +252,7 @@ POLD = '''
     &ADMS_POLLUTANT_DETAILS
     PolName                  = "NOx"
     PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 1
+    PolGasDepVelocityKnown   = 0
     PolGasDepositionVelocity = 0.0e+0
     PolGasType               = 1
     PolParDepVelocityKnown   = 1
@@ -268,7 +268,7 @@ POLD = '''
       1.000e+3
     PolParMassFraction =
       1.0e+0
-    PolWetWashoutKnown = 1
+    PolWetWashoutKnown = 0
     PolWetWashout      = 0.0e+0
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
@@ -281,7 +281,7 @@ POLD = '''
     PolName                  = "NO2"
     PolPollutantType         = 0
     PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 0.0e+0
+    PolGasDepositionVelocity = 1.5e-3
     PolGasType               = 1
     PolParDepVelocityKnown   = 1
     PolParTermVelocityKnown  = 1
@@ -296,7 +296,7 @@ POLD = '''
       1.000e+3
     PolParMassFraction =
       1.0e+0
-    PolWetWashoutKnown = 1
+    PolWetWashoutKnown = 0
     PolWetWashout      = 0.0e+0
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
@@ -309,7 +309,7 @@ POLD = '''
     PolName                  = "NO"
     PolPollutantType         = 0
     PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 0.0e+0
+    PolGasDepositionVelocity = 1.5e-3
     PolGasType               = 1
     PolParDepVelocityKnown   = 1
     PolParTermVelocityKnown  = 1
@@ -380,7 +380,7 @@ POLD = '''
       1.000e+3
     PolParMassFraction =
       1.0e+0
-    PolWetWashoutKnown = 1
+    PolWetWashoutKnown = 0
     PolWetWashout      = 0.0e+0
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
@@ -393,7 +393,7 @@ POLD = '''
     PolName                  = "SO2"
     PolPollutantType         = 0
     PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 0.0e+0
+    PolGasDepositionVelocity = 1.2e-2
     PolGasType               = 1
     PolParDepVelocityKnown   = 1
     PolParTermVelocityKnown  = 1
@@ -492,7 +492,7 @@ POLD = '''
       1.000e+3
     PolParMassFraction =
       1.0e+0
-    PolWetWashoutKnown = 1
+    PolWetWashoutKnown = 0
     PolWetWashout      = 0.0e+0
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
@@ -742,7 +742,7 @@ class admsAplWriter(object):
             self.writeStr(file, HEADER)
             #self.writeStr(file,SUP)
             self.writeTemp(file,SUP,self.data['terrindicator'])
-            self.writeTemp(file,MET,[self.data['Met']])
+            self.writeTemp(file,MET,[self.data['Met'],self.data['Lat']])
             self.writeBdn(file, self.data['Bdn'])
             self.writeStr(file,HIL)
             self.writeStr(file,FLC)

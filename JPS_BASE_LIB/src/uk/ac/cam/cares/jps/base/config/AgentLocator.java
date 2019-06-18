@@ -157,8 +157,13 @@ public class AgentLocator {
 	public static boolean isJPSRunningForTest() {
 		
 		String path = getJPSBaseDirectory();
-		boolean runningForTest = ! (path.startsWith("C:/TOMCAT/webapps/JPS_BASE") || path.startsWith("C:\\TOMCAT\\webapps\\JPS_BASE"));
-		return runningForTest;
+		String[] serverDirectories = new String[] {"C:/TOMCAT/webapps/JPS_BASE", "C:\\TOMCAT\\webapps\\JPS_BASE", "C:\\TOMCAT_8081_9.0.20\\webapps\\JPS_BASE", "C:/TOMCAT_8081_9.0.20/webapps/JPS_BASE"};
+		for (String current: serverDirectories) {
+			if (path.startsWith(current)) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	public static String getAbsolutePath(String keyForRelativePath, Object thisObject) {

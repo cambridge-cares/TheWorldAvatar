@@ -53,6 +53,7 @@
         <br/><br/>The selected region has to be inline with the wind direction in order for the dispersion profile to be displayed.
 		The dispersion profile can be viewed at a height of 0 m to 30 m by moving the slider on the left. 
 		<br/><br/>The user can also choose to view the different pollutants’ dispersion profiles by selecting the listed pollutants. 
+		For Hong Kong case, the terrain elevation factor is also involved in the dispersion calculation although it is still not able to be visualized that all the buildings in the visualization are projected down directly above the ground and none of them are floating.
 		<!-- The recommended region for the Den Haag scenario is between 79173.323 and 80199.621 for X and between 454193.456 and 455030.337 for Y.</span> !-->
 
 </div>
@@ -64,8 +65,9 @@
         <option value="http://www.theworldavatar.com/kb/ontokin/Toluene.owl#ReactionMechanism_187077735769001">Toluene-mechanism</option>
         <option value="http://www.theworldavatar.com/kb/ontokin/Reduced_PRF_ERC_particle.owl#ReactionMechanism_184144363244001">Reduced_PRF_ERC_particles-mechanism</option>
     </select>
-
+    
     <h1 id="head1"></h1>
+    <p id="optmsg"></p>
     <p id="description"></p>
 
     <label for="location">Location: </label>

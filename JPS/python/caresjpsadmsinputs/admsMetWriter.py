@@ -1,10 +1,13 @@
 #print("Here we go", sys.argv[0], sys.argv[1], sys.argv[2])
 import sys
 import json
+import datetime
+
+now=datetime.datetime.now()
 
 
 template = '''VARIABLES:
-9
+10
 STATION DCNN
 YEAR
 TDAY
@@ -14,9 +17,23 @@ U
 PHI
 P
 CL
+RHUM
 DATA:
-4238.0, 2018, 235.0, 8.0, %s, %s, %s, %s, %s
+4238.0, %s, %s, %s, %s, %s, %s, %s, %s, %s
 '''
+
+hournow= now.hour+1
+yearnow="%d" % now.year
+daynow="%d" % now.day
+
+#print (hournow)
+#print (yearnow)
+#print (daynow)
+fmt = '%Y.%m.%d'
+s=str(yearnow)+'.'+str(now.month)+'.'+str(now.day)
+dt = datetime.datetime.strptime(s, fmt)
+tt=dt.timetuple()
+#print(tt.tm_yday)
 
 
 
@@ -36,6 +53,7 @@ try:
 	windSpeed = weatherData['haswind']['hasspeed']
 	precitipation = weatherData['hasprecipation']['hasintensity']
 	temperature = weatherData['hasexteriortemperature']['hasvalue']
+	relativehumidity=weatherData['hashumidity']['hasvalue']
 	
 except:
 	print("ERROR: Invalid Input")
@@ -43,7 +61,7 @@ except:
 try:
 	metpath = str(fullPath)+"/test.met"
 	with open(metpath, 'w') as file:
-		result =  template%(temperature,windSpeed,windDirection,precitipation,cloudCover)
+		result =  template%(yearnow,tt.tm_yday,hournow,temperature,windSpeed,windDirection,precitipation,cloudCover,relativehumidity)
 		file.write(result)
 		file.close()
 	print("SUCCESS: MET File is Created")

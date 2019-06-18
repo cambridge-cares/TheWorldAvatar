@@ -31,11 +31,14 @@ public class HKUWeatherRetriever extends HttpServlet {
 	}
 	
 	public static void readWritedata() {
+		System.out.println("it goes to readwrite data");
 		//continously read data and put
 		String dataPath = QueryBroker.getLocalDataPath();
 		String fullPath = dataPath + "/HKU_WeatherData";
 		String result= "result for requesting the data";
+		
 		QueryBroker broker = new QueryBroker();
+		System.out.println("location for csv= "+fullPath);
 		broker.put(fullPath + "/arbitrary.csv", result);
 		
 		//then put it to data set for the metadata
