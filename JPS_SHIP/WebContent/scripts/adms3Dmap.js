@@ -1,74 +1,76 @@
-const listGeoJsonAddedToOSMB = []; // edit
+const listGeoJsonAddedToOSMB = [] // edit
 
 const controlButtonsSetter = osmb => {
-    var controlButtons = document.querySelectorAll('.control button');
-    for (var i = 0, il = controlButtons.length; i < il; i++) {
-        controlButtons[i].addEventListener('click', function(e) {
-            var button = this;
-            var parentClassList = button.parentNode.classList;
-            var direction = button.classList.contains('inc') ? 1 : -1;
-            var increment;
-            var property;
+  var controlButtons = document.querySelectorAll('.control button')
+  for (var i = 0, il = controlButtons.length; i < il; i++) {
+    controlButtons[i].addEventListener('click', function (e) {
+      var button = this
+      var parentClassList = button.parentNode.classList
+      var direction = button.classList.contains('inc') ? 1 : -1
+      var increment
+      var property
 
-            if (parentClassList.contains('tilt')) {
-                property = 'Tilt';
-                increment = direction*10;
-            }
-            if (parentClassList.contains('rotation')) {
-                property = 'Rotation';
-                increment = direction*10;
-            }
-            if (parentClassList.contains('zoom')) {
-                property = 'Zoom';
-                increment = direction*1;
-            }
-            if (property) {
-                osmb['set'+ property](osmb['get'+ property]()+increment);
-            }
-        });
-    }
-};
+      if (parentClassList.contains('tilt')) {
+        property = 'Tilt'
+        increment = direction * 10
+      }
+      if (parentClassList.contains('rotation')) {
+        property = 'Rotation'
+        increment = direction * 10
+      }
+      if (parentClassList.contains('zoom')) {
+        property = 'Zoom'
+        increment = direction * 1
+      }
+      if (property) {
+        osmb['set' + property](osmb['get' + property]() + increment)
+      }
+    })
+  }
+}
 
+const initadms3dmap = (
+  list, range, osmb, location, coordinatesMid, cityiri, shipList, folder) => {
 
-const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri, shipList, folder) => {
-	
-	for(obj of listGeoJsonAddedToOSMB) {
-		obj.destroy();
-	}
-	
-	proj4.defs("EPSG:3857","+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs");
+  for (obj of listGeoJsonAddedToOSMB) {
+    obj.destroy()
+  }
+
+  proj4.defs('EPSG:3857',
+    '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs')
 //	proj4.defs("EPSG:28992","+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.417,50.3319,465.552,-0.398957,0.343988,-1.8774,4.0725 +units=m +no_defs");
-    proj4.defs('WGS84', "+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees");
-    
-    const parsedLowLeft = proj4("EPSG:3857", "WGS84", [range[0], range[2]]);
-    const parsedTopRight = proj4("EPSG:3857", "WGS84", [range[1], range[3]]);
-    let lowLeft = [], topRight = [];
-    lowLeft[0] = Math.min(parsedLowLeft[0],parsedTopRight[0] )
-    lowLeft[1] = Math.min(parsedLowLeft[1],parsedTopRight[1]);
-    topRight[0] = Math.max(parsedLowLeft[0],parsedTopRight[0] )
-    topRight[1] = Math.max(parsedLowLeft[1],parsedTopRight[1]);
+  proj4.defs('WGS84',
+    '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees')
+
+  const parsedLowLeft = proj4('EPSG:3857', 'WGS84', [range[0], range[2]])
+  const parsedTopRight = proj4('EPSG:3857', 'WGS84', [range[1], range[3]])
+  let lowLeft = [], topRight = []
+  lowLeft[0] = Math.min(parsedLowLeft[0], parsedTopRight[0])
+  lowLeft[1] = Math.min(parsedLowLeft[1], parsedTopRight[1])
+  topRight[0] = Math.max(parsedLowLeft[0], parsedTopRight[0])
+  topRight[1] = Math.max(parsedLowLeft[1], parsedTopRight[1])
 //    lowLeft[0] = 103.8352845
 //    lowLeft[1] = 1.2379346;
 //    topRight[0] = 103.8780914;
 //    topRight[1] = 1.2754878;
-    console.log('****');
-    console.log(lowLeft );
-    console.log(topRight);
-    const position = {};
-    // if(location === "The Hague"){
-    //     position.latitude = 52.07690;
-    //     position.longitude = 4.29089;
-    // } else if (location === "Berlin"){
-    // 	position.latitude = 52.51461;
-    // 	position.longitude = 13.23966;
-    // }
+  console.log('****')
+  console.log(lowLeft)
+  console.log(topRight)
+  const position = {}
+  // if(location === "The Hague"){
+  //     position.latitude = 52.07690;
+  //     position.longitude = 4.29089;
+  // } else if (location === "Berlin"){
+  // 	position.latitude = 52.51461;
+  // 	position.longitude = 13.23966;
+  // }
 
-    position.latitude = coordinatesMid[0];
-    position.longitude = coordinatesMid[1];
+  position.latitude = coordinatesMid[0]
+  position.longitude = coordinatesMid[1]
 
-    osmb.setPosition(position);
-    osmb.setZoom(15.7);
-	osmb.setTilt(45.0);
+  osmb.setPosition(position)
+  osmb.setZoom(15.7)
+  osmb.setTilt(45.0)
 
 //    $.getJSON('/JPS/ADMSPowerPlantGetter',
 //    	{
@@ -84,127 +86,145 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri, sh
 //    		}
 //    	});
 
-    // --- Rendering 3D building models --- //
-    console.log("START")
+  // --- Rendering 3D building models --- //
+  console.log('START')
 
-    $.getJSON('/JPS/ADMSHelper',
-        {
-            listOfIRIs: JSON.stringify(list),
-            cityiri
-        },
-        function(data) {
-            var geojson = data;
-            var arrayLength = geojson.length;
-            console.log(data);
-            
-            for (var i = 0; i < arrayLength; i++) {
+  $.getJSON('/JPS/ADMSHelper',
+    {
+      listOfIRIs: JSON.stringify(list),
+      cityiri,
+    },
+    function (data) {
+      var geojson = data
+      var arrayLength = geojson.length
+      console.log(data)
 
-                try {
-                	listGeoJsonAddedToOSMB.push(osmb.addGeoJSON(geojson[i])); // edit
-                    console.log(JSON.stringify(geojson[i], null, 4));
-                } catch(err) {
-                    console.log(err.name)
-                }
-            }
-        });
-    
-    // --- Rendering 3D ship models --- //
-    $.getJSON('/JPS_SHIP/ShipGeoJSON',
-		{
-    		listOfIRIs: JSON.stringify(shipList)
-		},
-    	geojsonData => {       
-    		for (let ship of geojsonData) {
-        		try {
-        			listGeoJsonAddedToOSMB.push(osmb.addGeoJSON(JSON.parse(ship))); // edit
-        			console.log(JSON.stringify(geojson, null, 4));
-        		} catch (err) {
-        			console.log(err.name);
-        		}
-    		}
-	});
-    
-    
-    // --- Rendering 3D layer --- //
-    let optionWrapperNode = document.getElementById("optionwrapper");
-    while(optionWrapperNode.firstChild) {
-    	optionWrapperNode.removeChild(optionWrapperNode.firstChild);
-    }
-    makeRadios('optionwrapper', POL_LIST, 'Select a pollutant:');
-    
-    var geojson = {
-    		type: 'FeatureCollection',
-            features: [{
-                type: 'Feature',
-                properties: {
-                    //color: '#ff0000',
-                    //roofColor: '#cc0000',
-                    height: 0,
-                    minHeight: 0
-                },
-                geometry: {
-                    type: 'Polygon',
-                    coordinates: [//TODO:ã€€LINK THIS TO USER INPUT
-                        [
-                            [lowLeft[0],topRight[1]],
-                            [topRight[0],topRight[1]],
-                            [topRight[0],lowLeft[1]],
-                            [lowLeft[0],lowLeft[1]],
-                            [lowLeft[0],topRight[1]]
-                        ]
-                    ]
-                }
-            }]
-    };
-    
-    getContourMaps('/JPS/ADMSOutputAllForShips',folder).then(dataurls => {
-    	
-    	var idxSrc = 0, idxH = 0, preObj;
-    	$(".radiogroup").change(function(){
-    		var radioValue = $("input[name='radio']:checked").val();
-    		idxSrc = POL_LIST.indexOf(radioValue);
-    		console.log('src change to ' + idxSrc)
-    		if(preObj) preObj.destroy();
-    		preObj =  osmb.addGeoJSON(geojson,{ elevation: HEIGHT_INTERVAL * (idxH), hasTexture:dataurls[idxH*POL_NUM +idxSrc]});
-    		listGeoJsonAddedToOSMB.push(preObj); // edit
-        });
-        
-    	//  var dataurls = data.dataurls, heights =data.heights
-        preObj = osmb.addGeoJSON(geojson,{ elevation: 0, hasTexture:dataurls[0]});
-        listGeoJsonAddedToOSMB.push(preObj); // edit
-        
-        let sliderWrapperNode = document.getElementById("sliderwrapper");
-        while(sliderWrapperNode.firstChild) {
-        	sliderWrapperNode.removeChild(sliderWrapperNode.firstChild);
+      for (var i = 0; i < arrayLength; i++) {
+
+        try {
+          listGeoJsonAddedToOSMB.push(osmb.addGeoJSON(geojson[i])) // edit
+          console.log(JSON.stringify(geojson[i], null, 4))
+        } catch (err) {
+          console.log(err.name)
         }
-        //init at zero position
-        makeSlider('sliderwrapper', HEIGHT_NUM, function (event, ui) {
-        	if(preObj) preObj.destroy();
-            idxH = ui.value
-            $( "#height-show" ).val(idxH*10 );
+      }
+    })
 
-            console.log('sliderto ' + idxH)
-            preObj =  osmb.addGeoJSON(geojson,{ elevation: HEIGHT_INTERVAL * (idxH), hasTexture:dataurls[idxH*POL_NUM +idxSrc]});
-            listGeoJsonAddedToOSMB.push(preObj);
-        })
-    }, err => {console.log(err)})
-    //***************************************************************************
+  // --- Rendering 3D ship models --- //
+  $.getJSON('/JPS_SHIP/ShipGeoJSON',
+    {
+      listOfIRIs: JSON.stringify(shipList),
+    },
+    geojsonData => {
+      for (let ship of geojsonData) {
+        try {
+          listGeoJsonAddedToOSMB.push(osmb.addGeoJSON(JSON.parse(ship))) // edit
+          console.log(JSON.stringify(geojson, null, 4))
+        } catch (err) {
+          console.log(err.name)
+        }
+      }
+    })
 
- 
-    // osmb.highlight('w420847275','#00ff00');
-    //
-    // osmb.on('pointermove', function(e) {
-    //     osmb.getTarget(e.detail.x, e.detail.y, function(id) {
-    //         if (id) {
-    //             document.body.style.cursor = 'pointer';
-    //             osmb.highlight(id, '#ff0000');
-    //             //osmb.highlight('w420847275','#00ff00');
-    //
-    //         } else {
-    //             document.body.style.cursor = 'default';
-    //             osmb.highlight(null);
-    //             osmb.highlight('w420847275','#00ff00');
-    //         }
-    //     });
-    // });
-};
+  // --- Rendering 3D layer --- //
+  let optionWrapperNode = document.getElementById('optionwrapper')
+  while (optionWrapperNode.firstChild) {
+    optionWrapperNode.removeChild(optionWrapperNode.firstChild)
+  }
+  makeRadios('optionwrapper', POL_LIST, 'Select a pollutant:')
+
+  var geojson = {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: {
+          //color: '#ff0000',
+          //roofColor: '#cc0000',
+          height: 0,
+          minHeight: 0,
+        },
+        geometry: {
+          type: 'Polygon',
+          coordinates: [//TODO:ã€€LINK THIS TO USER INPUT
+            [
+              [lowLeft[0], topRight[1]],
+              [topRight[0], topRight[1]],
+              [topRight[0], lowLeft[1]],
+              [lowLeft[0], lowLeft[1]],
+              [lowLeft[0], topRight[1]],
+            ],
+          ],
+        },
+      }],
+  }
+
+  getContourMaps('/JPS/ADMSOutputAllForShips', folder).then(dataurls => {
+    const LEGEND_WRAPPER = 'legendwrapper'
+    const SLIDER_WRAPPER = 'sliderwrapper'
+    let legendWrapperNode = document.getElementById(LEGEND_WRAPPER)
+    let sliderWrapperNode = document.getElementById(SLIDER_WRAPPER)
+    let idxSrc = 0, idxH = 0, preObj
+    let image = dataurls[0][0]
+    let thresholds = dataurls[0][1], color = dataurls[0][2], thresholds0 = dataurls[0][3]
+
+    while (legendWrapperNode.firstChild) {
+      legendWrapperNode.removeChild(legendWrapperNode.firstChild)
+    }
+    makeLegend(LEGEND_WRAPPER, thresholds, color, thresholds0)
+
+    //  var dataurls = data.dataurls, heights =data.heights
+    preObj = osmb.addGeoJSON(geojson,
+      { elevation: 0, hasTexture: dataurls[0][0] })
+    listGeoJsonAddedToOSMB.push(preObj) // edit
+
+
+    while (sliderWrapperNode.firstChild) {
+      sliderWrapperNode.removeChild(sliderWrapperNode.firstChild)
+    }
+
+    $('.radiogroup').change(function () {
+      let radioValue = $('input[name=\'radio\']:checked').val()
+      idxSrc = POL_LIST.indexOf(radioValue)
+      thresholds = dataurls[idxH * POL_NUM + idxSrc][1]
+      color = dataurls[idxH * POL_NUM + idxSrc][2]
+      thresholds0 = dataurls[idxH * POL_NUM + idxSrc][3]
+      image =  dataurls[idxH * POL_NUM + idxSrc][0]
+
+      if (preObj) preObj.destroy()
+
+      while (legendWrapperNode.firstChild) {
+        legendWrapperNode.removeChild(legendWrapperNode.firstChild)
+      }
+      makeLegend(LEGEND_WRAPPER, thresholds, color, thresholds0)
+
+      preObj = osmb.addGeoJSON(geojson, {
+        elevation: HEIGHT_INTERVAL * (idxH),
+        hasTexture:image
+      })
+      listGeoJsonAddedToOSMB.push(preObj) // edit
+    })
+
+    //init at zero position
+    makeSlider(SLIDER_WRAPPER, HEIGHT_NUM, function (event, ui) {
+      if (preObj) preObj.destroy()
+      idxH = ui.value
+      $('#height-show').val(idxH * 10)
+      thresholds = dataurls[idxH * POL_NUM + idxSrc][1]
+      color = dataurls[idxH * POL_NUM + idxSrc][2]
+      thresholds0 = dataurls[idxH * POL_NUM + idxSrc][3]
+      image =  dataurls[idxH * POL_NUM + idxSrc][0]
+
+      while (legendWrapperNode.firstChild) {
+        legendWrapperNode.removeChild(legendWrapperNode.firstChild)
+      }
+      makeLegend(LEGEND_WRAPPER, thresholds, color, thresholds0)
+
+      preObj = osmb.addGeoJSON(geojson, {
+        elevation: HEIGHT_INTERVAL * (idxH),
+        hasTexture: image,
+      })
+      listGeoJsonAddedToOSMB.push(preObj)
+    })
+  }, err => {console.log(err)})
+}
