@@ -117,4 +117,39 @@ public class QueryString {
 		
 		return query;
 	}
+	
+	
+	
+	public static String getUniqueSpeciesUriSPARQL(String gaussianIRI) {
+		
+		/**
+		 * @author NK510
+		 * Comment: Namespace for property 'hasUniqueSpeciesIRI' should be changed to new one 
+		 */
+		String query = "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>" + 
+				"SELECT  ?speciesUri " + 
+				"WHERE { " + 
+				"<"+gaussianIRI+"> <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasUniqueSpeciesIRI> ?speciesUri . " +
+//				"<"+gaussianIRI+"> <https://como.cheng.cam.ac.uk/kb/compchem.owl#hasUniqueSpeciesIRI> ?speciesUri ." + 
+				"}";
+		
+		return query ;
+	}
+	
+public static String getOntoSpeciesEnthalpyAndTemperatureSPARQL(String speciesUri) {
+		
+	    
+		String query = "PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>" + 
+				"SELECT  ?enthalpy_value  ?temp_value " + 
+				"WHERE {" + 
+				"<"+ speciesUri +"> OntoSpecies:hasStandardEnthalpyOfFormation ?se ." + 
+				"?se OntoSpecies:value ?enthalpy_value ." + 
+				"?se OntoSpecies:hasReferenceTemperature ?temp ." + 
+				"?temp OntoSpecies:value ?temp_value ." + 
+				"}";
+		
+		return query;
+	}
+
+
 }

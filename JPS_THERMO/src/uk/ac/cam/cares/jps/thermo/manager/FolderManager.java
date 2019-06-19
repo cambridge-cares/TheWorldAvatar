@@ -115,11 +115,13 @@ public class FolderManager {
 		public void copyFileToAnotherDestination(File sourceFile, File destinationFile) throws IOException {
 			
 			InputStream inputStream = null;
+			
 		    OutputStream outputStream = null;
 		    
 		    try {
 		    	
 		        inputStream = new FileInputStream(sourceFile);
+		        
 		        outputStream = new FileOutputStream(destinationFile);
 		        
 		        byte[] buffer = new byte[1024];
@@ -139,6 +141,7 @@ public class FolderManager {
 		    	inputStream.close();
 		    	
 		        outputStream.close();
+
 		    }
 		    
 		}

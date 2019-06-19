@@ -16,8 +16,8 @@ import com.cmclinnovations.ontochem.model.exception.OntoException;
 /**
  * 
  * @author NK510 This class implements method to convert json file into owl
- *         file. Input json file is result of NASA polynomials calculations done by 
- *         using Python code.
+ *         file. Input json file is result of NASA polynomials calculations performed by 
+ *         Python code.
  *
  */
 
@@ -31,6 +31,7 @@ public class JsonToOwlConverter {
 		/**
 		 * @author NK510 This source code (method) is implemented by Dr M.S.F. Farazi.
 		 * e-mail:  <msff2@cam.ac.uk>
+		 * 
 		 */
 
 		if (applicationContext == null) {
@@ -46,10 +47,14 @@ public class JsonToOwlConverter {
 		sourceFiles.add(jsonFilePath);
 
 		if (sourceFiles != null) {
+			
 			OntoKin ontoKin = OntoKinFactory.getOntoKin(opCtrl.getOpReadCompChem(), opCtrl.getOpWriteOwl(), sourceFiles,
 					catalinaFolderPath);
+			
 			try {
+				
 				ontoKin.convert();
+			
 			} catch (OWLOntologyCreationException | OntoException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
