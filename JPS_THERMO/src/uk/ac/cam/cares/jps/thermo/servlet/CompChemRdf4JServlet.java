@@ -54,6 +54,8 @@ public class CompChemRdf4JServlet extends HttpServlet {
 	
 	private String ontokinServerUrl = jpsThermoProperties.getProperty("ontokin.kb.local.rdf4j.server.url");
 	
+	private String ontospeciesServerUrl = jpsThermoProperties.getProperty("ontospecies.kb.local.rdf4j.server.url");
+	
 	private String aboxOntokinUri = jpsThermoProperties.getProperty("abox.ontokin.uri");
 	
 	private final String RESULT_ONTOCOMPCHEM_FOLDER = jpsThermoProperties.getProperty("result.ontocompchem.folder");
@@ -80,10 +82,13 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		JSONObject parameterOne = AgentCaller.readJsonParameter(request);
 
 		String gaussian = parameterOne.getString("gaussian");
+		
+		logger.info("gaussian: " + gaussian);
 
 		/**
 		 * Folder that is already created on server side (Apache Tomcat) where result of
 		 * sparql query and result of thermochemistry calculation will be saved.
+		 * 
 		 */
 		folderName = gaussian.substring(gaussian.lastIndexOf("#") + 1);
 
@@ -102,12 +107,35 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		String updatedJsonOutputFilePath = RESULT_ONTOCOMPCHEM_FOLDER + folderName + "/" + folderName + "_updated_nasa" + ".json";
 		
 		/**
-		 * @author NK510 Querying CompChem remote RDF4J repository.
+		 * @author NK510 Querying 'ontocompchem' remote RDF4J repository. Result of the this query is stored as JSON file.
 		 */
 		SPARQLManager sparqlManager = new SPARQLManager();
 
 		sparqlManager.runCompChemSPARQL(gaussian, jsonSPARQLOutputFilePath, compchemServerUrl);
 
+		
+		/**
+		 * @author NK510
+		 * Returns species URI for given gaussian URI
+		 * 
+		 */
+		
+		 String speciesUri = sparqlManager.getUniqueSpeciesUri(compchemServerUrl, gaussian);
+		 
+		 logger.info("species-Uri inside CompChemRdf :  " + speciesUri);
+		
+		/**
+		 * 
+		 * @author NK510
+		 * 
+		 * SPARQL query performed on 'ontospecieskb' graph. Returns enthalpy of formation and temperature for given species id.
+		 * 
+		 */
+		 
+		 String enthalpyOfFormation = sparqlManager.getEnthalpyOfFormation(ontospeciesServerUrl, speciesUri);
+
+		 logger.info("enthalpyOfFormation (CompChemRef) : " + enthalpyOfFormation);
+		 
 		/**
 		 * 
 		 * @author NK510 Thermo calculation run by Python script.
@@ -116,7 +144,7 @@ public class CompChemRdf4JServlet extends HttpServlet {
 
 		ThermoCalculation thermoCalculation = new ThermoCalculation();
 
-		thermoCalculation.runThermoCalculation(jsonSPARQLOutputFilePath, jsonOutputFilePath);		
+		thermoCalculation.runThermoCalculation(jsonSPARQLOutputFilePath, jsonOutputFilePath);
 
 		JsonToJsonConverter jsonConverter = new JsonToJsonConverter();
 
@@ -125,10 +153,12 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		logger.info("jsonSet.size(): " + jsonList.size());
 
 		/** 
+		 * 
 		 * @author NK
 		 * Waits 2 second to complete thermo calculation.
 		 * 
 		 */
+		
 		try {
 			 
 			Thread.sleep(2000);
@@ -198,8 +228,10 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		}
 		 
 		/**
+		 * 
 		 * @author NK510
-		 * Upload generated Ontokin individual assertions (owl file) into RDF4J repository.
+		 * Uploads generated Ontokin individual assertions (owl file) into RDF4J repository.
+		 * 
 		 */
 		UploadOntology uploadOntology = new UploadOntology();
 
