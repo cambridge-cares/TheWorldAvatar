@@ -195,50 +195,50 @@
 
 			<!-- edited date: 2019-02-04 -->
 			<xsl:if test="$formula_name='Ar 1 '">
-				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_10" />
+				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/ontospecies/ontospecies.owl#species_10" />
 			</xsl:if>
 
 			<xsl:if test="$formula_name='H 1 '">
-				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_6" />
+				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/ontospecies/ontospecies.owl#species_6" />
 			</xsl:if>
 
 			<xsl:if test="$formula_name='H 2 '">
-				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_9" />
+				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/ontospecies/ontospecies.owl#species_9" />
 			</xsl:if>
 
 			<xsl:if test="$formula_name='H 2 O 1 '">
-				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_7" />
+				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/ontospecies/ontospecies.owl#species_7" />
 			</xsl:if>
 
 			<xsl:if test="$formula_name='H 2 O 2 '">
-				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_8" />
+				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/ontospecies/ontospecies.owl#species_8" />
 			</xsl:if>
 
 			<xsl:if test="$formula_name='H 1 O 2 '">
-				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_5" />
+				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/ontospecies/ontospecies.owl#species_5" />
 			</xsl:if>
 
 			<xsl:if test="$formula_name='N 2 '">
-				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_4" />
+				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/ontospecies/ontospecies.owl#species_4" />
 			</xsl:if>
 
 			<xsl:if test="$formula_name='O 1 '">
-				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_2" />
+				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/ontospecies/ontospecies.owl#species_2" />
 			</xsl:if>
 
 			<xsl:if test="$formula_name='O 2 '">
-				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_3" />
+				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/ontospecies/ontospecies.owl#species_3" />
 			</xsl:if>
 
 			<xsl:if test="$formula_name='H 1 O 1 '">
-				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/species/species.owl#species_1" />
+				<ontocompchem:hasUniqueSpeciesIRI rdf:resource="http://www.theworldavatar.com/kb/ontospecies/ontospecies.owl#species_1" />
 			</xsl:if>
 
 		</owl:NamedIndividual>
 
 		<xsl:if test="$formula_name='Ar 1 '">
 			<owl:NamedIndividual
-				rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_10">
+				rdf:about="http://www.theworldavatar.com/kb/ontospecies/ontospecies.owl#species_10">
 				<rdf:type
 					rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 			</owl:NamedIndividual>
@@ -246,7 +246,7 @@
 
 		<xsl:if test="$formula_name='H 1 '">
 			<owl:NamedIndividual
-				rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_6">
+				rdf:about="http://www.theworldavatar.com/kb/ontospecies/ontospecies.owl#species_6">
 				<rdf:type
 					rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 			</owl:NamedIndividual>
@@ -254,7 +254,7 @@
 
 		<xsl:if test="$formula_name='H 2 '">
 			<owl:NamedIndividual
-				rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_9">
+				rdf:about="http://www.theworldavatar.com/kb/ontospecies/ontospecies.owl#species_9">
 				<rdf:type
 					rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 			</owl:NamedIndividual>
@@ -262,7 +262,7 @@
 
 		<xsl:if test="$formula_name='H 2 O 1 '">
 			<owl:NamedIndividual
-				rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_7">
+				rdf:about="http://www.theworldavatar.com/kb/ontospecies/ontospecies.owl#species_7">
 				<rdf:type
 					rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 			</owl:NamedIndividual>
@@ -270,7 +270,7 @@
 
 		<xsl:if test="$formula_name='H 2 O 2 '">
 			<owl:NamedIndividual
-				rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_8">
+				rdf:about="http://www.theworldavatar.com/kb/ontospecies/ontospecies.owl#species_8">
 				<rdf:type
 					rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 			</owl:NamedIndividual>
@@ -278,7 +278,7 @@
 
 		<xsl:if test="$formula_name='H 1 O 2 '">
 			<owl:NamedIndividual
-				rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_5">
+				rdf:about="http://www.theworldavatar.com/kb/ontospecies/ontospecies.owl#species_5">
 				<rdf:type
 					rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 			</owl:NamedIndividual>
@@ -286,7 +286,7 @@
 
 		<xsl:if test="$formula_name='N 2 '">
 			<owl:NamedIndividual
-				rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_4">
+				rdf:about="http://www.theworldavatar.com/kb/ontospecies/ontospecies.owl#species_4">
 				<rdf:type
 					rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 			</owl:NamedIndividual>
@@ -294,7 +294,7 @@
 
 		<xsl:if test="$formula_name='O 1 '">
 			<owl:NamedIndividual
-				rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_2">
+				rdf:about="http://www.theworldavatar.com/kb/ontospecies/ontospecies.owl#species_2">
 				<rdf:type
 					rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 			</owl:NamedIndividual>
@@ -302,7 +302,7 @@
 
 		<xsl:if test="$formula_name='O 2 '">
 			<owl:NamedIndividual
-				rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_3">
+				rdf:about="http://www.theworldavatar.com/kb/ontospecies/ontospecies.owl#species_3">
 				<rdf:type
 					rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 			</owl:NamedIndividual>
@@ -310,7 +310,7 @@
 
 		<xsl:if test="$formula_name='H 1 O 1 '">
 			<owl:NamedIndividual
-				rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_1">
+				rdf:about="http://www.theworldavatar.com/kb/ontospecies/ontospecies.owl#species_1">
 				<rdf:type
 					rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
 			</owl:NamedIndividual>
