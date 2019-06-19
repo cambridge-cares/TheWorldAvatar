@@ -23,25 +23,34 @@ function getContourMaps (address, folder) {
         console.log('get contour data')
         d2result = JSON.parse(d2result)
 
-
         //=============contour consts======================//
         d2result = d2Arr21d(d2result)//to 1d
 
         //=============contour map as svg for each  ======================//
-        let mThresholds = []
         let svgstrs = d2result.map((output) => {
           var svg = d3.select('#svgwrapper svg'),
             width = +svg.attr('width'),
             height = +svg.attr('height')
-          //todo:
+          let range = THRESHOULD_NUM
           let ROW_NUM = 80
           let COL_NUM = 80
           let values = output
-          //let thresholds = (values) => {
-          let ubound = Math.max(...values)
-          const thresholdsC = d3.scaleLog() // [0, 1, 2, 3, 4, 5, 6, 7, 8]
-            .domain([1, enlarge(ubound)]).range([0, THRESHOULD_NUM])
-          let ticks = numberarray(THRESHOULD_NUM + 1)
+          let ubound = values.reduce((max, num) => Math.max(max, num))
+          let lbound = values.reduce((min, num) => {
+            if (min > 0 && num > 0) {
+              if (min > num) min = num
+            } else {
+              if (num > 0) min = num
+            }
+            return min
+          }, 0)
+          if (!ubound > 0) {
+            ubound = 1
+            range = 1
+          }
+          const thresholdsC = d3.scalePow() // [0, 1, 2, 3, 4, 5, 6, 7, 8]
+            .domain([enlarge(lbound), enlarge(ubound)]).range([0, range])
+          let ticks = numberarray(range + 1)
           let thresholds = ticks.map((tik) => {return thresholdsC.invert(tik)})
           for (var i = thresholds.length; i--;) {
             if (thresholds[i] === 0) thresholds.splice(i, 1)
@@ -49,11 +58,10 @@ function getContourMaps (address, folder) {
           let thresholdsO = thresholds.map((t) => restore(t))
           let middle = thresholds[Math.floor(thresholds.length / 2)]
 
-          let color = d3.scaleLog(d3.interpolateRdYlBu).
-            domain([1, middle, d3.max(thresholds)]).
+          let color = d3.scalePow(d3.interpolateRdYlBu).
+            domain([lbound, middle, d3.max(thresholds)]).
             range(['#3986ce', '#fee08b', '#d73027']).
             interpolate(d3.interpolateLab)
-          //}
 
           values = values.map((v) => enlarge(v))
           let contours = d3.contours().
@@ -116,7 +124,7 @@ function getContourMaps (address, folder) {
       }).fail(function (err) {
         //todo: err handling
         reject(err)
-      }
+      },
     )
 
   })
@@ -234,8 +242,9 @@ function makeRadios (selector_id, list, legend) {
     set.append('<legend>' + legend + '</legend>')
   }
   list.forEach((item) => {
-    set.append($('<input type=\'radio\'  value =\'' + item + '\' name=\'radio\' >' +
-      '<label>' + item + '&nbsp;</label>'))
+    set.append(
+      $('<input type=\'radio\'  value =\'' + item + '\' name=\'radio\' >' +
+        '<label>' + item + '&nbsp;</label>'))
   })
 
   console.log(set.children('input')[0])
