@@ -48,22 +48,23 @@ function getContourMaps (address, folder) {
             ubound = 1
             range = 1
           }
-          const thresholdsC = d3.scalePow() // [0, 1, 2, 3, 4, 5, 6, 7, 8]
-            .domain([enlarge(lbound), enlarge(ubound)]).range([0, range])
+          const thresholdsC = d3.scaleLog() // [0, 1, 2, 3, 4, 5, 6, 7, 8]
+            .domain([lbound, ubound]).range([0, range])
           let ticks = numberarray(range + 1)
           let thresholds = ticks.map((tik) => {return thresholdsC.invert(tik)})
           for (var i = thresholds.length; i--;) {
             if (thresholds[i] === 0) thresholds.splice(i, 1)
           }
-          let thresholdsO = thresholds.map((t) => restore(t))
+          let thresholdsO = thresholds
           let middle = thresholds[Math.floor(thresholds.length / 2)]
 
-          let color = d3.scalePow(d3.interpolateRdYlBu).
+          let color = d3.scaleLog(d3.interpolateRdYlBu).
             domain([lbound, middle, d3.max(thresholds)]).
             range(['#3986ce', '#fee08b', '#d73027']).
             interpolate(d3.interpolateLab)
 
-          values = values.map((v) => enlarge(v))
+
+          //values = values.map((v) => enlarge(v))
           let contours = d3.contours().
             size([COL_NUM, ROW_NUM]).
             thresholds(thresholds)
@@ -124,7 +125,7 @@ function getContourMaps (address, folder) {
       }).fail(function (err) {
         //todo: err handling
         reject(err)
-      },
+      }
     )
 
   })
