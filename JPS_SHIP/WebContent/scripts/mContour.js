@@ -55,14 +55,19 @@ function getContourMaps (address, folder) {
           for (var i = thresholds.length; i--;) {
             if (thresholds[i] === 0) thresholds.splice(i, 1)
           }
-          let thresholdsO = thresholds
-          let middle = thresholds[Math.floor(thresholds.length / 2)]
 
           let color = d3.scaleLog(d3.interpolateRdYlBu).
-            domain([lbound, middle, d3.max(thresholds)]).
-            range(['#3986ce', '#fee08b', '#d73027']).
+            domain(thresholds).
+            range([
+              '#3986ce',
+              '#b0d6f9',
+              'rgba(216,217,162,0.62)',
+              'rgba(255,254,78,0.65)',
+              '#fee91c',
+              '#ffce11',
+              '#fc9708',
+              '#d73027']).
             interpolate(d3.interpolateLab)
-
 
           //values = values.map((v) => enlarge(v))
           let contours = d3.contours().
@@ -79,7 +84,7 @@ function getContourMaps (address, folder) {
             })
           let svgstr = $('#svgwrapper').html()
           $('#svgwrapper svg').empty()//clear up and start again
-          return [svgstr, thresholds, color, thresholdsO]
+          return [svgstr, thresholds, color]
 
         })
 
@@ -109,7 +114,7 @@ function getContourMaps (address, folder) {
             let dataurl = context.canvas.toDataURL('image/png')
             context.clearRect(0, 0, canvas.width, canvas.height)
 
-            return [dataurl, image[1], image[2], image[3]]
+            return [dataurl, image[1], image[2]]
           })
           console.log(dataurls)
 
@@ -125,7 +130,7 @@ function getContourMaps (address, folder) {
       }).fail(function (err) {
         //todo: err handling
         reject(err)
-      }
+      },
     )
 
   })
@@ -168,10 +173,9 @@ function svgToImagePromise (svgstr) {
         reject(err)
         return
       }
-      resolve([image, svgstr[1], svgstr[2], svgstr[3]])
+      resolve([image, svgstr[1], svgstr[2]])
     })
   })
-
 }
 
 function d2Arr21d (d2array) {
@@ -187,7 +191,7 @@ function makeLegend (selector_id, thresholds, color, thresholdsO) {
   let range = thresholds.length - 1
 
   var thresholdScale = d3.scaleThreshold().
-    domain(thresholdsO).
+    domain(thresholds).
     range(['rgb(244, 244, 244)'].concat(
       d3.range(range).map(function (i) { return color(thresholds[i])})))
 

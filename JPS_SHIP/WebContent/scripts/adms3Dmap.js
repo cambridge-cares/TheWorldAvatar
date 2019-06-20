@@ -166,18 +166,17 @@ const initadms3dmap = (
     let sliderWrapperNode = document.getElementById(SLIDER_WRAPPER)
     let idxSrc = 0, idxH = 0, preObj
     let image = dataurls[0][0]
-    let thresholds = dataurls[0][1], color = dataurls[0][2], thresholds0 = dataurls[0][3]
+    let thresholds = dataurls[0][1], color = dataurls[0][2]
 
     while (legendWrapperNode.firstChild) {
       legendWrapperNode.removeChild(legendWrapperNode.firstChild)
     }
-    makeLegend(LEGEND_WRAPPER, thresholds, color, thresholds0)
+    makeLegend(LEGEND_WRAPPER, thresholds, color)
 
     //  var dataurls = data.dataurls, heights =data.heights
     preObj = osmb.addGeoJSON(geojson,
       { elevation: 0, hasTexture: dataurls[0][0] })
     listGeoJsonAddedToOSMB.push(preObj) // edit
-
 
     while (sliderWrapperNode.firstChild) {
       sliderWrapperNode.removeChild(sliderWrapperNode.firstChild)
@@ -188,19 +187,18 @@ const initadms3dmap = (
       idxSrc = POL_LIST.indexOf(radioValue)
       thresholds = dataurls[idxH * POL_NUM + idxSrc][1]
       color = dataurls[idxH * POL_NUM + idxSrc][2]
-      thresholds0 = dataurls[idxH * POL_NUM + idxSrc][3]
-      image =  dataurls[idxH * POL_NUM + idxSrc][0]
+      image = dataurls[idxH * POL_NUM + idxSrc][0]
 
       if (preObj) preObj.destroy()
 
       while (legendWrapperNode.firstChild) {
         legendWrapperNode.removeChild(legendWrapperNode.firstChild)
       }
-      makeLegend(LEGEND_WRAPPER, thresholds, color, thresholds0)
+      makeLegend(LEGEND_WRAPPER, thresholds, color)
 
       preObj = osmb.addGeoJSON(geojson, {
         elevation: HEIGHT_INTERVAL * (idxH),
-        hasTexture:image
+        hasTexture: image,
       })
       listGeoJsonAddedToOSMB.push(preObj) // edit
     })
@@ -212,13 +210,12 @@ const initadms3dmap = (
       $('#height-show').val(idxH * 10)
       thresholds = dataurls[idxH * POL_NUM + idxSrc][1]
       color = dataurls[idxH * POL_NUM + idxSrc][2]
-      thresholds0 = dataurls[idxH * POL_NUM + idxSrc][3]
-      image =  dataurls[idxH * POL_NUM + idxSrc][0]
+      image = dataurls[idxH * POL_NUM + idxSrc][0]
 
       while (legendWrapperNode.firstChild) {
         legendWrapperNode.removeChild(legendWrapperNode.firstChild)
       }
-      makeLegend(LEGEND_WRAPPER, thresholds, color, thresholds0)
+      makeLegend(LEGEND_WRAPPER, thresholds, color)
 
       preObj = osmb.addGeoJSON(geojson, {
         elevation: HEIGHT_INTERVAL * (idxH),
