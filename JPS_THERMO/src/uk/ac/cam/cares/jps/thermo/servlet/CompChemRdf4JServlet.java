@@ -127,7 +127,6 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		/**
 		 * 
 		 * @author NK510
-		 * 
 		 * SPARQL query performed on 'ontospecieskb' graph. Returns enthalpy of formation and temperature for given species id.
 		 * 
 		 */
