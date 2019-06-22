@@ -118,8 +118,6 @@ public class QueryString {
 		return query;
 	}
 	
-	
-	
 	public static String getUniqueSpeciesUriSPARQL(String gaussianIRI) {
 		
 		/**
@@ -130,7 +128,6 @@ public class QueryString {
 				"SELECT  ?speciesUri " + 
 				"WHERE { " + 
 				"<"+gaussianIRI+"> <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasUniqueSpeciesIRI> ?speciesUri . " +
-//				"<"+gaussianIRI+"> <https://como.cheng.cam.ac.uk/kb/compchem.owl#hasUniqueSpeciesIRI> ?speciesUri ." + 
 				"}";
 		
 		return query ;
@@ -140,7 +137,7 @@ public static String getOntoSpeciesEnthalpyAndTemperatureSPARQL(String speciesUr
 		
 	    
 		String query = "PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>" + 
-				"SELECT  ?enthalpy_value  ?temp_value " + 
+				"SELECT  (str(?enthalpy_value) AS ?enthalpyValue)  (str(?temp_value) AS ?tempValue)  " + 
 				"WHERE {" + 
 				"<"+ speciesUri +"> OntoSpecies:hasStandardEnthalpyOfFormation ?se ." + 
 				"?se OntoSpecies:value ?enthalpy_value ." + 

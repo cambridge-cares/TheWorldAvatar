@@ -9,7 +9,7 @@ import uk.ac.cam.cares.jps.thermo.manager.PropertiesManager;
 /**
  * 
  * @author NK510
- * Runs thermo calculations implemented by using Python.
+ * Runs thermo calculations implemented by using Python. It calculates NASA polynomials for selected species by using temperature and enthalpy of formation for selected species.
  *
  */
 
@@ -22,15 +22,13 @@ public class ThermoCalculation {
 	
 	/**
 	 * 
-	 * @param jsonInputFilePath json file that contains results of sparql query over compchem repository (graph).
-	 * @param catalinaFolderPath folder inside Apache Tomcat .
-	 * @throws IOException
+	 * @param jsonInputFilePath The json file that contains results of sparql query over compchem repository (graph).
+	 * @param catalinaFolderPath The folder inside Apache Tomcat .
+	 * @throws IOException The IO exception.
 	 * 
 	 */	
 	
-	 public void runThermoCalculation (String jsonInputFilePath, String jsonOutputFilePath) throws IOException {
-		 
-		 
+	 public void runThermoCalculation (String jsonInputFilePath, String jsonOutputFilePath, String enthalpyOfFormation) throws IOException {
 		 
 		/**
 		 * @author NK510
@@ -40,8 +38,6 @@ public class ThermoCalculation {
 		 */
 		
 		File outputFile = new File(jsonOutputFilePath);
-		
-		
 		
 		if(!outputFile.exists()) {
 			
@@ -54,8 +50,18 @@ public class ThermoCalculation {
 
 		String pyscript =pythonScript;
 		
-		String[] cmd = { "python", pyscript, "-j", inputFile.getAbsolutePath() };
+		if(!enthalpyOfFormation.isEmpty()) {
+			
+		String[] cmd = { "python", pyscript, "-j", inputFile.getAbsolutePath(), "--href " , "\"" + enthalpyOfFormation +"\"" };
 
 		Runtime.getRuntime().exec(cmd);
+		
+		}else {
+			
+			String[] cmd = { "python", pyscript, "-j", inputFile.getAbsolutePath() };
+
+			Runtime.getRuntime().exec(cmd);
+		}
+		
 	}	 
 }

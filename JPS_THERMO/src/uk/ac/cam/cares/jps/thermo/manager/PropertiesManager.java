@@ -29,7 +29,10 @@ public class PropertiesManager {
 				return properties;
 			}
 
-			// load a properties file from class path.
+			/**
+			 * @author NK510
+			 *  Loads a properties file from class path.
+			 */
 			properties.load(inputStream);
 
 		} catch (IOException ex) {

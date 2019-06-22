@@ -106,10 +106,10 @@ public class FolderManager {
 		
 		/**
 		 * 
-		 * @author NK510 Takes genetared owl file and copies it into destination folder
-		 * @param sourceFilePath
-		 * @param destinationFilePath
-		 * @throws IOException 
+		 * @author NK510 Takes generated owl file from source folder and copies it into destination folder
+		 * @param sourceFilePath The source file path.
+		 * @param destinationFilePath The destination file path.
+		 * @throws IOException  The IO exception.
 		 * 
 		 */
 		public void copyFileToAnotherDestination(File sourceFile, File destinationFile) throws IOException {
