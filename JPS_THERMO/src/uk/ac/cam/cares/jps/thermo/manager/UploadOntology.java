@@ -16,7 +16,12 @@ public class UploadOntology {
 	/** The Constant logger. */
 	final static Logger logger = Logger.getLogger(UploadOntology.class.getName());	
 
-	
+	/**
+	 * 
+	 * @param owlFilePath The owl file that is uploaded in RDF4J triple store
+	 * @param serverUrl The server url.
+	 * @param ontologyUri The ontology uri. 
+	 */
 	public void uploadOntoKin(String owlFilePath, String serverUrl, String ontologyUri) {
 		
 		
@@ -73,10 +78,10 @@ public class UploadOntology {
 						/**
 						 * 
 						 * @author nk510
-						 *         <p>
+						 *         
 						 *         If something is wrong during the transaction, it will return a
 						 *         message about it.
-						 *         </p>
+						 *         
 						 * 
 						 */
 

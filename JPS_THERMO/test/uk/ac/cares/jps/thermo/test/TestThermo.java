@@ -30,6 +30,7 @@ public class TestThermo extends TestCase {
 		
 		System.out.println("result = " + result);
 		
+		
 	}
 	
 }

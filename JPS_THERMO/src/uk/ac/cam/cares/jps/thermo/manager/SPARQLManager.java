@@ -4,6 +4,8 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
+import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
@@ -31,9 +33,9 @@ public class SPARQLManager {
 	
 	/**
 	 * @author NK510
-	 * @param gaussian
-	 * @param jsonInputFilePath
-	 * @param serverUrl
+	 * @param gaussian The Gaussian URI.
+	 * @param jsonInputFilePath The input JSON file.
+	 * @param serverUrl The RDF4J server url. 
 	 */
 	public void runCompChemSPARQL(String gaussian, String jsonInputFilePath,String serverUrl ) {
 		
@@ -119,10 +121,12 @@ public class SPARQLManager {
 			String queryString = QueryString.getUniqueSpeciesUriSPARQL(gaussianIRI);
 			
 			/**
-			 * Change TupleQueryResult	
+			 * 
+			 * Change TupleQueryResult	because it kills other sparql query. Use BindingSet
+			 *  
 			 */
 			TupleQuery query = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
-				
+			
 			TupleQueryResult tqr = query.evaluate();		
 			
 			while (tqr.hasNext()) {
@@ -137,7 +141,7 @@ public class SPARQLManager {
 			
 		} catch (RepositoryException e) {
 
-			logger.info(e.getMessage());
+		logger.info(e.getMessage());
 			
 		}  finally {
 
@@ -149,25 +153,18 @@ public class SPARQLManager {
 		
 		logger.info("speciesUri inside getUniqueSpeciesUri: "+ speciesUri);
 		
-		return speciesUri;	
-		
+		return speciesUri;
+
 	}
+	
 	/**
 	 * 
 	 * @param The serverUrl The URL of species knowledge graph.
 	 * @param The speciesUri The species URI that is used in SPARQL query in order to get enthalpy and temperature for given species URI.
-	 * @return The temperature and enthalpy. 
+	 * @return The temperature and enthalpy.
+	 * 
 	 */
-	public String getEnthalpyOfFormation(String serverUrl, String speciesUri) {
-		
-		/**
-		 * 
-		 * Converts old species Uri into new species URI.
-		 *  
-		 */		
-//		String ontoSpeciesUri = "http://www.theworldavatar.com/kb/ontospecies/ontospecies.owl#"+speciesUri.substring(speciesUri.lastIndexOf("#") + 1);
-		
-//		logger.info("ontoSpeciesUri: " + ontoSpeciesUri);
+	public String getEnthalpyOfFormation(String serverUrl, String speciesUri) {	
 		
 		String hrefEnthalpy = "";
 		
@@ -183,18 +180,25 @@ public class SPARQLManager {
 			
 			TupleQuery query = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
 			
-			TupleQueryResult tqr = query.evaluate();
+			TupleQueryResult result = query.evaluate();
 			
-			while (tqr.hasNext()) {
+			try {
 			
-			String enthalpy = tqr.next().getValue("enthalpy_value").toString();
+			while (result.hasNext()) {
+				
+			BindingSet bindingSet = result.next();
+			
+			Literal enthalpy = (Literal)bindingSet.getValue("enthalpyValue");
+			
+			Literal temperature = (Literal)bindingSet.getValue("tempValue");
+			
+			hrefEnthalpy = (String)temperature.getLabel().trim() + "," + (String)enthalpy.getLabel().trim();
+			
+			}
 
-			String temperature = tqr.next().getValue("temp_value").toString();
-			
-			
-			
-			hrefEnthalpy = temperature + " , " + enthalpy; 
-					
+			} catch(Exception e) {
+				
+				logger.info(e.getMessage());
 			}
 			
 			connection.commit();
@@ -202,7 +206,6 @@ public class SPARQLManager {
 		}catch(RepositoryException e) {
 			
 			logger.info(e.getMessage());
-			
 			
 		}finally {
 			
@@ -212,7 +215,8 @@ public class SPARQLManager {
 			
 		}
 		
-		logger.info("hrefEnthalpy: " + hrefEnthalpy );
+		logger.info("hrefEnthalpy: " + hrefEnthalpy);
+		
 		
 		return hrefEnthalpy;
 	}

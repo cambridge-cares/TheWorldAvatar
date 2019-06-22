@@ -158,6 +158,13 @@ public class JsonToJsonConverter {
 
 	}
 
+	/**
+	 * 
+	 * @param updatedJsonContent The new content added to JSON file such as unique species uri, and gaussian uri.
+	 * @param updatedJsonOutputFilePath The destination folder where updated JSON file is saved.
+	 * @param response HTTP servlet response.
+	 * @throws IOException The IO exception.
+	 */
 	public void writeUpdatedJsonToFile(String updatedJsonContent, String updatedJsonOutputFilePath,
 			HttpServletResponse response) throws IOException {
 

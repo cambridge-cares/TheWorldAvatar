@@ -178,6 +178,10 @@ public class CompChemOWLFileServlet extends HttpServlet {
 		doGet(request, response);
 	}
 
+	/**
+	 * Gets thermo-calculation agent.  
+	 * 
+	 */
 	public void getThermoCalculationAgent() {
 
 		JSONObject json = new JSONObject();
