@@ -12,4 +12,6 @@ public interface IKeys {
 	
 	public static final String URL_POSITIONQUERY = "url.positionquery"; 
 	public static final String URL_RDF_METADATA = "url.rdf.metadata";
+	
+	public static final String SCENARIO_USECASEDIRECTORY_SEPARATOR = "scenario.usecasedirectory.separator";
 }

@@ -1,12 +1,16 @@
 package uk.ac.cam.cares.jps.base.annotate;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
 
+import javax.xml.crypto.Data;
+
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService;
 import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService.RDFStoreType;
@@ -76,12 +80,27 @@ public class MetaDataAnnotator implements Prefixes {
 		return replaceByUUID(sparql.toString(), "?time");
 	}
 	
+	// TODO-AE 20190626 move time method to package base.util, also corresponding test
 	public static String getTimeInXsdTimeStampFormat(long millis) { 
 		Date date = new Date(millis);
 	    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); 
 		format.setTimeZone(TimeZone.getTimeZone("GMT+0:00"));
 	    String timestamp = format.format(date);
 	    return timestamp.replace(" ", "T");
+	} 
+	
+	// TODO-AE 20190626 move time method to package base.util, also corresponding test
+	public static long getMillisFromXsdTimeStampFormat(String timestamp) { 
+		timestamp = timestamp.replace("T", " ");	
+	    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); 
+		format.setTimeZone(TimeZone.getTimeZone("GMT+0:00"));
+		Date date;
+		try {
+			date = format.parse(timestamp);
+		} catch (ParseException e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		}
+		return date.getTime();
 	} 
 	
 	private static String replaceByUUID(String s, String replace) {
