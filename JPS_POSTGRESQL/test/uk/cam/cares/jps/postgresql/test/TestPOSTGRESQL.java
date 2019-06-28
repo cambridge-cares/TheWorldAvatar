@@ -57,18 +57,18 @@ public class TestPOSTGRESQL extends TestCase  {
 		   System.out.println("result of the ship= "+result);
 	}
 	
-	public void testcalculation() {
-		int add=1500;
+	public void testcalculationforterrain() {
+		int add=2900;
 		int xmin=833044;
 		int ymin=816015;
 		int xmax=834498;
 		int ymax=817460;
 		
 		//newset
-		xmin=830302;
-		ymin=813474;
-		xmax=843535;
-		ymax=826707;
+		xmin=821182;
+		ymin=806448;
+		xmax=846182;
+		ymax=831448;
 		
 				
 		int p=xmax-xmin;
