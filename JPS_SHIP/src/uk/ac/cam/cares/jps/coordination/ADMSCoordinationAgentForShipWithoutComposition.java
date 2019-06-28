@@ -1,9 +1,5 @@
 package uk.ac.cam.cares.jps.coordination;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -22,7 +18,6 @@ import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 @WebServlet("/ADMSCoordinationAgentForShipWithoutComposition")
 public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet {
@@ -37,49 +32,6 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet 
 		AgentCaller.writeJsonParameter(response, result);
 	}
 	
-	private void updateShipCoordinates() throws IOException {
-		File file = new File("C:\\JPS_DATA\\workingdir\\JPS\\SHIP\\counter.txt");        
-        BufferedReader reader = null;
-        FileWriter writer = null;
-        int countIn = 0;
-        int countOut = 0;
-        
-        try 
-        {
-            reader = new BufferedReader(new FileReader(file));
-            
-            //Reading all the lines of input text file into oldContent
-            
-            String line = reader.readLine();
-            logger.info("line: " + line);
-            
-            countIn = Integer.parseInt(line);
-            logger.info(String.valueOf(countIn));
-            
-            //Rewriting the input text file with newContent
-            
-            writer = new FileWriter(file);
-            
-    		if (countIn < 4 && countIn >= 0) {
-    			countOut = countIn + 1;
-    		} else {
-    			countOut = 0;
-    		}
-    		logger.info("countOut: " + String.valueOf(countOut));
-            writer.write(String.valueOf(countOut));
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-            reader.close();                
-            writer.close();
-            String result = PythonHelper.callPython("caresjpsship/writeThenReadShipCoordinates.py", String.valueOf(countIn), this);
-            logger.info("DONE UPDATING SHIP COORDINATES with count " + String.valueOf(countIn));
-        }
-	}
 	
 	public JSONObject executeWithoutComposition(String jsonInput) throws IOException {
 		
@@ -135,7 +87,12 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet 
 			jo.put("building", building);
 			logger.info("building FROM COORDINATION AGENT: " + building.toString());
 			
-			result = execute("/JPS_COMPOSITION/CityToWeather", regionToCityResult);
+			if(city.toLowerCase().contains("kong")) {
+				result = execute("/JPS_SHIP/GetHKUWeatherData", regionToCityResult);
+			}
+			else {
+				result = execute("/JPS_COMPOSITION/CityToWeather", regionToCityResult);	
+			}
 			JSONObject weatherstate = new JSONObject(result).getJSONObject("weatherstate");
 			jo.put("weatherstate", weatherstate);
 //			logger.info("weatherstate FROM COORDINATION AGENT: " + weatherstate.toString());
