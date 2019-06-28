@@ -16,6 +16,7 @@ import uk.ac.cam.cares.jps.thermo.manager.PropertiesManager;
 public class ThermoCalculation {
 
 	
+	
 	private Properties jpsThermoProperties = PropertiesManager.loadProperties(ThermoCalculation.class.getClassLoader().getResourceAsStream("jps_thermo.management.properties"));
 	
 	private String pythonScript = jpsThermoProperties.getProperty("python.file.path");
