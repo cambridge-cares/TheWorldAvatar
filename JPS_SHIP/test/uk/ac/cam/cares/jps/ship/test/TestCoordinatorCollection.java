@@ -17,5 +17,11 @@ public class TestCoordinatorCollection extends TestCase{
 		System.out.println("result= "+resultStart);
 		
 	}
+	
+	public void testcallhkuweatheragent() {
+		JSONObject jo = new JSONObject();
+		String result = AgentCaller.executeGetWithJsonParameter("JPS_SHIP/GetHKUWeatherData",jo.toString());
+		System.out.println("result= "+result);
+	}
 	 
 }

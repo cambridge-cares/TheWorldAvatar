@@ -57,14 +57,15 @@ public class ShipAgent extends HttpServlet {
 	private ObjectProperty has_density = null;
 	private ObjectProperty has_length = null;
 	private ObjectProperty hasunit = null;
-	private ObjectProperty intinsicChar=null;
+	private ObjectProperty hasSubsystem=null;
 	private OntClass particleclass = null;
 	private OntClass flowclass = null;
 	private OntClass scalarvalueclass = null;
-	private OntClass moleculargroupclass = null;
+	private OntClass partialparticleclass = null;
 	private OntClass diameterclass = null;
 	private OntClass massfractionclass = null;
 	private OntClass densityclass = null;
+	private ObjectProperty  hasRepresentativeParticle = null;
 	
 	static Individual gpers;
 	static Individual m;
@@ -88,14 +89,14 @@ public class ShipAgent extends HttpServlet {
 	
 	public void initOWLClasses(OntModel jenaOwlModel) {
 		numval = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");	
-		particleclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#MolecularEntity");	
+		particleclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ParticulateMaterialAmount");	
 		flowclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate");
 		hasProperty=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty");
 		hasValue=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue");
 		 hasunit = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure");
 		 scalarvalueclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue");
 		 contains=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains");
-		 moleculargroupclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/material/substance/molecular_structure.owl#MolecularGroup");
+		 partialparticleclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#SingleParticle");
 		 gpers=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#g_per_s");
 		 diameterclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#Diameter");
 		 densityclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Density");
@@ -104,7 +105,8 @@ public class ShipAgent extends HttpServlet {
 		 has_length=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#has_length");
 		 m=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m");
 		 kg_per_m3=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_cubic_m");
-		 intinsicChar=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/material/material.owl#intrinsicCharacteristics");
+		 hasSubsystem=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem");
+		 hasRepresentativeParticle=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#hasRepresentativeParticle");
 	}
 		
 	
@@ -116,20 +118,29 @@ public class ShipAgent extends HttpServlet {
 	    hmap.put("NO2", "ChemSpecies_Nitrogen__dioxide");
 	    hmap.put("HC", "PseudoComponent_Unburned_Hydrocarbon");
 	    hmap.put("NOx", "PseudoComponent_Nitrogen__oxides");
+	    hmap.put("SO2", "ChemSpecies_Sulfur__dioxide");
+	    hmap.put("O3", "ChemSpecies_Ozone");
 	    
+	    
+	    //remove the subtree first for particle
 	    JenaModelWrapper c= new JenaModelWrapper(jenaOwlModel, null);
-	    c.removeSubtree("http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Material2_WasteStreamOfChimney-1", Prefixes.OCPMATE, "intrinsicCharacteristics");
-	    //jenaOwlModel=c.getModel();
+	    c.removeSubtree("http://www.theworldavatar.com/kb/ships/Chimney-1.owl#GeneralizedAmount_WasteStreamOfChimney-1", Prefixes.OCPSYST, "contains");
 	    
+	    //reset all the emission rate to be zero
 		for (int b = 0; b < hmap.size(); b++) {
 			Individual valueofspeciesemissionrate = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] + "#V_" + hmap.get(hmap.keySet().toArray()[b]) + "_EmissionRate");
 			valueofspeciesemissionrate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double("0")));
 		}
 		
-		Individual particleratevalue = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] + "#V_Particulate-001_EmissionRate");
-		if(particleratevalue!=null) {
-		particleratevalue.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double("0")));
+		Individual particleratevalue1 = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] + "#V_Particulate-001_EmissionRate");
+		//Individual particleratevalue2 = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] + "#V_Particulate-002_EmissionRate");
+		if(particleratevalue1!=null) {
+			particleratevalue1.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double("0")));
 		}
+//		if(particleratevalue2!=null) {
+//			particleratevalue2.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double("0")));
+//		}
+		
 		
 		//JSONObject jsonObject = parseJSONFile(outputfiledir); (used after the format of json file is fixed )
 		Double molecularvalue = jsonObject.getJSONObject("mixture").getJSONObject("molmass").getDouble("value")*1000;
@@ -159,27 +170,27 @@ public class ShipAgent extends HttpServlet {
 		valueofcombinedheatcapacity.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(Cpvalue));
 		
 		
-		Individual particulate = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] +"#Particulate-001"); 
+		Individual particulate1 = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] +"#Particulate-001"); 
 		
-		if(particulate==null)
+		if(particulate1==null)
 		{
-			Individual material2 = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] +"#Material2_WasteStreamOfChimney-1");
-			particulate = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] +"#Particulate-001",particleclass);//if it is not there	
-			material2.addProperty(intinsicChar, particulate);
+			Individual material2 = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] +"#GeneralizedAmount_WasteStreamOfChimney-1");
+			particulate1 = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] +"#Particulate-001",particleclass);//if it is not there	
+			material2.addProperty(contains, particulate1);
 		}
-		Individual particulaterate = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] +"#Particulate-001_EmissionRate");
-		//particleratevalue = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] + "#V_Particulate-001_EmissionRate"); //thereis above
-		if(particulaterate==null)
+		Individual particulaterate1 = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] +"#Particulate-001_EmissionRate");
+
+		if(particulaterate1==null)
 		{
-			particulaterate = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] +"#Particulate-001_EmissionRate",flowclass);	
-			particleratevalue = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] + "#V_Particulate-001_EmissionRate",scalarvalueclass);
+			particulaterate1 = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] +"#Particulate-001_EmissionRate",flowclass);	
+			particleratevalue1 = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] + "#V_Particulate-001_EmissionRate",scalarvalueclass);
 		}
 		
-		particulate.addProperty(hasProperty, particulaterate);
+		particulate1.addProperty(hasProperty, particulaterate1);
 		
 		
-		particulaterate.addProperty(hasValue, particleratevalue);
-		particleratevalue.addProperty(hasunit, gpers);
+		particulaterate1.addProperty(hasValue, particleratevalue1);
+		particleratevalue1.addProperty(hasunit, gpers);
 			
 		int valueoftotalparticlesincluded = jsonObject.getJSONArray("particle").length();
 		
@@ -195,7 +206,7 @@ public class ShipAgent extends HttpServlet {
 //				totalparticleemission=0.0;
 //			}
 		}
-		particleratevalue.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(totalparticleemission)); 
+		particleratevalue1.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(totalparticleemission)); 
 		logger.info("total mass of particle="+totalparticleemission);
 		//---------------------------------------------------------------------------------------------------------------------------------
 		
@@ -223,17 +234,16 @@ public class ShipAgent extends HttpServlet {
 				Individual massfractionpartialparticulate = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] +"#MassFraction_Partial-"+a+"OfParticulate-001");
 				Individual massfractionvaluepartialparticulate = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] +"#V_MassFraction_Partial-"+a+"OfParticulate-001");
 				if(partialparticulate==null) {
-					partialparticulate = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] +"#Partial-"+a+"OfParticulate-001",moleculargroupclass);
+					partialparticulate = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] +"#Partial-"+a+"OfParticulate-001",partialparticleclass);
 					diameterpartialparticulate = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] +"#Diameter_Partial-"+a+"OfParticulate-001",diameterclass);
 					diametervaluepartialparticulate = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] +"#V_Diameter_Partial-"+a+"OfParticulate-001",scalarvalueclass);
 					densitypartialparticulate = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] +"#Density_Partial-"+a+"OfParticulate-001",densityclass);
 					densityvaluepartialparticulate = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] +"#V_Density_Partial-"+a+"OfParticulate-001",scalarvalueclass);
 					massfractionpartialparticulate = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] +"#MassFraction_Partial-"+a+"OfParticulate-001",massfractionclass);
 					massfractionvaluepartialparticulate = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] +"#V_MassFraction_Partial-"+a+"OfParticulate-001",scalarvalueclass);
-					
 				}
-				
-				particulate.addProperty(contains, partialparticulate);
+				particulate1.addProperty(hasRepresentativeParticle, partialparticulate);
+
 				
 					
 					partialparticulate.addProperty(has_length,diameterpartialparticulate);
@@ -257,15 +267,28 @@ public class ShipAgent extends HttpServlet {
 				logger.info("mass fraction= "+valueofmassfraction);
 			}
 		}
-		
+		double NO2value=0;
+		double NOvalue=0;
 		for (int b = 0; b < valueoftotalpollutant; b++) {
 			String parametername = jsonObject.getJSONArray("pollutants").getJSONObject(b).getString("name");
 			Double parametervalue = jsonObject.getJSONArray("pollutants").getJSONObject(b).getDouble("value")*1000; //(multiplied by 100 temporarily to make it visible)
+			
+			if(hmap.get(parametername) != null) {
+				System.out.println("iri needed= "+iriofchimney.split("#")[0] + "#V_" + hmap.get(parametername) + "_EmissionRate");
+				Individual valueofspeciesemissionrate = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] + "#V_" + hmap.get(parametername) + "_EmissionRate");
+				valueofspeciesemissionrate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(parametervalue));
+				if(parametername.contentEquals("NO2")) {
+					NO2value=jsonObject.getJSONArray("pollutants").getJSONObject(b).getDouble("value")*1000;
+				}
+			}
+			else if(parametername.contentEquals("NO")) {
+				NOvalue=jsonObject.getJSONArray("pollutants").getJSONObject(b).getDouble("value")*1000;
+			}
 
-			System.out.println("iri needed= "+iriofchimney.split("#")[0] + "#V_" + hmap.get(parametername) + "_EmissionRate");
-			Individual valueofspeciesemissionrate = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] + "#V_" + hmap.get(parametername) + "_EmissionRate");
-			valueofspeciesemissionrate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(parametervalue));
 		}
+		Individual valueofspeciesemissionrate = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] + "#V_" + hmap.get("NOx") + "_EmissionRate");
+		valueofspeciesemissionrate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(NO2value+NOvalue));
+
 	}
 		
 	

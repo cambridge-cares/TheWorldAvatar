@@ -17,16 +17,7 @@ import uk.ac.cam.cares.jps.ship.HKUWeatherRetriever;
 @WebServlet("/CollectorCoordination")
 public class CoordinationDataCollection extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
-	public static void retrieveHKWeather () {
-		//JSONObject jo = new JSONObject();
-		//jo.put("electricalnetwork", ELECTRICAL_NETWORK);
-		//String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_HKUWeatherAgent/getdata", "no parameter needed");
 		
-		
-		System.out.println(" finished reading writing data");
-	}
-	
 	public static void retrieveHKPollution () {
 		//JSONObject jo = new JSONObject();
 		//jo.put("electricalnetwork", ELECTRICAL_NETWORK);
@@ -43,14 +34,15 @@ public class CoordinationDataCollection extends HttpServlet {
 		JSONObject inputjo = AgentCaller.readJsonParameter(req);
 		String scenarioUrl = null;
 		String scenarioName = inputjo.optString("scenarioname");
-		if (scenarioName != null) {
+		if ((scenarioName != null) && !scenarioName.isEmpty()) {
 			scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
 			jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
 		}
 		
 		System.out.println("CoordinationDataCollection is called with scenarioUrl = " + scenarioUrl);
 		
-		HKUWeatherRetriever.readWritedata();
+		
+		new HKUWeatherRetriever().readWritedata();
 		System.out.println(" finished reading writing data");
 		
 		//retrieveHKPollution();
