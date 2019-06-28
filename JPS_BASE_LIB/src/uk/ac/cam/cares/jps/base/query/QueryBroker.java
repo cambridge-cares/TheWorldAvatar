@@ -14,7 +14,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONStringer;
 
+import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
@@ -270,5 +272,11 @@ public class QueryBroker {
 	
 	public static String getLocalDataPath() {
 		return BucketHelper.getLocalDataPath();
+	}
+	
+	public static String getLocalDataPath(String humanReadableSubPath) {
+		String separator = KeyValueManager.get(IKeys.SCENARIO_USECASEDIRECTORY_SEPARATOR);
+		String path = BucketHelper.getLocalDataPath() + separator + humanReadableSubPath;
+		return path;
 	}
 }

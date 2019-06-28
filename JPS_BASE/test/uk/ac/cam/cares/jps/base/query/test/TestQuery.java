@@ -242,4 +242,10 @@ public class TestQuery extends TestCase implements ITestConstants{
 		// we queried for a specific instance that was deleted; thus we expect zero result rows
 		assertEquals(0, resultList.size());
 	}
+	
+	public void testQueryBrokerGetLocalDataPath() {
+		String path = QueryBroker.getLocalDataPath("ADMS");
+		System.out.println(path);
+		assertTrue(path.endsWith("_ADMS"));
+	}
 }

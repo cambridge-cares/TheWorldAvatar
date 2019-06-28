@@ -51,6 +51,9 @@ public class TestMetaDataAnnotator extends TestCase implements Prefixes {
 		long millis = 1559633714596l;
 		String timestamp = MetaDataAnnotator.getTimeInXsdTimeStampFormat(millis);
 		assertEquals("2019-06-04T07:35:14.596", timestamp);
+		
+		long actualMillis = MetaDataAnnotator.getMillisFromXsdTimeStampFormat(timestamp);
+		assertEquals(millis, actualMillis);
 	}
 	
 	public void xxxxtestGetSparql() {
