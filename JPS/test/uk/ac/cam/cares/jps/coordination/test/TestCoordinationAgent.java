@@ -44,7 +44,7 @@ public class TestCoordinationAgent extends TestCase {
 						.key("uppery").value("52.514838").endObject()
 				.endObject()
 				.key("plant").value("http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002")
-				.key("reactionmechanism").value("https://como.cheng.cam.ac.uk/kb/Toluene.owl#ReactionMechanism_4631074216281807")
+				.key("reactionmechanism").value("http://www.theworldavatar.com/kb/ontokin/Toluene.owl#ReactionMechanism_187077735769001")
 				.endObject(); 
 		
 		// direct call without AgentCaller
@@ -69,16 +69,16 @@ public class TestCoordinationAgent extends TestCase {
 		
 		JSONWriter jsonInput = new JSONStringer().object().
 				key("region").object()
-					.key("srsname").value("EPSG:28992")
+					.key("srsname").value("EPSG:3857")
 					.key("lowercorner").object()
-						.key("lowerx").value("699182")
-						.key("lowery").value("532537").endObject()
+						.key("lowerx").value("1493262.39")
+						.key("lowery").value("6892594.98").endObject()
 					.key("uppercorner").object()
-						.key("upperx").value("699983")
-						.key("uppery").value("533338").endObject()
+						.key("upperx").value("1494710.67")
+						.key("uppery").value("6894044.12").endObject()
 				.endObject()
 				.key("plant").value("http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002")
-				.key("reactionmechanism").value("https://como.cheng.cam.ac.uk/kb/Toluene.owl#ReactionMechanism_4631074216281807")
+				.key("reactionmechanism").value("http://www.theworldavatar.com/kb/ontokin/Toluene.owl#ReactionMechanism_187077735769001")
 				.endObject(); 
 				
 		String result = AgentCaller.executeGetWithJsonParameter("/JPS/ADMSCoordinationAgentWithoutComposition", jsonInput.toString());
@@ -97,16 +97,16 @@ public class TestCoordinationAgent extends TestCase {
 		
 		JSONWriter jsonInput = new JSONStringer().object().
 				key("region").object()
-					.key("srsname").value("EPSG:28992")
+					.key("srsname").value("EPSG:3857")
 					.key("lowercorner").object()
-						.key("lowerx").value("79480")
-						.key("lowery").value("454670").endObject()
+						.key("lowerx").value("476584.89")
+						.key("lowery").value("6812941.68").endObject()
 					.key("uppercorner").object()
-						.key("upperx").value("80000")
-						.key("uppery").value("455190").endObject()
+						.key("upperx").value("478230.04")
+						.key("uppery").value("6814587.35").endObject()
 				.endObject()
 				.key("plant").value("http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl#Plant-001")
-				.key("reactionmechanism").value("https://como.cheng.cam.ac.uk/kb/Toluene.owl#ReactionMechanism_4631074216281807")
+				.key("reactionmechanism").value("http://www.theworldavatar.com/kb/ontokin/Toluene.owl#ReactionMechanism_187077735769001")
 				.endObject(); 
 				
 		String result = AgentCaller.executeGetWithJsonParameter("/JPS/ADMSCoordinationAgentWithoutComposition", jsonInput.toString());

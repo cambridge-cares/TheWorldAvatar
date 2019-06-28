@@ -1,5 +1,5 @@
 class admsPol(object):
-    def __init__(self, PolName, PolParNumDepositionData, PolParDiameter,PolParDensity, PolParMassFraction ,PolPollutantType = 1 , PolGasDepVelocityKnown = 1,  PolGasDepositionVelocity=0 ,PolGasType=1, PolParDepVelocityKnown =0, PolParTermVelocityKnown=0,   PolParDepositionVelocity =0,PolParTerminalVelocity=0   ,   PolWetWashoutKnown =1, PolWetWashout  = 0, PolWetWashoutA = 1.0e-4, PolWetWashoutB  =6.4e-1, PolConvFactor      =1, PolBkgLevel   = 0, PolBkgUnits ="ug/m3"):
+    def __init__(self, PolName, PolParNumDepositionData, PolParDiameter,PolParDensity, PolParMassFraction ,PolPollutantType = 1 , PolGasDepVelocityKnown = 1,  PolGasDepositionVelocity=0 ,PolGasType=1, PolParDepVelocityKnown =0, PolParTermVelocityKnown=0,   PolParDepositionVelocity =0,PolParTerminalVelocity=0   ,   PolWetWashoutKnown =1, PolWetWashout  = 0, PolWetWashoutA = 1.0e-4, PolWetWashoutB  =6.4e-1, PolConvFactor      =1, PolBkgLevel   = 64.3, PolBkgUnits ="ug/m3"):
 
         self.PolName = PolName
         self.PolPollutantType =PolPollutantType

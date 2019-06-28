@@ -189,7 +189,8 @@ public class SRMAgent extends HttpServlet  {
 		cleanDirectory();
 		
 		if(iri.contains("particle")){
-			String jsonFiledir = AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/OutputCase00001Cyc0001ADMS-valid_v2.json";
+			//String jsonFiledir = AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/OutputCase00001Cyc0001ADMS-valid_v2.json";
+			String jsonFiledir = AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/OutputCase00001Cyc0001ADMS-NOx-SOx-O3-PM.json";
 			JSONObject json = dojsonmodif(jsonFiledir);
 			AgentCaller.writeJsonParameter(response, json);
 		
@@ -447,11 +448,17 @@ public class SRMAgent extends HttpServlet  {
 		File[] listOfFiles = folder.listFiles();
 		
 		for (int i = 0; i < listOfFiles.length; i++) {
-			  if (listOfFiles[i].isFile() && !listOfFiles[i].getName().equals("ontokin.jar")&& !listOfFiles[i].getName().equals("InputParams.xml")&& !listOfFiles[i].getName().equals("InputEngineML.xml")&&!listOfFiles[i].getName().equals("OutputCase00001Cyc0001ADMS-valid_v2.json")&& !listOfFiles[i].getName().equals("convert.exe")&& !listOfFiles[i].getName().equals("ontokinConvertOwlToBin.bat")) {
-			
-			   listOfFiles[i].delete();
-			  }
+			if (listOfFiles[i].isFile() && !listOfFiles[i].getName().equals("ontokin.jar")
+					&& !listOfFiles[i].getName().equals("InputParams.xml")
+					&& !listOfFiles[i].getName().equals("InputEngineML.xml")
+					&& !listOfFiles[i].getName().equals("OutputCase00001Cyc0001ADMS-valid_v2.json")
+					&& !listOfFiles[i].getName().equals("OutputCase00001Cyc0001ADMS-NOx-SOx-O3-PM.json")
+					&& !listOfFiles[i].getName().equals("convert.exe")
+					&& !listOfFiles[i].getName().equals("ontokinConvertOwlToBin.bat")) {
+
+				listOfFiles[i].delete();
 			}
+		}
 	}
 
 	public void editinputparamXML(String filepath1, String filepath2, String valueofmech) throws TransformerFactoryConfigurationError {

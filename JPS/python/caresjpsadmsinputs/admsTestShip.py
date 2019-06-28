@@ -16,6 +16,7 @@ sourceCRS = Proj(init='epsg:4326')
 # targetCRS = Proj(init='epsg:3857')
 targetCRS = Proj(init=sys.argv[5][:4].lower() + sys.argv[5][4:])
 
+"""
 def sparqlQueryRead(queryString): #IT IS UNUSED CURRENTLY, REPLACED BY POSTGRESQL (31-5-2019)
     # sparql = SPARQLWrapper("http://www.theworldavatar.com/damecoolquestion/ships/sparql")
     sparql = SPARQLWrapper("http://172.25.182.41/damecoolquestion/ships-persistent/sparql")
@@ -23,6 +24,7 @@ def sparqlQueryRead(queryString): #IT IS UNUSED CURRENTLY, REPLACED BY POSTGRESQ
     sparql.setReturnFormat(JSON)
 
     return sparql.query().convert()
+"""
 
 try:
 #     pythonLogger.postInfoToLogServer('start')
@@ -132,14 +134,14 @@ try:
     
     print("PARAMETERS")
     print("")
-    print(chimney_iri_list,config.bldTopnode, coordinates,  ["CO2"   ,"CO" ,  "NO2" ,  "HC" ,  "NOx"], 2, config.bdnLimit,False, BDN)
+    #print(chimney_iri_list,config.bldTopnode, coordinates,  ["CO2"   ,"CO" ,  "NO2" ,  "HC" ,  "NOx"], 2, config.bdnLimit,False, BDN)
     print("")
-    test = admsInputDataRetriever(chimney_iri_list,config.bldTopnode, coordinates,  ["CO2"   ,"CO" ,  "NO2" ,  "HC" ,  "NOx", "Particulate001"], 2, config.bdnLimit,False, BDN, targetCRS)
+    test = admsInputDataRetriever(chimney_iri_list,config.bldTopnode, coordinates,  ["CO2"   ,"CO" ,  "NO2" ,  "HC" ,  "NOx", "Particulate001", "SO2", "O3"], 2, config.bdnLimit,False, BDN, targetCRS)
     result = test.get()
     
     print("RESULT TYPE: ")
     print(type(result))
-    pythonLogger.postInfoToLogServer('calling admsAplWirter ...')
+    pythonLogger.postInfoToLogServer('calling admsAplWriter ...')
     result['Bdn'] = BDN
     result['CoordiSys'] = sys.argv[5][5:]
     
@@ -148,8 +150,13 @@ try:
     
     if "2326" in sys.argv[5][5:] :
         result['terrindicator']="1"
+        
     else:
         result['terrindicator']="0"
+        
+    
+    result['chemindicator'] = "1";
+        
 
 
 #     result['CoordiSys'] = '3857';

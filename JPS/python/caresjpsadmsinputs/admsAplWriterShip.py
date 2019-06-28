@@ -22,7 +22,7 @@ SUP = '''
     SupModelComplexTerrain         = {0}
     SupModelCoastline              = 0
     SupPufType                     = 0
-    SupCalcChm                     = 0
+    SupCalcChm                     = {1}
     SupCalcDryDep                  = 0
     SupCalcWetDep                  = 0
     SupCalcPlumeVisibility         = 0
@@ -244,7 +244,7 @@ POLD = '''
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
     PolConvFactor      = 5.47e-1
-    PolBkgLevel        = 0.0e+0
+    PolBkgLevel        = 4.14e+5
     PolBkgUnits        = "ppb"
     /
 
@@ -273,7 +273,7 @@ POLD = '''
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
     PolConvFactor      = 5.2e-1
-    PolBkgLevel        = 0.0e+0
+    PolBkgLevel        = 6.0e+1
     PolBkgUnits        = "ppb"
     /
 
@@ -301,7 +301,7 @@ POLD = '''
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
     PolConvFactor      = 5.2e-1
-    PolBkgLevel        = 0.0e+0
+    PolBkgLevel        = 4.41e+1
     PolBkgUnits        = "ppb"
     /
 
@@ -352,12 +352,12 @@ POLD = '''
       1.000e+3
     PolParMassFraction =
       1.0e+0
-    PolWetWashoutKnown = 1
+    PolWetWashoutKnown = 0
     PolWetWashout      = 0.0e+0
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
     PolConvFactor      = 5.0e-1
-    PolBkgLevel        = 0.0e+0
+    PolBkgLevel        = 6.899e+1
     PolBkgUnits        = "ppb"
     /
 
@@ -409,11 +409,11 @@ POLD = '''
     PolParMassFraction =
       1.0e+0
     PolWetWashoutKnown = 1
-    PolWetWashout      = 0.0e+0
+    PolWetWashout      = 8.48e-5
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
     PolConvFactor      = 3.7e-1
-    PolBkgLevel        = 0.0e+0
+    PolBkgLevel        = 1.513e+1
     PolBkgUnits        = "ppb"
     /
 
@@ -436,12 +436,12 @@ POLD = '''
       1.000e+3
     PolParMassFraction =
       1.0e+0
-    PolWetWashoutKnown = 1
+    PolWetWashoutKnown = 0
     PolWetWashout      = 0.0e+0
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
     PolConvFactor      = 1.0e+0
-    PolBkgLevel        = 0.0e+0
+    PolBkgLevel        = 5.63e+1
     PolBkgUnits        = "ug/m3"
     /
 
@@ -464,12 +464,12 @@ POLD = '''
       1.000e+3
     PolParMassFraction =
       1.0e+0
-    PolWetWashoutKnown = 1
+    PolWetWashoutKnown = 0
     PolWetWashout      = 0.0e+0
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
     PolConvFactor      = 1.0e+0
-    PolBkgLevel        = 0.0e+0
+    PolBkgLevel        = 8.0e+0
     PolBkgUnits        = "ug/m3"
     /
 
@@ -497,7 +497,7 @@ POLD = '''
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
     PolConvFactor      = 8.6e-1
-    PolBkgLevel        = 0.0e+0
+    PolBkgLevel        = 1.222e+3
     PolBkgUnits        = "ppb"
     /
 
@@ -741,7 +741,7 @@ class admsAplWriter(object):
         with open(self.address, 'w') as file:
             self.writeStr(file, HEADER)
             #self.writeStr(file,SUP)
-            self.writeTemp(file,SUP,self.data['terrindicator'])
+            self.writeTemp(file,SUP,[self.data['terrindicator'],self.data['chemindicator']])
             self.writeTemp(file,MET,[self.data['Met'],self.data['Lat']])
             self.writeBdn(file, self.data['Bdn'])
             self.writeStr(file,HIL)

@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -192,11 +193,14 @@ public class ADMSAgent extends JPSHttpServlet {
 			// =================== Start ADMS when input files are written =======================
 			
 			String targetFolder = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
+			String agentIRI = "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service";
 			if(request.getServerName().contains("localhost")) {
 				//uncomment if tested in kevin's computer
 				startADMS(fullPath);
+				MetaDataAnnotator.annotateWithTimeAndAgent(fullPath + "/test.levels.gst", MetaDataAnnotator.getTimeInXsdTimeStampFormat(System.currentTimeMillis()), agentIRI);
 			} else {
 				startADMS(fullPath);
+				MetaDataAnnotator.annotateWithTimeAndAgent(fullPath + "/test.levels.gst", MetaDataAnnotator.getTimeInXsdTimeStampFormat(System.currentTimeMillis()), agentIRI);
 			}
 			JSONObject result = new JSONObject();
 			result.put("folder", fullPath);
