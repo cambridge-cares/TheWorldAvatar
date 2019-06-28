@@ -89,6 +89,12 @@ public class BucketHelper {
 		return getLocalPath(usecaseUrl, getScenarioUrl());
 	}
 	
+	public static String getLocalDataPathWithoutThreadContext() {
+		String usecaseUrl = getUsecaseUrl(getScenarioUrl());
+		usecaseUrl = usecaseUrl.replace(SLASH_KB, SLASH_DATA);
+		return getLocalPath(usecaseUrl, getScenarioUrl());
+	}
+	
 	public static String getLocalPath(String url) {
 		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);
 		return getLocalPath(url, scenarioUrl);
@@ -161,4 +167,5 @@ public class BucketHelper {
 		}
 		return mapped;
 	}
+	
 }

@@ -8,6 +8,7 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetFormatter;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONStringer;
 
 public class JenaResultSetFormatter {
 
@@ -135,5 +136,36 @@ public class JenaResultSetFormatter {
 		}
 		
 		return result;
+	}
+	
+	  /**
+	 * @param csvgroup= List of strings array that the list is the row, array is the column , include the header (representation of full csv data)
+	 * @param headertype= array of strings that contains the data type of each header 
+	 * @return convert it to a proper json object format in the string data
+	 */
+	public String createJSONfromCSV(List<String[]> csvgroup, String[] headertype) {
+		JSONStringer jsonStringer = new JSONStringer();
+
+		jsonStringer.object().key("head").object().key("vars").array();
+
+		for (int x = 0; x < csvgroup.get(0).length; x++) {
+			jsonStringer.value(csvgroup.get(0)[x]);
+		}
+
+		jsonStringer.endArray().endObject().key("results").object().key("bindings").array();
+
+		for (int y = 1; y < csvgroup.size(); y++) { // depends on data entries pollutant (row, not column)
+
+			jsonStringer.object().key(csvgroup.get(0)[0]).object().key("type").value(headertype[0]).key("value")
+					.value(csvgroup.get(y)[0]);
+			for (int h = 1; h < csvgroup.get(0).length; h++) {
+				jsonStringer.endObject().key(csvgroup.get(0)[h]).object().key("type").value(headertype[h]).key("value")
+						.value(csvgroup.get(y)[h]);
+			}
+			jsonStringer.endObject().endObject();
+		}
+
+		jsonStringer.endArray().endObject().endObject();
+		return jsonStringer.toString();
 	}
 }

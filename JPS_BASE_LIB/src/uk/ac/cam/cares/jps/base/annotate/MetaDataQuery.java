@@ -7,7 +7,8 @@ import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 public class MetaDataQuery implements Prefixes {
 
 	public static String queryResources(String fromTime, String toTime, String iriAgent) {
-		String sparql = getSparqlQueryResources(fromTime, toTime, iriAgent);
+		//String sparql = getSparqlQueryResources(fromTime, toTime, iriAgent);
+		String sparql = getSparqlMetaDataResources(fromTime, toTime, iriAgent);
 		System.out.println(sparql);
 		SparqlOverHttpService sparqlService =  MetaDataAnnotator.getSparqlService();
 		return sparqlService.executeGet(sparql);
@@ -36,5 +37,60 @@ public class MetaDataQuery implements Prefixes {
 		sparql.append("LIMIT 1000");	
 		
 		return sparql.toString();
+	}
+	
+public static String getSparqlMetaDataResources(String timefrom, String timeto, String agentiri) {
+		
+	String query=null;
+	String filterline="filter(?time >= \""+timefrom+"\"^^xsd:dateTime && ?time <= \""+timeto+"\"^^xsd:dateTime ).";
+	//String agentiri = result.optString("agent","none");
+	String optionalline="";
+	String limitline="";
+	if (agentiri != null){
+	optionalline="?directory dcterms:creator <" + agentiri + "> . \r\n";
+	}
+		if(timefrom.contains("none")&&timeto.contains("none")) {
+			
+		
+		 query=	"PREFIX j1:<https://www.w3.org/2006/time#>"
+						+"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#>"
+						+"PREFIX dcterms:<http://purl.org/dc/terms/>"
+				 
+					
+				+ "SELECT ?directory ?time ?agent "
+				+ "WHERE {?directory j1:hasTime ?inst ." 
+				+ "?inst j1:inXSDDateTime ?time."
+				+ "OPTIONAL {?directory dcterms:creator ?agent .}.\r\n"
+				+optionalline
+				+ "}"
+				+"ORDER BY DESC(?time) "
+				+"LIMIT 1";
+		}
+		else {
+			if(timefrom.contains("none")){
+				filterline="filter(?time <= \""+timeto+"\"^^xsd:dateTime ).";	
+				limitline="LIMIT 1";
+			}
+			else if(timeto.contains("none")){
+				filterline="filter(?time >= \""+timefrom+"\"^^xsd:dateTime ).";	
+			}
+		
+			query=	"PREFIX j1:<https://www.w3.org/2006/time#> "
+					+"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> "
+					+"PREFIX dcterms:<http://purl.org/dc/terms/> "
+				
+			+ "SELECT ?directory ?time ?agent "
+			+ "WHERE {?directory j1:hasTime ?inst ." 
+			+ "?inst j1:inXSDDateTime ?time."
+			+  filterline
+			+ "OPTIONAL {?directory dcterms:creator ?agent .}.\r\n"
+			+optionalline
+			+ "}"
+			+"ORDER BY DESC(?time) "
+			+limitline;
+
+		}	
+		
+		return query;
 	}
 }
