@@ -30,6 +30,7 @@ import uk.ac.cam.cares.jps.thermo.manager.PropertiesManager;
  *         'quantum calculation IRI'.
  *
  */
+
 public class JsonToJsonConverter {
 
 	/** The Constant logger. */

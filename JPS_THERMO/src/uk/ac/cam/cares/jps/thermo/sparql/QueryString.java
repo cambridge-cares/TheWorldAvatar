@@ -12,7 +12,9 @@ public class QueryString {
 	private static String ontoCompChemNS = jpsThermoProperties.getProperty("ontocompchem.kb.tbox.ns");
 	
 	
+	
 	/**
+	 * 
 	 * @author NK510
 	 * @param uuid
 	 * @return <p>String sparql query that contains given uuid as input parameter. 

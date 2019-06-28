@@ -25,6 +25,7 @@ import uk.ac.cam.cares.jps.thermo.sparql.QueryString;
  *
  */
 
+
 public class SPARQLManager {
 
 	/** The Constant logger. */
@@ -192,7 +193,17 @@ public class SPARQLManager {
 			
 			Literal temperature = (Literal)bindingSet.getValue("tempValue");
 			
+			/**
+			 * If enthalpy for a species is not available as information in knowledge graph, then method returns empty String.  
+			 */
+			if(!enthalpy.getLabel().toString().isEmpty()) {
+				
 			hrefEnthalpy = (String)temperature.getLabel().trim() + "," + (String)enthalpy.getLabel().trim();
+			
+			}else {
+			
+				hrefEnthalpy="";
+			}
 			
 			}
 
@@ -205,18 +216,17 @@ public class SPARQLManager {
 			
 		}catch(RepositoryException e) {
 			
-			logger.info(e.getMessage());
-			
+		logger.info(e.getMessage());
+		
 		}finally {
 			
-			connection.close();
+		connection.close();
 			
-			repository.shutDown();
+		repository.shutDown();
 			
 		}
 		
-		logger.info("hrefEnthalpy: " + hrefEnthalpy);
-		
+		logger.info("hrefEnthalpy: " + hrefEnthalpy + " hrefEnthalpy.isEmpty() : " + hrefEnthalpy.isEmpty());
 		
 		return hrefEnthalpy;
 	}
