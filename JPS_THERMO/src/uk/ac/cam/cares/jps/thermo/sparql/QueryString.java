@@ -12,6 +12,7 @@ public class QueryString {
 	private static String ontoCompChemNS = jpsThermoProperties.getProperty("ontocompchem.kb.tbox.ns");
 	
 	
+	
 	/**
 	 * 
 	 * @author NK510

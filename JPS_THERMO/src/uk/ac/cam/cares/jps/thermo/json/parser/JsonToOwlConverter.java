@@ -13,6 +13,7 @@ import com.cmclinnovations.ontochem.model.configuration.AppConfigOperationContro
 import com.cmclinnovations.ontochem.model.configuration.SpringConfiguration;
 import com.cmclinnovations.ontochem.model.exception.OntoException;
 
+
 /**
  * 
  * @author NK510 This class implements method to convert json file into owl

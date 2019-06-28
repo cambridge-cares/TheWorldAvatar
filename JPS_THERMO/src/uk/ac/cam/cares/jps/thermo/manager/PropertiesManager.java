@@ -7,6 +7,7 @@ import java.util.Properties;
 public class PropertiesManager {
 
 	
+	
 	/**
 	 * 
 	 * @author NK510
