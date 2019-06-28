@@ -6,10 +6,7 @@ import java.util.Properties;
 
 public class PropertiesManager {
 
-	public static void main(String[] args) {
-
-	}
-
+	
 	/**
 	 * 
 	 * @author NK510

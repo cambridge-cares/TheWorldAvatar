@@ -20,7 +20,8 @@ public class UploadOntology {
 	 * 
 	 * @param owlFilePath The owl file that is uploaded in RDF4J triple store
 	 * @param serverUrl The server url.
-	 * @param ontologyUri The ontology uri. 
+	 * @param ontologyUri The ontology uri.
+	 *  
 	 */
 	public void uploadOntoKin(String owlFilePath, String serverUrl, String ontologyUri) {
 		
@@ -33,14 +34,13 @@ public class UploadOntology {
 			
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
 				
 				/**
 				 * 
 				 * @author nk510 Gets the repository connection.
 				 * @param serverUrl remote ontokin sparql endpoint.
 				 * 
-				 */				
+				 */
 				
 				Repository repository = new HTTPRepository(serverUrl);
 
@@ -51,11 +51,12 @@ public class UploadOntology {
 				try {
 
 					/**
+					 * 
 					 * @author nk510
-					 *         <p>
-					 * 		Begins a new transaction. Requires commit() or rollback() to be
-					 *         called to end of the transaction.
-					 *         </p>
+					 * 
+					 * 		Begins a new transaction. Requires commit() or rollback() to be 
+					 *      called to end of the transaction.
+					 *
 					 */
 
 					connection.begin();
@@ -63,10 +64,9 @@ public class UploadOntology {
 					try {
 
 						/**
-						 * @author nk510
-						 *         <p>
-						 * 		Each generated owl file will be stored in RDF4J triple store.
-						 *         </p>
+						 * 
+						 * @author nk510 Each generated owl file will be stored in RDF4J triple store.
+						 *      
 						 */
 						
 						connection.add(owlFile, ontologyUri, RDFFormat.RDFXML);
@@ -78,7 +78,7 @@ public class UploadOntology {
 						/**
 						 * 
 						 * @author nk510
-						 *         
+						 * 
 						 *         If something is wrong during the transaction, it will return a
 						 *         message about it.
 						 *         

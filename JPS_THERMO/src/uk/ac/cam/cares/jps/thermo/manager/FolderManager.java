@@ -151,7 +151,6 @@ public class FolderManager {
 			File owlFileList = new File(folderPath);
 			
 			File[] fileList = owlFileList.listFiles();
-			
 						
 			return fileList[0];
 			

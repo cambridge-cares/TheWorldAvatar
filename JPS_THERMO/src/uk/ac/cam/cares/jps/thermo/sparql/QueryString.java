@@ -13,6 +13,7 @@ public class QueryString {
 	
 	
 	/**
+	 * 
 	 * @author NK510
 	 * @param uuid
 	 * @return <p>String sparql query that contains given uuid as input parameter. 

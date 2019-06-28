@@ -31,8 +31,8 @@ public class ThermoCalculation {
 	 public void runThermoCalculation (String jsonInputFilePath, String jsonOutputFilePath, String enthalpyOfFormation) throws IOException {
 		 
 		/**
-		 * @author NK510
 		 * 
+		 * @author NK510
 		 * Thermo calculation that runs Python script.
 		 * 
 		 */

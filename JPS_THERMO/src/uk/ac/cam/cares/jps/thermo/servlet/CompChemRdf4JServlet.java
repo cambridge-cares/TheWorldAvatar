@@ -87,6 +87,7 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		logger.info("gaussian: " + gaussian);
 
 		/**
+		 * 
 		 * Folder that is already created on server side (Apache Tomcat) where result of
 		 * sparql query and result of thermochemistry calculation will be saved.
 		 * 
@@ -142,6 +143,7 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		 */
 
 		SPARQLManager sparqEnthalpyManager = new SPARQLManager();
+		
 		String enthalpyOfFormationAndTemperature = sparqEnthalpyManager.getEnthalpyOfFormation(ontospeciesServerUrl, speciesUri);
 
 		logger.info("enthalpyOfFormation (CompChemRef) : " + enthalpyOfFormationAndTemperature);
@@ -164,7 +166,7 @@ public class CompChemRdf4JServlet extends HttpServlet {
 
 		/**
 		 * 
-		 * @author NK Waits 2 second to complete thermo calculation.
+		 * @author NK510 Waits 2 second to complete thermo calculation.
 		 * 
 		 */
 
@@ -178,7 +180,9 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		}
 
 		/**
+		 * 
 		 * @author NK510 updates json file and converts it into String.
+		 * 
 		 */
 
 		logger.info("jsonList.get(2): " + jsonList.get(0));
@@ -197,7 +201,8 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		jsonConverter.writeUpdatedJsonToFile(updatedJsonContent, updatedJsonOutputFilePath, response);
 
 		/**
-		 * @author NK Waits 2 second to complete thermo calculation.
+		 * 
+		 * @author NK510 Waits 2 second to complete thermo calculation.
 		 * 
 		 */
 		try {
@@ -221,6 +226,7 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		jsonToOwlConverter.convertJsonIntoOwl(updatedJsonOutputFilePath, RESULT_ONTOKIN_FOLDER + folderName + "/");
 
 		/**
+		 * 
 		 * @author NK Waits 2 second to complete thermo calculation.
 		 * 
 		 */
