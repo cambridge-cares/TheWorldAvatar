@@ -79,7 +79,10 @@ function getContourMaps (address, folder) {
         if (!ubound > 0) {
           ubound = 1
           range = 1
+        } else if (ubound === lbound) {
+          ubound = ubound * THRESHOULD_NUM
         }
+
         level++
         if (level > 5) level = 0
 
