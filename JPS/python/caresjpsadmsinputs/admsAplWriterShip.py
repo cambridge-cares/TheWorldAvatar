@@ -25,7 +25,7 @@ SUP = '''
     SupCalcChm                     = {1}
     SupCalcDryDep                  = 0
     SupCalcWetDep                  = 0
-    SupCalcPlumeVisibility         = 0
+    SupCalcPlumeVisibility         = 1
     SupModelFluctuations           = 0
     SupModelRadioactivity          = 0
     SupModelOdours                 = 0
@@ -133,7 +133,7 @@ HIL  = r'''
     HilGridSize          = 2
     HilUseTerFile        = 1
     HilUseRoughFile      = 0
-    HilTerrainPath       = "C:\JPS_DATA\workingdir\JPS\ADMS\updated.ter"
+    HilTerrainPath       = "C:\JPS_DATA\workingdir\JPS\ADMS\hkterrainlatestupdated.ter"
     HilRoughPath         = " "
     HilCreateFlowField   = 1
     /
