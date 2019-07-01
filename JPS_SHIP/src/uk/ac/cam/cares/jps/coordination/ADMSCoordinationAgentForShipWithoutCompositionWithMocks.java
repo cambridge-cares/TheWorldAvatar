@@ -36,7 +36,7 @@ public class ADMSCoordinationAgentForShipWithoutCompositionWithMocks extends ADM
 					
 			result = "{\"city\":\"" + cities[closestIndex] + "\"}";
 			
-		} else if ("/JPS_COMPOSITION/CityToWeather".contentEquals(path)) {
+		} else if ("/JPS_COMPOSITION/CityToWeather".contentEquals(path)||"/JPS_SHIP/GetHKUWeatherData".contentEquals(path)) {
 			
 			result = "{\"weatherstate\":{\"hashumidity\":{\"hasvalue\":\"49\"},\"hasexteriortemperature\":{\"hasvalue\":\"33.18\"},\"haswind\":{\"hasspeed\":\"4.1\",\"hasdirection\":\"95\"},\"hascloudcover\":{\"hascloudcovervalue\":\"75\"},\"hasweathercondition\":\"few_clouds\",\"hasprecipation\":{\"hasintensity\":\"0.0\"}}}";
 			

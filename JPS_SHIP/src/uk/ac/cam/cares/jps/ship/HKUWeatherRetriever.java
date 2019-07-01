@@ -69,8 +69,8 @@ public class HKUWeatherRetriever extends JPSHttpServlet {
 	System.out.println("go to weather agent");
 		JSONObject input = new JSONObject();
 		input.put("city", "http://dbpedia.org/resource/Hong_Kong");
-//		String result = AgentCaller.executeGetWithJsonParameter("/JPS_COMPOSITION/CityToWeather",input.toString());
-		String result=queryFromHKUServer(getTimeInXsdTimeStampFormat(System.currentTimeMillis()-3600*1000)/*"2019-07-01T02:00:00"*/,getTimeInXsdTimeStampFormat(System.currentTimeMillis()));
+		String result = AgentCaller.executeGetWithJsonParameter("/JPS_COMPOSITION/CityToWeather",input.toString());
+//		String result=queryFromHKUServer(getTimeInXsdTimeStampFormat(System.currentTimeMillis()-3600*1000)/*"2019-07-01T02:00:00"*/,getTimeInXsdTimeStampFormat(System.currentTimeMillis()));
 	
 		return result;
 	}
