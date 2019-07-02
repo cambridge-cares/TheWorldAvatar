@@ -3,6 +3,7 @@ import json
 import config
 import rdflib
 import requests
+import datetime
 from collections import namedtuple
 from admsAplWriterShip import admsAplWriter
 from admsInputDataRetrieverChimney import admsInputDataRetriever
@@ -147,6 +148,7 @@ try:
     
     result['Met']= workingDir+ '/test.met'
     result['Lat']= ymid
+    result['Bkg']= workingDir+ '/testbackgrnd.bgd'
     
     if "2326" in sys.argv[5][5:] :
         result['terrindicator']="1"
@@ -156,6 +158,17 @@ try:
         
     
     result['chemindicator'] = "1";
+    now=datetime.datetime.now()
+    hournow= now.hour+1
+    if not (6<=hournow <=18) :
+      result['night']="1"
+      result['dirnight']="C:\JPS_DATA\workingdir\JPS\ADMS\chemistrynight.AAI"
+     
+    else:
+      result['night']="0"
+      result['dirnight']=""
+        
+         
         
 
 

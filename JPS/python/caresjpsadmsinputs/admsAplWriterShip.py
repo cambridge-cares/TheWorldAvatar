@@ -15,8 +15,8 @@ SUP = '''
     &ADMS_PARAMETERS_SUP
     SupSiteName                    = "terrain dispersion site"
     SupProjectName                 = "chlorine leakage tank dispersion"
-    SupUseAddInput                 = 0
-    SupAddInputPath                = " "
+    SupUseAddInput                 = {2}
+    SupAddInputPath                = "{3}"
     SupReleaseType                 = 0
     SupModelBuildings              = 1
     SupModelComplexTerrain         = {0}
@@ -198,11 +198,14 @@ PUFGAM = '''
     GamCalcDose         = 0
     /
 '''
-BKGETC = '''
+BKG = '''
     &ADMS_PARAMETERS_BKG
-    BkgFilePath     = "D:\ADMS 5.2\Test files\\tank1574leakage\\background condition.bgd"
-    BkgFixedLevels  = 1
+    BkgFilePath     = "{0}"
+    BkgFixedLevels  = 0
     /
+'''
+
+ETC = ''' 
     &ADMS_PARAMETERS_ETC
     SrcNumSources    = {0}
     PolNumPollutants = 19
@@ -423,8 +426,8 @@ POLD = '''
     PolGasDepVelocityKnown   = 1
     PolGasDepositionVelocity = 0.0e+0
     PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
+    PolParDepVelocityKnown   = 0
+    PolParTermVelocityKnown  = 0
     PolParNumDepositionData  = 1
     PolParDepositionVelocity =
       0.0e+0
@@ -451,8 +454,8 @@ POLD = '''
     PolGasDepVelocityKnown   = 1
     PolGasDepositionVelocity = 0.0e+0
     PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
+    PolParDepVelocityKnown   = 0
+    PolParTermVelocityKnown  = 0
     PolParNumDepositionData  = 1
     PolParDepositionVelocity =
       0.0e+0
@@ -741,7 +744,7 @@ class admsAplWriter(object):
         with open(self.address, 'w') as file:
             self.writeStr(file, HEADER)
             #self.writeStr(file,SUP)
-            self.writeTemp(file,SUP,[self.data['terrindicator'],self.data['chemindicator']])
+            self.writeTemp(file,SUP,[self.data['terrindicator'],self.data['chemindicator'],self.data['night'],self.data['dirnight']])
             self.writeTemp(file,MET,[self.data['Met'],self.data['Lat']])
             self.writeBdn(file, self.data['Bdn'])
             self.writeStr(file,HIL)
@@ -751,8 +754,9 @@ class admsAplWriter(object):
             self.writeStr(file,PUFGAM)
             self.writeOpt(file,self.data['Opt'])
             self.writeStr(file,CHM)
-            self.writeStr(file,BKGETC.format(len(self.data['Src'])))
-
+            self.writeTemp(file,BKG,[self.data['Bkg']])
+            self.writeStr(file,ETC.format(len(self.data['Src'])))
+            
 
             self.writeCoordSys(file, self.data['CoordiSys'])# a special case, to be unified in future
             #self.writeCoordSys(file, self.data['CoordiSys'])# a special case, to be unified in future

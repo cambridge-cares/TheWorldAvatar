@@ -179,11 +179,14 @@ public class ADMSAgent extends JPSHttpServlet {
 				
 
 				JSONObject newRegion  = new JSONObject(String.format(regionTemplate, ux,uy,lx,ly));
+				
+				JSONObject bkgjson=new JSONObject(input.getJSONObject("weatherstate")); //temporary only to test 1/7
 				if (input.has("ship")) {
 					QueryBroker broker = new QueryBroker();
 					broker.put(fullPath + "/arbitrary.txt", "text to assign something arbitrary");
 					writeAPLFileShip(newBuildingData, plantIRI, newRegion, targetCRSName,fullPath);
 					writeMetFile(weather,fullPath);
+					writeBkgFile(bkgjson,fullPath);
 				} else {
 					writeAPLFile(newBuildingData,plantIRI, newRegion, targetCRSName);
 					fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
@@ -231,6 +234,21 @@ public class ADMSAgent extends JPSHttpServlet {
 			
 			CommandHelper.executeCommands(targetFolder, args);
 	}
+	
+	public void writeBkgFile(JSONObject bkgInJSON,String fullPath) {
+		
+		// fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
+		String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
+		
+		ArrayList<String> args = new ArrayList<String>();
+		args.add("python");
+		args.add("admsBgdWriter.py"); 
+		args.add(fullPath);
+		// TODO-AE replacing " by $, maybe better by ' as is done in method writeAPLFile
+		args.add(bkgInJSON.toString().replace("\"", "$"));
+		
+		CommandHelper.executeCommands(targetFolder, args);
+}
 	
 	public String writeAPLFile(String buildingInString, String plantIRI, JSONObject regionInJSON,String targetCRSName) {
 		String fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";

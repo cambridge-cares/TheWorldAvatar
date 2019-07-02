@@ -398,6 +398,16 @@ class admsInputDataRetriever(object):
         metpath = "C://JPS_DATA/workingdir/JPS/ADMS/test.met" #later it will be replaced, just ignored
         self.pythonLogger.postInfoToLogServer('path for adms met file='+metpath)
         return metpath
+    
+    def getBkg(self):
+        '''
+        get background data,
+        for now we trigger a python script to write the .met file directly
+        '''
+        #finish writing met
+        bkgpath = "C://JPS_DATA/workingdir/JPS/ADMS/testbackgrnd.bkg" #later it will be replaced, just ignored
+        self.pythonLogger.postInfoToLogServer('path for adms bkg file='+bkgpath)
+        return bkgpath
 
     def getPol(self):
         self.connectDB('http://www.theworldavatar.com/kb/ships/Chimney-1.owl', connectType = 'parse')
@@ -463,10 +473,11 @@ class admsInputDataRetriever(object):
         xran,yran = self.range
         grd = xran[0], yran[0], xran[1], yran[1]
         pol = self.getPol()
+        bkg=self.getBkg()
         
 
         #return {'Src': self.rawSrc, 'Bdn': self.rawBdn, 'Opt': rawOpt, 'Met': met, 'Grd':grd}
-        return {'Src': self.rawSrc, 'Opt': rawOpt, 'Met': met, 'Grd':grd, 'Pol':pol}
+        return {'Src': self.rawSrc, 'Opt': rawOpt, 'Met': met, 'Grd':grd, 'Pol':pol, 'Bkg':bkg }
         
 
 
