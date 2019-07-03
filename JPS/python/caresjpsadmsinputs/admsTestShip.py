@@ -158,6 +158,7 @@ try:
         
     
     result['chemindicator'] = "1";
+    result['wetindicator'] = "1";
     now=datetime.datetime.now()
     hournow= now.hour+1
     if not (6<=hournow <=18) :

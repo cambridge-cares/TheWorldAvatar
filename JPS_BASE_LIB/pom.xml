@@ -104,6 +104,11 @@
 			<artifactId>jena-shaded-guava</artifactId>
 			<version>3.7.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.orbisgis</groupId>
+			<artifactId>cts</artifactId>
+			<version>1.5.1</version>
+		</dependency>
 
 	</dependencies>
 </project>

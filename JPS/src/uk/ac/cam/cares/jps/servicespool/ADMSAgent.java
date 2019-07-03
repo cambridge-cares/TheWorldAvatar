@@ -45,19 +45,14 @@ public class ADMSAgent extends JPSHttpServlet {
 		
 		/*
 		 * This agent takes: region, plantIRI, city, weatherstate and later emission stream 
-		 * Then writes input files for adms : apl + met
+		 * Then writes input files for adms : apl + met+bgd
 		 * Then starts ADMS and generates output file test.levels.gst
 		 * Later it should returns data in the form of Tabular JSON
 		 */
 		
- 
-		String myHost = request.getServerName();
-		int myPort = request.getServerPort(); // Define the server name and port number without any hardcoding
-		
  		String value = request.getParameter("query");
 		try {
 			JSONObject input = new JSONObject(value);
-			input = new JSONObject(value);
 			JSONObject region = input.getJSONObject("region");
 			String cityIRI = input.getString("city");
 			
@@ -96,15 +91,11 @@ public class ADMSAgent extends JPSHttpServlet {
 			bundle.put("region", region);
 
 			//TODO-AE URGENT this called is not needed any more
-			URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
-					.setPath("/JPS/GetBuildingDataForSimulation")
-					.setParameter("query", bundle.toString());
-			String buildingsInString = executeGet(builder);	 	
-			//system.out.println("=========================== buildingsInString ===========================");
-			//system.out.println(buildingsInString);
-			//system.out.println("=============================================================");
+//			URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
+//					.setPath("/JPS/GetBuildingDataForSimulation")
+//					.setParameter("query", bundle.toString());
+//			String buildingsInString = executeGet(builder);	 
 			
-			//==============================================================================
 						
 			//String srsname = region.getString("srsname");
 			double upperx = Double.parseDouble(""+region.getJSONObject("uppercorner").get("upperx"));
@@ -125,7 +116,7 @@ public class ADMSAgent extends JPSHttpServlet {
 			//String newBuildingData = retrieveBuildingDataInJSON(input);  //23/4 the new version that remove the duplicate query, but the composition must be changed first
 			newBuildingData = newBuildingData.replace('\"', '\'');
 			
-			String srsname = region.getString("srsname");
+			//String srsname = region.getString("srsname");
 			
 			 
 			String targetCRSName = CRSTransformer.EPSG_25833;
@@ -181,6 +172,14 @@ public class ADMSAgent extends JPSHttpServlet {
 				JSONObject newRegion  = new JSONObject(String.format(regionTemplate, ux,uy,lx,ly));
 				
 				JSONObject bkgjson=new JSONObject(input.getJSONObject("weatherstate")); //temporary only to test 1/7
+				
+				String timestamp=null;
+				
+				if(timestamp==null) {
+					timestamp=MetaDataAnnotator.getTimeInXsdTimeStampFormat(System.currentTimeMillis());
+				
+				}
+				
 				if (input.has("ship")) {
 					QueryBroker broker = new QueryBroker();
 					broker.put(fullPath + "/arbitrary.txt", "text to assign something arbitrary");
@@ -195,15 +194,14 @@ public class ADMSAgent extends JPSHttpServlet {
 			
 			// =================== Start ADMS when input files are written =======================
 			
-			String targetFolder = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
 			String agentIRI = "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service";
 			if(request.getServerName().contains("localhost")) {
 				//uncomment if tested in kevin's computer
 				startADMS(fullPath);
-				MetaDataAnnotator.annotateWithTimeAndAgent(fullPath + "/test.levels.gst", MetaDataAnnotator.getTimeInXsdTimeStampFormat(System.currentTimeMillis()), agentIRI);
+				MetaDataAnnotator.annotateWithTimeAndAgent(fullPath + "/test.levels.gst", timestamp, agentIRI);
 			} else {
 				startADMS(fullPath);
-				MetaDataAnnotator.annotateWithTimeAndAgent(fullPath + "/test.levels.gst", MetaDataAnnotator.getTimeInXsdTimeStampFormat(System.currentTimeMillis()), agentIRI);
+				MetaDataAnnotator.annotateWithTimeAndAgent(fullPath + "/test.levels.gst", timestamp, agentIRI);
 			}
 			JSONObject result = new JSONObject();
 			result.put("folder", fullPath);
@@ -312,21 +310,6 @@ public class ADMSAgent extends JPSHttpServlet {
   		logger.info("APL FOR SHIP WRITTEN= "+result);
 		return result;		
 	}
-
-	public String executeGet(URIBuilder builder) { // TODO: ZXC: Put this function in utility
-		try {
-			URI uri = builder.build();
-			HttpGet request = new HttpGet(uri);
-			request.setHeader(HttpHeaders.ACCEPT, "application/json");
-			HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
-			if (httpResponse.getStatusLine().getStatusCode() != 200) {
-				throw new JPSRuntimeException("HTTP response with error = " + httpResponse.getStatusLine());
-			}
-			return EntityUtils.toString(httpResponse.getEntity());
-		} catch (Exception e) {
-			throw new JPSRuntimeException(e.getMessage(), e);
-		} 
-	}
 	
 	private String retrieveBuildingDataInJSONOLD(String city, double plantx, double planty, double lowerx, double lowery, double upperx, double uppery) {
 		
@@ -357,31 +340,6 @@ public class ADMSAgent extends JPSHttpServlet {
 		return argument;
 	}
 	
-	private double[] getPlantXY(String plant) {
-		// TODO-AE URGENT change hard-coded coordinates
-		
-		// "http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl";
-		double plantx = 79831;
-		double planty = 454766;
-		
-		if("http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002".equals(plant)) {
-			
-			String sourceCRS = "";
-			String targetCRS = "";
-			
-			double[] sourceCenter = new double[2];
-			double[] targetCenter = new double[2];
-			
-			sourceCRS = CRSTransformer.EPSG_25833; // Berlin
-			sourceCenter = new double[]{392825, 5819122};
-			targetCRS = CRSTransformer.EPSG_28992; // The Hague
-			targetCenter = CRSTransformer.transform(sourceCRS, targetCRS, sourceCenter);
-			plantx = targetCenter[0];
-			planty = targetCenter[1];
-		} 
-		
-		return new double[] {plantx, planty};
-	}
 	
 	private void startADMS(String targetFolder) {
 		String startADMSCommand = "\"C:\\\\Program Files (x86)\\CERC\\ADMS 5\\ADMSModel.exe\" /e2 /ADMS \"test.apl\"";

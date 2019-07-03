@@ -24,7 +24,7 @@ SUP = '''
     SupPufType                     = 0
     SupCalcChm                     = {1}
     SupCalcDryDep                  = 0
-    SupCalcWetDep                  = 0
+    SupCalcWetDep                  = {4}
     SupCalcPlumeVisibility         = 1
     SupModelFluctuations           = 0
     SupModelRadioactivity          = 0
@@ -439,8 +439,8 @@ POLD = '''
       1.000e+3
     PolParMassFraction =
       1.0e+0
-    PolWetWashoutKnown = 0
-    PolWetWashout      = 0.0e+0
+    PolWetWashoutKnown = 1
+    PolWetWashout      = 1.6e-3
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
     PolConvFactor      = 1.0e+0
@@ -744,7 +744,7 @@ class admsAplWriter(object):
         with open(self.address, 'w') as file:
             self.writeStr(file, HEADER)
             #self.writeStr(file,SUP)
-            self.writeTemp(file,SUP,[self.data['terrindicator'],self.data['chemindicator'],self.data['night'],self.data['dirnight']])
+            self.writeTemp(file,SUP,[self.data['terrindicator'],self.data['chemindicator'],self.data['night'],self.data['dirnight'],self.data['wetindicator']])
             self.writeTemp(file,MET,[self.data['Met'],self.data['Lat']])
             self.writeBdn(file, self.data['Bdn'])
             self.writeStr(file,HIL)
