@@ -1,1 +1,4 @@
 node_modules
+.idea
+../.idea/
+CO2WEB.iml
