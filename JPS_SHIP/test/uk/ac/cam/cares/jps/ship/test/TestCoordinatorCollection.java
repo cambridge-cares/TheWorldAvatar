@@ -84,6 +84,11 @@ public class TestCoordinatorCollection extends TestCase{
 				.key("city").value("http://dbpedia.org/resource/Singapore")
 				.endObject(); 
 		
+		System.out.println(CRSTransformer.transform("EPSG:4326", "EPSG:3857", new double[] {xmin, ymin})[0]);
+		System.out.println(CRSTransformer.transform("EPSG:4326", "EPSG:3857", new double[] {xmin, ymin})[1]);
+		System.out.println(CRSTransformer.transform("EPSG:4326", "EPSG:3857", new double[] {xmax, ymax})[0]);
+		System.out.println(CRSTransformer.transform("EPSG:4326", "EPSG:3857", new double[] {xmax, ymax})[1]);
+		
 		
 		HKUPollutionRetriever a= new HKUPollutionRetriever();
 		String resultwithcall= a.requestlatestbackgroundpol(jsonInput.toString());
