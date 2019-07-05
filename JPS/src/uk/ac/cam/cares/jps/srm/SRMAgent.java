@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.srm;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -73,6 +74,12 @@ public class SRMAgent extends HttpServlet  {
 	private void startbinaryconverter(String batchFolderlocation,String iri) {
 		//system.out.println("starting the binary converter");
 		String startSRMCommand = "C:/JPS_DATA/workingdir/JPS/SRM/ontokinConvertOwlToBin.bat "+iri;
+		CommandHelper.executeSingleCommand(batchFolderlocation, startSRMCommand);
+	}
+	
+	private void startspeedloadmap(String batchFolderlocation) {
+		//system.out.println("starting the binary converter");
+		String startSRMCommand = "C:/JPS_DATA/workingdir/JPS/SRM/ADMS-speed-load-map/SpeedLoadMap.bat ";
 		CommandHelper.executeSingleCommand(batchFolderlocation, startSRMCommand);
 	}
 	
@@ -169,11 +176,12 @@ public class SRMAgent extends HttpServlet  {
 		
 		String iri = null;
 		String iriofengine = null;
+		String source="";
 
 		try {
 			iri = joforrec.getString("reactionmechanism");
 			iriofengine = joforrec.getString("engine");
-
+			source=joforrec.optString("source", "none");
 
 		} catch (JSONException e1) {
 			logger.error(e1.getMessage(), e1);
@@ -188,6 +196,50 @@ public class SRMAgent extends HttpServlet  {
 		// for PRODUCTION
 		cleanDirectory();
 		
+		
+		if(!source.contains("none")) {
+			
+			/*
+			 * http://betterboat.com/average-boat-speed/ assume fastest medium boat max
+			 * speed= 25knot max rpm= 2500 rpm torque=constant=250Nm then 1knot=100 rpm rpm=
+			 * knot*100 roughly 1 ship 33 kg/h 1 boat= 1.1338650741577147e-05*3600 = 0.041
+			 * kg/h NO2 (comparison of NO2
+			 * https://pdfs.semanticscholar.org/1bd2/52f2ae1ede131d0ef84ee21c84a73fb6b374.
+			 * pdf) 1 boat mass flux=0.0192143028723584 kg/s 1 ship= 805 boat 1 ship
+			 * massflux= 15.4675 kg/s categorize by tankers, passengers vessels, cargo
+			 * ,container, boat passenger= 73 kg/h = 1780 ship cargo= 28.5 kg/h= 695 ship
+			 * container= 47.2 kg/h =1151 ship tanker =34 kg/h = 829 ship
+			 */
+			
+			
+			//double valuecalc=100*shipspeed;
+			
+			JSONObject in= new JSONObject();
+			JSONObject speedob= new JSONObject();
+			//speedob.put("value", valuecalc);
+			speedob.put("unit", "RPM");
+			JSONObject torob= new JSONObject();
+			torob.put("value", 250);
+			torob.put("unit", "Nm");
+			in.put("speed", speedob);
+			in.put("torque", torob);
+			  try (FileWriter file = new FileWriter(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/ADMS-speed-load-map/in.json")) {
+				  
+		            file.write(in.toString());
+		            file.flush();
+		 
+		        } catch (IOException e) {
+		            e.printStackTrace();
+		        }
+			
+			startspeedloadmap(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/ADMS-speed-load-map");
+			String jsonFiledir = AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/ADMS-speed-load-map/out.json";
+			JSONObject json = dojsonmodif(jsonFiledir);
+			AgentCaller.writeJsonParameter(response, json);
+		}
+		
+		
+		
 		if(iri.contains("particle")){
 			//String jsonFiledir = AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/OutputCase00001Cyc0001ADMS-valid_v2.json";
 			String jsonFiledir = AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/OutputCase00001Cyc0001ADMS-NOx-SOx-O3-PM.json";
@@ -200,18 +252,14 @@ public class SRMAgent extends HttpServlet  {
 			
 			
 		    //First, query from ontokin to get the specific reaction mechanism in the format of owl file iri  
-			
-			String mechanismquery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " 
-					+ "PREFIX ontochem: <https://como.cheng.cam.ac.uk/kb/ontochem.owl#> "
-					+ "SELECT ?x "
-					+ "WHERE {?x  rdf:type  ontochem:ReactionMechanism ." 
-					+ "}";
-			
-		
 			try {
+				String mechanismquery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " 
+						+ "PREFIX ontochem: <https://como.cheng.cam.ac.uk/kb/ontochem.owl#> "
+						+ "SELECT ?x "
+						+ "WHERE {?x  rdf:type  ontochem:ReactionMechanism ." 
+						+ "}";
 				//rs_mechanism = SRMAgent.queryFromRDF4JServer(mechanismquery,iri); not neccessary at moment
 				
-				//system.out.println("result of the total query= "+rs_mechanism);
 			} catch (JSONException e1) {
 
 				logger.error(e1.getMessage());

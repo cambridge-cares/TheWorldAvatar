@@ -38,25 +38,41 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet 
 		try {
 			
 			JSONObject jo = new JSONObject(jsonInput);
+						
+			String regionToCityResult = execute("/JPS/RegionToCity", jsonInput);
+			String city = new JSONObject(regionToCityResult).getString("city");
+			jo.put("city", city);
+			logger.info("city FROM COORDINATION AGENT: " + city);
+			logger.info("overall json= "+jo.toString());
 			
 			
-			//updateShipCoordinates();
+			String result = execute("/JPS/GetBuildingListFromRegion", jo.toString());
+			JSONArray building = new JSONObject(result).getJSONArray("building");
+			jo.put("building", building);
+			logger.info("building FROM COORDINATION AGENT: " + building.toString());
 			
-			//String jsonArrayOfShipIRI =execute("/JPS_SHIP/GetShipListFromRegion",jsonInput);	
-
-			//String jsonArrayOfShipIRI =execute("/JPS_POSTGRESQL/getEntitiesWithinRegion",jsonInput);
+			
+			if(city.toLowerCase().contains("kong")) {
+				result = execute("/JPS_SHIP/GetHKUWeatherData", regionToCityResult);
+			}
+			else {
+				result = execute("/JPS_COMPOSITION/CityToWeather", regionToCityResult);	
+			}
+			JSONObject weatherstate = new JSONObject(result).getJSONObject("weatherstate");
+			jo.put("weatherstate", weatherstate);
+//			logger.info("weatherstate FROM COORDINATION AGENT: " + weatherstate.toString());
+			
+			
 			logger.info("calling postgres= "+jsonInput);
-
 			String url = KeyValueManager.get(IKeys.URL_POSITIONQUERY);
 			url += "/getEntitiesWithinRegion";
 			String resultship=AgentCaller.executeGetWithURLAndJSON(url, jsonInput);			
 				
 			JSONObject jsonShipIRIs = new JSONObject(resultship);
 			JSONArray shipIRIs = jsonShipIRIs.getJSONArray("shipIRIs");
-//			while(shipIRIs.length()>20) {
-//			shipIRIs.remove(0);
-//			}
-			jo.put("ship", shipIRIs);
+
+//			jo.put("ship", shipIRIs);
+			
 			
 			JSONObject jsonReactionShip = new JSONObject();
 			String reactionMechanism = jo.getString("reactionmechanism");
@@ -72,30 +88,10 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends HttpServlet 
 				String waste = new JSONObject(wasteResult).getString("waste");
 				jo.put("waste", waste);
 			}
+			
+			jo.put("ship", shipIRIs);
 			// TODO: SC
 			// Iterate over list of ship iris and perform query of each ship.
-			
-						
-			String regionToCityResult = execute("/JPS/RegionToCity", jsonInput);
-			String city = new JSONObject(regionToCityResult).getString("city");
-			jo.put("city", city);
-			logger.info("city FROM COORDINATION AGENT: " + city);
-			logger.info("overall json= "+jo.toString());
-			
-			String result = execute("/JPS/GetBuildingListFromRegion", jo.toString());
-			JSONArray building = new JSONObject(result).getJSONArray("building");
-			jo.put("building", building);
-			logger.info("building FROM COORDINATION AGENT: " + building.toString());
-			
-			if(city.toLowerCase().contains("kong")) {
-				result = execute("/JPS_SHIP/GetHKUWeatherData", regionToCityResult);
-			}
-			else {
-				result = execute("/JPS_COMPOSITION/CityToWeather", regionToCityResult);	
-			}
-			JSONObject weatherstate = new JSONObject(result).getJSONObject("weatherstate");
-			jo.put("weatherstate", weatherstate);
-//			logger.info("weatherstate FROM COORDINATION AGENT: " + weatherstate.toString());
 			
 			result = execute("/JPS/ADMSAgent", jo.toString());
 			String folder = new JSONObject(result).getString("folder");
