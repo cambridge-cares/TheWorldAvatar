@@ -170,7 +170,27 @@ try:
       result['dirnight']=""
         
          
+    precipitation =float(str(sys.argv[6]))
+    annualprecipitation= precipitation*365*24
+    if annualprecipitation<103:
+        so2washout=0.000001/500*annualprecipitation
+    else:
+        so2washout=0.0000019+annualprecipitation*0.0000000008
+    
+    if precipitation<0.5:
+        pm10washout=0.0016
+    elif precipitation>4:
+        pm10washout=0.0072
+    else:
+        pm10washout=0.00363
         
+    result['so2washout'] = so2washout;
+    result['pm10washout'] = pm10washout;
+      
+        
+         
+    
+      
 
 
 #     result['CoordiSys'] = '3857';

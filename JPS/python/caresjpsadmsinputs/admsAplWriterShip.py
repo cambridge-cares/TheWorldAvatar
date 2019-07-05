@@ -355,7 +355,7 @@ POLD = '''
       1.000e+3
     PolParMassFraction =
       1.0e+0
-    PolWetWashoutKnown = 0
+    PolWetWashoutKnown = 1
     PolWetWashout      = 0.0e+0
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
@@ -412,7 +412,7 @@ POLD = '''
     PolParMassFraction =
       1.0e+0
     PolWetWashoutKnown = 1
-    PolWetWashout      = 8.48e-5
+    PolWetWashout      = {0}
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
     PolConvFactor      = 3.7e-1
@@ -440,7 +440,7 @@ POLD = '''
     PolParMassFraction =
       1.0e+0
     PolWetWashoutKnown = 1
-    PolWetWashout      = 1.6e-3
+    PolWetWashout      = {1}
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
     PolConvFactor      = 1.0e+0
@@ -469,8 +469,8 @@ POLD = '''
       1.0e+0
     PolWetWashoutKnown = 0
     PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
+    PolWetWashoutA     = 3.552e-1
+    PolWetWashoutB     = 5.394e-1
     PolConvFactor      = 1.0e+0
     PolBkgLevel        = 8.0e+0
     PolBkgUnits        = "ug/m3"
@@ -579,10 +579,10 @@ POLD = '''
       1.000e+3
     PolParMassFraction =
       1.0e+0
-    PolWetWashoutKnown = 1
+    PolWetWashoutKnown = 0
     PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
+    PolWetWashoutA     = 3.0e-4
+    PolWetWashoutB     = 6.6e-1
     PolConvFactor      = 6.589e-1
     PolBkgLevel        = 0.0e+0
     PolBkgUnits        = "ppb"
@@ -691,9 +691,9 @@ POLD = '''
       1.000e+3
     PolParMassFraction =
       1.0e+0
-    PolWetWashoutKnown = 1
+    PolWetWashoutKnown = 0
     PolWetWashout      = 1.0e-4
-    PolWetWashoutA     = 1.0e-4
+    PolWetWashoutA     = 5.0e-3
     PolWetWashoutB     = 6.4e-1
     PolConvFactor      = 1.462e+0
     PolBkgLevel        = 6.0e+0
@@ -761,7 +761,8 @@ class admsAplWriter(object):
             self.writeCoordSys(file, self.data['CoordiSys'])# a special case, to be unified in future
             #self.writeCoordSys(file, self.data['CoordiSys'])# a special case, to be unified in future
             self.writeStr(file,MAP)
-            self.writeStr(file,POLD)
+            #self.writeStr(file,POLD)
+            self.writeTemp(file,POLD,[self.data['so2washout'],self.data['pm10washout']])
             #self.writeTemp(self.data['OPT'])
             #del self.data['OPT']
             self.writePol(file,self.data['Pol'])
