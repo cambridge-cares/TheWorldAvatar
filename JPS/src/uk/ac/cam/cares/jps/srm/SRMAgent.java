@@ -197,24 +197,27 @@ public class SRMAgent extends HttpServlet  {
 		cleanDirectory();
 		
 		
-		if(!source.contains("none")) {
+		//if(!source.contains("none")) {
 			
 			/*
 			 * http://betterboat.com/average-boat-speed/ assume fastest medium boat max
 			 * speed= 25knot max rpm= 2500 rpm torque=constant=250Nm then 1knot=100 rpm rpm=
 			 * knot*100 roughly 1 ship 33 kg/h 1 boat= 1.1338650741577147e-05*3600 = 0.041
 			 * kg/h NO2 (comparison of NO2
-			 * https://pdfs.semanticscholar.org/1bd2/52f2ae1ede131d0ef84ee21c84a73fb6b374.
-			 * pdf) 1 boat mass flux=0.0192143028723584 kg/s 1 ship= 805 boat 1 ship
-			 * massflux= 15.4675 kg/s categorize by tankers, passengers vessels, cargo
-			 * ,container, boat passenger= 73 kg/h = 1780 ship cargo= 28.5 kg/h= 695 ship
-			 * container= 47.2 kg/h =1151 ship tanker =34 kg/h = 829 ship
+			 * https://pdfs.semanticscholar.org/1bd2/52f2ae1ede131d0ef84ee21c84a73fb6b374.pdf) 
+			 * 1 boat mass flux=0.0192143028723584 kg/s 
+			 * 1 ship= 805 boat 
+			 * 1 ship massflux= 15.4675 kg/s categorize by tankers, passengers vessels, cargo ,container 
+			 * boat passenger= 73 kg/h = 1780 boat NO2
+			 * cargo= 28.5 kg/h= 695 boat NO2
+			 * container= 47.2 kg/h =1151 boat NO2
+			 * tanker =34 kg/h = 829 boat NO2
 			 */
 			
 			
 			//double valuecalc=100*shipspeed;
 			
-			JSONObject in= new JSONObject();
+			/*JSONObject in= new JSONObject();
 			JSONObject speedob= new JSONObject();
 			//speedob.put("value", valuecalc);
 			speedob.put("unit", "RPM");
@@ -236,7 +239,8 @@ public class SRMAgent extends HttpServlet  {
 			String jsonFiledir = AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/ADMS-speed-load-map/out.json";
 			JSONObject json = dojsonmodif(jsonFiledir);
 			AgentCaller.writeJsonParameter(response, json);
-		}
+		}*/
+	
 		
 		
 		

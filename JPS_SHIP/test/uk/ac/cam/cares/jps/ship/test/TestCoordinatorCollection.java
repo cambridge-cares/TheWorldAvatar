@@ -60,7 +60,7 @@ public class TestCoordinatorCollection extends TestCase{
 			
 	}
 	
-	public void testgetCurrentBkgConcentration() throws JSONException, UnsupportedEncodingException {
+	public void testgetCurrentBkgConcentration() throws JSONException, UnsupportedEncodingException { //the time is wrong formt
 		   double xmin = 821182.43;
 		   double xmax = 846182.43;
 		   double ymin = 806448.76;
