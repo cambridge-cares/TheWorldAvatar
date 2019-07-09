@@ -60,7 +60,7 @@ public class TestCoordinatorCollection extends TestCase{
 			
 	}
 	
-	public void testgetCurrentBkgConcentration() throws JSONException, UnsupportedEncodingException {
+	public void testgetCurrentBkgConcentration() throws JSONException, UnsupportedEncodingException { //the time is wrong formt
 		   double xmin = 821182.43;
 		   double xmax = 846182.43;
 		   double ymin = 806448.76;
@@ -83,6 +83,11 @@ public class TestCoordinatorCollection extends TestCase{
 				.key("reactionmechanism").value("http://www.theworldavatar.com/kb/ontokin/Reduced_PRF_ERC_particle.owl#ReactionMechanism_184144363244001")
 				.key("city").value("http://dbpedia.org/resource/Singapore")
 				.endObject(); 
+		
+		System.out.println(CRSTransformer.transform("EPSG:4326", "EPSG:3857", new double[] {xmin, ymin})[0]);
+		System.out.println(CRSTransformer.transform("EPSG:4326", "EPSG:3857", new double[] {xmin, ymin})[1]);
+		System.out.println(CRSTransformer.transform("EPSG:4326", "EPSG:3857", new double[] {xmax, ymax})[0]);
+		System.out.println(CRSTransformer.transform("EPSG:4326", "EPSG:3857", new double[] {xmax, ymax})[1]);
 		
 		
 		HKUPollutionRetriever a= new HKUPollutionRetriever();

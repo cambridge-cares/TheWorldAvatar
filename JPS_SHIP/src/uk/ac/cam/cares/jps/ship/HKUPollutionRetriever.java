@@ -79,6 +79,7 @@ public class HKUPollutionRetriever extends JPSHttpServlet  {
 					sumofo3=sumofo3+Double.valueOf(listmap.get(x)[6]);
 					sumofpm10=sumofpm10+Double.valueOf(listmap.get(x)[7]);
 					sumofso2=sumofso2+Double.valueOf(listmap.get(x)[8]);
+					System.out.println("selected name= "+listmap.get(x)[0]);
 				}
 			}
 		}
