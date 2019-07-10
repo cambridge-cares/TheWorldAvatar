@@ -135,7 +135,8 @@ public class RelationalDB {
         String SQL = "SELECT * FROM ship " +
                 "INNER JOIN ship_details sd ON ship.mmsi = sd.ship_mmsi " +
                 "WHERE (lat BETWEEN ? AND ?) " +
-                "AND (lon BETWEEN ? AND ?) ";
+                "AND (lon BETWEEN ? AND ?) " +
+                "ORDER BY ss DESC, al DESC, aw DESC";
         //@todo add timestamp to the query and potentialy other restrictions like size, weigh of the ship, etc
 
         try {
