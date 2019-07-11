@@ -77,11 +77,7 @@ public class SRMAgent extends HttpServlet  {
 		CommandHelper.executeSingleCommand(batchFolderlocation, startSRMCommand);
 	}
 	
-	private void startspeedloadmap(String batchFolderlocation) {
-		//system.out.println("starting the binary converter");
-		String startSRMCommand = "C:/JPS_DATA/workingdir/JPS/SRM/ADMS-speed-load-map/SpeedLoadMap.bat ";
-		CommandHelper.executeSingleCommand(batchFolderlocation, startSRMCommand);
-	}
+
 	
 	
 	public static String executeGet(URIBuilder builder) {
@@ -194,54 +190,7 @@ public class SRMAgent extends HttpServlet  {
 
 		/** PREPARE ALL THE INPUT FILE*/
 		// for PRODUCTION
-		cleanDirectory();
-		
-		
-		//if(!source.contains("none")) {
-			
-			/*
-			 * http://betterboat.com/average-boat-speed/ assume fastest medium boat max
-			 * speed= 25knot max rpm= 2500 rpm torque=constant=250Nm then 1knot=100 rpm rpm=
-			 * knot*100 roughly 1 ship 33 kg/h 1 boat= 1.1338650741577147e-05*3600 = 0.041
-			 * kg/h NO2 (comparison of NO2
-			 * https://pdfs.semanticscholar.org/1bd2/52f2ae1ede131d0ef84ee21c84a73fb6b374.pdf) 
-			 * 1 boat mass flux=0.0192143028723584 kg/s 
-			 * 1 ship= 805 boat 
-			 * 1 ship massflux= 15.4675 kg/s categorize by tankers, passengers vessels, cargo ,container 
-			 * boat passenger= 73 kg/h = 1780 boat NO2
-			 * cargo= 28.5 kg/h= 695 boat NO2
-			 * container= 47.2 kg/h =1151 boat NO2
-			 * tanker =34 kg/h = 829 boat NO2
-			 */
-			
-			
-			//double valuecalc=100*shipspeed;
-			
-			/*JSONObject in= new JSONObject();
-			JSONObject speedob= new JSONObject();
-			//speedob.put("value", valuecalc);
-			speedob.put("unit", "RPM");
-			JSONObject torob= new JSONObject();
-			torob.put("value", 250);
-			torob.put("unit", "Nm");
-			in.put("speed", speedob);
-			in.put("torque", torob);
-			  try (FileWriter file = new FileWriter(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/ADMS-speed-load-map/in.json")) {
-				  
-		            file.write(in.toString());
-		            file.flush();
-		 
-		        } catch (IOException e) {
-		            e.printStackTrace();
-		        }
-			
-			startspeedloadmap(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/ADMS-speed-load-map");
-			String jsonFiledir = AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/ADMS-speed-load-map/out.json";
-			JSONObject json = dojsonmodif(jsonFiledir);
-			AgentCaller.writeJsonParameter(response, json);
-		}*/
-	
-		
+		cleanDirectory();		
 		
 		
 		if(iri.contains("particle")){
