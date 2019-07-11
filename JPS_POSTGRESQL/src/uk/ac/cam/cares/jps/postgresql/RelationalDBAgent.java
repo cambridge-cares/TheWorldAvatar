@@ -33,9 +33,7 @@ public class RelationalDBAgent extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getServletPath();
 
-        if ("/populateDB".equals(path)) {
-            logger.info("The database is populated--- " + RelationalDB.populateCoordinates());
-        } else if ("/getEntities".equals(path)) {
+        if ("/getEntities".equals(path)) {
             logger.info("the number of entities exist= " + RelationalDB.getNumberOfEntities(1));
         } else if ("/getEntitiesWithinRegion".equals(path)) {
             logger.info("querying the entities iri");
