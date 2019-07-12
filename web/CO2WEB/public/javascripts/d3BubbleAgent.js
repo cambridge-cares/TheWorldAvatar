@@ -1464,6 +1464,7 @@ $(window).load(function () {// when web dom ready
     
     //todo: discerning update with node addition!
     socket.on('agentevent', function (data) {
+		console.log('agentEvent')
         //shape library
         queue.push(data);
         clearInterval(qManager);

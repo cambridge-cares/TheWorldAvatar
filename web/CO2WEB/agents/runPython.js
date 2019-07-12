@@ -2,7 +2,6 @@
  * This is a common module for running python script.
  * It is yet quite primitive and might needs future calibration.
  */
-//TODO:
 function runPython(filename, args, cb) {
     var spawn = require('child_process').spawn,
         params = args? [filename, ...args] : [filename]
@@ -44,7 +43,6 @@ function runPython(filename, args, cb) {
         py.kill()
         console.log("final data str:")
         console.log(dataStr)
-      //TODO:　needtrim? j-format validation?
         if(dataStr.length > 0){
             try{
             cb(null, JSON.parse(dataStr));

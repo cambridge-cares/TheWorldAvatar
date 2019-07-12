@@ -1,4 +1,6 @@
-
+/***
+This module is used for GAMS showcase. Generate plant owl file according to premade csv result files.
+***/
 const fs = require('fs'),
     csv = require('csv'),
     writefromTemp = require('./WriteFileTemp'),
@@ -11,7 +13,6 @@ async = require('async')
 
 
 function runGAMSPredefined(id, cb){
-    //TODO: read csv according to given params
     console.log("id: "+id)
     console.log(typeof  id)
     //params is predefined id
@@ -85,9 +86,7 @@ function runGAMSPredefined(id, cb){
                 
                 //delete them all natively
                 async.each(oldPPfiles, fs.unlink, (err)=>{
-                    
-                    //todo: err handling
-    
+                        
                     //SPARQLStr.constructNDeletes()
     
                     let uriList = [], QList = []
@@ -126,7 +125,6 @@ function runGAMSPredefined(id, cb){
 					//let tempLoc = path.join(config.root, 'powerplantTemp.owl');
                     let tempLoc = path.join("C:/TOMCAT/webapps/ROOT/kb/sgp/jurongisland/nuclearpowerplants", 'powerplantTemp.owl');
                     //{temp, name, attrs[{s,p,o}]}
-                    //TODO:　pack into above format
     
                     let packed = csvresult.map((item)=>{
                         let childuri = baseUri+"/kb/sgp/jurongisland/nuclearpowerplants/"+item.name + '.owl';
@@ -139,7 +137,6 @@ function runGAMSPredefined(id, cb){
                         attrs['imports'] = ["http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl","http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl",
 						"http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl",
 						"http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl"]
-                        //TODO: here
                         console.log(attrs)
 
                         return {temp: tempLoc, path:path, attrs:attrs }

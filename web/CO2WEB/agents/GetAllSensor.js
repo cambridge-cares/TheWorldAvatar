@@ -47,7 +47,6 @@ function getAllSensors(callback) {
             // OUT repeat
 
             let uniqss = Array.from(new Set(sschildren));
-            //todo: some bms owl uri DEFINITIONS ARE WRONG, use this to prevent, later delete it after smone clean the owls up
 
             uniqss= uniqss.map((uri)=>{
                return uri.replace("/BMS/BMS", '/BMS')

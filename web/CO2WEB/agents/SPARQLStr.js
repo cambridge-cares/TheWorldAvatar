@@ -1,9 +1,13 @@
 /**
+  Commented
  * A simple module constructs SPARQL Query strs
- * Test to be added
  */
 
-
+    /**
+    for list of attributes construct sparql query strs to insert them
+    input: list of attributes
+    output: query strs
+    **/
     var SPARQLStr  = {
         numericalP : "<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue>",
         constructNUpdates : function (attrs) {
@@ -13,6 +17,13 @@
         }
         return list;
     },
+
+
+    /**
+    for list of attributesconstrict sparql query strs to delete them
+    input: list of attributes
+    output: query strs
+    **/
     constructNDeletes : function (attrs) {
         let list = []
         for(let attr of attrs){
@@ -20,7 +31,6 @@
         }
         return list;
     },
-        //TODO: where clause
         construct(actionType, s, p, o, prefix, template){
             //valid inputs
             this.actionType = actionType.toString().toLowerCase()
@@ -52,6 +62,9 @@
             return this.prefix+this.actionStr()+this.template+this.where+this.brace(this.s+' '+this.p+' '+this.o+'.')
         },
         
+              /***
+        construct phrase: o in <spo>
+       ***/
         constructO : function (o) {
             if(!o){
                 return;
@@ -66,6 +79,10 @@
             }
             return str;
         },
+
+              /***
+        construct phrase: literal type
+       ***/
         literalO({value, type}){
             //oObj{value, type}
             if(!value && !type){
@@ -76,6 +93,9 @@
             
         },
         
+    /***
+        numerator for sparql update action   
+       ***/
         actionStr(){
             let action = this.actionType;
             switch(action){
@@ -98,6 +118,9 @@
             }
         },
     
+          /***
+       query str to construct a coordiniate definition
+       ***/
         constructCoordinate({name,url, x,y}){
         let prefix = {
         "coordisystem" :"http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#",
@@ -137,6 +160,9 @@
             
         },
     
+        /*
+        capacity entity
+        **/ 
         constructCapacity({name, url, value}){
             let prefix = {
                 "sr" :"http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#",
@@ -156,6 +182,9 @@
         },
     
        
+       /***
+       query str to construct the file definition
+       ***/
        constructOwlDef({uri, imports}){
            let prefix = {
                "owl" :"http://www.w3.org/2002/07/owl#"

@@ -398,12 +398,15 @@ owlProcessor.getChildren = function(root) {
     //find all node with hasIRI property
     var uris = root.find("//Eco-industrialPark:hasIRI", namespaceOb);
     console.log("found node 001 Eco-industrialPark:hasIRI:" + uris.length);
-	console.log('----------- Eco-industrialPark:hasIRI  ------------')
+	console.log('----------- root  ------------')
+	console.log(root)
+	console.log('------------------------------')
 	for (let curi of uris) {
         // logger.debug(curi.name());
-		console.log(curi)
+		console.log('attr')
+		console.log(curi.attrs())
         if(curi.text().trim()!==""){
-           children.push(curi.text().trim());//push to targets list
+          //  children.push(curi.text().trim());//push to targets list
 		
         } else if(curi.attr("resource")&&curi.attr("resource").value()){
             children.push(curi.attr("resource").value());//push to targets list
@@ -416,24 +419,31 @@ owlProcessor.getChildren = function(root) {
     //logger.debug("found node system:hasIRI:"+urisS.length);
     for(let curi of urisS){
         //    logger.debug(curi.name());
-        children.push(curi.text().trim());//push to targets list
+        //children.push(curi.text().trim());//push to targets list
     }
     let urisSs = root.find("//system:hasSubsystem", namespaceOb);
-	    console.log("found node 002 Eco-system:hasSubsystem" + urisSs.length);
+	    console.log("found node 003 Eco-system:hasSubsystem" + urisSs.length);
 		
-		console.log('system:hasSubsystem')
+		console.log('urisSs')
 		console.log('----------------- urisss -----------------')
-		console.log(JSON.stringify(urisSs))
+		console.log(urisSs)
 		console.log('==========================================')
 
     //logger.debug("found node system:hasIRI:"+urisS.length);
     for(let curi of urisSs){
-        //    logger.debug(curi.name());
+            console.log(curi.name());
         if(curi.attr("resource")&&curi.attr("resource").value()){
             children.push(curi.attr("resource").value());//push to targets list
                 console.log(curi.attr("resource").value())
 
-        }    }
+        }    
+		
+		        if(curi.attr("rdf:resource")&&curi.attr("rdf:resource").value()){
+            children.push(curi.attr("rdf:resource").value());//push to targets list
+                console.log(curi.attr("rdf:resource").value())
+
+        }
+		}
        
     //delete # (location part)
     children = children.map((uri)=>{

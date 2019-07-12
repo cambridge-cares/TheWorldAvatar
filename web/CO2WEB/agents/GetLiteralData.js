@@ -24,7 +24,6 @@ const fs = require('graceful-fs'),
 /*SPRAQL Query******************/
 
 /**
- * TODO:RDFLIB MODULE does not support isLiteral,
  * use custom filter literal for now
  * use this query when switched to unified endpoint
  *
@@ -52,7 +51,6 @@ WHERE {
 
 
 function LiteralData(callback, nodeloc, opts) {
-//TODO: error handle
 
     queryLiteralSingle(nodeloc, function (err, result) {
         if(err){
@@ -164,7 +162,6 @@ function LiteralData(callback, nodeloc, opts) {
     }
 
     function queryLiteralSingle(nodeloc, callback) {
-        //todo: delete this poweplant subroute
         nodeloc = nodeloc.replace("http://www.theworldavatar.com", config.root).replace("http://www.jparksimulator.com", config.root);
         console.log(nodeloc);
         fs.readFile(nodeloc, function (err, file) {

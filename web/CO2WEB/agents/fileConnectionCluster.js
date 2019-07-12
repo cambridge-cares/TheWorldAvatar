@@ -1,4 +1,5 @@
 /***
+ Dated version of owl parser. xml processing style. 
  * Read all connecitons defined in current grOWl system, starting from a top node file on disk
  * All following children will be retreive by url online
  * Following definition will be considered a connection:
@@ -312,8 +313,6 @@ owlProcessor.parseXMLFile = function(file) {
         return root;
         
         //     logger.debug("myURI" + myUri);
-        //TODO: request for remote  VS search with name on current?
-        //TODO: xml parse the file => get targets list == childList => request on each child file
         
     } catch(err){
         logger.debug(err);
@@ -382,7 +381,6 @@ owlProcessor.getChildren = function(root) {
     }
     var children = [];
     var namespaceOb = {};//construct namespaceOb for find in root with nested namespace
-    //TODO: use getNSList instead
     
     namespaceOb['owl'] = "http://www.w3.org/2002/07/owl#";
     namespaceOb['Eco-industrialPark'] = "http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl#";
@@ -441,7 +439,6 @@ owlProcessor.getPPChildren = function (root) {
 }
 
 /***
- * //TODO: This needs to be unified
  * @param root
  * @returns {*}
  */
@@ -449,7 +446,6 @@ owlProcessor.getGeoCoord = function(root) {
     if(!root){
         return null;
     }
-    //TODO: use getNSList instead
     let x =  root.find("//*[contains(@rdf:about, '_x_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
     let y =  root.find("//*[contains(@rdf:about, '_y_')]", {owl:'http://www.w3.org/2002/07/owl#', rdf:"http://www.w3.org/1999/02/22-rdf-syntax-ns#"});
     

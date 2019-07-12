@@ -1,7 +1,5 @@
 /**
  * This is a module that runs the heatwaste network python module.
- * Note:
- * TODO:The loc of the py script should be specified in config(and actually in owl file, in a much later future) instead of here
  * @type {runPython}
  */
 
@@ -13,7 +11,6 @@ function runHeatWasteNetwork(plantData, cb) {
 
 
 //run the code, get results
-//TODO:　CHECK LENGTH and type of plantData
 
 
 

@@ -145,7 +145,6 @@ function PopupMap(options) {
         }
     };
     this.deviceMap = (function initDeviceMap() {
-        //TODO: add this to backend
         let deviceMap = new Map();
             for (let device of Object.keys(deviceMapRaw)) {
                 console.log("loading device: " + device);
@@ -297,7 +296,7 @@ PopupMap.prototype = {
 			
 			var highlight = false;
             
-			if(muri === 'http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/E-301.owl'||muri ==='http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant2/E-601008.owl'){
+			if(muri === 'http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/E-301.owl'||muri === 'http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant2/E-601008.owl'){
 				highlight = true;
 			}
 			
@@ -390,12 +389,10 @@ PopupMap.prototype = {
                 }, 200);
 
             }, marker));
-//TODO: input validation(type)
 
 
             /*double click listener*/
             marker.addListener('dblclick', function (e) {//open file
-                //TODO: timeout to prevent miss-interpretation
                 clearTimeout(marker.timer);
                 marker.sglclickPrevent = true;
                 window.open(pp.uri);
@@ -646,7 +643,6 @@ PopupMap.prototype = {
         return "<p class='alert alert-" + type + "'>" + msg + "</p>";
     },
     displayMsg: function(panel, msg, type) {
-        //TODO: swithc type
         this.cleanMsg(panel);
         panel.append(this.msgTemplate(msg, type));
 

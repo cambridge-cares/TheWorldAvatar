@@ -1,4 +1,5 @@
 /**
+wrapper to request to an sparql endpoint
  */
 const request = require('request'),
     SPARQLStr = require('./SPARQLStr'),

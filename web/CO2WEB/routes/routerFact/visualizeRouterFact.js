@@ -3,47 +3,51 @@
  * Parameter : topNode file
  * @type {*}
  */
-const express = require('express')
-const owlProcesser = require('../../agents/fileConnection2Way.js')
+var express = require('express');
+var owlProcesser = require("../../agents/fileConnection2Way.js");
 
-const connectionsReader = Object.create(owlProcesser)
+var connectionsReader = Object.create(owlProcesser)
 /* GET users listing. */
 
 //TODO: buffer logic, so no need recalculate for each request, but still robust,
 //TODO: could be time, or responding to change
 /****
  * Factory to create a router with file-connection-reader module.
- * @param opts - topNodeAddress  address of top node file
+ * @param topNodeAddress  address of top node file
  */
-const visualizationRouterFactory = function (opts) {
-  let router = express.Router()
-  let viewName = opts.viewName ? opts.viewName : 'visual'
+var visualizationRouterFactory = function (opts) {
+    var router = express.Router();
+    var viewName = opts.viewName?opts.viewName:'visual';
+    router.get('/', function(req, res, next) {
+                res.render(viewName); //render the view with this value, { result: JSON.stringify(results)
+    });
+    
+    router.get('/links', function(req, res, next) {
+    
+    
+        connectionsReader.process(opts).then((results)=>{
 
-  router.get('/', function (req, res) {
-    res.render(viewName) //render the view with this value, { result: JSON.stringify(results)
-  })
+            
+            console.log("read connections");
+            
+            //res.setHeader('Content-Type', 'application/json');
+            //res.json(results);//for testing
+            console.log(results)
+            conns = results;
+            results.topnode = opts.topnode;
+    
+    
+            res.json(results); //render the view with this value
+            
+        });
+        
+    });
+    
+    router.get('/includeImport', function(req, res, next) {
 
-  router.get('/links', function (req, res) {
-
-    connectionsReader.process(opts).then((results) => {
-
-      console.log('read connections')
-
-      console.log(results)
-
-      results.topnode = opts.topnode
-
-      res.json(results) //render the view with this value
-
-    })
-
-  })
-
-  router.get('/includeImport', function (req, res) {
-
-    opts['showImport'] = true
-
-    connectionsReader.process(opts).then((results) => {
+        opts['showImport'] = true;
+    
+        connectionsReader.process(opts).then((results)=>{
 
             
             console.log("read connections");
@@ -57,7 +61,6 @@ const visualizationRouterFactory = function (opts) {
             //res.setHeader('Content-Type', 'application/json');
             // res.json(results);
             res.json(results); //render the view with this value
-        opts['showImport'] = false;
 
 
         });
@@ -68,8 +71,9 @@ const visualizationRouterFactory = function (opts) {
 
         connectionsReader.getChildrenRecur({ showServiceOnly : true, showServiceUrl: true, topnode : topNodeAddress}, function (err, results) {
 
-  return router
-}
+            if(err){
+                res.status(500).send(err);
+            }
 
             console.log("read connections");
 

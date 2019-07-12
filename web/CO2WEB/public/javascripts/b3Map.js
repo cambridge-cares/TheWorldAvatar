@@ -29,8 +29,7 @@ let b3dm  = [
 
 let b2dm  =[
         ["V_molarF_601001",0],
-        ["V_Temperature_601001",0],
-		["V_Temperature_601002",0]
+        ["V_Temperature_601001",0]
 ]     
 
 var dataMaps = [
@@ -85,9 +84,7 @@ socket.on('update', function (udata) {
            SendSimulationQuery(url, Array.from(modifs[url].values()));
        });
    }
-//TODO: check update event
-    //on update event, ajax to simulation service
-    //when ajax result backs, ajax to endpoint for update
+
 });
 
 
@@ -143,7 +140,6 @@ function SendSimulationQuery(murl, variables) {
                  V_Angle_LoadPoint_R-302$-0.48014259831225964#
                  V_ActualVoltage_LoadPoint_R-302$2.966610277813966#
                  */
-                //TODO: process this result and update
 
                 let processed =  processResult(response);
                 let divided = dispatchArray(processed);
@@ -160,7 +156,6 @@ function SendSimulationQuery(murl, variables) {
             }
         });
 }
-//TODO: A single case, if extended, this should be more general
 
 function dispatchArray(arrs){
 
@@ -254,7 +249,6 @@ var constructUpdate = function (uri, modifications) {
  */
 var constructSingleUpdate = function (uri, attrObj) {
     var spoDel = "DELETE WHERE {<" + uri + "#" + attrObj.name + "> <" + attrObj.p + "> " + "?o.}";
-//TODO: add " for string
 
     var spoIns = "INSERT DATA {<" + uri + "#" + attrObj.name + "> <" + attrObj.p + "> " + "\""+attrObj.value + "\"^^<http://www.w3.org/2001/XMLSchema#"+attrObj.datatype+">.}";
     return [spoDel, spoIns];
@@ -262,7 +256,6 @@ var constructSingleUpdate = function (uri, attrObj) {
 
 
 
-//TODO: merge it with the one in PopUpmap, or think of how to seperately it from Popup map
 /***
  * Send output update queries
  * @param uris        array of uris to change, corresponding to updateQs
@@ -276,7 +269,6 @@ function  outputUpdate(input,cb) {
     let updateQs = input[1]
         console.log(uris)
     console.log(updateQs)
-    //TODO: construct uris && updateQs
     var myUrl = 'http://www.theworldavatar.com/Service_Node_BiodieselPlant3/SPARQLEndPoint?uri=' + encodeURIComponent(JSON.stringify(uris)) + '&update=' + encodeURIComponent(JSON.stringify(updateQs)) + '&mode=update';
 
     $.ajax({

@@ -7,7 +7,6 @@ $(document).ready(function () {
     /*socket io */
     var socket = io();
     /*select event******************************************/
-//TODO: leave previous
     let sensorChosen;
 
     $("select#sensor-select").on('change', function () {
@@ -39,7 +38,6 @@ $(document).ready(function () {
     var isInitialized = false;
     socket.on('initial', function(idata){// receive initial event from
         console.log(JSON.stringify(idata));
-        //TODO: check this is indeed updated Data point
         if(idata && idata.length > 0){ //check if this data is not null
             //let parsedData = idata;
             //let name = parsedData['name'];
@@ -54,14 +52,12 @@ $(document).ready(function () {
             mMultiPlot.initPlots(idata);
             isInitialized = true;
         } else {
-            //TODO: init one without previous data?
         }
     });
 
 
 
         socket.on('update', function(data){
-            //TODO: check this is indeed updated Data point
 
         let parsedData = data;
         let name = parsedData['filename'];

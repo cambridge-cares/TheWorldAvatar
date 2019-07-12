@@ -4,7 +4,7 @@
  * @type {*}
  */
 var express = require('express');
-var owlProcesser = require("../../agents/fileConnection2Way.js");
+var owlProcesser = require("../../agents/fileConnection2Wayhashed.js");
 
 var connectionsReader = Object.create(owlProcesser)
 /* GET users listing. */
@@ -70,11 +70,16 @@ var visualizationRouterFactory = function (opts) {
     
     router.get('/includeImport', function(req, res, next) {
 
-        opts['showImport'] = true;
-    
-        connectionsReader.process(opts).then((results)=>{
+        let importO = {};
+        importO['showImport'] = true;
+        importO['topnode'] = opts['topnode']
+        importO['supQuery'] = `
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+    select   ?uri
+    where {
+        ?a owl:imports ?uri;}`
+        connectionsReader.processSingle(importO).then((results)=>{
 
-            
             console.log("read connections");
             
             //res.setHeader('Content-Type', 'application/json');

@@ -4,7 +4,6 @@ let csv = require('csv');
 let parser = csv.parse();
 const fs = require('fs')
 function runGAMSPredefined(id, cb){
-    //TODO: read csv according to given params
 console.log("id: "+id)
  console.log(typeof  id)
     //params is predefined id

@@ -73,11 +73,10 @@ function groupwatcher(dir, informIndi){
 
             /*define data to be sent*****/
             let changedFilenames, withChangeData = {};
-            //TODO: method to get data:bmsDataReader
            let self = this;
             changedFilenames  ={uri:this.uri, filename : this.filename};
 
-           function getDataP() {//TODO: this should be delegate to the user instead of defined here
+           function getDataP() {
               return new Promise(function (resolve, reject) {
 
                       LiteralData(function (err, data) {
@@ -97,7 +96,6 @@ function groupwatcher(dir, informIndi){
             if(this.hasDataRequestObserver()){
                let  dataPromise = getDataP();
                 dataPromise.then(function (promisedData) {
-                    //TODO: merge instead of explicit declare
                     Object.assign(withChangeData, changedFilenames, promisedData);
                    // console.log("groupChangeWatcher: sent update data: ")
                    // console.log(withChangeData.data);
@@ -206,7 +204,6 @@ function groupwatcher(dir, informIndi){
 
     function setWatch(filename) {
         let filepath = path.join(dir, filename)
-        //TODO:get filename
         var newdog = new WatchDog(filepath, filename);
         watchDogs.set(filepath, newdog);
         return newdog;
@@ -226,7 +223,6 @@ function groupwatcher(dir, informIndi){
           dog.register(observerUri, receiveData);
         }
         else{
-            //TODO: err no such target
            // var newdog = new WatchDog(targetPath);
            // watchDogs.set(targetPath, newdog);
         }

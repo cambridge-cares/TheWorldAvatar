@@ -77,11 +77,9 @@ var socket = io();
 
         //let's diplay initial input Plots!
         mausimplot.displayInputInit = function(initData) {
-            //TODO: add titles for plots
             console.log("initial inputs:!!!!!!!!!!")
             console.log(Object.values(initData))
-            //TODO: how to display fix point data? should be a sentence
-            //TODO: first, determine if it is fixed=point or time-series data
+
 
             let values = Object.values(initData);
             let setPoints = [], seriesvalues = [];
@@ -102,7 +100,6 @@ var socket = io();
             });
             mauInputPlots.initPlots(seriesvalues);
             mausimplot.displaySetInput(setPoints);
-            //TODO: show waiting png until done
         }
 
         mausimplot.displaySetInput = function (setPArr) {
@@ -130,9 +127,7 @@ var socket = io();
             //output comes in [[5][5][5]]
             console.log("updated output:!!!!!!!!!!!!!!!!!!!")
             console.log(updatedDataMap)
-            //TODO:　magically the original retrive info about outputs are not here
-            //TODO: time info must either be returned or packed from orginal time,
-            //TODO: cont" problem is where this logic should lies
+     
             //need to remap this
             mauOutputPlots.initPlots(Object.values(updatedDataMap));
 
@@ -153,9 +148,6 @@ var socket = io();
             disSimResB4DBUpdateFn:"@_@",
             errorCB : "@_@"
         });
-
-        //TODO:　add a name
-        //TODO: add a loading bar
 
 
 

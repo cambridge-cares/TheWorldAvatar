@@ -310,7 +310,7 @@ var FileLinkMap = function (options) {
         let timer = 0;
         let sglclickPrevent = false;
     
-        let circleUp = circle.data(dnodes)//TODO: FILTERed
+        let circleUp = circle.data(dnodes)//: FILTERed
     
     
         console.log(circleUp.exit().select("circle"))
@@ -349,7 +349,6 @@ var FileLinkMap = function (options) {
                     sglclickPrevent = false;
                 }, 200);
             
-                //todo:set selected
                 function clickAction() {
                     if (d.serviceUrl && d.serviceUrl !== "") {
                         //    console.log(d.serviceUrl);
@@ -409,7 +408,7 @@ var FileLinkMap = function (options) {
         circleDraw = circle.select("circle")
     
         path = path //linking lines
-            .data(dlinks//todo:filtered
+            .data(dlinks
                 //function (d) {
                 //return d.source.domain + d.source.name + d.target.domain + d.target.name;}
             );
@@ -448,7 +447,7 @@ var FileLinkMap = function (options) {
             .nodes(dnodes)
     
     
-        simulation.force("link").links(dlinks)//todo:filtered
+        simulation.force("link").links(dlinks)
     
     
         simulation.alphaTarget(0.3).restart();
@@ -605,7 +604,6 @@ var FileLinkMap = function (options) {
      // console.log(filteredNodes.concat(newnodes).length)
     }
     
-    //TODO: handling node removal
     bubbleMap.update = function (links, coords, serviceUrls, retainSim) {
         coords = coords || []
         serviceUrls = serviceUrls || []
@@ -649,7 +647,6 @@ var FileLinkMap = function (options) {
         function filterlevel2nodes(nodes, links) {
             let oriLink = Object.assign([], links);
             let oriNodes = Object.assign([], nodes);
-            //todo:filter out nodes level larger than 2, and all links contain these nodes
             for (let node of oriNodes) {
                 if (node.level === undefined || node.level< 2) {
                     filteredNodes.push(node)
@@ -724,12 +721,12 @@ var FileLinkMap = function (options) {
         
         //console.log(bubbleMap.links)
 
-//TODO: find node list, subscribe change event through sockets
         /*subscribe**********/
         let subscribeList = bubbleMap.nodesArr.map(function (node) {
             return {uri: node.url, withData: false};
         });
         
+        console.log(subscribeList);
         socket.emit("join", JSON.stringify(subscribeList));
         /******************/
         
@@ -741,25 +738,7 @@ var FileLinkMap = function (options) {
         
     }
     
-    //update and expand cluster
-    bubbleMap.findLinks2Node = function (url) {
-        
-        /**
-         *         var childNodes = [], childLinks = [];
- 
-         for (let link of bubbleMap.links) {
-                //console.log(link)
-                if (link["source"].url == url) {
-                    childNodes.push(link['target']);
-                    childLinks.push(link)
-                }
-            }
-         return [childNodes, childLinks]
- 
-         **/
-        
-    }
-    
+
     
     bubbleMap.addnew = function (newlinks) {
         bubbleMap.update(newlinks, [], [], true)
@@ -785,7 +764,7 @@ var FileLinkMap = function (options) {
         
     }
     
-    //TODO: add coordinates to nodes data
+    //add coordinates to nodes data
     bubbleMap.updateByCoord = function updateByCoord(center, radius) {
         
         var resultArr = [];
@@ -810,7 +789,6 @@ var FileLinkMap = function (options) {
         });
         
         
-        //TODO: deal with path
         
         // deal with label
         gT.selectAll("text.nodeTag").attr("visibility", function (d) {
@@ -892,6 +870,7 @@ var FileLinkMap = function (options) {
        // console.log(bubbleMap.subconMap[url].connections)
         //console.log(bubbleMap.initLinks)
 		            bubbleMap.initLinks =  bubbleMap.initLinks.concat(bubbleMap.subconMap[url].connections)
+
 
         return bubbleMap.initLinks;
     
@@ -978,7 +957,6 @@ $(window).load(function () {// when web dom ready
         if ($('#checkShowImport').prop('checked')) {
             disableThenEnableAfterTimeout();
             
-            //TODO:ajax, only change data, but with d3...how? should use angular instead?
             $.ajax({
                 url: url + '/includeImport',
                 type: 'GET',
@@ -1001,7 +979,7 @@ $(window).load(function () {// when web dom ready
                                 
                             }
                             map.update(links, coords, [],true);
-                            //todo:concate subconnection
+                            //concate subconnection
                                                         console.log(data.subconnections)
                            map.subconMap = combineArrMap(map.subconMap,data.subconnections);
                         console.log(map.subconMap);               
@@ -1186,7 +1164,6 @@ $(window).load(function () {// when web dom ready
             displayMsg("Input parameters are not number", "danger");
             return;
         }
-        //Todo: or not to do. x,y,radius must be numbers .range checking also? min radius : 0.0000001
         /**
          //truncate radius to 7 digits, show warning
          if(decimalPlaces(x) > 7){
@@ -1318,7 +1295,6 @@ $(window).load(function () {// when web dom ready
     let blinkTimerList = {};
     let preTime = Date.now();
     let rerequestTimer, allowRe = true;
-    //todo: discerning update with node addition!
     socket.on('update', function (data) {
         console.log("Socket event!!!!!!!!!!!")
         console.log(data)
@@ -1365,7 +1341,7 @@ $(window).load(function () {// when web dom ready
         let url = window.location.href;     // Returns full URL
         
         console.log(data)
-        if (allowRe && data.filename == "NuclearPlants\.owl") { // todo: add type to change event: add and file update are different types of change
+        if (allowRe && data.filename == "NuclearPlants\.owl") { //
             console.log("request links again")
             $.ajax({ //ajax to get links again
                 url: url + '/links',
@@ -1420,7 +1396,6 @@ function initMap() {
 
 
 let deviceMap = (function initDeviceMap() {
-    //TODO: add this to backend
     let deviceMap = new Map();
     $.getJSON("JSON/prototypeDevices.json", function (data) {
         for (let device of Object.keys(data)) {
@@ -1502,7 +1477,7 @@ function hightLightResult(name, d3node) {
             row.addClass("selected");
         }
         console.log("!!!!!!!!!!!!!now hightlight " + name);
-        //TODO:hightlight bubble
+        //:hightlight bubble
         
         map.highlightNode(d3node, name);
     }

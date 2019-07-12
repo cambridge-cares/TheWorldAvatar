@@ -35,8 +35,7 @@ try{
 
         mparser.mquery( SPA, function (err, data) {//each data point
 
-            // console.log("@@@@@@@@@@@done")
-            // console.log(result)
+
             if(err){
                 console.log(err);
                 callback(err);
@@ -45,7 +44,6 @@ try{
             data.forEach(function(item){
                 CO2Addresult+=		parseFloat(item['?ValueOf_CarbonEmissions']['value']);
             })
-            //Now result is ready
 
             CO2Addresult = parseFloat(CO2Addresult)/(365*24*60*60);
 

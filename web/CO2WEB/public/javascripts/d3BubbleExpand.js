@@ -22,8 +22,8 @@ function getIdFromNameInResults(name) {
 var FileLinkMap = function (options) {
     var width = $(document).width(),
         height = $(document).height() > 2000 ? $(document).height() : 2000,
-        charge = options.charge || -500,
-        distance = options.distance || 50,
+        charge = options.charge || -400,
+        distance = options.distance || 20,
         nodeR = options.nodeR || 15,
         textSize = options.textSize || 5;
     
@@ -299,7 +299,7 @@ var FileLinkMap = function (options) {
              console.log("not retaining previous sim")
          
              simulation = d3.forceSimulation()
-             .force("link", d3.forceLink().strength(setD).id(function (d) {
+             .force("link", d3.forceLink().strength(3).id(function (d) {
                     return d.id;
                 }))
              .force("charge", d3.forceManyBody().strength(setBodyS))
@@ -429,7 +429,7 @@ var FileLinkMap = function (options) {
     
         text = text //node tags
             .data(dnodes, function (d) {
-                return d.domain + d.name;
+                return ''//d.domain + d.name;//todo:disable for now
             });
         text.exit().remove();
     
@@ -520,7 +520,8 @@ var FileLinkMap = function (options) {
                     }
                     return d.y;
                 });
-            text
+           
+		   text
                 .attr("x", function (d) {
                     if (d === undefined) {
                         return 0;
@@ -730,7 +731,7 @@ var FileLinkMap = function (options) {
             return {uri: node.url, withData: false};
         });
         
-        socket.emit("join", JSON.stringify(subscribeList));
+        //socket.emit("join", JSON.stringify(subscribeList));
         /******************/
         
         
@@ -943,7 +944,9 @@ WHERE {
 	}
 	UNION
 	{
-	    @placeholder ontokin:hasThermoModel ?thermoModel .
+		?phase ontokin:containedIn @placeholder .
+		?species ontokin:belongsToPhase ?phase.
+		?species ontokin:hasThermoModel ?thermoModel.
     ?thermoModel ontokin:hasQuantumCalculationIRI ?uri .
 	}
 } LIMIT 200
@@ -1065,9 +1068,9 @@ $(window).load(function () {// when web dom ready
                 
                 statusCode: {
                     200: function (data) {
-                        let links = data.connections;
-                        let coords = data.geoCoords;
-                        console.log('ajax successful!\n');
+                        let links = data;
+                        //let coords = data.geoCoords;
+                        //console.log('ajax successful!\n');
                         
                         
                         console.log(JSON.stringify(links));
@@ -1080,12 +1083,10 @@ $(window).load(function () {// when web dom ready
                                 }
                                 
                             }
-                            map.update(links, coords, [],true);
-                            //todo:concate subconnection
-                                                        console.log(data.subconnections)
-                           map.subconMap = combineArrMap(map.subconMap,data.subconnections);
-                        console.log(map.subconMap);               
-                        map.expandAll()             
+
+                            map.update(map.initLinks.concat(links), [], [],true);
+             
+                       // map.expandAll()             
                         }
                         
                     }

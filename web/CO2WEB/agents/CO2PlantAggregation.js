@@ -3,6 +3,7 @@ Aggregate plant emission by type and country
 
  */
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
 var log4js = require('log4js');
 var logger = log4js.getLogger();
 logger.level = 'debug';
@@ -17,7 +18,9 @@ const util = require('util');
 const path = require('path')
 const processor = Object.create(xmlParser);
 const pprefix = "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#";
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
+//sparql query////////////////////////////////////////////////////////////////////////////////////
 var qsTypeCountry = `
         PREFIX system_v1: <http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#>
      PREFIX j.0: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
@@ -42,18 +45,22 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
          ?x j.2:numericalValue ?Capacity.
              }`;
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+     /*
+     main function
+     **/
     function getPlantAggregation(callback) {
+
+
         var result = {};
-        const ppRoot =config.root;
         getWorldPPChild(function (err, ppraw) {
             if (err) {
                 callback(err);
                 return;
             }
             //replace uri with disk location
-            let pp = xmlParser.uriList2DiskLoc(ppraw, ppRoot);
+            let pp = xmlParser.uriList2DiskLoc(ppraw, config.root);
 
             async.concat(pp, query, function (err, plantDataO) {
                 //For each point, calculates emission
@@ -79,7 +86,6 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
                 result.dataBycountry = groupBy(plantData, "country");
                 result.sum = sum;
                 result.getByCountry = function (country) {
-                    //TODO: not exist
                     logger.debug(this.dataBycountry[country])
                     return this.dataBycountry[country] ;
                 }
@@ -116,7 +122,6 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
                     return sum;
                 })();
                 result.convert = function (country, percentage) {
-                    //TODO: not exist country
                     //cal new coal capa
                     //cal new coal emisison
                     //cal new ns cap
