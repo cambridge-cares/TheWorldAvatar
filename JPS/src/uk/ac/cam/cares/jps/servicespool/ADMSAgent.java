@@ -28,6 +28,7 @@ import java.util.List;
 public class ADMSAgent extends JPSHttpServlet {
     private static final long serialVersionUID = 1L;
     private static final String PARAM_KEY_SHIP = "ship";
+    private static final String PARAM_KEY_CHIMNEY = "waste";
     private static final String DATA_KEY_COLLECTION = "collection";
     private static final String DATA_KEY_ITEMS = "items";
     private static final String DATA_KEY_LAT = "lat";
@@ -79,8 +80,12 @@ public class ADMSAgent extends JPSHttpServlet {
                 QueryBroker broker = new QueryBroker();
                 broker.put(fullPath + "/arbitrary.txt", "text to assign something arbitrary");
                 String coordinates = new Gson().toJson(mCoordinates.toString());
+                String chimney = new String();
+                if (requestParams.has(PARAM_KEY_CHIMNEY)) {
+                    chimney = requestParams.getString(PARAM_KEY_CHIMNEY);
+                }
 
-                writeAPLFileShip(newBuildingData, mCoordinates.toString(), newRegion, targetCRSName, fullPath, precipitation);
+                writeAPLFileShip(newBuildingData, coordinates, newRegion, targetCRSName, fullPath, precipitation, chimney);
                 writeMetFile(weather, fullPath);
                 writeBkgFile(bkgjson, fullPath);
 
@@ -259,7 +264,7 @@ public class ADMSAgent extends JPSHttpServlet {
         return result;
     }
 
-    public String writeAPLFileShip(String buildingInString, String plantIRI, JSONObject regionInJSON, String targetCRSName, String fullPath, String precipitation) {
+    public String writeAPLFileShip(String buildingInString, String plantIRI, JSONObject regionInJSON, String targetCRSName, String fullPath, String precipitation, String chimney) {
 
         //fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
 
@@ -287,6 +292,7 @@ public class ADMSAgent extends JPSHttpServlet {
         args.add(targetCRSName);
         logger.info(targetCRSName);
         args.add(precipitation);
+        args.add(chimney);
         // TODO-AE use PythonHelper instead of CommandHelper
         String result = CommandHelper.executeCommands(targetFolder, args);
         logger.info("ARGUMENTS");
