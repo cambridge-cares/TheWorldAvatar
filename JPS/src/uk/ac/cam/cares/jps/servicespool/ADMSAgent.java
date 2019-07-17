@@ -28,6 +28,7 @@ import java.util.List;
 public class ADMSAgent extends JPSHttpServlet {
     private static final long serialVersionUID = 1L;
     private static final String PARAM_KEY_SHIP = "ship";
+    private static final String PARAM_KEY_PLANT = "plant";
     private static final String PARAM_KEY_CHIMNEY = "waste";
     private static final String DATA_KEY_COLLECTION = "collection";
     private static final String DATA_KEY_ITEMS = "items";
@@ -85,13 +86,13 @@ public class ADMSAgent extends JPSHttpServlet {
                     chimney = requestParams.getString(PARAM_KEY_CHIMNEY);
                 }
 
-                writeAPLFileShip(newBuildingData, coordinates, newRegion, targetCRSName, fullPath, precipitation, chimney);
+                writeAPLFileShip(PARAM_KEY_SHIP, newBuildingData, coordinates, newRegion, targetCRSName, fullPath, precipitation, chimney);
                 writeMetFile(weather, fullPath);
                 writeBkgFile(bkgjson, fullPath);
 
             } else {
                 String plantIRI = getSourceData(requestParams, cityIRI);
-                writeAPLFile(newBuildingData, plantIRI, newRegion, targetCRSName);
+                writeAPLFile(PARAM_KEY_PLANT, newBuildingData, plantIRI, newRegion, targetCRSName);
                 fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
                 writeMetFile(weather, fullPath);
             }
@@ -234,7 +235,7 @@ public class ADMSAgent extends JPSHttpServlet {
         CommandHelper.executeCommands(targetFolder, args);
     }
 
-    public String writeAPLFile(String buildingInString, String plantIRI, JSONObject regionInJSON, String targetCRSName) {
+    public String writeAPLFile(String entityType, String buildingInString, String plantIRI, JSONObject regionInJSON, String targetCRSName) {
         String fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
         //system.out.println("==================== full path ====================");
         //system.out.println(fullPath);
@@ -244,6 +245,7 @@ public class ADMSAgent extends JPSHttpServlet {
         args.add("python");
         args.add("admsTest.py");
 
+        args.add(entityType);
         args.add(buildingInString.replace("\"", "'"));
         logger.info(buildingInString.replace("\"", "'"));
 
@@ -264,7 +266,7 @@ public class ADMSAgent extends JPSHttpServlet {
         return result;
     }
 
-    public String writeAPLFileShip(String buildingInString, String plantIRI, JSONObject regionInJSON, String targetCRSName, String fullPath, String precipitation, String chimney) {
+    public String writeAPLFileShip(String entityType, String buildingInString, String plantIRI, JSONObject regionInJSON, String targetCRSName, String fullPath, String precipitation, String chimney) {
 
         //fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
 
@@ -276,6 +278,8 @@ public class ADMSAgent extends JPSHttpServlet {
         ArrayList<String> args = new ArrayList<String>();
         args.add("python");
         args.add("admsTestShip.py");
+        args.add(entityType);
+
         args.add(buildingInString.replace("\"", "'"));
         logger.info(buildingInString.replace("\"", "'"));
 

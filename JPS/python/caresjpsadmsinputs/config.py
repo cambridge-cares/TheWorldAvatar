@@ -29,3 +29,4 @@ class Constants(object):
     POL_PART_001 = 'Particulate001'
     POL_PART_SO2 = 'SO2'
     POL_PART_O3 = 'O3'
+    FILE_NAME_APL = '/test.apl'
