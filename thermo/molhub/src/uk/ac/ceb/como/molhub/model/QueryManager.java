@@ -483,10 +483,15 @@ public class QueryManager {
 
 				while (result.hasNext()) {
 
-					BindingSet bindingSet = result.next();
-
+					BindingSet bindingSet = result.next();										
+					
 					MoleculeProperty moleculeProperty = new MoleculeProperty(uuid,
-							bindingSet.getValue("moleculeName").stringValue(),
+//							bindingSet.getValue("moleculeName").stringValue(),
+							/**
+							 * @author nk510
+							 * It removes any occurrence of "1" and removes  spaces in the resulting output string of species name.
+							 */
+							SentenceManager.removeNumberAndSpaces(bindingSet.getValue("moleculeName").stringValue()),
 							bindingSet.getValue("basisSetValue").stringValue(),
 							bindingSet.getValue("levelOfTheory").stringValue(),
 							bindingSet.getValue("geometryTypeValue").stringValue());

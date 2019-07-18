@@ -1,10 +1,13 @@
 package uk.ac.ceb.como.molhub.model;
 
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.log4j.Logger;
 
 import aima.core.logic.propositional.kb.KnowledgeBase;
 import aima.core.logic.propositional.kb.data.Clause;
-
 import aima.core.logic.propositional.parsing.ast.Sentence;
 import aima.core.logic.propositional.visitors.ConvertToCNF;
 import aima.core.logic.propositional.visitors.DistributeOrOverAnd;
@@ -14,6 +17,9 @@ import aima.core.logic.propositional.visitors.DistributeOrOverAnd;
  */
 public class SentenceManager {
 
+	/** The Constant logger. */
+	final static Logger logger = Logger.getLogger(SentenceManager.class.getName());
+	
 /**
  * Gets the clause set.
  *
@@ -48,6 +54,52 @@ public static Set<Clause> getClauseSet(Sentence sentence){
 	
 	return clause;
 	
+}
+
+/**
+ * @author nk510
+ * @param speciesName The name of species in which we remove appearing a selected number (1) of molecules. Can be easily generalized to remove any number of molecules from species name. 
+ * @return The species name without appearing number one (1) in species name.
+ */
+public static String removeNumberAndSpaces(String speciesName) {
+	
+      logger.info("Original species: " + speciesName);
+		
+	  speciesName= speciesName.replaceAll("\\s+", "");
+		
+	  logger.info("Species with no empty spaces: " + speciesName);
+		
+	  Pattern p = Pattern.compile("\\d+");
+		
+     Matcher m = p.matcher(speciesName);
+       
+     String newSpecies = speciesName;
+       
+     int start =0;
+     int end = 0;
+       
+     while(m.find()) {
+       	
+       int number = Integer.parseInt(m.group().toString());
+       	
+       	logger.info("Number found in species name : " + number);
+       	
+       	if(number==1) {
+
+           logger.info("m.group(): " + m.group() + " number start at index: " + m.start() + " number ends at index: "  + m.end());
+
+           start = m.start();
+           
+           end = m.end();
+           
+           newSpecies = removeNumberAndSpaces(speciesName.substring(0, start) + speciesName.substring(end));
+
+       }
+       	
+	}
+     
+     return newSpecies;
+     
 }
 
 }
