@@ -3,6 +3,7 @@ class Apl(object):
         self.__header = None
         self.__sup = None
         self.__met = None
+        self.__bld = None
         self.__hil = None
         self.__cst = None
         self.__flc = None
@@ -22,6 +23,9 @@ class Apl(object):
 
     def set_met(self, met):
         self.__met = met
+
+    def set_bld(self, bld):
+        self.__bld = bld
 
     def set_hil(self, hil):
         self.__hil = hil
@@ -57,6 +61,7 @@ class Apl(object):
         spec = self.__header.to_string()
         spec = spec + self.__sup.to_string()
         spec = spec + self.__met.to_string()
+        spec = spec + self.__bld.to_string()
         spec = spec + self.__hil.to_string()
         spec = spec + self.__cst.to_string()
         spec = spec + self.__flc.to_string()
@@ -326,7 +331,7 @@ class AdmsMapper(AplPart):
 class AdmsPold(AplPart):
     def __init__(self):
         super().__init__()
-        self._name = self._AplPart__name + '&ADMS_POLLUTANT_DETAILS'
+        self._name = self._AplPart__name + 'ADMS_POLLUTANT_DETAILS'
         self.PolName = "CO2"
         self.PolPollutantType = 0
         self.PolGasDepVelocityKnown = 1
@@ -347,3 +352,17 @@ class AdmsPold(AplPart):
         self.PolConvFactor = 5.47e-1
         self.PolBkgLevel = 4.14e+5
         self.PolBkgUnits = "ppb"
+
+class AmdsBld(AplPart):
+    def __init__(self):
+        super().__init__()
+        self._name = self._AplPart__name + 'ADMS_PARAMETERS_BLD'
+        self.BldNumBuildings = 0
+        self.BldName = []
+        self.BldType = []
+        self.BldX = []
+        self.BldY = []
+        self.BldHeight = []
+        self.BldLength = []
+        self.BldWidth = []
+        self.BldAngle = []

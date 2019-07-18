@@ -1,4 +1,5 @@
 from adms_apl import *
+from config import Constants
 
 
 class AplDirector(object):
@@ -13,6 +14,7 @@ class AplDirector(object):
         header = self.__builder.get_header()
         sup = self.__builder.get_sup()
         met = self.__builder.get_met()
+        bld = self.__builder.get_bld()
         hil = self.__builder.get_hil()
         cst = self.__builder.get_cst()
         flc = self.__builder.get_flc()
@@ -27,6 +29,7 @@ class AplDirector(object):
         apl.set_header(header)
         apl.set_sup(sup)
         apl.set_met(met)
+        apl.set_bld(bld)
         apl.set_hil(hil)
         apl.set_cst(cst)
         apl.set_flc(flc)
@@ -42,11 +45,16 @@ class AplDirector(object):
 
 
 class AplBuilder(object):
+    def __init__(self, data):
+        self.data = data
+
     def get_header(self): pass
 
     def get_sup(self): pass
 
     def get_met(self): pass
+
+    def get_bld(self): pass
 
     def get_hil(self): pass
 
@@ -76,14 +84,26 @@ class AdmsAplShipBuilder(AplBuilder):
 
     def get_sup(self):
         sup = AdmsSup()
+        sup.SupModelComplexTerrain = str(self.data[Constants.KEY_INDICATOR_TERR])
+        sup.SupCalcChm = str(self.data[Constants.KEY_INDICATOR_CHEM])
+        sup.SupUseAddInput = str(self.data[Constants.KEY_NIGHT])
+        sup.SupAddInputPath = self.data[Constants.KEY_DIR_NIGHT]
+        sup.SupCalcWetDep = str(self.data[Constants.KEY_INDICATOR_WET])
         return sup
 
     def get_met(self):
         met = AdmsMet()
+        met.MetDataFileWellFormedPath = self.data[Constants.KEY_MET]
+        met.MetLatitude = self.data[Constants.KEY_LAT]
         return met
+
+    def get_bld(self):
+        bld = AmdsBld()
+        return bld
 
     def get_hil(self):
         hil = AdmsHil()
+        hil.HilTerrainPath = Constants.FILEPATH_HIL
         return hil
 
     def get_cst(self):
@@ -135,6 +155,10 @@ class AdmsAplPlantBuilder(AplBuilder):
     def get_met(self):
         met = AdmsMet()
         return met
+
+    def get_bld(self):
+        bld = AmdsBld()
+        return bld
 
     def get_hil(self):
         hil = AdmsHil()
