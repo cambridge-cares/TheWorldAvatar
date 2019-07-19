@@ -249,15 +249,13 @@ public class CompChemRdf4JServlet extends HttpServlet {
 
 		UploadOntology uploadOntology = new UploadOntology();
 
-		uploadOntology.uploadOntoKin(new FolderManager().getOwlFilePath(RESULT_ONTOKIN_FOLDER + folderName + "/"),
-				ontokinServerUrl, aboxOntokinUri);
+		uploadOntology.uploadOntoKin(new FolderManager().getOwlFilePath(RESULT_ONTOKIN_FOLDER + folderName + "/"),ontokinServerUrl, aboxOntokinUri);
 
 		FolderManager folderManager = new FolderManager();
 
 		String owlFileName = new FolderManager().getOwlFile(RESULT_ONTOKIN_FOLDER + folderName + "/").getName();
 
-		File sourceFile = new File(
-				new FolderManager().getOwlFile(RESULT_ONTOKIN_FOLDER + folderName + "/").getAbsolutePath());
+		File sourceFile = new File(new FolderManager().getOwlFile(RESULT_ONTOKIN_FOLDER + folderName + "/").getAbsolutePath());
 
 		File desinationFile = new File(RESULT_ONTOKIN_FOLDER + owlFileName);
 
