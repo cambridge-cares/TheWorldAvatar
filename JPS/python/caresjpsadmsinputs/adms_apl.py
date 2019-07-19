@@ -10,10 +10,13 @@ class Apl(object):
         self.__grd = None
         self.__puf = None
         self.__gam = None
+        self.__opt = None
         self.__bkg = None
         self.__etc = None
         self.__chm = None
+        self.__coordsys = None
         self.__mapper = None
+        self.__pollutants = None
 
     def set_header(self, header):
         self.__header = header
@@ -45,6 +48,9 @@ class Apl(object):
     def set_gam(self, gam):
         self.__gam = gam
 
+    def set_opt(self, opt):
+        self.__opt = opt
+
     def set_bkg(self, bkg):
         self.__bkg = bkg
 
@@ -54,8 +60,17 @@ class Apl(object):
     def set_etc(self, etc):
         self.__etc = etc
 
+    def set_coordsys(self, coordsys):
+        self.__coordsys = coordsys
+
     def set_mapper(self, mapper):
         self.__mapper = mapper
+
+    def set_pollutants(self, pollutants):
+        self.__pollutants = pollutants
+
+    def add_pollutant(self, pollutant):
+        self.__pollutants.append(pollutant)
 
     def specification(self):
         spec = self.__header.to_string()
@@ -68,10 +83,14 @@ class Apl(object):
         spec = spec + self.__grd.to_string()
         spec = spec + self.__puf.to_string()
         spec = spec + self.__gam.to_string()
-        spec = spec + self.__bkg.to_string()
+        spec = spec + self.__opt.to_string()
         spec = spec + self.__chm.to_string()
+        spec = spec + self.__bkg.to_string()
         spec = spec + self.__etc.to_string()
+        spec = spec + self.__coordsys.to_string()
         spec = spec + self.__mapper.to_string()
+        for pollutant in self.__pollutants:
+            spec = spec + pollutant.to_string()
         return spec
 
 
@@ -321,6 +340,13 @@ class AdmsChm(AplPart):
         self.ChmScheme = 2
 
 
+class AdmsCoordSys(AplPart):
+    def __init__(self):
+        super().__init__()
+        self._name = self._AplPart__name + 'ADMS_COORDINATESYSTEM'
+        self.ProjectedEPSG = 2
+
+
 class AdmsMapper(AplPart):
     def __init__(self):
         super().__init__()
@@ -353,6 +379,7 @@ class AdmsPold(AplPart):
         self.PolBkgLevel = 4.14e+5
         self.PolBkgUnits = "ppb"
 
+
 class AmdsBld(AplPart):
     def __init__(self):
         super().__init__()
@@ -366,3 +393,53 @@ class AmdsBld(AplPart):
         self.BldLength = []
         self.BldWidth = []
         self.BldAngle = []
+
+
+class AmdsOpt(AplPart):
+    def __init__(self):
+        super().__init__()
+        self._name = self._AplPart__name + 'ADMS_PARAMETERS_OPT'
+        self.OptNumOutputs = 8
+        self.OptPolName = []
+        self.OptInclude = []
+        self.OptShortOrLong = []
+        self.OptSamplingTime = []
+        self.OptSamplingTimeUnits = []
+        self.OptCondition = []
+        self.OptNumPercentiles = []
+        self.OptNumExceedences = []
+        self.OptPercentiles = []
+        self.OptExceedences = []
+        self.OptUnits = []
+        self.OptGroupsOrSource = 0
+        self.OptAllSources = 0
+        self.OptNumGroups = 1
+        self.OptIncludedGroups = []
+        self.OptIncludedSource = ""
+        self.OptCreateComprehensiveFile = 0
+
+
+class AmdsPold(AplPart):
+    def __init__(self):
+        super().__init__()
+        self._name = self._AplPart__name + 'ADMS_POLLUTANT_DETAILS'
+        self.PolName = ""
+        self.PolPollutantType = 0
+        self.PolGasDepVelocityKnown = 0
+        self.PolGasDepositionVelocity = 0
+        self.PolGasType = 0
+        self.PolParDepVelocityKnown = 0
+        self.PolParTermVelocityKnown = 0
+        self.PolParNumDepositionData = 1
+        self.PolParDepositionVelocity = [0.0e+0]
+        self.PolParTerminalVelocity = [0.0e+0]
+        self.PolParDiameter = []
+        self.PolParDensity = [1.000e+3]
+        self.PolParMassFraction = [1.0e+0]
+        self.PolWetWashoutKnown = 0
+        self.PolWetWashout = 0
+        self.PolWetWashoutA = 0
+        self.PolWetWashoutB = 0
+        self.PolConvFactor = 0
+        self.PolBkgLevel = 0
+        self.PolBkgUnits = ""
