@@ -25,7 +25,6 @@ import uk.ac.cam.cares.jps.thermo.sparql.QueryString;
  *
  */
 
-
 public class SPARQLManager {
 
 	/** The Constant logger. */

@@ -25,7 +25,6 @@ public class UploadOntology {
 	 */
 	public void uploadOntoKin(String owlFilePath, String serverUrl, String ontologyUri) {
 		
-		
 		File owlFile = new File (owlFilePath);
 		
 		ExecutorService executor = Executors.newSingleThreadExecutor();

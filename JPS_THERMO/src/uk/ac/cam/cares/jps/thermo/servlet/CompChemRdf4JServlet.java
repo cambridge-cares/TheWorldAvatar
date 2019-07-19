@@ -264,7 +264,6 @@ public class CompChemRdf4JServlet extends HttpServlet {
 		logger.info("desinationFile: " + desinationFile.getAbsolutePath());		
 
 		folderManager.copyFileToAnotherDestination(sourceFile, desinationFile);
-
 	}
 
 	@Override

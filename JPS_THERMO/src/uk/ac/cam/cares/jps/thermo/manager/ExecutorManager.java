@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.thermo.manager;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-
 /**
  * @author nk510
  * The Class ExecutorManager.
