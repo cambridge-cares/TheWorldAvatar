@@ -57,20 +57,28 @@ public class TiCl4CalculationISG {
 //        String destRList = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\publication-validation\\results\\isg\\";
         
         /**
+         * 
          * Explanation:
          * Below are given folder paths to data used in testing this code. 
          * srcCompoundsRef: This is a String that refers to a folder with GAussian files for which Hf and EBRs are estimated. Files are available on Vienna folder: /CoMoCommon/Archive/Projects/Preprints/c4e/c4e-180-pb556-TiCl4/Data/other/initial-calculations/thermo/thermo-calculations/esc/combined/g09/
          * srcRefPool: This is a String that refers to reference data (species) based on which this code estimates Hf and EBRs for target species given as  "String srcSoiPool". These data are available on data are available on Vienna folder: /CoMoCommon/Archive/Projects/Preprints/c4e/c4e-180-pb556-TiCl4/Data/other/initial-calculations/thermo/enthalpy/
          * srcSoiPool: This is a String that refers to target data (species) for which this Java code estimates Hf and EBRs. These data are available on data are available on Vienna folder: /CoMoCommon/Archive/Projects/Preprints/c4e/c4e-180-pb556-TiCl4/Data/other/initial-calculations/thermo/enthalpy/
          * destRList: This is a String that refers to destination folder where output of calculations (Hf, EBRs) are  stored.
+         * 
          */
     	
-        String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\g09\\"; 
-        String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\plain-ref_scaled_kJperMols_v8-0p05.csv";  
-//      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-1-species.csv";   //Target 1 species in first raw. Other species from the list belong to reference species.
-//      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-10-species.csv";  //Target 10 species from 1st to 10th raw. Other species from the list belong to reference species.
-        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-no-ref-data.csv"; // There are no reference species that are included in the list of target species.
+        String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\g09\\";
+        String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\plain-ref_scaled_kJperMols_v8-0p05.csv"; //171//ref-enthalpy_scaled_kJperMol.csv
+//      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-1-species.csv"; //Target 1 species in first raw. Other species from the list belong to reference species.
+        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-O2-3let.csv";
+//      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-10-species.csv"; //Target 10 species from 1st to 10th raw. Other species from the list belong to reference species.
+//      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-no-ref-data.csv"; // There are no reference species that are included in the list of target species. //171//calc-enthalpy_scaled_kJperMol.csv
         String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\isg\\";
+        
+//      String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\esc\\g09\\"; 
+//      String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\ref-enthalpy_scaled_kJperMol.csv";  //171//ref-enthalpy_scaled_kJperMol.csv
+//      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\calc-enthalpy_scaled_kJperMol.csv"; //171//calc-enthalpy_scaled_kJperMol.csv
+//      String destRList = "C:\\Users\\NK\\Documents\\philipp\\\\171-pb556\\hco_isg\\";
         
 //        String srcCompoundsRef = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\west-recalc\\all-g09\\";
 //        String srcRefPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\reference\\ref_scaled_kJperMols_v8.csv";
@@ -143,7 +151,9 @@ public class TiCl4CalculationISG {
             }
         }
         refSpecies.removeAll(invalids);
+        
         all.removeAll(invalids);
+        
         soiSpecies.removeAll(invalids);
         
         SolverHelper.add(mapElPairing);
@@ -159,23 +169,37 @@ public class TiCl4CalculationISG {
 
         for (int z = 0; z < ctrRadicals.length; z++) {
             int maxRadical = ctrRadicals[z];
+            
             int timeout = 1500;
+            
             for (int i = 0; i < ctrRuns.length; i++) {
-                for (int k = 0; k < ctrRes.length; k++) {
-                    String config = "isg_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_" + timeout + "s";
-                    System.out.println("Process configuration " + config);
+            
+            	for (int k = 0; k < ctrRes.length; k++) {
+                
+            		String config = "isg_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_" + timeout + "s";
+                    
+            		System.out.println("Process configuration " + config);
 
                     if (new File(destRList + "\\" + config + ".txt").exists()) {
-                        System.out.println("Skipping " + destRList + "\\" + config);
-                        continue;
+                    
+                    	System.out.println("Skipping " + destRList + "\\" + config);
+                        
+                    	continue;
+                    	
                     }
+                    
                     Collections.shuffle(refSpecies);
+                    
                     Collections.shuffle(soiSpecies);
+                    
                     ctr = 1;
+                    
                     for (Species target : soiSpecies) {
 
                         Map<Species, Collection<ReactionList>> results = new HashMap<>();
+                        
                         System.out.println("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " / " + soiSpecies.size() + ")");
+                        
                         ctr++;
 
                         if (new File(destRList + "\\" + target.getRef() + "\\" + config + "_reaction-list.rct").exists()) {
@@ -183,42 +207,68 @@ public class TiCl4CalculationISG {
                         }
 
                         List<Species> refPool = new ArrayList<>();
+                        
                         refPool.addAll(refSpecies);
+                        
                         refPool.remove(target);
+                        
                         // filter for radicals
                         for (Species sSpin : spinMultiplicity.keySet()) {
+                        	
                             try {
+                            	
                                 if (spinMultiplicity.get(sSpin) != null && spinMultiplicity.get(sSpin) - 1 > maxRadical) {
+                                	
                                     refPool.remove(sSpin);
+                                    
                                 }
+                                
                             } catch (NullPointerException ex) {
+                            	
                             }
                         }
+                        
                         Collections.shuffle(refPool);
+                        
                         ExecutorService executor = Executors.newSingleThreadExecutor();
+                        
                         PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new ISGReactionType(true))); 
+                        
                         poolModCalc.setMaximumSearchDepth(50);
+                        
                         MultiRunCalculator c
                                 = new MultiRunCalculator(
                                         poolModCalc);
+                        
                         c.setNumberOfRuns(ctrRuns[i]);
+                        
                         EnthalpyEstimationThread t = new EnthalpyEstimationThread(c, target, EvaluationUtils.getPool(refPool, true));
+                        
                         Future<Map<Species, Collection<ReactionList>>> future = executor.submit(t);
+                        
                         try {
                             try {
                                 Map<Species, Collection<ReactionList>> r = (Map<Species, Collection<ReactionList>>) future.get(timeout, TimeUnit.SECONDS);
+                                
                                 if (r != null) {
                                     for (Species sR : r.keySet()) {
                                         results.put(target, r.get(sR));
                                     }
                                 } else {
                                     r = (Map<Species, Collection<ReactionList>>) t.getCalculator().get();
+                                    
                                     if (r != null) {
+                                    	
                                         for (Species sR : r.keySet()) {
+                                        	
                                             results.put(target, r.get(sR));
+                                            
                                         }
+                                        
                                     } else {
+                                    	
                                         results.put(target, null);
+                                        
                                     }
                                 }
                             } catch (TimeoutException | InterruptedException | ExecutionException e) {
@@ -234,18 +284,57 @@ public class TiCl4CalculationISG {
                             }
 
                             ReactionList completeRList = new ReactionList();
+                            
                             Collection<Species> ttipSpecies = new HashSet<>();
+                            
                             for (Species s : results.keySet()) {
-                                try {
-                                    ReactionList rList = new ReactionList();
+                                
+                            	try {
+                                    
+                                	ReactionList rList = new ReactionList();
+                                    
                                     for (ReactionList l : results.get(s)) {
+                                    	
                                         rList.addAll(l);
+                                    
                                     }
+                                    
                                     completeRList.addAll(rList);
+                                    
                                     ReactionSelector selector = new MedianReactionSelector();
+                                    
                                     Reaction r = selector.select(rList).get(0);
                                     
-                                    System.out.println("[r.getSpecies().getRef(): " +r.getSpecies().getRef() + "] [r.getSpecies().getHf(): " + r.getSpecies().getHf() + "] [r.getSpecies().getTotalEnergy(): " + r.getSpecies().getTotalEnergy() + "]");
+                                   Map<Species, Double> reactant = r.getReactants();
+                                   
+                                   System.out.println("Reactants: ");
+                                   
+                                   for (Map.Entry<Species, Double> reactants : reactant.entrySet()) {
+                                	
+                                	   Species key = reactants.getKey();
+                                	   
+                                	   Double value = reactants.getValue();
+                                	    
+                                	    System.out.println("key.getRef(): " + key.getRef()+ " , value: " + value);
+                                	    
+                                	}
+                                   
+                                   
+                                   Map<Species, Double> product = r.getProducts();
+                                   
+                                   System.out.println("Products: ");
+                                   
+                                   for(Map.Entry<Species, Double>  products: product.entrySet()) {
+                                	   
+                                	   Species key = products.getKey();
+                                	   
+                                	   Double value = products.getValue();
+                                	   
+                                	   System.out.println("key.getRef(): " + key.getRef() + " ,  value : " + value);
+                                   }
+                                   
+
+                                   System.out.println("[r.getSpecies().getRef(): " +r.getSpecies().getRef() + "] [r.getSpecies().getHf(): " + r.getSpecies().getHf() + "] [r.getSpecies().getTotalEnergy(): " + r.getSpecies().getTotalEnergy() + "]");
                                     
                                     s.setHf(r.calculateHf());
 
@@ -254,19 +343,25 @@ public class TiCl4CalculationISG {
                                     System.out.println("[r.calculateHf(): " + r.calculateHf()+" ]");
                                     
                                     ttipSpecies.add(s);
+                                    
                                 } catch (ArrayIndexOutOfBoundsException | NullPointerException aioobe) {
+                                	
                                     System.out.println("No data were calculated for " + s.getRef());
                                 }
                             }
 
                             if (!new File(destRList + "\\" + target.getRef() + "\\").exists()) {
+                            	
                                 new File(destRList + "\\" + target.getRef() + "\\").mkdirs();
+                                
                             }
 
                             ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList + "\\" + target.getRef() + "\\" + config + "_reaction-list.rct"));
+                            
                             SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "\\" + target.getRef() + "\\" + config + "_species-pool_median.csv"));
 
                             if (!completeRList.isEmpty()) {
+                            	
                                 System.out.println("Writting complete reaction list...");
                                 rListWriter.set(completeRList);
                                 rListWriter.overwrite(true);

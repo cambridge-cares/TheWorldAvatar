@@ -55,8 +55,7 @@ public class TiCl4CalculationHOD {
 //        String srcRefPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\reference\\plain-ref_scaled_kJperMols_v8-0p05.csv"; //reference data
 //        String srcSoiPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\ti-o-cl-species\\calc-enthalpy_scaled_kJperMol.csv";  // target species
 //        String destRList = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\publication-validation\\results\\isg\\";
-        
-        
+    	
     	/**
          * Explanation:
          * Below are given folder paths to data used in testing this code. 
@@ -68,8 +67,8 @@ public class TiCl4CalculationHOD {
         String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\g09\\"; 
         String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\plain-ref_scaled_kJperMols_v8-0p05.csv";  
 //      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-1-species.csv";   //Target 1 species in first raw. Other species from the list belong to reference species.
-//      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-10-species.csv";  //Target 10 species from 1st to 10th raw. Other species from the list belong to reference species.
-        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-no-ref-data.csv"; // There are no reference species that are included in the list of target species.
+        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-10-species.csv";  //Target 10 species from 1st to 10th raw. Other species from the list belong to reference species.
+//      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-no-ref-data.csv"; // There are no reference species that are included in the list of target species.
         String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\hod\\";
         
 //        String srcCompoundsRef = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\west-recalc\\all-g09\\";
@@ -155,14 +154,14 @@ public class TiCl4CalculationHOD {
 
         int[] ctrRuns = new int[]{1};
         int[] ctrRes = new int[]{1}; // 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18, - number of reactions //8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40
-        int[] ctrRadicals = new int[]{100}; // 0, 1, 2, 3, 4, 5
+        int[] ctrRadicals = new int[]{100}; // 0, 1, 2, 3, 4, 5 //100
 
         for (int z = 0; z < ctrRadicals.length; z++) {
             int maxRadical = ctrRadicals[z];
             int timeout = 1500;
             for (int i = 0; i < ctrRuns.length; i++) {
                 for (int k = 0; k < ctrRes.length; k++) {
-                    String config = "isg_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_" + timeout + "s";
+                    String config = "hod_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_" + timeout + "s";
                     System.out.println("Process configuration " + config);
 
                     if (new File(destRList + "\\" + config + ".txt").exists()) {
@@ -185,6 +184,7 @@ public class TiCl4CalculationHOD {
                         List<Species> refPool = new ArrayList<>();
                         refPool.addAll(refSpecies);
                         refPool.remove(target);
+                        
                         // filter for radicals
                         for (Species sSpin : spinMultiplicity.keySet()) {
                             try {

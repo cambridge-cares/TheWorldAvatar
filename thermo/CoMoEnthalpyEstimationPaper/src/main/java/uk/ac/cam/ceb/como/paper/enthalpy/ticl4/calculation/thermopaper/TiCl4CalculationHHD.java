@@ -57,21 +57,31 @@ public class TiCl4CalculationHHD {
 //        String destRList = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\publication-validation\\results\\isg\\";
     	
     	/**
+    	 * 
          * Explanation:
          * Below are given folder paths to data used in testing this code. 
          * srcCompoundsRef: This is a String that refers to a folder with GAussian files for which Hf and EBRs are estimated. Files are available on Vienna folder: /CoMoCommon/Archive/Projects/Preprints/c4e/c4e-180-pb556-TiCl4/Data/other/initial-calculations/thermo/thermo-calculations/esc/combined/g09/
          * srcRefPool: This is a String that refers to reference data (species) based on which this code estimates Hf and EBRs for target species given as  "String srcSoiPool". These data are available on data are available on Vienna folder: /CoMoCommon/Archive/Projects/Preprints/c4e/c4e-180-pb556-TiCl4/Data/other/initial-calculations/thermo/enthalpy/
          * srcSoiPool: This is a String that refers to target data (species) for which this Java code estimates Hf and EBRs. These data are available on data are available on Vienna folder: /CoMoCommon/Archive/Projects/Preprints/c4e/c4e-180-pb556-TiCl4/Data/other/initial-calculations/thermo/enthalpy/
          * destRList: This is a String that refers to destination folder where output of calculations (Hf, EBRs) are  stored.
+         * 
          */
     	
-        String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\g09\\"; 
-        String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\plain-ref_scaled_kJperMols_v8-0p05.csv";  
-//      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-1-species.csv";   //Target 1 species in first raw. Other species from the list belong to reference species.
-//      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-10-species.csv";  //Target 10 species from 1st to 10th raw. Other species from the list belong to reference species.
-        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-no-ref-data.csv"; // There are no reference species that are included in the list of target species.
-        String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\hhd\\";
+//        String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\g09\\";
+//        String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\plain-ref_scaled_kJperMols_v8-0p05.csv"; //171//ref-enthalpy_scaled_kJperMol.csv
+//        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-1-species.csv"; //Target 1 species in first raw. Other species from the list belong to reference species.
+//        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-O2-3let.csv";
+//        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-10-species.csv"; //Target 10 species from 1st to 10th raw. Other species from the list belong to reference species.
+//        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-no-ref-data.csv"; // There are no reference species that are included in the list of target species. //171//calc-enthalpy_scaled_kJperMol.csv
+//        String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\hhd\\";
         
+          String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\esc\\g09\\"; 
+          String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\ref-enthalpy_scaled_kJperMol.csv";  //171//ref-enthalpy_scaled_kJperMol.csv
+//        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\calc-enthalpy_scaled_kJperMol.csv";
+          String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\calc-enthalpy_scaled_kJperMol10.csv";
+//        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\calc-enthalpy_scaled_kJperMol-1species.csv"; //171//calc-enthalpy_scaled_kJperMol.csv
+          String destRList = "C:\\Users\\NK\\Documents\\philipp\\\\171-pb556\\hco_hhd\\";
+
 //        String srcCompoundsRef = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\west-recalc\\all-g09\\";
 //        String srcRefPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\reference\\ref_scaled_kJperMols_v8.csv";
 //        String srcSoiPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\west-recalc\\calc-enthalpy_scaled_kJperMol-Ti5.csv";
@@ -97,19 +107,27 @@ public class TiCl4CalculationHHD {
         Map<String, Integer[]> mapElPairing = new HashMap<>();
         
         SpeciesPoolParser refParser = new SpeciesPoolParser(new File(srcRefPool));
+
         refParser.parse();
+        
         List<Species> refSpecies = new ArrayList<>(refParser.getRefSpecies());
 
         SpeciesPoolParser soiParser = new SpeciesPoolParser(new File(srcSoiPool));
+        
         soiParser.parse();
+        
         List<Species> soiSpecies = new ArrayList<>(soiParser.getSpeciesOfInterest());
 
         Collection<Species> invalids = new HashSet<>();
+        
         Map<Species, Integer> spinMultiplicity = new HashMap<>();
+        
         int ctr = 1;
 
         Set<Species> all = new HashSet<>();
+        
         all.addAll(soiSpecies);
+        
         all.addAll(refSpecies);
 
         for (Species s : all) {
@@ -128,22 +146,34 @@ public class TiCl4CalculationHHD {
                         invalids.add(s);
                     }
                 } catch (NullPointerException npe) {
+                	
                 	/**
                 	 * Check this line with Angiras.
                 	 */
                     if (s.getRef().compareTo("Ti5O6Cl8") == 0) {
-                        spinMultiplicity.put(s, 1);
+                    
+                    	spinMultiplicity.put(s, 1);
+                    
                     } else {
-                        System.out.println(s.getRef());
+                    
+                    	System.out.println(s.getRef());
+                
                     }
+                
                 }
+                
             } else {
-                System.out.println("REF: No file found for " + s.getRef());
+                
+            	System.out.println("REF: No file found for " + s.getRef());
+                
                 invalids.add(s);
             }
         }
+        
         refSpecies.removeAll(invalids);
+        
         all.removeAll(invalids);
+        
         soiSpecies.removeAll(invalids);
         
         SolverHelper.add(mapElPairing);
@@ -162,7 +192,7 @@ public class TiCl4CalculationHHD {
             int timeout = 1500;
             for (int i = 0; i < ctrRuns.length; i++) {
                 for (int k = 0; k < ctrRes.length; k++) {
-                    String config = "isg_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_" + timeout + "s";
+                    String config = "hhd_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_" + timeout + "s";
                     System.out.println("Process configuration " + config);
 
                     if (new File(destRList + "\\" + config + ".txt").exists()) {
