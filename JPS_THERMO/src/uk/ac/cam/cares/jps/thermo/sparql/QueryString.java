@@ -119,7 +119,11 @@ public class QueryString {
 		
 		return query;
 	}
-	
+	/**
+	 * 
+	 * @param gaussianIRI The Gaussian URI
+	 * @return The unique species URI
+	 */
 	public static String getUniqueSpeciesUriSPARQL(String gaussianIRI) {
 		
 		/**

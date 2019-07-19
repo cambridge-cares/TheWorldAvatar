@@ -28,6 +28,7 @@ public class PropertiesManager {
 			}
 
 			/**
+			 * 
 			 * @author NK510
 			 *  Loads a properties file from class path.
 			 */

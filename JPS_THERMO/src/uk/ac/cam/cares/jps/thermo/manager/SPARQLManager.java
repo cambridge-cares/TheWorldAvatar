@@ -33,6 +33,7 @@ public class SPARQLManager {
 	
 	
 	/**
+	 * 
 	 * @author NK510
 	 * @param gaussian The Gaussian URI.
 	 * @param jsonInputFilePath The input JSON file.

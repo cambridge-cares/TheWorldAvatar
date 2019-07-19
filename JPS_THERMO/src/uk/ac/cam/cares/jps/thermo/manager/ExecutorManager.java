@@ -12,7 +12,6 @@ public class ExecutorManager {
 
 	/**
 	 * 
-	 *
 	 * @author nk510
 	 * @param executorService The executor service. Shutdown executor service. 
 	 * 
