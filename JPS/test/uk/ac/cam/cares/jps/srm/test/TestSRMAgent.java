@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.srm.test;
 
+import java.io.FileWriter;
 import java.io.IOException;
 
 import org.apache.jena.ontology.OntModel;
@@ -19,6 +20,8 @@ import org.json.JSONObject;
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.query.JenaHelper;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.srm.SRMAgent;
 
 public class TestSRMAgent extends TestCase {
@@ -47,16 +50,6 @@ public class TestSRMAgent extends TestCase {
 		assertTrue(jo.getJSONObject("results").has("pollutants"));
 	}
 	
-	public static synchronized ResultSet queryFromOWLFile(String sparql, OntModel model) {
-		Query query = QueryFactory.create(sparql);
-		QueryExecution queryExec = QueryExecutionFactory.create(query, model);
-		ResultSet rs = queryExec.execSelect();   
-		//reset the cursor, so that the ResultSet can be repeatedly used
-		ResultSetRewindable results = ResultSetFactory.copyResults(rs);    
-		//ResultSetFormatter.out(System.out, results, query); ?? don't know why this is needed to be commented
-		return results;
-	}
-	
 	public void testqueryOWLFIle () {
 		OntModel jenaOwlModel = null; 
 		
@@ -80,7 +73,8 @@ public class TestSRMAgent extends TestCase {
 		jenaOwlModel = ModelFactory.createOntologyModel();	
 		jenaOwlModel.read("http://www.theworldavatar.com/kb/deu/berlin/powerplants/DieselEngine-001.owl#DieselEngine-001", null);
 		
-		ResultSet rs_engine = TestSRMAgent.queryFromOWLFile(engineInfo,jenaOwlModel); 
+
+		ResultSet rs_engine = JenaHelper.query(jenaOwlModel,engineInfo);
 		String valueiri=null;
 		String valuetype=null;
 		for (; rs_engine.hasNext();) {			
@@ -111,4 +105,17 @@ public class TestSRMAgent extends TestCase {
 		assertTrue(result.getJSONObject("results").has("mixture"));
 		assertTrue(result.getJSONObject("results").has("pollutants"));
 	}
+	
+	private void startspeedloadmap(String batchFolderlocation) {
+		//system.out.println("starting the binary converter");
+		String startSRMCommand = "C:/JPS_DATA/workingdir/JPS/SRM/ADMS-speed-load-map/SpeedLoadMap.bat ";
+		CommandHelper.executeSingleCommand(batchFolderlocation, startSRMCommand);
+	}
+
+
+
+		
+		
+		
+	
 }

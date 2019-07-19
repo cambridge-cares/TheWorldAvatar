@@ -15,17 +15,17 @@ SUP = '''
     &ADMS_PARAMETERS_SUP
     SupSiteName                    = "terrain dispersion site"
     SupProjectName                 = "chlorine leakage tank dispersion"
-    SupUseAddInput                 = 0
-    SupAddInputPath                = " "
+    SupUseAddInput                 = {2}
+    SupAddInputPath                = "{3}"
     SupReleaseType                 = 0
     SupModelBuildings              = 1
     SupModelComplexTerrain         = {0}
     SupModelCoastline              = 0
     SupPufType                     = 0
-    SupCalcChm                     = 0
+    SupCalcChm                     = {1}
     SupCalcDryDep                  = 0
-    SupCalcWetDep                  = 0
-    SupCalcPlumeVisibility         = 0
+    SupCalcWetDep                  = {4}
+    SupCalcPlumeVisibility         = 1
     SupModelFluctuations           = 0
     SupModelRadioactivity          = 0
     SupModelOdours                 = 0
@@ -133,7 +133,7 @@ HIL  = r'''
     HilGridSize          = 2
     HilUseTerFile        = 1
     HilUseRoughFile      = 0
-    HilTerrainPath       = "C:\JPS_DATA\workingdir\JPS\ADMS\updated.ter"
+    HilTerrainPath       = "C:\JPS_DATA\workingdir\JPS\ADMS\hkterrainlatestupdated.ter"
     HilRoughPath         = " "
     HilCreateFlowField   = 1
     /
@@ -198,11 +198,14 @@ PUFGAM = '''
     GamCalcDose         = 0
     /
 '''
-BKGETC = '''
+BKG = '''
     &ADMS_PARAMETERS_BKG
-    BkgFilePath     = "D:\ADMS 5.2\Test files\\tank1574leakage\\background condition.bgd"
-    BkgFixedLevels  = 1
+    BkgFilePath     = "{0}"
+    BkgFixedLevels  = 0
     /
+'''
+
+ETC = ''' 
     &ADMS_PARAMETERS_ETC
     SrcNumSources    = {0}
     PolNumPollutants = 19
@@ -244,7 +247,7 @@ POLD = '''
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
     PolConvFactor      = 5.47e-1
-    PolBkgLevel        = 0.0e+0
+    PolBkgLevel        = 4.14e+5
     PolBkgUnits        = "ppb"
     /
 
@@ -273,7 +276,7 @@ POLD = '''
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
     PolConvFactor      = 5.2e-1
-    PolBkgLevel        = 0.0e+0
+    PolBkgLevel        = 6.0e+1
     PolBkgUnits        = "ppb"
     /
 
@@ -301,7 +304,7 @@ POLD = '''
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
     PolConvFactor      = 5.2e-1
-    PolBkgLevel        = 0.0e+0
+    PolBkgLevel        = 4.41e+1
     PolBkgUnits        = "ppb"
     /
 
@@ -357,7 +360,7 @@ POLD = '''
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
     PolConvFactor      = 5.0e-1
-    PolBkgLevel        = 0.0e+0
+    PolBkgLevel        = 6.899e+1
     PolBkgUnits        = "ppb"
     /
 
@@ -409,11 +412,11 @@ POLD = '''
     PolParMassFraction =
       1.0e+0
     PolWetWashoutKnown = 1
-    PolWetWashout      = 0.0e+0
+    PolWetWashout      = {0}
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
     PolConvFactor      = 3.7e-1
-    PolBkgLevel        = 0.0e+0
+    PolBkgLevel        = 1.513e+1
     PolBkgUnits        = "ppb"
     /
 
@@ -423,8 +426,8 @@ POLD = '''
     PolGasDepVelocityKnown   = 1
     PolGasDepositionVelocity = 0.0e+0
     PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
+    PolParDepVelocityKnown   = 0
+    PolParTermVelocityKnown  = 0
     PolParNumDepositionData  = 1
     PolParDepositionVelocity =
       0.0e+0
@@ -437,11 +440,11 @@ POLD = '''
     PolParMassFraction =
       1.0e+0
     PolWetWashoutKnown = 1
-    PolWetWashout      = 0.0e+0
+    PolWetWashout      = {1}
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
     PolConvFactor      = 1.0e+0
-    PolBkgLevel        = 0.0e+0
+    PolBkgLevel        = 5.63e+1
     PolBkgUnits        = "ug/m3"
     /
 
@@ -451,8 +454,8 @@ POLD = '''
     PolGasDepVelocityKnown   = 1
     PolGasDepositionVelocity = 0.0e+0
     PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
+    PolParDepVelocityKnown   = 0
+    PolParTermVelocityKnown  = 0
     PolParNumDepositionData  = 1
     PolParDepositionVelocity =
       0.0e+0
@@ -464,12 +467,12 @@ POLD = '''
       1.000e+3
     PolParMassFraction =
       1.0e+0
-    PolWetWashoutKnown = 1
+    PolWetWashoutKnown = 0
     PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
+    PolWetWashoutA     = 3.552e-1
+    PolWetWashoutB     = 5.394e-1
     PolConvFactor      = 1.0e+0
-    PolBkgLevel        = 0.0e+0
+    PolBkgLevel        = 8.0e+0
     PolBkgUnits        = "ug/m3"
     /
 
@@ -497,7 +500,7 @@ POLD = '''
     PolWetWashoutA     = 1.0e-4
     PolWetWashoutB     = 6.4e-1
     PolConvFactor      = 8.6e-1
-    PolBkgLevel        = 0.0e+0
+    PolBkgLevel        = 1.222e+3
     PolBkgUnits        = "ppb"
     /
 
@@ -576,10 +579,10 @@ POLD = '''
       1.000e+3
     PolParMassFraction =
       1.0e+0
-    PolWetWashoutKnown = 1
+    PolWetWashoutKnown = 0
     PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
+    PolWetWashoutA     = 3.0e-4
+    PolWetWashoutB     = 6.6e-1
     PolConvFactor      = 6.589e-1
     PolBkgLevel        = 0.0e+0
     PolBkgUnits        = "ppb"
@@ -688,9 +691,9 @@ POLD = '''
       1.000e+3
     PolParMassFraction =
       1.0e+0
-    PolWetWashoutKnown = 1
+    PolWetWashoutKnown = 0
     PolWetWashout      = 1.0e-4
-    PolWetWashoutA     = 1.0e-4
+    PolWetWashoutA     = 5.0e-3
     PolWetWashoutB     = 6.4e-1
     PolConvFactor      = 1.462e+0
     PolBkgLevel        = 6.0e+0
@@ -741,7 +744,7 @@ class admsAplWriter(object):
         with open(self.address, 'w') as file:
             self.writeStr(file, HEADER)
             #self.writeStr(file,SUP)
-            self.writeTemp(file,SUP,self.data['terrindicator'])
+            self.writeTemp(file,SUP,[self.data['terrindicator'],self.data['chemindicator'],self.data['night'],self.data['dirnight'],self.data['wetindicator']])
             self.writeTemp(file,MET,[self.data['Met'],self.data['Lat']])
             self.writeBdn(file, self.data['Bdn'])
             self.writeStr(file,HIL)
@@ -751,13 +754,15 @@ class admsAplWriter(object):
             self.writeStr(file,PUFGAM)
             self.writeOpt(file,self.data['Opt'])
             self.writeStr(file,CHM)
-            self.writeStr(file,BKGETC.format(len(self.data['Src'])))
-
+            self.writeTemp(file,BKG,[self.data['Bkg']])
+            self.writeStr(file,ETC.format(len(self.data['Src'])))
+            
 
             self.writeCoordSys(file, self.data['CoordiSys'])# a special case, to be unified in future
             #self.writeCoordSys(file, self.data['CoordiSys'])# a special case, to be unified in future
             self.writeStr(file,MAP)
-            self.writeStr(file,POLD)
+            #self.writeStr(file,POLD)
+            self.writeTemp(file,POLD,[self.data['so2washout'],self.data['pm10washout']])
             #self.writeTemp(self.data['OPT'])
             #del self.data['OPT']
             self.writePol(file,self.data['Pol'])

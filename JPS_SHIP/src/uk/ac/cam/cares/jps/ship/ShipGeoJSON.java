@@ -26,7 +26,9 @@ import org.json.JSONStringer;
 /**
  * Servlet implementation class ShipGeoJSON
  * for visualization part which is called by the 3DADMSMap.js
+ * TODO need to change to database direction instead of owl file
  */
+
 @WebServlet("/ShipGeoJSON")
 public class ShipGeoJSON extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -96,7 +98,7 @@ public class ShipGeoJSON extends HttpServlet {
 		ResultSet rs = queryExec.execSelect();   
 		//reset the cursor, so that the ResultSet can be repeatedly used
 		ResultSetRewindable results = ResultSetFactory.copyResults(rs);    
-		//ResultSetFormatter.out(System.out, results, query); ?? don't know why this is needed to be commented
+
 		
 
 		

@@ -47,7 +47,7 @@ public class ADMSOutputAllForShips extends HttpServlet {
 		args.add("gstReader.py"); 
 		args.add(outputFile);
 		args.add("4"); //height variation level amount (e.g:0m,10m,20m,30m)
-		args.add("6"); //number of polluttant (e.g:CO2,CO,NO2,..etc)
+		args.add("8"); //number of polluttant (e.g:CO2,CO,NO2,..etc) with ozone and so2
 		args.add("");
 		
 		String result = CommandHelper.executeCommands(targetFolder, args);

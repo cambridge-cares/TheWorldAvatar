@@ -98,10 +98,8 @@ class admsInputDataRetriever(object):
                   ?o  techsys:realizes ?process.
                 ?process topology:hasOutput ?stream.
                 ?stream chemical_process_system:refersToGeneralizedAmount ?ga.
-                ?ga sys:hasSubsystem ?ma.
                 
-                ?ma a behavior:MaterialAmount .
-                ?ma sys:hasProperty ?ve.
+                ?ga sys:hasProperty ?ve.
                 ?ve a behavior:ConvectiveMassFlowrate .
                 ?ve sys:hasValue ?vv.
                 ?vv sys:numericalValue ?massflow.
@@ -159,6 +157,7 @@ class admsInputDataRetriever(object):
             qdataC = self.query("""
                     PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
             PREFIX substance:<http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#>
+            PREFIX part:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#>
 
             SELECT DISTINCT  ?content
             WHERE {{
@@ -166,7 +165,7 @@ class admsInputDataRetriever(object):
             ?mix a substance:Mixture.
             ?mix sys:containsDirectly  ?content. 
             }} UNION {{
-             ?content   a substance:MolecularEntity.
+             ?content   a part:ParticulateMaterialAmount.
             }}
             }}
 
@@ -374,6 +373,8 @@ class admsInputDataRetriever(object):
         'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Nitrogen__dioxide':'NO2',
         'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Carbon__monoxide':'CO',
         'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Carbon__dioxide':'CO2',
+        'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Sulfur__dioxide':'SO2',
+        'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Ozone':'O3',
         'http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Unburned_Hydrocarbon':'HC',
         'http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Nitrogen__oxides':'NOx',
          'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Particulate-001':'Particulate001'
@@ -397,18 +398,28 @@ class admsInputDataRetriever(object):
         metpath = "C://JPS_DATA/workingdir/JPS/ADMS/test.met" #later it will be replaced, just ignored
         self.pythonLogger.postInfoToLogServer('path for adms met file='+metpath)
         return metpath
+    
+    def getBkg(self):
+        '''
+        get background data,
+        for now we trigger a python script to write the .met file directly
+        '''
+        #finish writing met
+        bkgpath = "C://JPS_DATA/workingdir/JPS/ADMS/testbackgrnd.bkg" #later it will be replaced, just ignored
+        self.pythonLogger.postInfoToLogServer('path for adms bkg file='+bkgpath)
+        return bkgpath
 
     def getPol(self):
         self.connectDB('http://www.theworldavatar.com/kb/ships/Chimney-1.owl', connectType = 'parse')
         qb =self.query('''
-            PREFIX j.0: <http://www.theworldavatar.com/ontology/ontocape/material/substance/molecular_structure.owl#>
+            PREFIX j.0: <http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#>
             PREFIX j.3: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#>
             PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
             PREFIX j.1:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#>
 
               SELECT distinct ?p ?diameter ?density ?massFraction
               WHERE{
-              ?p a j.0:MolecularGroup.
+              ?p a j.0:SingleParticle.
               ?p j.3:has_length ?de.
               ?de system:hasValue ?ve.
               ?ve system:numericalValue ?diameter.
@@ -418,6 +429,7 @@ class admsInputDataRetriever(object):
               ?p system:hasProperty ?mf.
               ?mf system:hasValue ?mfve.
               ?mfve system:numericalValue ?massFraction.
+              
                         }
               ''')
 
@@ -427,9 +439,11 @@ class admsInputDataRetriever(object):
 
         self.pythonLogger.postInfoToLogServer([row['diameter'] for row in qb])
         rawSol =  admsPol('Particulate001',len(qb),[row['diameter'].toPython() for row in qb],[row['density'].toPython() for row in qb],[float(row['massFraction'].toPython()) for row in qb] )
-        print(rawSol)
+        #rawSolpm25 =  admsPol('PM2.5',len(qbpm25),[row['diameter'].toPython() for row in qbpm25],[row['density'].toPython() for row in qbpm25],[float(row['massFraction'].toPython()) for row in qbpm25] )
+        #print(rawSol)
         self.pythonLogger.postInfoToLogServer(rawSol)
         return rawSol
+
 
 
 
@@ -459,9 +473,11 @@ class admsInputDataRetriever(object):
         xran,yran = self.range
         grd = xran[0], yran[0], xran[1], yran[1]
         pol = self.getPol()
+        bkg=self.getBkg()
+        
 
         #return {'Src': self.rawSrc, 'Bdn': self.rawBdn, 'Opt': rawOpt, 'Met': met, 'Grd':grd}
-        return {'Src': self.rawSrc, 'Opt': rawOpt, 'Met': met, 'Grd':grd, 'Pol':pol}
+        return {'Src': self.rawSrc, 'Opt': rawOpt, 'Met': met, 'Grd':grd, 'Pol':pol, 'Bkg':bkg }
         
 
 

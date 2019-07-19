@@ -3,6 +3,7 @@ import json
 import config
 import rdflib
 import requests
+import datetime
 from collections import namedtuple
 from admsAplWriterShip import admsAplWriter
 from admsInputDataRetrieverChimney import admsInputDataRetriever
@@ -16,6 +17,7 @@ sourceCRS = Proj(init='epsg:4326')
 # targetCRS = Proj(init='epsg:3857')
 targetCRS = Proj(init=sys.argv[5][:4].lower() + sys.argv[5][4:])
 
+"""
 def sparqlQueryRead(queryString): #IT IS UNUSED CURRENTLY, REPLACED BY POSTGRESQL (31-5-2019)
     # sparql = SPARQLWrapper("http://www.theworldavatar.com/damecoolquestion/ships/sparql")
     sparql = SPARQLWrapper("http://172.25.182.41/damecoolquestion/ships-persistent/sparql")
@@ -23,6 +25,7 @@ def sparqlQueryRead(queryString): #IT IS UNUSED CURRENTLY, REPLACED BY POSTGRESQ
     sparql.setReturnFormat(JSON)
 
     return sparql.query().convert()
+"""
 
 try:
 #     pythonLogger.postInfoToLogServer('start')
@@ -132,24 +135,62 @@ try:
     
     print("PARAMETERS")
     print("")
-    print(chimney_iri_list,config.bldTopnode, coordinates,  ["CO2"   ,"CO" ,  "NO2" ,  "HC" ,  "NOx"], 2, config.bdnLimit,False, BDN)
+    #print(chimney_iri_list,config.bldTopnode, coordinates,  ["CO2"   ,"CO" ,  "NO2" ,  "HC" ,  "NOx"], 2, config.bdnLimit,False, BDN)
     print("")
-    test = admsInputDataRetriever(chimney_iri_list,config.bldTopnode, coordinates,  ["CO2"   ,"CO" ,  "NO2" ,  "HC" ,  "NOx", "Particulate001"], 2, config.bdnLimit,False, BDN, targetCRS)
+    test = admsInputDataRetriever(chimney_iri_list,config.bldTopnode, coordinates,  ["CO2"   ,"CO" ,  "NO2" ,  "HC" ,  "NOx", "Particulate001", "SO2", "O3"], 2, config.bdnLimit,False, BDN, targetCRS)
     result = test.get()
     
     print("RESULT TYPE: ")
     print(type(result))
-    pythonLogger.postInfoToLogServer('calling admsAplWirter ...')
+    pythonLogger.postInfoToLogServer('calling admsAplWriter ...')
     result['Bdn'] = BDN
     result['CoordiSys'] = sys.argv[5][5:]
     
     result['Met']= workingDir+ '/test.met'
     result['Lat']= ymid
+    result['Bkg']= workingDir+ '/testbackgrnd.bgd'
     
     if "2326" in sys.argv[5][5:] :
         result['terrindicator']="1"
+        
     else:
         result['terrindicator']="0"
+        
+    
+    result['chemindicator'] = "1";
+    result['wetindicator'] = "1";
+    now=datetime.datetime.now()
+    hournow= now.hour+1
+    if not (6<=hournow <=18) :
+      result['night']="1"
+      result['dirnight']="C:\JPS_DATA\workingdir\JPS\ADMS\chemistrynight.AAI"
+     
+    else:
+      result['night']="0"
+      result['dirnight']=""
+        
+         
+    precipitation =float(str(sys.argv[6]))
+    annualprecipitation= precipitation*365*24
+    if annualprecipitation<103:
+        so2washout=0.000001/500*annualprecipitation
+    else:
+        so2washout=0.0000019+annualprecipitation*0.0000000008
+    
+    if precipitation<0.5:
+        pm10washout=0.0016
+    elif precipitation>4:
+        pm10washout=0.0072
+    else:
+        pm10washout=0.00363
+        
+    result['so2washout'] = so2washout;
+    result['pm10washout'] = pm10washout;
+      
+        
+         
+    
+      
 
 
 #     result['CoordiSys'] = '3857';

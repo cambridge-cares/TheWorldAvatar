@@ -79,9 +79,11 @@ function getContourMaps (address, folder) {
         if (!ubound > 0) {
           ubound = 1
           range = 1
+        }else if (ubound === lbound) {
+          ubound = ubound * THRESHOULD_NUM
         }
         level++
-        if (level > 5) level = 0
+        if (level > POL_NUM - 1) level = 0
 
         const thresholdsC = d3.scaleLog() // [0, 1, 2, 3, 4, 5, 6, 7, 8]
           .domain([lbound, ubound]).range([0, range])
@@ -245,7 +247,7 @@ function makeLegend (selector_id, thresholds, color) {
   // .attr("transform", "translate(20,20)");
   console.log('addl legend')
   var legend = d3.legendColor().
-    labelFormat(d3.format('.2e')).
+    labelFormat(d3.format('.3e')).
     labels(d3.legendHelpers.thresholdLabels).
     scale(thresholdScale)
 
@@ -296,7 +298,7 @@ function makeRadios (selector_id, list, legend) {
 
 //make radio group
 
-const POL_LIST = ['CO2', 'CO', 'NO2', 'HC', 'NOx', 'Particulate001']
+const POL_LIST = ['CO2', 'CO', 'NO2', 'HC', 'NOx', 'Particulate001','SO2','O3']
 const POL_NUM = POL_LIST.length
 const HEIGHT_NUM = 4
 

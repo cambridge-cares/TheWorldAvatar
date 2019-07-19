@@ -17,7 +17,7 @@ public class TestShipAgent extends TestCase {
 	
 	public void testShipAgent () throws JSONException {
 		JSONObject arguments = new JSONObject();
-		arguments.put("reactionmechanism", "https://como.cheng.cam.ac.uk/kb/Reduced_PRF_ERC.owl#ReactionMechanism_4909454516579602");
+		arguments.put("reactionmechanism", "http://www.theworldavatar.com/kb/ontokin/Reduced_PRF_ERC_particle.owl#ReactionMechanism_184144363244001");
 		arguments.put("ship", "http://www.theworldavatar.com/kb/ships/Ship-1.owl#Ship-1");
 		
 		String wasteResult = AgentCaller.executeGet("/JPS_SHIP/ShipAgent", "query", arguments.toString());

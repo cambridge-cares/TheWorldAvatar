@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.srm;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -75,6 +76,8 @@ public class SRMAgent extends HttpServlet  {
 		String startSRMCommand = "C:/JPS_DATA/workingdir/JPS/SRM/ontokinConvertOwlToBin.bat "+iri;
 		CommandHelper.executeSingleCommand(batchFolderlocation, startSRMCommand);
 	}
+	
+
 	
 	
 	public static String executeGet(URIBuilder builder) {
@@ -169,11 +172,12 @@ public class SRMAgent extends HttpServlet  {
 		
 		String iri = null;
 		String iriofengine = null;
+		String source="";
 
 		try {
 			iri = joforrec.getString("reactionmechanism");
 			iriofengine = joforrec.getString("engine");
-
+			source=joforrec.optString("source", "none");
 
 		} catch (JSONException e1) {
 			logger.error(e1.getMessage(), e1);
@@ -186,10 +190,12 @@ public class SRMAgent extends HttpServlet  {
 
 		/** PREPARE ALL THE INPUT FILE*/
 		// for PRODUCTION
-		cleanDirectory();
+		cleanDirectory();		
+		
 		
 		if(iri.contains("particle")){
-			String jsonFiledir = AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/OutputCase00001Cyc0001ADMS-valid_v2.json";
+			//String jsonFiledir = AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/OutputCase00001Cyc0001ADMS-valid_v2.json";
+			String jsonFiledir = AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/OutputCase00001Cyc0001ADMS-NOx-SOx-O3-PM.json";
 			JSONObject json = dojsonmodif(jsonFiledir);
 			AgentCaller.writeJsonParameter(response, json);
 		
@@ -199,18 +205,14 @@ public class SRMAgent extends HttpServlet  {
 			
 			
 		    //First, query from ontokin to get the specific reaction mechanism in the format of owl file iri  
-			
-			String mechanismquery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " 
-					+ "PREFIX ontochem: <https://como.cheng.cam.ac.uk/kb/ontochem.owl#> "
-					+ "SELECT ?x "
-					+ "WHERE {?x  rdf:type  ontochem:ReactionMechanism ." 
-					+ "}";
-			
-		
 			try {
+				String mechanismquery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " 
+						+ "PREFIX ontochem: <https://como.cheng.cam.ac.uk/kb/ontochem.owl#> "
+						+ "SELECT ?x "
+						+ "WHERE {?x  rdf:type  ontochem:ReactionMechanism ." 
+						+ "}";
 				//rs_mechanism = SRMAgent.queryFromRDF4JServer(mechanismquery,iri); not neccessary at moment
 				
-				//system.out.println("result of the total query= "+rs_mechanism);
 			} catch (JSONException e1) {
 
 				logger.error(e1.getMessage());
@@ -447,11 +449,17 @@ public class SRMAgent extends HttpServlet  {
 		File[] listOfFiles = folder.listFiles();
 		
 		for (int i = 0; i < listOfFiles.length; i++) {
-			  if (listOfFiles[i].isFile() && !listOfFiles[i].getName().equals("ontokin.jar")&& !listOfFiles[i].getName().equals("InputParams.xml")&& !listOfFiles[i].getName().equals("InputEngineML.xml")&&!listOfFiles[i].getName().equals("OutputCase00001Cyc0001ADMS-valid_v2.json")&& !listOfFiles[i].getName().equals("convert.exe")&& !listOfFiles[i].getName().equals("ontokinConvertOwlToBin.bat")) {
-			
-			   listOfFiles[i].delete();
-			  }
+			if (listOfFiles[i].isFile() && !listOfFiles[i].getName().equals("ontokin.jar")
+					&& !listOfFiles[i].getName().equals("InputParams.xml")
+					&& !listOfFiles[i].getName().equals("InputEngineML.xml")
+					&& !listOfFiles[i].getName().equals("OutputCase00001Cyc0001ADMS-valid_v2.json")
+					&& !listOfFiles[i].getName().equals("OutputCase00001Cyc0001ADMS-NOx-SOx-O3-PM.json")
+					&& !listOfFiles[i].getName().equals("convert.exe")
+					&& !listOfFiles[i].getName().equals("ontokinConvertOwlToBin.bat")) {
+
+				listOfFiles[i].delete();
 			}
+		}
 	}
 
 	public void editinputparamXML(String filepath1, String filepath2, String valueofmech) throws TransformerFactoryConfigurationError {

@@ -1,6 +1,6 @@
 class admsSrc(object):
 
-    def __init__(self, SrcName, SrcHeight, SrcDiameter,SrcTemperature, SrcMolWeight, SrcDensity, SrcSpecHeatCap,  SrcPollutants,SrcPolEmissionRate, SrcVolFlowRate = 0,SrcSourceType = 0, SrcReleaseAtNTP = 0, SrcEffluxType = 3, SrcBuoyancyType=0, SrcPercentNOxAsNO2 = 5, SrcL1 =1, SrcL2 =1, SrcFm = 1, SrcFb = 1, SrcMassFlux = 1, SrcAngle1 = 0 , SrcAngle2 = 0, SrcMassH2O = 0,SrcUseVARFile=1,SrcNumGroups=1, SrcGroup=  "Grouptank001", SrcNumVertices =0, SrcTraNumTrafficFlows=0, SrcNumPollutants = 1,SrcPolTotalemission =1, SrcPolStartTime=0,SrcPolDuration =0, SrcNumIsotopes =0  ):
+    def __init__(self, SrcName, SrcHeight, SrcDiameter,SrcTemperature, SrcMolWeight, SrcDensity, SrcSpecHeatCap,  SrcPollutants,SrcPolEmissionRate, SrcVolFlowRate = 0,SrcSourceType = 0, SrcReleaseAtNTP = 0, SrcEffluxType = 3, SrcBuoyancyType=0, SrcPercentNOxAsNO2 = 5, SrcL1 =1, SrcL2 =1, SrcFm = 1, SrcFb = 1, SrcMassFlux = 1, SrcAngle1 = 0 , SrcAngle2 = 0, SrcMassH2O = 0.0645,SrcUseVARFile=1,SrcNumGroups=1, SrcGroup=  "Grouptank001", SrcNumVertices =0, SrcTraNumTrafficFlows=0, SrcNumPollutants = 1,SrcPolTotalemission =1, SrcPolStartTime=0,SrcPolDuration =0, SrcNumIsotopes =0  ):
 
         self.SrcName = SrcName
         self.SrcHeight = SrcHeight
