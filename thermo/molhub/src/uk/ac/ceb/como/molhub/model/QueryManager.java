@@ -288,7 +288,13 @@ public class QueryManager {
 					BindingSet bindingSet = result.next();
 
 					MoleculeProperty moleculeProperty = new MoleculeProperty(bindingSet.getValue("uuid").stringValue(),
-							moleculeName, bindingSet.getValue("levelOfTheory").toString(),
+//							moleculeName,
+							/**
+							 * @author nk510
+							 * It removes any occurrence of "1" and removes  spaces in the resulting output string of species name.
+							 */
+							SentenceManager.removeNumberAndSpaces(moleculeName),
+							bindingSet.getValue("levelOfTheory").toString(),
 							bindingSet.getValue("basisSetValue").toString());
 
 					moleculePropertyList.add(moleculeProperty);

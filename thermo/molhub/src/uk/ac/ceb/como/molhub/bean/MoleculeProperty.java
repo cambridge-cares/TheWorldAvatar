@@ -52,10 +52,10 @@ public class MoleculeProperty {
 	/**
 	 * Instantiates a new molecule property.
 	 *
-	 * @param uuid the uuid
+	 * @param uuid the uuid for species
 	 * @param moleculeName the molecule name
 	 * @param basisSet the basis set
-	 * @param levelOfTheory the level of theory
+	 * @param levelOfTheory the level of theory (method)
 	 */
 	public MoleculeProperty(String uuid,String moleculeName, String basisSet, String levelOfTheory) {
 		

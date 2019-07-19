@@ -242,6 +242,8 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 						Set<MoleculeProperty> setMoleculeProperty = new HashSet<MoleculeProperty>();
 
 						setMoleculeProperty = QueryManager.performSPARQLForMoleculeName(mpp);
+						
+						
 
 						/**
 						 * @author nk510
@@ -256,11 +258,13 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 					}
 
 					/**
+					 * 
 					 * @author nk510
 					 *         <p>
 					 * 		Adding search results as 2-tuple (uuid, molecule name) into session
 					 *         to be used by {@link uk.ac.ceb.como.molhub.action.CalculationAction}.
 					 *         </p>
+					 *         
 					 */
 					
 					for (MoleculeProperty mp : finalSearchResultSet) {
@@ -268,6 +272,8 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 						session.put(mp.getUuid(), mp.getMoleculeName());
 
 					}
+					
+					
 
 					NumberFormat formatter = new DecimalFormat("#00.00");
 

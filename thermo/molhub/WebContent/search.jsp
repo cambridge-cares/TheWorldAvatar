@@ -199,7 +199,7 @@ Session result: <s:property value="session"/>
             
         </div>
     
-    <div class="species-title"> <s:property  value="moleculeName"/></div>
+    <div class="species-title"> <s:property value="moleculeName"/></div>
     
     </div>
     
