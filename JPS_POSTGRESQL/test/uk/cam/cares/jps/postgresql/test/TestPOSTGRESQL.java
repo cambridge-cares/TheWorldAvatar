@@ -12,11 +12,12 @@ public class TestPOSTGRESQL extends TestCase  {
 
 	
 	public void testextractdata() {
+		//sg
 		double xmin=11560879/*.832*/;
 		double ymin=140107/*.739*/;
 		double xmax=11563323/*.926*/;
 		double ymax=143305/*.896*/;
-		
+		//hk
 		 xmin=12706630.262/*.832*/;
 		 ymin=2545539.172/*.739*/;
 		 xmax=12708200.45/*.926*/;

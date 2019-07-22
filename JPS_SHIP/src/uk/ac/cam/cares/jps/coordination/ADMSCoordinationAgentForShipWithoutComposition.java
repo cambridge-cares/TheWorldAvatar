@@ -1,6 +1,6 @@
 package uk.ac.cam.cares.jps.coordination;
 
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -70,7 +70,7 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServl
 
         responseParams.put("ship", jsonShip);
 
-        result = execute("/JPS/ADMSAgent", responseParams.toString(), HttpGet.METHOD_NAME);
+        result = execute("/JPS/ADMSAgent", responseParams.toString(), HttpPost.METHOD_NAME);
         String folder = new JSONObject(result).getString("folder");
         responseParams.put("folder", folder);
     }

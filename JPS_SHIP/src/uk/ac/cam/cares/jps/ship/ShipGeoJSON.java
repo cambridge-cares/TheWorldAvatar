@@ -21,7 +21,13 @@ import org.apache.jena.query.ResultSetRewindable;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.json.JSONStringer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
+
 
 /**
  * Servlet implementation class ShipGeoJSON
@@ -39,14 +45,17 @@ public class ShipGeoJSON extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// -- Get String formatted in Array of Strings -- //
+		Logger logger = LoggerFactory.getLogger(ShipGeoJSON.class);
 		request.setCharacterEncoding("UTF-8");
 		String listOfIRIs = request.getParameter("listOfIRIs");
+		logger.info("listofiriship= "+listOfIRIs);
 		JSONArray arrayOfIRIs = null;
 		JSONStringer arrayOfShipGeoJSON = new JSONStringer();
 		
 		try {
 			arrayOfShipGeoJSON.array();
-			arrayOfIRIs = new JSONArray(listOfIRIs);
+//			arrayOfIRIs = new JSONArray(listOfIRIs);
+			arrayOfIRIs = new JSONObject(listOfIRIs).getJSONArray("shipIRIs");
 			for (int i = 0; i < arrayOfIRIs.length(); i++) {
 				String shipIRI = arrayOfIRIs.getString(i);
 				JSONStringer shipGeoJSON = sparqlQueryReadEndpoint(shipIRI);

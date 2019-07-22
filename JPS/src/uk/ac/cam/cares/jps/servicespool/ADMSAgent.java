@@ -41,11 +41,13 @@ public class ADMSAgent extends JPSHttpServlet {
 
     @Override
     protected void processRequestParameters() {
+    	logger.info("enter adms request parameter");
         JSONObject region = requestParams.getJSONObject("region");
         String cityIRI = requestParams.getString("city");
         JSONObject weather = requestParams.getJSONObject("weatherstate");
+    	logger.info("getting  source");
         String plantIRI = getSourceData(requestParams, cityIRI);
-
+    	logger.info("getting the region,city, weather, and source");
         String precipitation = weather.getJSONObject("hasprecipation").getString("hasintensity");
         double upperx = Double.parseDouble("" + region.getJSONObject("uppercorner").get("upperx"));
         double uppery = Double.parseDouble("" + region.getJSONObject("uppercorner").get("uppery"));
@@ -157,7 +159,8 @@ public class ADMSAgent extends JPSHttpServlet {
         if (!(cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Singapore") || cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Hong_Kong"))) {
             plantIRI = input.getString("plant"); //
         } else {
-            shipIRIs = input.getJSONArray("ship");
+        	logger.info("input= "+input.toString());
+            shipIRIs = input.getJSONObject("ship").getJSONArray("shipIRIs");
 //				plantIRI = shipIRIs.toString();
 
             List<String> list = new ArrayList<String>();
