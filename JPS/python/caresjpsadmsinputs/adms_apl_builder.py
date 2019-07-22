@@ -1,7 +1,4 @@
-from typing import List
-
 from adms_apl import *
-from adms_apl import AmdsPold, AdmsPold
 from config import Constants
 
 
@@ -31,6 +28,7 @@ class AplDirector(object):
         coordsys = self.__builder.get_coordsys()
         mapper = self.__builder.get_mapper()
         pollutants = self.__builder.get_pollutants()
+        sources = self.__builder.get_sources()
 
         apl.set_header(header)
         apl.set_sup(sup)
@@ -49,6 +47,7 @@ class AplDirector(object):
         apl.set_coordsys(coordsys)
         apl.set_mapper(mapper)
         apl.set_pollutants(pollutants)
+        apl.set_sources(sources)
 
         return apl
 
@@ -136,8 +135,17 @@ class AplBuilder(object):
 
         return pollutants
 
-     def get_src(self):
+    def get_sources(self):
+        sources = []
+        src_data = self.data[Constants.KEY_SRC]
+        for s in src_data:
+            source = AdmsSrc()
+            for field in dir(s):
+                if not field.startswith('_') and field not in [Constants.KEY_INDEX, Constants.KEY_COUNT]:
+                    setattr(source, field, getattr(s, field))
+            sources.append(source)
 
+        return sources
 
     @staticmethod
     def get_pol_type(name):
@@ -291,11 +299,11 @@ class AplBuilder(object):
 class AdmsAplShipBuilder(AplBuilder):
     def get_sup(self):
         sup = AdmsSup()
-        sup.SupModelComplexTerrain = str(self.data[Constants.KEY_INDICATOR_TERR])
-        sup.SupCalcChm = str(self.data[Constants.KEY_INDICATOR_CHEM])
-        sup.SupUseAddInput = str(self.data[Constants.KEY_NIGHT])
+        sup.SupModelComplexTerrain = self.data[Constants.KEY_INDICATOR_TERR]
+        sup.SupCalcChm = self.data[Constants.KEY_INDICATOR_CHEM]
+        sup.SupUseAddInput =self.data[Constants.KEY_NIGHT]
         sup.SupAddInputPath = self.data[Constants.KEY_DIR_NIGHT]
-        sup.SupCalcWetDep = str(self.data[Constants.KEY_INDICATOR_WET])
+        sup.SupCalcWetDep = self.data[Constants.KEY_INDICATOR_WET]
         return sup
 
     def get_met(self):
@@ -305,7 +313,7 @@ class AdmsAplShipBuilder(AplBuilder):
         return met
 
     def get_bld(self):
-        bld = AmdsBld()
+        bld = AdmsBld()
         bld_data = self.data[Constants.KEY_BDN]
         for field in bld_data._fields:
             setattr(bld, field, getattr(bld_data, field))
@@ -327,10 +335,10 @@ class AdmsAplShipBuilder(AplBuilder):
     def get_grd(self):
         grd = AdmsGrd()
         data_grd = self.data[Constants.KEY_GRD]
-        grd.GrdRegularMin[0] = data_grd[0]
-        grd.GrdRegularMin[1] = data_grd[1]
-        grd.GrdRegularMax[0] = data_grd[2]
-        grd.GrdRegularMax[1] = data_grd[3]
+        grd.GrdRegularMin[0] = data_grd[2]
+        grd.GrdRegularMin[1] = data_grd[3]
+        grd.GrdRegularMax[0] = data_grd[0]
+        grd.GrdRegularMax[1] = data_grd[1]
         return grd
 
     def get_puf(self):
@@ -342,7 +350,7 @@ class AdmsAplShipBuilder(AplBuilder):
         return gam
 
     def get_opt(self):
-        opt = AmdsOpt()
+        opt = AdmsOpt()
         opt_data = self.data[Constants.KEY_OPT]
         for field in opt_data._fields:
             setattr(opt, field, getattr(opt_data, field))
@@ -386,10 +394,11 @@ class AdmsAplShipBuilder(AplBuilder):
 
     def get_pollutants(self):
         pollutants = super().get_pollutants()
-        pold = AmdsPold()
+        pold = AdmsPold()
         pold_data = self.data[Constants.KEY_POL]
-        for field in pold_data._fields:
-            setattr(pold, field, getattr(pold_data, field))
+        for field in dir(pold_data):
+            if not field.startswith('_') and field not in [Constants.KEY_INDEX, Constants.KEY_COUNT]:
+                setattr(pold, field, getattr(pold_data, field))
         pollutants.append(pold)
 
         return pollutants
@@ -405,7 +414,7 @@ class AdmsAplPlantBuilder(AplBuilder):
         return met
 
     def get_bld(self):
-        bld = AmdsBld()
+        bld = AdmsBld()
         return bld
 
     def get_hil(self):

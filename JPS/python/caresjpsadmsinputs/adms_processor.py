@@ -183,8 +183,9 @@ class AdmsProcessor(object):
         director.set_builder(builder)
         apl = director.get_apl()
         spec = apl.specification()
-        #writer = admsAplWriter(self.input, self.working_dir + Constants.FILE_NAME_APL)
-        #writer.write()
+        with open(self.working_dir + Constants.FILE_NAME_APL, 'w') as file:
+            file.write(spec)
+        file.close()
 
 
 def main(args):

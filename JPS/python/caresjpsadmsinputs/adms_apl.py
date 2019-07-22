@@ -17,6 +17,7 @@ class Apl(object):
         self.__coordsys = None
         self.__mapper = None
         self.__pollutants = None
+        self.__sources = None
 
     def set_header(self, header):
         self.__header = header
@@ -69,8 +70,8 @@ class Apl(object):
     def set_pollutants(self, pollutants):
         self.__pollutants = pollutants
 
-    def add_pollutant(self, pollutant):
-        self.__pollutants.append(pollutant)
+    def set_sources(self, sources):
+        self.__sources = sources
 
     def specification(self):
         spec = self.__header.to_string()
@@ -91,6 +92,8 @@ class Apl(object):
         spec = spec + self.__mapper.to_string()
         for pollutant in self.__pollutants:
             spec = spec + pollutant.to_string()
+        for source in self.__sources:
+            spec = spec + source.to_string()
         return spec
 
 
@@ -104,22 +107,28 @@ class AplPart(object):
 
         for var_name in vars(self).keys():
             if not var_name.startswith('_'):
-                str_out = str_out + var_name + ' = '
                 var_val = vars(self)[var_name]
-                if type(var_val) == str:
-                    var_val = '"' + var_val + '"'
-                elif type(var_val) == int or type(var_val) == float:
-                    var_val = str(var_val)
-                elif type(var_val) == list:
-                    i = 0
-                    out_val = '\n  '
-                    for v in var_val:
-                        if i != 0 and i % 4 == 0:
-                            out_val = out_val + '\n  '
-                        out_val = out_val + str('{:.1e}'.format(v)) + ' '
-                        i = i + 1
-                    var_val = out_val
-                str_out = str_out + var_val + '\n'
+                if type(var_val) in [str, int, float, list]:
+                    str_out = str_out + var_name + ' = '
+                    if type(var_val) == str:
+                        var_val = '"' + var_val + '"'
+                    elif type(var_val) == int or type(var_val) == float:
+                        var_val = str(var_val)
+                    elif type(var_val) == list:
+                        i = 0
+                        out_val = '\n  '
+                        for v in var_val:
+                            if i != 0 and i % 4 == 0:
+                                out_val = out_val + '\n  '
+                            if type(v) == int or type(v) == float:
+                                v = '{:.1e}'.format(v).replace('e+0', 'e+')
+                            elif type(v) == str:
+                                v = '"' + v + '"'
+                            out_val = out_val + str(v) + ' '
+                            i = i + 1
+                        var_val = out_val
+
+                    str_out = str_out + var_val + '\n'
         str_out = str_out + self._AplPart__end + '\n\n'
 
         return str_out
@@ -162,18 +171,25 @@ class AdmsSup(AplPart):
         self.SupTimeVaryingEmissionsType = 0
         self.SupTimeVaryingVARPath = " "
         self.SupTimeVaryingFACPath = " "
-        self.SupTimeVaryingEmissionFactorsWeekday = [1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
-                                                     1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
-                                                     1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
-                                                     1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0]
-        self.SupTimeVaryingEmissionFactorsSaturday = [1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
-                                                      1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
-                                                      1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
-                                                      1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0]
-        self.SupTimeVaryingEmissionFactorsSunday = [1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
-                                                    1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
-                                                    1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
-                                                    1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0]
+        self.SupTimeVaryingEmissionFactorsWeekday = [1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                     1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                     1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                     1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                     1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                     1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0]
+        self.SupTimeVaryingEmissionFactorsSaturday = [1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                      1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                      1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                      1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                      1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                      1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0]
+        self.SupTimeVaryingEmissionFactorsSunday = [1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                    1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                    1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                    1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                    1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                    1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0]
+
 
 
 class AdmsMet(AplPart):
@@ -293,7 +309,7 @@ class AdmsGrd(AplPart):
         self.GrdVarSpaceNumPointsR = 0
         self.GrdVarSpaceNumPointsTh = 0
         self.GrdVarSpaceNumPointsZp = 0
-        self.GrdPtsNumPoints = "0 0"
+        self.GrdPtsNumPoints = [0, 0]
         self.GrdPolarCentreX = 0.0e+0
         self.GrdPolarCentreY = 0.0e+0
         self.GrdPtsUsePointsFile = 1
@@ -354,33 +370,7 @@ class AdmsMapper(AplPart):
         self.ProjectFilePath = " "
 
 
-class AdmsPold(AplPart):
-    def __init__(self):
-        super().__init__()
-        self._name = self._AplPart__name + 'ADMS_POLLUTANT_DETAILS'
-        self.PolName = "CO2"
-        self.PolPollutantType = 0
-        self.PolGasDepVelocityKnown = 1
-        self.PolGasDepositionVelocity = 0.0e+0
-        self.PolGasType = 1
-        self.PolParDepVelocityKnown = 1
-        self.PolParTermVelocityKnown = 1
-        self.PolParNumDepositionData = 1
-        self.PolParDepositionVelocity = [0.0e+0]
-        self.PolParTerminalVelocity = [0.0e+0]
-        self.PolParDiameter = [1.0e-6]
-        self.PolParDensity = [1.000e+3]
-        self.PolParMassFraction = [1.0e+0]
-        self.PolWetWashoutKnown = 0
-        self.PolWetWashout = 0.0e+0
-        self.PolWetWashoutA = 1.0e-4
-        self.PolWetWashoutB = 6.4e-1
-        self.PolConvFactor = 5.47e-1
-        self.PolBkgLevel = 4.14e+5
-        self.PolBkgUnits = "ppb"
-
-
-class AmdsBld(AplPart):
+class AdmsBld(AplPart):
     def __init__(self):
         super().__init__()
         self._name = self._AplPart__name + 'ADMS_PARAMETERS_BLD'
@@ -395,7 +385,7 @@ class AmdsBld(AplPart):
         self.BldAngle = []
 
 
-class AmdsOpt(AplPart):
+class AdmsOpt(AplPart):
     def __init__(self):
         super().__init__()
         self._name = self._AplPart__name + 'ADMS_PARAMETERS_OPT'
@@ -419,7 +409,7 @@ class AmdsOpt(AplPart):
         self.OptCreateComprehensiveFile = 0
 
 
-class AmdsPold(AplPart):
+class AdmsPold(AplPart):
     def __init__(self):
         super().__init__()
         self._name = self._AplPart__name + 'ADMS_POLLUTANT_DETAILS'
@@ -445,7 +435,7 @@ class AmdsPold(AplPart):
         self.PolBkgUnits = ""
 
 
-class AmdsPold(AplPart):
+class AdmsSrc(AplPart):
     def __init__(self):
         super().__init__()
         self._name = self._AplPart__name + 'ADMS_SOURCE_DETAILS'
