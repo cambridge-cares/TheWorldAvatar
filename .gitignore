@@ -1,1 +1,16 @@
 /JPS_BMS/workingdir/rdf-xml-output
+.idea/
+/JPS/JPS.iml
+/JPS/target/
+/JPS_BASE/.idea/
+/JPS_BASE/JPS_BASE.iml
+/JPS_BASE/target/
+/JPS_BASE_LIB/.idea/
+/JPS_BASE_LIB/jps-base.iml
+/JPS_BASE_LIB/target/
+/JPS_POSTGRESQL/JPS_POSTGRESQL.iml
+/JPS_POSTGRESQL/target/
+/JPS_SHIP/.idea/
+/JPS_SHIP/JPS_SHIP.iml
+/JPS_SHIP/target/
+
