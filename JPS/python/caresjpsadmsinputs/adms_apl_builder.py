@@ -1,4 +1,7 @@
+from typing import List
+
 from adms_apl import *
+from adms_apl import AmdsPold, AdmsPold
 from config import Constants
 
 
@@ -53,81 +56,110 @@ class AplDirector(object):
 class AplBuilder(object):
     def __init__(self, data):
         self.data = data
-        self.pollutant_names = [Constants.POL_CO2,  Constants.POL_CO2, Constants.POL_NOX, Constants.POL_NO2,
+        self.pollutant_names = [Constants.POL_CO2, Constants.POL_CO2, Constants.POL_NOX, Constants.POL_NO2,
                                 Constants.POL_NO, Constants.POL_PART_O3, Constants.POL_VOC, Constants.POL_PART_SO2,
                                 Constants.POL_PM10, Constants.POL_PM25, Constants.POL_CO, Constants.POL_BENZENE,
                                 Constants.POL_BUTADIENE, Constants.POL_HCl, Constants.POL_Cl2, Constants.POL_CH3Cl,
                                 Constants.POL_ISOBUTYLENE, Constants.POL_NH3, Constants.POL_HC]
 
-    def get_header(self): pass
+    @staticmethod
+    def get_header():
+        header = AdmsHeader()
+        return header
 
-    def get_sup(self): pass
+    def get_sup(self):
+        pass
 
-    def get_met(self): pass
+    def get_met(self):
+        pass
 
-    def get_bld(self): pass
+    def get_bld(self):
+        pass
 
-    def get_hil(self): pass
+    def get_hil(self):
+        pass
 
-    def get_cst(self): pass
+    def get_cst(self):
+        pass
 
-    def get_flc(self): pass
+    def get_flc(self):
+        pass
 
-    def get_grd(self): pass
+    def get_grd(self):
+        pass
 
-    def get_puf(self): pass
+    def get_puf(self):
+        pass
 
-    def get_gam(self): pass
+    def get_gam(self):
+        pass
 
-    def get_opt(self): pass
+    def get_opt(self):
+        pass
 
-    def get_bkg(self): pass
+    def get_bkg(self):
+        pass
 
-    def get_chm(self): pass
+    def get_chm(self):
+        pass
 
-    def get_etc(self): pass
+    def get_etc(self):
+        pass
 
-    def get_coordsys(self): pass
+    def get_coordsys(self):
+        pass
 
-    def get_mapper(self): pass
+    def get_mapper(self):
+        pass
 
     def get_pollutants(self):
         pollutants = []
         for pname in self.pollutant_names:
             pollutant = AdmsPold()
             pollutant.PolName = pname
-            pollutant.PolPollutantType = self.get_pollutant_type(pname)
-            pollutant.PolGasDepVelocityKnown = self.get_pollutant_gas_dep_velocity_known(pname)
-            pollutant.PolGasDepositionVelocity = self.get_pollutant_gas_dep_velocity(pname)
-            pollutant.PolGasType = self.get_pollutant_gas_type(pname)
+            pollutant.PolPollutantType = self.get_pol_type(pname)
+            pollutant.PolGasDepVelocityKnown = self.get_pol_gas_dep_velocity_known(pname)
+            pollutant.PolGasDepositionVelocity = self.get_pol_gas_dep_velocity(pname)
+            pollutant.PolGasType = self.get_pol_gas_type(pname)
             pollutant.PolParDepVelocityKnown = self.get_pol_par_dep_velocity_known(pname)
             pollutant.PolParTermVelocityKnown = self.get_pol_par_term_velocity_known(pname)
             pollutant.PolParDiameter = self.get_pol_par_diameter(pname)
             pollutant.PolWetWashoutKnown = self.get_pol_wet_washout_known(pname)
             pollutant.PolWetWashout = self.get_pol_wet_washout(pname)
+            pollutant.PolWetWashoutA = self.get_pol_wet_washout_a(pname)
+            pollutant.PolWetWashoutB = self.get_pol_wet_washout_b(pname)
+            pollutant.PolConvFactor = self.get_pol_conv_factor(pname)
+            pollutant.PolBkgLevel = self.get_pol_bkg_level(pname)
+            pollutant.PolBkgUnits = self.get_pol_bkg_units(pname)
 
             pollutants.append(pollutant)
 
         return pollutants
 
-    def get_pollutant_type(self, name):
-        type = 0
-        type_1 = [Constants.POL_PM10, Constants.POL_PM25]
-        if name in type_1:
-            type = 1
+     def get_src(self):
 
-        return type
 
-    def get_pollutant_gas_dep_velocity_known(self, name):
+    @staticmethod
+    def get_pol_type(name):
+        ty = 0
+        ty_1 = [Constants.POL_PM10, Constants.POL_PM25]
+        if name in ty_1:
+            ty = 1
+
+        return ty
+
+    @staticmethod
+    def get_pol_gas_dep_velocity_known(name):
         flag = 1
         type_0 = [Constants.POL_Cl2, Constants.POL_CH3Cl, Constants.POL_ISOBUTYLENE, Constants.POL_NH3,
-                     Constants.POL_HC, Constants.POL_NOx]
+                  Constants.POL_HC, Constants.POL_NOX]
         if name in type_0:
             flag = 0
 
         return flag
 
-    def get_pollutant_gas_dep_velocity(self, name):
+    @staticmethod
+    def get_pol_gas_dep_velocity(name):
         value = 0.0e+0
         type_15 = [Constants.POL_NO2, Constants.POL_NO]
         type_12 = [Constants.POL_PART_SO2]
@@ -141,16 +173,18 @@ class AplBuilder(object):
 
         return value
 
-    def get_pollutant_gas_type(self, name):
-        type = 1
-        type_0 = [Constants.POL_HCl, Constants.POL_Cl2, Constants.POL_CH3Cl, Constants.POL_ISOBUTYLENE,
-                  Constants.POL_NH3, Constants.POL_HC]
-        if name in type_0:
-            type = 0
+    @staticmethod
+    def get_pol_gas_type(name):
+        ty = 1
+        ty_0 = [Constants.POL_HCl, Constants.POL_Cl2, Constants.POL_CH3Cl, Constants.POL_ISOBUTYLENE,
+                Constants.POL_NH3, Constants.POL_HC]
+        if name in ty_0:
+            ty = 0
 
-        return type
+        return ty
 
-    def get_pol_par_dep_velocity_known(self, name):
+    @staticmethod
+    def get_pol_par_dep_velocity_known(name):
         flag = 1
         type_0 = [Constants.POL_PM10, Constants.POL_PM25]
         if name in type_0:
@@ -158,7 +192,8 @@ class AplBuilder(object):
 
         return flag
 
-    def get_pol_par_term_velocity_known(self, name):
+    @staticmethod
+    def get_pol_par_term_velocity_known(name):
         flag = 1
         type_0 = [Constants.POL_PM10, Constants.POL_PM25]
         if name in type_0:
@@ -166,7 +201,8 @@ class AplBuilder(object):
 
         return flag
 
-    def get_pol_par_diameter(self, name):
+    @staticmethod
+    def get_pol_par_diameter(name):
         value = 1.0e-6
         if name == Constants.POL_PM10:
             value = 1.0e-5
@@ -175,30 +211,84 @@ class AplBuilder(object):
 
         return value
 
-    def get_pol_wet_washout_known(self, name):
+    @staticmethod
+    def get_pol_wet_washout_known(name):
         flag = 0
-        type_1 = [Constants.NO, Constants.O3, Constants.SO2, Constants.PM10, Constants.BENZENE, Constants.BUTADIENE,
-                  Constants.Cl2, Constants.CH3Cl, Constants.ISOBUTYLENE, Constants.HC]
+        type_1 = [Constants.POL_NO, Constants.POL_PART_O3, Constants.POL_PART_SO2, Constants.POL_PM10,
+                  Constants.POL_BENZENE, Constants.POL_BUTADIENE, Constants.POL_Cl2, Constants.POL_CH3Cl,
+                  Constants.POL_ISOBUTYLENE, Constants.POL_HC]
         if name in type_1:
             flag = 1
 
         return flag
 
-    def get_pol_wet_washout(self, name):
+    @staticmethod
+    def get_pol_wet_washout(name):
         value = 0.0e+0
-        type_1 = [Constants.Cl2, Constants.CH3Cl, Constants.ISOBUTYLENE, Constants.NH3, Constants.HC]
+        type_1 = [Constants.POL_Cl2, Constants.POL_CH3Cl, Constants.POL_ISOBUTYLENE, Constants.POL_NH3,
+                  Constants.POL_HC]
         if name in type_1:
             value = 1.0e-4
 
         return value
 
+    @staticmethod
+    def get_pol_wet_washout_a(name):
+        value = 1.0e-4
+        if name == Constants.POL_PM25:
+            value = 3.552e-1
+        elif name == Constants.POL_HCl:
+            value = 3.0e-4
+        elif name == Constants.POL_NH3:
+            value = 5.0e-3
+
+        return value
+
+    @staticmethod
+    def get_pol_wet_washout_b(name):
+        value = 6.4e-1
+        if name == Constants.POL_PM25:
+            value = 5.394e-1
+        elif name == Constants.POL_HCl:
+            value = 6.6e-1
+
+        return value
+
+    @staticmethod
+    def get_pol_conv_factor(name):
+        values = {Constants.POL_CO2: 5.47e-1, Constants.POL_NOX: 5.2e-1, Constants.POL_NO2: 5.2e-1,
+                  Constants.POL_NO: 8.0e-1, Constants.POL_PART_O3: 5.0e-1, Constants.POL_VOC: 3.1e-1,
+                  Constants.POL_PART_SO2: 3.7e-1, Constants.POL_PM10: 1.0e+0, Constants.POL_PM25: 1.0e+0,
+                  Constants.POL_CO: 8.6e-1, Constants.POL_BENZENE: 3.1e-1, Constants.POL_BUTADIENE: 4.5e-1,
+                  Constants.POL_HCl: 6.589e-1, Constants.POL_Cl2: 3.5e-1, Constants.POL_CH3Cl: 4.922e-1,
+                  Constants.POL_ISOBUTYLENE: 4.43e-1, Constants.POL_NH3: 1.462e+0, Constants.POL_HC: 0.802e+0}
+        value = values[name]
+
+        return value
+
+    @staticmethod
+    def get_pol_bkg_level(name):
+        values = {Constants.POL_CO2: 4.14e+5, Constants.POL_NOX: 6.0e+1, Constants.POL_NO2: 4.41e+1,
+                  Constants.POL_NO: 0.0e+0, Constants.POL_PART_O3: 6.899e+1, Constants.POL_VOC: 0.0e+0,
+                  Constants.POL_PART_SO2: 1.513e+1, Constants.POL_PM10: 5.63e+1, Constants.POL_PM25: 8.0e+0,
+                  Constants.POL_CO: 1.222e+3, Constants.POL_BENZENE: 0.0e+0, Constants.POL_BUTADIENE: 0.0e+0,
+                  Constants.POL_HCl: 0.0e+0, Constants.POL_Cl2: 0.0e+0, Constants.POL_CH3Cl: 6.0e-1,
+                  Constants.POL_ISOBUTYLENE: 0.0e+0, Constants.POL_NH3: 6.0e+0, Constants.POL_HC: 0.0e+0}
+        value = values[name]
+
+        return value
+
+    @staticmethod
+    def get_pol_bkg_units(name):
+        value = Constants.UNIT_PPB
+        ugm3 = [Constants.POL_PM10, Constants.POL_PM25]
+        if name in ugm3:
+            value = Constants.UNIT_UGM3
+
+        return value
 
 
 class AdmsAplShipBuilder(AplBuilder):
-    def get_header(self):
-        header = AdmsHeader()
-        return header
-
     def get_sup(self):
         sup = AdmsSup()
         sup.SupModelComplexTerrain = str(self.data[Constants.KEY_INDICATOR_TERR])
@@ -281,12 +371,31 @@ class AdmsAplShipBuilder(AplBuilder):
         mapper = AdmsMapper()
         return mapper
 
+    def get_pol_wet_washout(self, name):
+        value = 0.0e+0
+        type_1 = [Constants.POL_Cl2, Constants.POL_CH3Cl, Constants.POL_ISOBUTYLENE, Constants.POL_NH3,
+                  Constants.POL_HC]
+        if name in type_1:
+            value = 1.0e-4
+        elif name == Constants.POL_PART_SO2:
+            value = self.data[Constants.KEY_WASHOUT_SO2]
+        elif name == Constants.POL_PM10:
+            value = self.data[Constants.KEY_WASHOUT_PM10]
+
+        return value
+
+    def get_pollutants(self):
+        pollutants = super().get_pollutants()
+        pold = AmdsPold()
+        pold_data = self.data[Constants.KEY_POL]
+        for field in pold_data._fields:
+            setattr(pold, field, getattr(pold_data, field))
+        pollutants.append(pold)
+
+        return pollutants
+
 
 class AdmsAplPlantBuilder(AplBuilder):
-    def get_header(self):
-        header = AdmsHeader()
-        return header
-
     def get_sup(self):
         sup = AdmsSup()
         return sup
@@ -338,1095 +447,3 @@ class AdmsAplPlantBuilder(AplBuilder):
     def get_mapper(self):
         mapper = AdmsMapper()
         return mapper
-
-
-
-'''
-    PolWetWashout      = 0.0e+0
-'''
-
-'''
-    PolName                  = "CO2"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 0
-    PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 5.47e-1
-    PolBkgLevel        = 4.14e+5
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "NOx"
-    PolGasDepVelocityKnown   = 0
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 0
-    PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 5.2e-1
-    PolBkgLevel        = 6.0e+1
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "NO2"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 1.5e-3
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 0
-    PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 5.2e-1
-    PolBkgLevel        = 4.41e+1
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "NO"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 1.5e-3
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 1
-    PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 8.0e-1
-    PolBkgLevel        = 0.0e+0
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "O3"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 1
-    PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 5.0e-1
-    PolBkgLevel        = 6.899e+1
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "VOC"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 0
-    PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 3.1e-1
-    PolBkgLevel        = 0.0e+0
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "SO2"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 1.2e-2
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 1
-    PolWetWashout      = {0}
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 3.7e-1
-    PolBkgLevel        = 1.513e+1
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "PM10"
-    PolPollutantType         = 1
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 0
-    PolParTermVelocityKnown  = 0
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-5
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 1
-    PolWetWashout      = {1}
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 1.0e+0
-    PolBkgLevel        = 5.63e+1
-    PolBkgUnits        = "ug/m3"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "PM2.5"
-    PolPollutantType         = 1
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 0
-    PolParTermVelocityKnown  = 0
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      2.5e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 0
-    PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 3.552e-1
-    PolWetWashoutB     = 5.394e-1
-    PolConvFactor      = 1.0e+0
-    PolBkgLevel        = 8.0e+0
-    PolBkgUnits        = "ug/m3"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "CO"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 0
-    PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 8.6e-1
-    PolBkgLevel        = 1.222e+3
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "BENZENE"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 1
-    PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 3.1e-1
-    PolBkgLevel        = 0.0e+0
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "BUTADIENE"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 1
-    PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 4.5e-1
-    PolBkgLevel        = 0.0e+0
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "HCl"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 0
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 0
-    PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 3.0e-4
-    PolWetWashoutB     = 6.6e-1
-    PolConvFactor      = 6.589e-1
-    PolBkgLevel        = 0.0e+0
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "Cl2"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 0
-    PolGasDepositionVelocity = 5.0e+0
-    PolGasType               = 0
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 1
-    PolWetWashout      = 1.0e-4
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 3.5e-1
-    PolBkgLevel        = 0.0e+0
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "CH3Cl"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 0
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 0
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 1
-    PolWetWashout      = 1.0e-4
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 4.922e-1
-    PolBkgLevel        = 6.0e-1
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "ISOBUTYLENE"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 0
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 0
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 1
-    PolWetWashout      = 1.0e-4
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 4.43e-1
-    PolBkgLevel        = 0.0e+0
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "NH3"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 0
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 0
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 0
-    PolWetWashout      = 1.0e-4
-    PolWetWashoutA     = 5.0e-3
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 1.462e+0
-    PolBkgLevel        = 6.0e+0
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "HC"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 0
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 0
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 1
-    PolWetWashout      = 1.0e-4
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 0.802e+0
-    PolBkgLevel        = 0.0e+0
-    PolBkgUnits        = "ppb"
-    /
-'''
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "CO2"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 0
-    PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 5.47e-1
-    PolBkgLevel        = 4.14e+5
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "NOx"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 0
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 0
-    PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 5.2e-1
-    PolBkgLevel        = 6.0e+1
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "NO2"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 1.5e-3
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 0
-    PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 5.2e-1
-    PolBkgLevel        = 4.41e+1
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "NO"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 1.5e-3
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 1
-    PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 8.0e-1
-    PolBkgLevel        = 0.0e+0
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "O3"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 1
-    PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 5.0e-1
-    PolBkgLevel        = 6.899e+1
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "VOC"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 0
-    PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 3.1e-1
-    PolBkgLevel        = 0.0e+0
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "SO2"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 1.2e-2
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 1
-    PolWetWashout      = {0}
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 3.7e-1
-    PolBkgLevel        = 1.513e+1
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "PM10"
-    PolPollutantType         = 1
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 0
-    PolParTermVelocityKnown  = 0
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-5
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 1
-    PolWetWashout      = {1}
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 1.0e+0
-    PolBkgLevel        = 5.63e+1
-    PolBkgUnits        = "ug/m3"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "PM2.5"
-    PolPollutantType         = 1
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 0
-    PolParTermVelocityKnown  = 0
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      2.5e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 0
-    PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 3.552e-1
-    PolWetWashoutB     = 5.394e-1
-    PolConvFactor      = 1.0e+0
-    PolBkgLevel        = 8.0e+0
-    PolBkgUnits        = "ug/m3"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "CO"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 0
-    PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 8.6e-1
-    PolBkgLevel        = 1.222e+3
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "BENZENE"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 1
-    PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 3.1e-1
-    PolBkgLevel        = 0.0e+0
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "BUTADIENE"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 1
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 1
-    PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 4.5e-1
-    PolBkgLevel        = 0.0e+0
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "HCl"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 1
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 0
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 0
-    PolWetWashout      = 0.0e+0
-    PolWetWashoutA     = 3.0e-4
-    PolWetWashoutB     = 6.6e-1
-    PolConvFactor      = 6.589e-1
-    PolBkgLevel        = 0.0e+0
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "Cl2"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 0
-    PolGasDepositionVelocity = 5.0e+0
-    PolGasType               = 0
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 1
-    PolWetWashout      = 1.0e-4
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 3.5e-1
-    PolBkgLevel        = 0.0e+0
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "CH3Cl"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 0
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 0
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 1
-    PolWetWashout      = 1.0e-4
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 4.922e-1
-    PolBkgLevel        = 6.0e-1
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "ISOBUTYLENE"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 0
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 0
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 1
-    PolWetWashout      = 1.0e-4
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 4.43e-1
-    PolBkgLevel        = 0.0e+0
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "NH3"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 0
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 0
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 0
-    PolWetWashout      = 1.0e-4
-    PolWetWashoutA     = 5.0e-3
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 1.462e+0
-    PolBkgLevel        = 6.0e+0
-    PolBkgUnits        = "ppb"
-    /
-'''
-'''
-    &ADMS_POLLUTANT_DETAILS
-    PolName                  = "HC"
-    PolPollutantType         = 0
-    PolGasDepVelocityKnown   = 0
-    PolGasDepositionVelocity = 0.0e+0
-    PolGasType               = 0
-    PolParDepVelocityKnown   = 1
-    PolParTermVelocityKnown  = 1
-    PolParNumDepositionData  = 1
-    PolParDepositionVelocity =
-      0.0e+0
-    PolParTerminalVelocity =
-      0.0e+0
-    PolParDiameter =
-      1.0e-6
-    PolParDensity =
-      1.000e+3
-    PolParMassFraction =
-      1.0e+0
-    PolWetWashoutKnown = 1
-    PolWetWashout      = 1.0e-4
-    PolWetWashoutA     = 1.0e-4
-    PolWetWashoutB     = 6.4e-1
-    PolConvFactor      = 0.802e+0
-    PolBkgLevel        = 0.0e+0
-    PolBkgUnits        = "ppb"
-    /
-'''

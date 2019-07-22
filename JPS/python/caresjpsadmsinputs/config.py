@@ -30,6 +30,7 @@ class Constants(object):
     KEY_SRC = 'Src'
     KEY_GRD = 'Grd'
     KEY_OPT = 'Opt'
+    KEY_POL = 'Pol'
     KEY_INDICATOR = 'indicator'
     KEY_INDICATOR_TERR = 'terr' + KEY_INDICATOR
     KEY_INDICATOR_CHEM = 'chem' + KEY_INDICATOR
@@ -41,7 +42,6 @@ class Constants(object):
     KEY_DIR = 'dir'
     KEY_DIR_NIGHT = KEY_DIR + KEY_NIGHT
     STR_CHIMNEY = "Chimney-{0}"
-#    "CO2""NOx""NO2""NO""O3""VOC""SO2""PM10""PM2.5""CO""BENZENE""BUTADIENE""HCl""Cl2""CH3Cl""ISOBUTYLENE""NH3""HC"
     POL_CO2 = 'CO2'
     POL_NOX = 'NOx'
     POL_NO2 = 'NO2'
@@ -69,3 +69,5 @@ class Constants(object):
     FILENAME_BGD = '/testbackgrnd.bgd'
     FILEPATH_NIGHT = 'C:\JPS_DATA\working_dir\JPS\ADMS\chemistrynight.AAI'
     FILEPATH_HIL = 'C:\JPS_DATA\workingdir\JPS\ADMS\hkterrainlatestupdated.ter'
+    UNIT_PPB = 'ppb'
+    UNIT_UGM3 = 'ug/m3'

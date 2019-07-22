@@ -438,8 +438,51 @@ class AmdsPold(AplPart):
         self.PolParMassFraction = [1.0e+0]
         self.PolWetWashoutKnown = 0
         self.PolWetWashout = 0
-        self.PolWetWashoutA = 0
-        self.PolWetWashoutB = 0
+        self.PolWetWashoutA = 1.0e-4
+        self.PolWetWashoutB = 6.4e-1
         self.PolConvFactor = 0
         self.PolBkgLevel = 0
         self.PolBkgUnits = ""
+
+
+class AmdsPold(AplPart):
+    def __init__(self):
+        super().__init__()
+        self._name = self._AplPart__name + 'ADMS_SOURCE_DETAILS'
+        self.SrcName = ""
+        self.SrcMainBuilding = ""
+        self.SrcHeight = 0
+        self.SrcDiameter = 0
+        self.SrcVolFlowRate = 0
+        self.SrcVertVeloc = 0
+        self.SrcTemperature = 0
+        self.SrcMolWeight = 0
+        self.SrcDensity = 0
+        self.SrcSpecHeatCap = 0
+        self.SrcSourceType = 0
+        self.SrcReleaseAtNTP = 0
+        self.SrcEffluxType = 0
+        self.SrcBuoyancyType = 0
+        self.SrcPercentNOxAsNO2 = 0
+        self.SrcX1 = 0
+        self.SrcY1 = 0
+        self.SrcL1 = 0
+        self.SrcL2 = 0
+        self.SrcFm = 0
+        self.SrcFb = 0
+        self.SrcMassFlux = 0
+        self.SrcAngle1 = 0
+        self.SrcAngle2 = 0
+        self.SrcMassH2O = 0
+        self.SrcUseVARFile = 0
+        self.SrcNumGroups = 0
+        self.SrcGroup = []
+        self.SrcNumVertices = 0
+        self.SrcTraNumTrafficFlows = 0
+        self.SrcNumPollutants = 0
+        self.SrcPollutants = []
+        self.SrcPolEmissionRate = []
+        self.SrcPolTotalemission = []
+        self.SrcPolStartTime = []
+        self.SrcPolDuration = []
+        self.SrcNumIsotopes = 0

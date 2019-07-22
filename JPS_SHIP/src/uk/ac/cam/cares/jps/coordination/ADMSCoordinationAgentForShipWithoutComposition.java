@@ -1,9 +1,8 @@
 package uk.ac.cam.cares.jps.coordination;
 
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
@@ -20,6 +19,7 @@ import java.io.IOException;
 public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServlet {
 
     private static final long serialVersionUID = -2264681360832342804L;
+    private static final String PARAM_KEY_SHIP = "ship";
 
     @Override
     protected void doGetJPS(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -68,9 +68,9 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServl
             responseParams.put("waste", waste);
         }
 
-        responseParams.put("ship", jsonShip);
+        responseParams.put(PARAM_KEY_SHIP, jsonShip);
 
-        result = execute("/JPS/ADMSAgent", responseParams.toString(), HttpGet.METHOD_NAME);
+        result = execute("/JPS/ADMSAgent", responseParams.toString(), HttpPost.METHOD_NAME);
         String folder = new JSONObject(result).getString("folder");
         responseParams.put("folder", folder);
     }
