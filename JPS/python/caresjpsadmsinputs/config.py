@@ -69,7 +69,9 @@ class Constants(object):
     ENTITY_TYPE_SHIP = "ship"
     FILENAME_MET = '/test.met'
     FILENAME_BGD = '/testbackgrnd.bgd'
-    FILEPATH_NIGHT = 'C:\JPS_DATA\working_dir\JPS\ADMS\chemistrynight.AAI'
-    FILEPATH_HIL = 'C:\JPS_DATA\workingdir\JPS\ADMS\hkterrainlatestupdated.ter'
+    FILEPATH_NIGHT = 'C:\\JPS_DATA\\working_dir\\JPS\\ADMS\\chemistrynight.AAI'
+    FILEPATH_HIL_HK = 'C:\\JPS_DATA\\workingdir\\JPS\\ADMS\\hkterrainlatestupdated.ter'
+    FILEPATH_HIL_SG = 'C:\\Users\\kevin\\Downloads\\A48\\terrain accurate\\singaporeterrain.ter'
+    FILEPATH_HIL_BGD = 'D:\\ADMS 5.2\\Test files\\tank1574leakage\\background condition.bgd'
     UNIT_PPB = 'ppb'
     UNIT_UGM3 = 'ug/m3'

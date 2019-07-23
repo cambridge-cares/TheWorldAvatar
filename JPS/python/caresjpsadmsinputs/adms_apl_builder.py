@@ -67,49 +67,70 @@ class AplBuilder(object):
         return header
 
     def get_sup(self):
-        pass
+        sup = AdmsSup()
+        return sup
 
     def get_met(self):
-        pass
+        met = AdmsMet()
+        return met
 
     def get_bld(self):
-        pass
+        bld = AdmsBld()
+        return bld
 
     def get_hil(self):
-        pass
+        hil = AdmsHil()
+        return hil
 
-    def get_cst(self):
-        pass
+    @staticmethod
+    def get_cst():
+        cst = AdmsCst()
+        return cst
 
-    def get_flc(self):
-        pass
+    @staticmethod
+    def get_flc():
+        flc = AdmsFlc()
+        return flc
 
     def get_grd(self):
-        pass
+        grd = AdmsGrd()
+        return grd
 
-    def get_puf(self):
-        pass
+    @staticmethod
+    def get_puf():
+        puf = AdmsPuf()
+        return puf
 
-    def get_gam(self):
-        pass
+    @staticmethod
+    def get_gam():
+        gam = AdmsGam()
+        return gam
 
     def get_opt(self):
-        pass
+        opt = AdmsOpt()
+        return opt
 
     def get_bkg(self):
-        pass
+        bkg = AdmsBkg()
+        return bkg
 
-    def get_chm(self):
-        pass
+    @staticmethod
+    def get_chm():
+        chm = AdmsChm()
+        return chm
 
     def get_etc(self):
-        pass
+        etc = AdmsEtc()
+        return etc
 
     def get_coordsys(self):
-        pass
+        cords = AdmsCoordSys()
+        return cords
 
-    def get_mapper(self):
-        pass
+    @staticmethod
+    def get_mapper():
+        mapper = AdmsMapper()
+        return mapper
 
     def get_pollutants(self):
         pollutants = []
@@ -301,7 +322,7 @@ class AdmsAplShipBuilder(AplBuilder):
         sup = AdmsSup()
         sup.SupModelComplexTerrain = self.data[Constants.KEY_INDICATOR_TERR]
         sup.SupCalcChm = self.data[Constants.KEY_INDICATOR_CHEM]
-        sup.SupUseAddInput =self.data[Constants.KEY_NIGHT]
+        sup.SupUseAddInput = self.data[Constants.KEY_NIGHT]
         sup.SupAddInputPath = self.data[Constants.KEY_DIR_NIGHT]
         sup.SupCalcWetDep = self.data[Constants.KEY_INDICATOR_WET]
         return sup
@@ -321,16 +342,8 @@ class AdmsAplShipBuilder(AplBuilder):
 
     def get_hil(self):
         hil = AdmsHil()
-        hil.HilTerrainPath = Constants.FILEPATH_HIL
+        hil.HilTerrainPath = Constants.FILEPATH_HIL_HK
         return hil
-
-    def get_cst(self):
-        cst = AdmsCst()
-        return cst
-
-    def get_flc(self):
-        flc = AdmsFlc()
-        return flc
 
     def get_grd(self):
         grd = AdmsGrd()
@@ -340,14 +353,6 @@ class AdmsAplShipBuilder(AplBuilder):
         grd.GrdRegularMax[0] = data_grd[0]
         grd.GrdRegularMax[1] = data_grd[1]
         return grd
-
-    def get_puf(self):
-        puf = AdmsPuf()
-        return puf
-
-    def get_gam(self):
-        gam = AdmsGam()
-        return gam
 
     def get_opt(self):
         opt = AdmsOpt()
@@ -361,10 +366,6 @@ class AdmsAplShipBuilder(AplBuilder):
         bkg.BkgFilePath = self.data[Constants.KEY_BKG]
         return bkg
 
-    def get_chm(self):
-        chm = AdmsChm()
-        return chm
-
     def get_etc(self):
         etc = AdmsEtc()
         etc.SrcNumSources = len(self.data[Constants.KEY_SRC])
@@ -374,10 +375,6 @@ class AdmsAplShipBuilder(AplBuilder):
         coordsys = AdmsCoordSys()
         coordsys.ProjectedEPSG = self.data[Constants.KEY_COORD_SYS]
         return coordsys
-
-    def get_mapper(self):
-        mapper = AdmsMapper()
-        return mapper
 
     def get_pol_wet_washout(self, name):
         value = 0.0e+0
@@ -407,52 +404,84 @@ class AdmsAplShipBuilder(AplBuilder):
 class AdmsAplPlantBuilder(AplBuilder):
     def get_sup(self):
         sup = AdmsSup()
+        sup.SupModelComplexTerrain = 0
+        sup.SupCalcChm = 0
+        sup.SupCalcWetDep = 0
+        sup.SupCalcPlumeVisibility = 0
         return sup
 
     def get_met(self):
         met = AdmsMet()
+        met.Met_DS_Roughness = 1.5e+0
+        met.MetDataFileWellFormedPath = self.data[Constants.KEY_MET]
+        met.MetLatitude = 1.09e+0
         return met
-
-    def get_bld(self):
-        bld = AdmsBld()
-        return bld
 
     def get_hil(self):
         hil = AdmsHil()
+        hil.HilTerrainPath = Constants.FILEPATH_HIL_SG
         return hil
-
-    def get_cst(self):
-        cst = AdmsCst()
-        return cst
-
-    def get_flc(self):
-        flc = AdmsFlc()
-        return flc
-
-    def get_grd(self):
-        grd = AdmsGrd()
-        return grd
-
-    def get_puf(self):
-        puf = AdmsPuf()
-        return puf
-
-    def get_gam(self):
-        gam = AdmsGam()
-        return gam
 
     def get_bkg(self):
         bkg = AdmsBkg()
+        bkg.BkgFilePath = Constants.FILEPATH_HIL_BGD
+        bkg.BkgFixedLevels = 1
         return bkg
-
-    def get_chm(self):
-        chm = AdmsChm()
-        return chm
 
     def get_etc(self):
         etc = AdmsEtc()
+        etc.SrcNumSources = 1
+        etc.PolNumPollutants = 18
         return etc
 
-    def get_mapper(self):
-        mapper = AdmsMapper()
-        return mapper
+    def get_pol_wet_washout_known(self, name):
+        flag = 0
+        type_1 = [Constants.POL_NO, Constants.POL_PART_O3, Constants.POL_PART_SO2, Constants.POL_PM10,
+                  Constants.POL_BENZENE, Constants.POL_BUTADIENE, Constants.POL_Cl2, Constants.POL_CH3Cl,
+                  Constants.POL_ISOBUTYLENE, Constants.POL_HC, Constants.POL_NH3, Constants.POL_HCl, Constants.POL_CO,
+                  Constants.POL_PM25, Constants.POL_NO2, Constants.POL_NOX, Constants.POL_CO2]
+        if name in type_1:
+            flag = 1
+
+        return flag
+
+    def get_pol_bkg_level(self, name):
+        values = {Constants.POL_CO2: 0.0e+0, Constants.POL_NOX: 0.0e+0, Constants.POL_NO2: 0.0e+0,
+                  Constants.POL_NO: 0.0e+0, Constants.POL_PART_O3: 0.0e+0, Constants.POL_VOC: 0.0e+0,
+                  Constants.POL_PART_SO2: 0.0e+0, Constants.POL_PM10: 0.0e+0, Constants.POL_PM25: 0.0e+0,
+                  Constants.POL_CO: 0.0e+0, Constants.POL_BENZENE: 0.0e+0, Constants.POL_BUTADIENE: 0.0e+0,
+                  Constants.POL_HCl: 0.0e+0, Constants.POL_Cl2: 0.0e+0, Constants.POL_CH3Cl: 6.0e-1,
+                  Constants.POL_ISOBUTYLENE: 0.0e+0, Constants.POL_NH3: 6.0e+0, Constants.POL_HC: 0.0e+0}
+        value = values[name]
+
+        return value
+
+    def get_pol_gas_dep_velocity_known(self, name):
+        flag = 1
+        type_0 = [Constants.POL_Cl2, Constants.POL_CH3Cl, Constants.POL_ISOBUTYLENE, Constants.POL_NH3,
+                  Constants.POL_HC]
+        if name in type_0:
+            flag = 0
+
+        return flag
+
+    def get_pol_gas_dep_velocity(self, name):
+        value = 0.0e+0
+        type_50 = [Constants.POL_Cl2]
+
+        if name in type_50:
+            value = 5.0e+0
+
+        return value
+
+    def get_pol_par_dep_velocity_known(self, name):
+        return 1
+
+    def get_pol_par_term_velocity_known(self, name):
+        return 1
+
+    def get_pol_wet_washout_a(self, name):
+        return 1.0e-4
+
+    def get_pol_wet_washout_b(self, name):
+        return 6.4e-1

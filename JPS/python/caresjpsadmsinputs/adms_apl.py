@@ -1,3 +1,6 @@
+import re
+
+
 class Apl(object):
     def __init__(self):
         self.__header = None
@@ -121,7 +124,7 @@ class AplPart(object):
                             if i != 0 and i % 4 == 0:
                                 out_val = out_val + '\n  '
                             if type(v) == int or type(v) == float:
-                                v = '{:.1e}'.format(v).replace('e+0', 'e+')
+                                v = re.sub('0{1,8}e', '0e' , '{:.8e}'.format(v).replace('e+0', 'e+'))
                             elif type(v) == str:
                                 v = '"' + v + '"'
                             out_val = out_val + str(v) + ' '
@@ -189,6 +192,8 @@ class AdmsSup(AplPart):
                                                     1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
                                                     1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
                                                     1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0]
+
+
 
 
 
@@ -418,8 +423,8 @@ class AdmsPold(AplPart):
         self.PolGasDepVelocityKnown = 0
         self.PolGasDepositionVelocity = 0
         self.PolGasType = 0
-        self.PolParDepVelocityKnown = 0
-        self.PolParTermVelocityKnown = 0
+        self.PolParDepVelocityKnown = 1
+        self.PolParTermVelocityKnown = 1
         self.PolParNumDepositionData = 1
         self.PolParDepositionVelocity = [0.0e+0]
         self.PolParTerminalVelocity = [0.0e+0]
