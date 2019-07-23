@@ -13,4 +13,13 @@
 /JPS_SHIP/.idea/
 /JPS_SHIP/JPS_SHIP.iml
 /JPS_SHIP/target/
-
+/python/caresjpsadmsinputs/caresjpsadmsinputs.iml
+/JPS_BASE/PythonCustomLibraries/PythonCustomLibraries.iml
+/JPS_BASE/PythonCustomLibraries/build/
+/JPS_BASE/PythonCustomLibraries/caresjpsutil.egg-info/
+/JPS_BASE/PythonCustomLibraries/dist/
+/JPS_BASE_LIB/src/uk/ac/cam/cares/jps/base/util/CRSTransformer.java
+/JPS_COMPOSITION/JPS_COMPOSITION.iml
+/JPS_COMPOSITION/target/
+/JPS_SHIP/classes/
+/JPS/python/caresjpsadmsinputs/caresjpsadmsinputs.iml
