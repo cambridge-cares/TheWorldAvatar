@@ -1,17 +1,18 @@
 package callAP;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Map;
 
-import javax.script.*;
-
-import com.esri.core.tasks.query.QueryParameters;
+import com.esri.core.io.UserCredentials;
 
 //testing script for the "runPyScript" command  ZL-151202
 public class CallAP {
@@ -52,13 +53,70 @@ public class CallAP {
 	}
 ZL-151203*/	
 	public static void main(String args[]){
-		ArrayList<String[]> skeleton = new ArrayList<String[]>(); 
-		
+//		ArrayList<String[]> skeleton = new ArrayList<String[]>(); 
+		callOPART ();
+		System.out.println("success!");
 //		initiate(); //initiate editStack ZL-151202
-		skeleton.add(new String[] {"OIL,MEOH","FOIL,FMEOH"});  //manually add elements to skeleton ZL-151202
-		writeAPCSV(skeleton,APINCSV); //write the APIN.CSV i.e. the input data for Aspen Plus ZL-151202
-		runPyScript(editStack); //call python script to run Aspen Plus model "BiodiesePlant" ZL-151202
+//		skeleton.add(new String[] {"OIL,MEOH","FOIL,FMEOH"});  //manually add elements to skeleton ZL-151202
+//		writeAPCSV(skeleton,APINCSV); //write the APIN.CSV i.e. the input data for Aspen Plus ZL-151202
+//		runPyScript(editStack); //call python script to run Aspen Plus model "BiodiesePlant" ZL-151202
 		
+	}
+	
+	public static void callOPART () {
+//		ArrayList<String[]> editStack2 = new ArrayList<String[]>();	
+		HttpURLConnection urlCon;
+		OutputStreamWriter out;
+		URL url;
+/*		
+		UserCredentials user = new UserCredentials();
+		user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp");
+*/		
+		try{
+			System.out.println("1");
+//			url = new URL("http://14.100.26.181/OPALRTServlet/");
+//			url = new URL("http://172.25.182.41/OPALRTServlet/");
+			url = new URL("http://caresremote1.dyndns.org:80/OPALRTServlet/"); 
+			urlCon = (HttpURLConnection) url.openConnection();
+			urlCon.setRequestMethod("POST");
+			urlCon.setDoOutput(true);				
+			out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
+			
+			StringBuilder outputString = new StringBuilder();
+			outputString.append(URLEncoder.encode("layers", "UTF-8"));
+			outputString.append("=");
+			outputString.append(URLEncoder.encode("ss", "UTF-8"));
+			outputString.append("&");
+			outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
+			outputString.append("=");
+			outputString.append(URLEncoder.encode(" ", "UTF-8"));
+			outputString.append("&");
+			outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
+			outputString.append("=");
+			outputString.append(URLEncoder.encode(" ", "UTF-8"));
+			outputString.append("&");
+			outputString.append (URLEncoder.encode("QueryT", "UTF-8"));
+			outputString.append ("=");				
+			outputString.append (URLEncoder.encode(" ", "UTF-8"));
+			
+			DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
+			wr.writeBytes(outputString.toString());
+			wr.flush();
+			wr.close();
+			System.out.println(wr);
+			if(urlCon.getResponseCode()==200){
+				System.out.println("Message received!");
+			} else {
+				System.out.println( "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
+						+ "\nPlease try testing your code again");
+			}
+			
+			out.close();
+			System.out.println(outputString);
+			System.out.println(wr);
+		}catch (IOException equery){
+			equery.printStackTrace();
+		}
 	}
 	
  	public static void writeAPCSV(ArrayList<String[]> skeleton, String APINCSV){  

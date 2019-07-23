@@ -1,0 +1,29 @@
+% Reduced chi^2:
+3.98003e-005
+% R^2:
+0.00206514
+% Dimension (number of independent variables):
+6
+% Variable names:
+x_0 = subtype_ExxonMobil_Chemical_LoadMW_931
+x_1 = subtype_ExxonMobil_Refinery_LoadMW_941
+x_2 = subtype_Petrofac_LoadMW_951
+x_3 = subtype_ExxonMobil_Chemical_LoadMVR_931
+x_4 = subtype_ExxonMobil_Refinery_LoadMVR_941
+x_5 = subtype_Petrofac_LoadMVR_951
+% Surrogate model type:
+Polynomial
+% Order:
+1
+% Normal equations:
+0
+% Nullity:
+0
+% Coefficients:
+Constant=3.91422
+0.000158545*x_0
+-0.000310616*x_1
+-8.69658e-005*x_2
+-9.39112e-005*x_3
+-0.000319199*x_4
+8.22134e-005*x_5

@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="utf-8"?><kml xmlns="http://www.opengis.net/kml/2.2">
+<Placemark>
+<MultiGeometry>
+<Name>Biodiesel Plant</Name>
+<description>&lt;?xml version="1.0" standalone="yes"?&gt;
+&lt;DocumentElement&gt;
+  &lt;test&gt;
+    &lt;Id&gt;1&lt;/Id&gt;
+    &lt;dist_Tr&gt;2763&lt;/dist_Tr&gt;
+    &lt;Descript&gt;Seraya 1&lt;/Descript&gt;
+    &lt;Long&gt;11546715.0975806&lt;/Long&gt;
+    &lt;Lat&gt;142586.479219351&lt;/Lat&gt;
+    &lt;PowerGenMW&gt;200&lt;/PowerGenMW&gt;
+    &lt;GlobalID&gt;def27959-d5bb-4157-83e2-378c14c872d8&lt;/GlobalID&gt;
+    &lt;CreationDa&gt;2015-05-22T00:00:00+08:00&lt;/CreationDa&gt;
+    &lt;Creator&gt;jparksimulator&lt;/Creator&gt;
+    &lt;EditDate&gt;2015-07-27T00:00:00+08:00&lt;/EditDate&gt;
+    &lt;Editor&gt;jparksimulator&lt;/Editor&gt;
+    &lt;theta&gt;0.02562348&lt;/theta&gt;
+    &lt;volt_nom&gt;230&lt;/volt_nom&gt;
+    &lt;volt_act&gt;230.048843&lt;/volt_act&gt;
+    &lt;PowerGenMV&gt;100&lt;/PowerGenMV&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;2&lt;/Id&gt;
+    &lt;dist_Tr&gt;2605&lt;/dist_Tr&gt;
+    &lt;Descript&gt;Seraya 2&lt;/Descript&gt;
+    &lt;Long&gt;11546855.327016&lt;/Long&gt;
+    &lt;Lat&gt;142443.603946605&lt;/Lat&gt;
+    &lt;PowerGenMW&gt;200&lt;/PowerGenMW&gt;
+    &lt;GlobalID&gt;c8b9f18e-b171-48e7-a009-f1b7be6e5029&lt;/GlobalID&gt;
+    &lt;CreationDa&gt;2015-05-22T00:00:00+08:00&lt;/CreationDa&gt;
+    &lt;Creator&gt;jparksimulator&lt;/Creator&gt;
+    &lt;EditDate&gt;2015-07-27T00:00:00+08:00&lt;/EditDate&gt;
+    &lt;Editor&gt;jparksimulator&lt;/Editor&gt;
+    &lt;theta&gt;0.02384802&lt;/theta&gt;
+    &lt;volt_nom&gt;230&lt;/volt_nom&gt;
+    &lt;volt_act&gt;230.044708&lt;/volt_act&gt;
+    &lt;PowerGenMV&gt;100&lt;/PowerGenMV&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;3&lt;/Id&gt;
+    &lt;dist_Tr&gt;2381&lt;/dist_Tr&gt;
+    &lt;Descript&gt;Seraya 3&lt;/Descript&gt;
+    &lt;Long&gt;11547001.5096025&lt;/Long&gt;
+    &lt;Lat&gt;142298.744283688&lt;/Lat&gt;
+    &lt;PowerGenMW&gt;200&lt;/PowerGenMW&gt;
+    &lt;GlobalID&gt;d7840320-1518-49b5-b12b-69921eef60fd&lt;/GlobalID&gt;
+    &lt;CreationDa&gt;2015-05-22T00:00:00+08:00&lt;/CreationDa&gt;
+    &lt;Creator&gt;jparksimulator&lt;/Creator&gt;
+    &lt;EditDate&gt;2015-07-27T00:00:00+08:00&lt;/EditDate&gt;
+    &lt;Editor&gt;jparksimulator&lt;/Editor&gt;
+    &lt;theta&gt;0.02121338&lt;/theta&gt;
+    &lt;volt_nom&gt;230&lt;/volt_nom&gt;
+    &lt;volt_act&gt;230.038269&lt;/volt_act&gt;
+    &lt;PowerGenMV&gt;100&lt;/PowerGenMV&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;4&lt;/Id&gt;
+    &lt;dist_Tr&gt;1923&lt;/dist_Tr&gt;
+    &lt;Descript&gt;SembCorp Cogen&lt;/Descript&gt;
+    &lt;Long&gt;11544142.6187&lt;/Long&gt;
+    &lt;Lat&gt;139622.53215&lt;/Lat&gt;
+    &lt;PowerGenMW&gt;400&lt;/PowerGenMW&gt;
+    &lt;GlobalID&gt;aed800ca-ff9e-4fe7-af73-f224bd868646&lt;/GlobalID&gt;
+    &lt;CreationDa&gt;2015-05-22T00:00:00+08:00&lt;/CreationDa&gt;
+    &lt;Creator&gt;jparksimulator&lt;/Creator&gt;
+    &lt;EditDate&gt;2015-07-27T00:00:00+08:00&lt;/EditDate&gt;
+    &lt;Editor&gt;jparksimulator&lt;/Editor&gt;
+    &lt;theta&gt;0.01309921&lt;/theta&gt;
+    &lt;volt_nom&gt;230&lt;/volt_nom&gt;
+    &lt;volt_act&gt;230.012436&lt;/volt_act&gt;
+    &lt;PowerGenMV&gt;200&lt;/PowerGenMV&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;5&lt;/Id&gt;
+    &lt;dist_Tr&gt;2062&lt;/dist_Tr&gt;
+    &lt;Descript&gt;Keppel Merlimau&lt;/Descript&gt;
+    &lt;Long&gt;11540941.35235&lt;/Long&gt;
+    &lt;Lat&gt;142726.394600001&lt;/Lat&gt;
+    &lt;PowerGenMW&gt;400&lt;/PowerGenMW&gt;
+    &lt;GlobalID&gt;1e8e9642-aa7d-4a5c-ab9f-8eb08f8ff109&lt;/GlobalID&gt;
+    &lt;CreationDa&gt;2015-05-22T00:00:00+08:00&lt;/CreationDa&gt;
+    &lt;Creator&gt;jparksimulator&lt;/Creator&gt;
+    &lt;EditDate&gt;2015-07-27T00:00:00+08:00&lt;/EditDate&gt;
+    &lt;Editor&gt;jparksimulator&lt;/Editor&gt;
+    &lt;theta&gt;-0.0041176&lt;/theta&gt;
+    &lt;volt_nom&gt;230&lt;/volt_nom&gt;
+    &lt;volt_act&gt;229.96051&lt;/volt_act&gt;
+    &lt;PowerGenMV&gt;200&lt;/PowerGenMV&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;6&lt;/Id&gt;
+    &lt;dist_Tr&gt;2360&lt;/dist_Tr&gt;
+    &lt;Descript&gt;Main Island&lt;/Descript&gt;
+    &lt;Long&gt;11545121.1340605&lt;/Long&gt;
+    &lt;Lat&gt;144312.424239127&lt;/Lat&gt;
+    &lt;PowerGenMW&gt;1400&lt;/PowerGenMW&gt;
+    &lt;GlobalID&gt;1aa123a8-806d-45c6-b215-a728c6805138&lt;/GlobalID&gt;
+    &lt;CreationDa&gt;2015-05-22T00:00:00+08:00&lt;/CreationDa&gt;
+    &lt;Creator&gt;jparksimulator&lt;/Creator&gt;
+    &lt;EditDate&gt;2015-05-22T00:00:00+08:00&lt;/EditDate&gt;
+    &lt;Editor&gt;jparksimulator&lt;/Editor&gt;
+    &lt;theta&gt;0&lt;/theta&gt;
+    &lt;volt_nom&gt;0&lt;/volt_nom&gt;
+    &lt;volt_act&gt;0&lt;/volt_act&gt;
+    &lt;PowerGenMV&gt;0&lt;/PowerGenMV&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;dist_Tr&gt;0&lt;/dist_Tr&gt;
+    &lt;Descript&gt;SembCorp Cogen&lt;/Descript&gt;
+    &lt;Long&gt;11541017.3951202&lt;/Long&gt;
+    &lt;Lat&gt;140806.726814955&lt;/Lat&gt;
+    &lt;PowerGenMW&gt;0&lt;/PowerGenMW&gt;
+    &lt;CreationDa&gt;1899-12-30T00:00:00+08:00&lt;/CreationDa&gt;
+    &lt;EditDate&gt;1899-12-30T00:00:00+08:00&lt;/EditDate&gt;
+    &lt;theta&gt;0&lt;/theta&gt;
+    &lt;volt_nom&gt;0&lt;/volt_nom&gt;
+    &lt;volt_act&gt;0&lt;/volt_act&gt;
+    &lt;PowerGenMV&gt;0&lt;/PowerGenMV&gt;
+  &lt;/test&gt;
+&lt;/DocumentElement&gt;</description>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Polygon</type>
+<coordinates>
+103.726132330617,1.28194567912474,100
+103.727083050022,1.28099519839879,100
+103.725680739439,1.27959323789866,100
+103.724730020933,1.28054372004268,100
+103.726132330617,1.28194567912474,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Polygon</type>
+<coordinates>
+103.727392033648,1.28063876769883,100
+103.728318984529,1.2797120481859,100
+103.72694044247,1.27833384959308,100
+103.726013490691,1.27926056960387,100
+103.727392033648,1.28063876769883,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Polygon</type>
+<coordinates>
+103.728651735781,1.27937937990657,100
+103.729673758962,1.27835761130341,100
+103.728307100716,1.27699129284497,100
+103.727285077536,1.27801306109373,100
+103.728651735781,1.27937937990657,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Polygon</type>
+<coordinates>
+103.702069635208,1.25452891032046,100
+103.703183234445,1.25487442731334,100
+103.703525493467,1.25377185774981,100
+103.70241189423,1.25342634061139,100
+103.702069635208,1.25452891032046,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Polygon</type>
+<coordinates>
+103.673111925494,1.28256705615205,100
+103.673834471918,1.28308031556256,100
+103.674968273367,1.28148499550746,100
+103.674245726943,1.28097173577712,100
+103.673111925494,1.28256705615205,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Polygon</type>
+<coordinates>
+103.711546258484,1.29513997412816,100
+103.710120180118,1.29610233092623,100
+103.710120180118,1.29618787373504,100
+103.710954435962,1.2961950023023,100
+103.710954435962,1.29731418711464,100
+103.712259297668,1.29732131567873,100
+103.712259297668,1.29620925943678,100
+103.713022249593,1.29620925943678,100
+103.713022249593,1.29610945949375,100
+103.711546258484,1.29513997412816,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Polygon</type>
+<coordinates>
+103.674497525913,1.26485353785306,100
+103.674617164635,1.26493683964179,100
+103.674722374025,1.26478515378191,100
+103.674607640474,1.2647021122126,100
+103.674497525913,1.26485353785306,100
+</coordinates>
+</LineString>
+
+</MultiGeometry>
+</Placemark>
+</kml>
