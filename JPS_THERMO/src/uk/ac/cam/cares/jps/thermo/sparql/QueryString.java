@@ -11,8 +11,6 @@ public class QueryString {
 	private static String ontoCompChemUri = jpsThermoProperties.getProperty("ontocompchem.kb.tbox.uri");	
 	private static String ontoCompChemNS = jpsThermoProperties.getProperty("ontocompchem.kb.tbox.ns");
 	
-	
-	
 	/**
 	 * 
 	 * @author NK510
@@ -119,7 +117,11 @@ public class QueryString {
 		
 		return query;
 	}
-	
+	/**
+	 * 
+	 * @param gaussianIRI The Gaussian URI
+	 * @return The unique species URI
+	 */
 	public static String getUniqueSpeciesUriSPARQL(String gaussianIRI) {
 		
 		/**

@@ -25,7 +25,6 @@ import uk.ac.cam.cares.jps.thermo.sparql.QueryString;
  *
  */
 
-
 public class SPARQLManager {
 
 	/** The Constant logger. */
@@ -33,6 +32,7 @@ public class SPARQLManager {
 	
 	
 	/**
+	 * 
 	 * @author NK510
 	 * @param gaussian The Gaussian URI.
 	 * @param jsonInputFilePath The input JSON file.
