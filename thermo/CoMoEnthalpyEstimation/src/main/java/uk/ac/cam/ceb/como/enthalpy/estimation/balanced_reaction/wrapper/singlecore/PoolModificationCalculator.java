@@ -188,12 +188,50 @@ public class PoolModificationCalculator extends ObjectPoolCalculator {
         calculate(set);
         
         result.put(targetSpecies, reactionList);
+        
+        System.out.println("- - -  - - - -  - - - - - - result.put(targetSpecies, reactionList); - - - - -  - - - - - - - - - - - -");
+        
+        for(Map.Entry<Species, ReactionList> resultMap : result.entrySet()) {
+        	
+        	System.out.println("resultMap.getKey().getRef(): " + resultMap.getKey().getRef());
+        	
+        	Collection<Reaction> reactionCollection = resultMap.getValue().getCollection();
+        	
+        	for(Reaction rL1: reactionCollection) {
+        		
+        		Map<Species, Double> reactants1 = rL1.getReactants();
+        		
+        		System.out.println("----------------------Reactants------------------------------");
+
+        		for(Map.Entry<Species, Double> r1: reactants1.entrySet()) {
+            		
+            		System.out.println("r1.getKey().getRef(): " + r1.getKey().getRef() + " r1.getValue(): " + r1.getValue());
+            	}
+        		
+        		System.out.println("---------------------/Reactants------------------------------");
+        		
+        		System.out.println("----------------------Products------------------------------");
+        		
+        		Map<Species, Double> products1 = rL1.getProducts();
+        		
+        		for(Map.Entry<Species, Double> r2: products1.entrySet()) {
+            		
+            		System.out.println("r2.getKey().getRef(): " + r2.getKey().getRef() + " r2.getValue(): " + r2.getValue());
+            	}
+
+        		System.out.println("----------------------/Products------------------------------");
+        	}
+        	
+        }
+        
+        System.out.println("- - -  - - - -  - - - - - - - - - -  - - - -  - - -  - - -  - - - -  - - - - -  - - - - - - - - - - - -");
+        
     }
     
     /**
      * 
      * @author NK510
-     * @param s1 The HashMap that contains reactant species. 
+     * @param s1 The HashMap that contains reactant species.
      * @param s2 The HashMap that contains products species.
      * @return True if species from reactants and products reference (name) species are equal. Size od products and reactants is one.
      *  
@@ -236,8 +274,7 @@ public class PoolModificationCalculator extends ObjectPoolCalculator {
 
         try {
         	
-            Reaction r = enthalpySolver.solve(targetSpecies);
-           
+            Reaction r = enthalpySolver.solve(targetSpecies);          
         	
             /**
              * 
@@ -265,7 +302,7 @@ public class PoolModificationCalculator extends ObjectPoolCalculator {
             	
             	Map<Species, Double> reactantss = r12.getReactants();
             	
-            	System.out.println("- - - - - - -  -PoolModificationCalculator(calculate(int depth, Species targetSpecies, ObjectPool<Species> refPool) - - - - - - - - - - - - - ");
+            	System.out.println("- - - - - - -  -PoolModificationCalculator(calculate(int depth, Species targetSpecies, ObjectPool<Species> refPool) - - - - - - - - - - - - -");
             	
             	for(Map.Entry<Species, Double> r1: reactantss.entrySet()) {
             		
