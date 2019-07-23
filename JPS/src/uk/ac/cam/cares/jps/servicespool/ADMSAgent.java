@@ -34,6 +34,7 @@ public class ADMSAgent extends JPSHttpServlet {
     private static final String DATA_KEY_ITEMS = "items";
     private static final String DATA_KEY_LAT = "lat";
     private static final String DATA_KEY_LON = "lon";
+    private static final String FILENAME_ADMS_PROCESSOR = "adms_processor.py";
     private JSONArray mCoordinates = new JSONArray();
 
     private void setLogger() {
@@ -243,7 +244,7 @@ public class ADMSAgent extends JPSHttpServlet {
         String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
         ArrayList<String> args = new ArrayList<String>();
         args.add("python");
-        args.add("admsTest.py");
+        args.add(FILENAME_ADMS_PROCESSOR);
 
         args.add(entityType);
         args.add(buildingInString.replace("\"", "'"));
@@ -277,7 +278,7 @@ public class ADMSAgent extends JPSHttpServlet {
 
         ArrayList<String> args = new ArrayList<String>();
         args.add("python");
-        args.add("admsTestShip.py");
+        args.add(FILENAME_ADMS_PROCESSOR);
         args.add(entityType);
 
         args.add(buildingInString.replace("\"", "'"));
