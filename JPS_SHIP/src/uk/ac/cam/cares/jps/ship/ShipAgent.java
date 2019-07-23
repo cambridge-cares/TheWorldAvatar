@@ -441,9 +441,23 @@ public class ShipAgent extends HttpServlet {
 			dataSet.put("reactionmechanism",  iri) ;
 			dataSet.put("engine", cpirilist2.get(0)) ;	
 			dataSet.put("source", "ship") ;
-		String resultjson = AgentCaller.executeGet("JPS/SRMAgent", "query", dataSet.toString());
-			JSONObject jsonsrmresult = new JSONObject(resultjson).getJSONObject("results");
+			String resultjson="";
+			JSONObject jsonsrmresult=null;
+			// if there is no reaction mechanism
+			if(iri==null) {
+				JSONObject jo2 = new JSONObject();
+				jo2.put("speed",8.0); 
+				jo2.put("type","passenger");
+				resultjson = AgentCaller.executeGetWithJsonParameter("JPS/SLMAgent", jo2.toString());
+				jsonsrmresult=new JSONObject(resultjson);
+			}
+			else {
+				resultjson = AgentCaller.executeGet("JPS/SRMAgent", "query", dataSet.toString());
+				jsonsrmresult = new JSONObject(resultjson).getJSONObject("results");
+			}
+	
 			startConversion(cpirilist.get(0),jsonsrmresult);
+			
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new JPSRuntimeException(e.getMessage(), e);
