@@ -43,6 +43,8 @@ import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 
 /**
  * Servlet implementation class ShipAgent
+ * 
+ * 4/7 2019 : the iri of the engine and chimney are HARDCODED
  */
 @WebServlet("/ShipAgent")
 public class ShipAgent extends HttpServlet {
@@ -341,18 +343,19 @@ public class ShipAgent extends HttpServlet {
 		String iri2 = null;
 		try {
 			iri = joforrec.getString("reactionmechanism");
-			iri2 = joforrec.getString("ship");
+			//iri2 = joforrec.getString("ship");
 
 		} catch (JSONException e1) {
 			logger.error(e1.getMessage(), e1);
 			e1.printStackTrace();
 		} 
-		System.out.println("data got= "+iri+" and "+iri2);
-		
-//		response.getWriter().write("RESULT");		
+		//System.out.println("data got= "+iri+" and "+iri2);
+				
 
 		//try to query the owl file to get the waste stream inside it 
-		String engineInfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> " + 
+		
+		
+		/*String engineInfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> " + 
 				"PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> " +  
 				"SELECT ?engine\r\n" + 
 				"WHERE {?entity  j1:hasSubsystem ?engine ." + 
@@ -366,34 +369,36 @@ public class ShipAgent extends HttpServlet {
 				"WHERE " + 
 				"{ ?entity  j1:hasSubsystem ?chimney ." + 
 				"  ?chimney a cp:Pipe ." + 
-				"}";
+				"}";*/
 				
 		jenaOwlModel = ModelFactory.createOntologyModel();	
-		jenaOwlModel.read(iri2); // read from ship owl file
+		//jenaOwlModel.read(iri2); // read from ship owl file
 			
-		ResultSet rs_ship = ShipAgent.query(chimneyInfo,jenaOwlModel); 
+		//ResultSet rs_ship = ShipAgent.query(chimneyInfo,jenaOwlModel); 
 		
-		ResultSet rs_ship2 = ShipAgent.query(engineInfo,jenaOwlModel); 
+		//ResultSet rs_ship2 = ShipAgent.query(engineInfo,jenaOwlModel); 
 		
-		for (; rs_ship.hasNext();) {			
-			QuerySolution qs_p = rs_ship.nextSolution();
-
-			Resource cpiri = qs_p.getResource("chimney");
-			String valueiri = cpiri.toString();
-			System.out.println("cpirilistchimney = " + valueiri);
-			logger.info("query result1 = " + valueiri);
-
-			cpirilist.add(valueiri);
-		}
+		/*
+		 * for (; rs_ship.hasNext();) { QuerySolution qs_p = rs_ship.nextSolution();
+		 * 
+		 * Resource cpiri = qs_p.getResource("chimney"); String valueiri =
+		 * cpiri.toString(); System.out.println("cpirilistchimney = " + valueiri);
+		 * logger.info("query result1 = " + valueiri);
+		 * 
+		 * cpirilist.add(valueiri); }
+		 */
 		
-		for (; rs_ship2.hasNext();) {			
-			QuerySolution qs_p = rs_ship2.nextSolution();
-
-			Resource engineiri = qs_p.getResource("engine");
-			String valueengineiri = engineiri.toString();
-			logger.info("query result2= "+valueengineiri);
-			cpirilist2.add(valueengineiri);
-		}
+		cpirilist.add("http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Chimney-1");
+		
+		/*
+		 * for (; rs_ship2.hasNext();) { QuerySolution qs_p = rs_ship2.nextSolution();
+		 * 
+		 * Resource engineiri = qs_p.getResource("engine"); String valueengineiri =
+		 * engineiri.toString(); logger.info("query result2= "+valueengineiri);
+		 * cpirilist2.add(valueengineiri); }
+		 */
+		
+		cpirilist2.add("http://www.theworldavatar.com/kb/ships/Engine-001.owl#Engine-001");
 
 		jenaOwlModel.read(cpirilist.get(0));
 		String wasteStreamInfo = "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#> " + 
@@ -435,6 +440,7 @@ public class ShipAgent extends HttpServlet {
 		try {
 			dataSet.put("reactionmechanism",  iri) ;
 			dataSet.put("engine", cpirilist2.get(0)) ;	
+			dataSet.put("source", "ship") ;
 		String resultjson = AgentCaller.executeGet("JPS/SRMAgent", "query", dataSet.toString());
 			JSONObject jsonsrmresult = new JSONObject(resultjson).getJSONObject("results");
 			startConversion(cpirilist.get(0),jsonsrmresult);

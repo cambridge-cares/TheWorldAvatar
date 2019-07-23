@@ -5,8 +5,6 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class PropertiesManager {
-
-	
 	
 	/**
 	 * 
@@ -28,6 +26,7 @@ public class PropertiesManager {
 			}
 
 			/**
+			 * 
 			 * @author NK510
 			 *  Loads a properties file from class path.
 			 */
