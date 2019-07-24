@@ -59,7 +59,7 @@ public static Set<Clause> getClauseSet(Sentence sentence){
 /**
  * @author nk510
  * @param speciesName The name of species in which we remove appearing a selected number (1) of molecules. Can be easily generalized to remove any number of molecules from species name. 
- * @return The species name without appearing number one (1) in species name.
+ * @return The species name without having number one (1) and spaces in species name.
  */
 public static String removeNumberAndSpaces(String speciesName) {
 	
@@ -71,27 +71,29 @@ public static String removeNumberAndSpaces(String speciesName) {
 		
 	  Pattern p = Pattern.compile("\\d+");
 		
-     Matcher m = p.matcher(speciesName);
+      Matcher m = p.matcher(speciesName);
        
-     String newSpecies = speciesName;
+      String newSpecies = speciesName;
        
-     int start =0;
-     int end = 0;
+      int start =0;
+      int end = 0;
        
-     while(m.find()) {
+      while(m.find()) {
        	
-       int number = Integer.parseInt(m.group().toString());
+      int number = Integer.parseInt(m.group().toString());
        	
-       	logger.info("Number found in species name : " + number);
+      logger.info("Number found in species name : " + number);
        	
-       	if(number==1) {
+      if(number==1) {
 
-           logger.info("m.group(): " + m.group() + " number start at index: " + m.start() + " number ends at index: "  + m.end());
+      logger.info("m.group(): " + m.group() + " number start at index: " + m.start() + " number ends at index: "  + m.end());
 
-           start = m.start();
+      start = m.start();
+      end = m.end();
            
-           end = m.end();
-           
+           /**
+            * Recursive call of the method. 
+            */
            newSpecies = removeNumberAndSpaces(speciesName.substring(0, start) + speciesName.substring(end));
 
        }
