@@ -4,7 +4,7 @@
  * @type {*}
  */
 var express = require('express');
-var owlProcesser = require("../../agents/fileConnection2Wayhashed.js");
+var owlProcesser = require("../../agents/fileConnection2Way.js");
 
 var connectionsReader = Object.create(owlProcesser)
 /* GET users listing. */
