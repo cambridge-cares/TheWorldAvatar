@@ -48,7 +48,7 @@ class admsInputDataRetriever(object):
 
         self.range = self.getRange(range, targetCRS)
         print("RANGE HERE")
-        print(self.range)
+        #print(self.range)
         self.pythonLogger = PythonLogger('admsInputDataRetrieverChimney.py')
 
     def getRange(self, userrange, targetCRS):
@@ -152,6 +152,7 @@ class admsInputDataRetriever(object):
             
             
             print(aresult)
+            
 
             
             qdataC = self.query("""
@@ -202,6 +203,7 @@ class admsInputDataRetriever(object):
                         sorteder.append(v)
 
             print(sorteder)
+            
             aresult['emissionrates'] = sorteder
 
             result.append(aresult)
@@ -215,6 +217,7 @@ class admsInputDataRetriever(object):
         
         print("FILTERED :")
         print(result)
+        
 
 
 
@@ -282,8 +285,17 @@ class admsInputDataRetriever(object):
         for src in result:
             SrcNumPollutants = len(src['content'])
             pollutantnames = [self.polIRI2Name(content) for content in src['content'] ]
+            #add the pm 2.5 as the particulat is mapped to 2 different category
+            if 'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Particulate-001' in src['content']:
+                SrcNumPollutants+=1 
+                pollutantnames.append('PM2.5')
+                
+                
+
 
             newSrc = admsSrc(SrcName = src['o'].toPython(), SrcHeight = src['height'].toPython(), SrcDiameter = float(src['diameter'].toPython()), SrcPolEmissionRate = src['emissionrates'], SrcPollutants = pollutantnames,SrcTemperature = src['temp'].toPython(), SrcMolWeight = src['moleweight'].toPython(), SrcDensity = float(src['density'].toPython()), SrcSpecHeatCap = src['heatcapa'].toPython(), SrcNumPollutants=SrcNumPollutants, SrcMassFlux = src['massflow'].toPython())
+            print("hello")
+            print(newSrc)
             packed.append(newSrc)
         return packed
 
@@ -377,7 +389,9 @@ class admsInputDataRetriever(object):
         'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Ozone':'O3',
         'http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Unburned_Hydrocarbon':'HC',
         'http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Nitrogen__oxides':'NOx',
-         'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Particulate-001':'Particulate001'
+        #'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Particulate-001':'Particulate001',
+        'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Particulate-001':'PM10'
+        #'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Particulate-001':'PM2.5'
 
         }
 
@@ -436,13 +450,70 @@ class admsInputDataRetriever(object):
         print('now query')
         for row in qb:
             print(row)
-
+            
         self.pythonLogger.postInfoToLogServer([row['diameter'] for row in qb])
         rawSol =  admsPol('Particulate001',len(qb),[row['diameter'].toPython() for row in qb],[row['density'].toPython() for row in qb],[float(row['massFraction'].toPython()) for row in qb] )
+        
+        qb2 =self.query('''
+            PREFIX j.0: <http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#>
+            PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+            PREFIX j.1:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#>
+
+              SELECT distinct ?massrate
+              WHERE{
+              ?p a j.0:ParticulateMaterialAmount.
+              ?p system:hasProperty ?de.
+              ?de system:hasValue ?ve.
+              ?ve system:numericalValue ?massrate.
+                        }
+              ''')
+
+
+            
+        for massf in qb2:
+            print(massf['massrate'].toPython())
+
+        arrpm10D=[]
+        arrpm25D=[]
+        arrpm10massf=[]
+        arrpm25massf=[]
+        arrpm10Density=[]
+        arrpm25Density=[]
+        arrpm10fraction=[]
+        arrpm25fraction=[]
+        
+        for row in qb:
+            if row['diameter'].toPython()<0.00001:
+                arrpm10D.append(row['diameter'].toPython())
+                arrpm10Density.append(row['density'].toPython())
+                indivrate1=float(row['massFraction'])*float(massf['massrate'])
+                arrpm10massf.append(indivrate1)
+                print(indivrate1)
+                
+            elif row['diameter'].toPython()<0.0000025:
+                arrpm25D.append(row['diameter'].toPython())
+                arrpm25Density.append(row['density'].toPython())
+                indivrate2=float(row['massFraction'])*float(massf['massrate'])
+                arrpm25massf.append(indivrate2)
+                print(indivrate2)
+                
+        
+        for i in range(len(arrpm10massf)):
+            arrpm10fraction.append(arrpm10massf[i]/sum(arrpm10massf))
+            
+        for j in range(len(arrpm25massf)):
+            arrpm25fraction.append(arrpm25massf[j]/sum(arrpm25massf))
+                
+        rawSolpm25 =  admsPol('PM2.5',len(arrpm25D),arrpm25D,arrpm25Density,arrpm25fraction)   
+        rawSolpm10 =  admsPol('PM10',len(arrpm10D),arrpm10D,arrpm10Density,arrpm10fraction)      
+            
+        print(arrpm10fraction)   
+                
         #rawSolpm25 =  admsPol('PM2.5',len(qbpm25),[row['diameter'].toPython() for row in qbpm25],[row['density'].toPython() for row in qbpm25],[float(row['massFraction'].toPython()) for row in qbpm25] )
         #print(rawSol)
         self.pythonLogger.postInfoToLogServer(rawSol)
-        return rawSol
+        #return rawSol
+        return rawSolpm10,rawSolpm25
 
 
 
@@ -472,7 +543,8 @@ class admsInputDataRetriever(object):
         met = self.getWeather()
         xran,yran = self.range
         grd = xran[0], yran[0], xran[1], yran[1]
-        pol = self.getPol()
+        pm10,pm25=self.getPol()
+        pol = pm10,pm25
         bkg=self.getBkg()
         
 
@@ -576,5 +648,5 @@ def uri2name(uri):
     base = 'http://www.theworldavatar.com/'
     return uri.split('#')[1]
 
-
-
+ins=admsInputDataRetriever("http://www.theworldavatar.com/kb/ships/Chimney-1.owl")
+ins.getSrcData()
