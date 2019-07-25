@@ -123,7 +123,7 @@ class AplPart(object):
                         for v in var_val:
                             if i != 0 and i % 4 == 0:
                                 out_val = out_val + '\n  '
-                            if type(v) == int or type(v) == float:
+                            if type(v) == float:
                                 v = re.sub('0{1,8}e', '0e' , '{:.8e}'.format(v).replace('e+0', 'e+'))
                             elif type(v) == str:
                                 v = '"' + v + '"'
