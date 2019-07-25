@@ -94,6 +94,14 @@ class AdmsProcessor(object):
 
         self.input[Constants.KEY_INDICATOR_CHEM] = 1
         self.input[Constants.KEY_INDICATOR_WET] = 1
+        
+    def set_grid_size(self, args):
+        if str(2326) in args[6][5:]:
+            self.input[Constants.GRD_X] = 251
+            self.input[Constants.GRD_Y] = 251
+        else:
+            self.input[Constants.GRD_X] = 80
+            self.input[Constants.GRD_Y] = 80
 
     def set_input_ship_night(self):
         now = datetime.datetime.now()
@@ -109,8 +117,9 @@ class AdmsProcessor(object):
         self.set_input_ship_src_geo(ship_coordinates_list)
         self.set_input_ship_indicators(args)
         self.set_input_ship_night()
+        self.set_grid_size(args)
         
-        self.input[Constants.KEY_MET] = self.working_dir + Constants.FILENAME_BGD
+        self.input[Constants.KEY_MET] = self.working_dir + Constants.FILENAME_MET
         self.input[Constants.KEY_BKG] = self.working_dir + Constants.FILENAME_BGD
 
         so2washout, pm10washout = self.get_washouts()
@@ -133,7 +142,7 @@ class AdmsProcessor(object):
         ship_coordinates_list = []
         chimney_iri_list = []
 
-        for ship in json.loads(self.entity):
+        for ship in json.loads(self.entity.replace("'", '"')):
             x_coordinate_value = float(ship[Constants.KEY_LON])
             y_coordinate_value = float(ship[Constants.KEY_LAT])
             ship_coordinates_list.append(
@@ -170,7 +179,7 @@ class AdmsProcessor(object):
             self.modify_input_for_ship(args, ship_coordinates_list)
 
         self.input[Constants.KEY_BDN] = self.BDN
-        self.input[Constants.KEY_COORD_SYS] = self.coord_sys
+        self.input[Constants.KEY_COORD_SYS] = int(self.coord_sys)
 
     def save_apl(self, args):
         self.get_input(args)

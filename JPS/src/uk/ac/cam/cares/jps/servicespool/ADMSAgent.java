@@ -55,10 +55,12 @@ public class ADMSAgent extends JPSHttpServlet {
 
     @Override
     protected void processRequestParameters() {
+    	logger.info("enter adms request parameter");
         JSONObject region = requestParams.getJSONObject("region");
         String cityIRI = requestParams.getString("city");
         JSONObject weather = requestParams.getJSONObject("weatherstate");
-
+    	logger.info("getting  source");
+    	logger.info("getting the region,city, weather, and source");
         String precipitation = weather.getJSONObject("hasprecipation").getString("hasintensity");
         double upperx = Double.parseDouble("" + region.getJSONObject("uppercorner").get("upperx"));
         double uppery = Double.parseDouble("" + region.getJSONObject("uppercorner").get("uppery"));

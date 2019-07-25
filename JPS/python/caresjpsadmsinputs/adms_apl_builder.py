@@ -55,7 +55,7 @@ class AplDirector(object):
 class AplBuilder(object):
     def __init__(self, data):
         self.data = data
-        self.pollutant_names = [Constants.POL_CO2, Constants.POL_CO2, Constants.POL_NOX, Constants.POL_NO2,
+        self.pollutant_names = [Constants.POL_CO2, Constants.POL_NOX, Constants.POL_NO2,
                                 Constants.POL_NO, Constants.POL_PART_O3, Constants.POL_VOC, Constants.POL_PART_SO2,
                                 Constants.POL_PM10, Constants.POL_PM25, Constants.POL_CO, Constants.POL_BENZENE,
                                 Constants.POL_BUTADIENE, Constants.POL_HCl, Constants.POL_Cl2, Constants.POL_CH3Cl,
@@ -352,6 +352,9 @@ class AdmsAplShipBuilder(AplBuilder):
         grd.GrdRegularMin[1] = data_grd[3]
         grd.GrdRegularMax[0] = data_grd[0]
         grd.GrdRegularMax[1] = data_grd[1]
+        grd.GrdRegularNumPoints[0] = self.data[Constants.GRD_X]
+        grd.GrdRegularNumPoints[1] = self.data[Constants.GRD_Y]
+        
         return grd
 
     def get_opt(self):

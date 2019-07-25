@@ -20,8 +20,8 @@ Particulate001
 UNITS:
 ppb
 ppb
-ppb
-ppb
+ug/m3
+ug/m3
 ppb
 ug/m3
 ug/m3
@@ -52,8 +52,8 @@ try:
 	fullPath = sys.argv[1]
 	co2conc=414000
 	noxconc=60
-	no2conc=44.1
-	o3conc=68.99
+	no2conc=30
+	o3conc=10
 	so2conc=15.13
 	pm10conc=56.3
 	pm25conc=8

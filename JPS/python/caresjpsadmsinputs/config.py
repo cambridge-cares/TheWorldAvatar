@@ -75,3 +75,5 @@ class Constants(object):
     FILEPATH_HIL_BGD = 'D:\\ADMS 5.2\\Test files\\tank1574leakage\\background condition.bgd'
     UNIT_PPB = 'ppb'
     UNIT_UGM3 = 'ug/m3'
+    GRD_X = 'grid_x'
+    GRD_Y = 'grid_y'
