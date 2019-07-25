@@ -18,10 +18,10 @@ public class TestPOSTGRESQL extends TestCase  {
 		double xmax=11563323/*.926*/;
 		double ymax=143305/*.896*/;
 		//hk
-		 xmin=12706630.262/*.832*/;
-		 ymin=2545539.172/*.739*/;
-		 xmax=12708200.45/*.926*/;
-		 ymax=2546850.028/*.896*/;
+		 xmin=12693826.33/*.832*/;
+		 ymin=2535141.08 /*.739*/;
+		 xmax=12720831.57/*.926*/;
+		 ymax=2562311.02 /*.896*/;
 		   JSONObject jo = new JSONObject();
 		   
 		   JSONObject scope = new JSONObject();
