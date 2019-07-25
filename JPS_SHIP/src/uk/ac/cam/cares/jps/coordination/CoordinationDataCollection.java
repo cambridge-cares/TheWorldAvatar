@@ -44,11 +44,11 @@ public class CoordinationDataCollection extends HttpServlet {
 		//retrieveShipdata();
 		
 		JSONObject upcorn = new JSONObject();
-		upcorn.put("upperx", "12708200.45");
-		upcorn.put("uppery", "2546850.028");
+		upcorn.put("upperx", "12720831.57");
+		upcorn.put("uppery", "2562311.02");
 		JSONObject lowcorn = new JSONObject();
-		lowcorn.put("lowerx", "12706630.262");
-		lowcorn.put("lowery", "2545539.172");
+		lowcorn.put("lowerx", "12693826.33");
+		lowcorn.put("lowery", "2535141.08");
 		JSONObject joregion = new JSONObject();
 		joregion.put("srsname","EPSG:3857");
 		joregion.put("lowercorner",lowcorn);
