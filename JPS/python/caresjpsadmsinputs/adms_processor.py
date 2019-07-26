@@ -97,8 +97,8 @@ class AdmsProcessor(object):
         
     def set_grid_size(self, args):
         if str(2326) in args[6][5:]:
-            self.input[Constants.GRD_X] = 251
-            self.input[Constants.GRD_Y] = 251
+            self.input[Constants.GRD_X] = 80
+            self.input[Constants.GRD_Y] = 80
         else:
             self.input[Constants.GRD_X] = 80
             self.input[Constants.GRD_Y] = 80
