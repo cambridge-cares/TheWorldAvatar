@@ -54,8 +54,10 @@ public class TestPOSTGRESQL extends TestCase  {
 		   //System.out.println("json="+jsoninput.toString());
 		   
 		   String result = AgentCaller.executeGetWithJsonParameter("/JPS_POSTGRESQL/getEntitiesWithinRegion", jo.toString());
-
+		  
 		   System.out.println("result of the ship= "+result);
+		   JSONObject res = new JSONObject(result);
+		   System.out.println("amount of data ="+res.getJSONObject("collection").getJSONArray("items").length());
 	}
 	
 	public void testcalculationforterrain() {
