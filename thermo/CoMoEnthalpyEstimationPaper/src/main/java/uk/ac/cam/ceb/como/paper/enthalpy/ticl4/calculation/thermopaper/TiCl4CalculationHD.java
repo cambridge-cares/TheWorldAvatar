@@ -69,17 +69,17 @@ public class TiCl4CalculationHD {
          * 
          */
     	
-//        String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\g09\\";
-//        String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\plain-ref_scaled_kJperMols_v8-0p05.csv"; //171//ref-enthalpy_scaled_kJperMol.csv
-//        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-1-species.csv"; //Target 1 species in first raw. Other species from the list belong to reference species.
+//      String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\g09\\";
+//      String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\plain-ref_scaled_kJperMols_v8-0p05.csv"; //171//ref-enthalpy_scaled_kJperMol.csv
+//      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-1-species.csv"; //Target 1 species in first raw. Other species from the list belong to reference species.
 //      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-O2-3let.csv";
 //      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-10-species.csv"; //Target 10 species from 1st to 10th raw. Other species from the list belong to reference species.
 //      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-no-ref-data.csv"; // There are no reference species that are included in the list of target species. //171//calc-enthalpy_scaled_kJperMol.csv
-//        String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\hd\\";
+//      String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\hd\\";
         
         String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\esc\\g09\\";
         String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\ref-enthalpy_scaled_kJperMol.csv";  //171//ref-enthalpy_scaled_kJperMol.csv
-        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\calc-enthalpy_scaled_kJperMol-1species.csv"; //171//calc-enthalpy_scaled_kJperMol.csv
+        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\calc-enthalpy_scaled_kJperMol-3-species.csv"; //171//calc-enthalpy_scaled_kJperMol.csv
         String destRList = "C:\\Users\\NK\\Documents\\philipp\\\\171-pb556\\hco_hd\\";
         
 //      String srcCompoundsRef = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\west-recalc\\all-g09\\";
@@ -138,16 +138,20 @@ public class TiCl4CalculationHD {
                         System.out.println("REF: e- pairing could not be determined for " + s.getRef());
                         invalids.add(s);
                     }
+                    
                 } catch (NullPointerException npe) {
+                	
                 	/**
+                	 * 
                 	 * Check with Angiras if-else statement below.
+                	 * 
                 	 */
                     if (s.getRef().compareTo("Ti5O6Cl8") == 0) {
                     	
                         spinMultiplicity.put(s, 1);
                         
                     } else {
-                    	
+                    
                         System.out.println(s.getRef());
                     }
                 }
@@ -178,7 +182,7 @@ public class TiCl4CalculationHD {
         
         int[] ctrRes = new int[]{1}; // 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18, - number of reactions //8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40
         
-        int[] ctrRadicals = new int[]{100}; // 0, 1, 2, 3, 4, 5
+        int[] ctrRadicals = new int[]{0}; // 0, 1, 2, 3, 4, 5, 100
 
         for (int z = 0; z < ctrRadicals.length; z++) {
         	
@@ -248,7 +252,7 @@ public class TiCl4CalculationHD {
                         
                         PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new HDReactionType())); 
                         
-                        poolModCalc.setMaximumSearchDepth(50);
+                        poolModCalc.setMaximumSearchDepth(50); 
                         
                         MultiRunCalculator c = new MultiRunCalculator(poolModCalc);
                         
@@ -262,9 +266,9 @@ public class TiCl4CalculationHD {
                         	
                            try{
                             	
-                                Map<Species, Collection<ReactionList>> r = (Map<Species, Collection<ReactionList>>) future.get(timeout, TimeUnit.SECONDS);
+                           Map<Species, Collection<ReactionList>> r = (Map<Species, Collection<ReactionList>>) future.get(timeout, TimeUnit.SECONDS);
                                 
-                                if (r != null) {
+                           if (r != null) {
                                 
                                 	for (Species sR : r.keySet()) {
                                     
@@ -299,6 +303,8 @@ public class TiCl4CalculationHD {
                                 for (Species sR : re.keySet()) {
                                 		
                                 results.put(target, re.get(sR));
+                                
+                                
                                  
                                 }
                                 
