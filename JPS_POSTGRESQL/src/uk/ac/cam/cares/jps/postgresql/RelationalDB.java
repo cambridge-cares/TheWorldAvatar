@@ -98,8 +98,9 @@ public class RelationalDB {
                 "INNER JOIN ship_details sd ON ship.mmsi = sd.ship_mmsi " +
                 "WHERE (lat BETWEEN ? AND ?) " +
                 "AND (lon BETWEEN ? AND ?) " +
-                "AND (ts >= ? or tst >= ?)" +
-                "ORDER BY ss DESC, al DESC, aw DESC";
+                "AND (ts >= ? or tst >= ?) " +
+                "ORDER BY ss DESC, al DESC, aw DESC " +
+                "LIMIT 300";
 
         try {
             Instant instant = Instant.now();
