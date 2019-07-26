@@ -28,8 +28,6 @@ public abstract class JPSHttpServlet extends HttpServlet {
     private static final long serialVersionUID = 3507827296966247195L;
     protected Logger logger;
     private static final String GET_AGENT_INPUT_PARAMS_KEY = "query";
-    protected static JSONObject requestParams = new JSONObject();
-    protected static JSONObject responseParams = new JSONObject();
 
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -107,8 +105,8 @@ public abstract class JPSHttpServlet extends HttpServlet {
      * @return Response parameters as String
      */
     private String getResponseBody(HttpServletRequest request) {
-        requestParams = getRequestParameters(request);
-        processRequestParameters();
+        JSONObject requestParams = getRequestParameters(request);
+        JSONObject responseParams = processRequestParameters(requestParams);
         return responseParams.toString();
     }
 
@@ -118,7 +116,9 @@ public abstract class JPSHttpServlet extends HttpServlet {
      *
      * @TODO: convert it to the abstract method and alter all JPSHttpServlet implementations (slightly bigger job)
      */
-    protected void processRequestParameters() {
+    protected JSONObject processRequestParameters(JSONObject requestParams) {
+        JSONObject responseParams = new JSONObject();
+        return responseParams;
     }
 
     /**

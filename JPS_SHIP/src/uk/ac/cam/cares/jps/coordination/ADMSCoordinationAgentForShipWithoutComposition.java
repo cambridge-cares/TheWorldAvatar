@@ -28,9 +28,9 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServl
     }
 
     @Override
-    protected void processRequestParameters() {
+    protected JSONObject processRequestParameters(JSONObject requestParams) {
 
-        responseParams = requestParams;
+        JSONObject responseParams = requestParams;
 
         String regionToCityResult = execute("/JPS/RegionToCity", requestParams.toString());
         String city = new JSONObject(regionToCityResult).getString("city");
@@ -74,6 +74,8 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServl
         result = execute("/JPS/ADMSAgent", responseParams.toString(), HttpPost.METHOD_NAME);
         String folder = new JSONObject(result).getString("folder");
         responseParams.put("folder", folder);
+
+        return responseParams;
     }
 
 }

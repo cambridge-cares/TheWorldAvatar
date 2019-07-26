@@ -35,7 +35,6 @@ public class ADMSAgent extends JPSHttpServlet {
     private static final String DATA_KEY_LAT = "lat";
     private static final String DATA_KEY_LON = "lon";
     private static final String FILENAME_ADMS_PROCESSOR = "adms_processor.py";
-    private JSONArray mCoordinates = new JSONArray();
 
     private void setLogger() {
         logger = LoggerFactory.getLogger(ADMSAgent.class);
@@ -54,7 +53,7 @@ public class ADMSAgent extends JPSHttpServlet {
     }
 
     @Override
-    protected void processRequestParameters() {
+    protected JSONObject processRequestParameters(JSONObject requestParams) {
     	logger.info("enter adms request parameter");
         JSONObject region = requestParams.getJSONObject("region");
         String cityIRI = requestParams.getString("city");
@@ -80,10 +79,10 @@ public class ADMSAgent extends JPSHttpServlet {
 
         try {
             if (requestParams.has(PARAM_KEY_SHIP)) {
-                getEntityCoordinates(requestParams.getJSONObject(PARAM_KEY_SHIP));
+                JSONArray coords  = getEntityCoordinates(requestParams.getJSONObject(PARAM_KEY_SHIP));
                 QueryBroker broker = new QueryBroker();
                 broker.put(fullPath + "/arbitrary.txt", "text to assign something arbitrary");
-                String coordinates = new Gson().toJson(mCoordinates.toString());
+                String coordinates = new Gson().toJson(coords.toString());
                 String chimney = new String();
                 if (requestParams.has(PARAM_KEY_CHIMNEY)) {
                     chimney = requestParams.getString(PARAM_KEY_CHIMNEY);
@@ -110,7 +109,11 @@ public class ADMSAgent extends JPSHttpServlet {
         startADMS(fullPath);
         MetaDataAnnotator.annotateWithTimeAndAgent(fullPath + "/test.levels.gst", timestamp, agentIRI);
 
+        JSONObject responseParams = new JSONObject();
+
         responseParams.put("folder", fullPath);
+
+        return responseParams;
     }
 
 
@@ -187,27 +190,31 @@ public class ADMSAgent extends JPSHttpServlet {
     }
 
     /**
-     * Recursive method to extract latitude and longitude of an entity or collection of entities.
-     * Stores coordinates in the class member variable mCoordinates.
+     * Method to extract latitude and longitude of each entity in a collection of entities.
      *
      * @param input An item or collection of items wrapped in JSONObject
+     * @return Coordinates in JSONArray
      */
-    private void getEntityCoordinates(JSONObject input) {
+    private JSONArray getEntityCoordinates(JSONObject input) {
+        JSONArray coordinates = new JSONArray();
 
-        if (input.has(DATA_KEY_LAT) & input.has(DATA_KEY_LON)) {
-            JSONObject latlon = new JSONObject();
-            latlon.put(DATA_KEY_LAT, input.getDouble(DATA_KEY_LAT));
-            latlon.put(DATA_KEY_LON, input.getDouble(DATA_KEY_LON));
-            mCoordinates.put(latlon);
-        } else if (input.has(DATA_KEY_COLLECTION)) {
+        if (input.has(DATA_KEY_COLLECTION)) {
             JSONObject entities = input.getJSONObject(DATA_KEY_COLLECTION);
             if (entities.has(DATA_KEY_ITEMS)) {
                 JSONArray items = entities.getJSONArray(DATA_KEY_ITEMS);
                 for (Iterator<Object> i = items.iterator(); i.hasNext();) {
-                    getEntityCoordinates((JSONObject) i.next());
+                    JSONObject item = (JSONObject) i.next();
+                    if (item.has(DATA_KEY_LAT) & item.has(DATA_KEY_LON)) {
+                        JSONObject latlon = new JSONObject();
+                        latlon.put(DATA_KEY_LAT, item.getDouble(DATA_KEY_LAT));
+                        latlon.put(DATA_KEY_LON, item.getDouble(DATA_KEY_LON));
+                        coordinates.put(latlon);
+                    }
                 }
             }
         }
+
+        return coordinates;
     }
 
 
