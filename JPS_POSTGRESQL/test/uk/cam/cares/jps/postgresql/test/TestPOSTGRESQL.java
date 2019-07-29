@@ -12,15 +12,16 @@ public class TestPOSTGRESQL extends TestCase  {
 
 	
 	public void testextractdata() {
+		//sg
 		double xmin=11560879/*.832*/;
 		double ymin=140107/*.739*/;
 		double xmax=11563323/*.926*/;
 		double ymax=143305/*.896*/;
-		
-		 xmin=12706630.262/*.832*/;
-		 ymin=2545539.172/*.739*/;
-		 xmax=12708200.45/*.926*/;
-		 ymax=2546850.028/*.896*/;
+		//hk
+		 xmin=12693826.33/*.832*/;
+		 ymin=2535141.08 /*.739*/;
+		 xmax=12720831.57/*.926*/;
+		 ymax=2562311.02 /*.896*/;
 		   JSONObject jo = new JSONObject();
 		   
 		   JSONObject scope = new JSONObject();
@@ -53,8 +54,10 @@ public class TestPOSTGRESQL extends TestCase  {
 		   //System.out.println("json="+jsoninput.toString());
 		   
 		   String result = AgentCaller.executeGetWithJsonParameter("/JPS_POSTGRESQL/getEntitiesWithinRegion", jo.toString());
-
+		  
 		   System.out.println("result of the ship= "+result);
+		   JSONObject res = new JSONObject(result);
+		   System.out.println("amount of data ="+res.getJSONObject("collection").getJSONArray("items").length());
 	}
 	
 	public void testcalculationforterrain() {

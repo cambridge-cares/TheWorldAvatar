@@ -96,8 +96,8 @@ function getContourMaps (address, folder) {
         let color = d3.scaleLog(d3.interpolateRdYlBu).
           domain(thresholds).
           range([
-            '#3986ce',
-            '#b0d6f9',
+        	'#b0d6f9',
+        	'#3986ce',
             'rgba(216,217,162,0.62)',
             'rgba(255,254,78,0.65)',
             '#fee91c',
