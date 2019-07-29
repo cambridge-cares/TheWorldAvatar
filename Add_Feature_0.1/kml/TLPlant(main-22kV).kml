@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?><kml xmlns="http://www.opengis.net/kml/2.2">
+<Placemark>
+<MultiGeometry>
+<Name>Biodiesel Plant</Name>
+<description>&lt;?xml version="1.0" standalone="yes"?&gt;
+&lt;DocumentElement&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.108&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.010538&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;0.018596&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P1&lt;/Group_part&gt;
+    &lt;Name&gt;PHT-1&lt;/Name&gt;
+    &lt;Target&gt;HT-Substn1&lt;/Target&gt;
+    &lt;Source&gt;LoadPoint-118&lt;/Source&gt;
+    &lt;Ln_loss_P&gt;0.002&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0.003&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.1282&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.010538&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;0.018596&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P1&lt;/Group_part&gt;
+    &lt;Name&gt;PHT-2&lt;/Name&gt;
+    &lt;Target&gt;HT-Substn2&lt;/Target&gt;
+    &lt;Source&gt;LoadPoint-118&lt;/Source&gt;
+    &lt;Ln_loss_P&gt;0.001&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0.002&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.1944&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.010534&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;0.018596&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P2&lt;/Group_part&gt;
+    &lt;Name&gt;PHT-3&lt;/Name&gt;
+    &lt;Target&gt;HT-Substn1&lt;/Target&gt;
+    &lt;Source&gt;LoadPoint-118&lt;/Source&gt;
+    &lt;Ln_loss_P&gt;0.001&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0.003&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.1908&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.010538&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;0.018596&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P2&lt;/Group_part&gt;
+    &lt;Name&gt;PHT-4&lt;/Name&gt;
+    &lt;Target&gt;HT-Substn2&lt;/Target&gt;
+    &lt;Source&gt;LoadPoint-118&lt;/Source&gt;
+    &lt;Ln_loss_P&gt;0.001&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0.001&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+&lt;/DocumentElement&gt;</description>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.677515614335,1.25996798488469,100
+103.677527494428,1.25997976732896,100
+103.678063571855,1.25944316832705,100
+103.677990163834,1.25936958711191,100
+103.678049718701,1.25930993273281,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.678085062077,1.25928130563506,100
+103.678064819687,1.25930215065725,100
+103.678193178329,1.25943076843947,100
+103.677566305045,1.26002119655856,100
+103.677515614335,1.25996798488469,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.678049718701,1.25930993273281,100
+103.677883412441,1.25947534319425,100
+103.677595615835,1.25918369656949,100
+103.677247707344,1.2595268464991,100
+103.677331451438,1.259611710878,100
+103.67724788488,1.25969366270773,100
+103.677505866942,1.25996115667196,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.678085062077,1.2592813056351,100
+103.678064767953,1.25930208954999,100
+103.677856551468,1.25909335362973,100
+103.677656406684,1.25929235529816,100
+103.677600957115,1.25923661414511,100
+103.67735582017,1.25948009433393,100
+103.677539467248,1.25966470710571,100
+103.677375779942,1.25982734147237,100
+103.677508181378,1.2599635241779,100
+</coordinates>
+</LineString>
+
+</MultiGeometry>
+</Placemark>
+</kml>

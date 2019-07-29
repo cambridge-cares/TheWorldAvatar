@@ -1,0 +1,495 @@
+2016.03.18 18:47:47.798 SGT INFO: *** SYSTEM START ***
+2016.03.18 18:47:48.194 SGT WARNING: [Local Folder Repository] The specified file must be a directory. (D:\JParkSimulator-git\updateowl\plugins\edu.stanford.smi.protegex.owl) -- LocalFolderRepository.update()
+2016.03.18 18:47:48.208 SGT INFO: Loading triples for: null -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:47:48.557 SGT INFO:     Completed triple loading after 271 ms -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:47:48.559 SGT INFO: Postprocess: Process entities with incorrect Java type (1 entities) ...  -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:47:48.559 SGT INFO: 0 ms
+ -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:47:48.560 SGT INFO: Postprocess: Process metaclasses (3 metaclasses) ...  -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:47:48.560 SGT INFO: 0 ms
+ -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:47:48.560 SGT INFO: Postprocess: Process subclasses of rdf:List (1 classes) ...  -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:47:48.560 SGT INFO: 0 ms
+ -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:47:48.560 SGT INFO: Postprocess: Instances with multiple types (13 instances) ...  -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:47:48.562 SGT INFO: 2 ms
+ -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:47:48.569 SGT INFO: Postprocess: Add inferred superclasses ...  -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:47:48.569 SGT INFO: 0 ms
+ -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:47:48.571 SGT INFO: Postprocess: Process orphan classes (27 classes) ...  -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:47:48.572 SGT INFO: 1 ms
+ -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:47:48.572 SGT INFO: Postprocess: Generalized Concept Inclusion (0 axioms) ...  -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:47:48.574 SGT INFO: 1 ms
+ -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:47:48.574 SGT INFO: Postprocess: Abstract classes...  -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:47:48.574 SGT INFO: 0 ms
+ -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:47:48.575 SGT INFO: Postprocess: Domain and range of properties...  -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:47:48.576 SGT INFO: 1 ms
+ -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:47:48.576 SGT INFO: Postprocess: Possibly typed entities (4 resources) ...  -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:47:48.580 SGT INFO: 4 ms
+ -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:47:48.580 SGT INFO: Updating underlying frames model in 0 ms -- ProtegeOWLParser.doFinalPostProcessing()
+2016.03.18 18:48:13.124 SGT INFO: *** SYSTEM START ***
+2016.03.18 18:48:13.527 SGT WARNING: [Local Folder Repository] The specified file must be a directory. (D:\JParkSimulator-git\updateowl\plugins\edu.stanford.smi.protegex.owl) -- LocalFolderRepository.update()
+2016.03.18 18:48:13.548 SGT INFO: Loading triples for: null -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:48:13.876 SGT INFO:     Completed triple loading after 260 ms -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:48:13.878 SGT INFO: Postprocess: Process entities with incorrect Java type (1 entities) ...  -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:48:13.878 SGT INFO: 0 ms
+ -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:48:13.879 SGT INFO: Postprocess: Process metaclasses (3 metaclasses) ...  -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:48:13.879 SGT INFO: 0 ms
+ -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:48:13.879 SGT INFO: Postprocess: Process subclasses of rdf:List (1 classes) ...  -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:48:13.879 SGT INFO: 0 ms
+ -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:48:13.879 SGT INFO: Postprocess: Instances with multiple types (13 instances) ...  -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:48:13.881 SGT INFO: 2 ms
+ -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:48:13.888 SGT INFO: Postprocess: Add inferred superclasses ...  -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:48:13.888 SGT INFO: 0 ms
+ -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:48:13.890 SGT INFO: Postprocess: Process orphan classes (27 classes) ...  -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:48:13.891 SGT INFO: 1 ms
+ -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:48:13.891 SGT INFO: Postprocess: Generalized Concept Inclusion (0 axioms) ...  -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:48:13.893 SGT INFO: 1 ms
+ -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:48:13.893 SGT INFO: Postprocess: Abstract classes...  -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:48:13.893 SGT INFO: 0 ms
+ -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:48:13.893 SGT INFO: Postprocess: Domain and range of properties...  -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:48:13.895 SGT INFO: 2 ms
+ -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:48:13.895 SGT INFO: Postprocess: Possibly typed entities (3 resources) ...  -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:48:13.895 SGT INFO: 0 ms
+ -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:48:13.896 SGT INFO: Updating underlying frames model in 1 ms -- ProtegeOWLParser.doFinalPostProcessing()
+2016.03.18 18:48:38.294 SGT INFO: *** SYSTEM START ***
+2016.03.18 18:48:38.707 SGT WARNING: [Local Folder Repository] The specified file must be a directory. (D:\JParkSimulator-git\updateowl\plugins\edu.stanford.smi.protegex.owl) -- LocalFolderRepository.update()
+2016.03.18 18:48:38.727 SGT INFO: Loading triples for: null -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:48:39.080 SGT INFO:     Completed triple loading after 281 ms -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:48:39.083 SGT INFO: Postprocess: Process entities with incorrect Java type (1 entities) ...  -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:48:39.083 SGT INFO: 0 ms
+ -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:48:39.083 SGT INFO: Postprocess: Process metaclasses (3 metaclasses) ...  -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:48:39.083 SGT INFO: 0 ms
+ -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:48:39.084 SGT INFO: Postprocess: Process subclasses of rdf:List (1 classes) ...  -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:48:39.084 SGT INFO: 0 ms
+ -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:48:39.084 SGT INFO: Postprocess: Instances with multiple types (13 instances) ...  -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:48:39.085 SGT INFO: 1 ms
+ -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:48:39.093 SGT INFO: Postprocess: Add inferred superclasses ...  -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:48:39.093 SGT INFO: 0 ms
+ -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:48:39.095 SGT INFO: Postprocess: Process orphan classes (27 classes) ...  -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:48:39.096 SGT INFO: 1 ms
+ -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:48:39.096 SGT INFO: Postprocess: Generalized Concept Inclusion (0 axioms) ...  -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:48:39.098 SGT INFO: 2 ms
+ -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:48:39.099 SGT INFO: Postprocess: Abstract classes...  -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:48:39.099 SGT INFO: 0 ms
+ -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:48:39.099 SGT INFO: Postprocess: Domain and range of properties...  -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:48:39.100 SGT INFO: 1 ms
+ -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:48:39.101 SGT INFO: Postprocess: Possibly typed entities (4 resources) ...  -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:48:39.104 SGT INFO: 3 ms
+ -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:48:39.105 SGT INFO: Updating underlying frames model in 1 ms -- ProtegeOWLParser.doFinalPostProcessing()
+2016.03.18 18:49:43.398 SGT INFO: *** SYSTEM START ***
+2016.03.18 18:49:43.803 SGT WARNING: [Local Folder Repository] The specified file must be a directory. (D:\JParkSimulator-git\updateowl\plugins\edu.stanford.smi.protegex.owl) -- LocalFolderRepository.update()
+2016.03.18 18:49:43.824 SGT INFO: Loading triples for: null -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:49:44.223 SGT INFO:     Completed triple loading after 333 ms -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:49:44.228 SGT INFO: Postprocess: Process entities with incorrect Java type (1 entities) ...  -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:49:44.228 SGT INFO: 0 ms
+ -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:49:44.228 SGT INFO: Postprocess: Process metaclasses (3 metaclasses) ...  -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:49:44.228 SGT INFO: 0 ms
+ -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:49:44.228 SGT INFO: Postprocess: Process subclasses of rdf:List (1 classes) ...  -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:49:44.229 SGT INFO: 0 ms
+ -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:49:44.229 SGT INFO: Postprocess: Instances with multiple types (13 instances) ...  -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:49:44.230 SGT INFO: 1 ms
+ -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:49:44.238 SGT INFO: Postprocess: Add inferred superclasses ...  -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:49:44.238 SGT INFO: 0 ms
+ -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:49:44.240 SGT INFO: Postprocess: Process orphan classes (27 classes) ...  -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:49:44.241 SGT INFO: 1 ms
+ -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:49:44.241 SGT INFO: Postprocess: Generalized Concept Inclusion (0 axioms) ...  -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:49:44.243 SGT INFO: 1 ms
+ -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:49:44.243 SGT INFO: Postprocess: Abstract classes...  -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:49:44.243 SGT INFO: 0 ms
+ -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:49:44.243 SGT INFO: Postprocess: Domain and range of properties...  -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:49:44.245 SGT INFO: 2 ms
+ -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:49:44.245 SGT INFO: Postprocess: Possibly typed entities (4 resources) ...  -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:49:44.248 SGT INFO: 3 ms
+ -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:49:44.249 SGT INFO: Updating underlying frames model in 1 ms -- ProtegeOWLParser.doFinalPostProcessing()
+2016.03.18 18:50:36.410 SGT INFO: *** SYSTEM START ***
+2016.03.18 18:50:36.806 SGT WARNING: [Local Folder Repository] The specified file must be a directory. (D:\JParkSimulator-git\updateowl\plugins\edu.stanford.smi.protegex.owl) -- LocalFolderRepository.update()
+2016.03.18 18:50:36.826 SGT INFO: Loading triples for: null -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:50:37.154 SGT INFO:     Completed triple loading after 261 ms -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:50:37.156 SGT INFO: Postprocess: Process entities with incorrect Java type (1 entities) ...  -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:50:37.156 SGT INFO: 0 ms
+ -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:50:37.156 SGT INFO: Postprocess: Process metaclasses (3 metaclasses) ...  -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:50:37.157 SGT INFO: 0 ms
+ -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:50:37.157 SGT INFO: Postprocess: Process subclasses of rdf:List (1 classes) ...  -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:50:37.157 SGT INFO: 0 ms
+ -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:50:37.157 SGT INFO: Postprocess: Instances with multiple types (13 instances) ...  -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:50:37.159 SGT INFO: 2 ms
+ -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:50:37.166 SGT INFO: Postprocess: Add inferred superclasses ...  -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:50:37.166 SGT INFO: 0 ms
+ -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:50:37.168 SGT INFO: Postprocess: Process orphan classes (27 classes) ...  -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:50:37.169 SGT INFO: 1 ms
+ -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:50:37.170 SGT INFO: Postprocess: Generalized Concept Inclusion (0 axioms) ...  -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:50:37.172 SGT INFO: 1 ms
+ -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:50:37.172 SGT INFO: Postprocess: Abstract classes...  -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:50:37.173 SGT INFO: 1 ms
+ -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:50:37.173 SGT INFO: Postprocess: Domain and range of properties...  -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:50:37.174 SGT INFO: 1 ms
+ -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:50:37.175 SGT INFO: Postprocess: Possibly typed entities (5 resources) ...  -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:50:37.178 SGT INFO: 3 ms
+ -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:50:37.179 SGT INFO: Updating underlying frames model in 0 ms -- ProtegeOWLParser.doFinalPostProcessing()
+2016.03.18 18:51:15.846 SGT INFO: *** SYSTEM START ***
+2016.03.18 18:51:16.260 SGT WARNING: [Local Folder Repository] The specified file must be a directory. (D:\JParkSimulator-git\updateowl\plugins\edu.stanford.smi.protegex.owl) -- LocalFolderRepository.update()
+2016.03.18 18:51:16.281 SGT INFO: Loading triples for: null -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:51:16.614 SGT INFO:     Completed triple loading after 266 ms -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:51:16.616 SGT INFO: Postprocess: Process entities with incorrect Java type (1 entities) ...  -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:51:16.617 SGT INFO: 0 ms
+ -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:51:16.617 SGT INFO: Postprocess: Process metaclasses (3 metaclasses) ...  -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:51:16.617 SGT INFO: 0 ms
+ -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:51:16.617 SGT INFO: Postprocess: Process subclasses of rdf:List (1 classes) ...  -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:51:16.617 SGT INFO: 0 ms
+ -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:51:16.617 SGT INFO: Postprocess: Instances with multiple types (13 instances) ...  -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:51:16.619 SGT INFO: 2 ms
+ -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:51:16.625 SGT INFO: Postprocess: Add inferred superclasses ...  -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:51:16.625 SGT INFO: 0 ms
+ -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:51:16.627 SGT INFO: Postprocess: Process orphan classes (27 classes) ...  -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:51:16.628 SGT INFO: 1 ms
+ -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:51:16.628 SGT INFO: Postprocess: Generalized Concept Inclusion (0 axioms) ...  -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:51:16.631 SGT INFO: 2 ms
+ -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:51:16.631 SGT INFO: Postprocess: Abstract classes...  -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:51:16.631 SGT INFO: 0 ms
+ -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:51:16.631 SGT INFO: Postprocess: Domain and range of properties...  -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:51:16.633 SGT INFO: 2 ms
+ -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:51:16.633 SGT INFO: Postprocess: Possibly typed entities (3 resources) ...  -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:51:16.633 SGT INFO: 0 ms
+ -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:51:16.633 SGT INFO: Updating underlying frames model in 0 ms -- ProtegeOWLParser.doFinalPostProcessing()
+2016.03.18 18:51:42.669 SGT INFO: *** SYSTEM START ***
+2016.03.18 18:51:43.070 SGT WARNING: [Local Folder Repository] The specified file must be a directory. (D:\JParkSimulator-git\updateowl\plugins\edu.stanford.smi.protegex.owl) -- LocalFolderRepository.update()
+2016.03.18 18:51:43.090 SGT INFO: Loading triples for: null -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:51:43.416 SGT INFO:     Completed triple loading after 259 ms -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:51:43.418 SGT INFO: Postprocess: Process entities with incorrect Java type (1 entities) ...  -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:51:43.419 SGT INFO: 0 ms
+ -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:51:43.419 SGT INFO: Postprocess: Process metaclasses (3 metaclasses) ...  -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:51:43.419 SGT INFO: 0 ms
+ -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:51:43.419 SGT INFO: Postprocess: Process subclasses of rdf:List (1 classes) ...  -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:51:43.419 SGT INFO: 0 ms
+ -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:51:43.419 SGT INFO: Postprocess: Instances with multiple types (13 instances) ...  -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:51:43.421 SGT INFO: 2 ms
+ -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:51:43.427 SGT INFO: Postprocess: Add inferred superclasses ...  -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:51:43.428 SGT INFO: 1 ms
+ -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:51:43.429 SGT INFO: Postprocess: Process orphan classes (27 classes) ...  -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:51:43.430 SGT INFO: 1 ms
+ -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:51:43.430 SGT INFO: Postprocess: Generalized Concept Inclusion (0 axioms) ...  -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:51:43.433 SGT INFO: 1 ms
+ -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:51:43.433 SGT INFO: Postprocess: Abstract classes...  -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:51:43.433 SGT INFO: 0 ms
+ -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:51:43.433 SGT INFO: Postprocess: Domain and range of properties...  -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:51:43.435 SGT INFO: 2 ms
+ -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:51:43.435 SGT INFO: Postprocess: Possibly typed entities (3 resources) ...  -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:51:43.435 SGT INFO: 0 ms
+ -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:51:43.435 SGT INFO: Updating underlying frames model in 0 ms -- ProtegeOWLParser.doFinalPostProcessing()
+2016.03.18 18:52:15.485 SGT INFO: *** SYSTEM START ***
+2016.03.18 18:52:15.897 SGT WARNING: [Local Folder Repository] The specified file must be a directory. (D:\JParkSimulator-git\updateowl\plugins\edu.stanford.smi.protegex.owl) -- LocalFolderRepository.update()
+2016.03.18 18:52:15.918 SGT INFO: Loading triples for: null -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:52:16.256 SGT INFO:     Completed triple loading after 271 ms -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:52:16.258 SGT INFO: Postprocess: Process entities with incorrect Java type (1 entities) ...  -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:52:16.259 SGT INFO: 0 ms
+ -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:52:16.259 SGT INFO: Postprocess: Process metaclasses (3 metaclasses) ...  -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:52:16.259 SGT INFO: 0 ms
+ -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:52:16.259 SGT INFO: Postprocess: Process subclasses of rdf:List (1 classes) ...  -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:52:16.259 SGT INFO: 0 ms
+ -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:52:16.259 SGT INFO: Postprocess: Instances with multiple types (13 instances) ...  -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:52:16.261 SGT INFO: 2 ms
+ -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:52:16.269 SGT INFO: Postprocess: Add inferred superclasses ...  -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:52:16.269 SGT INFO: 0 ms
+ -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:52:16.271 SGT INFO: Postprocess: Process orphan classes (27 classes) ...  -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:52:16.272 SGT INFO: 1 ms
+ -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:52:16.272 SGT INFO: Postprocess: Generalized Concept Inclusion (0 axioms) ...  -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:52:16.274 SGT INFO: 2 ms
+ -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:52:16.274 SGT INFO: Postprocess: Abstract classes...  -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:52:16.275 SGT INFO: 0 ms
+ -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:52:16.275 SGT INFO: Postprocess: Domain and range of properties...  -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:52:16.276 SGT INFO: 1 ms
+ -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:52:16.276 SGT INFO: Postprocess: Possibly typed entities (4 resources) ...  -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:52:16.280 SGT INFO: 3 ms
+ -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:52:16.280 SGT INFO: Updating underlying frames model in 0 ms -- ProtegeOWLParser.doFinalPostProcessing()
+2016.03.18 18:52:55.441 SGT INFO: *** SYSTEM START ***
+2016.03.18 18:52:55.857 SGT WARNING: [Local Folder Repository] The specified file must be a directory. (D:\JParkSimulator-git\updateowl\plugins\edu.stanford.smi.protegex.owl) -- LocalFolderRepository.update()
+2016.03.18 18:52:55.877 SGT INFO: Loading triples for: null -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:52:56.208 SGT INFO:     Completed triple loading after 264 ms -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:52:56.210 SGT INFO: Postprocess: Process entities with incorrect Java type (1 entities) ...  -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:52:56.210 SGT INFO: 0 ms
+ -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:52:56.210 SGT INFO: Postprocess: Process metaclasses (3 metaclasses) ...  -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:52:56.211 SGT INFO: 1 ms
+ -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:52:56.211 SGT INFO: Postprocess: Process subclasses of rdf:List (1 classes) ...  -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:52:56.211 SGT INFO: 0 ms
+ -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:52:56.211 SGT INFO: Postprocess: Instances with multiple types (13 instances) ...  -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:52:56.212 SGT INFO: 1 ms
+ -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:52:56.220 SGT INFO: Postprocess: Add inferred superclasses ...  -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:52:56.220 SGT INFO: 0 ms
+ -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:52:56.222 SGT INFO: Postprocess: Process orphan classes (27 classes) ...  -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:52:56.223 SGT INFO: 1 ms
+ -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:52:56.223 SGT INFO: Postprocess: Generalized Concept Inclusion (0 axioms) ...  -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:52:56.225 SGT INFO: 2 ms
+ -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:52:56.226 SGT INFO: Postprocess: Abstract classes...  -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:52:56.226 SGT INFO: 0 ms
+ -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:52:56.226 SGT INFO: Postprocess: Domain and range of properties...  -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:52:56.228 SGT INFO: 2 ms
+ -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:52:56.228 SGT INFO: Postprocess: Possibly typed entities (3 resources) ...  -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:52:56.228 SGT INFO: 0 ms
+ -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:52:56.228 SGT INFO: Updating underlying frames model in 0 ms -- ProtegeOWLParser.doFinalPostProcessing()
+2016.03.18 18:52:56.485 SGT INFO: ... saving successful to: D:\OntoCAPE\BiodieselPlantchange2.owl -- Protege2Jena.saveAll()
+2016.03.18 18:54:21.479 SGT INFO: *** SYSTEM START ***
+2016.03.18 18:54:21.877 SGT WARNING: [Local Folder Repository] The specified file must be a directory. (D:\JParkSimulator-git\updateowl\plugins\edu.stanford.smi.protegex.owl) -- LocalFolderRepository.update()
+2016.03.18 18:54:21.899 SGT INFO: Loading triples for: null -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:54:22.227 SGT INFO:     Completed triple loading after 261 ms -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:54:22.230 SGT INFO: Postprocess: Process entities with incorrect Java type (1 entities) ...  -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:54:22.230 SGT INFO: 0 ms
+ -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:54:22.230 SGT INFO: Postprocess: Process metaclasses (3 metaclasses) ...  -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:54:22.231 SGT INFO: 1 ms
+ -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:54:22.231 SGT INFO: Postprocess: Process subclasses of rdf:List (1 classes) ...  -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:54:22.231 SGT INFO: 0 ms
+ -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:54:22.231 SGT INFO: Postprocess: Instances with multiple types (13 instances) ...  -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:54:22.233 SGT INFO: 2 ms
+ -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:54:22.245 SGT INFO: Postprocess: Add inferred superclasses ...  -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:54:22.246 SGT INFO: 0 ms
+ -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:54:22.247 SGT INFO: Postprocess: Process orphan classes (27 classes) ...  -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:54:22.249 SGT INFO: 1 ms
+ -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:54:22.249 SGT INFO: Postprocess: Generalized Concept Inclusion (0 axioms) ...  -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:54:22.251 SGT INFO: 1 ms
+ -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:54:22.251 SGT INFO: Postprocess: Abstract classes...  -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:54:22.251 SGT INFO: 0 ms
+ -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:54:22.252 SGT INFO: Postprocess: Domain and range of properties...  -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:54:22.253 SGT INFO: 1 ms
+ -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:54:22.253 SGT INFO: Postprocess: Possibly typed entities (4 resources) ...  -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:54:22.256 SGT INFO: 3 ms
+ -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:54:22.257 SGT INFO: Updating underlying frames model in 1 ms -- ProtegeOWLParser.doFinalPostProcessing()
+2016.03.18 18:54:22.506 SGT INFO: ... saving successful to: D:\OntoCAPE\BiodieselPlantchange2.owl -- Protege2Jena.saveAll()
+2016.03.18 18:56:38.402 SGT INFO: *** SYSTEM START ***
+2016.03.18 18:56:38.809 SGT WARNING: [Local Folder Repository] The specified file must be a directory. (D:\JParkSimulator-git\updateowl\plugins\edu.stanford.smi.protegex.owl) -- LocalFolderRepository.update()
+2016.03.18 18:56:38.830 SGT INFO: Loading triples for: null -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:56:39.173 SGT INFO:     Completed triple loading after 274 ms -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:56:39.175 SGT INFO: Postprocess: Process entities with incorrect Java type (1 entities) ...  -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:56:39.175 SGT INFO: 0 ms
+ -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:56:39.176 SGT INFO: Postprocess: Process metaclasses (3 metaclasses) ...  -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:56:39.176 SGT INFO: 0 ms
+ -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:56:39.176 SGT INFO: Postprocess: Process subclasses of rdf:List (1 classes) ...  -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:56:39.176 SGT INFO: 0 ms
+ -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:56:39.176 SGT INFO: Postprocess: Instances with multiple types (13 instances) ...  -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:56:39.178 SGT INFO: 2 ms
+ -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:56:39.186 SGT INFO: Postprocess: Add inferred superclasses ...  -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:56:39.186 SGT INFO: 0 ms
+ -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:56:39.188 SGT INFO: Postprocess: Process orphan classes (27 classes) ...  -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:56:39.189 SGT INFO: 1 ms
+ -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:56:39.189 SGT INFO: Postprocess: Generalized Concept Inclusion (0 axioms) ...  -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:56:39.191 SGT INFO: 2 ms
+ -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:56:39.192 SGT INFO: Postprocess: Abstract classes...  -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:56:39.192 SGT INFO: 0 ms
+ -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:56:39.192 SGT INFO: Postprocess: Domain and range of properties...  -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:56:39.194 SGT INFO: 2 ms
+ -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:56:39.194 SGT INFO: Postprocess: Possibly typed entities (3 resources) ...  -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:56:39.194 SGT INFO: 0 ms
+ -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:56:39.194 SGT INFO: Updating underlying frames model in 0 ms -- ProtegeOWLParser.doFinalPostProcessing()
+2016.03.18 18:56:39.447 SGT INFO: ... saving successful to: D:\OntoCAPE\BiodieselPlantchange2.owl -- Protege2Jena.saveAll()
+2016.03.18 18:57:06.998 SGT INFO: *** SYSTEM START ***
+2016.03.18 18:57:07.403 SGT WARNING: [Local Folder Repository] The specified file must be a directory. (D:\JParkSimulator-git\updateowl\plugins\edu.stanford.smi.protegex.owl) -- LocalFolderRepository.update()
+2016.03.18 18:57:07.426 SGT INFO: Loading triples for: null -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:57:07.790 SGT INFO:     Completed triple loading after 297 ms -- ProtegeOWLParser.loadTriples()
+2016.03.18 18:57:07.793 SGT INFO: Postprocess: Process entities with incorrect Java type (1 entities) ...  -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:57:07.793 SGT INFO: 0 ms
+ -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 18:57:07.794 SGT INFO: Postprocess: Process metaclasses (3 metaclasses) ...  -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:57:07.794 SGT INFO: 0 ms
+ -- TriplePostProcessor.processMetaclasses()
+2016.03.18 18:57:07.794 SGT INFO: Postprocess: Process subclasses of rdf:List (1 classes) ...  -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:57:07.794 SGT INFO: 0 ms
+ -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 18:57:07.794 SGT INFO: Postprocess: Instances with multiple types (13 instances) ...  -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:57:07.796 SGT INFO: 2 ms
+ -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 18:57:07.804 SGT INFO: Postprocess: Add inferred superclasses ...  -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:57:07.804 SGT INFO: 0 ms
+ -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 18:57:07.805 SGT INFO: Postprocess: Process orphan classes (27 classes) ...  -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:57:07.806 SGT INFO: 0 ms
+ -- TriplePostProcessor.processOrphanClses()
+2016.03.18 18:57:07.807 SGT INFO: Postprocess: Generalized Concept Inclusion (0 axioms) ...  -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:57:07.809 SGT INFO: 1 ms
+ -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 18:57:07.809 SGT INFO: Postprocess: Abstract classes...  -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:57:07.809 SGT INFO: 0 ms
+ -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 18:57:07.809 SGT INFO: Postprocess: Domain and range of properties...  -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:57:07.811 SGT INFO: 2 ms
+ -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 18:57:07.811 SGT INFO: Postprocess: Possibly typed entities (4 resources) ...  -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:57:07.814 SGT INFO: 3 ms
+ -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 18:57:07.815 SGT INFO: Updating underlying frames model in 1 ms -- ProtegeOWLParser.doFinalPostProcessing()
+2016.03.18 18:57:08.067 SGT INFO: ... saving successful to: D:\OntoCAPE\BiodieselPlantchange2.owl -- Protege2Jena.saveAll()
+2016.03.18 19:03:07.666 SGT INFO: *** SYSTEM START ***
+2016.03.18 19:03:08.067 SGT WARNING: [Local Folder Repository] The specified file must be a directory. (D:\JParkSimulator-git\updateowl\plugins\edu.stanford.smi.protegex.owl) -- LocalFolderRepository.update()
+2016.03.18 19:03:08.088 SGT INFO: Loading triples for: null -- ProtegeOWLParser.loadTriples()
+2016.03.18 19:03:08.415 SGT INFO:     Completed triple loading after 259 ms -- ProtegeOWLParser.loadTriples()
+2016.03.18 19:03:08.417 SGT INFO: Postprocess: Process entities with incorrect Java type (1 entities) ...  -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 19:03:08.417 SGT INFO: 0 ms
+ -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 19:03:08.418 SGT INFO: Postprocess: Process metaclasses (3 metaclasses) ...  -- TriplePostProcessor.processMetaclasses()
+2016.03.18 19:03:08.418 SGT INFO: 0 ms
+ -- TriplePostProcessor.processMetaclasses()
+2016.03.18 19:03:08.418 SGT INFO: Postprocess: Process subclasses of rdf:List (1 classes) ...  -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 19:03:08.418 SGT INFO: 0 ms
+ -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 19:03:08.418 SGT INFO: Postprocess: Instances with multiple types (13 instances) ...  -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 19:03:08.420 SGT INFO: 2 ms
+ -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 19:03:08.427 SGT INFO: Postprocess: Add inferred superclasses ...  -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 19:03:08.427 SGT INFO: 0 ms
+ -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 19:03:08.429 SGT INFO: Postprocess: Process orphan classes (27 classes) ...  -- TriplePostProcessor.processOrphanClses()
+2016.03.18 19:03:08.430 SGT INFO: 1 ms
+ -- TriplePostProcessor.processOrphanClses()
+2016.03.18 19:03:08.430 SGT INFO: Postprocess: Generalized Concept Inclusion (0 axioms) ...  -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 19:03:08.432 SGT INFO: 2 ms
+ -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 19:03:08.432 SGT INFO: Postprocess: Abstract classes...  -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 19:03:08.432 SGT INFO: 0 ms
+ -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 19:03:08.432 SGT INFO: Postprocess: Domain and range of properties...  -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 19:03:08.434 SGT INFO: 2 ms
+ -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 19:03:08.434 SGT INFO: Postprocess: Possibly typed entities (3 resources) ...  -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 19:03:08.434 SGT INFO: 0 ms
+ -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 19:03:08.434 SGT INFO: Updating underlying frames model in 0 ms -- ProtegeOWLParser.doFinalPostProcessing()
+2016.03.18 19:04:05.647 SGT INFO: *** SYSTEM START ***
+2016.03.18 19:04:06.052 SGT WARNING: [Local Folder Repository] The specified file must be a directory. (D:\JParkSimulator-git\updateowl\plugins\edu.stanford.smi.protegex.owl) -- LocalFolderRepository.update()
+2016.03.18 19:04:06.074 SGT INFO: Loading triples for: null -- ProtegeOWLParser.loadTriples()
+2016.03.18 19:04:06.410 SGT INFO:     Completed triple loading after 268 ms -- ProtegeOWLParser.loadTriples()
+2016.03.18 19:04:06.413 SGT INFO: Postprocess: Process entities with incorrect Java type (1 entities) ...  -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 19:04:06.413 SGT INFO: 0 ms
+ -- TriplePostProcessor.processFramesWithWrongJavaType()
+2016.03.18 19:04:06.414 SGT INFO: Postprocess: Process metaclasses (3 metaclasses) ...  -- TriplePostProcessor.processMetaclasses()
+2016.03.18 19:04:06.414 SGT INFO: 0 ms
+ -- TriplePostProcessor.processMetaclasses()
+2016.03.18 19:04:06.414 SGT INFO: Postprocess: Process subclasses of rdf:List (1 classes) ...  -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 19:04:06.414 SGT INFO: 0 ms
+ -- TriplePostProcessor.processSubclassesOfRdfList()
+2016.03.18 19:04:06.414 SGT INFO: Postprocess: Instances with multiple types (13 instances) ...  -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 19:04:06.416 SGT INFO: 2 ms
+ -- TriplePostProcessor.processInstancesWithMultipleTypes()
+2016.03.18 19:04:06.422 SGT INFO: Postprocess: Add inferred superclasses ...  -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 19:04:06.422 SGT INFO: 0 ms
+ -- TriplePostProcessor.processInferredSuperclasses()
+2016.03.18 19:04:06.424 SGT INFO: Postprocess: Process orphan classes (27 classes) ...  -- TriplePostProcessor.processOrphanClses()
+2016.03.18 19:04:06.425 SGT INFO: 1 ms
+ -- TriplePostProcessor.processOrphanClses()
+2016.03.18 19:04:06.425 SGT INFO: Postprocess: Generalized Concept Inclusion (0 axioms) ...  -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 19:04:06.427 SGT INFO: 2 ms
+ -- TriplePostProcessor.processGeneralizedConceptInclusions()
+2016.03.18 19:04:06.428 SGT INFO: Postprocess: Abstract classes...  -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 19:04:06.428 SGT INFO: 0 ms
+ -- TriplePostProcessor.processAbstractClasses()
+2016.03.18 19:04:06.428 SGT INFO: Postprocess: Domain and range of properties...  -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 19:04:06.430 SGT INFO: 2 ms
+ -- TriplePostProcessor.processDomainAndRange()
+2016.03.18 19:04:06.430 SGT INFO: Postprocess: Possibly typed entities (3 resources) ...  -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 19:04:06.430 SGT INFO: 0 ms
+ -- TriplePostProcessor.processPossiblyTypedResources()
+2016.03.18 19:04:06.430 SGT INFO: Updating underlying frames model in 0 ms -- ProtegeOWLParser.doFinalPostProcessing()
+2016.03.18 19:04:06.687 SGT INFO: ... saving successful to: D:\OntoCAPE\BiodieselPlantchange2.owl -- Protege2Jena.saveAll()

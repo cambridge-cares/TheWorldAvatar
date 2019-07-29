@@ -327,7 +327,7 @@ public class PowerWorld {
 				public void onError(Throwable e) {
 					e.printStackTrace();
 				}});
-			
+/*			
 			latch.await(); // wait until feature service table is ready
 			while ((line=fileReader.readLine())!=null) { // Continue reading lines until none left
 				String[] data = line.split(","); // split string by comma
@@ -349,6 +349,7 @@ public class PowerWorld {
 					LoadPointsTable.updateFeature(Long.parseLong(ArcGISFID), attributes); // update feature locally
 				}
 			}
+*/			
 			LoadPointsTable.applyEdits(null); // commit local update onto server
 			System.out.println("Updating process took " + String.valueOf(System.currentTimeMillis()-start) + "ms"); // tells you how long it took to update
 		} catch (Exception e) {
