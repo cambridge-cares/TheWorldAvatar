@@ -19,7 +19,17 @@ import requests
 from pyproj import Proj, transform
 
 sourceCRS = Proj(init='epsg:3857')
+pm10er=10
+pm25er=0
 # targetCRS = Proj(init='epsg:3414')
+
+def setpm10(value):
+    global pm10er
+    pm10er=value
+        
+def setpm25(value):
+    global pm25er
+    pm25er=value
 
 class admsInputDataRetriever(object):
     BDN = namedtuple('BDN', ['BldNumBuildings','BldName','BldType','BldX','BldY','BldHeight', 'BldLength', 'BldWidth', 'BldAngle'])
@@ -200,9 +210,16 @@ class admsInputDataRetriever(object):
                 name = content.split('#')[1]
                 for ername, v in emissionrates.items():
                     if name in ername:
-                        sorteder.append(v)
+                        print('name='+name)
+                        if "Particulate" in name:
+                            print('name2='+name)
+                            sorteder.append(pm10er)
+                            sorteder.append(pm25er)
+                        else:
+                            sorteder.append(v)
 
             print(sorteder)
+            print('sorteder printed')
             
             aresult['emissionrates'] = sorteder
 
@@ -504,6 +521,9 @@ class admsInputDataRetriever(object):
         for j in range(len(arrpm25massf)):
             arrpm25fraction.append(arrpm25massf[j]/sum(arrpm25massf))
                 
+        pm10er=setpm10(sum(arrpm10massf))
+        pm25er=setpm25(sum(arrpm25massf))
+
         rawSolpm25 =  admsPol('PM2.5',len(arrpm25D),arrpm25D,arrpm25Density,arrpm25fraction)   
         rawSolpm10 =  admsPol('PM10',len(arrpm10D),arrpm10D,arrpm10Density,arrpm10fraction)      
             
@@ -512,6 +532,7 @@ class admsInputDataRetriever(object):
         #rawSolpm25 =  admsPol('PM2.5',len(qbpm25),[row['diameter'].toPython() for row in qbpm25],[row['density'].toPython() for row in qbpm25],[float(row['massFraction'].toPython()) for row in qbpm25] )
         #print(rawSol)
         self.pythonLogger.postInfoToLogServer(rawSol)
+         
         #return rawSol
         return rawSolpm10,rawSolpm25
 
@@ -522,7 +543,9 @@ class admsInputDataRetriever(object):
     def get(self):
         '''main function, get all related info for adms
         returns: complete data for adms
-        '''       
+        '''  
+        pm10,pm25=self.getPol()    
+
         #get all src data
         self.rawSrc = self.getSrcData()
         ##todo: think about this case: when nothing is found ,where should we handle it?
@@ -543,13 +566,14 @@ class admsInputDataRetriever(object):
         met = self.getWeather()
         xran,yran = self.range
         grd = xran[0], yran[0], xran[1], yran[1]
-        pm10,pm25=self.getPol()
+        
         pol = pm10,pm25
         bkg=self.getBkg()
         
 
         #return {'Src': self.rawSrc, 'Bdn': self.rawBdn, 'Opt': rawOpt, 'Met': met, 'Grd':grd}
         return {'Src': self.rawSrc, 'Opt': rawOpt, 'Met': met, 'Grd':grd, 'Pol':pol, 'Bkg':bkg }
+        
         
 
 
