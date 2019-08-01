@@ -187,6 +187,9 @@ public class SoftSensor extends HttpServlet {
 					double realx=Double.valueOf(findtheclosest(simulationResult,x,y,z).get(0));
 					double realy=Double.valueOf(findtheclosest(simulationResult,x,y,z).get(1));
 					double realz=Double.valueOf(findtheclosest(simulationResult,x,y,z).get(2));
+					logger.info("realx= "+realx);
+					logger.info("realy= "+realy);
+					logger.info("realz= "+realz);
 					
 					List<String>concentration=findtheconcentration(simulationResult,realx,realy,realz);
 					
