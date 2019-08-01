@@ -1,9 +1,16 @@
 package uk.ac.cam.cares.jps.ship;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -126,8 +133,7 @@ public class ShipAgent extends HttpServlet {
 	    
 	    //remove the subtree first for particle
 	    JenaModelWrapper c= new JenaModelWrapper(jenaOwlModel, null);
-	    c.removeSubtree("http://www.theworldavatar.com/kb/ships/Chimney-1.owl#GeneralizedAmount_WasteStreamOfChimney-1", Prefixes.OCPSYST, "contains");
-	    
+	    c.removeSubtree(iriofchimney.split("#")[0]+"#GeneralizedAmount_WasteStreamOfChimney-1", Prefixes.OCPSYST, "contains");
 	    //reset all the emission rate to be zero
 		for (int b = 0; b < hmap.size(); b++) {
 			Individual valueofspeciesemissionrate = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] + "#V_" + hmap.get(hmap.keySet().toArray()[b]) + "_EmissionRate");
@@ -329,6 +335,22 @@ public class ShipAgent extends HttpServlet {
 		//ResultSetFormatter.out(System.out, results, query); ?? don't know why this is needed to be commented
 		return results;
 	}
+	
+	public static boolean exists(String URLName){
+	    try {
+	      HttpURLConnection.setFollowRedirects(false);
+	      // note : you may also need
+	      //        HttpURLConnection.setInstanceFollowRedirects(false)
+	      HttpURLConnection con =
+	         (HttpURLConnection) new URL(URLName).openConnection();
+	      con.setRequestMethod("HEAD");
+	      return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+	    }
+	    catch (Exception e) {
+	       e.printStackTrace();
+	       return false;
+	    }
+	  }
 
 
 	/**
@@ -343,6 +365,7 @@ public class ShipAgent extends HttpServlet {
 		String iri2 = null;
 		try {
 			iri = joforrec.getString("reactionmechanism");
+			iri2=joforrec.getJSONObject("ship").get("mmsi").toString(); //only get the mmsi instead of full iri
 			//iri2 = joforrec.getString("ship");
 
 		} catch (JSONException e1) {
@@ -387,8 +410,30 @@ public class ShipAgent extends HttpServlet {
 		 * 
 		 * cpirilist.add(valueiri); }
 		 */
+		if(iri2!=null) {
+			if(exists(iri2))
+			{
+				cpirilist.add("http://www.theworldavatar.com/kb/ships/"+iri2+"/Chimney-1.owl#Chimney-1");
+			}
+			else {
+				File stockDir = new File("C:/TOMCAT/webapps/ROOT/kb/ships/"+iri2);
+				stockDir.mkdir();
+				File source = new File("C:/TOMCAT/webapps/ROOT/kb/ships/Chimney-1.owl");
+				File destiny = new File("C:/TOMCAT/webapps/ROOT/kb/ships/"+iri2+"/Chimney-1.owl");
+		    	Charset charset = StandardCharsets.UTF_8;
+		    	String content = new String(Files.readAllBytes(source.toPath()), charset);		                
+		        content = content.replaceAll("http://www.theworldavatar.com/kb/ships/Chimney-1.owl", "http://www.theworldavatar.comkb/ships/"+iri2+"/Chimney-1.owl");        
+		        Files.write(destiny.toPath(), content.getBytes(charset));	
+				//finished create owl file based on this iri()
+				cpirilist.add("http://www.theworldavatar.com/kb/ships/"+iri2+"/Chimney-1.owl#Chimney-1");	
+			}
+			
+		}
+		else {
+			//cpirilist.add("http://www.theworldavatar.com/kb/ships/1234678/Chimney-1.owl#Chimney-1"); (sample)
+			cpirilist.add("http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Chimney-1");
+		}
 		
-		cpirilist.add("http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Chimney-1");
 		
 		/*
 		 * for (; rs_ship2.hasNext();) { QuerySolution qs_p = rs_ship2.nextSolution();
@@ -401,6 +446,9 @@ public class ShipAgent extends HttpServlet {
 		cpirilist2.add("http://www.theworldavatar.com/kb/ships/Engine-001.owl#Engine-001");
 
 		jenaOwlModel.read(cpirilist.get(0));
+		
+		
+		
 		String wasteStreamInfo = "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#> " + 
 				"PREFIX j7:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> " + 
 				"SELECT ?wasteStream \r\n" + 
@@ -441,9 +489,25 @@ public class ShipAgent extends HttpServlet {
 			dataSet.put("reactionmechanism",  iri) ;
 			dataSet.put("engine", cpirilist2.get(0)) ;	
 			dataSet.put("source", "ship") ;
-		String resultjson = AgentCaller.executeGet("JPS/SRMAgent", "query", dataSet.toString());
-			JSONObject jsonsrmresult = new JSONObject(resultjson).getJSONObject("results");
+			String resultjson="";
+			JSONObject jsonsrmresult=null;
+			// if there is no reaction mechanism
+			if(iri==null) {
+				JSONObject jo2 = new JSONObject();
+//				jo2.put("speed",8.0); 
+//				jo2.put("type","passenger");
+				jo2.put("speed",joforrec.getJSONObject("ship").getString("ss"));
+				jo2.put("type",joforrec.getJSONObject("ship").getString("type"));
+				resultjson = AgentCaller.executeGetWithJsonParameter("JPS/SLMAgent", jo2.toString());
+				jsonsrmresult=new JSONObject(resultjson);
+			}
+			else {
+				resultjson = AgentCaller.executeGet("JPS/SRMAgent", "query", dataSet.toString());
+				jsonsrmresult = new JSONObject(resultjson).getJSONObject("results");
+			}
+	
 			startConversion(cpirilist.get(0),jsonsrmresult);
+			
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new JPSRuntimeException(e.getMessage(), e);
