@@ -365,7 +365,7 @@ public class ShipAgent extends HttpServlet {
 		String iri2 = null;
 		try {
 			iri = joforrec.getString("reactionmechanism");
-			iri2=joforrec.getJSONObject("ship").getString("mmsi"); //only get the mmsi instead of full iri
+			iri2=joforrec.getJSONObject("ship").getString("ship_mmsi"); //only get the mmsi instead of full iri
 			//iri2 = joforrec.getString("ship");
 
 		} catch (JSONException e1) {
@@ -496,7 +496,7 @@ public class ShipAgent extends HttpServlet {
 				JSONObject jo2 = new JSONObject();
 //				jo2.put("speed",8.0); 
 //				jo2.put("type","passenger");
-				jo2.put("speed",joforrec.getJSONObject("ship").getString("speed"));
+				jo2.put("speed",joforrec.getJSONObject("ship").getString("ss"));
 				jo2.put("type",joforrec.getJSONObject("ship").getString("type"));
 				resultjson = AgentCaller.executeGetWithJsonParameter("JPS/SLMAgent", jo2.toString());
 				jsonsrmresult=new JSONObject(resultjson);
