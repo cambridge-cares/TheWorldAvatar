@@ -4,15 +4,13 @@ module that retreives and pack adms input info
 import rdflib
 import sys
 import rdflib.plugins.sparql.results.jsonresults as jsresult
+from rdflib.plugins.sparql import prepareQuery
 from collections import namedtuple
 from admsSrcChimney import admsSrc
 from admsPol import admsPol
 from caresjpsutil import PythonLogger
 import requests
 from config import Constants, QueryStrings
-
-pm10er = 10
-pm25er = 0
 
 
 class AdmsInputDataRetriever(object):
@@ -36,13 +34,18 @@ class AdmsInputDataRetriever(object):
         """
         self.address = None
         self.pollutants = pollutants
-        self.topnode = topnode
+        if isinstance(topnode, list):
+            self.topnode = (*topnode,)
+        else:
+            self.topnode = (topnode,)
         self.bdnnode = bdnnode
         self.srcLimit = srcLimit
         self.bdnLimit = bdnLimit
         # TODO-AE remove filterSrc and topnode
         self.filterSrc = filterSrc
         self.rawBdn = rawBdn
+        self.pm10_emrates = {}
+        self.pm25_emrates = {}
 
         self.range = self.getRange(range)
         self.pythonLogger = PythonLogger('admsInputDataRetrieverChimney.py')
@@ -51,70 +54,60 @@ class AdmsInputDataRetriever(object):
         return (
             (float(userrange['xmin']), float(userrange['xmax'])), (float(userrange['ymin']), float(userrange['ymax'])))
 
-    def getSrcData(self):
+    def get_src_data(self):
         """get all sourced data :
         returns: data object
         """
-        if isinstance(self.topnode, list):
-            filtered = (*self.topnode,)
-        else:
-            filtered = (self.topnode,)
+        sources = []
+        q1 = prepareQuery(QueryStrings.SPARQL_DIAMETER_TEMP_HEIGHT_MASSFLOW_HEATCAPA_DENSITY_MOLEWEIGHT)
+        q2 = prepareQuery(QueryStrings.SPARQL_CONTENT)
+        q3 = prepareQuery(QueryStrings.SPARQL_ERATE)
 
-        s = set()  # make a set of substance to query later
-        result = []
-        for uri in filtered:
+        for uri in self.topnode:
             self.connectDB(uri, connectType='parse')
-            qdata = self.query(QueryStrings.SPARQL_DIAMETER_TEMP_HEIGHT_MASSFLOW_HEATCAPA_DENSITY_MOLEWEIGHT)
+            qdata = self.query(q1)
+            qdataC = self.query(q2)
+            qdataERate = self.query(q3)
 
-            aresult, = [row.asdict() for row in qdata]
+            aresult, sorteder, pollutantnames = self.get_new_src_data(uri, qdata, qdataC, qdataERate)
 
-            qdataC = self.query(QueryStrings.SPARQL_CONTENT)
+            new_src = admsSrc(SrcName=aresult[Constants.KEY_O].toPython(), SrcHeight=aresult[Constants.KEY_HEIGHT].toPython(),
+                             SrcDiameter=float(aresult[Constants.KEY_DIAMETER].toPython()), SrcPolEmissionRate=sorteder,
+                             SrcPollutants=pollutantnames, SrcTemperature=aresult[Constants.KEY_TEMP].toPython(),
+                             SrcMolWeight=aresult[Constants.KEY_MOLE_WEIGHT].toPython(), SrcDensity=float(
+                                aresult[Constants.KEY_DENSITY].toPython()),
+                             SrcSpecHeatCap=aresult[Constants.KEY_HEAT_CAP].toPython(), SrcNumPollutants=len(pollutantnames),
+                             SrcMassFlux=aresult[Constants.KEY_MASS_FLOW].toPython())
+            sources.append(new_src)
 
-            contents = [row['content'].toPython() for row in qdataC]
+        return sources
 
-            s = s.union(contents)
-            aresult['content'] = contents
+    def get_new_src_data(self, uri, qdata, qdataC, qdataERate):
+        aresult, = [row.asdict() for row in qdata]
+        contents = [row[Constants.KEY_CONTENT].toPython() for row in qdataC]
+        pollutantnames = [self.polIRI2Name(content) for content in contents]
+        i = 0
+        for p in pollutantnames:
+            if type(p) == list:
+                pl  = pollutantnames.pop(i)
+                pollutantnames = pollutantnames + pl
+            i = i + 1
 
-            qdataERate = self.query(QueryStrings.SPARQL_ERATE)
+        emissionrates = {row[Constants.KEY_ER].toPython(): row[Constants.KEY_V].toPython() for row in qdataERate}
 
-            emissionrates = {row['er'].toPython(): row['v'].toPython() for row in qdataERate}
+        sorteder = []
+        for content in contents:
+            name = content.split('#')[1]
+            for ername, v in emissionrates.items():
+                if name in ername:
+                    if Constants.POL_PART_001 in name.replace('-', ''):
+                        sorteder.append(self.pm25_emrates[uri])
+                        sorteder.append(self.pm10_emrates[uri])
+                    else:
+                        sorteder.append(v)
 
-            sorteder = []
-            for content in contents:
-                name = content.split('#')[1]
-                for ername, v in emissionrates.items():
-                    if name in ername:
-                        print('name=' + name)
-                        if "Particulate" in name:
-                            print('name2=' + name)
-                            sorteder.append(pm10er)
-                            sorteder.append(pm25er)
-                        else:
-                            sorteder.append(v)
+        return aresult, sorteder, pollutantnames
 
-            aresult['emissionrates'] = sorteder
-
-            result.append(aresult)
-
-        packed = []
-        for src in result:
-            SrcNumPollutants = len(src['content'])
-            pollutantnames = [self.polIRI2Name(content) for content in src['content']]
-            # add the pm 2.5 as the particulat is mapped to 2 different category
-            if 'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Particulate-001' in src['content']:
-                SrcNumPollutants += 1
-                pollutantnames.append('PM2.5')
-
-            newSrc = admsSrc(SrcName=src['o'].toPython(), SrcHeight=src['height'].toPython(),
-                             SrcDiameter=float(src['diameter'].toPython()), SrcPolEmissionRate=src['emissionrates'],
-                             SrcPollutants=pollutantnames, SrcTemperature=src['temp'].toPython(),
-                             SrcMolWeight=src['moleweight'].toPython(), SrcDensity=float(src['density'].toPython()),
-                             SrcSpecHeatCap=src['heatcapa'].toPython(), SrcNumPollutants=SrcNumPollutants,
-                             SrcMassFlux=src['massflow'].toPython())
-            print("hello")
-            print(newSrc)
-            packed.append(newSrc)
-        return packed
 
     def filterBdnEnvelope(self):
         '''
@@ -124,7 +117,7 @@ class AdmsInputDataRetriever(object):
         xRange, yRange = self.range
         qb = self.query('''
             PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-            PREFIX citygml: <http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>
+            PREFIX citygml: <http://www.theworldavatar.com/ontology/ontocithttp://www.theworldavatar.com/kb/ships/Chimney-1-temp2.owlygml/OntoCityGML.owl#>
             PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
             PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
@@ -188,27 +181,28 @@ class AdmsInputDataRetriever(object):
 
     def polIRI2Name(self, polIRI):
         substances = {
-            # 'http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#chlorine':'Cl2',
-            'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Nitrogen__dioxide': 'NO2',
-            'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Carbon__monoxide': 'CO',
-            'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Carbon__dioxide': 'CO2',
-            'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Sulfur__dioxide': 'SO2',
-            'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Ozone': 'O3',
-            'http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Unburned_Hydrocarbon': 'HC',
-            'http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Nitrogen__oxides': 'NOx',
-            # 'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Particulate-001':'Particulate001',
-            'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Particulate-001': 'PM10'
-            # 'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Particulate-001':'PM2.5'
-
+            'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Nitrogen__dioxide':
+                Constants.POL_NO2,
+            'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Carbon__monoxide':
+                Constants.POL_CO,
+            'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Carbon__dioxide':
+                Constants.POL_CO2,
+            'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Sulfur__dioxide':
+                Constants.POL_PART_SO2,
+            'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Ozone':
+                Constants.POL_PART_O3,
+            'http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Unburned_Hydrocarbon':
+                Constants.POL_HC,
+            'http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Nitrogen__oxides':
+                Constants.POL_NOX,
+            'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Particulate-001': [Constants.POL_PM10,
+                                                                                     Constants.POL_PM25]
         }
 
         if polIRI in substances.keys():
-            print('Found: ' + substances[polIRI])
             return substances[polIRI]
         else:
-            print(polIRI + 'Not found !!!!')
-            # raise Exception('This substance is not defined!!!!')
-            return None
+            raise Exception('This substance is not defined!!!!')
 
     def getWeather(self):
         '''
@@ -231,45 +225,41 @@ class AdmsInputDataRetriever(object):
         return bkgpath
 
     def getPol(self):
-        self.connectDB('http://www.theworldavatar.com/kb/ships/Chimney-1.owl', connectType = 'parse')
-        qb = self.query(QueryStrings.SPARQL_DIAMETER_DENSITY_MASSFRACTION)
-        massrate = self.query(QueryStrings.SPARQL_MASSRATE).__iter__().__next__()[Constants.KEY_MASS_RATE].toPython()
+        pm25D = set()
+        pm10D = set()
+        pm25Density = set()
+        pm10Density = set()
+        pm_fraction = [1.0e+0]
+        q1 = prepareQuery(QueryStrings.SPARQL_DIAMETER_DENSITY_MASSFRACTION)
+        q2 = prepareQuery(QueryStrings.SPARQL_MASSRATE)
 
-        pm10D = []
-        pm25D = []
-        pm10massf = []
-        pm25massf = []
-        pm10Density = []
-        pm25Density = []
-        pm10fraction = []
-        pm25fraction = []
+        for src in self.topnode:
+            self.connectDB(src, connectType = 'parse')
+            qb = self.query(q1)
+            massrate = self.query(q2).__iter__().__next__()[Constants.KEY_MASS_RATE].toPython()
+            pm10massf = []
+            pm25massf = []
 
-        for row in qb:
-            diameter = row[Constants.KEY_DIAMETER].toPython()
-            density = row[Constants.KEY_DENSITY].toPython()
-            massFraction = float(row[Constants.KEY_MASS_FRACTION])
-            indivrate = massFraction * massrate
+            for row in qb:
+                diameter = row[Constants.KEY_DIAMETER].toPython()
+                density = row[Constants.KEY_DENSITY].toPython()
+                mass_fraction = float(row[Constants.KEY_MASS_FRACTION])
+                indivrate = mass_fraction * massrate
 
-            if diameter < 0.00001:
-                pm10D.append(diameter)
-                pm10Density.append(density)
-                pm10massf.append(indivrate)
-                if diameter < 0.0000025:
-                    pm25D.append(diameter)
-                    pm25Density.append(density)
-                    pm25massf.append(indivrate)
+                if diameter < 0.00001:
+                    pm10D.add(diameter)
+                    pm10Density.add(density)
+                    pm10massf.append(indivrate)
+                    if diameter < 0.0000025:
+                        pm25D.add(diameter)
+                        pm25Density.add(density)
+                        pm25massf.append(indivrate)
+            #SrcPolEmissionRate
+            self.pm10_emrates[src] = sum(pm10massf)
+            self.pm25_emrates[src] = sum(pm25massf)
 
-        all_pm10_massf = sum(pm10massf)
-        all_pm25_massf = sum(pm25massf)
-
-        for p in pm10massf:
-            pm10fraction.append(p / all_pm10_massf)
-
-        for p in pm25massf:
-            pm25fraction.append(p / all_pm25_massf)
-
-        raw_solpm25 = admsPol(Constants.POL_PM25, len(pm25D), pm25D, pm25Density, pm25fraction)
-        raw_solpm10 = admsPol(Constants.POL_PM10, len(pm10D), pm10D, pm10Density, pm10fraction)
+        raw_solpm25 = admsPol(Constants.POL_PM25, len(pm25D), list(pm25D), list(pm25Density), pm_fraction)
+        raw_solpm10 = admsPol(Constants.POL_PM10, len(pm10D), list(pm10D), list(pm10Density), pm_fraction)
 
         return raw_solpm10, raw_solpm25
 
@@ -280,26 +270,20 @@ class AdmsInputDataRetriever(object):
         pm10, pm25 = self.getPol()
 
         # get all src data
-        self.rawSrc = self.getSrcData()
+        self.rawSrc = self.get_src_data()
         ##todo: think about this case: when nothing is found ,where should we handle it?
         ##then nothing should be written, and catch this exception and mute it in main function
         if self.rawSrc is None:
             raise Exception("No src in found to requiries")
 
-        print('raw building: ')
-        print(self.rawBdn)
         rawOpt = self.getOpt(self.pollutants, [s.SrcName for s in self.rawSrc])
         self.coreBdn2Src()
-
-        # for debuging, in future,define this for data type, i dont think it auto rpint for objet
-        for src in self.rawSrc:
-            print(src)
 
         met = self.getWeather()
         xran, yran = self.range
         grd = xran[0], yran[0], xran[1], yran[1]
 
-        pol = pm10, pm25
+        pol = [pm10, pm25]
         bkg = self.getBkg()
 
         # return {'Src': self.rawSrc, 'Bdn': self.rawBdn, 'Opt': rawOpt, 'Met': met, 'Grd':grd}
