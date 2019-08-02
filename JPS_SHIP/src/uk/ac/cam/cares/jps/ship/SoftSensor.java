@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.ship;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -173,39 +174,41 @@ public class SoftSensor extends HttpServlet {
 			List<String[]>propercsv=new ArrayList<String[]>();
 			String[]header= {"time","x","y","z","crs","pollutant","observes","value","unit"};
 			propercsv.add(header);
-			//System.out.println("directorysize= "+map.get("directory").size());
+			logger.info("size= "+listmap.size());
 			for(int v=1;v<listmap.size();v++) {
 				System.out.println("agent involved= "+listmap.get(v)[2]);
-				
-				String csv = new QueryBroker().readFile(listmap.get(v)[0]);
-				List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
-				
-				for(int v2=0;v2<coordinatelist.length();v2++) {
-					double x=coordinatelist.getJSONObject(v2).getDouble("x");
-					double y=coordinatelist.getJSONObject(v2).getDouble("y");
-					double z=coordinatelist.getJSONObject(v2).getDouble("z");
-					double realx=Double.valueOf(findtheclosest(simulationResult,x,y,z).get(0));
-					double realy=Double.valueOf(findtheclosest(simulationResult,x,y,z).get(1));
-					double realz=Double.valueOf(findtheclosest(simulationResult,x,y,z).get(2));
-					logger.info("realx= "+realx);
-					logger.info("realy= "+realy);
-					logger.info("realz= "+realz);
+				File name = new File(listmap.get(v)[0]);
+				if(name.exists()&&name.length()!=0) {
+					String csv = new QueryBroker().readFile(listmap.get(v)[0]);
+					List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
 					
-					List<String>concentration=findtheconcentration(simulationResult,realx,realy,realz);
-					
-					String timeinst=listmap.get(v)[1];
-					for (int r = 0; r < concentration.size(); r += 2) {
-						String content[] = new String[9];
-						content[0] = timeinst;
-						content[1] = "" + x;
-						content[2] = "" + y;
-						content[3] = "" + z;
-						content[4] = "EPSG:2326";
-						content[5] = concentration.get(r).split("\\|")[2]; // later need to be mapped to iri
-						content[6] = "http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MassConcentration";
-						content[7] = concentration.get(r + 1);
-						content[8] = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ug_per_m.m.m";
-						propercsv.add(content);
+					for(int v2=0;v2<coordinatelist.length();v2++) {
+						double x=coordinatelist.getJSONObject(v2).getDouble("x");
+						double y=coordinatelist.getJSONObject(v2).getDouble("y");
+						double z=coordinatelist.getJSONObject(v2).getDouble("z");
+						double realx=Double.valueOf(findtheclosest(simulationResult,x,y,z).get(0));
+						double realy=Double.valueOf(findtheclosest(simulationResult,x,y,z).get(1));
+						double realz=Double.valueOf(findtheclosest(simulationResult,x,y,z).get(2));
+						logger.info("realx= "+realx);
+						logger.info("realy= "+realy);
+						logger.info("realz= "+realz);
+						
+						List<String>concentration=findtheconcentration(simulationResult,realx,realy,realz);
+						
+						String timeinst=listmap.get(v)[1];
+						for (int r = 0; r < concentration.size(); r += 2) {
+							String content[] = new String[9];
+							content[0] = timeinst;
+							content[1] = "" + x;
+							content[2] = "" + y;
+							content[3] = "" + z;
+							content[4] = "EPSG:2326";
+							content[5] = concentration.get(r).split("\\|")[2]; // later need to be mapped to iri
+							content[6] = "http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MassConcentration";
+							content[7] = concentration.get(r + 1);
+							content[8] = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ug_per_m.m.m";
+							propercsv.add(content);
+						}
 					}
 				}
 			}
