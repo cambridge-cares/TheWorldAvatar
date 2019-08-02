@@ -18,6 +18,8 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -107,7 +109,11 @@ public class ADMSAgent extends JPSHttpServlet {
         String timestamp = MetaDataAnnotator.getTimeInXsdTimeStampFormat(System.currentTimeMillis());
 
         startADMS(fullPath);
-        MetaDataAnnotator.annotateWithTimeAndAgent(fullPath + "/test.levels.gst", timestamp, agentIRI);
+        File name=new File(fullPath + "/test.levels.gst");
+        
+        if(name.length()!=0&&name.exists()) {
+        	MetaDataAnnotator.annotateWithTimeAndAgent(fullPath + "/test.levels.gst", timestamp, agentIRI);	
+        }
 
         JSONObject responseParams = new JSONObject();
 
