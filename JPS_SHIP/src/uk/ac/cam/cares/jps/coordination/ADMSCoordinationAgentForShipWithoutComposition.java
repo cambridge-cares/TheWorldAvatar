@@ -59,9 +59,10 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServl
         JSONObject jsonShip = new JSONObject(resultship);
         int sizeofshipselected=jsonShip.getJSONObject("collection").getJSONArray("items").length();
         
-
+        String waste =""; //temp to test
 
         for (int i = 0; i < sizeofshipselected; i++) {
+        	logger.info("=================ship agent is called for "+i+" times========================");
             JSONObject jsonReactionShip = new JSONObject();
             String reactionMechanism = requestParams.getString("reactionmechanism");
             jsonReactionShip.put("reactionmechanism", reactionMechanism);
@@ -69,9 +70,10 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServl
             
 
             String wasteResult = execute("/JPS_SHIP/ShipAgent", jsonReactionShip.toString());
-            String waste = new JSONObject(wasteResult).getString("waste");
-            responseParams.put("waste", waste);
+             waste = new JSONObject(wasteResult).getString("waste");
+            
         }
+        responseParams.put("waste", waste); //temp to test
 
         responseParams.put(PARAM_KEY_SHIP, jsonShip);
 

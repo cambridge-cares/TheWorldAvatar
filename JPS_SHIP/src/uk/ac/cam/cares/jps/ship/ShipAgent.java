@@ -131,9 +131,11 @@ public class ShipAgent extends HttpServlet {
 	    hmap.put("O3", "ChemSpecies_Ozone");
 	    
 	    
-	    //remove the subtree first for particle
-	    JenaModelWrapper c= new JenaModelWrapper(jenaOwlModel, null);
-	    c.removeSubtree(iriofchimney.split("#")[0]+"#GeneralizedAmount_WasteStreamOfChimney-1", Prefixes.OCPSYST, "contains");
+	    //remove the subtree first for particle 1-8-19 undo it:	    
+	    //JenaModelWrapper c= new JenaModelWrapper(jenaOwlModel, null);
+	    //logger.info("removed subtree= "+iriofchimney.split("#")[0]+"#GeneralizedAmount_WasteStreamOfChimney-1");
+	    //c.removeSubtree(iriofchimney.split("#")[0]+"#GeneralizedAmount_WasteStreamOfChimney-1", Prefixes.OCPSYST, "contains");
+	    
 	    //reset all the emission rate to be zero
 		for (int b = 0; b < hmap.size(); b++) {
 			Individual valueofspeciesemissionrate = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] + "#V_" + hmap.get(hmap.keySet().toArray()[b]) + "_EmissionRate");
@@ -183,7 +185,8 @@ public class ShipAgent extends HttpServlet {
 		if(particulate1==null)
 		{
 			Individual material2 = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] +"#GeneralizedAmount_WasteStreamOfChimney-1");
-			particulate1 = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] +"#Particulate-001",particleclass);//if it is not there	
+//			particulate1 = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] +"#Particulate-001",particleclass);//if it is not there	
+			particulate1 = jenaOwlModel.createIndividual("http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Particulate-001",particleclass);//temp solution 2-8-19
 			material2.addProperty(contains, particulate1);
 		}
 		Individual particulaterate1 = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] +"#Particulate-001_EmissionRate");
@@ -233,7 +236,7 @@ public class ShipAgent extends HttpServlet {
 
 			
 			if(Double.valueOf(valueofmassfraction)>0) { //maybe later changed to emission rate 
-				logger.info("the particle selected= "+a);
+				//logger.info("the particle selected= "+a);
 				Individual partialparticulate = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] +"#Partial-"+a+"OfParticulate-001");
 				Individual diameterpartialparticulate = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] +"#Diameter_Partial-"+a+"OfParticulate-001");
 				Individual diametervaluepartialparticulate = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] +"#V_Diameter_Partial-"+a+"OfParticulate-001");
@@ -272,7 +275,7 @@ public class ShipAgent extends HttpServlet {
 				
 				massfractionpartialparticulate.addProperty(hasValue, massfractionvaluepartialparticulate);
 				massfractionvaluepartialparticulate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(valueofmassfraction));
-				logger.info("mass fraction= "+valueofmassfraction);
+				//logger.info("mass fraction= "+valueofmassfraction);
 			}
 		}
 		double NO2value=0;
@@ -336,22 +339,6 @@ public class ShipAgent extends HttpServlet {
 		return results;
 	}
 	
-	public static boolean exists(String URLName){
-	    try {
-	      HttpURLConnection.setFollowRedirects(false);
-	      // note : you may also need
-	      //        HttpURLConnection.setInstanceFollowRedirects(false)
-	      HttpURLConnection con =
-	         (HttpURLConnection) new URL(URLName).openConnection();
-	      con.setRequestMethod("HEAD");
-	      return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
-	    }
-	    catch (Exception e) {
-	       e.printStackTrace();
-	       return false;
-	    }
-	  }
-
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -362,17 +349,17 @@ public class ShipAgent extends HttpServlet {
 		JSONObject joforrec = AgentCaller.readJsonParameter(request);
 		System.out.println("json accepted= "+joforrec.toString());
 		String iri = null;
-		String iri2 = null;
+		String mmsi = null;
 		try {
 			iri = joforrec.getString("reactionmechanism");
-			iri2=joforrec.getJSONObject("ship").get("mmsi").toString(); //only get the mmsi instead of full iri
-			//iri2 = joforrec.getString("ship");
+			mmsi=joforrec.getJSONObject("ship").get("mmsi").toString(); //only get the mmsi instead of full iri
+			//mmsi = joforrec.getString("ship");
 
 		} catch (JSONException e1) {
 			logger.error(e1.getMessage(), e1);
 			e1.printStackTrace();
 		} 
-		//System.out.println("data got= "+iri+" and "+iri2);
+		//System.out.println("data got= "+iri+" and "+mmsi);
 				
 
 		//try to query the owl file to get the waste stream inside it 
@@ -395,7 +382,7 @@ public class ShipAgent extends HttpServlet {
 				"}";*/
 				
 		jenaOwlModel = ModelFactory.createOntologyModel();	
-		//jenaOwlModel.read(iri2); // read from ship owl file
+		//jenaOwlModel.read(mmsi); // read from ship owl file
 			
 		//ResultSet rs_ship = ShipAgent.query(chimneyInfo,jenaOwlModel); 
 		
@@ -410,29 +397,18 @@ public class ShipAgent extends HttpServlet {
 		 * 
 		 * cpirilist.add(valueiri); }
 		 */
-		if(iri2!=null) {
-			if(exists(iri2))
-			{
-				cpirilist.add("http://www.theworldavatar.com/kb/ships/"+iri2+"/Chimney-1.owl#Chimney-1");
-			}
-			else {
-				File stockDir = new File("C:/TOMCAT/webapps/ROOT/kb/ships/"+iri2);
-				stockDir.mkdir();
-				File source = new File("C:/TOMCAT/webapps/ROOT/kb/ships/Chimney-1.owl");
-				File destiny = new File("C:/TOMCAT/webapps/ROOT/kb/ships/"+iri2+"/Chimney-1.owl");
-		    	Charset charset = StandardCharsets.UTF_8;
-		    	String content = new String(Files.readAllBytes(source.toPath()), charset);		                
-		        content = content.replaceAll("http://www.theworldavatar.com/kb/ships/Chimney-1.owl", "http://www.theworldavatar.comkb/ships/"+iri2+"/Chimney-1.owl");        
-		        Files.write(destiny.toPath(), content.getBytes(charset));	
+		File stockDir = new File("C:/TOMCAT/webapps/ROOT/kb/ships/" + mmsi);
+		stockDir.mkdir();
+		File source = new File("C:/TOMCAT/webapps/ROOT/kb/ships/Chimney-1.owl");
+		File destiny = new File("C:/TOMCAT/webapps/ROOT/kb/ships/" + mmsi + "/Chimney-1.owl");
+		Charset charset = StandardCharsets.UTF_8;
+		String content = new String(Files.readAllBytes(source.toPath()), charset);
+		content = content.replaceAll("http://www.theworldavatar.com/kb/ships/Chimney-1.owl",
+				"http://www.theworldavatar.com/kb/ships/" + mmsi + "/Chimney-1.owl");
+		Files.write(destiny.toPath(), content.getBytes(charset));
 				//finished create owl file based on this iri()
-				cpirilist.add("http://www.theworldavatar.com/kb/ships/"+iri2+"/Chimney-1.owl#Chimney-1");	
-			}
-			
-		}
-		else {
-			//cpirilist.add("http://www.theworldavatar.com/kb/ships/1234678/Chimney-1.owl#Chimney-1"); (sample)
-			cpirilist.add("http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Chimney-1");
-		}
+		
+
 		
 		
 		/*
@@ -445,8 +421,8 @@ public class ShipAgent extends HttpServlet {
 		
 		cpirilist2.add("http://www.theworldavatar.com/kb/ships/Engine-001.owl#Engine-001");
 
-		jenaOwlModel.read(cpirilist.get(0));
-		
+		//jenaOwlModel.read(cpirilist.get(0));
+		jenaOwlModel.read("http://www.theworldavatar.com/kb/ships/"+mmsi+"/Chimney-1.owl#Chimney-1");
 		
 		
 		String wasteStreamInfo = "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#> " + 
@@ -477,10 +453,6 @@ public class ShipAgent extends HttpServlet {
 		}
 			
 		
-		logger.info("message to sent = " + jo.toString());
-		response.getWriter().write(jo.toString());
-		
-		
 	    //send the info to SRM Engine Agent
 
 		
@@ -506,15 +478,21 @@ public class ShipAgent extends HttpServlet {
 				jsonsrmresult = new JSONObject(resultjson).getJSONObject("results");
 			}
 	
-			startConversion(cpirilist.get(0),jsonsrmresult);
+//			startConversion(cpirilist.get(0),jsonsrmresult);
+			startConversion("http://www.theworldavatar.com/kb/ships/"+mmsi+"/Chimney-1.owl#Chimney-1",jsonsrmresult);
 			
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new JPSRuntimeException(e.getMessage(), e);
 		} //convert to update value
 
+		
+		logger.info("message to sent = " + jo.toString());
+		response.getWriter().write(jo.toString());
 	    
-	    cpirilist.clear();
+		
 	    cpirilist2.clear();	
+	    
+	    
 	}
 }
