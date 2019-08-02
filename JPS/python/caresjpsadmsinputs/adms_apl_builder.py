@@ -393,13 +393,17 @@ class AdmsAplShipBuilder(AplBuilder):
         return value
 
     def get_pollutants(self):
+        self.pollutant_names.remove(Constants.POL_PM10)
+        self.pollutant_names.remove(Constants.POL_PM25)
         pollutants = super().get_pollutants()
-        pold = AdmsPold()
-        pold_data = self.data[Constants.KEY_POL]
-        for field in dir(pold_data):
-            if not field.startswith('_') and field not in [Constants.KEY_INDEX, Constants.KEY_COUNT]:
-                setattr(pold, field, getattr(pold_data, field))
-        pollutants.append(pold)
+
+        polls = self.data[Constants.KEY_POL]
+        for pold_data in polls:
+            pold = AdmsPold()
+            for field in dir(pold_data):
+                if not field.startswith('_') and field not in [Constants.KEY_INDEX, Constants.KEY_COUNT]:
+                    setattr(pold, field, getattr(pold_data, field))
+            pollutants.append(pold)
 
         return pollutants
 
