@@ -94,6 +94,15 @@ class Constants(object):
     KEY_DENSITY = 'density'
     KEY_MASS_FRACTION = 'massFraction'
     KEY_MASS_RATE = 'massrate'
+    KEY_CONTENT = 'content'
+    KEY_HEIGHT = 'height'
+    KEY_TEMP = 'temp'
+    KEY_MOLE_WEIGHT = 'moleweight'
+    KEY_HEAT_CAP = 'heatcapa'
+    KEY_MASS_FLOW = 'massflow'
+    KEY_ER = 'er'
+    KEY_V = 'v'
+    KEY_O = 'o'
 
 
 class QueryStrings(object):
@@ -145,22 +154,22 @@ class QueryStrings(object):
                 PREFIX material: <''' + Constants.OWL_MATERIAL + '''>
                 PREFIX substance:<''' + Constants.OWL_SUBSTANCE + '''>
                 
-                SELECT distinct ?o ?''' + Constants.KEY_DIAMETER + ''' ?temp ?height ?massflow ?heatcapa ?''' \
+                SELECT distinct ?''' + Constants.KEY_O + ''' ?''' + Constants.KEY_DIAMETER + ''' ?temp ?height ?massflow ?heatcapa ?''' \
                                                                        + Constants.KEY_DENSITY + ''' ?moleweight
                 WHERE {
                 
                     ?o plant:hasHeight ?he.
                     ?he sys:hasValue ?hv.
-                    ?hv sys:numericalValue ?height .
+                    ?hv sys:numericalValue ?''' + Constants.KEY_HEIGHT + ''' .
       
-                      ?o  techsys:realizes ?process.
+                    ?o  techsys:realizes ?process.
                     ?process topology:hasOutput ?stream.
                     ?stream chemical_process_system:refersToGeneralizedAmount ?ga.
                     
                     ?ga sys:hasProperty ?ve.
                     ?ve a behavior:ConvectiveMassFlowrate .
                     ?ve sys:hasValue ?vv.
-                    ?vv sys:numericalValue ?massflow.
+                    ?vv sys:numericalValue ?''' + Constants.KEY_MASS_FLOW + '''.
                     
                     ?o a plant:Pipe .
                     ?o plant:hasInsideDiameter ?de . #?dev sys:hasValue ?de.
@@ -169,12 +178,12 @@ class QueryStrings(object):
                     
                     ?phase phase_system:has_temperature ?tempE.
                     ?tempE sys:hasValue ?vte.
-                    ?vte sys:numericalValue ?temp .
+                    ?vte sys:numericalValue ?''' + Constants.KEY_TEMP + ''' .
                     
                     
                     ?cp a phase_system:ThermodynamicStateProperty.
                     ?cp sys:hasValue ?cpv.
-                    ?cpv sys:numericalValue ?heatcapa.
+                    ?cpv sys:numericalValue ?''' + Constants.KEY_HEAT_CAP + '''.
                     
                     ?singlephase a phase_system:SinglePhase.
                     ?singlephase phase_system:has_density ?den.
@@ -185,7 +194,7 @@ class QueryStrings(object):
                     
                     ?mw a substance:MolecularWeight.
                     ?mw sys:hasValue ?mwv.
-                    ?mwv sys:numericalValue ?moleweight. 
+                    ?mwv sys:numericalValue ?''' + Constants.KEY_MOLE_WEIGHT + '''. 
                     OPTIONAL {
                         ?o space_and_time_extended:hasGISCoordinateSystem ?coe .
                         ?coe space_and_time_extended:hasProjectedCoordinate_x ?xe.
@@ -204,13 +213,13 @@ class QueryStrings(object):
                 PREFIX substance:<''' + Constants.OWL_SUBSTANCE + '''>
                 PREFIX part:<''' + Constants.OWL_BEHAVIOUR + '''>
     
-                SELECT DISTINCT  ?content
+                SELECT DISTINCT  ?''' + Constants.KEY_CONTENT + '''
                 WHERE {{
                     {{
                     ?mix a substance:Mixture.
-                    ?mix sys:containsDirectly  ?content. 
+                    ?mix sys:containsDirectly  ?''' + Constants.KEY_CONTENT + '''. 
                     }} UNION {{
-                     ?content   a part:ParticulateMaterialAmount.
+                     ?''' + Constants.KEY_CONTENT + '''   a part:ParticulateMaterialAmount.
                     }}
                 }}
 
@@ -220,11 +229,11 @@ class QueryStrings(object):
                 PREFIX substance:<''' + Constants.OWL_SUBSTANCE + '''>
                 PREFIX behavior:<''' + Constants.OWL_BEHAVIOUR + '''>
                 
-                SELECT DISTINCT  ?er ?v
+                SELECT DISTINCT  ?''' + Constants.KEY_ER + ''' ?''' + Constants.KEY_V + '''
                 WHERE {{
-                    ?mix sys:hasProperty  ?er.
-                    ?er  a behavior:ConvectiveMassFlowrate.
-                     ?er sys:hasValue ?erv.
-                    ?erv sys:numericalValue ?v
+                    ?mix sys:hasProperty  ?''' + Constants.KEY_ER + '''.
+                    ?''' + Constants.KEY_ER + '''  a behavior:ConvectiveMassFlowrate.
+                     ?''' + Constants.KEY_ER + ''' sys:hasValue ?erv.
+                    ?erv sys:numericalValue ?''' + Constants.KEY_V + '''
                 }}
             '''
