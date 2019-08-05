@@ -85,9 +85,13 @@ public class ADMSAgent extends JPSHttpServlet {
                 QueryBroker broker = new QueryBroker();
                 broker.put(fullPath + "/arbitrary.txt", "text to assign something arbitrary");
                 String coordinates = new Gson().toJson(coords.toString());
-                String chimney = new String();
+                ArrayList<String> chimney = new ArrayList<String>();
                 if (requestParams.has(PARAM_KEY_CHIMNEY)) {
-                    chimney = requestParams.getString(PARAM_KEY_CHIMNEY);
+                    //chimney = requestParams.getString(PARAM_KEY_CHIMNEY);
+                	for(int d=0;d<requestParams.getJSONArray(PARAM_KEY_CHIMNEY).length();d++) {
+                		chimney.add(requestParams.getJSONArray(PARAM_KEY_CHIMNEY).getString(d));
+                	}
+                	
                 }
 
                 writeAPLFileShip(PARAM_KEY_SHIP, newBuildingData, coordinates, newRegion, targetCRSName, fullPath, precipitation, chimney);
@@ -280,7 +284,7 @@ public class ADMSAgent extends JPSHttpServlet {
         return result;
     }
 
-    public String writeAPLFileShip(String entityType, String buildingInString, String plantIRI, JSONObject regionInJSON, String targetCRSName, String fullPath, String precipitation, String chimney) {
+    public String writeAPLFileShip(String entityType, String buildingInString, String plantIRI, JSONObject regionInJSON, String targetCRSName, String fullPath, String precipitation, ArrayList<String> chimney) {
 
         //fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
 
@@ -310,7 +314,7 @@ public class ADMSAgent extends JPSHttpServlet {
         args.add(targetCRSName);
         logger.info(targetCRSName);
         args.add(precipitation);
-        args.add(chimney);
+        args.addAll(chimney);
         // TODO-AE use PythonHelper instead of CommandHelper
         String result = CommandHelper.executeCommands(targetFolder, args);
         logger.info("ARGUMENTS");
