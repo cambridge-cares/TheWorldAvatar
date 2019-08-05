@@ -301,15 +301,7 @@ public class ShipAgent extends HttpServlet {
 		valueofspeciesemissionrate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(NO2value+NOvalue));
 
 	}
-		
-	
-    //temporarily unused
-	public static JSONObject parseJSONFile(String filename) throws JSONException, IOException {
-        String content = new String(Files.readAllBytes(Paths.get(filename)));
-        JSONObject content2 = new JSONObject(content.trim());
-        return content2;
-    }
-	
+			
 	public void startConversion(String iriOfChimney,JSONObject jsonresultstring) throws Exception {
 				
 		jenaOwlModel = ModelFactory.createOntologyModel();	
@@ -359,44 +351,9 @@ public class ShipAgent extends HttpServlet {
 			logger.error(e1.getMessage(), e1);
 			e1.printStackTrace();
 		} 
-		//System.out.println("data got= "+iri+" and "+mmsi);
-				
-
-		//try to query the owl file to get the waste stream inside it 
-		
-		
-		/*String engineInfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> " + 
-				"PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> " +  
-				"SELECT ?engine\r\n" + 
-				"WHERE {?entity  j1:hasSubsystem ?engine ." + 
-				"MINUS" + 
-				"{?engine a cp:Pipe .}" + 
-				"}"; 
-						
-		String chimneyInfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> " + 
-				"PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> " + 
-				"SELECT ?chimney\r\n" + 
-				"WHERE " + 
-				"{ ?entity  j1:hasSubsystem ?chimney ." + 
-				"  ?chimney a cp:Pipe ." + 
-				"}";*/
 				
 		jenaOwlModel = ModelFactory.createOntologyModel();	
-		//jenaOwlModel.read(mmsi); // read from ship owl file
 			
-		//ResultSet rs_ship = ShipAgent.query(chimneyInfo,jenaOwlModel); 
-		
-		//ResultSet rs_ship2 = ShipAgent.query(engineInfo,jenaOwlModel); 
-		
-		/*
-		 * for (; rs_ship.hasNext();) { QuerySolution qs_p = rs_ship.nextSolution();
-		 * 
-		 * Resource cpiri = qs_p.getResource("chimney"); String valueiri =
-		 * cpiri.toString(); System.out.println("cpirilistchimney = " + valueiri);
-		 * logger.info("query result1 = " + valueiri);
-		 * 
-		 * cpirilist.add(valueiri); }
-		 */
 		File stockDir = new File("C:/TOMCAT/webapps/ROOT/kb/ships/" + mmsi);
 		stockDir.mkdir();
 		File source = new File("C:/TOMCAT/webapps/ROOT/kb/ships/Chimney-1.owl");
@@ -408,20 +365,9 @@ public class ShipAgent extends HttpServlet {
 		Files.write(destiny.toPath(), content.getBytes(charset));
 				//finished create owl file based on this iri()
 		
-
-		
-		
-		/*
-		 * for (; rs_ship2.hasNext();) { QuerySolution qs_p = rs_ship2.nextSolution();
-		 * 
-		 * Resource engineiri = qs_p.getResource("engine"); String valueengineiri =
-		 * engineiri.toString(); logger.info("query result2= "+valueengineiri);
-		 * cpirilist2.add(valueengineiri); }
-		 */
 		
 		cpirilist2.add("http://www.theworldavatar.com/kb/ships/Engine-001.owl#Engine-001");
 
-		//jenaOwlModel.read(cpirilist.get(0));
 		jenaOwlModel.read("http://www.theworldavatar.com/kb/ships/"+mmsi+"/Chimney-1.owl#Chimney-1");
 		
 		
@@ -487,7 +433,7 @@ public class ShipAgent extends HttpServlet {
 		} //convert to update value
 
 		
-		logger.info("message to sent = " + jo.toString());
+		logger.info("message to sent back from shipagent = " + jo.toString());
 		response.getWriter().write(jo.toString());
 	    
 		
