@@ -118,7 +118,6 @@ class AdmsProcessor(object):
         self.set_input_ship_src_geo(ship_coordinates_list)
         self.set_input_ship_indicators(args)
         self.set_input_ship_night()
-        self.set_grid_size(args)
         
         self.input[Constants.KEY_MET] = self.working_dir + Constants.FILENAME_MET
         self.input[Constants.KEY_BKG] = self.working_dir + Constants.FILENAME_BGD
@@ -181,6 +180,7 @@ class AdmsProcessor(object):
 
         self.input[Constants.KEY_BDN] = self.BDN
         self.input[Constants.KEY_COORD_SYS] = int(self.coord_sys)
+        self.set_grid_size(args)
 
     def save_apl(self, args):
         self.get_input(args)
