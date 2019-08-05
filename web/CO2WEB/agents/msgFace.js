@@ -7,7 +7,10 @@ var rabbitmq = new RabbitMQ({'url':'amqp://guest:guest@www.theworldavatar.com:56
 
 var msgWatcher = {};
 
-
+/***
+init function
+define listeners and start subscribing
+***/
 msgWatcher.init = function (io) {
     
     let self = this
@@ -34,7 +37,9 @@ msgWatcher.init = function (io) {
      
      }
      
-
+/***
+pack message into format
+***/
 msgWatcher.packMsg = function (msg) {
   //  console.log(msg['data']['agent iri'])
     return {agentId :msg['data']['agent iri'], plantId:msg['data']['plant'],scenarioId:msg['data']['scenario id']}

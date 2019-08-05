@@ -1,7 +1,11 @@
+/***
+map logic for b3 powerplant
+***/
 var b3map = new PopupMap({useCluster:true,  editable: true});
 
 var socket = io();
 
+//subscribe to socket for data change event
 socket.emit("join", JSON.stringify([{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/E-301.owl", withData:true}
     ,{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-301.owl", withData:true}
 ,{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant2/T-601002.owl", withData:true}
@@ -52,7 +56,7 @@ socket.on('initial', function (idata) {
     console.log(dataMaps);
 
 });
-socket.on('update', function (udata) {
+socket.on('update', function (udata) {//when subscribed value updated
     //need to corrspond the updated data with kept copy - by name
 
     console.log("get update event");
@@ -76,6 +80,7 @@ socket.on('update', function (udata) {
 
                     })
 
+//send new data to simulation api
     let modifs = updateDataMap(udata.data);
     console.log(modifs)   
    if(Object.keys(modifs).length > 0){
@@ -110,6 +115,12 @@ function updateDataMap(newData) {
 }
 
 //"http://www.theworldavatar.com/Service_Node_BiodieselPlant3/DoSimulation"
+/***
+send request to simulation api
+@params: 
+url: url of simulation api
+variables: values of variables
+***/
 function SendSimulationQuery(murl, variables) {
 
 

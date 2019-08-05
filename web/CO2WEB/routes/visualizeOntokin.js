@@ -2,7 +2,7 @@
 var topNode = require("../config").ontokinNode;
 console.log("****************")
 console.log(topNode)
-let opts = {topnode:topNode,viewName:'visualEx',supQuery:
+let opts = {useSharp:true, topnode:topNode,viewName:'visualEx',supQuery:
     
     
     `

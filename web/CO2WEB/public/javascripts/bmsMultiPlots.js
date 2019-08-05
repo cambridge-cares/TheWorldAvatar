@@ -57,7 +57,7 @@ $(document).ready(function () {
 
 
 
-        socket.on('update', function(data){
+        socket.on('update', function(data){//received data update event
 
         let parsedData = data;
         let name = parsedData['filename'];

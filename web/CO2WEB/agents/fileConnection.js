@@ -15,7 +15,7 @@
  *
  *   Connections are saved as:
  *   [{source, target: , level: },..]
- *   Import connections only have level: null
+ *   Import connections only have level: null[commented]
 
  */
 var log4js = require('log4js');

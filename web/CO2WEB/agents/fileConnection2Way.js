@@ -1,7 +1,7 @@
 "use strict";
 /***
- 
- 没有结构性数据，考虑全程用流来做，如果有流的sparqlengine就直接套，不然就流local graph来query
+async function to get inter-connected iris in a stream fashion
+ [commented]
  */
 var log4js = require('log4js');
 var logger = log4js.getLogger();
@@ -111,7 +111,9 @@ owlProcessor.doConnect = function(address, level) {
                         return;//skip null 
                     }
 
+					if(!me.useSharp){
                     item = me.normalAddr(item);
+					}
                     item = me.equalHost(item);
                     console.log(item)
                        
@@ -329,6 +331,9 @@ owlProcessor.xmlstreamParser = function (instream, level) {
     
 };
 
+/***
+check if retreived file is a valid file
+***/
 owlProcessor.checkFile = function (loc) {
     return new Promise((resolve, reject) => {
         let parser = new Parser();
@@ -429,6 +434,13 @@ owlProcessor.queryPromise = function (loc, type, level) {
 
 }
 
+/**
+send query request to an endpoint
+@params:
+loc: endpoint url
+
+@callback (error, queryResult)
+***/
 owlProcessor.singleEpQ = function(loc){
 
     let q = function(qStr, callback){
@@ -529,6 +541,8 @@ owlProcessor.fileStreamPromise = function (loc) {
     owlProcessor.init = function (options) {
         this.loc = options.topnode;
 		this.unpack = options.unpack?options.unpack:false;
+		this.useSharp = options.useSharp?options.useSharp:false;
+		console.log('use sharp? '+this.useSharp);
         //modify query
         let extraQ = options.extraQuery?options.extraQuery:'';
         let extraP = options.extraPredicate?options.extraPredicate:'';
@@ -565,6 +579,10 @@ owlProcessor.fileStreamPromise = function (loc) {
         this.parentMap = {}
     };
 
+/***
+utility function
+pack connection data into cluster format(subconnection map)
+***/
 owlProcessor.packIntoClusterData = function (rawconn) {
     //get level 1 connections
     let self = this

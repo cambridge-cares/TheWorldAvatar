@@ -50,6 +50,10 @@ WHERE {
 `;
 
 
+
+/***
+find all literal data contained in an iri entity 
+***/
 function LiteralData(callback, nodeloc, opts) {
 
     queryLiteralSingle(nodeloc, function (err, result) {
@@ -59,7 +63,7 @@ function LiteralData(callback, nodeloc, opts) {
             return;
         }
         let resultsB
-        if(!result.eq){
+        if(!result.eq){//no equivalent entity
             resultsB = packTimeseriesDataIfAny(result.nvpairs);
             if(opts&&opts.specificNames instanceof  Array && opts.specificNames.length >0){
                 console.log("names specified")
@@ -71,7 +75,7 @@ function LiteralData(callback, nodeloc, opts) {
             callback(null, resultsB);
             return;
         }
-        queryLiteralSingle(result.eq, function (err,resultEq) {
+        queryLiteralSingle(result.eq, function (err,resultEq) {//query attributes defined under equivalent entity
             if(err){
                 logger.debug(err)
                 callback(null, resultsB);
@@ -91,6 +95,12 @@ function LiteralData(callback, nodeloc, opts) {
 
 
 
+/***
+utility function:
+find in the result list item with specific names
+
+returns list of found items
+**/
     function filterVNames(results, namelist){
 
        return namelist.map((name)=>{
@@ -105,6 +115,11 @@ function LiteralData(callback, nodeloc, opts) {
     }
 
 
+/***
+pack timeseries data into an array if it exists in an data array
+input: all data before processing
+return packed data
+***/
     function packTimeseriesDataIfAny(allData) {
         logger.debug("literal data all before parsing timeseries data")
         let timeSeriesData = {}, normalData = []
@@ -161,6 +176,14 @@ function LiteralData(callback, nodeloc, opts) {
         return ta.time-tb.time;
     }
 
+/***
+find all attributed and equivalent iris defined under one iri entity
+input:
+nodeloc   entity iri
+callback
+@returns {eq iri, name-value pairs of attributes}
+
+***/
     function queryLiteralSingle(nodeloc, callback) {
         nodeloc = nodeloc.replace("http://www.theworldavatar.com", config.root).replace("http://www.jparksimulator.com", config.root);
         console.log(nodeloc);
@@ -203,6 +226,9 @@ function LiteralData(callback, nodeloc, opts) {
 
 
 
+  /**
+  unpack equivalent iri
+  **/
     function getEQ(spos) {
         let found =  spos.find(function (spo) {
             return spo['?eq'];

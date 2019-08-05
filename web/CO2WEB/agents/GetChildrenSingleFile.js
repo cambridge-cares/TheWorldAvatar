@@ -4,7 +4,10 @@ get children list of a single file
 const xmlProcessor = require("./fileConnection")
     ,fs = require('fs')
 
-
+/***
+async func to get a list of children(hasIri) iris of one single file
+return : list of children iris
+***/
 function getChildrenSingleFile(uri, callback) {
 
     let loc = xmlProcessor.uriList2DiskLoc([uri])[0].diskLoc;

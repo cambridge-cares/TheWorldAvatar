@@ -18,6 +18,7 @@ var connectionsReader = Object.create(owlProcesser)
 var visualizationRouterFactory = function (opts) {
     var router = express.Router();
     var viewName = opts.viewName?opts.viewName:'visual';
+
     router.get('/', function(req, res, next) {
                 res.render(viewName); //render the view with this value, { result: JSON.stringify(results)
     });
@@ -50,8 +51,9 @@ var visualizationRouterFactory = function (opts) {
         let topnode = body['iri'];
         console.log(topnode)
         console.log(supQuery)
+		let useSharp = opts.useSharp
     
-        connectionsReader.processSingle({supQuery, topnode}).then((results)=>{
+        connectionsReader.processSingle({supQuery, topnode, useSharp}).then((results)=>{
             
             
             console.log("read connections");

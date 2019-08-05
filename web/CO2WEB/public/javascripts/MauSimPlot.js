@@ -1,3 +1,7 @@
+   
+/***
+Implements the Sim prototype. for Mau.
+***/
     const toggleDisplay = elemId => {
         let x = document.getElementById(elemId);
         if (x.style.display !== 'block') {

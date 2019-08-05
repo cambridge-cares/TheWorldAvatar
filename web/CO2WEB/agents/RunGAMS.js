@@ -7,7 +7,9 @@
 //TODO: run a child process of MAU
 //TODO :read result from output file
 
-
+/***
+executed on the GAMS python file
+***/
 function runGams(){
     //read
     function runCMD(program, params){

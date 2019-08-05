@@ -13,7 +13,7 @@ var config = {};
 config.baseUri = "http://www.theworldavatar.com"
 
 config.crebase = "http://www.theworldavatar.com/damecoolquestion/ontochem"
-config.ontokinbase = "http://www.theworldavatar.com/damecoolquestion/ontokin"
+config.ontokinbase = "http://www.theworldavatar.com/damecoolquestion/ontokin2"
 
 //configDevelop();
 configDeploy();

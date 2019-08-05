@@ -9,8 +9,7 @@ var owlProcesser = require("../../agents/fileConnection2Way.js");
 var connectionsReader = Object.create(owlProcesser)
 /* GET users listing. */
 
-//TODO: buffer logic, so no need recalculate for each request, but still robust,
-//TODO: could be time, or responding to change
+
 /****
  * Factory to create a router with file-connection-reader module.
  * @param topNodeAddress  address of top node file

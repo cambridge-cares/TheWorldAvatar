@@ -1,5 +1,5 @@
 /**
-Aggregate plant emission by type and country
+Aggregate plant emission by type and country[commented]
 
  */
 
@@ -121,6 +121,14 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
                     }
                     return sum;
                 })();
+                /**
+                convert coal to natural gass and calculated new emission
+                input:
+                country: country id
+                percentage: percentage of convertion
+
+                return new emission value
+                ***/
                 result.convert = function (country, percentage) {
                     //cal new coal capa
                     //cal new coal emisison
@@ -152,6 +160,14 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
 
 
 
+         /**
+         utility function:
+         group a map by certain key
+         input xs => map
+         key => key to group by
+         return new map grouped by key
+
+         **/
         var groupBy = function(xs, key) {
             return xs.reduce(function(rv, x) {
                 (rv[x[key]] = rv[x[key]] || []).push(x);
@@ -159,6 +175,10 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
             }, {});
         };
 
+
+        /***
+        async function to get all powerplant uri from root file
+        ****/
         function getWorldPPChild(callback) {
             //loop through world node children , compare type to be PP or not
             processor.init({});
@@ -177,6 +197,12 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
 			let sec = uri.split('#');
 			return sec[0];
 		}
+
+        /**
+
+          async function to query all powerlant file for the capacity, type and contry info
+          return: [{uri, name, type,country, capacity}]
+        ***/
         function query(item, callback) {
 			///console.log('read: '+item.diskLoc);
             fs.readFile(item.diskLoc, function (err, file) {
@@ -209,6 +235,14 @@ var qsCapacity = `    PREFIX system_realization: <http://www.theworldavatar.com/
         }
 
 
+         /***
+         emission equation
+
+         input:
+         type: type of fuel
+         capacity: capacity value
+         return : emission value
+         ***/
         function calculateEmission(type, capacity) {
             switch (type) {
                 case "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#CoalGeneration":

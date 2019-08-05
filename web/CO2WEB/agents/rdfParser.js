@@ -28,6 +28,10 @@ RdfParser.RdfParser = function (opts) {
 
 
 RdfParser.RdfParser.prototype =  {
+
+    /***
+    parse the file
+    ***/
     parseBody: function() {
         try{
             $rdf.parse(this.file, this.store, this.uri, this.mimeType);// parse rdf
@@ -37,9 +41,16 @@ RdfParser.RdfParser.prototype =  {
 
     },
 
+
+    /***
+    define a symbol
+    ***/
     defineSym  : function (nodeUrl) {
         return $rdf.sym(nodeUrl);
     },
+    /**
+    add a triple
+    ***/
     add : function (s, p, o, oIsNode) {
         try{
             let o = oIsNode?this.defineSym(o):o;
@@ -51,6 +62,9 @@ RdfParser.RdfParser.prototype =  {
         }
 
     },
+    /***
+    execute a sparql query
+    ***/
     mquery : function (queryStr, callback) {
         let dataset = [];
 
@@ -87,6 +101,14 @@ RdfParser.RdfParser.prototype =  {
 
 
     },
+
+    /***
+    search triples with specific s and p
+    @params:
+    nodeUrl: s
+    propertyUrl: p
+    
+    ***/
     search : function (nodeUrl, propertyUrl) {
         //test nodeUrl = "http://www.theworldavatar.com/JurongIsland.owl#CM_BiodieselPlant-3";
         //test propertyUrl = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/eco-industrialPark.owl#hasIRI";
@@ -193,6 +215,9 @@ RdfParser.RdfParser.prototype =  {
 };
 
 
+/***
+unwrap query results into an array of items
+***/
 RdfParser.unwrapResult = function (result, type) {
     if(!('head' in result) || !('results' in result) || !('bindings' in result['results']) || result['results']['bindings'].length === 0){
         console.log('wrong format')

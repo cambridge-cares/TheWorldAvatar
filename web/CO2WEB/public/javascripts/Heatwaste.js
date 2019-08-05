@@ -3,7 +3,9 @@
     /**
 const data = {"tupleNumber": 120, "flowNumber": "10", "flowList": [[1.0, 2.0], [1.0, 3.0], [1.0, 5.0], [3.0, 2.0], [4.0, 1.0], [4.0, 2.0], [4.0, 3.0], [4.0, 5.0], [5.0, 2.0], [5.0, 3.0]], "modifyList": [[895.0, 1.0, 2.0], [1512.0, 1.0, 5.0], [638.0, 4.0, 1.0]], "saveNumber": 3045.0};
      **/
-
+/***
+for heatwaste, implements popupMap
+***/
    var plants = ["Zeon", "Exxonmobil","Singapore refining","Lanxess BTR Plant", "Chang Chun"]
 var hwMap = new PopupMap({useCluster:false});
 
@@ -767,7 +769,9 @@ $(document).ready(function () {
 });
 
 
-
+/***
+ajax to get initial inputs
+***/
 function InitialInputs(){
     $.ajax({
         url: window.location.href + "/initial",
@@ -789,6 +793,9 @@ function InitialInputs(){
     const rePanel = $("#result-panel")
     const drawPanel = $("#draw-panel")
 
+/**
+ajax to get simulation result and draw it as a bubble map
+***/
 function HWSimulation() {
     //todo:need refresh map?
     //first, ajax
@@ -813,7 +820,7 @@ function HWSimulation() {
              console.log(packed)
 
             addTextDisplay(data);
-     var linkmap   = FileLinkMap({connections : packed}, {width: 500, height:500});
+     var linkmap   = FileLinkMap({connections : packed}, {width: 500, height:500});//draw result as a filelinkmap
         },
         error: function () {
             console.log("Can not get location")

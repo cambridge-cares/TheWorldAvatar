@@ -1,5 +1,5 @@
 /**
- * The module that runs simulation through API*/
+ * The PROTOTYPE module that runs simulation through API*/
 
 console.log(async)
 
@@ -41,13 +41,16 @@ Sim.prototype = {
             };
         this.initInputCounter = 0;
     },
+    /**
+    set  data update event subscription
+    ***/
     setSubscribe: function () {
         let msocket = this.socket;
         console.log(msocket)
         msocket.emit("join", JSON.stringify(this.subscribes));
 
 
-        msocket.on('initial',  (idata)=>{
+        msocket.on('initial',  (idata)=>{//when receive initial data
             console.log(idata);
             this.initInputCounter++;
             this.updateInputs(idata);
@@ -73,7 +76,7 @@ Sim.prototype = {
                 }
             }
         });
-        msocket.on('update',  (udata)=>{
+        msocket.on('update',  (udata)=>{//when receive data updates
             //need to corrspond the updated data with kept copy - by name
             console.log("get update event");
             console.log(udata.data);
@@ -114,7 +117,9 @@ Sim.prototype = {
     }
     ,
 
-    //TODO: maybe we need to match by time
+    /***
+    format convertion for value objects
+    ***/
     valueMap2variableArr : function (valueMapObj) {
 
         let values = Object.values(valueMapObj);
@@ -154,7 +159,8 @@ Sim.prototype = {
         return groups
     },
     /***
-     * If it is update to me I'd prefer POST, but now for convinience, better keep same format of API, with GET and input as params
+    send simulation to API
+     * If it is up to me I'd prefer POST, but now for convinience, better keep same format of API, with GET and input as params
      * @param variables
      * @constructor
      */
@@ -183,11 +189,14 @@ Sim.prototype = {
             }
         });
     },
+    /***
+    simulation callback
+    ***/
     simulationResultCB : function (sResult) {
-        if(this.disSimResB4DBUpdateFn){//display without Update?
-            this.disSimResB4DBUpdateFn(sResult);
+        if(this.disSimResB4DBUpdateFn){//display before Update
+            this.disSimResB4DBUpdateFn(sResult);//
         }
-        if(this.updateOutput2DBFlag ){//WANT to update the sim results to db?
+        if(this.updateOutput2DBFlag ){//update the sim results to db
             let updates =this.processResultStr(sResult);
             this.updateResult(updates, this.outputUpdateSuccessCBFn, this.errorCB);
         }
@@ -199,7 +208,6 @@ Sim.prototype = {
         $.ajax({//TODO:　CHANGE THIS IN FUTURE
             url: "http://www.theworldavatar.com:82/getSpecAttr"  ,
 method:"POST",
-//TODO:　modifythis?
             data: JSON.stringify(item),
             contentType: "application/json; charset=utf-8",
             success: (response)=>{
@@ -208,7 +216,6 @@ method:"POST",
                 CB(null, response);
             },
             error: (err)=>{
-                //Do Something to handle error
                 CB(err);
             }
         });
@@ -262,6 +269,9 @@ method:"POST",
 
     },
 
+/**
+update output map kept in memory
+***/
     updateOutputMap:function (result) {
       console.log(this.outputMap);
 	  result[0] = JSON.parse(result[0])

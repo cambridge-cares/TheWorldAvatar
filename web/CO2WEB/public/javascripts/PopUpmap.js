@@ -1,8 +1,8 @@
 /**
- * Module for map visualization, make cluster an option
+ * Prototype Module for map visualization, make cluster an option
  */
 
-//-----------------------------------------------------------------------------------//
+//part no written by me-----------------------------------------------------------------------------------//
 	
 	const toggleDisplay = elemId => {
         let x = document.getElementById(elemId);
@@ -205,6 +205,12 @@ PopupMap.prototype = {
     },
 
 
+/**
+update markers 
+@parans:
+pps: coordinates to draw
+definedPopUpAttrPair: map of attributes to appear in popups for markers
+***/
     updateMarkers : function (pps, definedPopUpAttrPair) {
         var self = this;
         self.clearMarkers();
@@ -401,6 +407,9 @@ PopupMap.prototype = {
         });
     },
 
+/**
+clean all markers
+***/
     clearMarkers : function () {
         let self = this;
         if(!self.markers || Object.keys(self.markers).length < 1){
@@ -433,7 +442,13 @@ PopupMap.prototype = {
         });
     },
 
-
+/**
+draw a popup window for a marker
+@params:
+attrPairs: attrs to appear in the pouup
+muri: uri of marker as id
+marker: the marker object
+***/
     formatPopup : function (attrPairs, muri, marker) {
         const self = this;
 
@@ -448,10 +463,8 @@ PopupMap.prototype = {
                 let mattrs = attrPairs
                 let modifications = {};
 
-				 console.log(muri)
-				 console.log(infobox)
-				 console.log(mattrs)
 
+                 //***input event handler for popup window**************//
                 infobox.on('input', 'input',  function(){//when user makes input
                     console.log("input changed");
 
@@ -477,6 +490,7 @@ PopupMap.prototype = {
                     //    self.displayMsg(errMsgBox, "Wrong datatype.", "warning");
                     // }
                 });
+                //submit event handler for popup window**************//
                 $(document).on('click', submitId, function () {
                     if(Object.keys(modifications).length < 1){//do nothing if no modific
 					console.log('no change')
