@@ -97,6 +97,14 @@ class AplBuilder(object):
 
     def get_grd(self):
         grd = AdmsGrd()
+        data_grd = self.data[Constants.KEY_GRD]
+        grd.GrdRegularMin[0] = data_grd[0]
+        grd.GrdRegularMin[1] = data_grd[1]
+        grd.GrdRegularMax[0] = data_grd[2]
+        grd.GrdRegularMax[1] = data_grd[3]
+        grd.GrdRegularNumPoints[0] = self.data[Constants.GRD_X]
+        grd.GrdRegularNumPoints[1] = self.data[Constants.GRD_Y]
+
         return grd
 
     @staticmethod
@@ -130,8 +138,9 @@ class AplBuilder(object):
         return etc
 
     def get_coordsys(self):
-        cords = AdmsCoordSys()
-        return cords
+        coordsys = AdmsCoordSys()
+        coordsys.ProjectedEPSG = self.data[Constants.KEY_COORD_SYS]
+        return coordsys
 
     @staticmethod
     def get_mapper():
@@ -344,18 +353,6 @@ class AdmsAplShipBuilder(AplBuilder):
         hil.HilTerrainPath = Constants.FILEPATH_HIL_HK
         return hil
 
-    def get_grd(self):
-        grd = AdmsGrd()
-        data_grd = self.data[Constants.KEY_GRD]
-        grd.GrdRegularMin[0] = data_grd[2]
-        grd.GrdRegularMin[1] = data_grd[3]
-        grd.GrdRegularMax[0] = data_grd[0]
-        grd.GrdRegularMax[1] = data_grd[1]
-        grd.GrdRegularNumPoints[0] = self.data[Constants.GRD_X]
-        grd.GrdRegularNumPoints[1] = self.data[Constants.GRD_Y]
-        
-        return grd
-
     def get_bkg(self):
         bkg = AdmsBkg()
         bkg.BkgFilePath = self.data[Constants.KEY_BKG]
@@ -365,11 +362,6 @@ class AdmsAplShipBuilder(AplBuilder):
         etc = AdmsEtc()
         etc.SrcNumSources = len(self.data[Constants.KEY_SRC])
         return etc
-
-    def get_coordsys(self):
-        coordsys = AdmsCoordSys()
-        coordsys.ProjectedEPSG = self.data[Constants.KEY_COORD_SYS]
-        return coordsys
 
     def get_pol_wet_washout(self, name):
         value = 0.0e+0
