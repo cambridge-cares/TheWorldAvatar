@@ -22,6 +22,7 @@ class AdmsProcessor(object):
         self.targetCRS = None
         self.precipitation = None
         self.chimney_iri = None
+        self.ship_coordinates_list = None
         self.input = None
         self.coords = None
         self.BDN = None
@@ -161,6 +162,7 @@ class AdmsProcessor(object):
             retriever = admsInputDataRetriever(self.entity, Constants.BLD_TOPNODE, self.coords, pollutants, 2,
                                                Constants.BLD_LIMIT, False, self.BDN)
         elif self.entity_type == Constants.ENTITY_TYPE_SHIP:
+            self.ship_coordinates_list = self.get_ship_coordinates()
             from admsInputDataRetrieverChimney import admsInputDataRetriever
             pollutants = [Constants.POL_CO2, Constants.POL_CO, Constants.POL_NO2, Constants.POL_HC, Constants.POL_NOX,
                           Constants.POL_PART_001, Constants.POL_PART_SO2, Constants.POL_PART_O3]
@@ -172,11 +174,10 @@ class AdmsProcessor(object):
         self.set_vars_from_args(args)
         self.BDN = self.get_bdn(self.bdn_data)
         self.coords = self.get_coordinates(self.coor_data)
-        ship_coordinates_list = self.get_ship_coordinates()
         self.retrieve_input()
 
         if self.entity_type == Constants.ENTITY_TYPE_SHIP:
-            self.modify_input_for_ship(args, ship_coordinates_list)
+            self.modify_input_for_ship(args, self.ship_coordinates_list)
 
         self.input[Constants.KEY_BDN] = self.BDN
         self.input[Constants.KEY_COORD_SYS] = int(self.coord_sys)

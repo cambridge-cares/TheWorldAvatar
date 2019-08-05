@@ -76,6 +76,9 @@ class AplBuilder(object):
 
     def get_bld(self):
         bld = AdmsBld()
+        bld_data = self.data[Constants.KEY_BDN]
+        for field in bld_data._fields:
+            setattr(bld, field, getattr(bld_data, field))
         return bld
 
     def get_hil(self):
@@ -108,6 +111,9 @@ class AplBuilder(object):
 
     def get_opt(self):
         opt = AdmsOpt()
+        opt_data = self.data[Constants.KEY_OPT]
+        for field in opt_data._fields:
+            setattr(opt, field, getattr(opt_data, field))
         return opt
 
     def get_bkg(self):
@@ -333,13 +339,6 @@ class AdmsAplShipBuilder(AplBuilder):
         met.MetLatitude = self.data[Constants.KEY_LAT.title()]
         return met
 
-    def get_bld(self):
-        bld = AdmsBld()
-        bld_data = self.data[Constants.KEY_BDN]
-        for field in bld_data._fields:
-            setattr(bld, field, getattr(bld_data, field))
-        return bld
-
     def get_hil(self):
         hil = AdmsHil()
         hil.HilTerrainPath = Constants.FILEPATH_HIL_HK
@@ -356,13 +355,6 @@ class AdmsAplShipBuilder(AplBuilder):
         grd.GrdRegularNumPoints[1] = self.data[Constants.GRD_Y]
         
         return grd
-
-    def get_opt(self):
-        opt = AdmsOpt()
-        opt_data = self.data[Constants.KEY_OPT]
-        for field in opt_data._fields:
-            setattr(opt, field, getattr(opt_data, field))
-        return opt
 
     def get_bkg(self):
         bkg = AdmsBkg()
