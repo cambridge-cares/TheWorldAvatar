@@ -44,8 +44,7 @@ class AdmsInputDataRetriever(object):
         # TODO-AE remove filterSrc and topnode
         self.filterSrc = filterSrc
         self.rawBdn = rawBdn
-        self.pm10_emrates = {}
-        self.pm25_emrates = {}
+        self.em_rates = {}
 
         self.range = self.getRange(range)
         self.pythonLogger = PythonLogger('admsInputDataRetrieverChimney.py')
@@ -55,8 +54,8 @@ class AdmsInputDataRetriever(object):
             (float(userrange['xmin']), float(userrange['xmax'])), (float(userrange['ymin']), float(userrange['ymax'])))
 
     def get_src_data(self):
-        """get all sourced data :
-        returns: data object
+        """Gets all sourced data.
+        returns: list of source data objects for the ADMS_SOURCE_DETAILS section of the APL.
         """
         sources = []
         q1 = prepareQuery(QueryStrings.SPARQL_DIAMETER_TEMP_HEIGHT_MASSFLOW_HEATCAPA_DENSITY_MOLEWEIGHT)
@@ -71,13 +70,16 @@ class AdmsInputDataRetriever(object):
 
             aresult, sorteder, pollutantnames = self.get_new_src_data(uri, qdata, qdataC, qdataERate)
 
-            new_src = admsSrc(SrcName=aresult[Constants.KEY_O].toPython(), SrcHeight=aresult[Constants.KEY_HEIGHT].toPython(),
-                             SrcDiameter=float(aresult[Constants.KEY_DIAMETER].toPython()), SrcPolEmissionRate=sorteder,
-                             SrcPollutants=pollutantnames, SrcTemperature=aresult[Constants.KEY_TEMP].toPython(),
-                             SrcMolWeight=aresult[Constants.KEY_MOLE_WEIGHT].toPython(), SrcDensity=float(
-                                aresult[Constants.KEY_DENSITY].toPython()),
-                             SrcSpecHeatCap=aresult[Constants.KEY_HEAT_CAP].toPython(), SrcNumPollutants=len(pollutantnames),
-                             SrcMassFlux=aresult[Constants.KEY_MASS_FLOW].toPython())
+            new_src = admsSrc(SrcName=aresult[Constants.KEY_O].toPython(),
+                              SrcHeight=aresult[Constants.KEY_HEIGHT].toPython(),
+                              SrcDiameter=float(aresult[Constants.KEY_DIAMETER].toPython()),
+                              SrcPolEmissionRate=sorteder,
+                              SrcPollutants=pollutantnames, SrcTemperature=aresult[Constants.KEY_TEMP].toPython(),
+                              SrcMolWeight=aresult[Constants.KEY_MOLE_WEIGHT].toPython(), SrcDensity=float(
+                    aresult[Constants.KEY_DENSITY].toPython()),
+                              SrcSpecHeatCap=aresult[Constants.KEY_HEAT_CAP].toPython(),
+                              SrcNumPollutants=len(pollutantnames),
+                              SrcMassFlux=aresult[Constants.KEY_MASS_FLOW].toPython())
             sources.append(new_src)
 
         return sources
@@ -86,12 +88,9 @@ class AdmsInputDataRetriever(object):
         aresult, = [row.asdict() for row in qdata]
         contents = [row[Constants.KEY_CONTENT].toPython() for row in qdataC]
         pollutantnames = [self.polIRI2Name(content) for content in contents]
-        i = 0
-        for p in pollutantnames:
-            if type(p) == list:
-                pl  = pollutantnames.pop(i)
-                pollutantnames = pollutantnames + pl
-            i = i + 1
+        if None in pollutantnames:
+            pollutantnames.remove(None)
+            pollutantnames = pollutantnames + list(self.em_rates[uri].keys())
 
         emissionrates = {row[Constants.KEY_ER].toPython(): row[Constants.KEY_V].toPython() for row in qdataERate}
 
@@ -101,13 +100,11 @@ class AdmsInputDataRetriever(object):
             for ername, v in emissionrates.items():
                 if name in ername:
                     if Constants.POL_PART_001 in name.replace('-', ''):
-                        sorteder.append(self.pm25_emrates[uri])
-                        sorteder.append(self.pm10_emrates[uri])
+                        sorteder = sorteder + list (self.em_rates[uri].values())
                     else:
                         sorteder.append(v)
 
         return aresult, sorteder, pollutantnames
-
 
     def filterBdnEnvelope(self):
         '''
@@ -195,8 +192,7 @@ class AdmsInputDataRetriever(object):
                 Constants.POL_HC,
             'http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Nitrogen__oxides':
                 Constants.POL_NOX,
-            'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Particulate-001': [Constants.POL_PM10,
-                                                                                     Constants.POL_PM25]
+            'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Particulate-001': None
         }
 
         if polIRI in substances.keys():
@@ -224,50 +220,59 @@ class AdmsInputDataRetriever(object):
         self.pythonLogger.postInfoToLogServer('path for adms bkg file=' + bkgpath)
         return bkgpath
 
-    def getPol(self):
-        pm25D = set()
-        pm10D = set()
-        pm25Density = set()
-        pm10Density = set()
-        pm_fraction = [1.0e+0]
+    def get_pol(self):
+        """
+        Prepares data for ADMS_POLLUTANT_DETAILS section of the APL.
+        Separates particles to PM10 and PM2.5 categories. Stores emission rates in em_rates
+        class member variable for every examined source for later use. @see: get_src_data()
+        @return: list of Pol objects.
+        """
+        pols = []
+        pol_data = []
+        diam_dens = set()
+        pol_names = {}
         q1 = prepareQuery(QueryStrings.SPARQL_DIAMETER_DENSITY_MASSFRACTION)
         q2 = prepareQuery(QueryStrings.SPARQL_MASSRATE)
+        i = 0
+        k = 0
 
         for src in self.topnode:
-            self.connectDB(src, connectType = 'parse')
+            self.connectDB(src, connectType=Constants.KEY_PARSE)
             qb = self.query(q1)
             massrate = self.query(q2).__iter__().__next__()[Constants.KEY_MASS_RATE].toPython()
-            pm10massf = []
-            pm25massf = []
 
             for row in qb:
-                diameter = row[Constants.KEY_DIAMETER].toPython()
-                density = row[Constants.KEY_DENSITY].toPython()
-                mass_fraction = float(row[Constants.KEY_MASS_FRACTION])
-                indivrate = mass_fraction * massrate
+                dd = (row[Constants.KEY_DIAMETER].toPython(), row[Constants.KEY_DENSITY].toPython())
+                pol_data.append({Constants.KEY_DIAMETER + Constants.KEY_DENSITY: dd,
+                                 Constants.KEY_MASS_FLOW: float(row[Constants.KEY_MASS_FRACTION]) * massrate,
+                                 Constants.KEY_SRC: src})
+                diam_dens.add(dd)
+            self.em_rates[src] = {}
 
-                if diameter < 0.00001:
-                    pm10D.add(diameter)
-                    pm10Density.add(density)
-                    pm10massf.append(indivrate)
-                    if diameter < 0.0000025:
-                        pm25D.add(diameter)
-                        pm25Density.add(density)
-                        pm25massf.append(indivrate)
-            #SrcPolEmissionRate
-            self.pm10_emrates[src] = sum(pm10massf)
-            self.pm25_emrates[src] = sum(pm25massf)
+        for diam, dens in diam_dens:
+            name = None
+            if diam < 0.00001:
+                name = Constants.POL_PM10 + '-' + str(i)
+                i = i + 1
+                if diam < 0.0000025:
+                    name = Constants.POL_PM25 + '-' + str(k)
+                    k = k + 1
+            if name != None:
+                pol_names[(diam, dens)] = name
+                pols.append(admsPol(name, 1, [diam], [dens], [1.0e+0]))
+                self.pollutants.append(name)
 
-        raw_solpm25 = admsPol(Constants.POL_PM25, len(pm25D), list(pm25D), list(pm25Density), pm_fraction)
-        raw_solpm10 = admsPol(Constants.POL_PM10, len(pm10D), list(pm10D), list(pm10Density), pm_fraction)
+        for pd in pol_data:
+            self.em_rates[pd[Constants.KEY_SRC]][pol_names[pd[Constants.KEY_DIAMETER + Constants.KEY_DENSITY]]] \
+                = pd[Constants.KEY_MASS_FLOW]
 
-        return raw_solpm10, raw_solpm25
+        return pols
 
     def get(self):
         '''main function, get all related info for adms
         returns: complete data for adms
         '''
-        pm10, pm25 = self.getPol()
+        pol = self.get_pol()
 
         # get all src data
         self.rawSrc = self.get_src_data()
@@ -283,10 +288,8 @@ class AdmsInputDataRetriever(object):
         xran, yran = self.range
         grd = xran[0], yran[0], xran[1], yran[1]
 
-        pol = [pm10, pm25]
         bkg = self.getBkg()
 
-        # return {'Src': self.rawSrc, 'Bdn': self.rawBdn, 'Opt': rawOpt, 'Met': met, 'Grd':grd}
         return {'Src': self.rawSrc, 'Opt': rawOpt, 'Met': met, 'Grd': grd, 'Pol': pol, 'Bkg': bkg}
 
     def queryEndpoint(self, str):

@@ -103,6 +103,7 @@ class Constants(object):
     KEY_ER = 'er'
     KEY_V = 'v'
     KEY_O = 'o'
+    KEY_PARSE = 'parse'
 
 
 class QueryStrings(object):
