@@ -22,7 +22,7 @@ function getIdFromNameInResults(name) {
 var FileLinkMap = function (options) {
     var width = $(document).width(),
         height = $(document).height() > 2000 ? $(document).height() : 2000,
-        charge = options.charge || -400,
+        charge = options.charge || -500,
         distance = options.distance || 20,
         nodeR = options.nodeR || 15,
         textSize = options.textSize || 5;
@@ -299,7 +299,7 @@ var FileLinkMap = function (options) {
              console.log("not retaining previous sim")
          
              simulation = d3.forceSimulation()
-             .force("link", d3.forceLink().strength(3).id(function (d) {
+             .force("link", d3.forceLink().strength(2).id(function (d) {
                     return d.id;
                 }))
              .force("charge", d3.forceManyBody().strength(setBodyS))
@@ -944,15 +944,23 @@ WHERE {
 	}
 	UNION
 	{
-		?phase ontokin:containedIn @placeholder .
-		?species ontokin:belongsToPhase ?phase.
-		?species ontokin:hasThermoModel ?thermoModel.
+
+		@placeholder ontokin:hasThermoModel ?thermoModel.
     ?thermoModel ontokin:hasQuantumCalculationIRI ?uri .
 	}
+		UNION
+	{
+	    ?species owl:sameAs  @placeholder .
+		?species ontokin:hasThermoModel ?thermoModel.
+		    ?thermoModel ontokin:hasQuantumCalculationIRI ?uri .
+
+	}
+	
 } LIMIT 200
 `
         ;
-        
+        		//?phase ontokin:containedIn @placeholder .
+		//?species ontokin:belongsToPhase ?phase.
         let query = customQ.replace(/@placeholder/g, "<"+extrairi+">");
         console.log(query)
         
