@@ -6,6 +6,7 @@ from collections import namedtuple
 from caresjpsutil import PythonLogger
 from config import Constants
 from adms_apl_builder import AplDirector, AdmsAplPlantBuilder, AdmsAplShipBuilder
+import geopy.distance
 
 pythonLogger = PythonLogger('adms_processor.py')
 
@@ -22,6 +23,7 @@ class AdmsProcessor(object):
         self.targetCRS = None
         self.precipitation = None
         self.chimney_iri = None
+        self.ship_coordinates_list = None
         self.input = None
         self.coords = None
         self.BDN = None
@@ -57,7 +59,7 @@ class AdmsProcessor(object):
         coordinates[Constants.KEY_MAX_Y] = ymax
 
         return coordinates
-    
+
     def get_washouts(self):
         annual_precipitation = self.precipitation * 365 * 24
 
@@ -72,18 +74,18 @@ class AdmsProcessor(object):
             pm10washout = 0.0072
         else:
             pm10washout = 0.00363
-        
+
         return so2washout, pm10washout
-    
+
     def set_input_ship_src_geo(self, ship_coordinates_list):
         for idx in range(len(ship_coordinates_list)):
             self.input[Constants.KEY_SRC][idx].setCoordinates(ship_coordinates_list[idx])
             self.input[Constants.KEY_SRC][idx].SrcName = Constants.STR_CHIMNEY.format(idx + 1)
-        
+
         latitudemid = (float(self.coords[Constants.KEY_MIN_Y]) + float(self.coords[Constants.KEY_MAX_Y])) / 2
         longitudemid = (float(self.coords[Constants.KEY_MIN_X]) + float(self.coords[Constants.KEY_MAX_X])) / 2
         xmid, ymid = transform(self.targetCRS, self.sourceCRS, longitudemid, latitudemid)
-        
+
         self.input[Constants.KEY_LAT.title()] = ymid
 
     def set_input_ship_indicators(self, args):
@@ -94,14 +96,22 @@ class AdmsProcessor(object):
 
         self.input[Constants.KEY_INDICATOR_CHEM] = 1
         self.input[Constants.KEY_INDICATOR_WET] = 1
-        
-    def set_grid_size(self, args):
-        if str(2326) in args[6][5:]:
-            self.input[Constants.GRD_X] = 80
-            self.input[Constants.GRD_Y] = 80
-        else:
-            self.input[Constants.GRD_X] = 80
-            self.input[Constants.GRD_Y] = 80
+
+    def set_grid_size(self):
+        """
+        Calculate image resolution based on size of the selected area.
+        X, Y are equal and  calculated as function of the distance between upper and lower corner coordinates.
+        :return: None
+        """
+        distance = geopy.distance.distance(transform(self.targetCRS, self.sourceCRS, self.coords[Constants.KEY_MAX_X],
+                                                     self.coords[Constants.KEY_MAX_Y])[::-1],
+                                           transform(self.targetCRS, self.sourceCRS, self.coords[Constants.KEY_MIN_X],
+                                                     self.coords[Constants.KEY_MIN_Y])[::-1]).km
+        # Rounds to 200 for ~35.5km distance, in case of default HK area size,
+        # and to 80 for ~4.5km distance, in case of default SG area size
+        rounded = int(round(distance * 4 + 62, -1))
+        self.input[Constants.GRD_X] = rounded
+        self.input[Constants.GRD_Y] = rounded
 
     def set_input_ship_night(self):
         now = datetime.datetime.now()
@@ -117,8 +127,7 @@ class AdmsProcessor(object):
         self.set_input_ship_src_geo(ship_coordinates_list)
         self.set_input_ship_indicators(args)
         self.set_input_ship_night()
-        self.set_grid_size(args)
-        
+
         self.input[Constants.KEY_MET] = self.working_dir + Constants.FILENAME_MET
         self.input[Constants.KEY_BKG] = self.working_dir + Constants.FILENAME_BGD
 
@@ -136,7 +145,7 @@ class AdmsProcessor(object):
         if self.entity_type == Constants.ENTITY_TYPE_SHIP:
             self.targetCRS = Proj(init=args[6][:4].lower() + args[6][4:])
             self.precipitation = float(str(args[7]))
-            self.chimney_iri = str(args[8]) #should it be changed to the list extractor first?
+            self.chimney_iri = str(args[8])
 
     def get_ship_coordinates(self):
         ship_coordinates_list = []
@@ -161,10 +170,11 @@ class AdmsProcessor(object):
             retriever = admsInputDataRetriever(self.entity, Constants.BLD_TOPNODE, self.coords, pollutants, 2,
                                                Constants.BLD_LIMIT, False, self.BDN)
         elif self.entity_type == Constants.ENTITY_TYPE_SHIP:
-            from admsInputDataRetrieverChimney import AdmsInputDataRetriever
+            self.ship_coordinates_list = self.get_ship_coordinates()
+            from admsInputDataRetrieverChimney import admsInputDataRetriever
             pollutants = [Constants.POL_CO2, Constants.POL_CO, Constants.POL_NO2, Constants.POL_HC, Constants.POL_NOX,
-                          Constants.POL_PART_SO2, Constants.POL_PART_O3]
-            retriever = AdmsInputDataRetriever(self.entity, Constants.BLD_TOPNODE, self.coords, pollutants, 2,
+                          Constants.POL_PART_001, Constants.POL_PART_SO2, Constants.POL_PART_O3]
+            retriever = admsInputDataRetriever(self.entity, Constants.BLD_TOPNODE, self.coords, pollutants, 2,
                                                Constants.BLD_LIMIT, False, self.BDN, self.targetCRS)
         self.input = retriever.get()
 
@@ -172,14 +182,14 @@ class AdmsProcessor(object):
         self.set_vars_from_args(args)
         self.BDN = self.get_bdn(self.bdn_data)
         self.coords = self.get_coordinates(self.coor_data)
-        ship_coordinates_list = self.get_ship_coordinates()
         self.retrieve_input()
 
         if self.entity_type == Constants.ENTITY_TYPE_SHIP:
-            self.modify_input_for_ship(args, ship_coordinates_list)
+            self.modify_input_for_ship(args, self.ship_coordinates_list)
 
         self.input[Constants.KEY_BDN] = self.BDN
         self.input[Constants.KEY_COORD_SYS] = int(self.coord_sys)
+        self.set_grid_size()
 
     def save_apl(self, args):
         self.get_input(args)

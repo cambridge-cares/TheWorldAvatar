@@ -251,10 +251,10 @@ class AdmsInputDataRetriever(object):
 
         for diam, dens in diam_dens:
             name = None
-            if diam < 0.00001:
+            if diam <= 0.00001:
                 name = Constants.POL_PM10 + '-' + str(i)
                 i = i + 1
-                if diam < 0.0000025:
+                if diam <= 0.0000025:
                     name = Constants.POL_PM25 + '-' + str(k)
                     k = k + 1
             if name != None:
