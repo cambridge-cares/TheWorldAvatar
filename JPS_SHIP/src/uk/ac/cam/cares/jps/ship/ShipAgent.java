@@ -401,7 +401,7 @@ public class ShipAgent extends HttpServlet {
 		
 	    //send the info to SRM Engine Agent
 
-		
+		logger.info("iri gotten= "+iri);
 		JSONObject dataSet = new JSONObject();
 		try {
 			dataSet.put("reactionmechanism",  iri) ;
@@ -409,15 +409,16 @@ public class ShipAgent extends HttpServlet {
 			dataSet.put("source", "ship") ;
 			String resultjson="";
 			JSONObject jsonsrmresult=null;
-			logger.info("iri gotten= "+iri);
+			
 			// if there is no reaction mechanism
-			if(iri=="none") {
+			if(!iri.contains("theworldavatar")) {
 				JSONObject jo2 = new JSONObject();
 //				jo2.put("speed",8.0); 
 //				jo2.put("type","passenger");
-				jo2.put("speed",joforrec.getJSONObject("ship").getString("ss"));
-				jo2.put("type",joforrec.getJSONObject("ship").getString("type"));
-				resultjson = AgentCaller.executeGetWithJsonParameter("JPS/SLMAgent", jo2.toString());
+				jo2.put("speed",joforrec.getJSONObject("ship").getDouble("ss"));
+				jo2.put("type",joforrec.getJSONObject("ship").get("type").toString().replace("+", " "));
+				logger.info("type of ship= "+joforrec.getJSONObject("ship").getString("type").replace("+", " "));
+				resultjson = AgentCaller.executeGetWithJsonParameter("JPS_SHIP/SLMAgent", jo2.toString());
 				jsonsrmresult=new JSONObject(resultjson);
 			}
 			else {

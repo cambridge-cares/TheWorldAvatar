@@ -55,7 +55,7 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 		if(valuecalc>2500) {
 			valuecalc=2500;
 		}
-		String type=jo.getString("type");
+		String type=jo.getString("type").toLowerCase();
 		JSONObject speedob= new JSONObject();		
 		speedob.put("value", valuecalc);
 		speedob.put("unit", "RPM");
@@ -115,7 +115,7 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 				pollutantmass.put("value",oldvaluemixmass*697);	
 			}
 			else  {
-				pollutantmass.put("value",oldvaluemixmass);	
+				pollutantmass.put("value",oldvaluemixmass*300);	
 			}
 		}
 		
@@ -138,7 +138,7 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 				particlemass.put("value",oldvaluemixmass*697);	
 			}
 			else  {
-				particlemass.put("value",oldvaluemixmass);	
+				particlemass.put("value",oldvaluemixmass*300);	
 			}
 		}
 		
@@ -160,7 +160,7 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 			mixturemass.put("value",oldvaluemixmass*697);	
 		}
 		else  {
-			mixturemass.put("value",oldvaluemixmass);	
+			mixturemass.put("value",oldvaluemixmass*300);	
 		}
 		return json;
 	}
