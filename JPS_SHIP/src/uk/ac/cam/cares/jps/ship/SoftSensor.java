@@ -197,6 +197,8 @@ public class SoftSensor extends HttpServlet {
 						List<String>concentration=findtheconcentration(simulationResult,realx,realy,realz);
 						
 						String timeinst=listmap.get(v)[1];
+						double sumpm10=0;
+						double sumpm25=0;
 						for (int r = 0; r < concentration.size(); r += 2) {
 							String content[] = new String[9];
 							content[0] = timeinst;
@@ -208,8 +210,39 @@ public class SoftSensor extends HttpServlet {
 							content[6] = "http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MassConcentration";
 							content[7] = concentration.get(r + 1);
 							content[8] = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ug_per_m.m.m";
-							propercsv.add(content);
+							
+							
+							if(content[5].toLowerCase().contains("pm2.5")) {
+								sumpm25=sumpm25+Double.valueOf(content[7]);	
+							}
+							else if(content[5].toLowerCase().contains("pm10")){
+								sumpm10=sumpm10+Double.valueOf(content[7]);	
+							} 
+							else {
+								propercsv.add(content);
+							}	
 						}
+						String content[] = new String[9];
+						content[0] = timeinst;
+						content[1] = "" + x;
+						content[2] = "" + y;
+						content[3] = "" + z;
+						content[4] = "EPSG:2326";
+						content[5] = "PM10"; // later need to be mapped to iri
+						content[6] = "http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MassConcentration";
+						content[7] = String.valueOf(sumpm10+sumpm25);
+						content[8] = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ug_per_m.m.m";
+						propercsv.add(content);
+						content[0] = timeinst;
+						content[1] = "" + x;
+						content[2] = "" + y;
+						content[3] = "" + z;
+						content[4] = "EPSG:2326";
+						content[5] = "PM2.5"; // later need to be mapped to iri
+						content[6] = "http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MassConcentration";
+						content[7] = ""+sumpm25;
+						content[8] = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ug_per_m.m.m";
+						propercsv.add(content);
 					}
 				}
 			}
