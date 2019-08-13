@@ -298,7 +298,8 @@ function makeRadios (selector_id, list, legend) {
 
 //make radio group
 
-const POL_LIST = ['CO2', 'CO', 'NO2', 'HC', 'NOx', 'Particulate001','SO2','O3']
+//const POL_LIST = ['CO2', 'CO', 'NO2', 'HC', 'NOx', 'Particulate001','SO2','O3']
+const POL_LIST = ['CO2', 'CO', 'NO2', 'HC', 'NOx', 'PM10', 'PM2.5','SO2','O3']
 const POL_NUM = POL_LIST.length
 const HEIGHT_NUM = 4
 
