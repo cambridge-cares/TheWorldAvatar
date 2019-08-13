@@ -79,8 +79,8 @@ class AdmsProcessor(object):
 
     def set_input_ship_src_geo(self, ship_coordinates_list):
         for idx in range(len(ship_coordinates_list)):
-            self.input[Constants.KEY_SRC][idx].setCoordinates(ship_coordinates_list[idx])
-            self.input[Constants.KEY_SRC][idx].SrcName = Constants.STR_CHIMNEY.format(idx + 1)
+            if idx in self.input[Constants.KEY_SRC]:
+                self.input[Constants.KEY_SRC][idx].setCoordinates(ship_coordinates_list[idx])
 
         latitudemid = (float(self.coords[Constants.KEY_MIN_Y]) + float(self.coords[Constants.KEY_MAX_Y])) / 2
         longitudemid = (float(self.coords[Constants.KEY_MIN_X]) + float(self.coords[Constants.KEY_MAX_X])) / 2
@@ -145,19 +145,17 @@ class AdmsProcessor(object):
         if self.entity_type == Constants.ENTITY_TYPE_SHIP:
             self.targetCRS = Proj(init=args[6][:4].lower() + args[6][4:])
             self.precipitation = float(str(args[7]))
-            self.chimney_iri = str(args[8])
+            self.chimney_iri = json.loads(args[8])
 
     def get_ship_coordinates(self):
         ship_coordinates_list = []
-        chimney_iri_list = []
 
         for ship in json.loads(self.entity.replace("'", '"')):
             x_coordinate_value = float(ship[Constants.KEY_LON])
             y_coordinate_value = float(ship[Constants.KEY_LAT])
             ship_coordinates_list.append(
                 list(transform(self.sourceCRS, self.targetCRS, x_coordinate_value, y_coordinate_value)))
-            chimney_iri_list.append(self.chimney_iri)
-        self.entity = chimney_iri_list
+        self.entity = self.chimney_iri
 
         return ship_coordinates_list
 
@@ -171,10 +169,10 @@ class AdmsProcessor(object):
                                                Constants.BLD_LIMIT, False, self.BDN)
         elif self.entity_type == Constants.ENTITY_TYPE_SHIP:
             self.ship_coordinates_list = self.get_ship_coordinates()
-            from admsInputDataRetrieverChimney import admsInputDataRetriever
+            from admsInputDataRetrieverChimney import AdmsInputDataRetriever
             pollutants = [Constants.POL_CO2, Constants.POL_CO, Constants.POL_NO2, Constants.POL_HC, Constants.POL_NOX,
-                          Constants.POL_PART_001, Constants.POL_PART_SO2, Constants.POL_PART_O3]
-            retriever = admsInputDataRetriever(self.entity, Constants.BLD_TOPNODE, self.coords, pollutants, 2,
+                          Constants.POL_PART_SO2, Constants.POL_PART_O3]
+            retriever = AdmsInputDataRetriever(self.entity, Constants.BLD_TOPNODE, self.coords, pollutants, 2,
                                                Constants.BLD_LIMIT, False, self.BDN, self.targetCRS)
         self.input = retriever.get()
 

@@ -263,8 +263,9 @@ class AdmsInputDataRetriever(object):
                 self.pollutants.append(name)
 
         for pd in pol_data:
-            self.em_rates[pd[Constants.KEY_SRC]][pol_names[pd[Constants.KEY_DIAMETER + Constants.KEY_DENSITY]]] \
-                = pd[Constants.KEY_MASS_FLOW]
+            pol_key = pd[Constants.KEY_DIAMETER + Constants.KEY_DENSITY]
+            if pol_key in pol_names:
+                self.em_rates[pd[Constants.KEY_SRC]][pol_names[pol_key]] = pd[Constants.KEY_MASS_FLOW]
 
         return pols
 
