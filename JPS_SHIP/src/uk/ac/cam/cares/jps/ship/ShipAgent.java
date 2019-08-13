@@ -343,7 +343,7 @@ public class ShipAgent extends HttpServlet {
 		String iri = null;
 		String mmsi = null;
 		try {
-			iri = joforrec.getString("reactionmechanism");
+			iri = joforrec.optString("reactionmechanism");
 			mmsi=joforrec.getJSONObject("ship").get("mmsi").toString(); //only get the mmsi instead of full iri
 			//mmsi = joforrec.getString("ship");
 
@@ -409,8 +409,9 @@ public class ShipAgent extends HttpServlet {
 			dataSet.put("source", "ship") ;
 			String resultjson="";
 			JSONObject jsonsrmresult=null;
+			logger.info("iri gotten= "+iri);
 			// if there is no reaction mechanism
-			if(iri==null) {
+			if(iri=="none") {
 				JSONObject jo2 = new JSONObject();
 //				jo2.put("speed",8.0); 
 //				jo2.put("type","passenger");

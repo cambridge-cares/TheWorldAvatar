@@ -65,7 +65,7 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServl
         for (int i = 0; i < 5; i++) {
         	logger.info("=================ship agent is called for "+i+" times========================");
             JSONObject jsonReactionShip = new JSONObject();
-            String reactionMechanism = requestParams.getString("reactionmechanism");
+            String reactionMechanism = requestParams.optString("reactionmechanism");
             jsonReactionShip.put("reactionmechanism", reactionMechanism);
             jsonReactionShip.put("ship", jsonShip.getJSONObject("collection").getJSONArray("items").getJSONObject(i));
             
