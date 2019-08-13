@@ -161,10 +161,10 @@ class AdmsProcessor(object):
             retriever = admsInputDataRetriever(self.entity, Constants.BLD_TOPNODE, self.coords, pollutants, 2,
                                                Constants.BLD_LIMIT, False, self.BDN)
         elif self.entity_type == Constants.ENTITY_TYPE_SHIP:
-            from admsInputDataRetrieverChimney import admsInputDataRetriever
+            from admsInputDataRetrieverChimney import AdmsInputDataRetriever
             pollutants = [Constants.POL_CO2, Constants.POL_CO, Constants.POL_NO2, Constants.POL_HC, Constants.POL_NOX,
-                          Constants.POL_PART_001, Constants.POL_PART_SO2, Constants.POL_PART_O3]
-            retriever = admsInputDataRetriever(self.entity, Constants.BLD_TOPNODE, self.coords, pollutants, 2,
+                          Constants.POL_PART_SO2, Constants.POL_PART_O3]
+            retriever = AdmsInputDataRetriever(self.entity, Constants.BLD_TOPNODE, self.coords, pollutants, 2,
                                                Constants.BLD_LIMIT, False, self.BDN, self.targetCRS)
         self.input = retriever.get()
 
