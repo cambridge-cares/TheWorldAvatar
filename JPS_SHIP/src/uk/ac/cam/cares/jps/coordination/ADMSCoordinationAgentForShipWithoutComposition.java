@@ -61,7 +61,8 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServl
         
         String waste =""; //temp to test
         JSONArray newwaste = new JSONArray();
-        for (int i = 0; i < sizeofshipselected; i++) {
+//        for (int i = 0; i < sizeofshipselected; i++) { temporary solution to check whether the loop is ok
+        for (int i = 0; i < 5; i++) {
         	logger.info("=================ship agent is called for "+i+" times========================");
             JSONObject jsonReactionShip = new JSONObject();
             String reactionMechanism = requestParams.getString("reactionmechanism");
