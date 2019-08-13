@@ -356,7 +356,7 @@ public class ShipAgent extends HttpServlet {
 			
 		File stockDir = new File("C:/TOMCAT/webapps/ROOT/kb/ships/" + mmsi);
 		stockDir.mkdir();
-		File source = new File("C:/TOMCAT/webapps/ROOT/kb/ships/Chimney-1.owl");
+		File source = new File("C:/TOMCAT/webapps/ROOT/kb/ships/Chimney-1-temp.owl");
 		File destiny = new File("C:/TOMCAT/webapps/ROOT/kb/ships/" + mmsi + "/Chimney-1.owl");
 		Charset charset = StandardCharsets.UTF_8;
 		String content = new String(Files.readAllBytes(source.toPath()), charset);
