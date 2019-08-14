@@ -145,7 +145,7 @@ class AdmsProcessor(object):
         if self.entity_type == Constants.ENTITY_TYPE_SHIP:
             self.targetCRS = Proj(init=args[6][:4].lower() + args[6][4:])
             self.precipitation = float(str(args[7]))
-            self.chimney_iri = json.loads(args[8])
+            self.chimney_iri = json.loads(args[8].replace("'", '"'))
 
     def get_ship_coordinates(self):
         ship_coordinates_list = []
