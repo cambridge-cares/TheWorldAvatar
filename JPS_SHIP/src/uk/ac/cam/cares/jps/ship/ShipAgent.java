@@ -354,8 +354,15 @@ public class ShipAgent extends HttpServlet {
 				
 		jenaOwlModel = ModelFactory.createOntologyModel();	
 			
+		
 		File stockDir = new File("C:/TOMCAT/webapps/ROOT/kb/ships/" + mmsi);
+		if (! stockDir.exists()){
 		stockDir.mkdir();
+		}
+		File[] listOfFiles = stockDir.listFiles();
+		for (int i = 0; i < listOfFiles.length; i++) {
+			listOfFiles[i].delete();
+		}
 		File source = new File("C:/TOMCAT/webapps/ROOT/kb/ships/Chimney-1-temp.owl");
 		File destiny = new File("C:/TOMCAT/webapps/ROOT/kb/ships/" + mmsi + "/Chimney-1.owl");
 		Charset charset = StandardCharsets.UTF_8;
@@ -364,6 +371,8 @@ public class ShipAgent extends HttpServlet {
 				"http://www.theworldavatar.com/kb/ships/" + mmsi + "/Chimney-1.owl");
 		Files.write(destiny.toPath(), content.getBytes(charset));
 				//finished create owl file based on this iri()
+		
+		//TODO need to register to database soon also!!
 		
 		
 		cpirilist2.add("http://www.theworldavatar.com/kb/ships/Engine-001.owl#Engine-001");
