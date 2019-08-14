@@ -124,8 +124,12 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 		for(int part=0;part<json.getJSONArray("particle").length();part++) {
 			JSONObject particlemass=json.getJSONArray("particle").getJSONObject(part).getJSONObject("emission_rate");
 			Double oldvaluemixmass= particlemass.getDouble("value");
+			JSONObject particleD=json.getJSONArray("particle").getJSONObject(part).getJSONObject("diameter");
+			Double oldvaluemixD= particleD.getDouble("value");
+			particleD.put("value",(double)Math.round(oldvaluemixD * 1000d) / 1000d);
 			if(type.contains("cargo")) {
-				particlemass.put("value",oldvaluemixmass*322);	
+				
+				particlemass.put("value",oldvaluemixmass*322);
 			}
 			else if(type.contains("tanker")) {
 				particlemass.put("value",oldvaluemixmass*430);	
