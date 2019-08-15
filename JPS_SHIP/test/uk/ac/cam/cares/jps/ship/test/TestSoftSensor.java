@@ -53,7 +53,10 @@ public class TestSoftSensor extends TestCase {
 		SoftSensor a= new SoftSensor();
 		String csv = new QueryBroker().readFile(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/test.levels.csv");
 		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
-		double x=822082.44;
+//		double x=822082.44;
+//		double y=809548.75;
+//		double z=0.0;
+		double x=823682.44;
 		double y=809548.75;
 		double z=0.0;
 		String timeinst="just general timestamp";
@@ -126,8 +129,10 @@ public class TestSoftSensor extends TestCase {
 		
 		JSONObject dataSet = new JSONObject(new JenaResultSetFormatter().createJSONfromCSV(propercsv,headertype));
 		System.out.println(dataSet.toString());
-		assertEquals(585014.1000000001, Double.valueOf(content2[7])); //pm10 amount
-		assertEquals(585029.5000000001, Double.valueOf(content[7]));  //pm2.5 amount
+//		assertEquals(585014.1000000001, Double.valueOf(content2[7])); //pm10 amount
+//		assertEquals(585029.5000000001, Double.valueOf(content[7]));  //pm2.5 amount
+		assertEquals(585013.5399999999, Double.valueOf(content2[7])); //pm10 amount
+		assertEquals(585028.5399999999, Double.valueOf(content[7]));  //pm2.5 amount
 		
 	}
 
