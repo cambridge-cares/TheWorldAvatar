@@ -233,16 +233,17 @@ public class SoftSensor extends HttpServlet {
 						content[7] = String.valueOf(sumpm10+sumpm25);
 						content[8] = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ug_per_m.m.m";
 						propercsv.add(content);
-						content[0] = timeinst;
-						content[1] = "" + x;
-						content[2] = "" + y;
-						content[3] = "" + z;
-						content[4] = "EPSG:2326";
-						content[5] = "PM2.5"; // later need to be mapped to iri
-						content[6] = "http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MassConcentration";
-						content[7] = ""+sumpm25;
-						content[8] = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ug_per_m.m.m";
-						propercsv.add(content);
+						String content2[] = new String[9];
+						content2[0] = timeinst;
+						content2[1] = "" + x;
+						content2[2] = "" + y;
+						content2[3] = "" + z;
+						content2[4] = "EPSG:2326";
+						content2[5] = "PM2.5"; // later need to be mapped to iri
+						content2[6] = "http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MassConcentration";
+						content2[7] = ""+sumpm25;
+						content2[8] = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ug_per_m.m.m";
+						propercsv.add(content2);
 					}
 				}
 			}
@@ -258,9 +259,7 @@ public class SoftSensor extends HttpServlet {
 
 			String[]headertype= {"xsd:dateTime","xsd:number","xsd:number","xsd:number","literal","literal","uri","xsd:number","uri"};
 			
-			//System.out.println("result 1st of entities= "+dir.get(0));
-			//System.out.println("result number of entities= "+queryresult);
-			System.out.println("result csv format= "+arrayinstring);
+			//System.out.println("result csv format= "+arrayinstring);
 			
 			//System.out.println("result json format= "+new JenaResultSetFormatter().createJSONfromCSV(propercsv,headertype));
 			JSONObject dataSet = new JSONObject(new JenaResultSetFormatter().createJSONfromCSV(propercsv,headertype));
