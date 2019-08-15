@@ -12,10 +12,10 @@ NOx
 NO2
 O3
 SO2
-PM10
-PM2.5
+PM2.5-0
+PM2.5-1
 CO
-Particulate001
+PM10-2
 
 UNITS:
 ppb
@@ -26,7 +26,7 @@ ppb
 ug/m3
 ug/m3
 ppb
-ppb
+ug/m3
 
 DATA:
 %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
@@ -55,10 +55,10 @@ try:
 	no2conc=30
 	o3conc=10
 	so2conc=15.13
-	pm10conc=56.3
-	pm25conc=8
+	pm251conc=4
+	pm252conc=4
 	coconc=1222
-	particulateconc=64.3
+	pm102conc=48.3
 # 	
 # 	cloudCover = bgdData['hascloudcover']['hascloudcovervalue']
 # 	cloudCover = (float(cloudCover) / 100) * 8
@@ -80,7 +80,7 @@ except:
 try:
 	metpath = str(fullPath)+"/testbackgrnd.bgd"
 	with open(metpath, 'w') as file:
-		result =  template%(yearnow,tt.tm_yday,hournow,co2conc,noxconc,no2conc,o3conc,so2conc,pm10conc,pm25conc,coconc,particulateconc)
+		result =  template%(yearnow,tt.tm_yday,hournow,co2conc,noxconc,no2conc,o3conc,so2conc,pm251conc,pm252conc,coconc,pm102conc)
 		file.write(result)
 		file.close()
 	print("SUCCESS: BGD File is Created")

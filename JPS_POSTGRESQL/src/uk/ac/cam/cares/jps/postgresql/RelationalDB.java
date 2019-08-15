@@ -7,11 +7,13 @@ import org.slf4j.LoggerFactory;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import java.sql.*;
 import java.time.Instant;
+import java.util.ArrayList;
 
 //@todo: use query builder to build queries (there are many reasons for that)
 public class RelationalDB {
     private static final String KEY_COLLECTION = "collection";
     private static final String KEY_ITEMS = "items";
+    private static final String KEY_MMSI = "mmsi";
     private static final String url = "jdbc:postgresql:adms_ships";
     private static final String user = "postgres";
     private static final String password = "postgres";
@@ -98,9 +100,9 @@ public class RelationalDB {
                 "INNER JOIN ship_details sd ON ship.mmsi = sd.ship_mmsi " +
                 "WHERE (lat BETWEEN ? AND ?) " +
                 "AND (lon BETWEEN ? AND ?) " +
-               // "AND (ts >= ? or tst >= ?) " + [patch solution because database is down]
+                "AND (ts >= ? or tst >= ?) " +
                 "ORDER BY ss DESC, al DESC, aw DESC " +
-                "LIMIT 300";
+                "LIMIT 10";
 
         try {
             Instant instant = Instant.now();
@@ -112,9 +114,9 @@ public class RelationalDB {
             pstmt.setDouble(2, ymax);
             pstmt.setDouble(3, xmin);
             pstmt.setDouble(4, xmax);
-           // pstmt.setLong(5, epoch_back); [patch solution because database is down]
-           // pstmt.setLong(6, epoch_back); [patch solution because database is down]
-            results = preparedStatementResultsToJsonArray(pstmt);
+            pstmt.setLong(5, epoch_back);
+            pstmt.setLong(6, epoch_back);
+            results = preparedStatementResultsToJsonArray(pstmt, true, KEY_MMSI);
         } catch (SQLException ex) {
             logger.error(ex.getMessage(), ex);
             throw new JPSRuntimeException(ex.getMessage(), ex);
@@ -141,7 +143,8 @@ public class RelationalDB {
      * @param pstmt PreparedStatement
      * @return JSONStringer results
      */
-    private static JSONStringer preparedStatementResultsToJsonArray(PreparedStatement pstmt) {
+    private static JSONStringer preparedStatementResultsToJsonArray(PreparedStatement pstmt,
+                                                                    Boolean removeDupes, String dupColumn) {
         JSONStringer results = new JSONStringer();
 
         try {
@@ -149,15 +152,30 @@ public class RelationalDB {
             ResultSetMetaData rsmd = rs.getMetaData();
             results.object().key(KEY_COLLECTION).object().key(KEY_ITEMS);
             results.array();
+            ArrayList dupesRef = new ArrayList<>();
 
             while (rs.next()) {
                 int numColumns = rsmd.getColumnCount();
                 JSONObject obj = new JSONObject();
+                Boolean dupe = false;
                 for (int i = 1; i <= numColumns; i++) {
                     String column_name = rsmd.getColumnName(i);
-                    obj.put(column_name, rs.getObject(column_name));
+                    Object column_value = rs.getObject(column_name);
+                    if (removeDupes && column_name.equals(dupColumn)) {
+                        if (!dupesRef.contains(column_value)) {
+                            obj.put(column_name, column_value);
+                            dupesRef.add(column_value);
+                        } else {
+                            dupe = true;
+                            break;
+                        }
+                    } else {
+                        obj.put(column_name, rs.getObject(column_name));
+                    }
                 }
-                results.value(obj);
+                if (!dupe) {
+                    results.value(obj);
+                }
             }
             results.endArray().endObject().endObject();
 
@@ -168,5 +186,7 @@ public class RelationalDB {
 
         return results;
     }
+
+
 }
 
