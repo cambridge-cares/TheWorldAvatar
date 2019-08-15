@@ -22,7 +22,6 @@ class AdmsProcessor(object):
         self.coord_sys = None
         self.targetCRS = None
         self.precipitation = None
-        self.chimney_iri = None
         self.ship_coordinates_list = None
         self.input = None
         self.coords = None
@@ -145,7 +144,6 @@ class AdmsProcessor(object):
         if self.entity_type == Constants.ENTITY_TYPE_SHIP:
             self.targetCRS = Proj(init=args[6][:4].lower() + args[6][4:])
             self.precipitation = float(str(args[7]))
-            self.chimney_iri = json.loads(args[8].replace("'", '"'))
 
     def get_ship_coordinates(self):
         ship_coordinates_list = []
@@ -155,7 +153,6 @@ class AdmsProcessor(object):
             y_coordinate_value = float(ship[Constants.KEY_LAT])
             ship_coordinates_list.append(
                 list(transform(self.sourceCRS, self.targetCRS, x_coordinate_value, y_coordinate_value)))
-        self.entity = self.chimney_iri
 
         return ship_coordinates_list
 
@@ -172,7 +169,7 @@ class AdmsProcessor(object):
             from admsInputDataRetrieverChimney import AdmsInputDataRetriever
             pollutants = [Constants.POL_CO2, Constants.POL_CO, Constants.POL_NO2, Constants.POL_HC, Constants.POL_NOX,
                           Constants.POL_PART_SO2, Constants.POL_PART_O3]
-            retriever = AdmsInputDataRetriever(self.entity, Constants.BLD_TOPNODE, self.coords, pollutants, 2,
+            retriever = AdmsInputDataRetriever(json.loads(self.entity.replace("'", '"')), Constants.BLD_TOPNODE, self.coords, pollutants, 2,
                                                Constants.BLD_LIMIT, False, self.BDN, self.targetCRS)
         self.input = retriever.get()
 

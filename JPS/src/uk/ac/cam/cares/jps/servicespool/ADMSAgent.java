@@ -36,6 +36,7 @@ public class ADMSAgent extends JPSHttpServlet {
     private static final String DATA_KEY_ITEMS = "items";
     private static final String DATA_KEY_LAT = "lat";
     private static final String DATA_KEY_LON = "lon";
+    private static final String DATA_KEY_MMSI = "mmsi";
     private static final String FILENAME_ADMS_PROCESSOR = "adms_processor.py";
 
     private void setLogger() {
@@ -85,16 +86,8 @@ public class ADMSAgent extends JPSHttpServlet {
                 QueryBroker broker = new QueryBroker();
                 broker.put(fullPath + "/arbitrary.txt", "text to assign something arbitrary");
                 String coordinates = new Gson().toJson(coords.toString());
-                JSONArray chimney = new JSONArray();
-                if (requestParams.has(PARAM_KEY_CHIMNEY)) {
-                    //chimney = requestParams.getString(PARAM_KEY_CHIMNEY);
-                	for(int d=0;d<requestParams.getJSONArray(PARAM_KEY_CHIMNEY).length();d++) {
-                		chimney.put(requestParams.getJSONArray(PARAM_KEY_CHIMNEY).getString(d));
-                	}
-                	
-                }
 
-                writeAPLFileShip(PARAM_KEY_SHIP, newBuildingData, coordinates, newRegion, targetCRSName, fullPath, precipitation, chimney);
+                writeAPLFileShip(PARAM_KEY_SHIP, newBuildingData, coordinates, newRegion, targetCRSName, fullPath, precipitation);
                 writeMetFile(weather, fullPath);
                 writeBkgFile(bkgjson, fullPath);
 
@@ -216,6 +209,7 @@ public class ADMSAgent extends JPSHttpServlet {
                         JSONObject latlon = new JSONObject();
                         latlon.put(DATA_KEY_LAT, item.getDouble(DATA_KEY_LAT));
                         latlon.put(DATA_KEY_LON, item.getDouble(DATA_KEY_LON));
+                        latlon.put(DATA_KEY_MMSI, item.get(DATA_KEY_MMSI));
                         coordinates.put(latlon);
                     }
                 }
@@ -284,7 +278,7 @@ public class ADMSAgent extends JPSHttpServlet {
         return result;
     }
 
-    public String writeAPLFileShip(String entityType, String buildingInString, String plantIRI, JSONObject regionInJSON, String targetCRSName, String fullPath, String precipitation, JSONArray chimney) {
+    public String writeAPLFileShip(String entityType, String buildingInString, String plantIRI, JSONObject regionInJSON, String targetCRSName, String fullPath, String precipitation) {
 
         //fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
 
@@ -314,7 +308,6 @@ public class ADMSAgent extends JPSHttpServlet {
         args.add(targetCRSName);
         logger.info(targetCRSName);
         args.add(precipitation);
-        args.add(chimney.toString());
         // TODO-AE use PythonHelper instead of CommandHelper
         String result = CommandHelper.executeCommands(targetFolder, args);
         logger.info("ARGUMENTS");
