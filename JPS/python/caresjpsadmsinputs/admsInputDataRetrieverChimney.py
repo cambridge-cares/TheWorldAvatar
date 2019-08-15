@@ -208,7 +208,7 @@ class AdmsInputDataRetriever(object):
         '''
         # finish writing met
         metpath = "C://JPS_DATA/workingdir/JPS/ADMS/test.met"  # later it will be replaced, just ignored
-        self.pythonLogger.postInfoToLogServer('path for adms met file=' + metpath)
+        #self.pythonLogger.postInfoToLogServer('path for adms met file=' + metpath)
         return metpath
 
     def getBkg(self):
@@ -218,7 +218,7 @@ class AdmsInputDataRetriever(object):
         '''
         # finish writing met
         bkgpath = "C://JPS_DATA/workingdir/JPS/ADMS/testbackgrnd.bkg"  # later it will be replaced, just ignored
-        self.pythonLogger.postInfoToLogServer('path for adms bkg file=' + bkgpath)
+        #self.pythonLogger.postInfoToLogServer('path for adms bkg file=' + bkgpath)
         return bkgpath
 
     def get_pol(self):

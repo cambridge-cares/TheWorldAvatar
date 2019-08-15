@@ -78,7 +78,6 @@ class AdmsProcessor(object):
 
     def set_input_ship_src_geo(self, ship_coordinates_list):
         for idx in range(len(ship_coordinates_list)):
-            if idx in self.input[Constants.KEY_SRC]:
                 self.input[Constants.KEY_SRC][idx].setCoordinates(ship_coordinates_list[idx])
 
         latitudemid = (float(self.coords[Constants.KEY_MIN_Y]) + float(self.coords[Constants.KEY_MAX_Y])) / 2
@@ -141,8 +140,8 @@ class AdmsProcessor(object):
         self.entity = str(args[4])
         self.working_dir = str(args[5])
         self.coord_sys = args[6][5:]
+        self.targetCRS = Proj(init=args[6][:4].lower() + args[6][4:])
         if self.entity_type == Constants.ENTITY_TYPE_SHIP:
-            self.targetCRS = Proj(init=args[6][:4].lower() + args[6][4:])
             self.precipitation = float(str(args[7]))
 
     def get_ship_coordinates(self):

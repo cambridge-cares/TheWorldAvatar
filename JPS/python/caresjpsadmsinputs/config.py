@@ -44,7 +44,7 @@ class Constants(object):
     KEY_DIR_NIGHT = KEY_DIR + KEY_NIGHT
     KEY_INDEX = 'index'
     KEY_COUNT = 'count'
-    STR_CHIMNEY = "/Chimney-1"
+    STR_CHIMNEY = "/Chimney-1.owl"
     POL_CO2 = 'CO2'
     POL_NOX = 'NOx'
     POL_NO2 = 'NO2'
