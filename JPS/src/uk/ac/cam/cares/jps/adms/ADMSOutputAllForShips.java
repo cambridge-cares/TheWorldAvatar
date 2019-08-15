@@ -49,30 +49,21 @@ public class ADMSOutputAllForShips extends HttpServlet {
 		
 		
 		int startcontentindex=7;
-		int sizeofpol2=startcontentindex;
-		ArrayList<String> listofpol = new ArrayList<String>();	
-			
-		while (Double.valueOf(simulationResult.get(0)[sizeofpol2].split("Z=")[1].split("m")[0])
-				- Double.valueOf(simulationResult.get(0)[startcontentindex].split("Z=")[1].split("m")[0]) == 0.0) {	
-			sizeofpol2++;
-			listofpol.add(simulationResult.get(0)[sizeofpol2].split("\\|")[2]);
-		}
-	
-		int sizeofpol=(sizeofpol2-startcontentindex);  //number of polluttant (e.g:CO2,CO,NO2,..etc) with ozone and so2
+		int sizeofpol = findHowManyPol(simulationResult, startcontentindex);  //number of polluttant (e.g:CO2,CO,NO2,..etc) with ozone and so2
 		logger.info("number of pollutant= "+sizeofpol);
 		
 		int heightamount=(simulationResult.get(0).length-startcontentindex)/sizeofpol;//height variation level amount (e.g:0m,10m,20m,30m) currently 4
 		
 		
-		
-		ArrayList<String[]> copier=new ArrayList<String[]>();
-		String[]headerold=simulationResult.get(0);
-		int size=headerold.length;
-		String[]header=new String[size];
-		for(int w=0;w<size;w++) {
-			header[w]=headerold[w];
-		}
-		copier.add(simulationResult.get(0));
+//		TODO IS IT NEEDED IN THE FUTURE TO CHANGE THE GST PHYSICALLY????
+//		ArrayList<String[]> copier=new ArrayList<String[]>();
+//		String[]headerold=simulationResult.get(0);
+//		int size=headerold.length;
+//		String[]header=new String[size];
+//		for(int w=0;w<size;w++) {
+//			header[w]=headerold[w];
+//		}
+//		copier.add(simulationResult.get(0));
 		
 		
 		
@@ -93,5 +84,19 @@ public class ADMSOutputAllForShips extends HttpServlet {
 		logger.debug("=== Result === :" + result);
 		response.setContentType("application/json");
 		response.getWriter().write(result);
+	}
+
+	public int findHowManyPol(List<String[]> simulationResult, int startcontentindex) {
+		int sizeofpol2=startcontentindex;
+		ArrayList<String> listofpol = new ArrayList<String>();	
+			
+		while (Double.valueOf(simulationResult.get(0)[sizeofpol2].split("Z=")[1].split("m")[0])
+				- Double.valueOf(simulationResult.get(0)[startcontentindex].split("Z=")[1].split("m")[0]) == 0.0) {	
+			sizeofpol2++;
+			listofpol.add(simulationResult.get(0)[sizeofpol2].split("\\|")[2]);
+		}
+	
+		int sizeofpol=(sizeofpol2-startcontentindex);
+		return sizeofpol;
 	}
 }
