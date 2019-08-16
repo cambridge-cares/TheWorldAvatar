@@ -43,6 +43,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.sparql.JenaModelWrapper;
@@ -56,6 +58,8 @@ import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 @WebServlet("/ShipAgent")
 public class ShipAgent extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private static final String CHIMNEY = "Chimney-1";
+	private static final String OWL_CHIMNEY = CHIMNEY + ".owl";
 	private Logger logger = LoggerFactory.getLogger(ShipAgent.class);
 	
 	OntModel jenaOwlModel = null;
@@ -339,45 +343,47 @@ public class ShipAgent extends HttpServlet {
 	    logger.info("ship agent is called");
 	    
 		JSONObject joforrec = AgentCaller.readJsonParameter(request);
-		System.out.println("json accepted= "+joforrec.toString());
+		String baseURL = IKeys.URL_SCHEME + IKeys.HOST + IKeys.PORT;
+		String shipKbURL = baseURL + IKeys.PATH_KNOWLEDGEBASE_SHIPS;
 		String iri = null;
 		String mmsi = null;
+
 		try {
 			iri = joforrec.optString("reactionmechanism");
 			mmsi=joforrec.getJSONObject("ship").get("mmsi").toString(); //only get the mmsi instead of full iri
-			//mmsi = joforrec.getString("ship");
-
 		} catch (JSONException e1) {
 			logger.error(e1.getMessage(), e1);
 			e1.printStackTrace();
 		} 
 				
-		jenaOwlModel = ModelFactory.createOntologyModel();	
-			
-		
-		File stockDir = new File("C:/TOMCAT/webapps/ROOT/kb/ships/" + mmsi);
+		jenaOwlModel = ModelFactory.createOntologyModel();
+
+		String shipKbDir = KeyValueManager.get(IKeys.ABSDIR_ROOT + IKeys.PATH_KNOWLEDGEBASE_SHIPS);
+		File stockDir = new File(shipKbDir + mmsi);
+
 		if (! stockDir.exists()){
-		stockDir.mkdir();
+			stockDir.mkdir();
 		}
 		File[] listOfFiles = stockDir.listFiles();
 		for (int i = 0; i < listOfFiles.length; i++) {
 			listOfFiles[i].delete();
 		}
-		File source = new File("C:/TOMCAT/webapps/ROOT/kb/ships/Chimney-1-temp.owl");
-		File destiny = new File("C:/TOMCAT/webapps/ROOT/kb/ships/" + mmsi + "/Chimney-1.owl");
+		File source = new File(shipKbDir + "/" + CHIMNEY + "-temp.owl");
+		File destiny = new File(shipKbDir + mmsi + "/" + OWL_CHIMNEY);
 		Charset charset = StandardCharsets.UTF_8;
 		String content = new String(Files.readAllBytes(source.toPath()), charset);
-		content = content.replaceAll("http://www.theworldavatar.com/kb/ships/Chimney-1.owl",
-				"http://www.theworldavatar.com/kb/ships/" + mmsi + "/Chimney-1.owl");
+
+		content = content.replaceAll(shipKbURL + OWL_CHIMNEY,
+				shipKbURL + mmsi + "/" + OWL_CHIMNEY);
 		Files.write(destiny.toPath(), content.getBytes(charset));
 				//finished create owl file based on this iri()
 		
 		//TODO need to register to database soon also!!
 		
 		
-		cpirilist2.add("http://www.theworldavatar.com/kb/ships/Engine-001.owl#Engine-001");
+		cpirilist2.add(shipKbURL + "Engine-001.owl#Engine-001");
 
-		jenaOwlModel.read("http://www.theworldavatar.com/kb/ships/"+mmsi+"/Chimney-1.owl#Chimney-1");
+		jenaOwlModel.read(shipKbURL + mmsi + "/" + OWL_CHIMNEY + "#"  + CHIMNEY);
 		
 		
 		String wasteStreamInfo = "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#> " + 
@@ -436,7 +442,7 @@ public class ShipAgent extends HttpServlet {
 			}
 	
 //			startConversion(cpirilist.get(0),jsonsrmresult);
-			startConversion("http://www.theworldavatar.com/kb/ships/"+mmsi+"/Chimney-1.owl#Chimney-1",jsonsrmresult);
+			startConversion(shipKbURL + mmsi + "/" + OWL_CHIMNEY + "#" + CHIMNEY, jsonsrmresult);
 			
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

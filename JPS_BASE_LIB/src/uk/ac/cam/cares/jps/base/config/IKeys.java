@@ -2,16 +2,19 @@ package uk.ac.cam.cares.jps.base.config;
 
 public interface IKeys {
 
-	public static final String HOST = "host";
-	public static final String PORT = "port";
+	String HOST = "host";
+	String PORT = "port";
 	
-	public static final String URL_BUILDINGSQUERY_BERLIN = "url.buildingsquery.berlin";
-	public static final String URL_BUILDINGSQUERY_THEHAGUE = "url.buildingsquery.thehague";
-	public static final String URL_BUILDINGSQUERY_SINGAPORE = "url.buildingsquery.singapore";
-	public static final String URL_BUILDINGSQUERY_HONGKONG = "url.buildingsquery.hongkong";
+	String URL_BUILDINGSQUERY_BERLIN = "url.buildingsquery.berlin";
+	String URL_BUILDINGSQUERY_THEHAGUE = "url.buildingsquery.thehague";
+	String URL_BUILDINGSQUERY_SINGAPORE = "url.buildingsquery.singapore";
+	String URL_BUILDINGSQUERY_HONGKONG = "url.buildingsquery.hongkong";
 	
-	public static final String URL_POSITIONQUERY = "url.positionquery"; 
-	public static final String URL_RDF_METADATA = "url.rdf.metadata";
+	String URL_POSITIONQUERY = "url.positionquery";
+	String URL_RDF_METADATA = "url.rdf.metadata";
 	
-	public static final String SCENARIO_USECASEDIRECTORY_SEPARATOR = "scenario.usecasedirectory.separator";
+	String SCENARIO_USECASEDIRECTORY_SEPARATOR = "scenario.usecasedirectory.separator";
+	String ABSDIR_ROOT =  "absdir.root";
+	String PATH_KNOWLEDGEBASE_SHIPS = "reldir.knowledgebase.ships";
+	String URL_SCHEME = "url.scheme";
 }
