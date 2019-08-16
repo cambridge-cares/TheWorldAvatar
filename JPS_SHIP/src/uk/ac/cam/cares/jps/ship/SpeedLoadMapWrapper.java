@@ -29,9 +29,10 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 	//if(!source.contains("none")) {
 	
 	/*
-	 * http://betterboat.com/average-boat-speed/ assume fastest medium boat max
-	 * speed= 25knot max rpm= 2500 rpm torque=constant=250Nm then 1knot=100 rpm rpm=
-	 * knot*100 roughly 1 ship 33 kg/h 1 boat= 1.1338650741577147e-05*3600 = 0.041
+	 * http://betterboat.com/average-boat-speed/ assume fastest medium boat 
+	 * max speed= 25knot max rpm= 2500 rpm torque=constant=250Nm then 1knot=100 rpm rpm=
+	 * https://www.marineinsight.com/shipping-news/worlds-fastest-ship-built-tasmania-christened-argentinas-president/->fastest=58.1 knot
+	 * knot*2500/58.1 roughly 1 ship 33 kg/h 1 boat= 1.1338650741577147e-05*3600 = 0.041
 	 * kg/h NO2 (comparison of NO2
 	 * https://pdfs.semanticscholar.org/1bd2/52f2ae1ede131d0ef84ee21c84a73fb6b374.pdf) 
 	 * 1 boat mass flux=0.0192143028723584 kg/s 
@@ -50,8 +51,11 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 		
 		JSONObject jo = AgentCaller.readJsonParameter(request);
 		JSONObject in= new JSONObject();
-		double valuecalc=jo.getDouble("speed")*100;
-		String type=jo.getString("type");
+		double valuecalc=jo.getDouble("speed")*2500/58.1;
+		if(valuecalc>2500) {
+			valuecalc=2500;
+		}
+		String type=jo.getString("type").toLowerCase();
 		JSONObject speedob= new JSONObject();		
 		speedob.put("value", valuecalc);
 		speedob.put("unit", "RPM");
@@ -110,6 +114,9 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 			else if(type.contains("passenger")) {
 				pollutantmass.put("value",oldvaluemixmass*697);	
 			}
+			else  {
+				pollutantmass.put("value",oldvaluemixmass*300);	
+			}
 		}
 		
 		
@@ -117,8 +124,12 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 		for(int part=0;part<json.getJSONArray("particle").length();part++) {
 			JSONObject particlemass=json.getJSONArray("particle").getJSONObject(part).getJSONObject("emission_rate");
 			Double oldvaluemixmass= particlemass.getDouble("value");
+			JSONObject particleD=json.getJSONArray("particle").getJSONObject(part).getJSONObject("diameter");
+			Double oldvaluemixD= particleD.getDouble("value");
+			particleD.put("value",(double)Math.round(oldvaluemixD * 1000d) / 1000d);
 			if(type.contains("cargo")) {
-				particlemass.put("value",oldvaluemixmass*322);	
+				
+				particlemass.put("value",oldvaluemixmass*322);
 			}
 			else if(type.contains("tanker")) {
 				particlemass.put("value",oldvaluemixmass*430);	
@@ -129,6 +140,9 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 			}
 			else if(type.contains("passenger")) {
 				particlemass.put("value",oldvaluemixmass*697);	
+			}
+			else  {
+				particlemass.put("value",oldvaluemixmass*300);	
 			}
 		}
 		
@@ -148,6 +162,9 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 		}
 		else if(type.contains("passenger")) {
 			mixturemass.put("value",oldvaluemixmass*697);	
+		}
+		else  {
+			mixturemass.put("value",oldvaluemixmass*300);	
 		}
 		return json;
 	}

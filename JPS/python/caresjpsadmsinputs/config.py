@@ -27,6 +27,7 @@ class Constants(object):
     KEY_COORD_SYS = 'CoordiSys'
     KEY_LAT = 'lat'
     KEY_LON = 'lon'
+    KEY_MMSI = 'mmsi'
     KEY_SRC = 'Src'
     KEY_GRD = 'Grd'
     KEY_OPT = 'Opt'
@@ -43,7 +44,7 @@ class Constants(object):
     KEY_DIR_NIGHT = KEY_DIR + KEY_NIGHT
     KEY_INDEX = 'index'
     KEY_COUNT = 'count'
-    STR_CHIMNEY = "Chimney-{0}"
+    STR_CHIMNEY = "/Chimney-1.owl"
     POL_CO2 = 'CO2'
     POL_NOX = 'NOx'
     POL_NO2 = 'NO2'
@@ -104,6 +105,7 @@ class Constants(object):
     KEY_V = 'v'
     KEY_O = 'o'
     KEY_PARSE = 'parse'
+    IRI_KB_SHIPS = "http://www.theworldavatar.com/kb/ships/"
 
 
 class QueryStrings(object):
@@ -155,8 +157,8 @@ class QueryStrings(object):
                 PREFIX material: <''' + Constants.OWL_MATERIAL + '''>
                 PREFIX substance:<''' + Constants.OWL_SUBSTANCE + '''>
                 
-                SELECT distinct ?''' + Constants.KEY_O + ''' ?''' + Constants.KEY_DIAMETER + ''' ?temp ?height ?massflow ?heatcapa ?''' \
-                                                                       + Constants.KEY_DENSITY + ''' ?moleweight
+                SELECT distinct ?''' + Constants.KEY_O + ''' ?''' + Constants.KEY_DIAMETER \
+                        + ''' ?temp ?height ?massflow ?heatcapa ?''' + Constants.KEY_DENSITY + ''' ?moleweight
                 WHERE {
                 
                     ?o plant:hasHeight ?he.

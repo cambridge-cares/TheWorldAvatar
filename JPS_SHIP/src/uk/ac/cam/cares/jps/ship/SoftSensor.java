@@ -174,12 +174,11 @@ public class SoftSensor extends HttpServlet {
 			List<String[]>propercsv=new ArrayList<String[]>();
 			String[]header= {"time","x","y","z","crs","pollutant","observes","value","unit"};
 			propercsv.add(header);
-			//System.out.println("directorysize= "+map.get("directory").size());
+			logger.info("size= "+listmap.size());
 			for(int v=1;v<listmap.size();v++) {
+				System.out.println("agent involved= "+listmap.get(v)[2]);
 				File name = new File(listmap.get(v)[0]);
 				if(name.exists()&&name.length()!=0) {
-					System.out.println("agent involved= "+listmap.get(v)[2]);
-					
 					String csv = new QueryBroker().readFile(listmap.get(v)[0]);
 					List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
 					

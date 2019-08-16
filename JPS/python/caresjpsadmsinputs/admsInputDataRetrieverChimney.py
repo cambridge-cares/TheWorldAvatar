@@ -62,21 +62,22 @@ class AdmsInputDataRetriever(object):
         q2 = prepareQuery(QueryStrings.SPARQL_CONTENT)
         q3 = prepareQuery(QueryStrings.SPARQL_ERATE)
 
-        for uri in self.topnode:
-            self.connectDB(uri, connectType='parse')
+        for src in self.topnode:
+            iri = self.connectChimneyDB(src)
             qdata = self.query(q1)
             qdataC = self.query(q2)
             qdataERate = self.query(q3)
 
-            aresult, sorteder, pollutantnames = self.get_new_src_data(uri, qdata, qdataC, qdataERate)
+            aresult, sorteder, pollutantnames = self.get_new_src_data(iri, qdata, qdataC, qdataERate)
 
-            new_src = admsSrc(SrcName=aresult[Constants.KEY_O].toPython(),
+            new_src = admsSrc(SrcName=str(src[Constants.KEY_MMSI]),
                               SrcHeight=aresult[Constants.KEY_HEIGHT].toPython(),
                               SrcDiameter=float(aresult[Constants.KEY_DIAMETER].toPython()),
                               SrcPolEmissionRate=sorteder,
-                              SrcPollutants=pollutantnames, SrcTemperature=aresult[Constants.KEY_TEMP].toPython(),
-                              SrcMolWeight=aresult[Constants.KEY_MOLE_WEIGHT].toPython(), SrcDensity=float(
-                    aresult[Constants.KEY_DENSITY].toPython()),
+                              SrcPollutants=pollutantnames,
+                              SrcTemperature=aresult[Constants.KEY_TEMP].toPython(),
+                              SrcMolWeight=aresult[Constants.KEY_MOLE_WEIGHT].toPython(),
+                              SrcDensity=float(aresult[Constants.KEY_DENSITY].toPython()),
                               SrcSpecHeatCap=aresult[Constants.KEY_HEAT_CAP].toPython(),
                               SrcNumPollutants=len(pollutantnames),
                               SrcMassFlux=aresult[Constants.KEY_MASS_FLOW].toPython())
@@ -84,13 +85,13 @@ class AdmsInputDataRetriever(object):
 
         return sources
 
-    def get_new_src_data(self, uri, qdata, qdataC, qdataERate):
+    def get_new_src_data(self, iri, qdata, qdataC, qdataERate):
         aresult, = [row.asdict() for row in qdata]
         contents = [row[Constants.KEY_CONTENT].toPython() for row in qdataC]
         pollutantnames = [self.polIRI2Name(content) for content in contents]
         if None in pollutantnames:
             pollutantnames.remove(None)
-            pollutantnames = pollutantnames + list(self.em_rates[uri].keys())
+            pollutantnames = pollutantnames + list(self.em_rates[iri].keys())
 
         emissionrates = {row[Constants.KEY_ER].toPython(): row[Constants.KEY_V].toPython() for row in qdataERate}
 
@@ -100,7 +101,7 @@ class AdmsInputDataRetriever(object):
             for ername, v in emissionrates.items():
                 if name in ername:
                     if Constants.POL_PART_001 in name.replace('-', ''):
-                        sorteder = sorteder + list (self.em_rates[uri].values())
+                        sorteder = sorteder + list (self.em_rates[iri].values())
                     else:
                         sorteder.append(v)
 
@@ -114,7 +115,7 @@ class AdmsInputDataRetriever(object):
         xRange, yRange = self.range
         qb = self.query('''
             PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-            PREFIX citygml: <http://www.theworldavatar.com/ontology/ontocithttp://www.theworldavatar.com/kb/ships/Chimney-1-temp2.owlygml/OntoCityGML.owl#>
+            PREFIX citygml: <http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>
             PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
             PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
@@ -207,7 +208,7 @@ class AdmsInputDataRetriever(object):
         '''
         # finish writing met
         metpath = "C://JPS_DATA/workingdir/JPS/ADMS/test.met"  # later it will be replaced, just ignored
-        self.pythonLogger.postInfoToLogServer('path for adms met file=' + metpath)
+        #self.pythonLogger.postInfoToLogServer('path for adms met file=' + metpath)
         return metpath
 
     def getBkg(self):
@@ -217,7 +218,7 @@ class AdmsInputDataRetriever(object):
         '''
         # finish writing met
         bkgpath = "C://JPS_DATA/workingdir/JPS/ADMS/testbackgrnd.bkg"  # later it will be replaced, just ignored
-        self.pythonLogger.postInfoToLogServer('path for adms bkg file=' + bkgpath)
+        #self.pythonLogger.postInfoToLogServer('path for adms bkg file=' + bkgpath)
         return bkgpath
 
     def get_pol(self):
@@ -237,7 +238,7 @@ class AdmsInputDataRetriever(object):
         k = 0
 
         for src in self.topnode:
-            self.connectDB(src, connectType=Constants.KEY_PARSE)
+            iri = self.connectChimneyDB(src)
             qb = self.query(q1)
             massrate = self.query(q2).__iter__().__next__()[Constants.KEY_MASS_RATE].toPython()
 
@@ -245,16 +246,16 @@ class AdmsInputDataRetriever(object):
                 dd = (row[Constants.KEY_DIAMETER].toPython(), row[Constants.KEY_DENSITY].toPython())
                 pol_data.append({Constants.KEY_DIAMETER + Constants.KEY_DENSITY: dd,
                                  Constants.KEY_MASS_FLOW: float(row[Constants.KEY_MASS_FRACTION]) * massrate,
-                                 Constants.KEY_SRC: src})
+                                 Constants.KEY_SRC: iri})
                 diam_dens.add(dd)
-            self.em_rates[src] = {}
+            self.em_rates[iri] = {}
 
         for diam, dens in diam_dens:
             name = None
-            if diam < 0.00001:
+            if diam <= 0.00001:
                 name = Constants.POL_PM10 + '-' + str(i)
                 i = i + 1
-                if diam < 0.0000025:
+                if diam <= 0.0000025:
                     name = Constants.POL_PM25 + '-' + str(k)
                     k = k + 1
             if name != None:
@@ -263,8 +264,9 @@ class AdmsInputDataRetriever(object):
                 self.pollutants.append(name)
 
         for pd in pol_data:
-            self.em_rates[pd[Constants.KEY_SRC]][pol_names[pd[Constants.KEY_DIAMETER + Constants.KEY_DENSITY]]] \
-                = pd[Constants.KEY_MASS_FLOW]
+            pol_key = pd[Constants.KEY_DIAMETER + Constants.KEY_DENSITY]
+            if pol_key in pol_names:
+                self.em_rates[pd[Constants.KEY_SRC]][pol_names[pol_key]] = pd[Constants.KEY_MASS_FLOW]
 
         return pols
 
@@ -362,6 +364,14 @@ class AdmsInputDataRetriever(object):
                 raise Exception('db connection method not defined')
             self.query = self.qmethodMap[connectType]
             connectDBActual(address)
+
+    def connectChimneyDB(self,src):
+        mmsi = src[Constants.KEY_MMSI]
+        iri = Constants.IRI_KB_SHIPS + str(mmsi) + Constants.STR_CHIMNEY
+        self.connectDB(iri, connectType=Constants.KEY_PARSE)
+
+        return iri
+
 
 
 def sameGraph(uri1, uri2):

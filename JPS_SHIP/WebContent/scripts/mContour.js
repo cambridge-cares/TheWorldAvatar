@@ -26,7 +26,7 @@ function getContourMaps (address, folder) {
           level.forEach(
             (polutant) => {
               let plmax = polutant.reduce(
-                (max, num) => Math.max(max, num),
+                (max, num) => Math.max(max, num)
               )
               let plmin = polutant.reduce(
                 (min, num) => {
@@ -37,10 +37,10 @@ function getContourMaps (address, folder) {
                   }
                   return min
                 },
-                0,
+                0
               )
               levbands.push([plmin, plmax])
-            },
+            }
           )
           levbands.forEach((bandvals) => {
             let pvals = bands[count]
@@ -53,7 +53,7 @@ function getContourMaps (address, folder) {
             }
             count++
           })
-        },
+        }
       )
 
       //=============contour consts======================//
