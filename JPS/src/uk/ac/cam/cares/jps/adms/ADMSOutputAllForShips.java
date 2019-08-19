@@ -60,14 +60,16 @@ public class ADMSOutputAllForShips extends HttpServlet {
 //		TODO IS IT NEEDED IN THE FUTURE TO CHANGE THE GST PHYSICALLY????
 		ArrayList<String[]> copier=new ArrayList<String[]>();
 		int totalline=simulationResult.size();
-		//hardcoded = 14,15,16 (numpol=9)
+		//hardcoded = index 14,15,16 (numpol=10 then merged to 9), pollostmerging=1
 
 
 
 		int pollostmerging = 1;
 		int newarrsize = simulationResult.get(0).length - (heightamount * pollostmerging);// 43
-
+		
+		//the header of a modified file
 		String[] newheader = new String[newarrsize];
+		//column index 0-6 is the same between old and modified file
 		for (int line = 0; line < startcontentindex; line++) {
 			newheader[line] = simulationResult.get(0)[line];
 		}
@@ -76,10 +78,10 @@ public class ADMSOutputAllForShips extends HttpServlet {
 
 			for (int line1 = startcontentindex; line1 < 14; line1++) { // (col 7-13 which is normal)
 				newheader[line1 + numpol * heightindex] = simulationResult.get(0)[line1 + numpol * heightindex
-						- counter1];
-				int a = (line1 + numpol * heightindex) - counter1;
+						+ counter1];
+				int a = (line1 + numpol * heightindex) + counter1;
 				System.out.println("index= " + a);
-				System.out.println("a" + simulationResult.get(0)[line1 + numpol * heightindex - counter1]);
+				System.out.println("a" + simulationResult.get(0)[line1 + numpol * heightindex + counter1]);
 			}
 
 			String headernamepm25 = simulationResult.get(0)[14 + numpol * heightindex];
@@ -95,39 +97,41 @@ public class ADMSOutputAllForShips extends HttpServlet {
 			System.out.println("c" + headernamepm10.replace(headernamepm10.split("\\|")[2], "PM10"));
 			System.out.println("-----------------------------");
 
-			counter1 -= pollostmerging; // how many pol lost after merging (shifted in index array)
+			counter1 += pollostmerging; // how many pol lost after merging (shifted in index array)
 
 		}
 		copier.add(newheader);
-
+		//the content of a modified file
 		for (int t = 1; t < totalline; t++) { // row
 			String[] newcontent = new String[newarrsize];
+			//column index 0-6 is the same between old and modified file
 			for (int line = 0; line < startcontentindex; line++) {
 				newcontent[line] = simulationResult.get(t)[line];
 			}
 			int counter = 0;
 			for (int heightindex = 0; heightindex < heightamount; heightindex++) { // loop 4x based on height level
 
-				double pm25 = Double.valueOf(simulationResult.get(t)[14 + numpol * heightindex - counter])
-						+ Double.valueOf(simulationResult.get(t)[15 + numpol * heightindex - counter]);
+				double pm25 = Double.valueOf(simulationResult.get(t)[14 + numpol * heightindex + counter])
+						+ Double.valueOf(simulationResult.get(t)[15 + numpol * heightindex + counter]);//+index.....
 				newcontent[14 + numpol * heightindex] = "" + pm25;
 
-				double pm10 = Double.valueOf(simulationResult.get(t)[16 + numpol * heightindex - counter]) + pm25;
+				double pm10 = Double.valueOf(simulationResult.get(t)[16 + numpol * heightindex + counter]) + pm25; //+index.....
 				newcontent[15 + numpol * heightindex] = "" + pm10;
 
 				for (int line1 = startcontentindex; line1 < 14; line1++) { // (col 7-13 which is normal)
 					newcontent[line1 + numpol * heightindex] = simulationResult.get(t)[line1 + numpol * heightindex
-							- counter];
+							+ counter];
 				}
 
-				counter -= pollostmerging; // how many pol lost after merging
+				counter += pollostmerging; // how many pol lost after merging
 
 			}
 			copier.add(newcontent);
 		}
 		
+		//make the json array to replace the functionality of gstreader.py
 		JSONArray a = new JSONArray();
-		for (int z = 0; z < 4; z++) {
+		for (int z = 0; z < heightamount; z++) {
 			JSONArray h = new JSONArray();
 			for (int y = 7; y < 16; y++) { // index0-index 9 for 1 pollutant
 				JSONArray pol = new JSONArray();
@@ -147,7 +151,7 @@ public class ADMSOutputAllForShips extends HttpServlet {
 		
 		
 		
-		ArrayList<String> args = new ArrayList<String>();
+		/*ArrayList<String> args = new ArrayList<String>();
 		System.out.println("================ output file ===============");
 		System.out.println(outputFile);
 		System.out.println("============================================");
@@ -158,11 +162,13 @@ public class ADMSOutputAllForShips extends HttpServlet {
 		args.add(""+numpol);
 		args.add("");
 		
-		String result = CommandHelper.executeCommands(targetFolder, args);
+		String result = CommandHelper.executeCommands(targetFolder, args);*/
+		//============================================================================================		
 		 
-		logger.debug("=== Result === :" + result);
+		//logger.debug("=== Result === :" + result);
 		response.setContentType("application/json");
-		response.getWriter().write(result);
+		//response.getWriter().write(result);
+		response.getWriter().write(a.toString());
 	}
 
 	public int findHowManyPol(List<String[]> simulationResult, int startcontentindex) {

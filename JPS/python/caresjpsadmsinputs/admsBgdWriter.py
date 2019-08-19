@@ -57,7 +57,7 @@ try:
 	so2conc=15.13
 	pm251conc=4
 	pm252conc=4
-	coconc=1222
+	coconc=430
 	pm102conc=48.3
 # 	
 # 	cloudCover = bgdData['hascloudcover']['hascloudcovervalue']

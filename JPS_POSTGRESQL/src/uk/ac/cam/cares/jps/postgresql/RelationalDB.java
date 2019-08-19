@@ -100,9 +100,9 @@ public class RelationalDB {
                 "INNER JOIN ship_details sd ON ship.mmsi = sd.ship_mmsi " +
                 "WHERE (lat BETWEEN ? AND ?) " +
                 "AND (lon BETWEEN ? AND ?) " +
-                "AND (ts >= ? or tst >= ?) " +
+                //"AND (ts >= ? or tst >= ?) " +
                 "ORDER BY ss DESC, al DESC, aw DESC " +
-                "LIMIT 10";
+                "LIMIT 60";
 
         try {
             Instant instant = Instant.now();
@@ -114,8 +114,8 @@ public class RelationalDB {
             pstmt.setDouble(2, ymax);
             pstmt.setDouble(3, xmin);
             pstmt.setDouble(4, xmax);
-            pstmt.setLong(5, epoch_back);
-            pstmt.setLong(6, epoch_back);
+          //  pstmt.setLong(5, epoch_back);
+           // pstmt.setLong(6, epoch_back);
             results = preparedStatementResultsToJsonArray(pstmt, true, KEY_MMSI);
         } catch (SQLException ex) {
             logger.error(ex.getMessage(), ex);

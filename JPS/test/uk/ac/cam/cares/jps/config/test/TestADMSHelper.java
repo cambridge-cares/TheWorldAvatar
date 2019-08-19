@@ -54,7 +54,7 @@ public class TestADMSHelper extends TestCase {
 		
 	}
 	
-	public void testheader() {
+	public void testheaderpostprocessing() {
 		
 		ArrayList<String[]> copier=new ArrayList<String[]>();
 		String csv = new QueryBroker().readFile("D:/JPS-git/JParkSimulator-git/JPS/workingdir/ADMS/test.levels.gst");

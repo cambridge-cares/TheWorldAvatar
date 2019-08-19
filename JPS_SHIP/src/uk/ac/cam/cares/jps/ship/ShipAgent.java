@@ -209,7 +209,7 @@ public class ShipAgent extends HttpServlet {
 		double totalparticleemission=0.0;
 		for( int a=0; a<valueoftotalparticlesincluded;a++) {
 			if(jsonObject.getJSONArray("particle").getJSONObject(a).has("emission_rate")) {
-				double valueofparticlerate=jsonObject.getJSONArray("particle").getJSONObject(a).getJSONObject("emission_rate").getDouble("value");
+				double valueofparticlerate=jsonObject.getJSONArray("particle").getJSONObject(a).getJSONObject("emission_rate").getDouble("value")*1000;
 				totalparticleemission=totalparticleemission+valueofparticlerate;
 			}
 //			else
@@ -227,7 +227,7 @@ public class ShipAgent extends HttpServlet {
 				valueofmassfraction=String.valueOf(jsonObject.getJSONArray("particle").getJSONObject(a).getJSONObject("mass_fraction").get("value"));
 			}
 			else {
-				double valueofparticlerate=jsonObject.getJSONArray("particle").getJSONObject(a).getJSONObject("emission_rate").getDouble("value");
+				double valueofparticlerate=jsonObject.getJSONArray("particle").getJSONObject(a).getJSONObject("emission_rate").getDouble("value")*1000;
 				 valueofmassfraction=String.valueOf(valueofparticlerate/totalparticleemission);
 			}
 			//logger.info("mass fraction= "+valueofmassfraction);
