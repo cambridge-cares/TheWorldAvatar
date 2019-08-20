@@ -60,9 +60,8 @@ public class ADMSOutputAllForShips extends HttpServlet {
 //		TODO IS IT NEEDED IN THE FUTURE TO CHANGE THE GST PHYSICALLY????
 		ArrayList<String[]> copier=new ArrayList<String[]>();
 		int totalline=simulationResult.size();
+		
 		//hardcoded = index 14,15,16 (numpol=10 then merged to 9), pollostmerging=1
-
-
 
 		int pollostmerging = 1;
 		int newarrsize = simulationResult.get(0).length - (heightamount * pollostmerging);// 43
@@ -74,33 +73,47 @@ public class ADMSOutputAllForShips extends HttpServlet {
 			newheader[line] = simulationResult.get(0)[line];
 		}
 		int counter1 = 0;
+		int index=startcontentindex;
 		for (int heightindex = 0; heightindex < heightamount; heightindex++) { // loop 4x based on height level
+			boolean flag10 = false;
+			boolean flag25 = false;
+			int line1 = startcontentindex;
+			while (Double.valueOf(simulationResult.get(0)[line1].split("Z=")[1].split("m")[0])
+					- Double.valueOf(simulationResult.get(0)[startcontentindex].split("Z=")[1].split("m")[0]) == 0.0) {
 
-			for (int line1 = startcontentindex; line1 < 14; line1++) { // (col 7-13 which is normal)
-				newheader[line1 + numpol * heightindex] = simulationResult.get(0)[line1 + numpol * heightindex
-						+ counter1];
-				int a = (line1 + numpol * heightindex) + counter1;
-				System.out.println("index= " + a);
-				System.out.println("a" + simulationResult.get(0)[line1 + numpol * heightindex + counter1]);
+				if (simulationResult.get(0)[line1 + numpol * heightindex + counter1].contains("PM2.5")) {
+					if (flag25 == false) {
+						String headernamepm25 = simulationResult.get(0)[line1 + numpol * heightindex];
+						newheader[index] = headernamepm25.replace(headernamepm25.split("\\|")[2], "PM2.5");
+						flag25 = true;
+						System.out.println("indexa= " + index);
+						index++;
+					}
+
+				} else if (simulationResult.get(0)[line1 + numpol * heightindex + counter1].contains("PM10")) {
+					if (flag10 == false) {
+						String headernamepm10 = simulationResult.get(0)[line1 + numpol * heightindex];
+						newheader[index] = headernamepm10.replace(headernamepm10.split("\\|")[2], "PM10");
+						flag10 = true;
+						System.out.println("indexb= " + index);
+						index++;
+					}
+
+				} else {
+					newheader[index] = simulationResult.get(0)[line1 + numpol * heightindex + counter1];
+					System.out.println("indexc= " + index);
+					index++;
+				}
+
+				line1++;
+
 			}
-
-			String headernamepm25 = simulationResult.get(0)[14 + numpol * heightindex];
-			newheader[14 + numpol * heightindex] = headernamepm25.replace(headernamepm25.split("\\|")[2], "PM2.5");
-			int b = 14 + numpol * heightindex;
-			System.out.println("indexb= " + b);
-			System.out.println("b" + headernamepm25.replace(headernamepm25.split("\\|")[2], "PM2.5"));
-
-			String headernamepm10 = simulationResult.get(0)[16 + numpol * heightindex];
-			newheader[15 + numpol * heightindex] = headernamepm10.replace(headernamepm10.split("\\|")[2], "PM10");
-			int c = 15 + numpol * heightindex;
-			System.out.println("indexc= " + c);
-			System.out.println("c" + headernamepm10.replace(headernamepm10.split("\\|")[2], "PM10"));
-			System.out.println("-----------------------------");
-
-			counter1 += pollostmerging; // how many pol lost after merging (shifted in index array)
+			counter1 += pollostmerging; // how many pol lost after merging
 
 		}
 		copier.add(newheader);
+		
+		
 		//the content of a modified file
 		for (int t = 1; t < totalline; t++) { // row
 			String[] newcontent = new String[newarrsize];
