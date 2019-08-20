@@ -61,7 +61,7 @@ public class ADMSOutputAllForShips extends HttpServlet {
 		ArrayList<String[]> copier=new ArrayList<String[]>();
 		int totalline=simulationResult.size();
 		
-		//hardcoded = index 14,15,16 (numpol=10 then merged to 9), pollostmerging=1
+		//hardcoded =  (numpol=10 then merged to 9), pollostmerging=1
 
 		int pollostmerging = 1;
 		int newarrsize = simulationResult.get(0).length - (heightamount * pollostmerging);// 43
@@ -117,27 +117,53 @@ public class ADMSOutputAllForShips extends HttpServlet {
 		//the content of a modified file
 		for (int t = 1; t < totalline; t++) { // row
 			String[] newcontent = new String[newarrsize];
-			//column index 0-6 is the same between old and modified file
 			for (int line = 0; line < startcontentindex; line++) {
 				newcontent[line] = simulationResult.get(t)[line];
 			}
 			int counter = 0;
+			int indexcontent = startcontentindex;
+
 			for (int heightindex = 0; heightindex < heightamount; heightindex++) { // loop 4x based on height level
+				boolean flag10 = false;
+				boolean flag25 = false;
+				int line1 = startcontentindex;
+				int lockindexpm25 = 0;
+				double pm25 = 0;
+				int lockindexpm10 = 0;
+				double pm10 = 0;
 
-				double pm25 = Double.valueOf(simulationResult.get(t)[14 + numpol * heightindex + counter])
-						+ Double.valueOf(simulationResult.get(t)[15 + numpol * heightindex + counter]);//+index.....
-				newcontent[14 + numpol * heightindex] = "" + pm25;
+				while (Double.valueOf(simulationResult.get(0)[line1].split("Z=")[1].split("m")[0]) - Double
+						.valueOf(simulationResult.get(0)[startcontentindex].split("Z=")[1].split("m")[0]) == 0.0) {
 
-				double pm10 = Double.valueOf(simulationResult.get(t)[16 + numpol * heightindex + counter]) + pm25; //+index.....
-				newcontent[15 + numpol * heightindex] = "" + pm10;
+					if (simulationResult.get(0)[line1 + numpol * heightindex + counter].contains("PM2.5")) {
+						pm25 = pm25 + Double.valueOf(simulationResult.get(t)[line1 + numpol * heightindex + counter]);
+						if (flag25 == false) {
 
-				for (int line1 = startcontentindex; line1 < 14; line1++) { // (col 7-13 which is normal)
-					newcontent[line1 + numpol * heightindex] = simulationResult.get(t)[line1 + numpol * heightindex
-							+ counter];
+							lockindexpm25 = indexcontent;
+							flag25 = true;
+							indexcontent++;
+						}
+
+					} else if (simulationResult.get(0)[line1 + numpol * heightindex + counter].contains("PM10")) {
+						pm10 = pm10 + Double.valueOf(simulationResult.get(t)[line1 + numpol * heightindex + counter]);
+						if (flag10 == false) {
+
+							lockindexpm10 = indexcontent;
+							flag10 = true;
+							indexcontent++;
+						}
+					} else {
+						newcontent[indexcontent] = simulationResult.get(t)[line1 + numpol * heightindex + counter];
+						// System.out.println("indexc= " + index);
+						indexcontent++;
+					}
+
+					line1++;
 				}
+				newcontent[lockindexpm25] = "" + pm25;
+				newcontent[lockindexpm10] = "" + (pm10 + pm25);
 
 				counter += pollostmerging; // how many pol lost after merging
-
 			}
 			copier.add(newcontent);
 		}
@@ -146,10 +172,10 @@ public class ADMSOutputAllForShips extends HttpServlet {
 		JSONArray a = new JSONArray();
 		for (int z = 0; z < heightamount; z++) {
 			JSONArray h = new JSONArray();
-			for (int y = 7; y < 16; y++) { // index0-index 9 for 1 pollutant
+			for (int y = startcontentindex; y < startcontentindex+findHowManyPol(copier,startcontentindex); y++) { // index0-index 9 for 1 pollutant
 				JSONArray pol = new JSONArray();
 				for (int x = 1; x < copier.size(); x++) { // 1-the last line
-					pol.put(copier.get(x)[y + 9*z]);
+					pol.put(copier.get(x)[y + findHowManyPol(copier,startcontentindex)*z]);
 				}
 				h.put(pol);
 			}
