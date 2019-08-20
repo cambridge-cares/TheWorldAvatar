@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.json.JSONArray;
 
 import com.google.gson.Gson;
@@ -74,69 +75,115 @@ public class TestADMSHelper extends TestCase {
 			newheader[line] = simulationResult.get(0)[line];
 		}
 		int counter1 = 0;
+		int index=startcontentindex;
+		
+		
 		for (int heightindex = 0; heightindex < heightamount; heightindex++) { // loop 4x based on height level
-			
-			for (int line1 = startcontentindex; line1 < 14; line1++) { // (col 7-13 which is normal)
-				newheader[line1 + numpol * heightindex] = simulationResult.get(0)[line1 + numpol * heightindex
-						- counter1];
-				int a=(line1 + numpol * heightindex)- counter1;
-				System.out.println("index= "+a);
-				System.out.println("a"+simulationResult.get(0)[line1 + numpol * heightindex-counter1]);
+			boolean flag10 = false;
+			boolean flag25 = false;
+			int line1 = startcontentindex;
+			while (Double.valueOf(simulationResult.get(0)[line1].split("Z=")[1].split("m")[0])
+					- Double.valueOf(simulationResult.get(0)[startcontentindex].split("Z=")[1].split("m")[0]) == 0.0) {
+
+				if (simulationResult.get(0)[line1 + numpol * heightindex + counter1].contains("PM2.5")) {
+					if (flag25 == false) {
+						String headernamepm25 = simulationResult.get(0)[line1 + numpol * heightindex];
+						newheader[index] = headernamepm25.replace(headernamepm25.split("\\|")[2], "PM2.5");
+						flag25 = true;
+						
+						index++;
+					}
+
+				} else if (simulationResult.get(0)[line1 + numpol * heightindex + counter1].contains("PM10")) {
+					if (flag10 == false) {
+						String headernamepm10 = simulationResult.get(0)[line1 + numpol * heightindex];
+						newheader[index] = headernamepm10.replace(headernamepm10.split("\\|")[2], "PM10");
+						flag10 = true;
+						
+						index++;
+					}
+
+				} else {
+					newheader[index] = simulationResult.get(0)[line1 + numpol * heightindex + counter1];
+					
+					index++;
+				}
+
+				line1++;
+
 			}
-
-			String headernamepm25=simulationResult.get(0)[14 + numpol * heightindex];
-			newheader[14 + numpol * heightindex] = headernamepm25.replace(headernamepm25.split("\\|")[2],"PM2.5");
-			int b=14 + numpol * heightindex;
-			System.out.println("indexb= "+b);
-			System.out.println("b"+headernamepm25.replace(headernamepm25.split("\\|")[2],"PM2.5"));
-			
-			String headernamepm10=simulationResult.get(0)[16 + numpol * heightindex];
-			newheader[15 + numpol * heightindex] = headernamepm10.replace(headernamepm10.split("\\|")[2],"PM10");
-			int c=15 + numpol * heightindex;
-			System.out.println("indexc= "+c);
-			System.out.println("c"+headernamepm10.replace(headernamepm10.split("\\|")[2],"PM10"));
-			System.out.println("-----------------------------");
-
-			counter1 -= pollostmerging; // how many pol lost after merging
+			counter1 += pollostmerging; // how many pol lost after merging
 
 		}
 		copier.add(newheader);
 
+				
 		for (int t = 1; t < totalline; t++) { // row
-			// System.out.println("totalline= "+t);
 			String[] newcontent = new String[newarrsize];
 			for (int line = 0; line < startcontentindex; line++) {
 				newcontent[line] = simulationResult.get(t)[line];
 			}
 			int counter = 0;
+			int indexcontent=startcontentindex;
+			
 			for (int heightindex = 0; heightindex < heightamount; heightindex++) { // loop 4x based on height level
+				boolean flag10 = false;
+				boolean flag25 = false;
+				int line1 = startcontentindex;
+				int lockindexpm25 = 0;
+				double pm25 = 0;
+				int lockindexpm10 = 0;
+				double pm10 = 0;
 
-				double pm25 = Double.valueOf(simulationResult.get(t)[14 + numpol * heightindex- counter])
-						+ Double.valueOf(simulationResult.get(t)[15 + numpol * heightindex- counter]);
-				newcontent[14 + numpol * heightindex] = "" + pm25;
+				while (Double.valueOf(simulationResult.get(0)[line1].split("Z=")[1].split("m")[0]) - Double
+						.valueOf(simulationResult.get(0)[startcontentindex].split("Z=")[1].split("m")[0]) == 0.0) {
 
-				double pm10 = Double.valueOf(simulationResult.get(t)[16 + numpol * heightindex- counter]) + pm25;
-				newcontent[15 + numpol * heightindex] = "" + pm10;
+					if (simulationResult.get(0)[line1 + numpol * heightindex + counter].contains("PM2.5")) {
+						pm25 = pm25 + Double.valueOf(simulationResult.get(t)[line1 + numpol * heightindex + counter]);
+						if (flag25 == false) {
 
-				for (int line1 = startcontentindex; line1 < 14; line1++) { // (col 7-13 which is normal)
-					newcontent[line1 + numpol * heightindex] = simulationResult.get(t)[line1 + numpol * heightindex
-							- counter];
+							lockindexpm25 = indexcontent;
+							flag25 = true;
+							indexcontent++;
+						}
+//						newcontent[lockindexpm25] = "" + pm25;
+
+					} else if (simulationResult.get(0)[line1 + numpol * heightindex + counter].contains("PM10")) {
+						pm10 = pm10 + Double.valueOf(simulationResult.get(t)[line1 + numpol * heightindex + counter]);
+						if (flag10 == false) {
+
+							lockindexpm10 = indexcontent;
+							flag10 = true;
+							indexcontent++;
+						}
+//						newcontent[lockindexpm10] = "" + (pm10+pm25);
+
+					} else {
+						newcontent[indexcontent] = simulationResult.get(t)[line1 + numpol * heightindex + counter];
+						// System.out.println("indexc= " + index);
+						indexcontent++;
+					}
+
+					line1++;
+
 				}
+				newcontent[lockindexpm25] = "" + pm25;
+				newcontent[lockindexpm10] = "" + (pm10+pm25);
 
-				counter -= pollostmerging; // how many pol lost after merging
+				counter += pollostmerging; // how many pol lost after merging
 
 			}
 			copier.add(newcontent);
 		}
-
+		
 		QueryBroker broker = new QueryBroker();
 		String baseUrl = QueryBroker.getLocalDataPath() + "/JPS";
 		System.out.println(baseUrl);
 		
 		JSONArray a = new JSONArray();
-		for (int z = 0; z < 4; z++) {
+		for (int z = 0; z < heightamount; z++) {
 			JSONArray h = new JSONArray();
-			for (int y = 7; y < 16; y++) { // index0-index 9 for 1 pollutant
+			for (int y = startcontentindex; y < 16; y++) { // index0-index 9 for 1 pollutant
 				JSONArray pol = new JSONArray();
 				for (int x = 1; x < copier.size(); x++) { // 1-the las line
 					pol.put(copier.get(x)[y + 9*z]);
@@ -147,7 +194,7 @@ public class TestADMSHelper extends TestCase {
 		}
 		System.out.println(a.getJSONArray(0).getJSONArray(8).toString());
 		System.out.println(a.getJSONArray(0).getJSONArray(8).length());
-		//broker.put(baseUrl + "/newresult.csv", MatrixConverter.fromArraytoCsv(copier));
+		broker.put(baseUrl + "/newresult2.csv", MatrixConverter.fromArraytoCsv(copier));
 		
 		
 		
