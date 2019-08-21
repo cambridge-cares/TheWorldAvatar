@@ -6,6 +6,7 @@ from collections import namedtuple
 from caresjpsutil import PythonLogger
 from config import Constants
 from adms_apl_builder import AplDirector, AdmsAplPlantBuilder, AdmsAplShipBuilder
+from adms_input_retriever import CliInputContext
 import geopy.distance
 
 pythonLogger = PythonLogger('adms_processor.py')
@@ -173,6 +174,9 @@ class AdmsProcessor(object):
         self.input = retriever.get()
 
     def get_input(self, args):
+        context = CliInputContext(args)
+        self.input = context.get_input()
+
         self.set_vars_from_args(args)
         self.BDN = self.get_bdn(self.bdn_data)
         self.coords = self.get_coordinates(self.coor_data)
