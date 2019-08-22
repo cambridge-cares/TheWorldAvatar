@@ -206,8 +206,7 @@ public class DownloadHTML {
 	public static void writeHTMLFile(String casRegNr, File dest, String category)
 			throws FileNotFoundException, IOException, Exception {
 
-		URL oracle = new URL("https://webbook.nist.gov/cgi/cbook.cgi?ID=C" + casRegNr.replace("-", "")
-				+ "&Units=SI&Mask=1" + category); // Registry Number Not Found
+		URL oracle = new URL("https://webbook.nist.gov/cgi/cbook.cgi?ID=C" + casRegNr.replace("-", "") + "&Units=SI&Mask=1" + category); // Registry Number Not Found
 
 		URLConnection yc = oracle.openConnection();
 

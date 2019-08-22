@@ -62,15 +62,20 @@ public class NISTInfoReader extends NISTParser {
         if (content.size() > 0 && content.contains("CAS Registry Number:")) {
             for (int i = 0; i < content.size(); i++) {
                 if (content.get(i).trim().contains("CAS Registry Number:")) {
+                	
                     if (i + 1 < content.size()) {
+                    	
                         // cas nr
                         if (verifyCASRegNr(content.get(i + 1).trim())) {
+                        	
                             return content.get(i + 1).trim();
+                            
                         }
                     }
                 }
             }
         }
+        
         return "";
     }
 
@@ -284,9 +289,11 @@ public class NISTInfoReader extends NISTParser {
     }
     
     /**
+     * 
      * @author NK510
      * @param body
      * @return permanent link as a string
+     * 
      */
     protected String extractPermanentLink(StringList body) {
     	
@@ -304,7 +311,7 @@ public class NISTInfoReader extends NISTParser {
     		
     		if(lineIndex<0) {
     			
-    			return "";    			
+    			return "";
     		}
     		
     		ArrayList<String> content = NISTHTMLReaderHelper.extractTagValue(body.get(lineIndex), "href");
@@ -313,7 +320,6 @@ public class NISTInfoReader extends NISTParser {
     			
     			return content.get(0);
     		}
-    	
     	
     	return "";
     }
