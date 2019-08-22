@@ -1,8 +1,10 @@
 import json
 import requests
 import sys
+import geopy.distance
+import datetime
 from collections import namedtuple
-from pyproj import Proj
+from pyproj import Proj, transform
 from rdflib import Graph
 from rdflib.plugins.sparql import prepareQuery
 from rdflib.plugins.sparql.results.jsonresults import JSONResult
@@ -53,7 +55,11 @@ class CliInputStrategy(object):
     def extract_data(self):
         self.BDN = self.get_bdn(self.bdn_data)
         self.coords = self.get_coordinates(self.coor_data)
-        self.retrieve_input()
+        self.input = self.retrieve_input()
+        self.input[Constants.KEY_BDN] = self.BDN
+        self.input[Constants.KEY_COORD_SYS] = int(self.coord_sys)
+        self.set_grid_size()
+        return self.input
 
     @staticmethod
     def get_bdn(buildingdata):
@@ -141,11 +147,6 @@ class CliInputStrategy(object):
             connect_db_actual(address)
 
     def retrieve_input(self):
-        self.get_pol()
-        self.raw_src = self.get_src_data()
-        pass
-
-    def get_pol(self):
         pass
 
     def get_src_data(self):
@@ -177,10 +178,26 @@ class CliInputStrategy(object):
             return self.connect_db(src, Constants.KEY_CONN_PARSE)
 
     def get_new_src_data(self, iri, qdata, qdata_c, qdata_erate):
-        return None, None, None
+        return [], [], []
 
     def make_src(self, aresult, sorteder, pollutantnames):
-        return None
+        src = self.make_common_src(aresult, sorteder, pollutantnames)
+        return src
+
+    @staticmethod
+    def make_common_src(aresult, sorteder, pollutantnames):
+        src = AdmsSrc(src_name=aresult[Constants.KEY_O].toPython(),
+                      src_height=aresult[Constants.KEY_HEIGHT].toPython(),
+                      src_diameter=float(aresult[Constants.KEY_DIAMETER].toPython()),
+                      src_pol_emission_rate=sorteder,
+                      src_pollutants=pollutantnames,
+                      src_temperature=aresult[Constants.KEY_TEMP].toPython(),
+                      src_mol_weight=aresult[Constants.KEY_MOLE_WEIGHT].toPython(),
+                      src_density=float(aresult[Constants.KEY_DENSITY].toPython()),
+                      src_spec_heat_cap=aresult[Constants.KEY_HEAT_CAP].toPython(),
+                      src_num_pollutants=len(pollutantnames),
+                      src_mass_flux=aresult[Constants.KEY_MASS_FLOW].toPython())
+        return src
 
     def get_opt(self, pol_names, src_names):
         num_pol = len(pol_names)
@@ -191,10 +208,13 @@ class CliInputStrategy(object):
 
     @staticmethod
     def get_range(userrange):
-        return ((float(userrange[Constants.KEY_MIN_X]),
-                 float(userrange[Constants.KEY_MAX_X])),
-                (float(userrange[Constants.KEY_MIN_Y]),
-                 float(userrange[Constants.KEY_MAX_Y])))
+        keys = userrange.keys()
+        if Constants.KEY_MIN_X in keys and Constants.KEY_MAX_X in keys \
+                and Constants.KEY_MIN_Y in keys and Constants.KEY_MAX_Y in keys:
+            return ((float(userrange[Constants.KEY_MIN_X]),
+                     float(userrange[Constants.KEY_MAX_X])),
+                    (float(userrange[Constants.KEY_MIN_Y]),
+                     float(userrange[Constants.KEY_MAX_Y])))
 
     def core_bdn_src(self):
         y_midpoint = (self.range[1][0] + self.range[1][1]) / 2
@@ -212,7 +232,7 @@ class CliInputStrategy(object):
                     closed = self.BDN.BldName[i]
                     dclosed = d
             if closed is not None:
-                src.setMainBuilding(closed)
+                setattr(src, Constants.SRC_MAIN_BLD, closed)
             else:
                 raise Exception(ExceptionStrings.BDN_NOT_FOUND + src.SrcName)
 
@@ -241,6 +261,22 @@ class CliInputStrategy(object):
             return substances[pol_iri]
         else:
             raise Exception(ExceptionStrings.SUBSTANCE_UNDEFINED)
+
+    def set_grid_size(self):
+        """
+        Calculate image resolution based on size of the selected area.
+        X, Y are equal and  calculated as function of the distance between upper and lower corner coordinates.
+        :return: None
+        """
+        distance = geopy.distance.distance(transform(self.targetCRS, self.sourceCRS, self.coords[Constants.KEY_MAX_X],
+                                                     self.coords[Constants.KEY_MAX_Y])[::-1],
+                                           transform(self.targetCRS, self.sourceCRS, self.coords[Constants.KEY_MIN_X],
+                                                     self.coords[Constants.KEY_MIN_Y])[::-1]).km
+        # Rounds to 200 for ~35.5km distance, in case of default HK area size,
+        # and to 80 for ~4.5km distance, in case of default SG area size
+        rounded = int(round(distance * 4 + 62, -1))
+        self.input[Constants.GRD_X] = rounded
+        self.input[Constants.GRD_Y] = rounded
 
 
 class PlantCliInputStrategy(CliInputStrategy):
@@ -286,20 +322,10 @@ class PlantCliInputStrategy(CliInputStrategy):
         return aresult, sorteder, pollutantnames
 
     def make_src(self, aresult, sorteder, pollutantnames):
-        src = AdmsSrc(src_name=aresult[Constants.KEY_O].toPython(),
-                      src_x1=aresult[Constants.KEY_X].toPython(),
-                      src_y1=aresult[Constants.KEY_Y].toPython(),
-                      src_height=aresult[Constants.KEY_HEIGHT].toPython(),
-                      src_diameter=float(aresult[Constants.KEY_DIAMETER].toPython()),
-                      src_vert_veloc=aresult[Constants.KEY_VELOCITY].toPython(),
-                      src_pol_emission_rate=sorteder,
-                      src_pollutants=pollutantnames,
-                      src_temperature=aresult[Constants.KEY_TEMP].toPython(),
-                      src_mol_weight=aresult[Constants.KEY_MOLE_WEIGHT].toPython(),
-                      src_density=float(aresult[Constants.KEY_DENSITY].toPython()),
-                      src_spec_heat_cap=aresult[Constants.KEY_HEAT_CAP].toPython(),
-                      src_num_pollutants=len(pollutantnames),
-                      src_mass_flux=aresult[Constants.KEY_MASS_FLOW].toPython())
+        src = self.make_common_src(aresult, sorteder, pollutantnames)
+        src.set_coordinates([aresult[Constants.KEY_X].toPython(), aresult[Constants.KEY_Y].toPython()])
+        setattr(src, Constants.SRC_VERT_VELOC, aresult[Constants.KEY_VELOCITY].toPython())
+
         return src
 
 
@@ -317,6 +343,7 @@ class ShipCliInputStrategy(CliInputStrategy):
         self.em_rates = {}
 
     def retrieve_input(self):
+        self.ship_coordinates_list = self.get_ship_coordinates()
         pol = self.get_pol()
         self.raw_src = self.get_src_data()
         raw_opt = self.get_opt(self.pollutants, [s.SrcName for s in self.raw_src])
@@ -324,10 +351,15 @@ class ShipCliInputStrategy(CliInputStrategy):
         met = self.get_weather()
         xran, yran = self.range
         grd = xran[0], yran[0], xran[1], yran[1]
-
         bkg = self.get_bkg()
 
-        return {'Src': self.raw_src, 'Opt': raw_opt, 'Met': met, 'Grd': grd, 'Pol': pol, 'Bkg': bkg}
+        return {Constants.KEY_SRC: self.raw_src, Constants.KEY_OPT: raw_opt, Constants.KEY_MET: met,
+                Constants.KEY_GRD: grd, Constants.KEY_POL: pol, Constants.KEY_BKG: bkg}
+
+    def extract_data(self):
+        self.input = super(ShipCliInputStrategy, self).extract_data()
+        self.modify_input_for_ship(self.ship_coordinates_list)
+        return self.input
 
     def get_src_queries(self):
         q1 = prepareQuery(QueryStrings.SPARQL_DIAMETER_TEMP_HEIGHT_MASSFLOW_HEATCAPA_DENSITY_MOLEWEIGHT)
@@ -367,20 +399,6 @@ class ShipCliInputStrategy(CliInputStrategy):
                         sorteder.append(v)
 
         return aresult, sorteder, pollutantnames
-
-    def make_src(self, aresult, sorteder, pollutantnames):
-        src = AdmsSrc(src_name=str(aresult[Constants.KEY_MMSI]),
-                      src_height=aresult[Constants.KEY_HEIGHT].toPython(),
-                      src_diameter=float(aresult[Constants.KEY_DIAMETER].toPython()),
-                      src_pol_emission_rate=sorteder,
-                      src_pollutants=pollutantnames,
-                      src_temperature=aresult[Constants.KEY_TEMP].toPython(),
-                      src_mol_weight=aresult[Constants.KEY_MOLE_WEIGHT].toPython(),
-                      src_density=float(aresult[Constants.KEY_DENSITY].toPython()),
-                      src_spec_heat_cap=aresult[Constants.KEY_HEAT_CAP].toPython(),
-                      src_num_pollutants=len(pollutantnames),
-                      src_mass_flux=aresult[Constants.KEY_MASS_FLOW].toPython())
-        return src
 
     def get_pol(self):
         """
@@ -439,8 +457,78 @@ class ShipCliInputStrategy(CliInputStrategy):
                         Constants.KEY_GRPTANK, src_names, 0)
 
     def connect_chimney_db(self, src):
-        mmsi = src[Constants.KEY_MMSI]
-        iri = Constants.IRI_KB_SHIPS + str(mmsi) + Constants.STR_CHIMNEY
+        #mmsi = src[Constants.KEY_MMSI]
+        #iri = Constants.IRI_KB_SHIPS + str(mmsi) + Constants.STR_CHIMNEY
+        iri = 'http://www.theworldavatar.com/kb/ships/Chimney-1.owl'
         self.connect_db(iri, Constants.KEY_PARSE)
 
         return iri
+
+    def get_ship_coordinates(self):
+        ship_coordinates_list = []
+
+        for ship in self.entity:
+            x_coordinate_value = float(ship[Constants.KEY_LON])
+            y_coordinate_value = float(ship[Constants.KEY_LAT])
+            ship_coordinates_list.append(
+                list(transform(self.sourceCRS, self.targetCRS, x_coordinate_value, y_coordinate_value)))
+
+        return ship_coordinates_list
+
+    def modify_input_for_ship(self, ship_coordinates_list):
+        self.set_input_ship_src_geo(ship_coordinates_list)
+        self.set_input_ship_indicators()
+        self.set_input_ship_night()
+
+        self.input[Constants.KEY_MET] = self.working_dir + Constants.FILENAME_MET
+        self.input[Constants.KEY_BKG] = self.working_dir + Constants.FILENAME_BGD
+
+        so2washout, pm10washout = self.get_washouts()
+        self.input[Constants.KEY_WASHOUT_SO2] = so2washout
+        self.input[Constants.KEY_WASHOUT_PM10] = pm10washout
+
+    def set_input_ship_src_geo(self, ship_coordinates_list):
+        for idx in range(len(ship_coordinates_list)):
+            self.input[Constants.KEY_SRC][idx].set_coordinates(ship_coordinates_list[idx])
+
+        latitudemid = (float(self.coords[Constants.KEY_MIN_Y]) + float(self.coords[Constants.KEY_MAX_Y])) / 2
+        longitudemid = (float(self.coords[Constants.KEY_MIN_X]) + float(self.coords[Constants.KEY_MAX_X])) / 2
+        xmid, ymid = transform(self.targetCRS, self.sourceCRS, longitudemid, latitudemid)
+
+        self.input[Constants.KEY_LAT.title()] = ymid
+
+    def set_input_ship_indicators(self):
+        if str(2326) in self.coord_sys:
+            self.input[Constants.KEY_INDICATOR_TERR] = 1
+        else:
+            self.input[Constants.KEY_INDICATOR_TERR] = 0
+
+        self.input[Constants.KEY_INDICATOR_CHEM] = 1
+        self.input[Constants.KEY_INDICATOR_WET] = 1
+
+    def set_input_ship_night(self):
+        now = datetime.datetime.now()
+        hournow = now.hour + 1
+        if not (6 <= hournow <= 18):
+            self.input[Constants.KEY_NIGHT] = 1
+            self.input[Constants.KEY_DIR_NIGHT] = Constants.FILEPATH_NIGHT
+        else:
+            self.input[Constants.KEY_NIGHT] = 0
+            self.input[Constants.KEY_DIR_NIGHT] = ""
+
+    def get_washouts(self):
+        annual_precipitation = self.precipitation * 365 * 24
+
+        if annual_precipitation < 103:
+            so2washout = 0.000001 / 500 * annual_precipitation
+        else:
+            so2washout = 0.0000019 + annual_precipitation * 0.0000000008
+
+        if self.precipitation < 0.5:
+            pm10washout = 0.0016
+        elif self.precipitation > 4:
+            pm10washout = 0.0072
+        else:
+            pm10washout = 0.00363
+
+        return so2washout, pm10washout

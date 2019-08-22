@@ -3,8 +3,8 @@ from config import Constants
 
 class AdmsSrc(object):
 
-    def __init__(self, src_name, src_height, src_diameter, src_vert_veloc, src_temperature, src_mol_weight, src_density,
-                 src_spec_heat_cap, src_pollutants, src_pol_emission_rate, src_x1, src_y1, src_vol_flow_rate=0,
+    def __init__(self, src_name, src_height, src_diameter, src_temperature, src_mol_weight, src_density,
+                 src_spec_heat_cap, src_pollutants, src_pol_emission_rate, src_x1 = 0, src_y1 = 0, src_vol_flow_rate=0,
                  src_source_type=0, src_release_at_ntp=0, src_efflux_type=3, src_buoyancy_type=0,
                  src_percent_n_ox_as_no2=5, src_l1=1, src_l2=1, src_fm=1, src_fb=1, src_mass_flux=1, src_angle1=0,
                  src_angle2=0, src_mass_h2_o=0, src_use_var_file=1, src_num_groups=1, src_group=Constants.KEY_GRPTANK,
@@ -14,7 +14,6 @@ class AdmsSrc(object):
         self.SrcHeight = src_height
         self.SrcDiameter = src_diameter
         self.SrcVolFlowRate = src_vol_flow_rate
-        self.SrcVertVeloc = src_vert_veloc
         self.SrcTemperature = src_temperature
         self.SrcMolWeight = src_mol_weight
         self.SrcDensity = src_density
@@ -53,8 +52,8 @@ class AdmsSrc(object):
 
     def __repr__(self):
         attrs = self.__dict__.items()
-
         return '<admsSrc {}>'.format(['{} {}'.format(attr, value) for (attr, value) in attrs])
 
-    def setMainBuilding(self, mainBdn):
-        self.SrcMainBuilding = mainBdn
+    def set_coordinates(self, coordinates):
+        self.SrcX1 = coordinates[0]
+        self.SrcY1 = coordinates[1]

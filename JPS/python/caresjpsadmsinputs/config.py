@@ -18,6 +18,8 @@ class Constants(object):
     BLD_ANGLE = 'BldAngle'
     BLD_TOPNODE = BASE_IRI + 'damecoolquestion/buildingsLite/sparql'
     BLD_LIMIT = 25
+    SRC_MAIN_BLD = 'SrcMainBuilding'
+    SRC_VERT_VELOC = 'SrcVertVeloc'
     COORD_MAX_CORNER = 'uppercorner'
     COORD_MAX_X = 'upperx'
     COORD_MAX_Y = 'uppery'
