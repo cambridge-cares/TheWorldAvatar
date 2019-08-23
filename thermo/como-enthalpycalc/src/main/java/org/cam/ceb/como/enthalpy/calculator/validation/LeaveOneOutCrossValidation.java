@@ -22,6 +22,7 @@ import org.cam.ceb.como.tools.objectpool.ObjectPool;
  * @author pb556
  * 
  */
+
 public class LeaveOneOutCrossValidation implements Runnable {
 
     protected ObjectPoolCalculator calculator = null;
@@ -29,7 +30,7 @@ public class LeaveOneOutCrossValidation implements Runnable {
     protected HashMap<Species, Double> results = null;
     protected HashMap<Species, Reaction> resultsDetailed = null;
     protected HashMap<Species, ReactionList> resultsDetailedComplete = null;
-    protected ObjectPool pool = null;
+    protected ObjectPool<Species> pool = null;
     
     private Logger logger = Logger.getLogger(getClass());
 
@@ -76,33 +77,53 @@ public class LeaveOneOutCrossValidation implements Runnable {
     public void run() {
     	
         results = new HashMap<Species, Double>();
+        
         resultsDetailed = new HashMap<Species, Reaction>();
+        
         resultsDetailedComplete = new HashMap<Species, ReactionList>();
         
-        ObjectPool orig = new ObjectPool();
+        ObjectPool<Species> orig = new ObjectPool<Species>();
         
         orig.addAll(pool.getValidatedObjects());
         
         HashMap<Species, Object> res = new HashMap<Species, Object>();
+        
         int ctr = 0;
         
+        System.out.println("orig.getValidatedObjects().size(): " + orig.getValidatedObjects().size());
+        
         for (Object soi : orig.getValidatedObjects()) {
+        	
             ctr++;
-            ObjectPool clone = SolverHelper.clone(orig);
+            
+            ObjectPool<Species> clone = SolverHelper.clone(orig);
+            
             Species selSOI = null;
+            
             for (Object x : clone.getInvalidatedObjects()) {
-                Species o = (Species) x;
-                if (o.equals((Species) soi, true)) {
-                    selSOI = (Species) o;
-                    break;
+            
+            Species o = (Species) x;
+                
+            if (o.equals((Species) soi, true)) {
+                
+            selSOI = (Species) o;
+                    
+            break;
+            
                 }
             }
+            
             if (selSOI == null) {
-                for (Object x : clone.getValidatedObjects()) {
-                    Species o = (Species) x;
-                    if (o.equals((Species) soi, true)) {
-                        selSOI = (Species) o;
-                        break;
+            
+            	for (Object x : clone.getValidatedObjects()) {
+                
+            		Species o = (Species) x;
+                    
+            		if (o.equals((Species) soi, true)) {
+                    
+            			selSOI = (Species) o;
+                        
+            			break;
                     }
                 }
             }
@@ -128,16 +149,17 @@ public class LeaveOneOutCrossValidation implements Runnable {
                 HashMap<Species, ReactionList> sol = new HashMap<Species, ReactionList>();
                 
                 HashMap<Species, Object> buffer = (HashMap<Species, Object>) calculator.get();
-            
+                
+                
                 for (Species s : buffer.keySet()) {
                 	
-                    if (buffer.get(s) instanceof ReactionList) {
+                if (buffer.get(s) instanceof ReactionList) {
                     	
                         sol.put(s, (ReactionList) buffer.get(s));
                         
-                    }
+                }
                     
-                    if (buffer.get(s) instanceof Collection) {
+                if (buffer.get(s) instanceof Collection) {
                     	
                         Collection c = (Collection) buffer.get(s);
                         
@@ -178,7 +200,7 @@ public class LeaveOneOutCrossValidation implements Runnable {
                         	results.put(s, s.getHf() - valid.get(0).calculateHf());
                             
                             resultsDetailed.put(s, valid.get(0));
-                            	
+                           
                             System.out.println(" valid.get(0).toString: " + valid.get(0).toString()+ " valid.get(0).calculateHf(): " + valid.get(0).calculateHf() );
                             
                         } catch (IndexOutOfBoundsException ioobe) {
@@ -223,7 +245,7 @@ public class LeaveOneOutCrossValidation implements Runnable {
                 Species species = rdc.getKey();
                 	
                 System.out.println(" resultsDetailedComplete species name: " + species.getRef() + " species enthalpy taken from csv input file :  " + species.getHf());
-//                	
+
 //              System.out.println("rdc.getValue().get(0).calculateHf(): " + rdc.getValue().get(0).calculateHf() + " rdc.getValue().get(0).toString(): " + rdc.getValue().get(0).toString());
                 	
 //              System.out.println();
@@ -236,7 +258,13 @@ public class LeaveOneOutCrossValidation implements Runnable {
                 	
                 	for(Reaction r: rlc) {
                 		
-//             		System.out.println();
+
+                	
+                	/**
+                	 *  
+                	 * Lists generated reaction and enthalpy estimated for that reaction.
+                	 * 
+                	 */
                 		
                   	System.out.println("R_" +i+ ": " + rdc.getValue().get(i).toString() + "  enthalpy: " + rdc.getValue().get(i).calculateHf());
                   	
@@ -256,7 +284,7 @@ public class LeaveOneOutCrossValidation implements Runnable {
                 			//System.out.println("product key: " + prod.getKey().getRef() + "product value: " + prod.getValue());
                 			
                 		}
-                	}                	
+                	}
                 }
                 
             } catch (Exception ex) {
@@ -266,8 +294,9 @@ public class LeaveOneOutCrossValidation implements Runnable {
             }
         }
     }
-    // create the k samples
-    // what algorithm for the subsampling was chosen
+    
+//    create the k samples
+//    what algorithm for the subsampling was chosen
 //    protected Map<Integer, ObjectPool> createSubSets() {
 //        pool.validateAll();
 //        HashMap<Integer, ObjectPool> samples = new HashMap<Integer, ObjectPool>();
